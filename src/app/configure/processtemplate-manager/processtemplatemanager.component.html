@@ -1,0 +1,29 @@
+<nz-card style="width:100%;" nzTitle="管理流程模版">
+  <div class="table-operations">
+    <app-upload-file [uploadManager]="processTemplateManager.uploadProcessTemplate"></app-upload-file>
+  </div>
+  <nz-table #processTemplateTable nzSize="small" [nzData]="processTemplateManager.processTemplateList"
+            style="margin-bottom: 20px">
+    <thead>
+    <tr>
+      <th>标识</th>
+      <th>模板名称</th>
+      <th>最后更新日期</th>
+      <th>版本</th>
+      <th>操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let data of processTemplateTable.data">
+      <td>{{ data['key'] }}</td>
+      <td>{{ data['name'] }}</td>
+      <td>{{ data['lastUpdateDate'] | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+      <td>{{ data['version'] }}</td>
+      <td>
+        <a nz-icon type="delete" title="移除" nz-popconfirm nzTitle="删除"
+           (nzOnConfirm)="processTemplateManager.removeLastVersion(data)"></a>
+      </td>
+    </tr>
+    </tbody>
+  </nz-table>
+</nz-card>

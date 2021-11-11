@@ -1,0 +1,82 @@
+<h4 class="font-weight-bold py-3">
+  <span>{{state=="DOACS"?"审核进单准备表":"审核合同概要表"}}</span>
+</h4>
+<igt-approval-flowline></igt-approval-flowline>
+<ngb-tabset type="tabs" [destroyOnHide]="false" [activeId]="activedId" (tabChange)="tabclick($event)" class="nav-tabs-top nav-responsive-xl">
+  <ngb-tab id="pending-tab">
+    <ng-template ngbTabTitle>
+      <span class="tab-title">
+        <strong>
+          {{ state === 'DCDSH' ? '合同概要表' : '' }}
+          {{ state === 'DOACS' ? '基础信息' : '' }}
+        </strong>
+      </span>
+    </ng-template>
+    <ng-template ngbTabContent>
+      <div class="card-body">
+        <div class="demo-vertical-spacing">
+          <form #searchForm="ngForm">
+            <app-preOrderBaseInfo
+              *ngIf="state === 'DCDSH'"
+              [disa]="true"
+              [showChek]="true"
+              [conTable]="true"
+              (myEvent)="myskip($event)"
+              [dataBase]="dataBase">
+            </app-preOrderBaseInfo>
+            <app-preOrderBaseInfo
+              *ngIf="state === 'DOACS'"
+              [disa]="true"
+              [showChek]="false"
+              (myEvent)="myskip($event)"
+              [dataBase]="dataBase">
+            </app-preOrderBaseInfo>
+          </form>
+        </div>
+      </div>
+        <div class="tr  mb10 mr10">
+          <button *ngIf="state === 'DCDSH'" nz-button [nzType]="'primary'" (click)="myskip('complete-record')">下一步</button>
+          <button *ngIf="state === 'DOACS'" nz-button [nzType]="'primary'" (click)="myskip('complete-tab')">下一步</button>
+        </div>
+    </ng-template>
+  </ngb-tab>
+<!--  DCDSH-->
+<!--  DOACS-->
+  <ngb-tab id="complete-tab" *ngIf="state === 'DOACS'">
+    <ng-template ngbTabTitle><span class="tab-title"><strong>产品信息</strong></span></ng-template>
+    <ng-template ngbTabContent>
+      <div class="card-body">
+        <app-preOrderProductInfo
+          [dataBase]="dataBase"
+          [ishow]="true"
+          [completed]="true"
+          [paySwitch]="paySwitch"
+          [installSwitch]="installSwitch"
+          [disa]="true"
+          (myEvent)="myskip($event)"
+        ></app-preOrderProductInfo>
+      </div>
+      <div class="tr  mb10 mr10">
+        <button nz-button [nzType]="'primary'" (click)="myskip('pending-tab')">上一步</button>
+        <button nz-button [nzType]="'primary'" (click)="myskip('complete-record')">下一步</button>
+      </div>
+    </ng-template>
+  </ngb-tab>
+  <ngb-tab id="complete-record">
+    <ng-template ngbTabTitle><span class="tab-title"><strong>审批</strong></span></ng-template>
+    <ng-template ngbTabContent>
+      <div class="card-body">
+        <app-auditrecord  [dataBase]="dataBase"  (myEvent)="myskip($event)"></app-auditrecord>
+      </div>
+      <div class="tr  mb10 mr10">
+        <button *ngIf="state === 'DCDSH'" nz-button [nzType]="'primary'" (click)="myskip('pending-tab')">上一步</button>
+        <button *ngIf="state === 'DOACS'" nz-button [nzType]="'primary'" (click)="myskip('complete-tab')">上一步</button>
+      </div>
+    </ng-template>
+  </ngb-tab>
+</ngb-tabset>
+<!--  <nz-modal [(nzVisible)]="isVisibleWinCheck" nzTitle="中标确认校验结果" nzOkText="提交进单准备表" nzCancelText="取消" nzCentered nzWidth="900" (nzOnCancel)="handleCancelWinCheck()" (nzOnOk)="handleOkWinCheck()">-->
+<!--    <ng-container>-->
+<!--        <app-preOrderWinCheckTable [bidData]="bidData"></app-preOrderWinCheckTable>-->
+<!--    </ng-container>-->
+<!--  </nz-modal>-->

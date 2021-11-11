@@ -1,0 +1,87 @@
+<h4 class="font-weight-bold py-3">
+  <span>Personal Info</span>
+</h4>
+
+<div class="demo-vertical-spacing">
+  <div>
+    <div class="row">
+      <div class="col-sm-6 col-md-6 col-lg-3 mb-3">
+        <input class="form-control" type="text" placeholder="Filter by Code..." #codeInput (keyup)="updateFilter($event)">
+      </div>
+      <div class="col-sm-6 col-md-6 col-lg-3 mb-3">
+        <input class="form-control" type="text"  placeholder="Filter by UserName..." #nameInput (keyup)="updateFilter($event)">
+      </div>
+      <div class="col-sm-6 col-md-6 col-lg-3 mb-3">
+        <input class="form-control" type="text" placeholder="Filter by UserEmail..." #emailInput (keyup)="updateFilter($event)">
+      </div>
+      <div class="col-sm-6 col-md-6 col-lg-3 mb-3">
+        <input class="form-control" type="text" placeholder="Filter by SapCode..." #sapCodeInput
+          (keyup)="updateFilter($event)">
+      </div>
+      <!-- <ng-container *ngIf="hasStatus">
+        <div class="col-sm-6 col-md-5 col-lg-3 mb-3 ml-auto">
+            <button type="button" class="btn btn-round btn-success" (click)="triggerStatus('1')">&ensp;Active&ensp;</button>
+            <button type="button" class="btn btn-round btn-danger" (click)="triggerStatus('0')">Deactive</button>
+        </div>
+      </ng-container> -->
+    </div>
+
+    <div class="table-responsive">
+      <ngx-datatable #table style="min-width: 500px"
+        [rows]="rows"
+        [loadingIndicator]="loadingIndicator"
+        [columnMode]="'force'"
+        [headerHeight]="43"
+        [footerHeight]="'auto'"
+        [rowHeight]="'auto'"
+        [reorderable]="true"
+        [selected]="selected"
+        [selectionType]="'checkbox'"
+        [limit]="10"
+        (select)='onSelect($event)'>
+        <!-- blow commented line just for first column checkbox -->
+        <!-- <ngx-datatable-column
+          [width]="40"
+          [sortable]="false"
+          [canAutoResize]="false"
+          [draggable]="false"
+          [resizeable]="false"
+          [headerCheckboxable]="false"
+          [checkboxable]="false">
+        </ngx-datatable-column> -->
+        <ngx-datatable-column prop="code" name="Code" [headerClass]="getHeaderClass" [cellClass]="getCellClass"></ngx-datatable-column>
+        <ngx-datatable-column prop="name" name="Name" [headerClass]="getHeaderClass" [cellClass]="getCellClass"></ngx-datatable-column>
+        <ngx-datatable-column prop="email" name="Email" [headerClass]="getHeaderClass" [cellClass]="getCellClass"></ngx-datatable-column>
+        <ngx-datatable-column prop="phone" name="Phone" [headerClass]="getHeaderClass" [cellClass]="getCellClass"></ngx-datatable-column>
+        <ngx-datatable-column prop="sapCode" name="SapCode" [headerClass]="getHeaderClass" [cellClass]="getCellClass"></ngx-datatable-column>
+        <ngx-datatable-column prop="description" name="Description" [headerClass]="getHeaderClass" [cellClass]="getCellClass"></ngx-datatable-column>
+        <!-- <ngx-datatable-column prop="mobile" name="Mobile" [headerClass]="getHeaderClass" [cellClass]="getCellClass"></ngx-datatable-column> -->
+        <!-- <ngx-datatable-column prop="lmcode1" name="LmCode1" [headerClass]="getHeaderClass" [cellClass]="getCellClass"></ngx-datatable-column> -->
+        <!-- <ngx-datatable-column prop="lmname" name="LmName" [headerClass]="getHeaderClass" [cellClass]="getCellClass"></ngx-datatable-column> -->
+        <!--<ngx-datatable-column prop="rolecode" name="RoleCode" [headerClass]="getHeaderClass" [cellClass]="getCellClass"></ngx-datatable-column>
+        <ngx-datatable-column prop="rolename" name="RoleName" [headerClass]="getHeaderClass" [cellClass]="getCellClass"></ngx-datatable-column>
+        <ngx-datatable-column prop="rolegroupcode" name="RoleGroupCode" [headerClass]="getHeaderClass" [cellClass]="getCellClass"></ngx-datatable-column>
+        <ngx-datatable-column prop="rolegroupname" name="RoleGroupName" [headerClass]="getHeaderClass" [cellClass]="getCellClass"></ngx-datatable-column>-->
+        <!-- <ngx-datatable-column prop="updatedat" name="UpdatedAt" [headerClass]="getHeaderClass" [cellClass]="getCellClass"></ngx-datatable-column> -->
+        <!-- <ngx-datatable-column prop="rolegroupname" name="RoleGroupName" [headerClass]="getHeaderClass" [cellClass]="getCellClass"></ngx-datatable-column> -->
+        <!--  -->
+        <!-- <ngx-datatable-column prop="name" name="Name" [headerClass]="getHeaderClass" [cellClass]="getCellClass"></ngx-datatable-column> -->
+        <!-- <ngx-datatable-column prop="lineManager" name="LineManager" [headerClass]="getHeaderClass" [cellClass]="getCellClass"></ngx-datatable-column> -->
+        <!-- <ngx-datatable-column prop="mobile" name="Mobile" [headerClass]="getHeaderClass" [cellClass]="getCellClass"></ngx-datatable-column> -->
+        <!-- <ngx-datatable-column prop="email" name="Email" [headerClass]="getHeaderClass" [cellClass]="getCellClass"></ngx-datatable-column> -->
+        <!-- <ngx-datatable-column prop="roleId" name="RoleId" [headerClass]="getHeaderClass" [cellClass]="getCellClass"></ngx-datatable-column> -->
+        <!-- <ngx-datatable-column prop="status" name="Status" [headerClass]="getHeaderClass" [cellClass]="getCellClass">
+          <ng-template ngx-datatable-cell-template let-rowIndex="rowIndex" let-row="row" let-value="value">
+            <span *ngIf="value == '0';else other_content">Active</span>
+            <ng-template #other_content><span>Inactive</span></ng-template>
+          </ng-template>
+        </ngx-datatable-column> -->
+        <!-- <ngx-datatable-column prop="createDate" name="createDate"></ngx-datatable-column> -->
+        <!-- <ngx-datatable-column prop="createDby" name="createDby"></ngx-datatable-column> -->
+        <!-- <ngx-datatable-column prop="id" name="id"></ngx-datatable-column> -->
+        <!-- <ngx-datatable-column prop="lastModifiedBy" name="lastModifiedBy"></ngx-datatable-column> -->
+        <!-- <ngx-datatable-column prop="lastModifiedDate" name="lastModifiedDate"></ngx-datatable-column> -->
+      </ngx-datatable>
+    </div>
+  </div>
+</div>

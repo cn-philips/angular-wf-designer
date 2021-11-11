@@ -1,0 +1,362 @@
+<nz-table
+  #expandTable
+  [nzData]="listOfMapData"
+  [nzScroll]="{ x: '4100px', y:'500px' }"
+  [nzLoading]="loading"
+  [nzFrontPagination]="false"
+  [nzTotal]="total"
+  [nzShowTotal]="totalTemplate"
+  [nzPageIndex]="pagination.pageNo"
+  [nzPageSize]="pagination.pageSize"
+  (nzPageIndexChange)="changePageIndex($event)"
+  (nzPageSizeChange)="changePageSize($event)"
+  [nzHideOnSinglePage]="false"
+  [nzPageSizeOptions]="[5, 10, 20, 30, 40, 50 ]"
+  [nzShowQuickJumper]="true"
+  [nzShowSizeChanger]="true"
+  style="margin-top: 20px;"
+>
+  <thead>
+  <tr>
+    <th nzWidth="200px" nzLeft="0px">Ref No</th>
+    <th nzWidth="200px">任务状态</th>
+    <th nzWidth="200px">医院名称</th>
+    <th nzWidth="200px">销售</th>
+    <th nzWidth="300px">项目名称</th>
+    <th nzWidth="300px">招标编号</th>
+    <th nzWidth="300px">本地名称(Market Bundle)</th>
+    <th nzWidth="300px">投标公司</th>
+    <th nzWidth="200px">提交时间</th>
+    <th nzWidth="200px">项目信息</th>
+    <th nzWidth="200px">业务模式</th>
+    <th nzWidth="150px">进单模式</th>
+    <th nzWidth="150px">进单状态</th>
+    <th nzWidth="200px">招标授权模式</th>
+    <th nzWidth="200px">招标授权状态</th>
+    <th nzWidth="200px">是否授权</th>
+    <th nzWidth="200px">Pre-FP</th>
+    <th nzWidth="200px">SO#</th>
+    <th nzWidth="200px">第三方自采核查</th>
+    <th nzWidth="280px" nzRight="0px">操作</th>
+  </tr>
+  </thead>
+  <tbody>
+  <ng-container *ngFor="let data of expandTable.data">
+    <ng-container *ngFor="let item of mapOfExpandedData[data.key]">
+      <tr *ngIf="(item.parent && item.parent.expand) || !item.parent">
+        <td
+          nzLeft="0px"
+          [nzIndentSize]="item.level !== 0 ? 20 : 0"
+          [nzShowExpand]="!!item.children"
+          [(nzExpand)]="item.expand"
+          (nzExpandChange)="collapse(mapOfExpandedData[data.key], item, $event)"
+        >
+          <span [ngClass]="{'global-color-history': item.level === 2 && item.HistiryContractSummary !== ''}">{{item.type=='ZBSQ'?item.treeName:item.referenceNoJd}}</span>
+          <span *ngIf="item.level === 0 && item.ContractSummary !== ''" class="global-color-red">{{ item.ContractSummary }}</span>
+        </td>
+        <td nzWidth="200px" style="word-break: break-all;">
+
+            <ng-template [ngIf]="item.process_status||item.task_status">
+              {{item.process_status|ProcessStatusPipe}}{{item.process_status&&item.task_status?'-':""}}{{item.task_status|ProcessStatusPipe}}
+            </ng-template>
+
+        </td>
+        <td>
+          {{item.type=='ZBSQ'? item.hospital_name:item.hospitalNameJd}}
+        </td>
+        <td nzWidth="200px" style="word-break: break-all;">
+          <div class="innerbox">{{ item.sale }}</div>
+        </td>
+        <td>
+          <div
+            class="lines-2"
+            nz-tooltip
+            [nzTitle]="item.type=='ZBSQ'?item.bidding_name:(item.biddingNameJd?item.biddingNameJd:item.biddingNameJdStock)"
+          >
+            {{item.type=='ZBSQ'?item.bidding_name:(item.biddingNameJd?item.biddingNameJd:item.biddingNameJdStock)}}
+          </div>
+        </td>
+        <td>{{item.type=='ZBSQ'?item.bidding_no:item.biddingNoJd }}</td>
+        <td>
+          <div
+            class="lines-2"
+            nz-tooltip
+            [nzTitle]="item.type === 'ZBSQ' ? item.product_name : item.productNameJd"
+          >
+            {{ item.type === 'ZBSQ' ? item.product_name : item.productNameJd }}
+          </div>
+        </td>
+        <td>{{item.type=='ZBSQ'?item.bidding_name1:item.biddingCompanyNameJd}}</td>
+        <td>{{ item.processTime | TimeFormatePipe}}</td>
+        <td>
+          <a
+            *ngFor="let information of item.projectIformations; index as i;"
+            style="display: block;text-decoration: underline;"
+            [href]="information.link"
+          >
+            {{ item.type=='ZBSQ' ? information.name : item.projectNameJd}}
+          </a>
+        </td>
+        <td>{{item.type==="ZBSQ"?(item.business_type|ProcessModel):(item.businessTypeJd | ProcessModel)}}</td>
+        <td>{{ ProJdType(item.jdType) }}</td>
+        <td>{{ item.entryStatus }}
+          <!--进单准备状态显示-->
+          <a *ngIf="item.process_status&&item.process_status==='JDZB' || item.process_status === 'HTQS'">{{item.process_status|ProcessStatusPipe}}{{item.process_status&&item.task_status?'-':""}}{{item.task_status|ProcessStatusPipe}}</a>
+        </td>
+        <td>{{ ProAppType(item.applyType)}}</td>
+        <!--进单准备不显示-->
+        <td> <a *ngIf="item.process_status&&item.process_status!=='JDZB'&&item.process_status !== 'HTQS'">{{item.process_status|ProcessStatusPipe}}{{item.process_status&&item.task_status?'-':""}}{{item.task_status|ProcessStatusPipe}}</a></td>
+        <td>{{item.tender_authorization|proceessAuthor}}</td>
+        <td>{{ item.preFP }}</td>
+        <td><a style="display: block;word-wrap:break-word;word-break:break-all;">{{ item.subProStatusTime}}</a></td>
+        <td>{{ item.subProStatusThird|ProcessThird }}</td>
+        <td
+          nzRight="0px"
+        >
+          <!--进单oa and 场地审核-->
+          <button
+            *ngIf="item.task_status === 'DCDSH'||item.task_status === 'DOACS'"
+            style="display: block;margin: 1rem 1rem 1rem 0;"
+            nz-button
+            nzSize="small"
+            nzType="primary"
+            (click)="goToPreorderaudit(item)"
+          >{{ flag === 0&&item.processor.indexOf(user)!=-1? (item.task_status | ProcessStatusPipe) : '查看'}}</button>
+          <button
+            *ngIf="item.task_status === 'DTJ'"
+            style="display: block;margin: 1rem 1rem 1rem 0;"
+            nz-button
+            nzSize="small"
+            nzType="primary"
+            (click)="goToApplyTenderModif(item)"
+          >{{ flag === 0&&item.processor.indexOf(user)!=-1? (item.task_status | ProcessStatusPipe) : '查看'}}</button>
+          <button
+            *ngIf="item.task_status === 'DBA'"
+            style="display: block;margin: 1rem 1rem 1rem 0;"
+            nz-button
+            nzSize="small"
+            nzType="primary"
+            (click)="goToBid(item)"
+          >{{ flag === 0&&item.processor.indexOf(user)!=-1? (item.task_status | ProcessStatusPipe) : '查看'}}</button>
+          <!--已中标确认-->
+          <button
+            *ngIf="item.task_status === 'YZBQR'||item.task_status === 'YZBQRYBCWJ'"
+            style="display: block;margin: 1rem 1rem 1rem 0;"
+            nz-button
+            nzSize="small"
+            nzType="primary"
+            (click)="goToWinningBid2(item)"
+          >查看</button>
+          <button
+            *ngIf="item.task_status === 'DSWZYQR'"
+            style="display: block;margin: 1rem 1rem 1rem 0;"
+            nz-button
+            nzSize="small"
+            nzType="primary"
+            (click)="goToWinningBid(item)"
+          >{{ flag === 0&&item.processor.indexOf(user)!=-1? (item.task_status | ProcessStatusPipe) : '查看'}}</button>
+          <button
+            *ngIf="item.task_status==='YZBQRDBCWJ'"
+            style="display: block;margin: 1rem 1rem 1rem 0;"
+            nz-button
+            nzSize="small"
+            nzType="primary"
+            (click)="goToSupportUp(item)"
+          >{{ flag === 0&&item.processor.indexOf(user)!=-1? (item.task_status | ProcessStatusPipe) : '查看'}}</button>
+          <button
+            *ngIf="item.task_status === 'DSWYSH' || item.task_status === 'XSBMDMSH' || item.task_status === 'XSBMZSLSH' || item.task_status === '2JSH'"
+            style="display: block;margin: 1rem 1rem 1rem 0;"
+            nz-button
+            nzSize="small"
+            nzType="primary"
+            (click)="goTenderreview(item)"
+          >{{ flag === 0&&item.processor.indexOf(user)!=-1? (item.task_status | ProcessStatusPipe) : '查看'}}</button>
+          <button
+            *ngIf="item.task_status === 'DSWZYSQ'"
+            style="display: block;margin: 1rem 1rem 1rem 0;"
+            nz-button
+            nzSize="small"
+            nzType="primary"
+            (click)="goEmp(item)"
+          >{{ flag === 0&&item.processor.indexOf(user)!=-1? (item.task_status | ProcessStatusPipe) : '查看'}}</button>
+          <!--合同子流程审核  查看-->
+          <button
+            *ngIf="item.task_status === 'DZLCSH'||item.task_status === 'JDEND'||item.task_status === 'CANCELLED'"
+            style="display: block;margin: 1rem 1rem 1rem 0;"
+            nz-button
+            nzSize="small"
+            nzType="primary"
+            (click)="goUn(item)"
+          >查看</button>
+          <!--待OIT待文件上传-->
+          <button
+            *ngIf="item.task_status === 'DOITWJSC'"
+            style="display: block;margin: 1rem 1rem 1rem 0;"
+            nz-button
+            nzSize="small"
+            nzType="primary"
+            (click)="goCompleteOit(item)"
+          >{{ flag === 0&&item.processor.indexOf(user)!=-1? (item.task_status | ProcessStatusPipe) : '查看'}}</button>
+          <!--待OIT文件上传-->
+          <button
+            *ngIf="item.task_status === 'OITEND'"
+            style="display: block;margin: 1rem 1rem 1rem 0;"
+            nz-button
+            nzSize="small"
+            nzType="primary"
+            (click)="goCompleteOit(item)"
+          >{{ flag === 0&&item.oaName!=1&&item.processor.indexOf(user)!=-1? (item.task_status | ProcessStatusPipe) : '查看'}}</button>
+<!--          <button-->
+<!--            *ngIf="(item.task_status === 'OITEND'||item.task_status==='DBCWJSC')&&flag===1&&item.dealerAudit==='1'"-->
+<!--            style="display: block;margin: 1rem 1rem 1rem 0;"-->
+<!--            nz-button-->
+<!--            nzSize="small"-->
+<!--            nzType="primary"-->
+<!--            (click)="goCompleteOit(item,'third')"-->
+<!--          >第三方自采核查</button>-->
+<!--          <button-->
+<!--            *ngIf="(item.task_status === 'OITEND'||item.task_status==='DBCWJSC')&&flag===0&&item.oaName==1"-->
+<!--            style="display: block;margin: 1rem 1rem 1rem 0;"-->
+<!--            nz-button-->
+<!--            nzSize="small"-->
+<!--            nzType="primary"-->
+<!--            (click)="goCompleteOit(item,'realTime')"-->
+<!--          >OIT Real Time</button>-->
+          <!--待合同签署-->
+          <!--          <button-->
+          <!--          *ngIf="item.task_status === 'DHTQS'"-->
+          <!--          style="display: block;margin: 1rem 1rem 1rem 0;"-->
+          <!--          nz-button-->
+          <!--          nzSize="small"-->
+          <!--          nzType="primary"-->
+          <!--          (click)="goConsign(item)"-->
+          <!--        >{{ flag === 0 ? (item.task_status | ProcessStatusPipe) : '查看'}}</button>-->
+          <!--审核order summary -->
+          <button
+            *ngIf="item.task_status === 'OITENDDBCWJSC'"
+            style="display: block;margin: 1rem 1rem 1rem 0;"
+            nz-button
+            nzSize="small"
+            nzType="primary"
+            (click)="goCompleteOitFile(item)"
+          >查看</button>
+          <button
+            *ngIf="item.task_status === 'DODSH'"
+            style="display: block;margin: 1rem 1rem 1rem 0;"
+            nz-button
+            nzSize="small"
+            nzType="primary"
+            (click)="goExaminesummary(item)"
+          >{{ flag === 0&&item.processor.indexOf(user)!=-1? (item.task_status | ProcessStatusPipe) : '查看'}}</button>
+          <!-- 审核合同概要表 -->
+          <!-- 待销售部门审核 -->
+          <!--OA审核-->
+          <!--特批进单审核-->
+          <button
+            *ngIf="item.task_status === 'DXSBMSH' || item.task_status === 'DXSBM2JSH' || item.task_status === 'DOAJDQR' || item.task_status ==='DHTOASH' || item.task_status ==='DFBSH' || item.task_status ==='DTPJDSH'"
+            style="display: block;margin: 1rem 1rem 1rem 0;"
+            nz-button
+            nzSize="small"
+            nzType="primary"
+            (click)="goExamineOrder(item)"
+          >{{ flag === 0&&item.processor.indexOf(user)!=-1? (item.task_status | ProcessStatusPipe) : '查看'}}</button>
+          <!--修改合共概要表-->
+          <!--取消进单-->
+          <button
+            *ngIf="item.task_status === 'CANCELLEDSUB'"
+            style="display: block;margin: 1rem 1rem 1rem 0;"
+            nz-button
+            nzSize="small"
+            nzType="primary"
+            (click)="goExamineOrderEnd(item)"
+          >查看</button>
+           <!--取消进单 end-->
+          <button
+            *ngIf="item.task_status === 'DHTGYBTX'||item.task_status === 'XJDHTGYBTX'"
+            style="display: block;margin: 1rem 1rem 1rem 0;"
+            nz-button
+            nzSize="small"
+            nzType="primary"
+            (click)="goInconmodif(item)"
+          >{{ flag === 0&&item.processor.indexOf(user)!=-1? (item.task_status | ProcessStatusPipe) : '查看'}}</button>
+          <!--合同签署-->
+          <button
+            *ngIf="item.task_status === 'DHTQS'"
+            style="display: block;margin: 1rem 1rem 1rem 0;"
+            nz-button
+            nzSize="small"
+            nzType="primary"
+            (click)="goConsign(item)"
+          >{{ flag === 0&&item.processor.indexOf(user)!=-1? (item.task_status | ProcessStatusPipe) : '查看'}}</button>
+          <button
+            *ngIf="item.task_status === 'DTXHT'"
+            style="display: block;margin: 1rem 1rem 1rem 0;"
+            nz-button
+            nzSize="small"
+            nzType="primary"
+            (click)="goOrdersummary(item)"
+          >{{ flag === 0&&item.processor.indexOf(user)!=-1? (item.task_status | ProcessStatusPipe) : '查看'}}</button>
+          <!--待补充文件上传-->
+          <button
+            *ngIf="item.task_status === 'DBCWJSC'"
+            style="display: block;margin: 1rem 1rem 1rem 0;"
+            nz-button
+            nzSize="small"
+            nzType="primary"
+            (click)="goSuppfile(item)"
+          >{{ flag === 0&&item.processor.indexOf(user)!=-1? (item.task_status | ProcessStatusPipe) : '查看'}}</button>
+          <!--未中标 二次开标 已办查看-->
+          <button
+            *ngIf="( item.task_status === 'WZB' || item.task_status === '2CKB' || item.task_status === '2CKBZZ')"
+            style="display: block;margin: 1rem 1rem 1rem 0;"
+            nz-button
+            nzSize="small"
+            nzType="primary"
+            (click)="goToBid(item)"
+          >查看</button>
+          <!--未中标 二次开标 已办查看-->
+          <button
+            *ngIf="( item.task_status === 'ZBSQ' || item.task_status === '2CKB' || item.task_status === '2CKBZZ') && flag === 0&&!(item.processor.indexOf(user)!=-1)"
+            style="display: block;margin: 1rem 1rem 1rem 0;"
+            nz-button
+            nzSize="small"
+            nzType="primary"
+            (click)="goToBid(item)"
+          >查看</button>
+          <button
+            *ngIf="(item.task_status === 'ZBSQ' || item.task_status === '2CKB' || item.task_status === '2CKBZZ') && flag === 0&&item.processor.indexOf(user)!=-1"
+            style="display: block;margin: 1rem 1rem 1rem 0;"
+            nz-button
+            nzSize="small"
+            nzType="default"
+            nz-popconfirm
+            nzTitle="你确定要执行待备案的操作?"
+            (nzOnConfirm)="confirmBidding(item, 'approved')"
+            (nzOnCancel)="cancelBidding()"
+          >待备案</button>
+          <button
+            *ngIf="(item.task_status === 'ZBSQ' || item.task_status === '2CKB' || item.task_status === '2CKBZZ') && flag === 0&&item.processor.indexOf(user)!=-1"
+            style="display: block;margin: 1rem 1rem 1rem 0;"
+            nz-button
+            nzSize="small"
+            nzType="default"
+            nz-popconfirm
+            nzTitle="你确定要执行二次开标的操作?"
+            (nzOnConfirm)="confirmSecondBid(item, 'secbidding')"
+            (nzOnCancel)="cancelSecondBid()"
+          >二次开标</button>
+          <button
+            *ngIf="(item.task_status === 'ZBSQ' || item.task_status === '2CKB' || item.task_status === '2CKBZZ') && flag === 0"
+            style="display: block;margin: 1rem 1rem 1rem 0;"
+            nz-button
+            nzSize="small"
+            nzType="primary"
+            (click)="goEmp2(item)"
+          >查看授权信息</button>
+        </td>
+      </tr>
+    </ng-container>
+  </ng-container>
+  </tbody>
+</nz-table>
+<ng-template #totalTemplate let-total> 数据总条数 {{ total }} </ng-template>

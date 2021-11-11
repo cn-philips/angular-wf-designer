@@ -1,0 +1,16 @@
+@import '../../../vendor/libs/angular2-ladda/angular2-ladda.scss';
+@import "../../../vendor/libs/ng-select/ng-select.scss";
+
+.cell-right{
+    text-align: right;
+    color: red;
+}
+
+.simple-file-table{
+    text-align: right;
+}
+
+.attachment-title {
+    background: lightgray;
+    height: 30px;
+}

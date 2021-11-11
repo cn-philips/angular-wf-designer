@@ -1,0 +1,497 @@
+<div nz-row class="pl30">
+  <div nz-col nzSpan="12">
+    <nz-form-item>
+      <nz-form-label [nzSpan]="6" nzFor="email">进单模式</nz-form-label>
+      <nz-form-control [nzSpan]="14">
+        <nz-select name="name" [(ngModel)]="stockCode">
+          <nz-option *ngFor="let item of empowerList let i=index" [nzValue]="item.value" [nzLabel]="item.name">
+          </nz-option>
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+  </div>
+</div>
+<nz-card nzTitle="项目基本信息">
+
+  <div nz-row>
+    <div nz-col nzSpan="12">
+        <nz-form-item>
+            <nz-form-label [nzSpan]="6" nzFor="email">进单模式</nz-form-label>
+            <nz-form-control [nzSpan]="14">
+                <nz-select nzDisabled nzDisabled name="name" [(ngModel)]="stockCode">
+                    <nz-option *ngFor="let item of empowerList let i=index" [nzValue]="item.value" [nzLabel]="item.name">
+                    </nz-option>
+                </nz-select>
+            </nz-form-control>
+        </nz-form-item>
+    </div>
+</div>
+<div class="form">
+    <div class="title">
+        项目基本信息
+    </div>
+    <div nz-row>
+        <div nz-col nzSpan="12">
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="email">业务模式</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                    <input nz-input name="email" disabled type="email">
+                </nz-form-control>
+            </nz-form-item>
+        </div>
+        <div nz-col nzSpan="12">
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="email">区域</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                    <input nz-input name="email" disabled type="email">
+                </nz-form-control>
+            </nz-form-item>
+        </div>
+    </div>
+    <div nz-row>
+        <div nz-col nzSpan="12">
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="email">中标通知书</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                    <a href="javascript:">中标通知书</a>
+                </nz-form-control>
+            </nz-form-item>
+        </div>
+        <div nz-col nzSpan="12">
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="email">招标编号</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                    <input nz-input name="email" disabled type="email">
+                </nz-form-control>
+            </nz-form-item>
+        </div>
+    </div>
+    <div nz-row>
+        <div nz-col nzSpan="12">
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="email">经销商</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                    <input nz-input name="email" disabled type="email">
+                </nz-form-control>
+                <nz-form-control [nzSpan]="4">
+                    <button disabled nz-button class="ml6" nzType="primary">选择经销商</button>
+                </nz-form-control>
+            </nz-form-item>
+        </div>
+        <div nz-col nzSpan="12">
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="email">DDP Status</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                    <input nz-input name="email" disabled type="email">
+                </nz-form-control>
+            </nz-form-item>
+        </div>
+    </div>
+    <div nz-row>
+        <div nz-col nzSpan="12">
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="email">经销商地址</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                    <input nz-input name="email" disabled type="email">
+                </nz-form-control>
+                <nz-form-control [nzSpan]="4">
+                    <button disabled nz-button class="ml6" nzType="primary">经销商联系人</button>
+                </nz-form-control>
+            </nz-form-item>
+        </div>
+        <div nz-col nzSpan="12">
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="email">DDP Status</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                    <input nz-input name="email" disabled type="email">
+                </nz-form-control>
+            </nz-form-item>
+        </div>
+    </div>
+    <div nz-row>
+        <div nz-col nzSpan="12">
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="email">经销商电话</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                    <input nz-input name="email" disabled type="email">
+                </nz-form-control>
+            </nz-form-item>
+        </div>
+        <div nz-col nzSpan="12">
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="email">经销商邮箱</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                    <input nz-input name="email" disabled type="email">
+                </nz-form-control>
+            </nz-form-item>
+        </div>
+    </div>
+    <div nz-row>
+        <div nz-col nzSpan="12">
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="email">采购订单签署人</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                    <input nz-input name="email" disabled type="email">
+                </nz-form-control>
+            </nz-form-item>
+        </div>
+        <div nz-col nzSpan="12">
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="email">采购订单签署人职务</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                    <input nz-input name="email" disabled type="email">
+                </nz-form-control>
+            </nz-form-item>
+        </div>
+    </div>
+    <div nz-row>
+        <div nz-col nzSpan="12">
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="email">合同买方</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                    <input nz-input name="email" disabled  type="email">
+                </nz-form-control>
+                <nz-form-control [nzSpan]="4">
+                    <button disabled nz-button class="ml6" nzType="primary">IE Pool 选择</button>
+                </nz-form-control>
+            </nz-form-item>
+        </div>
+        <div nz-col nzSpan="12">
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="email">DDP Status</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                    <input nz-input name="email" disabled type="email">
+                </nz-form-control>
+            </nz-form-item>
+        </div>
+    </div>
+    <div nz-row>
+        <div nz-col nzSpan="12">
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="email">合同买方地址</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                    <input nz-input name="email" disabled type="email">
+                </nz-form-control>
+            </nz-form-item>
+        </div>
+        <div nz-col nzSpan="12">
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="email">合同买方联系人</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                    <input nz-input name="email" disabled type="email">
+                </nz-form-control>
+            </nz-form-item>
+        </div>
+    </div>
+    <div nz-row>
+        <div nz-col nzSpan="12">
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="email">合同买方电话</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                    <input nz-input name="email" disabled type="email">
+                </nz-form-control>
+            </nz-form-item>
+        </div>
+        <div nz-col nzSpan="12">
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="email">合同买方邮箱</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                    <input nz-input name="email" disabled type="email">
+                </nz-form-control>
+            </nz-form-item>
+        </div>
+    </div>
+    <div nz-row>
+        <div nz-col nzSpan="12">
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="email">进口协议签署人</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                    <input nz-input name="email" disabled type="email">
+                </nz-form-control>
+            </nz-form-item>
+        </div>
+        <div nz-col nzSpan="12">
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="email">进口协议签署人职务</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                    <input nz-input name="email" disabled type="email">
+                </nz-form-control>
+            </nz-form-item>
+        </div>
+    </div>
+    <div nz-row>
+        <div nz-col nzSpan="12">
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="email">最终用户</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                    <input nz-input name="email" disabled type="email">
+                </nz-form-control>
+            </nz-form-item>
+        </div>
+        <div nz-col nzSpan="12">
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="email">医院性质</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                    <input nz-input name="email" disabled type="email">
+                </nz-form-control>
+            </nz-form-item>
+        </div>
+    </div>
+    <div nz-row>
+        <div nz-col nzSpan="12">
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="email">最终用户地址</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                    <input nz-input name="email" disabled type="email">
+                </nz-form-control>
+            </nz-form-item>
+        </div>
+        <div nz-col nzSpan="12">
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="email">最终用户联系人</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                    <input nz-input name="email" disabled type="email">
+                </nz-form-control>
+            </nz-form-item>
+        </div>
+    </div>
+    <div nz-row>
+        <div nz-col nzSpan="12">
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="email">最终用户电话</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                    <input nz-input name="email" disabled type="email">
+                </nz-form-control>
+            </nz-form-item>
+        </div>
+        <div nz-col nzSpan="12">
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="email">最终用户邮箱</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                    <input nz-input name="email"  disabled type="email">
+                </nz-form-control>
+            </nz-form-item>
+        </div>
+    </div>
+    <div nz-row>
+        <div nz-col nzSpan="12">
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="email">VAT发票开票信息</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                    <input nz-input name="email" disabled type="email">
+                </nz-form-control>
+            </nz-form-item>
+        </div>
+    </div>
+    <div nz-row>
+        <div nz-col nzSpan="12">
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="email">币制</nz-form-label>
+                <nz-form-control [nzSpan]="6">
+                    <input nz-input name="email" disabled type="email">
+                </nz-form-control>
+            </nz-form-item>
+        </div>
+    </div>
+    <div nz-row>
+        <div nz-col nzSpan="12">
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="email">是否抽样审核</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                </nz-form-control>
+            </nz-form-item>
+        </div>
+        <div nz-col nzSpan="12">
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="email">Contract Price</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                    <input nz-input name="email" disabled type="email">
+                </nz-form-control>
+            </nz-form-item>
+        </div>
+    </div>
+    <div nz-row>
+        <div nz-col nzSpan="12">
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="email">产品型号</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                    <input nz-input name="email" disabled type="email">
+                </nz-form-control>
+            </nz-form-item>
+        </div>
+        <div nz-col nzSpan="12">
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="email">CFDA证</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                    <input nz-input name="email" disabled  type="email">
+                </nz-form-control>
+            </nz-form-item>
+        </div>
+    </div>
+</div>
+<div class="form mt20 pl30">
+    <div class="title">
+        项目支持文件
+    </div>
+    <table class="tab">
+        <tbody>
+            <tr>
+                <td rowspan="5">招标文件审核</td>
+                <td>中标通知书</td>
+                <td><a href="javascript:">合同概要表信息</a></td>
+            </tr>
+            <tr>
+                <td>场地报告</td>
+                <td><a href="javascript:">合同概要表信息</a></td>
+            </tr>
+            <tr>
+                <td>要货函</td>
+                <td><a href="javascript:">合同概要表信息</a></td>
+            </tr>
+            <tr>
+                <td> 项目解决方案售前支持报告(仅针对含solution项目)</td>
+                <td><a href="javascript:">合同概要表信息</a></td>
+            </tr>
+            <tr>
+                <td>不适用</td>
+                <td>
+                    <nz-switch nzSize="small" [ngModel]="true"></nz-switch>
+                </td>
+            </tr>
+            <tr>
+                <td rowspan="6">抽样审核订单支持文件</td>
+                <td>招标文件</td>
+                <td><a href="javascript:">合同概要表信息</a></td>
+            </tr>
+            <tr>
+                <td>投标文件</td>
+                <td><a href="javascript:">合同概要表信息</a></td>
+            </tr>
+            <tr>
+                <td>最终用户合同</td>
+                <td><a href="javascript:">合同概要表信息</a></td>
+            </tr>
+            <tr>
+                <td>经销商利润分析表</td>
+                <td><a href="javascript:">合同概要表信息</a></td>
+            </tr>
+            <tr>
+                <td>项目分析表</td>
+                <td><a href="javascript:">合同概要表信息</a></td>
+            </tr>
+            <tr>
+                <td>不适用</td>
+                <td>
+                    <nz-switch nzSize="small" [ngModel]="true"></nz-switch>
+                </td>
+            </tr>
+            <tr>
+                <td rowspan="6">合同条款确认</td>
+                <td>付款条款</td>
+                <td>
+                    <div class="flex">
+                        <nz-select name="name" [(ngModel)]="stockCode" class="ml10" disabled>
+                            <nz-option *ngFor="let item of itemList let i=index"  [nzValue]="item.value" [nzLabel]="item.name">
+                            </nz-option>
+                        </nz-select>
+                        <input nz-input disabled name="email" class="ml10" type="email">
+                        <a class="w200" href="javascript:">合同概要表信息</a>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>装运及交货</td>
+                <td>
+                    <div class="flex">
+                        <nz-select name="name" [(ngModel)]="stockCode" class="ml10" disabled>
+                            <nz-option *ngFor="let item of itemList let i=index"  [nzValue]="item.value" [nzLabel]="item.name">
+                            </nz-option>
+                        </nz-select>
+                        <input nz-input name="email" disabled class="ml10" type="email">
+                        <a class="w200" href="javascript:">合同概要表信息</a>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>安装及保修</td>
+                <td>
+                    <div class="flex">
+                        <nz-select name="name" [(ngModel)]="stockCode" class="ml10" disabled>
+                            <nz-option *ngFor="let item of itemList let i=index"  [nzValue]="item.value" [nzLabel]="item.name">
+                            </nz-option>
+                        </nz-select>
+                        <input nz-input name="email" disabled class="ml10" type="email">
+                        <a class="w200" href="javascript:">合同概要表信息</a>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>直投订单合同金额和中标金额有价差</td>
+                <td>
+                    <div class="flex">
+                        <nz-select name="name" [(ngModel)]="stockCode" class="ml10" disabled>
+                            <nz-option *ngFor="let item of itemList let i=index"  [nzValue]="item.value" [nzLabel]="item.name">
+                            </nz-option>
+                        </nz-select>
+                        <input nz-input name="email" disabled class="ml10" type="email">
+                        <a class="w200" href="javascript:">合同概要表信息</a>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>培训</td>
+                <td>
+                    <div class="flex">
+                        <nz-select name="name" [(ngModel)]="stockCode" class="ml10" disabled>
+                            <nz-option *ngFor="let item of itemList let i=index"  [nzValue]="item.value" [nzLabel]="item.name">
+                            </nz-option>
+                        </nz-select>
+                        <input nz-input name="email" disabled class="ml10" type="email">
+                        <a class="w200" href="javascript:">合同概要表信息</a>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>场地准备</td>
+                <td>
+                    <div class="flex">
+                        <nz-select name="name" [(ngModel)]="stockCode" class="ml10" disabled>
+                            <nz-option *ngFor="let item of itemList let i=index"  [nzValue]="item.value" [nzLabel]="item.name">
+                            </nz-option>
+                        </nz-select>
+                        <input nz-input name="email" disabled class="ml10" type="email">
+                        <a class="w200" href="javascript:">合同概要表信息</a>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>罚则及违约责任(不含售后)</td>
+                <td>
+                    <div class="flex">
+                        <nz-select name="name" [(ngModel)]="stockCode" class="ml10" disabled>
+                            <nz-option *ngFor="let item of itemList let i=index"  [nzValue]="item.value" [nzLabel]="item.name">
+                            </nz-option>
+                        </nz-select>
+                        <input nz-input name="email" disabled class="ml10" type="email">
+                        <a class="w200" href="javascript:">合同概要表信息</a>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>其他条款</td>
+                    <td>
+                        <div class="flex">
+                            <nz-select name="name" [(ngModel)]="stockCode" disabled class="ml10">
+                                <nz-option *ngFor="let item of itemList let i=index" [nzValue]="item.value" [nzLabel]="item.name">
+                                </nz-option>
+                            </nz-select>
+                            <input nz-input name="email" disabled class="ml10" type="email">
+                            <a class="w200" href="javascript:">合同概要表信息</a>
+                        </div>
+                    </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

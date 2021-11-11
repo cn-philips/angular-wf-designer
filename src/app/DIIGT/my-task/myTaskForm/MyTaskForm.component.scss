@@ -1,0 +1,13 @@
+@import '../../../../media_query.scss';
+@media screen and (max-width: $screen-xs-max) {
+  .btns-group{ 
+    display: flex;
+    overflow-x: auto; 
+    .btn-collapse{
+      display: block;
+      position: relative;
+      // width: 100px;
+      white-space: nowrap;
+    }
+  }
+}

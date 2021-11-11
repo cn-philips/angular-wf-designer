@@ -1,0 +1,36 @@
+<h4 class="font-weight-bold py-3">
+  <span>授权发放</span>
+</h4>
+<igt-approval-flowline></igt-approval-flowline>
+<div class="demo-vertical-spacing">
+  <div class="posi">
+    <ngb-tabset type="tabs" [destroyOnHide]="true"  class="nav-tabs-top nav-responsive-xl">
+      <!--基础信息-->
+      <ngb-tab id="pending-tab">
+        <ng-template ngbTabTitle><span class="tab-title"><strong>投标申请表</strong>&ensp;</span></ng-template>
+        <ng-template ngbTabContent>
+          <div class="card-body">
+            <!--            <app-my-ppending (pendingTaskEvent)="onPendingTaskEvent($event)"></app-my-ppending>-->
+            <!-- <app-emp-in></app-emp-in> -->
+            <!--            <my-task-pending (pendingTaskEvent)="onPendingTaskEvent($event)"></my-task-pending>-->
+             <!--基础信息-->
+             <app-applybase [isDisable]="true" [dataBase]="data"></app-applybase>
+             <!--产品信息-->
+             <app-newproduct [isDisable]="true" [dataBase]="data"></app-newproduct>
+             <!--补充信息-->
+             <app-supplement [isDisable]="true" [dataBase]="data"></app-supplement>
+          </div>
+        </ng-template>
+      </ngb-tab>
+      <!--授权发放-->
+      <ngb-tab id="complete-duc4">
+        <ng-template ngbTabTitle><span class="tab-title"><strong>授权发放</strong></span></ng-template>
+        <ng-template ngbTabContent>
+          <div class="card-body">
+            <app-emp-emp [data]="data" [(mainid)]="mainid"></app-emp-emp>
+          </div>
+        </ng-template>
+      </ngb-tab>
+    </ngb-tabset>
+  </div>
+</div>

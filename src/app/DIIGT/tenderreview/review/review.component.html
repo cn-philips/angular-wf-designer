@@ -1,0 +1,127 @@
+<nz-card class="mtb1rem" nzTitle="审批记录">
+  <app-emp-acc></app-emp-acc>
+</nz-card>
+<nz-card class="mtb1rem" nzTitle="审核投标申请表">
+  <form nz-form [formGroup]="validateForm">
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="top">
+      <div nz-col nzSpan="24" *ngIf="dataBase&&this.dataBase.businessType=='DIRECT'">
+        <nz-form-item>
+            <nz-form-label [nzNoColon]="'true'" [nzSpan]="4" >
+            <label *ngIf="flag==0" [disabled]="take" [ngModelOptions]="{standalone:true}"
+                [(ngModel)]="labarr.nonStandardTerms" style="color:rgba(0,0,0,.85)" nz-checkbox>包含非标准条款:</label>
+            <label *ngIf="flag==1" disabled="true" style="color:rgba(0,0,0,.85)" [ngModelOptions]="{standalone:true}"
+                [(ngModel)]="labarr.nonStandardTerms" nz-checkbox>包含非标准条款:</label>
+            </nz-form-label>
+            <nz-form-control [nzSpan]="20">
+            <div *ngIf="labarr.nonStandardTerms==true">
+                <div>
+                <label [disabled]="take" [ngModelOptions]="{standalone:true}" [(ngModel)]="labarr.logisticsTermsApproval"
+                    nz-checkbox>物流条款审批</label>
+                </div>
+                <div>
+                <label [disabled]="take" [ngModelOptions]="{standalone:true}" [(ngModel)]="labarr.approvalAfterSales"
+                    nz-checkbox>售后维修条款审批</label>
+                </div>
+                <div>
+                <label [disabled]="take" [ngModelOptions]="{standalone:true}" [ngModelOptions]="{standalone:true}"
+                    [(ngModel)]="labarr.approvalBidSecurity" nz-checkbox>投标保证金及履约保证金额审批</label>
+                  <div style="padding-left: 32px" *ngIf="dataBase && dataBase.AppExpert && labarr.approvalBidSecurity">
+                    <a *ngFor="let bmc of arrSort(dataBase.AppExpert)" style="margin-right: 50px" [class]="take?'hui':''">{{bmc.bmc}} : {{bmc.name}}<br></a>
+                  </div>
+                </div>
+                <div>
+                <label [disabled]="take" [ngModelOptions]="{standalone:true}" [(ngModel)]="labarr.paymentMethod"
+                    nz-checkbox>付款方式审批</label>
+                </div>
+                <div>
+                <label [disabled]="take" [ngModelOptions]="{standalone:true}" [(ngModel)]="labarr.technicalTerms"
+                    nz-checkbox>技术条款审批</label>
+                  <!--可操作-->
+                  <div style="padding-left: 32px" *ngIf="dataBase && dataBase.BMClist && labarr.technicalTerms && !take">
+                    <div *ngFor="let bmc of arrSort(dataBase.BMClist)" style="margin-right: 50px; display: flex; align-items: center; margin-top: 20px">
+                      <a [class]="take?'hui':''">{{bmc.bmc}}</a>
+                      <nz-select [disabled]="take" nzShowSearch nzAllowClear nzPlaceHolder="请选择审批人" style="width: 200px; margin-left: 20px"
+                                 nzSize="large" [(ngModel)]="bmc.name" [ngModelOptions]="{standalone:true}"  (ngModelChange)="ngModelChang(bmc)">
+                        <nz-option *ngFor="let expert of dataBase.BMCExpert[bmc.bmc]" [nzValue]="expert.name" [nzLabel]="expert.name">
+                        </nz-option>
+                      </nz-select>
+                    </div>
+                  </div>
+                  <!--不可操作-->
+                  <div style="padding-left: 32px" *ngIf="dataBase && dataBase.BMClist && labarr.technicalTerms && take">
+                    <div *ngFor="let bmc of arrSort(dataBase.BMClist)" style="margin-right: 50px; display: flex; align-items: center; margin-top: 20px">
+                      <a [class]="take?'hui':''">{{bmc.bmc}}</a>
+                      <nz-select [disabled]="take" nzShowSearch nzAllowClear nzPlaceHolder="请选择审批人" style="width: 200px; margin-left: 20px"
+                                 nzSize="large" [(ngModel)]="bmc.name" [ngModelOptions]="{standalone:true}"  (ngModelChange)="ngModelChang(bmc)">
+                        <nz-option  [nzValue]="bmc.name" [nzLabel]="bmc.name">
+                        </nz-option>
+                      </nz-select>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                <label disabled="true" [ngModelOptions]="{standalone:true}" [(ngModel)]="labarr.provisionsInvolved"
+                    nz-checkbox>涉及法律条款说明</label>
+                </div>
+            </div>
+            </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzSpan="24" *ngIf="flag==0" class="col-sm-12">
+        <nz-form-item>
+          <nz-form-label [nzSpan]="4" class="form-label min-label">备注</nz-form-label>
+          <nz-form-control [nzSpan]="10">
+            <textarea oninput="if(value.length>255)value=value.slice(0,255)" formControlName="remarks" class="form-control" [(ngModel)]="labarr.remarks">
+                        </textarea>
+            <div>还可以输入:{{labarr.remarks.length}}/{{textLen}}</div>
+            <nz-form-explain *ngIf="validateForm.get('remarks')?.dirty && validateForm.get('remarks')?.errors">
+              请填写拒绝理由
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <!--暂时隐藏-->
+        <!-- <div nz-col nzSpan="24" *ngIf="flag==1" class="col-sm-12">
+            <nz-form-item>
+                <nz-form-label [nzSpan]="4" class="form-label min-label paddnon">备注</nz-form-label>
+                <nz-form-control [nzSpan]="10">
+                    <textarea [ngModelOptions]="{standalone:true}" disabled="true" nz-input class="form-control"
+                        [(ngModel)]="labarr.remarks">
+                                        </textarea>
+                    <nz-form-explain *ngIf="validateForm.get('remarks')?.dirty && validateForm.get('remarks')?.errors">
+                        请填写备注信息
+                    </nz-form-explain>
+                </nz-form-control>
+            </nz-form-item>
+        </div> -->
+       <!--暂时隐藏 备注和附件-->
+      <div nz-col *ngIf="flag==0" nzSpan="24">
+        <nz-form-item>
+          <nz-form-label [nzSpan]="4" nzFor="email" class="min-label">审核支持文件</nz-form-label>
+          <nz-form-control [nzSpan]="14">
+            <div class="maxuploadto">
+            <nz-upload [(nzFileList)]="fileList" [nzBeforeUpload]="beforeApprovalUpload" [nzLimit]="1"
+              [nzPreview]="dwonLoad">
+              <button *ngIf="flag==0" nz-button><i nz-icon nzType="upload"></i><span>文件上传</span></button>
+            </nz-upload>
+            </div>
+            <!--暂时隐藏-->
+            <!-- <button *ngIf="flag==1&&labarr.file" class="down" nz-button nzType="link"
+              (click)="fileDwon(labarr.file)">文件下载</button> -->
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+  </form>
+  <div *ngIf="flag==0" nz-row nzType="flex" nzJustify="end" nzAlign="middle">
+    <div nz-col nzXs="24" nzSm="24" nzMd="16">
+      <nz-form-item style="text-align: right;">
+        <button nz-button class="ml10" nzType="primary" [nzSize]="6" nz-popconfirm
+          nzTitle="你确定要执行通过的操作?" (nzOnConfirm)="submit()">审核通过</button>
+        <button nz-button class="ml10" nzType="primary"  [nzSize]="6" nz-popconfirm
+          nzTitle="你确定要执行拒绝的操作?" (nzOnConfirm)="refuse()">拒绝</button>
+      </nz-form-item>
+    </div>
+  </div>
+</nz-card>

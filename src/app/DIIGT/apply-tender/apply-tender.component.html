@@ -1,0 +1,56 @@
+<h4 class="font-weight-bold py-3">
+  <span>新建投标申请表</span>
+</h4>
+<div class="tabs-box">
+  <app-apploading [load]="load"></app-apploading>
+  <div nz-row nzType="flex" nzJustify="end" nzAlign="middle" class="tabs-box-actions">
+    <div nz-col nzSpan="24">
+      <nz-form-item>
+        <nz-form-control [nzSm]="24" [nzXs]="24" style="text-align: right;">
+          <button nz-button nzType="default" (click)="save()" style="margin-right:10px;">保存</button>
+          <button nz-button nzType="primary" (click)="submit()">提交投标申请表</button>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+  <ngb-tabset type="tabs" [destroyOnHide]="false" (tabChange)="tabclick($event)" [activeId]="activedId" class="nav-tabs-top nav-responsive-xl mtb1rem">
+    <ngb-tab id="pending-tab">
+      <ng-template ngbTabTitle><span class="tab-title"><strong>基础信息</strong></span></ng-template>
+      <ng-template ngbTabContent>
+        <div class="card-body">
+          <app-applybase #childbase  [dataBase]="dataBase" (myEvent)="myskip($event)" [productData]="productData" [arr]="arr"></app-applybase>
+          <div class="pr tr">
+            <button  nz-button class="nextbtn ml6" nzType="primary"
+                     (click)="myskip('complete-tab')">下一步</button>
+          </div>
+        </div>
+      </ng-template>
+    </ngb-tab>
+    <ngb-tab id="complete-tab">
+      <ng-template ngbTabTitle><span class="tab-title"><strong>产品信息</strong></span></ng-template>
+      <ng-template ngbTabContent>
+        <div class="card-body">
+          <app-newproduct #product (myEvent)="myskip($event)" (upData)="upData($event)" [dataBase]="dataBase" [productData]="productData" [arr]="arr" [file_arr]="file_arr"></app-newproduct>
+          <div class="pr tr">
+            <button  nz-button class="nextbtn ml6" nzType="primary"
+                     (click)="myskip('pending-tab')">上一步</button>
+            <button  nz-button class="nextbtn ml6" nzType="primary"
+                     (click)="myskip('complete-pad')">下一步</button>
+          </div>
+        </div>
+      </ng-template>
+    </ngb-tab>
+    <ngb-tab id="complete-pad">
+      <ng-template ngbTabTitle><span class="tab-title"><strong>补充信息</strong></span></ng-template>
+      <ng-template ngbTabContent>
+        <div class="card-body">
+          <app-supplement #supplement (myEvent)="myskip($event)" [dataBase]="dataBase" [productData]="productData" [file_arr]="file_arr"></app-supplement>
+          <div class="pr tr">
+            <button  nz-button class="nextbtn ml6" nzType="primary"
+                     (click)="myskip('complete-tab')">上一步</button>
+          </div>
+        </div>
+      </ng-template>
+    </ngb-tab>
+  </ngb-tabset>
+</div>

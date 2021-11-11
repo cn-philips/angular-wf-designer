@@ -1,0 +1,16 @@
+<div class="flexbox">
+    <div class="treebox">
+        <nz-radio-group class="radiobox" [(ngModel)]="radioValue">
+              <label class="radio" nz-radio [nzValue]="o.sofonFile" *ngFor="let o of listOption">{{o.sofonFile}}</label>      
+        </nz-radio-group>
+    </div>
+    <div class="opera">
+        <div (click)="tranRight()"><i nz-icon nzType="right" nzTheme="outline"></i></div>
+        <div (click)="tranleft()"><i nz-icon nzType="left" nzTheme="outline"></i></div>
+    </div>
+    <div class="right">
+        <nz-radio-group class="radiobox" [(ngModel)]="checkOptions">
+            <label class="radio" nz-radio [nzValue]="o.sofonFile" *ngFor="let o of checkOptionsOne">{{o.sofonFile}}</label>   
+        </nz-radio-group>
+    </div>
+</div>

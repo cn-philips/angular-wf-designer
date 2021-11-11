@@ -1,0 +1,116 @@
+<nz-table
+  #columnTable
+  nzBordered
+  [nzData]="bidData"
+  [nzLoading]="tableLoad"
+  [nzScroll]="{ x: businessModel=='DISTRIBUTOR'?'4500px':'4100px',y:'500px' }"
+  [nzFrontPagination]="false"
+>
+  <thead>
+  <tr>
+    <th nzWidth="90px" nzLeft="0px">进单单位</th>
+    <th nzWidth="140px" nzLeft="90px">Opportunity</th>
+    <th nzWidth="180px" nzLeft="230px">Market Bundle</th>
+    <!-- <th nzWidth="350px">产品</th> -->
+    <th nzWidth="850px">中标确认查询结果</th>
+
+    <th nzWidth="250px">校验失败原因</th>
+    <th nzWidth="120px">Simulation ID</th>
+    <th nzWidth="200px">Market Bundle ID</th>
+    <th nzWidth="200px">客户名称（进单）</th>
+    <th nzWidth="200px">客户名称（中标）</th>
+    <th *ngIf="businessModel=='DISTRIBUTOR'" nzWidth="200px">经销商（进单)</th>
+    <th *ngIf="businessModel=='DISTRIBUTOR'"  nzWidth="200px"> 经销商（投标）</th>
+    <th nzWidth="220px">申请人（进单）</th>
+    <th nzWidth="220px">申请人（中标）</th>
+     <th nzWidth="220px">投标公司(进单）</th>
+    <th nzWidth="220px">投标公司(中标)</th>
+    <th nzWidth="200px">招标编号(进单)</th>
+    <th nzWidth="200px">招标编号(中标)</th>
+    <th nzWidth="150px" nzRight="0px">校验结果</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let data of columnTable.data; index as i">
+    <td nzWidth="90px" nzLeft="0px" style="word-break: break-all;"[attr.rowspan]="data.rowspan" *ngIf="data.isCheak" >
+      <div class="oppt">{{ data.modelNumber}}</div>
+    </td>
+    <td nzWidth="140px" nzLeft="90px"  style="word-break: break-all;"  [attr.rowspan]="data.rowspan" *ngIf="data.isCheak">
+    <div class="oppt"> {{ data.opportunityId }}</div>
+    </td>
+    <td nzWidth="180px" nzLeft="230px" style="word-break: break-all;" [attr.rowspan]="data.rowspan" *ngIf="data.isCheak">
+     <div class="oppt">{{ data.marketBundleName }}</div>
+    </td>
+    <!-- <td  nzWidth="350px">{{ data.productName }}</td> -->
+    <td nzWidth="850px" [attr.rowspan]="data.rowspan" *ngIf="data.isCheak">
+      <nz-radio-group
+        [(ngModel)]="data.select"
+        (ngModelChange)="modelChang(i)"
+      >
+      <div class="mkbox">
+        <div *ngFor="let item of data.searchResult; index as j;" style="display:flex;">
+          <div style="flex: 2;display: flex;align-items: center;justify-content: flex-start;">
+            <label [nzDisabled]="item.isDisable" nz-radio  [ngStyle]="style" [nzValue]="item.id">
+              <div (click)="gotoWin(item)" nz-tooltip [nzTitle]="item.title"  class="win-check-link" [ngClass]="item.useStatus=='0'?'down':'grey'">
+                 <span class="name">{{ item.marketBundleName}} 中标价格:{{item.price!=null&&item.price!=''&&item.price!='0.00'?(item.price|NumberThousandth):'N/A'}}</span>
+                 <span class="usr">{{item.useStatus=='0'?'(未使用)':"(已使用)"}} 投标申请表链接</span>
+                 <i class="check" *ngIf="item.temUser==true">(已选中)</i>
+              </div>
+            </label>
+          </div>
+          <div *ngIf="(item.id==data.select||item.temUser)&&(item.useStatus=='0')" style="flex: 1;display: flex;align-items: center;justify-content: center">
+            <button nz-button nzSize="small" nzType="primary" (click)="selectClick(i,j)">{{item.temUser?'取消此项进单':'选择此项进单'}}</button>
+          </div>
+        </div>
+      </div>
+      </nz-radio-group>
+    </td>
+
+    <td nzWidth="250px" [attr.rowspan]="data.rowspan" *ngIf="data.isCheak">
+      <!-- {{ data.checkResultReasons }} -->
+      <ng-container *ngIf="data.checkResultReasons&&data.checkResultReasons.length>0">
+        <div *ngFor="let item of data.checkResultReasons; index as j;">
+          {{j+1}}、{{item}}
+        </div>
+      </ng-container>
+    </td>
+    <td nzWidth="120px" [attr.rowspan]="data.rowspan" *ngIf="data.isCheak">{{ data.simulationIds}}</td>
+    <td nzWidth="200px" [attr.rowspan]="data.rowspan" *ngIf="data.isCheak">{{ data.dealFormMarketBundleId }}</td>
+    <td nzWidth="200px" [attr.rowspan]="data.rowspan" *ngIf="data.isCheak">
+       <div class="oppt">{{data.orderByCustomerName}}</div>
+    </td>
+    <td nzWidth="200px" style="word-break: break-all;" [attr.rowspan]="data.rowspan" *ngIf="data.isCheak">
+      <div class="oppt"> {{data.winningByCustomerName}}</div>
+    </td>
+    <td nzWidth="200px" style="word-break: break-all;" [attr.rowspan]="data.rowspan" *ngIf="data.isCheak&&businessModel=='DISTRIBUTOR'">
+      <div class="oppt">{{ data.distributor}}</div>
+    </td>
+    <td nzWidth="200px" style="word-break: break-all;" [attr.rowspan]="data.rowspan" *ngIf="data.isCheak&&businessModel=='DISTRIBUTOR'">
+      <div class="oppt"> {{ data.agreementAgenName}}</div>
+    </td>
+    <td nzWidth="220px" style="word-break: break-all;" [attr.rowspan]="data.rowspan" *ngIf="data.isCheak">
+      <div class="oppt">{{ data.appPerson }}</div>
+    </td>
+    <td nzWidth="220px" style="word-break: break-all;" [attr.rowspan]="data.rowspan" *ngIf="data.isCheak">
+      <div class="oppt">{{ data.winPerson }}</div>
+    </td>
+    <td nzWidth="220px" style="word-break: break-all;" [attr.rowspan]="data.rowspan" *ngIf="data.isCheak">
+      <div class="oppt">{{ data.tenderingCompany }}</div>
+    </td>
+     <td nzWidth="220px" [attr.rowspan]="data.rowspan" *ngIf="data.isCheak">
+      <div class="oppt"> {{ data.biddingName }}</div>
+    </td>
+   <td nzWidth="200px" style="word-break: break-all;" [attr.rowspan]="data.rowspan" *ngIf="data.isCheak">
+      <div class="oppt">{{ data.tenderNo}}</div>
+    </td>
+   <td nzWidth="200px" [attr.rowspan]="data.rowspan" *ngIf="data.isCheak">
+      <div class="oppt"> {{ data.biddingNo }}</div>
+    </td>
+    <td nzWidth="150px" nzRight="0px" [attr.rowspan]="data.rowspan" *ngIf="data.isCheak">
+      <div *ngIf="data.checkResult!==''" [ngClass]="data.checkResult?'green':'red'">
+        {{ data.checkResult?"成功":"失败" }}
+      </div>
+    </td>
+  </tr>
+  </tbody>
+</nz-table>

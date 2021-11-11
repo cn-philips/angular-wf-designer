@@ -1,0 +1,69 @@
+<div class="modal-header" id="simple-modal-title">
+
+  <h5 class="modal-title">
+    {{mainModalTitle}}
+  </h5>
+  <div *ngIf="buttonType=='simple'">
+    <button type="button" class="close" (click)="closeModal()" style="color:black;font-size:28px;font-weight:bold;"> &times;</button>
+  </div>
+  <div *ngIf="buttonType=='quotation'">
+    <div *ngIf="!disabled">
+      <button type="button" class="close" mwlConfirmationPopover popoverMessage="是否离开报价单页面？" placement="bottom"
+        confirmText="是" [popoverTitle]="''" cancelText="否" (confirm)="closeModal()" style="color:black;font-size:28px;font-weight:bold;" >&times;</button>
+    </div>
+    <button *ngIf="disabled" type="button" class="close" style="color:black;font-size:28px;font-weight:bold;" (click)="closeModal()">&times;</button>
+  </div>
+</div>
+<div class="modal-body" style="background-color: white;">
+  <div *ngIf="pageType == 'processDefinitionDiagram'" ngbTabContent>
+    <div class="card-body">
+      <approval-flowline [diagramType]="'processDefinitionDiagram'" [componentParams]="paramsToPass"></approval-flowline>
+    </div>
+  </div>
+
+  <div *ngIf="pageType == 'processInstanceDiagram'" ngbTabContent>
+    <div class="card-body">
+      <approval-flowline [diagramType]="'processInstanceDiagram'" [componentParams]="paramsToPass"></approval-flowline>
+    </div>
+  </div>
+  <div *ngIf="pageType == 'quotation'" ngbTabContent>
+    <div class="card-body">
+      <quotation-main #quotationMain [componentParams]="paramsToPass" [disabled]="disabled" (onQuotationDetailChanged)="updateQData($event)" (closeModal)="saveAndClose($event);"></quotation-main>
+    </div>
+  </div>
+  <div *ngIf="pageType == 'quotationSimplePdf'" ngbTabContent>
+    <div class="card-body">
+      <simple-pdf-viewer [qdetail]="paramsToPass"></simple-pdf-viewer>
+    </div>
+  </div>
+  <div *ngIf="pageType == 'quotationTemplatePreview'" ngbTabContent>
+    <div class="card-body">
+      <quotation-preview [params]="paramsToPass"></quotation-preview>
+    </div>
+  </div>
+  <div *ngIf="pageType == 'sofonPdfPreview'" ngbTabContent>
+    <div class="card-body">
+      <multi-simple-pdf-viewer [pdfFileIds]="paramsToPass"></multi-simple-pdf-viewer>
+    </div>
+  </div>
+</div>
+<div class="modal-footer" style="justify-content:center;">
+  <div *ngIf="buttonType=='simple'">
+    <button type="button" class="btn btn-primary" (click)="closeModal('click cancel button')">返回</button>
+  </div>
+  <div *ngIf="buttonType=='quotation'">
+    <button *ngIf="!disabled" type="button" class="btn btn-primary" (click)="saveAndClose()">保存修改</button>
+    <div *ngIf="!disabled" style="display: inline-block;">
+      <button type="button" class="btn btn-primary" 
+        mwlConfirmationPopover
+            popoverMessage="是否离开报价单页面？"
+            placement="top"
+            confirmText="是" [popoverTitle]="''"
+            cancelText="否"
+            (confirm)="closeModal()">
+        返回
+      </button>
+    </div>
+    <button *ngIf="disabled" type="button" class="btn btn-primary" (click)="closeModal()">返回</button>
+  </div>
+</div>

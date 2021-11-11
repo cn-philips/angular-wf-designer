@@ -1,0 +1,112 @@
+<h4 class="font-weight-bold py-3 mb-4">
+    角色组管理
+  </h4>
+  <!-- <app-person-manage-modal></app-person-manage-modal> -->
+  <!-- Modal -->
+  <nz-modal [nzVisible]="modalAttribute.isVisible" [nzTitle]="modalAttribute.title" nzWidth="800"
+            (nzOnCancel)="modalAttribute.modalCancel()" (nzOnOk)="modalAttribute.modalOk()">
+    <form nz-form [formGroup]="modalAttribute.modalForm">
+      <input formControlName="id" type="hidden"/>
+      <div nz-row [nzGutter]="24">
+        <div nz-col [nzSpan]="24">
+          <nz-form-item>
+            <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="modalCode">标识</nz-form-label>
+            <nz-form-control [nzSm]="14" [nzXs]="24">
+              <input nz-input formControlName="code" id="modalCode"/>
+              <nz-form-explain
+                *ngIf="modalAttribute.modalForm.get('code')?.dirty && modalAttribute.modalForm.get('code')?.errors">
+                标识必填
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="modalName">名称</nz-form-label>
+            <nz-form-control [nzSm]="14" [nzXs]="24">
+              <input nz-input formControlName="name" id="modalName"/>
+              <nz-form-explain
+                *ngIf="modalAttribute.modalForm.get('name')?.dirty && modalAttribute.modalForm.get('name')?.errors">
+                名称必填
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+            <nz-form-item>
+                <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="modalRoleList">角色</nz-form-label>
+                <nz-form-control [nzSm]="14" [nzXs]="24">
+                  <nz-select
+                     [nzMaxTagPlaceholder]="tagPlaceHolder"
+                     style="width: 100%"
+                     nzMode="multiple"
+                     formControlName="roleList"
+                     id="modalRoleList"
+                     nzPlaceHolder="Please select"
+                     (nzOnSearch)="modalSearchRole($event)"
+                     nzShowSearch
+                     nzServerSearch
+                     ngModel>
+                  <nz-option *ngFor="let option of listOfOption" [nzLabel]="option.label" [nzValue]="option.value"></nz-option>
+                  </nz-select>
+                 <ng-template #tagPlaceHolder let-selectedList> and {{ selectedList.length }} more selected </ng-template>
+                </nz-form-control>
+              </nz-form-item>
+        </div>
+      </div>
+    </form>
+  </nz-modal>
+  <!-- Search filter -->
+  <nz-card nzTitle="搜索" style="margin-bottom: 20px">
+      <form nz-form [formGroup]="queryParams.queryForm" class="ant-advanced-search-form">
+        <div nz-row [nzGutter]="24">
+          <div nz-col [nzSpan]="6">
+            <nz-form-item nzFlex>
+              <nz-form-label nzFor="code">标识</nz-form-label>
+              <nz-form-control>
+                <input nz-input formControlName="code" id="code"/>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        <div nz-col [nzSpan]="6">
+            <nz-form-item nzFlex>
+              <nz-form-label nzFor="name">名称</nz-form-label>
+              <nz-form-control>
+                <input nz-input formControlName="name" id="name"/>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          <div nz-col nzSpan="24" style="text-align: right;">
+            <button nz-button nzType="primary" (click)="queryForm()">查询</button>
+            <button nz-button (click)="resetQueryForm()">重置</button>
+          </div>
+        </div>
+      </form>
+    </nz-card>
+  <!-- add Personal button-->
+  <div class="table-operations" style="margin-bottom: 15px;">
+      <button nz-button nzType="primary" (click)="addGroups()">新增</button>
+    </div>
+    <!-- Show table -->
+  <nz-table #editRowTable [nzData]="listOfData">
+    <thead>
+      <tr>
+        <th>标识</th>
+        <th>名称</th>
+        <th>角色</th>
+        <th nzWidth="100px">操作</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let data of editRowTable.data">
+          <td>{{data.code}}</td>
+          <td>{{data.name}}</td>
+          <td>
+              <span *ngFor="let role of getNameList(data)">
+                  <nz-tag [nzColor]="'green'">{{role.name}}</nz-tag>
+              </span>
+         </td>
+        <td>
+            <a nz-icon type="edit" title="编辑" (click)="editGroups(data)"></a> 
+            <nz-divider nzType="vertical"></nz-divider>
+              <a nz-icon type="delete" title="移除" nzTitle="删除" nz-popconfirm (nzOnConfirm)="removeGroups(data)"></a>
+        </td>
+      </tr>
+    </tbody>
+  </nz-table>

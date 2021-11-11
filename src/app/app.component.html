@@ -1,0 +1,7 @@
+<div class="central-loader" *ngIf="authGuard.loader">
+    <div>
+        <nz-spin [nzSpinning]="authGuard.loader"></nz-spin>
+    </div>
+</div>
+<router-outlet></router-outlet>
+

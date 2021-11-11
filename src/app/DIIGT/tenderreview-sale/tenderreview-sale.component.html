@@ -1,0 +1,40 @@
+<h4 class="font-weight-bold py-3 mb-4">
+  审核投标申请表
+</h4>
+<hr class="border-light container-m--x mt-0 mb-4">
+<igt-approval-flowline></igt-approval-flowline>
+<div class="demo-vertical-spacing">
+  <div>
+    <ngb-tabset type="tabs" [destroyOnHide]="true" class="nav-tabs-top nav-responsive-xl" [activeId]="tab">
+      <ngb-tab id="0">
+        <ng-template ngbTabTitle><span class="tab-title"><strong>投标申请表</strong></span></ng-template>
+        <ng-template ngbTabContent>
+          <div class="card-body">
+            <!--基础信息-->
+            <app-applybase [isDisable]="true" [dataBase]="infor"></app-applybase>
+            <!--产品信息-->
+            <app-newproduct [isDisable]="true" [dataBase]="infor"></app-newproduct>
+            <!--补充信息-->
+            <app-supplement [isDisable]="true" [dataBase]="infor"></app-supplement>
+            <div style="padding: 10px 0;text-align: right">
+              <!--                        <button  nz-button class="nextbtn ml6" nzType="primary" (click)="upTab('l')">上一步</button>-->
+              <button  nz-button class="nextbtn ml6" nzType="primary" (click)="upTab('n')">下一步</button>
+            </div>
+          </div>
+        </ng-template>
+      </ngb-tab>
+      <ngb-tab id="1">
+        <ng-template ngbTabTitle><span class="tab-title"><strong>审批</strong></span></ng-template>
+        <ng-template ngbTabContent>
+          <div class="card-body">
+            <app-review [take]="take"  [urls]="urls" [dataBase]="infor" [(labarr)]="labarr"></app-review>
+            <div style="padding: 10px 0;text-align: right">
+              <button  nz-button class="nextbtn ml6" nzType="primary" (click)="upTab('l')">上一步</button>
+              <!--                        <button  nz-button class="nextbtn ml6" nzType="primary" (click)="upTab('n')">下一步</button>-->
+            </div>
+          </div>
+        </ng-template>
+      </ngb-tab>
+    </ngb-tabset>
+  </div>
+</div>

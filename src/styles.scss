@@ -1,0 +1,320 @@
+@import '../node_modules/angular-tree-component/dist/angular-tree-component.css';
+@import './vendor/libs/ngx-toastr/ngx-toastr.scss';
+@import './global.scss';
+
+@mixin keyframes($name) {
+  @-webkit-keyframes #{$name} {
+    @content;
+  }
+  @-moz-keyframes #{$name} {
+    @content;
+  }
+  @keyframes #{$name} {
+    @content;
+  }
+}
+
+// Remove outline on desktops
+@media(min-width: 720px) {
+  ngb-carousel,
+  .dropdown-item,
+  ngb-datepicker,
+  ngb-rating {
+    outline: 0 !important;
+  }
+}
+
+.dropdown-menu-right {
+  right: auto !important;
+}
+
+// *******************************************************************************
+// * Page transition
+
+.router-transitions {
+  opacity: 1;
+  transition: opacity .2s;
+
+  body.app-loading & {
+    opacity: .75;
+  }
+}
+
+// *******************************************************************************
+// * Tooltip and popover animations
+
+@include keyframes(ngTooltipAnimation) {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+ngb-tooltip-window {
+  animation: ngTooltipAnimation .25s;
+}
+
+// *******************************************************************************
+// * Modal animations
+
+@include keyframes(ngModalBackdropAnimation) {
+  0% { opacity: 0; }
+  100% { opacity: .5; }
+}
+@include keyframes(ngMaterialModalBackdropAnimation) {
+  0% { opacity: 0; }
+  100% { opacity: .2; }
+}
+@include keyframes(ngDefaultModalAnimation) {
+  0% {
+    opacity: 0;
+    transform: translateY(150px) scale(.8);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@include keyframes(ngTopModalAnimation) {
+  0% {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@include keyframes(ngSlideModalAnimation) {
+  0% {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@include keyframes(ngRtlSlideModalAnimation) {
+  0% {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@include keyframes(ngFillInModalAnimation) {
+  0% {
+    opacity: 0;
+    transform: scale(.5, .5);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1, 1);
+  }
+}
+
+ngb-modal-backdrop.modal-backdrop {
+  opacity: .5;
+  animation: ngModalBackdropAnimation .15s ease-out;
+}
+
+ngb-modal-window {
+  &.modal .modal-dialog {
+    animation: ngDefaultModalAnimation .15s ease-out;
+  }
+
+  &.modal-top .modal-dialog {
+    animation: ngTopModalAnimation .15s ease-out;
+  }
+
+  &.modal-slide .modal-dialog {
+    animation: ngSlideModalAnimation .15s ease-out;
+  }
+
+  &.modal-fill-in .modal-dialog {
+    animation: ngFillInModalAnimation .15s ease-out;
+  }
+
+  [dir=rtl] &.modal-slide .modal-dialog {
+    animation: ngRtlSlideModalAnimation .15s ease-out;
+  }
+}
+
+.material-style ngb-modal-backdrop.modal-backdrop {
+  opacity: .2;
+  animation: ngMaterialModalBackdropAnimation .15s ease-out;
+}
+
+// Prevent horizontal scrollbar
+[dir=rtl] .dz-hidden-input {
+  right: 0 !important;
+  left: auto !important;
+}
+
+// *******************************************************************************
+// * Accordion
+
+ngb-accordion .card-header > * > .btn.btn-link {
+  width: 100%;
+  padding: 0;
+  text-align: inherit;
+  white-space: normal;
+  vertical-align: inherit;
+  border: 0;
+  font-size: .894rem;
+}
+
+.ngb-accordion-with-icon .card-header > * > .btn.btn-link {
+  display: flex;
+  justify-content: space-between;
+}
+
+// *******************************************************************************
+// * Typeahead
+
+ngb-typeahead-window .dropdown-item {
+  cursor: pointer;
+}
+
+// *******************************************************************************
+// * ngx-datatable customized css
+.datatable-column-header-01 {
+  text-align: center;
+}
+
+.datatable-column-money {
+  text-align: right;
+  word-wrap:break-word;
+}
+
+.datatable-column-money-bold {
+  text-align: right;
+  word-wrap: break-word;
+  font-weight: bold;
+}
+
+.datatable-column-normal {
+  word-wrap:break-word;
+}
+
+.datatable-column-normal-bold {
+  word-wrap: break-word;
+  font-weight: bold;
+}
+
+.datatable-column-rejected {
+  word-wrap: break-word;
+  color: red;
+}
+
+// *******************************************************************************
+// * angular-tree-component customized css
+.my-tree { }
+.my-tree tree-node-expander {
+  order: 0;
+}
+.my-tree tree-node-checkbox {
+  order: 1;
+  padding: 4px;
+}
+.my-tree .node-content-wrapper {
+  order: 2;
+}
+
+// *******************************************************************************
+// * navbar logo customized css
+.navbar {
+  background: url(assets/image/nav-logo.png) no-repeat left top;
+  background-size: auto 46px;
+}
+.navbar-logo {
+  width: 100px;
+}
+.navbar-title {
+  font-size: 16px;
+}
+
+// *******************************************************************************
+// * route loader customized css
+.central-loader {
+    position: fixed;
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.2);
+    z-index: 1050;
+}
+
+.central-loader > div {
+    height: 42px;
+    line-height: 40px;
+    width: 200px;
+    text-align: center;
+    margin: auto;
+}
+
+// *******************************************************************************
+// * quotation modal && quotation backdrop customized css
+.modal{
+    overflow:auto!important;
+    overflow-x: hidden !important;
+  }
+
+.quotation-modal .modal-lg {
+    min-width: 100%;
+    max-width: 100%;
+    z-index: 1100 !important;
+}
+
+.quotation-modal .modal-content {
+    background-color: whitesmoke;
+}
+
+.quotation-backdrop {
+    z-index: 1090 !important;
+    background-color: black !important;
+}
+
+// *******************************************************************************
+// * no spin customized css for some number input
+.no-spin::-webkit-inner-spin-button, .no-spin::-webkit-outer-spin-button {
+    -webkit-appearance: none !important;
+    margin: 0 !important;
+    -moz-appearance:textfield !important;
+}
+
+.default-color {
+  color: #4E5155 !important;
+}
+
+.no-border {
+  border: none !important;
+}
+
+.funnel-label-red-plus {
+  color: red;
+  font-size: 11px;
+}
+
+// *******************************************************************************
+// * no spin customized css for some number input
+.ant-select-sm .ant-select-selection--single {
+  height: 24px !important;
+}
+
+// used in mobile
+.view-pc {
+    display: block !important;
+}
+.view-mobile {
+    display: none !important;
+}
+@media(min-width: 720px) {
+  .view-pc {
+      display: none !important;
+  }
+  .view-mobile {
+      display: block !important;
+  }
+}

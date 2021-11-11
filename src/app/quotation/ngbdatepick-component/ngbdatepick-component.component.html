@@ -1,0 +1,36 @@
+<!-- <p>
+  ngbdatepick-component works!
+</p> -->
+<div>
+  <label class="ng-star-inserted">{{myLabel}}</label>
+</div>
+<div class="input-group">
+  <div class="input-group-prepend">
+    <button class="input-group-text" (click)="d1.toggle()" type="button">
+      <span class="ion ion-md-calendar" style="cursor: pointer;"></span>
+    </button>
+  </div>
+  <input class="form-control"
+         [formlyAttributes]="field"
+         [formControl]="formControl"
+         ngbDatepicker
+         navigation="'select'"
+         (click)="d1.toggle()"
+         #d1="ngbDatepicker">
+</div>
+
+<!-- <input type="input" [formControl]="formControl" [formlyAttributes]="field"> -->
+
+<!-- <input matInput
+      [matDatepickerFilter]="to.filter"
+      [errorStateMatcher]="errorStateMatcher"
+      [formControl]="formControl"
+      [matDatepicker]="picker"
+      [matDatepickerFilter]="to.datepickerOptions.filter"
+      [formlyAttributes]="field">
+    <ng-template #matSuffix>
+      <mat-datepicker-toggle [for]="picker"></mat-datepicker-toggle>
+    </ng-template>
+    <mat-datepicker #picker></mat-datepicker> -->
+
+

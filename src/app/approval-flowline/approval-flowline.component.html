@@ -1,0 +1,7 @@
+<div class="step">
+  <ul>
+    <li *ngFor="let item of listStep" [class]="item.running ? 'running' : ''">
+      <a [class]="'width:' + (100 / listStep.length)  + '%;'">{{item.name}}</a>
+    </li>
+  </ul>
+</div>

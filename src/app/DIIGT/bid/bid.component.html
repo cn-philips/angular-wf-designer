@@ -1,0 +1,37 @@
+<h4 class="font-weight-bold py-3">
+  <span>中标备案</span>
+</h4>
+<igt-approval-flowline></igt-approval-flowline>
+<app-apploading [load]="load"></app-apploading>
+<div class="tabs-box">
+  <div nz-row nzType="flex" nzJustify="end" nzAlign="middle" class="tabs-box-actions">
+    <div nz-col nzSpan="24">
+      <nz-form-item>
+        <nz-form-control [nzSm]="24" [nzXs]="24" style="text-align: right;">
+          <button *ngIf="flag==0" nz-button nzType="default" (click)="save(0)" style="margin-right: 20px;">保存</button>
+          <button *ngIf="flag==0" nz-button nzType="primary" (click)="save(1)">提交中标备案</button>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+  <ngb-tabset type="tabs" [destroyOnHide]="false"  class="nav-tabs-top nav-responsive-xl">
+    <!--基础信息-->
+    <ngb-tab id="pending-tab">
+      <ng-template ngbTabTitle><span class="tab-title"><strong>投标申请表</strong>&ensp;</span></ng-template>
+      <ng-template ngbTabContent>
+        <div class="card-body">
+          <app-bid-index [infor]="infor"></app-bid-index>
+        </div>
+      </ng-template>
+    </ngb-tab>
+    <!--中标备案-->
+    <ngb-tab id="complete-ck">
+      <ng-template ngbTabTitle><span class="tab-title"><strong>中标备案</strong></span></ng-template>
+      <ng-template ngbTabContent>
+        <div class="card-body">
+          <app-bid-ck [data]="data" [infor]="infor" #bidck></app-bid-ck>
+        </div>
+      </ng-template>
+    </ngb-tab>
+  </ngb-tabset>
+</div>

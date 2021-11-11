@@ -1,0 +1,40 @@
+<h4 class="font-weight-bold py-3">
+  <span>{{this.dataBase.detail.status=="DOAJDQR"?"进单确认":"审核合同概要表"}}</span>
+</h4>
+<igt-approval-flowline></igt-approval-flowline>
+<ngb-tabset type="tabs" [destroyOnHide]="false"  class="nav-tabs-top nav-responsive-xl">
+  <ngb-tab id="pending-tab">
+    <ng-template ngbTabTitle><span class="tab-title"><strong>合同概要表</strong></span></ng-template>
+    <ng-template ngbTabContent>
+      <div class="card-body">
+        <div class="demo-vertical-spacing">
+          <form #searchForm="ngForm">
+            <app-preOrderBaseInfo
+              [dataBase]="dataBase"
+              [disa]="true"
+              (updateDataBaseInfo)="updateDataBase($event)"
+              (updateBase)="updateBase($event)"
+              [conTable]="true"
+            >
+            </app-preOrderBaseInfo>
+          </form>
+        </div>
+      </div>
+    </ng-template>
+  </ngb-tab>
+  <ngb-tab id="examine-tab">
+    <ng-template ngbTabTitle><span class="tab-title"><strong>审批</strong></span></ng-template>
+    <ng-template ngbTabContent>
+      <div class="card-body">
+        <nz-card class="mtb1rem" nzTitle="审批记录">
+          <app-emp-acc></app-emp-acc>
+        </nz-card>
+        <nz-card *ngIf="dataBase.detail.status!='CANCELLEDSUB'"  [nzTitle]="title">
+          <app-examine-form-igt
+            [dataBase]="dataBase"
+          ></app-examine-form-igt>
+        </nz-card>
+      </div>
+    </ng-template>
+  </ngb-tab>
+</ngb-tabset>

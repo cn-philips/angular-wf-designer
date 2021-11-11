@@ -1,0 +1,204 @@
+{
+    "oitStatus": [
+        {
+            "name": "InProcess",
+            "code": "InProcess"
+        },
+        {
+            "name": "OIT",
+            "code": "OIT"
+        }
+    ],
+    "solutionType": [
+        {
+            "name": "不含Solution",
+            "code": "0"
+        },
+        {
+            "name": "包含Solution----脱机QLAB",
+            "code": "1"
+        },
+        {
+            "name": "包含Solution----ISCV",
+            "code": "2"
+        },
+        {
+            "name": "包含Solution----超声远程",
+            "code": "3"
+        },
+        {
+            "name": "包含Solution----Lumify",
+            "code": "4"
+        },
+        {
+          "name": "包含Solution----AI breast",
+          "code": "5"
+        }, {
+          "name": "包含Solution----Echo Navigator",
+          "code": "6"
+        }, {
+          "name": "包含Solution----专业服务",
+          "code": "7"
+        }
+    ],
+    "bigArea": [
+        {
+            "name": "CHINA_NORTH",
+            "code": "CHINA_NORTH"
+        },
+        {
+            "name": "CHINA_EAST",
+            "code": "CHINA_EAST"
+        }
+    ],
+    "smallArea": [
+        {
+            "name": "NORTH_BJ_TJ",
+            "code": "NORTH_BJ_TJ"
+        },
+        {
+            "name": "NORTH_HEBEI",
+            "code": "NORTH_HEBEI"
+        },
+        {
+            "name": "NORTH_SX_NM",
+            "code": "NORTH_SX_NM"
+        },
+        {
+            "name": "NORTH_HENAN1",
+            "code": "NORTH_HENAN1"
+        },
+        {
+            "name": "NORTH_HENAN2",
+            "code": "NORTH_HENAN2"
+        },
+        {
+            "name": "NORTH_NE2",
+            "code": "NORTH_NE2"
+        },
+        {
+            "name": "NORTH_NE1",
+            "code": "NORTH_NE1"
+        },
+        {
+            "name": "NORTH_PRIVATE",
+            "code": "NORTH_PRIVATE"
+        },
+        {
+            "name": "EAST_SH",
+            "code": "EAST_SH"
+        },
+        {
+            "name": "EAST_ZJ",
+            "code": "EAST_ZJ"
+        },
+        {
+            "name": "EAST_FJ",
+            "code": "EAST_FJ"
+        },
+        {
+            "name": "EAST_JS1",
+            "code": "EAST_JS1"
+        },
+        {
+            "name": "EAST_JS2",
+            "code": "EAST_JS2"
+        },
+        {
+            "name": "EAST_HUBEI",
+            "code": "EAST_HUBEI"
+        },
+        {
+            "name": "EAST_SD1",
+            "code": "EAST_SD1"
+        },
+        {
+            "name": "EAST_SD2",
+            "code": "EAST_SD2"
+        },
+        {
+            "name": "EAST_PRIVATE1",
+            "code": "EAST_PRIVATE1"
+        },
+        {
+            "name": "EAST_PRIVATE2",
+            "code": "EAST_PRIVATE2"
+        },
+        {
+            "name": "EAST_PRIVATE3",
+            "code": "EAST_PRIVATE3"
+        },
+        {
+            "name": "SOUTH_SC1",
+            "code": "SOUTH_SC1"
+        },
+        {
+            "name": "SOUTH_SC2",
+            "code": "SOUTH_SC2"
+        },
+        {
+            "name": "SOUTH_SC1_SC2_PRIVATE",
+            "code": "SOUTH_SC1_SC2_PRIVATE"
+        },
+        {
+            "name": "SOUTH_HZ_PRIVATE",
+            "code": "SOUTH_HZ_PRIVATE"
+        },
+        {
+            "name": "WEST_SW1",
+            "code": "WEST_SW1"
+        },
+        {
+            "name": "WEST_SW2",
+            "code": "WEST_SW2"
+        },
+        {
+            "name": "WEST_NW1",
+            "code": "WEST_NW1"
+        },
+        {
+            "name": "WEST_NW2",
+            "code": "WEST_NW2"
+        },
+        {
+            "name": "WEST_XJ",
+            "code": "WEST_XJ"
+        },
+        {
+            "name": "WEST_SW1_PRIVATE",
+            "code": "WEST_SW1_PRIVATE"
+        },
+        {
+            "name": "WEST_SW2_PRIVATE",
+            "code": "WEST_SW2_PRIVATE"
+        },
+        {
+            "name": "WEST_NW_PRIVATE",
+            "code": "WEST_NW_PRIVATE"
+        },
+        {
+            "name": "CHINA_NTA_SOUTH",
+            "code": "CHINA_NTA_SOUTH"
+        },
+        {
+            "name": "CHINA_NTA_EAST",
+            "code": "CHINA_NTA_EAST"
+        },
+        {
+            "name": "CHINA_NTA_WEST",
+            "code": "CHINA_NTA_WEST"
+        },
+        {
+            "name": "CHINA_NTA_NORTH",
+            "code": "CHINA_NTA_NORTH"
+        },
+        {
+            "name": "SOUTH_HZ",
+            "code": "SOUTH_HZ"
+        },
+        {
+            "name": "EAST_PRIVATE4",
+            "code": "EAST_PRIVATE4"
+        }
+    ]
+}

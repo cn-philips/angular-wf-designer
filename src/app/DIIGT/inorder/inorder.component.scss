@@ -1,0 +1,34 @@
+.posi{
+  position: relative;
+}
+.myck{
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  text-align: right;
+  z-index: 999;
+}
+.pr {
+  position: relative;
+  .cancel,
+  .submit,
+  .save,.flag{
+      position: absolute;
+      right: 10px;
+      top: 0px;
+      z-index: 999;
+  }
+  .cancel {
+      right: 200px;
+  }
+  .submit {
+      right: 10px
+  }
+  .save {
+    right: 180px;
+  }
+  .flag{
+    right:253px;
+  }
+}

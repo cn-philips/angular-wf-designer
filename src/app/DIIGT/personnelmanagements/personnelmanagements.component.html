@@ -1,0 +1,39 @@
+<h4 class="font-weight-bold py-3">
+  <span>Personal Info</span>
+</h4>
+
+<div class="demo-vertical-spacing">
+    <div>
+        <div class="row">
+            <div class="col-sm-6 col-md-6 col-lg-3 mb-3">
+                <input class="form-control" type="text" placeholder="Filter by Code..." #codeInput (keyup)="updateFilter($event)">
+            </div>
+            <div class="col-sm-6 col-md-6 col-lg-3 mb-3">
+                <input class="form-control" type="text" placeholder="Filter by UserName..." #nameInput (keyup)="updateFilter($event)">
+            </div>
+            <div class="col-sm-6 col-md-6 col-lg-3 mb-3">
+                <input class="form-control" type="text" placeholder="Filter by UserEmail..." #emailInput (keyup)="updateFilter($event)">
+            </div>
+            <div class="col-sm-6 col-md-6 col-lg-3 mb-3">
+                <input class="form-control" type="text" placeholder="Filter by SapCode..." #sapCodeInput (keyup)="updateFilter($event)">
+            </div>
+            <!-- <ng-container *ngIf="hasStatus">
+        <div class="col-sm-6 col-md-5 col-lg-3 mb-3 ml-auto">
+            <button type="button" class="btn btn-round btn-success" (click)="triggerStatus('1')">&ensp;Active&ensp;</button>
+            <button type="button" class="btn btn-round btn-danger" (click)="triggerStatus('0')">Deactive</button>
+        </div>
+      </ng-container> -->
+        </div>
+        <div class="table-responsive">
+            <ngx-datatable #table style="min-width: 500px" [rows]="rows" [loadingIndicator]="loadingIndicator" [columnMode]="'force'" [headerHeight]="43" [footerHeight]="'auto'" [rowHeight]="'auto'" [reorderable]="true" [selected]="selected" [selectionType]="'checkbox'"
+                [limit]="10" (select)='onSelect($event)'>
+                <ngx-datatable-column prop="code" name="Code" [headerClass]="getHeaderClass" [cellClass]="getCellClass"></ngx-datatable-column>
+                <ngx-datatable-column prop="name" name="Name" [headerClass]="getHeaderClass" [cellClass]="getCellClass"></ngx-datatable-column>
+                <ngx-datatable-column prop="email" name="Email" [headerClass]="getHeaderClass" [cellClass]="getCellClass"></ngx-datatable-column>
+                <ngx-datatable-column prop="phone" name="Phone" [headerClass]="getHeaderClass" [cellClass]="getCellClass"></ngx-datatable-column>
+                <ngx-datatable-column prop="sapCode" name="SapCode" [headerClass]="getHeaderClass" [cellClass]="getCellClass"></ngx-datatable-column>
+                <ngx-datatable-column prop="description" name="Description" [headerClass]="getHeaderClass" [cellClass]="getCellClass"></ngx-datatable-column>
+            </ngx-datatable>
+        </div>
+    </div>
+</div>

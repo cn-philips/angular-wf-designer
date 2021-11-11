@@ -1,0 +1,16 @@
+::ng-deep .custom-form-item {
+  margin-bottom: 8px;
+}
+
+:host ::ng-deep .ant-form-item-label {
+  padding: 0 0 0;
+  line-height: inherit;
+}
+
+::ng-deep .ant-form-item-control {
+  line-height: inherit;
+}
+
+::ng-deep .ant-input-disabled, .ant-input[disabled] {
+  color: #4E5155;
+}

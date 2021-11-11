@@ -1,0 +1,121 @@
+<h4 class="font-weight-bold py-3">
+  <!-- <span>填写/修改合同概要表</span> -->
+  {{dataBase.detail.status=='XJDHTGYBTX'?'填写合同概要表':'修改合同概要表'}}
+</h4>
+<igt-approval-flowline></igt-approval-flowline>
+<div class="tabs-box">
+  <app-apploading [load]="load"></app-apploading>
+  <div nz-row nzType="flex" nzJustify="end" nzAlign="middle" class="tabs-box-actions">
+    <div nz-col nzSpan="24">
+      <nz-form-item>
+        <nz-form-control [nzSm]="24" [nzXs]="24" style="text-align: right;">
+          <button *ngIf="!disa" nz-button nzType="default" (click)="save(0)" style="margin-right:10px;">保存</button>
+          <button *ngIf="!disa" nz-button nzType="primary" (click)="save(1)">提交合同概要表</button>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+  <ngb-tabset type="tabs" [destroyOnHide]="false"  [activeId]="activedId" (tabChange)="tabclick($event)" class="nav-tabs-top nav-responsive-xl">
+    <ngb-tab id="pending-tab">
+      <ng-template ngbTabTitle><span class="tab-title"><strong>合同概要表</strong></span></ng-template>
+      <ng-template ngbTabContent>
+        <div class="card-body">
+          <form #searchForm="ngForm">
+            <app-preOrderBaseInfo
+              [dataBase]="dataBase"
+              (updateDataBaseInfo)="updateDataBase($event)"
+              [showChek]="true"
+              [conTable]="true"
+              [disa]="disa"
+            >
+            </app-preOrderBaseInfo>
+          </form>
+          <div nz-row nzType="flex" nzJustify="end" nzAlign="middle">
+            <div nz-col nzSpan="4">
+              <nz-form-item>
+                <nz-form-control [nzSm]="24" [nzXs]="24" style="text-align: right;">
+                  <button nz-button [nzType]="'primary'" (click)="myskip('examine-tab')">下一步</button>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+          </div>
+        </div>
+      </ng-template>
+    </ngb-tab>
+    <ngb-tab id="examine-tab">
+      <ng-template ngbTabTitle><span class="tab-title"><strong>审批记录</strong></span></ng-template>
+      <ng-template ngbTabContent>
+        <div class="card-body">
+          <nz-card class="mtb1rem" nzTitle="审批记录">
+            <app-emp-acc></app-emp-acc>
+          </nz-card>
+          <nz-card class="mtb1rem" [nzTitle]="dataBase.detail.status=='XJDHTGYBTX'?'填写合同概要表':'修改合同概要表'">
+
+            <!--修改备注-->
+            <form nz-form [formGroup]="validateForm">
+              <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+                <div nz-col nzSpan="24">
+                  <nz-form-item>
+                    <nz-form-label [nzSm]="3" [nzXs]="24" [nzRequired]="dataBase.detail.status=='XJDHTGYBTX'?false:true">备注</nz-form-label>
+                    <nz-form-control *ngIf="dataBase.detail.status=='DHTGYBTX'" [nzSm]="7" [nzXs]="24">
+                        <textarea
+                           nz-input oninput="if(value.length>255)value=value.slice(0,255)"
+                          placeholder=""
+                          formControlName="remarks"
+                          [(ngModel)]="params.remarks"
+                          [nzAutosize]="{ minRows: 3, maxRows: 6 }"
+                        ></textarea>
+                        <div>还可以输入:{{params.remarks.length}}/{{textLen}}</div>
+                      <nz-form-explain
+                        *ngIf="validateForm.get('remarks')?.dirty && validateForm.get('remarks')?.errors">
+                        此选项必填字段
+                      </nz-form-explain>
+                    </nz-form-control>
+                    <nz-form-control *ngIf="dataBase.detail.status=='XJDHTGYBTX'" [nzSm]="7" [nzXs]="24">
+                      <textarea
+                        class="textarea"
+                         nz-input oninput="if(value.length>255)value=value.slice(0,255)"
+                        placeholder=""
+                        [disabled]="dataBase.detail.flag=='1'"
+                        [ngModelOptions]="{ standalone: true }"
+                        [(ngModel)]="params.remarks"                        
+                      ></textarea>
+                      <div>还可以输入:{{params.remarks.length}}/{{textLen}}</div>                   
+                  </nz-form-control>
+                  </nz-form-item>
+                </div>
+                <div nz-col nzSpan="24">
+                  <nz-form-item>
+                    <nz-form-label [nzSm]="3" [nzXs]="24">说明附件</nz-form-label>
+                    <nz-form-control [nzSm]="7" [nzXs]="24">
+                      <div class="maxuploadto">
+                      <nz-upload
+                        [(nzFileList)]="fileFileList"
+                        [nzBeforeUpload]="fileBeforeUpload"
+                        [nzLimit]="1"
+                        [nzPreview]="dwonLoad"
+                      >
+                        <button nz-button [disabled]="disa"><i nz-icon nzType="upload"></i><span>上传附件</span></button>
+                      </nz-upload>
+                      </div>
+                      <!-- <button *ngIf="flag=='1'&&dataBase.fileUpload" class="down" nz-button nzType="link" (click)="fileDwon(dataBase.fileUpload)">下载文件</button> -->
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+              </div>
+            </form>
+          </nz-card>
+          <div nz-row nzType="flex" nzJustify="end" nzAlign="middle">
+            <div nz-col nzSpan="4">
+              <nz-form-item>
+                <nz-form-control [nzSm]="24" [nzXs]="24" style="text-align: right;">
+                  <button nz-button [nzType]="'primary'" (click)="myskip('pending-tab')">上一步</button>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+          </div>
+        </div>
+      </ng-template>
+    </ngb-tab>
+  </ngb-tabset>
+</div>

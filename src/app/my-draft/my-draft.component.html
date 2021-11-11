@@ -1,0 +1,69 @@
+<h4 class="font-weight-bold py-3 mb-4">
+  我的草稿
+  <div ngbDropdown placement="bottom-right" *ngIf="showNewAppBtn">
+    <button type="button" class="btn btn-default" ngbDropdownToggle style="float:right"><span
+        class="ion ion-ios-add-circle"></span>&nbsp;&nbsp;新建审批
+    </button>
+    <div ngbDropdownMenu *ngIf="newApprovalList.length > 0">
+      <div>
+        <ng-container *ngFor="let item of newApprovalList">
+          <a class="dropdown-item" href="javascript:void(0)"
+            (click)="openNewApprovalModal($event,item.key,item.name)">{{item.name}}</a>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</h4>
+  
+  <hr class="border-light container-m--x mt-0 mb-4">
+  
+  <div class="demo-vertical-spacing">
+    <div>
+        <div class="row">
+          <ng-container *ngIf="columnFilterName.length > 0">
+            <ng-container *ngFor="let kv of columnFilterName ">
+              <div class="col-sm-6 col-md-5 col-lg-3 mb-3" filtertype="innerts">
+                <input class="form-control" #filterInputs type="text" attr.filtername="{{kv.key}}" placeholder='Filter by {{kv.value}}' (keyup)="updateFilterAll($event)">
+              </div>
+            </ng-container>
+          </ng-container>
+        </div>
+  
+      <div class="table-responsive">
+        <ngx-datatable #table style="min-width: 500px"
+          [rows]="rows"
+          [loadingIndicator]="loadingIndicator"
+          [columnMode]="'force'"
+          [headerHeight]="43"
+          [footerHeight]="'auto'"
+          [rowHeight]="'auto'"
+          [reorderable]="true"
+          [selected]="selected"
+          [limit]="15">
+          <ngx-datatable-column prop="businessName" name="最终用户名称" [headerClass]="getHeaderClass" [cellClass]="getCellClass"></ngx-datatable-column>
+          <ngx-datatable-column prop="name" name="审批名称" [headerClass]="getHeaderClass" [cellClass]="getCellClass"></ngx-datatable-column>
+          <ngx-datatable-column prop="createDate" name="创建时间" [headerClass]="getHeaderClass" [cellClass]="getCellClass">
+            <ng-template let-value="value" ngx-datatable-cell-template>
+              {{value | date:'yyyy-MM-dd HH:mm:ss'}}
+            </ng-template>
+          </ngx-datatable-column>
+          <ngx-datatable-column prop="updateDate" name="最后更新时间" [headerClass]="getHeaderClass" [cellClass]="getCellClass">
+            <ng-template let-value="value" ngx-datatable-cell-template>
+              {{value | date:'yyyy-MM-dd HH:mm:ss'}}
+            </ng-template>
+          </ngx-datatable-column>
+          <ngx-datatable-column [sortable]="false" name="操作" [headerClass]="getHeaderClass" [cellClass]="getCellClass">
+            <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+              <a href="javascript:void(0)" class="btn btn-primary btn-xs" (click)="open(row.id,row.name)">继续编辑</a>
+              <a href="javascript:void(0)" class="btn btn-danger btn-xs" mwlConfirmationPopover
+                popoverMessage="确认删除？"
+                placement="top" 
+                confirmText="确认" [popoverTitle]="''" 
+                cancelText="取消" 
+                (confirm)="delDraft(row);">删除</a>
+            </ng-template>
+          </ngx-datatable-column>
+        </ngx-datatable>
+      </div>
+    </div>
+  </div>

@@ -1,0 +1,102 @@
+import { Pipe, PipeTransform } from '@angular/core';
+
+@Pipe({
+  name: 'ProcessStatusPipe'
+})
+export class ProcessStatusPipe implements PipeTransform {
+  processTypeMap = {
+    '': '',
+    'null': '',
+    'ZLCSH':"子流程审核",
+    'ZBSQ': '招标授权', // 二次开标btn, 待备案btn
+    'ZBBA': '中标备案',
+    'DBA': '待备案',
+    'DSWZYQR' : '待商务专员确认',
+    'DTJ': '待提交',
+    // 'ABC': '待提交',
+    'WZB': '未中标',
+    '2CKB' : '二次开标', // 二次开标btn, 待备案btn
+    '2CKBZZ' : '二次开标',  // 项目终止
+    'XMZZ' : '项目终止',
+    'ZBQR': '中标确认',
+    'YZBQR': '已中标确认',
+    'SUBMIT': '已提交',
+    'APPROVED': '已批准',
+    'uploaded':'已上传',
+    'DSWYSH': '待商务专员审核',
+    'DZBQR': '待商务专员确认',
+    'SWZYCS': '待商务专员审核',
+    'XSBMDMSH': '待销售经理审核',
+    'XSBMZSLSH': '待销售总监审核',
+    '2JSH': '待非标准条款审核',
+    'CWBM': '财务部',
+    'ZLFGB': '质量法规部',
+    'GYLYYB': '供应链运营部',
+    'FLB': '法律部',
+    'FAFWB': '方案服务部',
+    'SCB': '市场部',
+    'DSWZYSQ': '授权发放',
+    'FFSQ': '授权发放',
+    'REJECTED': '已拒绝',
+    'back':'已退回',
+    'JDZB': '进单准备',
+    'DCDSH': '待场地审核',
+    'DOACS': '进单准备表待OA审核',
+    'HTQS': '合同签署',
+    'DXSBMSH': '待销售经理审核',
+    'DXSBM2JSH': '待销售总监审核',
+    'TP': '特批',
+    'DHTGYBTX': '修改合同概要表',
+    'XJDHTGYBTX':' 提交合同概要表',
+    'DHTOASH': '合同概要表OA审核',
+    'DTPJDSH': '特批进单审核',
+    'DTXHT': '待填写OrderSummary',
+    'DODSH': '待OrderSummary审核',
+    'DHTQS': '待合同签署',
+    'DOITWJSC': '待OIT文件上传',
+    'DBCWJSC': 'OIT完成-待补充文件上传',
+    'DBCWJ':'已中标确认-待补充文件上传',
+    'YZBQRYBCWJ':'已中标确认-已补充文件',
+    'CDSH': '场地审核',
+    'DZLCSH': '合同子流程审核',
+    'DOAJDQR': '待进单确认',
+    'XS1JBMSH': '销售经理审核',
+    'XS2JBMSH': '销售总监审核',
+    'JDEND': '进单流程完成',
+    'OITEND': 'OIT完成',
+    'OITENDDBCWJSC':'OIT补充文件完成',
+    'JDQR': '进单确认',
+    'ORDERCG': 'OrderSummary填写',
+    'OASH':'合同概要表待OA审核',
+    'HTGYB': '查看并提交合同概要表',
+    'CANCELLEDSUB':'项目终止-取消进单',
+    'CANCELLED':'项目终止-取消进单',
+    'ORDERSH': 'Order Summary审核 On Behalf Of Cluster BP',
+    'rejected': '已拒绝',
+    'approved': '已批准',
+    'DFBSH': '待合同非标准条款审核',
+    'paymentProvision': '待C&C Leader审核',
+    'paymentProvision2': '待Cluster BP审核',
+
+    'installationWarranty': '待S&SD Marketing Leader审核',
+    'installationWarranty2': '待S&SD BP审核',
+
+    'shipmentDelivery': '待CFC Distributor leader审核',
+    'amountDifference': '待OIT committee审核',
+    'sitePreparation': '待CFC PM Leader审核',
+    'performanceBond': '待Cluster BP审核',
+    'TPWJJDCS': '待Cluster BP审核',
+    'TPWJJDSH': '待CFC Leader审核',
+    'TPWJJDZS': '待COP Leader审核',
+    'OACS': '进单准备表OA审核',
+    'YZBQRDBCWJ': '已中标确认-待补充文件上传',
+    'COMPLETE': '已完成',
+  };
+
+  transform(value: any, args?: any): any {
+    if (value !== null && value !== undefined && value !== '') {
+      if (this.processTypeMap[value.toString()]) {
+        return this.processTypeMap[value.toString()];
+      } else return '';
+    }}
+  }

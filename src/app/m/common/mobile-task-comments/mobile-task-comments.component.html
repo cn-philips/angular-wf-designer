@@ -1,0 +1,28 @@
+<div *ngIf="commentable">
+  <div class="am-list" style="margin:0;" >
+    <div class="am-list-header">
+      <span *ngIf="isComment">审批意见</span>
+      <span *ngIf='!isComment'>备注</span>
+      </div>
+    <div *ngIf="routerList && routerList.length > 0">
+      <ListItem Picker [arrow]="'horizontal'" [extra]="selectRouterText" [data]="routerList" [(ngModel)]="selectRouterValue" [disabled]="disabled"
+        (ngModelChange)="changeSelectRouterValue($event);">
+        审批
+      </ListItem>
+    </div>
+    <ListItem *ngIf="!disabled" Picker [arrow]="'horizontal'" [data]="reasonFromMasterdata" [(ngModel)]="currentComment" (ngModelChange)="addComment($event);">
+      快捷意见
+    </ListItem>
+    <div class="am-list-body">
+      <TextareaItem [rows]="5" [placeholder]="''" [(ngModel)]="inputComment" [disabled]="disabled"></TextareaItem>
+    </div>
+  </div>
+  <WhiteSpace></WhiteSpace>
+  
+  <WhiteSpace></WhiteSpace>
+  <div *ngIf="!disabled" Button [type]="'primary'" (click)="mobilePassTask()" [disabled]="loadingIndicator" [loading]="loadingIndicator" [size]="'default'">完成</div>
+</div>
+
+<div class="am-list" style="margin:0;" *ngIf="!commentable">
+  <div class="am-list-header"><b>该任务请在PC端完成</b></div>
+</div>

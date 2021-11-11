@@ -1,0 +1,377 @@
+@import '../../../media_query.scss';
+.card-header {
+  display: flex;
+  align-items: center;
+  margin: 0 -0.75rem;
+  i {
+    margin-right: 5px;
+  }
+}
+.homepage-container{
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  .first-row {
+    .placeImage {
+      background: url(assets/image/homepage_banner.jpg) no-repeat;
+      background-size: cover;
+      background-origin: border-box;
+      // height: 26rem;
+      background-position: top center;
+      @media screen and (max-width: $screen-xs-max) {
+        width: 100%;
+        height: 10rem; 
+      }
+      @media screen and (min-width: $screen-sm-min) and (max-width: $screen-sm-max) { 
+        width: 100%;
+        height: 10rem; 
+      }
+    }
+    .quick_link {
+      overflow-x: hidden;
+      // height: 100%;
+      @media screen and (max-width: $screen-xs-max) {
+        width: 100%; 
+        max-height: 15rem;
+      }
+      @media screen and (min-width: $screen-sm-min) and (max-width: $screen-sm-max) { 
+        width: 100%; 
+        max-height: 15rem;
+      }
+      .card-body {
+        margin: 0 -0.75rem;
+        padding: 0;
+        // height: 22.875rem;
+        overflow-y: auto;
+        ul {
+          li {
+            border-radius: 2px;
+            overflow: hidden;
+            border-bottom: 1px solid #eee;
+            transition: border-bottom 0.3s ease-in-out;
+            margin-bottom: 1px;
+            &:hover {
+              border-bottom: 1px solid #20bdff;
+            }
+            a {
+              display: block;
+              padding: 0.5rem 1.5rem;
+              width: 100%;
+              box-shadow: 4px 0px 0px 0px #ccc inset;
+              transition: box-shadow 0.3s ease-in-out;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+              display: flex;
+              align-items: center;
+              i {
+                margin-right: 5px;
+              }
+              &:link,
+              &:visited,
+              &:hover,
+              &:active {
+                color: #4e5155;
+              }
+              &:hover {
+                box-shadow: 4px 0px 0px 0px #1c86ff inset,
+                  8px 0px 0px 0px #20bdff inset;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  .second-row {
+    .dashboard_nav {
+      @media screen and (max-width: $screen-sm-max) { 
+        width: 100%;
+      }
+      @media screen and (min-width: $screen-md-min)   { 
+        flex: 2;
+        // width: 25%;
+      }
+      position: relative;
+      color: #fff;
+      background: url(assets/image/homepage_btn.jpg) no-repeat;
+      background-origin: border-box;
+      background-size: cover;
+      cursor: pointer;
+      user-select: none;
+      box-shadow: rgba(17, 17, 26, 0.1) 0px 4px 16px,
+        rgba(17, 17, 26, 0.1) 0px 8px 24px, rgba(17, 17, 26, 0.1) 0px 16px 56px;
+      overflow: hidden;
+      border: none;
+      background-position: center center;
+      min-width: 20rem;
+      // min-height: 20rem;
+      .nav_title {
+        display: flex;
+        align-items: center;
+        font-size: 2.5rem;
+        .todo_count {
+          color: #13c8ff;
+          text-shadow: 0 0 10px rgb(102, 102, 102);
+        }
+      }
+      .card-body {
+        justify-content: center;
+        align-items: center;
+        z-index: 1;
+      }
+      .dashboard_nav_shadow {
+
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.4);
+        .dashboard_cycle_decoration{
+          position: absolute;
+          border: 3px solid #fff;
+          border-radius: 1rem;
+          width: 1rem;
+          height: 1rem;
+          right: .5rem;
+          top: .5rem;
+        }
+      }
+      .dashboard_intro {
+        ul {
+          height: 5rem;
+          li {
+            span {
+              display: block;
+              transition: transform 0.5s ease-in-out, opacity 0.5s ease;
+              transform: translateX(30px);
+              opacity: 0; 
+              &.entered {
+                transform: translateX(0px);
+                opacity: 1;
+              }
+            }
+          }
+        }
+      }
+      .dashboard_intro,
+      .dashboard_entry {
+        transition: max-height 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+          opacity 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        overflow: hidden;
+      }
+      .ShowDashboard {
+        .dashboard_intro {
+          max-height: 0;
+          opacity: 0;
+        }
+        .dashboard_entry {
+          max-height: 1000px;
+          opacity: 1;
+        }
+      }
+      .HideDashboard {
+        .dashboard_intro {
+          max-height: 1000px;
+          opacity: 1;
+        }
+        .dashboard_entry {
+          max-height: 0;
+          opacity: 0;
+        }
+      }
+    }
+  
+    $avatar_size: 64px;
+  
+    .user-card-group {
+      // width: 40rem; 
+      flex: 1;
+      @media screen and (max-width: $screen-xs-max) {
+        width: 100%; 
+      }
+      @media screen and (min-width: $screen-sm-min) and (max-width: $screen-sm-max) { 
+        width: 100%; 
+      }
+      .card-body-group {
+        // max-height: 15rem;
+        overflow-y: auto;
+        padding-top: 0.5rem;
+        .card-body {
+          padding: 1rem 1.5rem;
+          .user-card {
+            height: 100%;
+            width: 100%;
+            border-radius: 1rem;
+            box-shadow: rgba(17, 17, 26, 0.1) 0px 8px 20px;
+            transition: box-shadow 0.5s ease;
+            &:hover {
+              box-shadow: rgba(17, 17, 26, 0.4) 0px 8px 40px;
+            } 
+            .user-card-body {
+              position: relative;
+              padding: 0.5rem 1rem;
+              .user-card-avatar {
+                width: $avatar_size;
+                height: $avatar_size;
+                position: absolute;
+                border-radius: $avatar_size;
+                overflow: hidden;
+                box-shadow: rgba(17, 17, 26, 0.2) 0px 8px 10px; 
+                z-index: 1;
+                img {
+                  width: $avatar_size;
+                  height: $avatar_size;
+                }
+              }
+              .user-card-name {
+                font-weight: bold;
+                font-size: 1.2rem;
+              }
+            }
+            &.left-avatar {
+              text-align: right;
+              .user-card-body {
+                &::before{
+                  content: '';
+                  width: 64px;
+                  height: 64px;
+                  display: block;
+                  float: left;
+                }
+                .user-card-avatar {
+                  left: 0;
+                  top: 0;
+                  transform: translateX(30%) translateY(-30%);
+                }
+              } 
+            }
+            &.right-avatar {
+              text-align: left;
+              &::before{
+                content: '';
+                width: 80px;
+                height: 64px;
+                display: block;
+                float: right;
+              }
+              .user-card-body {
+                .user-card-avatar {
+                  right: 0;
+                  top: 0;
+                  transform: translateX(-30%) translateY(-30%);
+                }
+              } 
+            }
+          }
+        }
+      } 
+    }
+    
+    .user-manual-group {
+      // width: 15rem;
+      flex: 1;
+      @media screen and (max-width: $screen-xs-max) { 
+        max-height: 20rem; 
+      }
+      @media screen and (min-width: $screen-sm-min) and (max-width: $screen-sm-max) { 
+        max-height: 20rem; 
+      }
+      .user-manual-body {
+        // max-height: 15rem;
+        overflow-y: auto;
+        .user-manual-container { 
+          width: 100%;
+          display: flex;
+          flex-wrap: nowrap;
+          flex-direction: column;
+          .user-manual {
+            width: 20%;
+            @media screen and (max-width: $screen-xs-max) { 
+              width: 50%;
+            }
+            @media screen and (min-width: $screen-sm-min) and (max-width: $screen-sm-max) { 
+              width: 50%;
+            }
+            border-radius: .5rem;
+            padding: .5rem;
+            margin: .5rem 0;
+            background: #1c86ff;
+            transition: box-shadow 0.5s ease-in-out,width 0.5s ease-in-out,height 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            color: #fff;
+            cursor: pointer;
+            box-shadow:  rgba(17, 17, 26, 0.1) 0px 8px 20px;
+            &.manual-unfold{
+              width: 100%;
+            }
+            
+            &:hover{
+              box-shadow:  rgba(17, 17, 26, 0.3) 0px 8px 20px;
+            }
+            a{
+              .user-manual-title{
+                font-size: 1rem;
+              }
+              .user-manual-meta{
+                word-break: break-all; 
+              }
+              &:link,
+              &:visited,
+              &:hover,
+              &:active {
+                color: #fff;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  .first-row,
+  .second-row {
+    flex-wrap: nowrap;
+    flex:1; 
+    @media screen and (max-width: $screen-xs-max) {
+      // max-height: 25%;
+      flex-wrap: wrap;
+    }
+    @media screen and (min-width: $screen-sm-min) and (max-width: $screen-sm-max) { 
+      flex-wrap: wrap;
+    }
+    @media screen and (min-width: $screen-md-min) and (max-width: $screen-md-max) { 
+      max-height: 40vh;
+    }
+    @media screen and (min-width: $screen-lg-min) and (max-width: $screen-lg-max) { 
+      max-height: 40vh;
+    }
+    @media screen and (min-width: $screen-FHD-min) and (max-width: $screen-FHD-max) { 
+      max-height: 45vh;
+    }
+    @media screen and (min-width: $screen-1080p-min) { 
+      max-height: 40vh;
+    }
+  }
+  @media screen and (max-width: $screen-xs-max) {
+      .mr-4{
+        margin-right: 0 !important;
+      }
+      .mb-4{
+        margin-bottom: 0 !important;
+      }
+      .first-row>*,
+      .second-row>*{
+        margin-top: 1rem;
+      } 
+  }
+  @media screen and (min-width: $screen-sm-min) and (max-width: $screen-sm-max) { 
+    .mr-4{
+      margin-right: 0 !important;
+    }
+    .mb-4{
+      margin-bottom: 0 !important;
+    }
+  } 
+
+
+}

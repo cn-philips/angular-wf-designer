@@ -1,0 +1,44 @@
+@import '../../../vendor/libs/angular2-ladda/angular2-ladda.scss';
+@import "../../../vendor/libs/ng-select/ng-select.scss";
+
+.cell-right{
+    text-align: right;
+    color: red;
+}
+
+.ngx-datatable {
+    overflow: visible !important;
+}
+
+.simple-file-table{
+    text-align: right;
+}
+
+.attachment-title {
+    background: lightgray;
+    height: 30px;
+}
+
+.custom-progressbar {
+    position:fixed;
+    position:-webkit-sticky;
+    position:sticky;
+    top:40%;
+    right:96px;
+    z-index: 2201;
+}
+
+.custom-mask {
+	position: fixed;
+	left: 0px;
+	top: 0px;
+	right: 0px;
+	bottom: 0px;
+	display: block;
+    z-index: 2200;
+	background: rgba(0, 0, 0, 0.4);
+}
+
+:host ::ng-deep .ant-input-disabled, .ant-input[disabled] {
+  color: #4E5155;
+}

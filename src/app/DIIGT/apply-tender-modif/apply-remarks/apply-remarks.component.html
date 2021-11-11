@@ -1,0 +1,37 @@
+<app-apploading [load]="load"></app-apploading>
+<form nz-form [formGroup]="validateForm">
+  <div nz-row>
+    <div nz-col nzSpan="12">
+      <nz-form-item>
+        <nz-form-label [nzSpan]="6" nzRequired nzFor="email">备注</nz-form-label>
+        <nz-form-control [nzSpan]="14">
+          <textarea rows="4" formControlName="remarks" [(ngModel)]="dataBase.remarks"  nz-input oninput="if(value.length>255)value=value.slice(0,255)"></textarea>
+          <nz-form-explain *ngIf="validateForm.get('remarks')?.dirty && validateForm.get('remarks')?.errors">
+            此选项必填字段
+          </nz-form-explain>
+          <ng-container *ngIf="dataBase && dataBase.remarks">
+            <div>还可以输入:{{dataBase.remarks.length}}/{{textLen}}</div>
+          </ng-container>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+  <div nz-row>
+    <div nz-col nzSpan="12">
+      <nz-form-item>
+        <nz-form-label [nzSpan]="6" nzFor="email">文件上传</nz-form-label>
+        <nz-form-control [nzSpan]="14">
+          <div class="maxuploadto">
+          <nz-upload *ngIf="flag==0" [(nzFileList)]="fileList" [nzBeforeUpload]="beforeUpload" [nzLimit]="1" [nzPreview]="dwonLoad" [nzRemove]="removeFile">
+            <button nz-button><i nz-icon nzType="upload"></i>文件上传</button>
+          </nz-upload>
+          </div>
+          <button *ngIf="flag==1&&dataBase.file" class="down" nz-button nzType="link" (click)="fileDwon(dataBase.file)">下载文件</button>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+</form>
+<!-- <div class="tr mt10">
+  <button nz-button class="submit" nzType="primary" (click)="prev()">上一步</button>
+</div> -->

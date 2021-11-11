@@ -1,0 +1,95 @@
+<div class="modal-header">
+    <h5 *ngIf="licenseType == '2'" class="modal-title">
+      {{pageMainObject.HospitalName}} - {{pageMainObject.HospitalType}} <br/>{{pageMainObject.HospitalAddress}} 
+    </h5>
+    <h5 *ngIf="licenseType == '1'" class="modal-title">
+      {{pageMainObject.CompanyName}}
+    </h5>
+    <button type="button" class="close" (click)="closeModal()">&times;</button>
+  </div>
+
+  <div class="modal-body">
+    <div ngbTabContent>
+      <div class="card-body">
+        <div class="demo-vertical-spacing">
+          <div class="row">
+            <div class="table-responsive">
+              <ngx-datatable #tableLicense
+                              [rows]="licenseList"
+                              [columnMode]="'force'"
+                              [headerHeight]="30"
+                              [footerHeight]="0"
+                              [rowHeight]="'auto'"
+                              [reorderable]="false"
+                              [limit]="200">
+                <ngx-datatable-column [sortable]="false" prop="LicenseType" name="证书类型" [headerClass]="getHeaderClass"
+                                      [cellClass]="getCellClass">
+                    <ng-template let-value="value" ngx-datatable-cell-template>
+                        <span *ngIf="value">{{value | licenseType}}</span>
+                    </ng-template>
+                </ngx-datatable-column>
+                <ngx-datatable-column [sortable]="false" prop="LicenseNumber" name="证书编号" [headerClass]="getHeaderClass"
+                                      [cellClass]="getCellClass">
+                    <ng-template let-value="value" ngx-datatable-cell-template>
+                        <span *ngIf="value">{{value}}</span>
+                    </ng-template>
+                </ngx-datatable-column>
+                <ngx-datatable-column [sortable]="false" prop="IssueDate" name="签发日期" [headerClass]="getHeaderClass"
+                                      [cellClass]="getCellClass">
+                    <ng-template let-value="value" ngx-datatable-cell-template>
+                        <span *ngIf="value">{{value | date:'yyyy-MM-dd'}}</span>
+                    </ng-template>
+                </ngx-datatable-column>
+                <ngx-datatable-column [sortable]="false" prop="ExpirationDate" name="失效日期" [headerClass]="getHeaderClass"
+                                      [cellClass]="getCellClass">
+                    <ng-template let-value="value" ngx-datatable-cell-template>
+                        <span *ngIf="value">{{value | date:'yyyy-MM-dd'}}</span>
+                    </ng-template>
+                </ngx-datatable-column>
+              </ngx-datatable>
+            </div>
+          </div>
+
+          <!-- 区域授权信息 -->
+          <div *ngIf="licenseType == '1'" class="row">
+            <div class="table-responsive">
+              <ngx-datatable #tableArea
+                              [rows]="areaAuthorityList"
+                              [columnMode]="'force'"
+                              [headerHeight]="30"
+                              [footerHeight]="0"
+                              [rowHeight]="'auto'"
+                              [reorderable]="false"
+                              [limit]="200">
+                <ngx-datatable-column [sortable]="false" prop="Region" name="Region" [headerClass]="getHeaderClass"
+                                      [cellClass]="getCellClass">
+                    <ng-template let-value="value" ngx-datatable-cell-template>
+                        <span *ngIf="value">{{value}}</span>
+                    </ng-template>
+                </ngx-datatable-column>
+                <ngx-datatable-column [sortable]="false" prop="District" name="District" [headerClass]="getHeaderClass"
+                                      [cellClass]="getCellClass">
+                    <ng-template let-value="value" ngx-datatable-cell-template>
+                        <span *ngIf="value">{{value}}</span>
+                    </ng-template>
+                </ngx-datatable-column>
+                <ngx-datatable-column [sortable]="false" prop="ProductSeriesDetail" name="产品系列" [headerClass]="getHeaderClass"
+                                      [cellClass]="getCellClass">
+                    <ng-template let-value="value" ngx-datatable-cell-template>
+                        <span *ngIf="value">{{value}}</span>
+                    </ng-template>
+                </ngx-datatable-column>
+              </ngx-datatable>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-footer" style="justify-content:center;">
+    <div>
+      <button type="button" class="btn btn-primary" (click)="closeModal()">返回</button>
+    </div>
+  </div>
+  

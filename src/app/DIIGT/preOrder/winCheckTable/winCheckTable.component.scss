@@ -1,0 +1,49 @@
+
+.ant-radio-group {
+  display: block;
+}
+.green{
+  color:green
+}
+.red{
+  color:red;
+}
+.mkbox{
+  max-height: 200px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.win-check-link {
+  // text-decoration: underline;
+  &.down{
+    white-space:nowrap !important;
+  }
+  display:inline-block;
+  vertical-align: -10px;
+  .name{
+    text-overflow: ellipsis;
+    max-width:300px;
+    white-space: nowrap;
+    overflow: hidden;
+    display:inline-block;
+  }
+  .usr{
+    display: inline-block;
+    vertical-align: 10px;
+  }
+}
+.check{
+  color:#1890ff;
+  font-style: normal;
+  display: inline-block;
+  vertical-align: 10px;
+}
+.grey{
+  color:#CCC
+}
+.oppt{
+  word-wrap: break-word;
+  white-space:pre-wrap;
+
+}

@@ -1,0 +1,31 @@
+<h4 class="font-weight-bold py-3">
+  <span>中标确认</span>
+</h4>
+<igt-approval-flowline></igt-approval-flowline>
+<div class="pr">
+    <ngb-tabset type="tabs" [destroyOnHide]="true" class="nav-tabs-top nav-responsive-xl">
+        <ngb-tab id="pending-tab">
+            <ng-template ngbTabTitle><span class="tab-title"><strong>基础信息</strong></span></ng-template>
+            <ng-template ngbTabContent>
+                <div class="card-body">
+                    <!--项目信息-->
+                    <app-applybase [name]="name" [isDisable]="true" [dataBase]="dataBase" ></app-applybase>
+                     <!--产品信息-->
+                    <app-newproduct [isDisable]="true" [dataBase]="dataBase"></app-newproduct>
+                    <!--产品信息-->
+                    <app-supplement [isDisable]="true" [dataBase]="dataBase"></app-supplement>
+                </div>
+            </ng-template>
+        </ngb-tab>
+        <ngb-tab id="complete-ba">
+            <ng-template ngbTabTitle><span class="tab-title"><strong>中标确认</strong></span></ng-template>
+            <ng-template ngbTabContent>
+                <div class="card-body">
+                    <app-winningconfirm [flag]="flag" [odata]="odata" [data]="data" [dataBase]="dataBase" [othercheck]="othercheck" [fileList]="fileList"></app-winningconfirm>
+                </div>
+            </ng-template>
+        </ngb-tab>
+    </ngb-tabset>
+    <!-- <button nz-button class="ml6 save" nzType="primary">保存</button>
+    <button nz-button class="ml6 submit" nzType="primary">保存并提交</button> -->
+</div>

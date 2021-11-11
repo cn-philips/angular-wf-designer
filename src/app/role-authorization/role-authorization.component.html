@@ -1,0 +1,62 @@
+<h4 class="font-weight-bold py-3 mb-4">
+    <!--<span class="text-muted font-weight-light">Tables /</span>-->  Role Authorization
+</h4>
+<div class="card mb-4">
+    <!-- <h6 class="card-header">
+      Overview
+    </h6> -->
+    <div class="card-body">
+      <!-- <form> -->
+        <div class="form-group row">
+          <label class="col-form-label col-sm-2 text-sm-right">角色</label>
+          <div class="col-sm-10">
+            <ng-select [items]="roleList"
+              bindLabel="name"
+              [(ngModel)]="selectedRelation"
+              placeholder="Choose a role"
+              [disabled]=false
+              (clear)="onClearRole()"
+              (change)="onChangeRole($event)">
+            </ng-select>
+          </div>
+        </div>
+
+        <!-- <div class="form-group row">
+          <label class="col-form-label col-sm-2 text-sm-right">Role Description</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" readonly [(ngModel)]="selectedRole.comment">
+          </div>
+        </div> -->
+
+        <div class="form-group row">
+          <label class="col-form-label col-sm-2 text-sm-right">功能权限</label>
+          <div class="col-sm-10">
+              <tree-root
+              id="role-tree"
+              #tree 
+              [ngClass]="'my-tree'"
+              [nodes]="menuNodeList"
+              [options]="treeOptions"
+              [(state)]="state"
+              (initialized)="onInitialized(tree)"
+              (select)="onSelectNode($event,true)"
+              (deselect)="onSelectNode($event,false)">
+              <!-- <ng-template #treeNodeTemplate let-node="node" let-index="index" >
+                <input
+                  (change)="check(node, !node.data.checked)"
+                  type="checkbox"
+                  [indeterminate]="node.data.indeterminate"
+                  [checked]="node.data.checked">
+                  {{ node.data.name }}
+              </ng-template> -->
+            </tree-root>
+          </div>
+        </div>
+      <!-- </form> -->
+      <div class="form-group row">
+        <div class="col-sm-10 ml-sm-auto">
+          <button class="btn btn-primary" type="button" (click)="updateRole()">保存</button>
+        </div>
+      </div>
+    </div>
+</div>

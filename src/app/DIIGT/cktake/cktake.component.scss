@@ -1,0 +1,23 @@
+@import '../../../../node_modules/@swimlane/ngx-datatable/release/index.css';
+@import '../../../vendor/libs/ngx-datatable/ngx-datatable';
+@import '../../../../node_modules/@swimlane/ngx-datatable/release/assets/icons.css';
+@import '../../../vendor/libs/ngb-datepicker/ngb-datepicker';
+
+.table-responsive {
+  overflow: visible;
+}
+
+.ngx-datatable {
+  overflow: visible !important;
+}
+
+.modal-xl .modal-lg {
+  max-width: 95%;
+}
+.datatable-body-cell-label{
+ text-align: center !important;
+}
+.ck{
+  width: 40px !important;
+  height: 20px !important;
+}

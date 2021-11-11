@@ -1,0 +1,55 @@
+<h4 class="font-weight-bold py-3">
+  <span>审核Order Summary</span>
+</h4>
+<igt-approval-flowline></igt-approval-flowline>
+<div class="demo-vertical-spacing">
+  <div class="posi">
+    <div class="pr">
+    <ngb-tabset type="tabs" [destroyOnHide]="false" (tabChange)="tabclick($event)" [activeId]="activedId"  class="nav-tabs-top nav-responsive-xl">
+      <!--合同概要表-->
+      <ngb-tab id="pending-tab">
+        <ng-template ngbTabTitle><span class="tab-title"><strong>合同概要表</strong>&ensp;</span></ng-template>
+        <ng-template ngbTabContent>
+          <div class="card-body">
+            <app-preOrderBaseInfo #baseInfo [disa]="true" [dataBase]="infor" [conTable]="true"  [showChek]="true"></app-preOrderBaseInfo>
+            <div class="step">
+              <button (click)="myskip('complete-duc')" nz-button nzType="primary">下一步</button>
+            </div>
+          </div>
+        </ng-template>
+      </ngb-tab>
+      <!--order summary-->
+      <ngb-tab id="complete-duc">
+        <ng-template ngbTabTitle><span class="tab-title"><strong>Order Summary</strong></span></ng-template>
+        <ng-template ngbTabContent>
+          <div class="card-body">
+            <app-inorder-in [dataBase]="dataBase"></app-inorder-in>
+            <app-inorder-ex [disa]="true" [dataBase]="dataBase"></app-inorder-ex>
+            <div class="step">
+              <button nz-button (click)="myskip('pending-tab')"  nzType="primary">上一步</button>
+              <button nz-button (click)="myskip('complete-duc3')"  nzType="primary">下一步</button>
+            </div>
+          </div>
+        </ng-template>
+      </ngb-tab>
+      <!--审批order summary-->
+      <ngb-tab id="complete-duc3">
+          <ng-template ngbTabTitle><span class="tab-title"><strong>审批</strong></span></ng-template>
+          <ng-template ngbTabContent>
+            <div class="card-body">
+                <nz-card  nzTitle="审批记录">
+                  <app-emp-acc></app-emp-acc>
+                </nz-card>
+                <nz-card class="mt10" nzTitle="审核Order Summary">
+                  <app-inoderfrom></app-inoderfrom>
+                </nz-card>
+              <div class="step">
+                <button nz-button (click)="myskip('complete-duc')" nzType="primary">上一步</button>
+              </div>
+            </div>
+          </ng-template>
+      </ngb-tab>
+    </ngb-tabset>
+    </div>
+  </div>
+</div>

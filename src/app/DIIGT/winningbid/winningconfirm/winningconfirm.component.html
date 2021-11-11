@@ -1,0 +1,199 @@
+<app-apploading [load]="load"></app-apploading>
+<nz-card class="mtb1rem" nzTitle="审批记录">
+  <app-emp-acc></app-emp-acc>
+</nz-card>
+<nz-card class="mtb1rem" nzTitle="包含非标准条款" *ngIf="dataBase && dataBase.businessType != 'DISTRIBUTOR'">
+  <app-app-terms></app-app-terms>
+</nz-card>
+<nz-card class="mtb1rem" nzTitle="中标备案信息">
+  <div nz-row nzGutter="24" nzType="flex" nzJustify="start" nzAlign="top">
+    <div nz-col nzSpan="24">
+      <app-bidinfor [isDisable]="isDisable" [data]="dataInfor" [infor]="dataBase" [flag]="flag"></app-bidinfor>
+    </div>
+  </div>
+</nz-card>
+<nz-card class="mtb1rem" nzTitle="中标确认">
+  <form nz-form [formGroup]="validateForm">
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzSpan="12">
+        <nz-form-item>
+          <nz-form-label [nzSm]="8" [nzXs]="24">需特批事项</nz-form-label>
+          <nz-form-control [nzSm]="14" [nzXs]="24">
+            <div class="cheabox">
+              <div>
+                <label *ngIf="isChan2()" class="marginNone" [nzDisabled]="flag==1" [(ngModel)]="odata.bidWinningNotice" [ngModelOptions]="{standalone: true}"
+                  nz-checkbox>缺失中标通知书</label>
+                <label *ngIf="biddingNoType&&isChan2()" class="marginNone" [nzDisabled]="flag==1" [(ngModel)]="odata.bidWinningAnnouncement"
+                  [ngModelOptions]="{standalone: true}" nz-checkbox>缺失中标公告</label>
+                <label class="marginNone" [nzDisabled]="flag==1" [(ngModel)]="odata.demandLetter" [ngModelOptions]="{standalone: true}"
+                  nz-checkbox>缺要货函，用场地报告代替</label>
+<!--                <label class="marginNone" [nzDisabled]="flag==1" [(ngModel)]="odata.otherTypes" [ngModelOptions]="{standalone: true}"-->
+<!--                  nz-checkbox>公立医院，招标编号-其他类型</label>-->
+                <div class="flax">
+                <label class="marginNone" [nzDisabled]="flag==1" [nzChecked]="IsCheck()" [(ngModel)]="othercheck"
+                  [ngModelOptions]="{standalone: true}"  (ngModelChange)="otherChange()" nz-checkbox>其他</label>
+                <a class="is" *ngIf="IsOtherInput()"></a>
+                <input  [disabled]="flag==1" oninput="if(value.length>100)value=value.slice(0,100)" [(ngModel)]="odata.other" [ngModelOptions]="{standalone: true}" nz-input
+                  placeholder="" nzSize="default" style="width: 190px;margin-left:0px;" />
+                </div>
+                <ng-container *ngIf="odata && odata.other">
+                  <div>还可以输入:{{odata.other.length}}/{{minitextLen}}</div>
+                </ng-container>
+              </div>
+            </div>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzSpan="12">
+        <nz-form-item>
+          <nz-form-label [nzRequired]="IsspecialApprovalFile()" [nzSm]="8" [nzXs]="24">特批支持文件</nz-form-label>
+          <nz-form-control [nzSm]="14" [nzXs]="24" nzHasFeedback>
+            <div class="maxuploadto">
+            <nz-upload *ngIf="flag==0" formControlName="fileurl" [(nzFileList)]="fileList.fileSpecialList"
+              [nzBeforeUpload]="beforeSpecialUpload" [nzLimit]="1" [nzPreview]="dwonLoad">
+              <button nz-button><i nz-icon nzType="upload"></i><span>上传附件</span></button>
+              <!-- <button *ngIf="flag==1" disabled="true"    nz-button><i nz-icon nzType="upload"></i><span>上传附件</span></button> -->
+            </nz-upload>
+            </div>
+            <button nz-tooltip [nzTitle]="odata.specialApprovalFileName" *ngIf="flag==1&&odata.specialApprovalFile" class="down link-tesk" nz-button nzType="link"
+              (click)="fileDwon(odata.specialApprovalFile)">{{odata.specialApprovalFileName}}</button>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzSpan="12">
+        <nz-form-item>
+          <nz-form-label [nzSm]="8" [nzXs]="24">备注</nz-form-label>
+          <nz-form-control [nzSm]="14" [nzXs]="24">
+            <textarea *ngIf="flag==0" nz-input oninput="if(value.length>255)value=value.slice(0,255)" formControlName="remarks" nz-input placeholder="" [disabled]="flag === 1"
+              [nzAutosize]="{ minRows: 2, maxRows: 6 }" [(ngModel)]="odata.remarks"></textarea>
+            <textarea *ngIf="flag==1" nz-input oninput="if(value.length>255)value=value.slice(0,255)" nz-input placeholder="" disabled [nzAutosize]="{ minRows: 2, maxRows: 6 }"
+              [(ngModel)]="odata.remarks" [ngModelOptions]="{standalone:true}"></textarea>
+            <ng-container *ngIf="odata && odata.remarks">
+              <div>还可以输入:{{odata.remarks.length}}/{{textLen}}</div>
+            </ng-container>
+<!--            <nz-form-explain *ngIf="validateForm.get('remarks')?.dirty && validateForm.get('remarks')?.errors">-->
+<!--              请填写拒绝理由-->
+<!--            </nz-form-explain>-->
+            <div *ngIf="rem_mess">
+              <a style="color: #f5222d">请填写拒绝理由</a>
+            </div>
+            <div *ngIf="return_mess">
+              <a style="color: #f5222d">请填写退回理由</a>
+            </div>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzSpan="12">
+        <nz-form-item>
+          <nz-form-label [nzSm]="8" [nzXs]="24">补充文件</nz-form-label>
+          <nz-form-control [nzSm]="14" [nzXs]="24" nzHasFeedback>
+            <div>
+              <div class="maxuploadto">
+              <nz-upload formControlName="fileurl" *ngIf="flag==0" [(nzFileList)]="fileList.filesupplementList"
+                [nzBeforeUpload]="beforeSupplementUpload" [nzLimit]="1" [nzPreview]="dwonLoad">
+                <button nz-button><i nz-icon nzType="upload"></i><span>上传附件</span></button>
+                <!-- <button *ngIf="flag==1" disabled="true"    nz-button><i nz-icon nzType="upload"></i><span>上传附件</span></button> -->
+              </nz-upload>
+              </div>
+              <button nz-tooltip [nzTitle]="odata.supplementaryFileName" *ngIf="flag==1&&odata.supplementaryFile" class="down link-tesk" nz-button nzType="link"
+                (click)="fileDwon(odata.supplementaryFile)">{{odata.supplementaryFileName}}</button>
+            </div>
+
+            <div>
+              <!--补充文件2-->
+              <div class="maxuploadto">
+              <nz-upload *ngIf="flag==0" [(nzFileList)]="fileList.filesupplementsList"
+                        [nzBeforeUpload]="beforeSupplementsUpload" [nzLimit]="1" [nzPreview]="dwonLoad">
+                <button nz-button><i nz-icon nzType="upload"></i><span>上传附件</span></button>
+                <!-- <button *ngIf="flag==1" disabled="true"    nz-button><i nz-icon nzType="upload"></i><span>上传附件</span></button> -->
+              </nz-upload>
+              </div>
+              <button nz-tooltip [nzTitle]="odata.supplementaryFileNames" *ngIf="flag==1&&odata.supplementaryFiles" class="down link-tesk" nz-button nzType="link"
+                      (click)="fileDwon(odata.supplementaryFiles)">{{odata.supplementaryFileNames}}</button>
+            </div>
+
+            <div>
+              <!--补充文件3-->
+              <div class="maxuploadto">
+              <nz-upload *ngIf="flag==0" [(nzFileList)]="fileList.filesupplementssList"
+                        [nzBeforeUpload]="beforeSupplementssUpload" [nzLimit]="1" [nzPreview]="dwonLoad">
+                <button nz-button><i nz-icon nzType="upload"></i><span>上传附件</span></button>
+                <!-- <button *ngIf="flag==1" disabled="true"    nz-button><i nz-icon nzType="upload"></i><span>上传附件</span></button> -->
+              </nz-upload>
+              </div>
+              <button nz-tooltip [nzTitle]="odata.supplementaryFileNamess" *ngIf="flag==1&&odata.supplementaryFiless" class="down link-tesk" nz-button nzType="link"
+                      (click)="fileDwon(odata.supplementaryFiless)">{{odata.supplementaryFileNamess}}</button>
+            </div>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle" *ngIf="status == 'YZBQRYBCWJ'">
+      <div nz-col nzSpan="12">
+        <nz-form-item>
+          <nz-form-label [nzSm]="8" [nzXs]="24">缺失文件已补齐</nz-form-label>
+          <nz-form-control [nzSm]="14" [nzXs]="24">
+            <nz-radio-group nzSize="default" [ngModelOptions]="{standalone: true}" [disabled]="flag == 1"
+                            [(ngModel)]="isSupp">
+              <label nz-radio nzValue="1">是</label>
+              <label nz-radio nzValue="0">否</label>
+            </nz-radio-group>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <!--    <div *ngIf="flag==0" nz-row nzType="flex" nzJustify="start" nzAlign="middle">-->
+    <!--      <div nz-col nzSpan="3"></div>-->
+    <!--      <div nz-col nzSpan="12">-->
+    <!--        <nz-form-item>-->
+    <!--          <nz-form-control [nzSm]="14" [nzXs]="24">-->
+    <!--            <ng-container *ngIf="!showSupplt">-->
+    <!--            <button nz-button nzType="primary" (click)="submitForm($event, validateForm.value, 1, '确定')">确定</button>-->
+    <!--            <button nz-button (click)="submitForm($event, validateForm.value, 0, '拒绝')" style="margin-left: 10px!important;">拒绝</button>-->
+    <!--          </ng-container>-->
+    <!--          <ng-container *ngIf="showSupplt">-->
+    <!--            <button nz-button nzType="primary" (click)="submitForm($event, validateForm.value,1,'保存',0)">保存</button>-->
+    <!--            <button nz-button nzType="primary" (click)="submitForm($event, validateForm.value,1,'结束',1)">结束</button>-->
+    <!--          </ng-container>-->
+    <!--          </nz-form-control>-->
+    <!--        </nz-form-item>-->
+    <!--      </div>-->
+    <!--    </div>-->
+
+    <div *ngIf="flag==0" nz-row nzType="flex" nzJustify="end" nzAlign="middle">
+      <div nz-col nzSpan="16">
+        <nz-form-item style="text-align: right;">
+          <ng-container *ngIf="!showSupplt">
+            <button nz-button nz-popconfirm nzTitle="你确定要执行退回的操作?" nzType="primary" class="ml10" [nzSize]="6"
+            (nzOnConfirm)="submitForm($event, validateForm.value, 2, '退回至投标申请表')">退回至投标申请表</button>
+            <button nz-button nz-popconfirm nzTitle="你确定要执行通过的操作?" nzType="primary" class="ml10" [nzSize]="6"
+            (nzOnConfirm)="submitForm($event, validateForm.value, 1, '确定')">确认中标</button>
+            <button nz-button nz-popconfirm nzTitle="你确定要执行拒绝的操作?" [nzSize]="6" class="ml10" nzType="primary"
+            (nzOnConfirm)="submitForm($event, validateForm.value, 0, '拒绝')" style="margin-left: 10px!important;">拒绝</button>
+          </ng-container>
+          <ng-container *ngIf="showSupplt">
+            <button nz-button nzType="primary" nzSize="6" class="ml10"
+              (click)="submitForm($event, validateForm.value,1,'保存',0)">保存</button>
+            <button nz-button nzType="primary" nz-popconfirm nzTitle="你确定要执行结束的操作?" nzSize="6" class="ml10" (nzOnConfirm)="submitForm($event, validateForm.value,1,'结束',1)">结束</button>
+          </ng-container>
+        </nz-form-item>
+      </div>
+    </div>
+  </form>
+</nz-card>
+
+<nz-card class="mtb1rem" nzTitle="相关进单进程链接" *ngIf="flag==1 && CkUrlLength()">
+  <div>《进单准备表》/《合同概要表》/《OrderSummary》/《合同签署》/《OIT完成》链接（进程状态以实际状态为准）：</div>
+  <div *ngFor="let item of mainid_winList">
+    <a class="a-url a-url-left" (click)="toWin(item)">{{item.referenceId}}</a>
+<!--    <a class="a-url" (click)="toWin(item)">{{item.jdChildMainId ? item.jdChildMainId : item.jdMainId}}</a>-->
+  </div>
+</nz-card>

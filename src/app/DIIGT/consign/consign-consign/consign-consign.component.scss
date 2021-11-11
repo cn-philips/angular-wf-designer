@@ -1,0 +1,25 @@
+.p1{
+  margin: 20px auto;
+}
+.a1{
+  margin-left: 20px !important;
+  color: #1e70cd !important;
+}
+.next{
+  margin-top: 10px;
+}
+.flex{
+  display: flex;
+  position: relative;
+  .updata{
+    display: inline-block;
+    position: absolute;
+    left: 148px;
+    top: 4px;
+  }
+
+}
+
+/deep/.ant-upload-list-item{
+  max-width: 300px;
+}

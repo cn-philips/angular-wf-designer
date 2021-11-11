@@ -1,0 +1,168 @@
+<h4 class="font-weight-bold py-3 mb-4">
+  <!--<span class="text-muted font-weight-light">Tables /</span>-->  WBS归档
+</h4>
+
+<hr class="border-light container-m--x mt-0 mb-4">
+
+<div class="demo-vertical-spacing">
+  <div>
+    <form #searchForm="ngForm">
+      <div class="row">
+        <div class="col-sm-6 col-md-5 col-lg-3 mb-3">
+          <label class="form-label">最终用户名称</label>
+          <input class="form-control" ngModel name="businessName">
+        </div>
+        <div class="col-sm-6 col-md-5 col-lg-3 mb-3">
+          <label class="form-label">大区</label>
+          <nz-select nzNoAnimation [nzMaxTagCount]="99" nzAllowClear
+                     nzPlaceHolder="" name="bigArea" ngModel>
+            <nz-option *ngFor="let option of bigAreaList" [nzLabel]="option.dimensionName"
+                       [nzValue]="option.dimensionCode"></nz-option>
+          </nz-select>
+        </div>
+        <div class="col-sm-6 col-md-5 col-lg-3 mb-3">
+          <label class="form-label">小区</label>
+          <nz-select nzNoAnimation [nzMaxTagCount]="99" nzPlaceHolder="" nzAllowClear name="smallArea" ngModel>
+            <nz-option *ngFor="let option of smallAreaList" [nzLabel]="option.dimensionName"
+                       [nzValue]="option.dimensionCode"></nz-option>
+          </nz-select>
+        </div>
+        <div class="col-sm-6 col-md-5 col-lg-3 mb-3">
+          <label class="form-label">流程类型</label>
+          <nz-select nzNoAnimation [nzMaxTagCount]="99" nzPlaceHolder="" nzAllowClear name="processDefinitionKey" ngModel>
+            <nz-option [nzLabel]="'通用销售流程'" [nzValue]="'CommericalPriceApproval_WF'"></nz-option>
+            <nz-option [nzLabel]="'经销商通用销售流程'" [nzValue]="'DistributorCommericalPriceApproval_WF'"></nz-option>
+          </nz-select>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-6 col-md-5 col-lg-3 mb-3">
+          <label class="form-label">开始日期起</label>
+          <div class="input-group">
+            <input ngModel class="form-control" name="createTimeStart"
+                   ngbDatepicker
+                   navigation="'select'"
+                   #d1="ngbDatepicker">
+            <div class="input-group-append">
+              <button class="input-group-text" (click)="d1.toggle()" type="button">
+                <span class="ion ion-md-calendar" style="cursor: pointer;"></span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6 col-md-5 col-lg-3 mb-3">
+          <label class="form-label">开始日期止</label>
+          <div class="input-group">
+            <input ngModel class="form-control" name="createTimeEnd"
+                   ngbDatepicker
+                   navigation="'select'"
+                   #d2="ngbDatepicker">
+            <div class="input-group-append">
+              <button class="input-group-text" (click)="d2.toggle()" type="button">
+                <span class="ion ion-md-calendar" style="cursor: pointer;"></span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6 col-md-5 col-lg-3 mb-3">
+          <label class="form-label">WBS完成状态</label>
+          <nz-select nzNoAnimation [nzMaxTagCount]="99" nzPlaceHolder="" nzAllowClear name="wbsFinished" ngModel>
+            <nz-option nzLabel="已完成" [nzValue]=true></nz-option>
+            <nz-option nzLabel="未完成" [nzValue]=false></nz-option>
+          </nz-select>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-6 col-md-5 col-lg-3 mb-3">
+          <label class="form-label">完成日期起</label>
+          <div class="input-group">
+            <input ngModel
+                   class="form-control" name="finishedTimeStart"
+                   ngbDatepicker
+                   navigation="'select'"
+                   #d3="ngbDatepicker">
+            <div class="input-group-append">
+              <button class="input-group-text" (click)="d3.toggle()" type="button">
+                <span class="ion ion-md-calendar" style="cursor: pointer;"></span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6 col-md-5 col-lg-3 mb-3">
+          <label class="form-label">完成日期止</label>
+          <div class="input-group">
+            <input
+              ngModel
+              class="form-control" name="finishedTimeEnd"
+              ngbDatepicker
+              navigation="'select'"
+              #d4="ngbDatepicker">
+            <div class="input-group-append">
+              <button class="input-group-text" (click)="d4.toggle()" type="button">
+                <span class="ion ion-md-calendar" style="cursor: pointer;"></span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6 col-md-5 col-lg-3 mb-3">
+          <label class="form-label">申请编号</label>
+          <input class="form-control" ngModel name="businessNumber">
+        </div>
+        <div class="col-sm-6 col-md-5 col-lg-3 mb-3 ml-auto mt-auto">
+          <button type="button" class="btn btn-primary" (click)="applyFilter();">查询</button>
+          <button type="button" class="btn btn-info" (click)="resetForm();">重置</button>
+        </div>
+      </div>
+    </form>
+
+    <div class="table-responsive">
+      <ngx-datatable #table style="min-width: 500px"
+                     [rows]="rows"
+                     [loadingIndicator]="loadingIndicator"
+                     [columnMode]="'force'"
+                     [headerHeight]="43"
+                     [footerHeight]="'auto'"
+                     [rowHeight]="'auto'"
+                     [reorderable]="true"
+                     [selected]="selected"
+                     [selectionType]="'checkbox'"
+                     [externalPaging]="true"
+                     [externalSorting]="true"
+                     [count]="page.totalElements"
+                     [offset]="page.pageNumber"
+                     [limit]="page.pageSize"
+                     [sortType]="'single'"
+                     (page)="pageCallback($event)"
+                     (sort)="sortCallback($event)">
+        <ngx-datatable-column prop="businessNumber" name="申请编号" [sortable]="false" [headerClass]="getHeaderClass"
+                              [cellClass]="getCellClass"></ngx-datatable-column>
+        <ngx-datatable-column prop="businessName" name="最终用户名称" [sortable]="false" [headerClass]="getHeaderClass"
+                              [cellClass]="getCellClass"></ngx-datatable-column>
+        <ngx-datatable-column prop="startDateTime" name="开始日期" [sortable]="false" [headerClass]="getHeaderClass"
+                              [cellClass]="getCellClass">
+          <ng-template let-value="value" ngx-datatable-cell-template>
+            {{value | date:'yyyy-MM-dd HH:mm:ss'}}
+          </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column prop="finishedDateTime" name="完成日期" [sortable]="false" [headerClass]="getHeaderClass"
+                              [cellClass]="getCellClass">
+          <ng-template let-value="value" ngx-datatable-cell-template>
+            {{value | date:'yyyy-MM-dd HH:mm:ss'}}
+          </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column prop="name" name="流程类型" [sortable]="false" [headerClass]="getHeaderClass"
+        [cellClass]="getCellClass"></ngx-datatable-column>
+        <ngx-datatable-column prop="wbsFinished" name="WBS状态" [sortable]="false" [headerClass]="getHeaderClass"
+                              [cellClass]="getCellClass">
+          <ng-template let-value="value" ngx-datatable-cell-template>{{value ? "已完成" : "未完成"}}</ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column name="操作" [sortable]="false" [headerClass]="getHeaderClass" [cellClass]="getCellClass">
+          <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+            <!--<a *ngIf="row.state=='running'" href="javascript:void(0)" class="btn btn-info btn-xs" (click)=openSimpleModal(row)>查看</a>-->
+            <a href="javascript:void(0)" class="btn btn-info btn-xs" (click)=openProcessDetailModal(row)>编辑</a>
+          </ng-template>
+        </ngx-datatable-column>
+      </ngx-datatable>
+    </div>
+  </div>
+</div>

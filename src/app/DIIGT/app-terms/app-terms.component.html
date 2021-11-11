@@ -1,0 +1,68 @@
+<div>
+  <div nz-col>
+    <nz-form-item>
+    <nz-form-control [nzSpan]="3">
+      <label disabled [(ngModel)]="dataBase.nonStandardTerms" style="color:rgba(0,0,0,.85);text-align: right;"
+             nz-checkbox>包含非标准条款:</label>
+    </nz-form-control>
+    <nz-form-control [nzSpan]="20">
+      <div *ngIf="dataBase.nonStandardTerms==true">
+      <div>
+        <label [disabled]="true" [(ngModel)]="dataBase.logisticsTermsApproval" nz-checkbox>物流条款审批</label>
+      </div>
+      <div>
+        <label disabled [(ngModel)]="dataBase.approvalAfterSales" nz-checkbox>售后维修条款审批</label>
+      </div>
+      <div>
+        <label disabled [(ngModel)]="dataBase.approvalBidSecurity" nz-checkbox>投标保证金及履约保证金额审批</label>
+        <div style="padding-left: 32px" *ngIf="dataBase && dataBase.approvallist2 && dataBase.approvalBidSecurity">
+          <a *ngFor="let bmc of arrSort(dataBase.approvallist2)" style="margin-right: 50px" class="hui">{{bmc.bmc}}
+            : {{bmc.name}}<br></a>
+        </div>
+      </div>
+      <div>
+        <label disabled [(ngModel)]="dataBase.paymentMethod" nz-checkbox>付款方式审批</label>
+      </div>
+      <div>
+        <label disabled [(ngModel)]="dataBase.technicalTerms" nz-checkbox>技术条款审批</label>
+        <div style="padding-left: 32px" *ngIf="dataBase && dataBase.BMClist && dataBase.technicalTerms">
+          <div *ngFor="let bmc of arrSort(dataBase.BMClist)"
+               style="margin-right: 50px; display: flex; align-items: center; margin-top: 20px">
+            <a class="hui">{{bmc.bmc}}</a>
+            <nz-select [disabled]="true" nzShowSearch nzAllowClear nzPlaceHolder=""
+                       style="width: 200px; margin-left: 20px"
+                       nzSize="large" [(ngModel)]="bmc.name" [ngModelOptions]="{standalone:true}">
+              <!--          <nz-option *ngFor="let expert of dataBase.BMCExpert[bmc.bmc]" [nzValue]="expert.productExpert" [nzLabel]="expert.productExpert">-->
+              <!--          </nz-option>-->
+              <nz-option [nzValue]="bmc.name" [nzLabel]="bmc.name">
+              </nz-option>
+            </nz-select>
+          </div>
+        </div>
+      </div>
+      <div>
+        <label disabled [(ngModel)]="dataBase.provisionsInvolved" nz-checkbox>涉及法律条款说明</label>
+      </div>
+      </div>
+    </nz-form-control>
+    </nz-form-item>
+  </div>
+  <div nz-col>
+    <nz-form-control [nzSpan]="3">
+      <label style="color:rgba(0,0,0,.25);text-align: right;width: 100%;padding-right: 10px">备注 :</label>
+    </nz-form-control>
+    <nz-form-control [nzSpan]="10">
+  <textarea disabled class="form-control" [(ngModel)]="dataBase.remarks">
+    </textarea>
+
+      <!--    <div nz-col nzSpan="24">-->
+      <!--      <nz-form-item>-->
+      <!--        <nz-form-label [nzSm]="2" [nzXs]="24" [nzSpan]="5">备注</nz-form-label>-->
+      <!--        <nz-form-control [nzSm]="7" [nzXs]="24">-->
+      <!--          <textarea disabled class="form-control" [(ngModel)]="dataBase.remarks"></textarea>-->
+      <!--        </nz-form-control>-->
+      <!--      </nz-form-item>-->
+      <!--    </div>-->
+    </nz-form-control>
+  </div>
+</div>

@@ -1,0 +1,9 @@
+<igt-MyTaskForm (passFormValues)="updateParams($event)" (exportEvent)="exportData()"></igt-MyTaskForm>
+<igt-MyTaskTable
+  (updateTable)="updateDataList($event)"
+  (setLoading)="getLoading($event)"
+  [listOfMapData]="listOfMapData"
+  [total]="total"
+  [loading]="loading"
+  [flag]="1"
+></igt-MyTaskTable>

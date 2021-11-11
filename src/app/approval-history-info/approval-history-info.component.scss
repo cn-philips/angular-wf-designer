@@ -1,0 +1,15 @@
+@import '../../../node_modules/@swimlane/ngx-datatable/release/index.css';
+@import '../../vendor/libs/ngx-datatable/ngx-datatable.scss';
+@import '../../../node_modules/@swimlane/ngx-datatable/release/assets/icons.css';
+
+.table-responsive {
+  overflow: visible;
+}
+
+.ngx-datatable {
+  overflow: visible !important;
+}
+
+.on-going {
+  color: green;
+}

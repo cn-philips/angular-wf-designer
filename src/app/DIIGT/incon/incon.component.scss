@@ -1,0 +1,17 @@
+.posi{
+  position: relative;
+}
+.myck{
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  text-align: right;
+}
+
+.product-info-actions {
+  text-align: right;
+  .ant-btn {
+    margin-left: 10px;
+  }
+}

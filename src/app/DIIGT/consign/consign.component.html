@@ -1,0 +1,77 @@
+<h4 class="font-weight-bold py-3">
+  <span>合同签署</span>
+</h4>
+<app-apploading [load]="load"></app-apploading>
+<igt-approval-flowline></igt-approval-flowline>
+<div class="tabs-box">
+  <div nz-row nzType="flex" nzJustify="end" nzAlign="middle" class="tabs-box-actions">
+    <div nz-col nzSpan="24">
+      <nz-form-item>
+        <nz-form-control [nzSm]="24" [nzXs]="24" style="text-align: right;">
+          <button nz-button *ngIf="dataBase.detail.flag== 0" nzType="default" style="margin-right:10px;"
+            nz-popconfirm nzTitle="你确定要执行退回的操作?" (nzOnConfirm)="save(0)">退回</button>
+          <button nz-button *ngIf="dataBase.detail.flag== 0" nzType="default" style="margin-right:10px;"
+            (click)="save(2)">保存</button>
+          <button nz-button *ngIf="dataBase.detail.flag== 0" nzType="primary" style="margin-right:10px;"
+            (click)="save(1)">提交</button>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+  <ngb-tabset type="tabs" [destroyOnHide]="false" class="nav-tabs-top nav-responsive-xl" [activeId]="activedId">
+    <!--marketBundleName-->
+    <ngb-tab id="tab0">
+      <ng-template ngbTabTitle><span class="tab-title"><strong>合同概要表</strong>&ensp;</span></ng-template>
+      <ng-template ngbTabContent>
+        <div class="card-body">
+          <app-preOrderBaseInfo [disa]="true" [dataBase]="dataBase" [showChek]="true" [conTable]="true">
+          </app-preOrderBaseInfo>
+          <div style="padding: 10px 0;text-align: right">
+            <button nz-button class="nextbtn ml6" nzType="primary" (click)="myskip('tab1')">下一步</button>
+          </div>
+        </div>
+      </ng-template>
+    </ngb-tab>
+    <!--Order Summary-->
+    <ngb-tab id="tab1">
+      <ng-template ngbTabTitle><span class="tab-title"><strong>Order Summary</strong></span></ng-template>
+      <ng-template ngbTabContent>
+        <div class="card-body">
+          <!--            <app-consign-order></app-consign-order>-->
+          <app-inorder-in [dataBase]="osData"></app-inorder-in>
+          <app-inorder-ex [dataBase]="osData" [disa]="true"></app-inorder-ex>
+          <div style="padding: 10px 0;text-align: right">
+            <button nz-button class="nextbtn ml6" nzType="primary" (click)="myskip('tab0')">上一步</button>
+            <button nz-button class="nextbtn ml6" nzType="primary" (click)="myskip('tab2')">下一步</button>
+          </div>
+        </div>
+      </ng-template>
+    </ngb-tab>
+    <!--审批记录-->
+    <ngb-tab id="tab2">
+      <ng-template ngbTabTitle><span class="tab-title"><strong>审批记录</strong></span></ng-template>
+      <ng-template ngbTabContent>
+        <div class="card-body">
+          <app-emp-acc></app-emp-acc>
+          <div style="padding: 10px 0;text-align: right">
+            <button nz-button class="nextbtn ml6" nzType="primary" (click)="myskip('tab1')">上一步</button>
+            <button nz-button class="nextbtn ml6" nzType="primary" (click)="myskip('tab3')">下一步</button>
+          </div>
+        </div>
+      </ng-template>
+    </ngb-tab>
+    <!--合同签署-->
+    <ngb-tab id="tab3">
+      <ng-template ngbTabTitle><span class="tab-title"><strong>合同签署</strong></span></ng-template>
+      <ng-template ngbTabContent>
+        <div class="card-body">
+          <app-consign-consign #childbase [dataBase]="signingData" [mergeData]="mergeData"></app-consign-consign>
+          <div style="padding: 10px 0;text-align: right">
+            <button nz-button class="nextbtn ml6" nzType="primary" (click)="myskip('tab2')">上一步</button>
+          </div>
+        </div>
+      </ng-template>
+    </ngb-tab>
+  </ngb-tabset>
+
+</div>

@@ -1,0 +1,18 @@
+<h4 class="font-weight-bold py-3">
+  <i nz-icon nzType="bar-chart" nzTheme="outline"></i><span class="span">统计数据</span>
+</h4>
+<div class="card-container">
+  <nz-card
+    [ngClass]="{ 'mtb1rem': true }">
+    <div nz-row nzType="flex" nzAlign="middle">
+       时间范围：<nz-range-picker   [(ngModel)]="dateRange" nzFormat="yyyy-MM-dd"  (nzOnOk)="onChangeDate($event)" nzShowTime></nz-range-picker>            
+    </div>
+    <div nz-row nzType="flex" class="pr" nzAlign="middle">
+     <span class="sp">区域范围:</span>  <!-- 区域范围：<nz-checkbox-group [(ngModel)]="checkOptionsOne" (ngModelChange)="changChbox(checkOptionsOne)"></nz-checkbox-group>             -->
+    </div>
+    <div  class="mainbox">
+      <nz-spin *ngIf="load"  style="z-index:999999;" nzSimple [nzSize]="'large'"></nz-spin>
+      <div id="main" class="main"></div>     
+    </div>
+  </nz-card>
+</div>

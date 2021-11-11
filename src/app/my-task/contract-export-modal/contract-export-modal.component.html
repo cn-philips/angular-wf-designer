@@ -1,0 +1,36 @@
+<div class="modal-header">
+  <h5  class="modal-title">合同列表</h5>
+  <button type="button" class="close" (click)="closeModal()">&times;</button>
+</div>
+
+<div class="modal-body">
+  <div ngbTabContent>
+    <div class="card-body">
+      <div class="demo-vertical-spacing">
+        <div class="row">
+          <div class="table-responsive">
+            <ngx-datatable #tableContract [rows]="contractTempList" [columnMode]="'force'" [headerHeight]="30"
+              [footerHeight]="0" [rowHeight]="'auto'" [reorderable]="false"  [limit]="99" [messages]="{emptyMessage:''}">
+              <ngx-datatable-column [sortable]="false" prop="name" name="合同模板名称" headerClass="text-center">
+                <ng-template let-value="value" ngx-datatable-cell-template>
+                  <span *ngIf="value">{{value}}</span>
+                </ng-template>
+              </ngx-datatable-column>
+              <ngx-datatable-column name="操作" headerClass="text-center"  cellClass="text-center">
+                <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+                  <a href="javascript:void(0)" class="btn btn-info btn-xs" (click)="exportContract(row)">导出</a>
+                </ng-template>
+              </ngx-datatable-column>
+            </ngx-datatable>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-footer" style="justify-content:center;">
+  <div>
+    <button type="button" class="btn btn-primary" (click)="closeModal()">返回</button>
+  </div>
+</div>

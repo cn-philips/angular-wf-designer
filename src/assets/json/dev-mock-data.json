@@ -1,0 +1,22 @@
+{
+    "dealerInfo": [
+        {
+            "type": "public",
+            "DMS_Code": "dc-001",
+            "Agreement_No": "an-2019-0001",
+            "status" : "1"
+        },
+        {
+            "type": "private",
+            "DMS_Code": "dc-001",
+            "Agreement_No": "an-2019-0002",
+            "status": "1"
+        },
+        {
+            "type": "poc",
+            "DMS_Code": "dc-001",
+            "Agreement_No": "an-2019-0003",
+            "status": "1"
+        }
+    ]
+}

@@ -1,0 +1,13 @@
+<div class="form-group">
+  <label class="ng-star-inserted">{{myLabel}}<span *ngIf="to.required">&ensp;*</span></label>
+  <ng-select [items]="options$ | async"
+    [class.is-invalid]="showError"
+    [placeholder]="to.placeholder" [typeahead]="search$" typeToSearchText="请输入名称搜索" loadingText="查询中..."
+    notFoundText=" " bindLabel="CustomerName" bindValue="CustomerName" (compositionstart)="changeImeFlag('0');"
+        (compositionend)="changeImeFlag('1');" [hideSelected]="true" [required]="to.required"
+    [formControl]="formControl">
+  </ng-select>
+  <div *ngIf="showError" class="invalid-feedback d-block">
+    <formly-validation-message [field]="field"></formly-validation-message>
+  </div>
+</div>

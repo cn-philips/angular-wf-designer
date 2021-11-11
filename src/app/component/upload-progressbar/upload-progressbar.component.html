@@ -1,0 +1,15 @@
+<div class="custom-mask" *ngIf="progressCount && progressCount != 0">
+</div>
+<div class="custom-progressbar"  *ngIf="progressCount && progressCount != 0">
+<!-- <div class="custom-progressbar"  *ngIf="true"> -->
+  <div class="card">
+    <div class="card-body" style="padding-bottom:8px;">
+      <p>
+        <ngb-progressbar [value]="progressCount" type="info" [striped]="true" [animated]="true" [showValue]="true"></ngb-progressbar>
+      </p>
+      <p class="text-center" style="margin-top: 16px;">
+        <button type="button" class="btn btn-sm btn-info" (click)="cancelUploading()" >取消上传</button>
+      </p>
+    </div>
+  </div>
+</div>

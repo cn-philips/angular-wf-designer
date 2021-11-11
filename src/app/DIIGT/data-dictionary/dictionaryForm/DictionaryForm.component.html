@@ -1,0 +1,53 @@
+<form nz-form [formGroup]="validateForm" (ngSubmit)="submitForm($event, validateForm.value)">
+  <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+    <div nz-col nzSpan="8">
+      <nz-form-item>
+        <nz-form-label [nzSm]="6" [nzXs]="24">字典组</nz-form-label>
+        <nz-form-control [nzSm]="14" [nzXs]="24">
+          <nz-select
+            formControlName="dictGroup"
+            style="width: 100%;"
+            nzShowSearch
+            nzAllowClear
+            nzPlaceHolder=""
+          >
+            <nz-option
+              *ngFor="let item of dictGrouplList"
+              [nzValue]="item.dictGroup"
+              [nzLabel]="item.dictGroup"
+            ></nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzSpan="8">
+      <nz-form-item>
+        <nz-form-label [nzSm]="6" [nzXs]="24">状态</nz-form-label>
+        <nz-form-control [nzSm]="14" [nzXs]="24">
+          <nz-select
+            formControlName="status"
+            style="width: 100%;"
+            nzShowSearch
+            nzAllowClear
+            nzPlaceHolder=""
+          >
+            <nz-option
+              *ngFor="let item of statusList"
+              [nzValue]="item.value"
+              [nzLabel]="item.label"
+            ></nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+  <div nz-row nzType="flex" nzJustify="end" nzAlign="middle">
+    <div nz-col nzSpan="16">
+      <nz-form-item style="text-align: right;">
+        <button nz-button [nzType]="'primary'" style="margin-left: 10px;">搜索</button>
+        <button nz-button [nzType]="'default'" style="margin-left: 10px;" (click)="resetForm()">清空</button>
+        <button nz-button [nzType]="'primary'" (click)="openModel($event)" style="margin-left: 10px;">新增</button>
+      </nz-form-item>
+    </div>
+  </div>
+</form>

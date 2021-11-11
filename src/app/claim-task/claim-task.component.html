@@ -1,0 +1,115 @@
+<h4 class="font-weight-bold py-3 mb-4">
+  <!--<span class="text-muted font-weight-light">Tables /</span>-->  认领任务
+</h4>
+
+<hr class="border-light container-m--x mt-0 mb-4">
+
+<div class="demo-vertical-spacing">
+  <div>
+    <!-- 由于服务端分页，查询另做 施工ing -->
+    <form #searchForm="ngForm">
+      <div class="row">
+        <div class="col-sm-6 col-md-5 col-lg-3 mb-3" >
+          <label class="form-label">任务名称</label>
+          <input ngModel class="form-control" type="text" name="taskName" >
+        </div>
+        <div class="col-sm-6 col-md-5 col-lg-3 mb-3" >
+          <label class="form-label">最终用户名称</label>
+          <input ngModel class="form-control" type="text" name="businessName" >
+        </div>
+        <div class="col-sm-6 col-md-5 col-lg-3 mb-3" >
+          <label class="form-label">审批编号</label>
+          <input ngModel class="form-control" type="text" name="businessNumber" >
+        </div>
+        <div class="col-sm-6 col-md-5 col-lg-3 mb-3" >
+          <label class="form-label">审批名称</label>
+          <select ngModel class="form-control custom-select"  name="processName">
+            <option value="" selected>&ensp;</option>
+            <option *ngFor="let item of processList" [value]="item.name">{{item.name}}</option>
+          </select>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-6 col-md-5 col-lg-3 mb-3" >
+          <label class="form-label">任务创建时间起</label>
+          <div class="input-group">
+            <input ngModel class="form-control" name="createTimeStart"
+                   ngbDatepicker
+                   navigation= "'select'"
+                   #d1="ngbDatepicker">
+            <div class="input-group-append">
+              <button class="input-group-text" (click)="d1.toggle()" type="button">
+                <span class="ion ion-md-calendar" style="cursor: pointer;"></span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6 col-md-5 col-lg-3 mb-3" >
+          <label class="form-label">任务创建时间止</label>
+          <div class="input-group">
+            <input ngModel class="form-control" name="createTimeEnd"
+                   ngbDatepicker
+                   navigation= "'select'"
+                   #d2="ngbDatepicker">
+            <div class="input-group-append">
+              <button class="input-group-text" (click)="d2.toggle()" type="button">
+                <span class="ion ion-md-calendar" style="cursor: pointer;"></span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6 col-md-5 col-lg-3 mb-3 ml-auto mt-auto">
+          <button type="button" class="btn btn-primary" (click)="applyFilter();">查询</button>
+          <button type="button" class="btn btn-info" (click)="resetForm();">重置</button>
+        </div>
+      </div>
+    </form>
+
+    <div class="table-responsive">
+      <ngx-datatable #table style="min-width: 500px"
+                     [rows]="rows"
+                     [loadingIndicator]="loadingIndicator"
+                     [columnMode]="'force'"
+                     [headerHeight]="43"
+                     [footerHeight]="'auto'"
+                     [rowHeight]="'auto'"
+                     [reorderable]="true"
+                     [selected]="selected"
+                     [selectionType]="'checkbox'"
+                     [externalPaging]="true"
+                     [externalSorting]="true"
+                     [count]="page.totalElements"
+                     [offset]="page.pageNumber"
+                     [limit]="page.pageSize"
+                     [sortType]="'single'"
+                     (page)="pageCallback($event)"
+                     (sort)="sortCallback($event)">
+        <ngx-datatable-column prop="businessNumber" name="审批编号" [headerClass]="getHeaderClass" [cellClass]="getCellClass"></ngx-datatable-column>
+        <ngx-datatable-column prop="businessName" name="业务名" [headerClass]="getHeaderClass" [cellClass]="getCellClass"></ngx-datatable-column>
+        <ngx-datatable-column prop="processDefinitionName" name="申请类型" [headerClass]="getHeaderClass"
+                              [cellClass]="getCellClass"></ngx-datatable-column>
+        <ngx-datatable-column prop="name" name="任务名称" [headerClass]="getHeaderClass" [cellClass]="getCellClass"></ngx-datatable-column>
+        <ngx-datatable-column prop="createTime" name="任务创建时间" [headerClass]="getHeaderClass" [cellClass]="getCellClass">
+          <ng-template let-value="value" ngx-datatable-cell-template>
+            {{value | date:'yyyy-MM-dd HH:mm:ss'}}
+          </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column prop="processCreateTime" name="申请发起时间" [headerClass]="getHeaderClass" [cellClass]="getCellClass">
+          <ng-template let-value="value" ngx-datatable-cell-template>
+            {{value | date:'yyyy-MM-dd HH:mm:ss'}}
+          </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column prop="owner" name="申请所有者" [headerClass]="getHeaderClass" [cellClass]="getCellClass">
+          <ng-template let-value="value" ngx-datatable-cell-template>
+            {{value}}
+          </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column name="操作" [sortable]="false" [headerClass]="getHeaderClass" [cellClass]="getCellClass">
+          <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+            <a href="javascript:void(0)" class="btn btn-primary btn-xs" (click)="claim($event,row)">认领任务</a>
+          </ng-template>
+        </ngx-datatable-column>
+      </ngx-datatable>
+    </div>
+  </div>
+</div>

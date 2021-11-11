@@ -1,0 +1,43 @@
+<h4 class="font-weight-bold py-3">
+  <span>合同子流程</span>
+</h4>
+<igt-approval-flowline></igt-approval-flowline>
+<hr class="border-light container-m--x mt-0 mb-4">
+<ngb-tabset type="tabs" [destroyOnHide]="false" class="nav-tabs-top nav-responsive-xl">
+  <ngb-tab id="pending-tab">
+    <ng-template ngbTabTitle><span class="tab-title"><strong>基础信息</strong></span></ng-template>
+    <ng-template ngbTabContent>
+      <div class="card-body">
+        <div class="demo-vertical-spacing">
+          <form #searchForm="ngForm">
+            <app-preOrderBaseInfo [(dataBase)]="dataBase" [disa]="true"></app-preOrderBaseInfo>
+          </form>
+        </div>
+      </div>
+    </ng-template>
+  </ngb-tab>
+  <ngb-tab id="complete-tab">
+    <ng-template ngbTabTitle><span class="tab-title"><strong>产品信息</strong></span></ng-template>
+    <ng-template ngbTabContent>
+      <div class="card-body">
+        <app-preOrderProductInfo [dataBase]="dataBase" [sofonoff]="true" [disa]="true" [ishow]="true"></app-preOrderProductInfo>
+      </div>
+    </ng-template>
+  </ngb-tab>
+  <ngb-tab id="complete-audit">
+    <ng-template ngbTabTitle><span class="tab-title"><strong>审批</strong></span></ng-template>
+    <ng-template ngbTabContent>
+      <div class="card-body">
+        <nz-card class="mtb1rem" nzTitle="审批记录">
+          <app-emp-acc></app-emp-acc>
+        </nz-card>
+      </div>
+    </ng-template>
+  </ngb-tab>
+</ngb-tabset>
+<!--  <nz-modal [(nzVisible)]="isVisibleWinCheck" nzTitle="中标确认校验结果" nzOkText="提交进单准备表" nzCancelText="取消" nzCentered nzWidth="900" (nzOnCancel)="handleCancelWinCheck()" (nzOnOk)="handleOkWinCheck()">-->
+<!--    <ng-container>-->
+<!--        <app-preOrderWinCheckTable [bidData]="bidData"></app-preOrderWinCheckTable>-->
+<!--    </ng-container>-->
+<!--  </nz-modal>-->
+

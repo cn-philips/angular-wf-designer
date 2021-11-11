@@ -1,0 +1,16 @@
+// @import "../../../../node_modules/ng-zorro-antd/ng-zorro-antd.min.css";
+
+
+.table-operations {
+  margin-bottom: 16px;
+  margin-right: 10px;
+}
+
+.table-operations > button {
+  margin-right: 8px;
+}
+
+::ng-deep .ant-select-dropdown {
+  top: 100% !important;
+  left: 0 !important;
+}

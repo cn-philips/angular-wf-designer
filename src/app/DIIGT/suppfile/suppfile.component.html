@@ -1,0 +1,69 @@
+<h4 class="font-weight-bold py-3">
+  <span>待补充文件上传</span>
+</h4>
+<igt-approval-flowline></igt-approval-flowline>
+<hr class="border-light container-m--x mt-0 mb-4">
+<div class="tabs-box">
+  <div nz-row nzType="flex" nzJustify="end" nzAlign="middle" class="tabs-box-actions">
+    <div nz-col nzSpan="24">
+      <nz-form-item>
+        <nz-form-control [nzSm]="24" [nzXs]="24" style="text-align: right;">
+          <!--暂时隐藏-->
+          <!-- <button nz-button style="margin-right:10px;"  nzType="default">取消</button>-->
+          <button nz-button *ngIf="infor.detail.status=='DBCWJSC'&&infor.detail.flag=='0'" style="margin-right:10px;"   nzType="default" (click)="save(0)">保存</button> 
+          <button nz-button *ngIf="infor.detail.status=='DBCWJSC'&&infor.detail.flag=='0'"  nzType="primary" (click)="save(1)">提交</button>
+      </nz-form-control>
+     </nz-form-item>
+    </div>
+  </div>
+  <ngb-tabset type="tabs" [destroyOnHide]="false" class="nav-tabs-top nav-responsive-xl">
+    <ngb-tab id="pending-tab">
+      <ng-template ngbTabTitle><span class="tab-title"><strong>合同概要表</strong></span></ng-template>
+      <ng-template ngbTabContent>
+        <div class="card-body">
+          <app-preOrderBaseInfo
+            [disa]="true"
+            [dataBase]="infor"
+            [showChek]="true"
+            [conTable]="true"
+            [defect]="defect"
+          >
+          </app-preOrderBaseInfo>
+        </div>
+      </ng-template>
+    </ngb-tab>
+    <ngb-tab id="complete-tab">
+      <ng-template ngbTabTitle><span class="tab-title"><strong>Order Summary</strong></span></ng-template>
+      <ng-template ngbTabContent>
+        <div class="card-body">
+          <app-inorder-in [dataBase]="dataBase"></app-inorder-in>
+          <app-inorder-ex [dataBase]="dataBase" [disa]="true"></app-inorder-ex>
+        </div>
+      </ng-template>
+    </ngb-tab>
+    <ngb-tab id="complete-pad">
+      <ng-template ngbTabTitle><span class="tab-title"><strong>合同签署</strong></span></ng-template>
+      <ng-template ngbTabContent>
+        <div class="card-body">
+          <app-consign-consign [dataBase]="signingData" [mergeData]="mergeData" [disa]="true"></app-consign-consign>
+        </div>
+      </ng-template>
+    </ngb-tab>
+    <ngb-tab id="complete-pads">
+      <ng-template ngbTabTitle><span class="tab-title"><strong>审批记录</strong></span></ng-template>
+      <ng-template ngbTabContent>
+        <div class="card-body">
+          <app-emp-acc></app-emp-acc>
+        </div>
+      </ng-template>
+    </ngb-tab>
+    <ngb-tab id="complete-padd">
+      <ng-template ngbTabTitle><span class="tab-title"><strong>OIT完成</strong></span></ng-template>
+      <ng-template ngbTabContent>
+        <div class="card-body">
+          <app-oitcomplete  [oitInfor]="oitData"></app-oitcomplete>
+        </div>
+      </ng-template>
+    </ngb-tab>
+  </ngb-tabset>
+</div>

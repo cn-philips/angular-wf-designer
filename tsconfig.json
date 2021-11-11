@@ -1,0 +1,30 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "outDir": "./dist/out-tsc",
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "target": "es5",
+    "module": "commonjs",
+    "allowJs": true,
+    "typeRoots": [
+      "node_modules/@types",
+      "src/typings.d.ts"
+    ],
+    "lib": [
+      "es2017",
+      "dom"
+    ]
+  },
+  "include": [
+    "./src",
+    "./node_modules/ng-autosize",
+    "./src/typings.d.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

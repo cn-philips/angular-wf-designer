@@ -1,0 +1,28 @@
+<h4 class="font-weight-bold py-3 mb-4">
+  <!--<span class="text-muted font-weight-light">Tables /</span>-->  管理员工具
+</h4>
+<hr class="border-light container-m--x mt-0 mb-4">
+<div class="demo-vertical-spacing">
+  <div>
+    <nz-tabset>
+      <nz-tab nzTitle="导入用户角色">
+        <app-upload-file [uploadManager]="uploadUserAndRoles"></app-upload-file>
+      </nz-tab>
+      <nz-tab nzTitle="导入纬度树">
+        <app-upload-file [uploadManager]="uploadDimensionTree"></app-upload-file>
+      </nz-tab>
+      <nz-tab nzTitle="管理首页提示">
+        <app-home-mention></app-home-mention>
+      </nz-tab>
+      <nz-tab nzTitle="流程管理">
+
+        <processtemplate-manager></processtemplate-manager>
+
+        <task-manager></task-manager>
+
+        <process-manager></process-manager>
+
+      </nz-tab>
+    </nz-tabset>
+  </div>
+</div>

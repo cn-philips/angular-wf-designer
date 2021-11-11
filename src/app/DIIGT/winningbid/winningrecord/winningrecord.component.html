@@ -1,0 +1,156 @@
+<nz-card class="mtb1rem" nzTitle="中标备案">
+    <div nz-row nzGutter="24" nzType="flex" nzJustify="start" nzAlign="top">
+        <div nz-col nzSpan="12">
+            <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+                <div nz-col nzSpan="24">
+                    <nz-form-item>
+                        <nz-form-label [nzSm]="12" [nzXs]="24">中标通知书</nz-form-label>
+                        <nz-form-control [nzSm]="12" [nzXs]="24">
+                            <a href="javascript:">附件1</a>
+                        </nz-form-control>
+                    </nz-form-item>
+                </div>
+                <div nz-col nzSpan="24">
+                    <nz-form-item>
+                        <nz-form-label [nzSm]="12" [nzXs]="24">上传投标及其他承诺文件（Direct Deal）</nz-form-label>
+                        <nz-form-control [nzSm]="12" [nzXs]="24">
+                            <a href="javascript:">附件1</a>
+                        </nz-form-control>
+                    </nz-form-item>
+                </div>
+                <div nz-col nzSpan="24">
+                    <nz-form-item>
+                        <nz-form-label [nzSm]="12" [nzXs]="24">参与投标声明函（Direct Deal）</nz-form-label>
+                        <nz-form-control [nzSm]="12" [nzXs]="24">
+                            <a href="javascript:">附件1</a>
+                        </nz-form-control>
+                    </nz-form-item>
+                </div>
+                <div nz-col nzSpan="24">
+                    <nz-form-item>
+                        <nz-form-label [nzSm]="12" [nzXs]="24">上传场地勘验报告</nz-form-label>
+                        <nz-form-control [nzSm]="2" [nzXs]="24">
+                            <a href="javascript:">附件1</a>
+                        </nz-form-control>
+                        <nz-form-control [nzSm]="10" [nzXs]="24">
+                            <label nz-checkbox nzDisabled [(ngModel)]="checked">预计机房完成日期小于6个月</label>
+                        </nz-form-control>
+                    </nz-form-item>
+                </div>
+                <div nz-col nzSpan="24">
+                    <nz-form-item>
+                        <nz-form-label [nzSm]="12" [nzXs]="24">中标价格</nz-form-label>
+                        <nz-form-control [nzSm]="6" [nzXs]="24">
+                            <input nz-input name="email" disabled type="email">
+                        </nz-form-control>
+                        <nz-form-control [nzSm]="6" [nzXs]="24">
+                            <nz-select style="width: 120px;margin-left:4px" [(ngModel)]="selectedValue" disabled nzAllowClear nzPlaceHolder="Choose">
+                                <nz-option nzValue="0" nzLabel="USD"></nz-option>
+                                <nz-option nzValue="1" nzLabel="RMB"></nz-option>
+                            </nz-select>
+                        </nz-form-control>
+                    </nz-form-item>
+                </div>
+                <div nz-col nzSpan="24">
+                    <nz-form-item>
+                        <nz-form-label [nzSm]="12" [nzXs]="24">需后补备案文件</nz-form-label>
+                        <nz-form-control [nzSm]="12" [nzXs]="24">
+                            <textarea disabled rows="4" nz-input></textarea>
+                        </nz-form-control>
+                    </nz-form-item>
+                </div>
+                <div nz-col nzSpan="24">
+                    <nz-form-item>
+                        <nz-form-label [nzSm]="12" [nzXs]="24">中标时间</nz-form-label>
+                        <nz-form-control [nzSm]="12" [nzXs]="24">
+                            <input disabled nz-input name="email" type="email">
+                        </nz-form-control>
+                    </nz-form-item>
+                </div>
+                <div nz-col nzSpan="24">
+                    <nz-form-item>
+                        <nz-form-label [nzSm]="12" [nzXs]="24">备注</nz-form-label>
+                        <nz-form-control [nzSm]="12" [nzXs]="24">
+                            <label nzDisabled nz-checkbox>中标通知书</label>
+                            <label nzDisabled nz-checkbox>中标公告</label>
+                            <label nzDisabled nz-checkbox>其它</label>
+                        </nz-form-control>
+                    </nz-form-item>
+                </div>
+            </div>
+            <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+                <div nz-col nzSpan="24">
+                    <nz-form-item>
+                        <nz-form-label [nzSm]="12" [nzXs]="24">中标产品信息</nz-form-label>
+                        <nz-form-control [nzSm]="12" [nzXs]="24">
+                            <div class="cheabox">
+                                <header>
+                                    <a href="javascript:">Opportunity 1</a>
+                                </header>
+                                <div>
+                                    <label nzDisabled nz-checkbox>Market Bundle1</label>
+                                </div>
+                                <div>
+                                    <label nzDisabled nz-checkbox>Market Bundle2</label>
+                                </div>
+                                <header>
+                                    <a href="javascript:">Opportunity 2</a>
+                                </header>
+                                <div>
+                                    <label nzDisabled nz-checkbox>Market Bundle1</label>
+                                </div>
+                                <div>
+                                    <label nzDisabled nz-checkbox>Market Bundle2</label>
+                                </div>
+                            </div>
+                        </nz-form-control>
+                    </nz-form-item>
+                </div>
+            </div>
+        </div>
+        <!-- <div nz-col nzSpan="12">
+            <nz-card class="mtb1rem" nzTitle="未中标">
+                <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+                    <div nz-col nzSpan="24">
+                        <nz-form-item>
+                            <nz-form-label [nzSm]="10" [nzXs]="24">上传场地勘验报告</nz-form-label>
+                            <nz-form-control [nzSm]="14" [nzXs]="24">
+                                <a href="javascript:">附件</a>
+                            </nz-form-control>
+                        </nz-form-item>
+                    </div>
+                    <div nz-col nzSpan="24">
+                        <nz-form-item>
+                            <nz-form-label [nzSm]="10" [nzXs]="24">中标价格</nz-form-label>
+                            <nz-form-control [nzSm]="7" [nzXs]="24">
+                                <input nz-input name="email" type="email">
+                            </nz-form-control>
+                            <nz-form-control [nzSm]="7" [nzXs]="24">
+                                <nz-select style="width:90%;margin-left:4px" [(ngModel)]="selectedValue" nzAllowClear nzPlaceHolder="Choose">
+                                    <nz-option nzValue="0" nzLabel="USD"></nz-option>
+                                    <nz-option nzValue="1" nzLabel="RMB"></nz-option>
+                                </nz-select>
+                            </nz-form-control>
+                        </nz-form-item>
+                    </div>
+                    <div nz-col nzSpan="24">
+                        <nz-form-item>
+                            <nz-form-label [nzSm]="10" [nzXs]="24">中标公司</nz-form-label>
+                            <nz-form-control [nzSm]="14" [nzXs]="24">
+                                <input nz-input name="email" type="email">
+                            </nz-form-control>
+                        </nz-form-item>
+                    </div>
+                    <div nz-col nzSpan="24">
+                        <nz-form-item>
+                            <nz-form-label [nzSm]="10" [nzXs]="24">备注</nz-form-label>
+                            <nz-form-control [nzSm]="14" [nzXs]="24">
+                                <input nz-input name="email" type="email">
+                            </nz-form-control>
+                        </nz-form-item>
+                    </div>
+                </div>
+            </nz-card>
+        </div> -->
+    </div>
+</nz-card>

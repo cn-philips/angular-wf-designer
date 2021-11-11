@@ -1,0 +1,37 @@
+<div class="demo-vertical-spacing">
+  <div>
+    <div class="table-responsive">
+      <ngx-datatable #table [columnMode]="'force'"
+                     [footerHeight]="'auto'"
+                     [headerHeight]="43"
+                     [limit]="10"
+                     [loadingIndicator]="loadingIndicator"
+                     [reorderable]="true"
+                     [rowClass]="getRowClass"
+                     [rowHeight]="'auto'"
+                     [rows]="rows"
+                     [selected]="selected"
+                     [selectionType]="'checkbox'"
+                     style="min-width: 500px">
+        <ngx-datatable-column [cellClass]="getCellClass" [headerClass]="getHeaderClass" name="状态">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            <nz-badge [nzStatus]="showStatue(row)" [nzText]="showStatueDisplay(row)"></nz-badge>
+          </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column [cellClass]="getCellClass" [headerClass]="getHeaderClass" name="审批节点"
+                              prop="name"></ngx-datatable-column>
+        <ngx-datatable-column [cellClass]="getCellClass" [headerClass]="getHeaderClass" name="审批人"
+                              prop="owner"></ngx-datatable-column>
+        <ngx-datatable-column [cellClass]="getCellClass" [headerClass]="getHeaderClass" name="操作"
+                              prop="simpleRouter"></ngx-datatable-column>
+        <ngx-datatable-column [cellClass]="getCellClass" [headerClass]="getHeaderClass" name="备注"
+                              prop="comment"></ngx-datatable-column>
+        <ngx-datatable-column [cellClass]="getCellClass" [headerClass]="getHeaderClass" name="完成时间" prop="endTime">
+          <ng-template let-value="value" ngx-datatable-cell-template>
+            {{value | date:'yyyy-MM-dd HH:mm:ss'}}
+          </ng-template>
+        </ngx-datatable-column>
+      </ngx-datatable>
+    </div>
+  </div>
+</div>

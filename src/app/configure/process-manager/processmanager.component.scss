@@ -1,0 +1,24 @@
+@import "../../../../node_modules/ng-zorro-antd/ng-zorro-antd.min.css";
+@import '../../../../node_modules/@swimlane/ngx-datatable/release/index.css';
+@import '../../../vendor/libs/ngx-datatable/ngx-datatable.scss';
+@import '../../../../node_modules/@swimlane/ngx-datatable/release/assets/icons.css';
+
+.table-operations {
+  margin-bottom: 16px;
+}
+
+.table-operations > button {
+  margin-right: 8px;
+}
+
+.table-responsive {
+  overflow: visible;
+}
+
+.modal-xl .modal-lg {
+  width: 95%;
+}
+
+.modal-xl .modal-content {
+  background-color: whitesmoke;
+}

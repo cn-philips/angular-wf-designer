@@ -1,0 +1,46 @@
+<div class="form-row">
+  <div class="form-group col-md-8 col-sm-12">
+    <ng-container *ngIf="!needComment">
+      <label class="form-label"><span *ngIf="mustRemark && !disabled" class="require">*</span>备注
+      </label>
+      <textarea rows=5 class="form-control" required [(ngModel)]="inputComment" [disabled]="disabled"></textarea>
+    </ng-container>
+    <ng-container *ngIf="needComment">
+      <label class="form-label"><span class="require">*</span>意见&ensp;
+        <div *ngIf="!disabled" ngbDropdown class="d-inline-flex">
+          <button class="btn btn-sm btn-primary" ngbDropdownToggle>快捷意见模板</button>
+          <div ngbDropdownMenu>
+            <a class="dropdown-item" href="javascript:void(0)" (click)="addComment($event)">同意</a>
+            <div *ngIf="reasonFromMasterdata.length > 0">
+              <div class="dropdown-divider"></div>
+              <ng-container *ngFor="let item of reasonFromMasterdata">
+                <a class="dropdown-item" href="javascript:void(0)" (click)="addComment($event)">{{item.Reject_Reason}}</a>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+      </label>
+      <textarea rows=5 class="form-control" required [(ngModel)]="inputComment" [disabled]="disabled"></textarea>
+      <!-- <div style="margin-top: 8px;">
+        <label>自定义cc抄送&nbsp;
+        </label>
+        <div class="d-inline-flex" *ngIf="!disabled">
+          <nz-select [(ngModel)]="selectedUser" style="width: 400px;" [nzSize]="'small'" nzShowSearch nzServerSearch
+            nzAllowClear nzPlaceHolder="搜索用户Email" [nzShowArrow]="false" (nzOnSearch)="searchEmail($event)"
+            (ngModelChange)="addEmail($event)">
+            <nz-option *ngFor="let option of userList" [nzLabel]="option.text" [nzValue]="option">
+            </nz-option>
+          </nz-select>
+        </div>
+        <textarea rows=2 class="form-control" placeholder="请使用英文分号分隔多个email地址" [(ngModel)]="inputCc" [disabled]="disabled"></textarea>
+      </div> -->
+      <div *ngIf="taskRouter">
+        <label class="form-label"><span class="require">*</span>操作</label>
+        <select class="form-control custom-select" [(ngModel)]="selectRouterValue" (change)="changeSelectRouterValue()" [disabled]="disabled">
+          <option *ngFor="let kv of taskRouter | keyvalue" [value]="kv.key">{{kv.value}}</option>
+        </select>
+      </div>
+    </ng-container>
+  </div>
+</div>
+

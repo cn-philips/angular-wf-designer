@@ -1,0 +1,10 @@
+@import '../../vendor/libs/ngx-contextmenu/ngx-contextmenu.scss';
+
+.dropdown-menu.show{
+    max-height: 400px;
+    overflow: auto;
+}
+
+input:-webkit-autofill {
+    background-color: white !important;
+}
