@@ -37,7 +37,9 @@ export class InorderExComponent implements OnInit {
       status:'',
     }
   }; //表格的基础信息
+  public rowspanht=1;
   public sampleRow=4;
+  public paymentOff:any=false;
   public enclosurFileList=[]
   public load=false;
   public widthConfig=['100px','100px','100px','100px']
@@ -70,10 +72,19 @@ export class InorderExComponent implements OnInit {
     this.viewData("enclosure", "enclosurFileList", this.dataBase.enclosureNames);
     if(this.dataBase)
     {
+      this.paymentMethod();
       if(this.dataBase.entryMode&&this.dataBase.entryMode == 'BIDDING')
       {
         this.getWinUrl();
-      }    
+      } 
+      if(this.infor.entryMode==''||this.infor.entryMode=='BIDDING'||(this.infor.sampleAuditFlag=='1'&&this.infor.entryMode=='STOCK'))
+      {
+          this.rowspanht=7;
+      }
+      else{
+        this.rowspanht=1;
+      }  
+      
     } 
       
   }
@@ -84,6 +95,100 @@ export class InorderExComponent implements OnInit {
     this.init();
     this.getDataBase();
     this.getfinancialList();
+  }
+
+  //付款条款列表的组合模式
+  public paymentMethod() {     
+    const params = {
+      dictGroup: '',
+    };
+    let applyTypeoff=false;
+    applyTypeoff=this.infor.entryMode=='BIDDING'||this.infor.entryMode=='STOCK'?true:false;
+    let applyType = this.infor.entryMode;
+    let clientType = this.infor.hospitalNature;
+    let tenderPriceCurrencys = this.infor.invoiceInformation;
+    let businessType = this.infor.businessModel;
+    if (applyTypeoff && clientType && tenderPriceCurrencys && businessType) {
+      if (applyType == "BIDDING" && businessType == "DIRECT" && tenderPriceCurrencys == "CNY" && clientType == "公立医院") {
+        params.dictGroup = 'BDCG';     
+      }
+      else if (applyType == 'BIDDING' && businessType == 'DIRECT' && tenderPriceCurrencys == 'USD' && clientType == '公立医院') {
+        params.dictGroup = 'BDUG';
+        
+      }
+      else if (applyType == 'BIDDING' && businessType == 'DIRECT' && tenderPriceCurrencys == 'CNY' && clientType == '民营医院') {
+        params.dictGroup = 'BDCM';
+        
+      }
+      else if (applyType == 'BIDDING' && businessType == 'DIRECT' && tenderPriceCurrencys == 'USD' && clientType == '民营医院') {
+        params.dictGroup = 'BDUM';
+       
+      }
+      else if (applyType == 'BIDDING' && businessType == 'DISTRIBUTOR' && tenderPriceCurrencys == 'USD' && clientType == '民营医院') {
+        params.dictGroup = 'BDisUM';
+      
+      }
+      else if (applyType == 'BIDDING' && businessType == 'DISTRIBUTOR' && tenderPriceCurrencys == 'CNY' && clientType == '民营医院') {
+        params.dictGroup = 'BDisCM';
+       
+      }
+      else if (applyType == 'BIDDING' && businessType == 'DISTRIBUTOR' && tenderPriceCurrencys == 'USD' && clientType == '公立医院') {
+        params.dictGroup = 'BDisUG';      
+      }
+      else if (applyType == 'BIDDING' && businessType == 'DISTRIBUTOR' && tenderPriceCurrencys == 'CNY' && clientType == '公立医院') {
+        params.dictGroup = 'BDisCG';     
+      }
+      else if(applyType == 'BIDDING' && businessType == 'DIRECT' && tenderPriceCurrencys == 'CNY' && clientType == '其他') {
+        params.dictGroup = 'BDCQ';     
+      }
+      else if (applyType == 'BIDDING' && businessType == 'DIRECT' && tenderPriceCurrencys == 'USD' && clientType == '其他') {
+        params.dictGroup = 'BDUQ';
+      
+      }
+      else if (applyType == 'BIDDING' && businessType == 'DISTRIBUTOR' && tenderPriceCurrencys == 'CNY' && clientType == '其他') {
+        params.dictGroup = 'BDisCQ';
+      
+      }
+      else if(applyType == 'BIDDING' && businessType == 'DISTRIBUTOR' && tenderPriceCurrencys == 'USD' && clientType == '其他') {
+        params.dictGroup = 'BDisUQ';
+       
+      }
+      else if(applyType == 'STOCK' && businessType == 'DISTRIBUTOR' && tenderPriceCurrencys == 'CNY') {
+        params.dictGroup = 'SDisC';
+        
+      }
+      else if(applyType == 'STOCK' && businessType == 'DISTRIBUTOR' && tenderPriceCurrencys == 'USD') {
+        params.dictGroup = 'SDisU';       
+      }
+    }   
+     
+    if (params.dictGroup != '') {      
+      this.http.post(`/act/ecom/dictData/queryGroupDictData`, params).subscribe((rest => {
+        if (rest.code === '0000') {
+          this.infor.paymentList = rest.data; 
+          if(this.infor.paymentProvision=='0'||this.infor.paymentProvision=='1')
+          {
+            let selectId=this.infor.paymentList.find(val=>val.remark==this.infor.paymentProvision); 
+            this.infor.paymentProvision=selectId.dictId
+          }     
+          let selectId=this.infor.paymentList.find(val=>val.dictId==this.infor.paymentProvision);         
+          if(selectId)
+          {
+            this.paymentOff=selectId.remark=='1'?true:false
+          }
+          else
+          {
+            this.paymentOff=false;
+            this.infor.paymentProvision="";
+          }         
+        }
+      }),(error=>{
+        this.message.create("error","请求异常");
+      }));
+    }
+    else{
+      this.infor.paymentList=null;
+    }
   }
    /**
    * @param   data 回显数据
@@ -160,17 +265,20 @@ export class InorderExComponent implements OnInit {
   //招标文件的编辑类型
   setType()
   {
-    if(this.infor.hospitalNature=='民营医院')
-    {
-      this.demandLetter="场地勘验报告";
+    if (this.infor.entryMode == 'STOCK' && (this.infor.userTeme == 'BV' || this.infor.userTeme == 'DXR')) {
+      this.demandLetter = "要货函";
     }
-    else{
-      if(this.infor.tenderNo!='其它类型')
-      {
-        this.demandLetter="要货函";
+    else {
+      if (this.infor.hospitalNature == '民营医院') {
+        this.demandLetter = "场地勘验报告";
       }
-      else{
-        this.demandLetter="场地勘验报告";
+      else {
+        if (this.infor.tenderNo != '其他类型') {
+          this.demandLetter = "要货函";
+        }
+        else {
+          this.demandLetter = "场地勘验报告";
+        }
       }
     }
   }
@@ -191,7 +299,10 @@ export class InorderExComponent implements OnInit {
   init()
   {
     this.validateForm = this.fb.group({
+      afterSales:new FormControl({value: 'Nancy',disabled:this.disas||this.flag==1}),
+      afterSalesRemarks:new FormControl({ value: 'Nancy', disabled:this.disa}), //是否售后文本框
       freeText:new FormControl({value: 'Nancy',disabled:this.disas||this.flag==1}),
+      afterSalesCheckFlag:new FormControl({value: 'Nancy',disabled:this.disa||this.flag==1}),
       confirmationFileCheckFlag:new FormControl({value: 'Nancy',disabled:this.disa||this.flag==1}),
       mrShieldingCompanyCheckFlag:new FormControl({value: 'Nancy',disabled:this.disa||this.flag==1}),
       performanceBondCheckFlag:new FormControl({value: 'Nancy',disabled:this.disa||this.flag==1}),
@@ -263,7 +374,8 @@ export class InorderExComponent implements OnInit {
                   status: '',
                 }
                 this.infor.detail.id=mainId;
-                this.infor.detail.status=status;                
+                this.infor.detail.status=status; 
+                this.infor.userTeme = this.infor.cteam;              
                 this.setBaseInfor();
                 this.setColSpanOfConfirmTable();
                 this.setType();
@@ -301,12 +413,18 @@ export class InorderExComponent implements OnInit {
   {
     if(this.infor.businessModel!='DIRECT')
     {
-      this.sampleRow = 4;
+      if(this.infor.tenderNo!='其他类型')
+        {
+          this.sampleRow = 4
+        }
+        else{
+          this.sampleRow =2;
+        }
     }
     else{
       if(this.infor.tenderNo!='其他类型')
         {
-          this.sampleRow = 3;
+          this.sampleRow = 2;
         }
         else{
           this.sampleRow =1;

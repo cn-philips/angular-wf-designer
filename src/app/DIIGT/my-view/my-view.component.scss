@@ -1,9 +1,9 @@
-:host {
-  background: #f5f5f5;
-  overflow: hidden;
-  padding: 24px;
-  display: block;
-}
+// :host {
+//   background: #f5f5f5;
+//   overflow: hidden;
+//   padding: 24px;
+//   display: block;
+// }
 
 .card-container ::ng-deep .ant-tabs-card .ant-tabs-content {
   height: 120px;
@@ -29,3 +29,4 @@
   background: #fff;
 }
 
+@import "../../../theme/common/dashboard.scss";

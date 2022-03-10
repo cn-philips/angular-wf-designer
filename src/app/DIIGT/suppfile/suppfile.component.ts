@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {decodeString, formatDatesNowMth, formatDatesNow} from '../../../assets/js/tools';
+import {decodeString, formatDatesNowMth, formatDatesNow,standardTime} from '../../../assets/js/tools';
 import {HttpService} from '../../services';
 import {NzMessageService} from 'ng-zorro-antd';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -73,8 +73,7 @@ export class SuppfileComponent implements OnInit {
      const  detailData=await this.getDataDetail();       
      const contractData=await this.getDataBase();
      const cpData=await this.getCpdata();
-     const orderData:any=await this.getOrderSummary(contractData,cpData);
-     orderData.distributor=orderData.agent;   
+     const orderData:any=await this.getOrderSummary(contractData,cpData);       
      this.mergeData=Object.assign(detailData,orderData,contractData);
      const getTemplates=await this.getTemplate();
      const getFormDetailsd= await this.getFormDetails(); 
@@ -120,9 +119,14 @@ export class SuppfileComponent implements OnInit {
           this.dataBase = res.data
           this.dataBase.customerRequestLetter = formatDatesNow(this.dataBase.customerRequestLetter);
           this.dataBase.contractConfirmationDate = formatDatesNow(this.dataBase.contractConfirmationDate);
-          resolve(res.data);          
+          resolve(res.data); 
+          this.dataBase.poolEndDate=standardTime(param.poolEndDate);//外贸易公司日期  
+          this.dataBase.contractEndDate=standardTime(param.contractEndDate);//经销商日期          
           this.dataBase.entryMode = param.entryMode //进单模式
-          this.dataBase.region = param.region;//区域
+          this.dataBase.team=param.team;//team
+          this.dataBase.region = param.region;//大区域
+          this.dataBase.smallArea = param.smallArea;//小区域
+          this.dataBase.endUserId=param.endUserId; //最终用户id
           this.dataBase.businessModel = param.businessModel; //业务模式
           this.dataBase.bidWinningNotice = param.bidWinningNotice;//中标通知书
           this.dataBase.distributor = param.tenderingCompany; //投标公司
@@ -136,6 +140,7 @@ export class SuppfileComponent implements OnInit {
           this.dataBase.contractPrice = param.contractPrice //合同价格
           this.dataBase.paymentProvision = param.paymentProvision //付款条款
           this.dataBase.referenceId = param.referenceId; //添加referenceId
+          this.dataBase.dealFormId =param.dealFormId;//dealFromid
           this.dataBase.contractDdpStatus = param.contractDdpStatus; //合同买方的ddpstatus
           this.dataBase.foreignTradeCompany = param.foreignTradeCompany; //外贸易公司
           this.dataBase.invoiceInformation = param.invoiceInformation;   //币制
@@ -143,22 +148,28 @@ export class SuppfileComponent implements OnInit {
           this.dataBase.relationshipLink = params.businessOpportunityHierarchyLink // 商机层级关系链接
           this.dataBase.priceRange = params.samplingInspection // 是否抽样审核
           this.dataBase.sofonFile = params.sofonFile;
-          this.dataBase.countryOrigin = params.countryOrigin // 原产地
+          this.dataBase.countryOrigin = params.countryOrigin // 原产地中文
+          this.dataBase.countryOriginEn = params.countryOriginEn?params.countryOriginEn:""; // 原产地英文
+         
+          this.dataBase.medicalDeviceName=params.medicalDeviceName;//医疗器械名称
+          this.dataBase.nmpaRegistrationExpried=params.nmpaRegistrationExpried;//NMPA证有效期截止日期       
+          this.dataBase.financialProgramme=params.financialProgramme; //金融方案价格  
+          this.dataBase.financialProgrammeTxt=params.financialProgrammeTxt; //金融方案文本框的值
+          this.dataBase.tradeInCost=params.tradeInCost;//tradeIn总额
+          this.dataBase.financialProgrammeCost=params.financialProgrammeCost; //金融方案总金额
+          this.dataBase.agreementNo=param.agreementNo; //经销商协议号;
+          this.dataBase.dealerCode=param.dealerCode; //经销商code;
+          this.dataBase.centralized=param.centralized; //集采
+          this.dataBase.actualSales=param.actualSales; //实际销售人          
           this.dataBase.finalSofonQuotation = params.sofonNo //finalSofonQuotation
           this.dataBase.tradeList = params.cosOppTradeIns!=null&&params.cosOppTradeIns!=""&&params.cosOppTradeIns.length>0?params.cosOppTradeIns:[{name:"",costs1:""}]; // tradeIn
-          this.dataBase.warrantyList =params.cosOppExtendedWarranties!=null&&params.cosOppExtendedWarranties!=""&&params.cosOppExtendedWarranties.length>0?params.cosOppExtendedWarranties:[{posIdName:"",posLocalCtp:""}] // 延长保修
+          this.dataBase.warrantyList =params.cosOppExtendedWarranties!=null&&params.cosOppExtendedWarranties!=""&&params.cosOppExtendedWarranties.length>0?params.cosOppExtendedWarranties:[] // 延长保修
+          this.dataBase.otherList=params.otherList!=null&&params.otherList!=""&&params.otherList.length>0?params.otherList:[] //其他预留
           this.dataBase.productList = params.cosOppThirdParties!=null&&params.cosOppThirdParties!=""&&params.cosOppThirdParties.length>0?params.cosOppThirdParties:[{thirdPartyName:"",total:""}] // 第三方       
           this.dataBase.application = params.applications!=null&&params.applications!=""&&params.applications.length>0?params.applications:[{productName:"",localCtp1:""}];
           this.dataBase.applicationPrice = params.applicationPrice;
           this.dataBase.applications=params.applications!=null&&params.applications!=""&&params.applications.length>0?params.applications:[{productName:"",localCtp1:""}]      
-          if (this.dataBase.warrantyList && this.dataBase.warrantyList.length > 0) {
-            this.dataBase.warrantyList.map(res => {
-              res.name = res.posIdName;
-              res.price = res.posLocalCtp;
-              delete res.posIdName;
-              delete res.posLocalCtp;
-            });
-          }
+          
           if (this.dataBase.productList && this.dataBase.productList.length > 0) {
             this.dataBase.productList.map(res => {
               res.name = res.thirdPartyName;
@@ -326,7 +337,7 @@ export class SuppfileComponent implements OnInit {
         this.message.create("error","请上传投标文件");
          return;
       }   
-      if(this.infor.endUserContract==""||this.infor.endUserContract==undefined||this.infor.endUserContract==null)
+      if((this.infor.endUserContract==""||this.infor.endUserContract==undefined||this.infor.endUserContract==null)&&this.infor.businessModel=='DISTRIBUTOR')
       {
         this.message.create("error","请上传最终用户合同");
          return;

@@ -1,12 +1,22 @@
-<h4 class="font-weight-bold py-3">
-  <span>主页</span>
-</h4>
-<nz-card class="mtb1rem" *ngIf="menuList.length>0">
-  <ng-container *ngFor="let item of menuList;let m=index;">
-    <button nzSize='large' nz-button [nzType]="m === 0 ? 'primary' : 'default'" [ngClass]="m === 0 ? 'ml0' : 'ml10'" (click)="linkToApplyTender(item)"><i nz-icon type="file-add"></i>新建{{item.jurisdictionName}}</button>
-
-
-  </ng-container>
+<nz-card class="title_warpper" *ngIf="menuList.length > 0">
+  <div>
+    <h4 class="font-weight-bold">
+      <span>主页</span>
+    </h4>
+  </div>
+  <div>
+    <ng-container *ngFor="let item of menuList; let m = index">
+      <button
+        nzSize="large"
+        nz-button
+        [nzType]="m === 0 ? 'primary' : 'default'"
+        [ngClass]="m === 0 ? 'ml0' : 'ml10'"
+        (click)="linkToApplyTender(item)"
+      >
+        <i nz-icon type="file-add"></i>新建{{ item.jurisdictionName }}
+      </button>
+    </ng-container>
+  </div>
 </nz-card>
 
 <!-- <nz-card class="mtb1rem" >
@@ -33,35 +43,59 @@
           <div class="badge badge-primary">{{ myTasksTotal }}</div>
         </div>
       </h5>
-      <div class="card-body" style="height: 450px;padding:3px 18px">
+      <div class="card-body" style="height: 650px; padding: 3px 18px">
         <ng-container *ngIf="myTasksTotal == 0">
-          <div style="text-align: center">
-            <span>Content Was Empty</span>
-          </div>
+          <div class="card-empty-icon" style="text-align: center"></div>
         </ng-container>
         <ng-container *ngIf="myTasksTotal > 0">
-          <div *ngFor="let it of mytaks; index as i;" class="media bottom">
-            <div *ngIf="i < 5" class="media-body" (click)="goToDetail(it,0)">
-              <div class="subject-content" >
+          <div *ngFor="let it of mytaks; index as i" class="media bottom">
+            <div *ngIf="i < 5" class="media-body" (click)="goToDetail(it, 0)">
+              <div class="subject-content">
                 <strong class="font-weight-semibold global-1line">
                   <div
                     class="lines-1"
                     nz-tooltip
-                    [nzTitle]="it.type=='ZBSQ'?it.biddingName:(it.biddingNameJd?it.biddingNameJd:it.biddingNameJdStock)"
+                    [nzTitle]="
+                      it.type == 'ZBSQ'
+                        ? it.biddingName
+                        : it.biddingNameJd
+                        ? it.biddingNameJd
+                        : it.biddingNameJdStock
+                    "
                   >
-                  {{it.type=='ZBSQ'?(it.bidding_name?it.bidding_name:"N/A"):(it.biddingNameJd?it.biddingNameJd:(it.biddingNameJdStock?it.biddingNameJdStock:"N/A"))}}
+                    {{
+                      it.type == "ZBSQ"
+                        ? it.bidding_name
+                          ? it.bidding_name
+                          : "N/A"
+                        : it.biddingNameJd
+                        ? it.biddingNameJd
+                        : it.biddingNameJdStock
+                        ? it.biddingNameJdStock
+                        : "N/A"
+                    }}
                   </div>
                 </strong>
-                <div class="global-1line"> {{it.process_status|ProcessStatusPipe}}{{it.process_status&&it.task_status?'-':""}}{{it.task_status|ProcessStatusPipe}}</div>
-                <div class="global-1line">{{ProAppType(it.applyType)}}</div>
+                <div class="global-1line">
+                  {{ it.process_status | ProcessStatusPipe
+                  }}{{ it.process_status && it.task_status ? "-" : ""
+                  }}{{ it.task_status | ProcessStatusPipe }}
+                </div>
+                <div class="global-1line">{{ ProAppType(it.applyType) }}</div>
               </div>
-              <small class="data-muted global-1line">{{it.processTime | TimeFormatePipe}}</small>
+              <small class="data-muted global-1line">{{
+                it.processTime | TimeFormatePipe
+              }}</small>
             </div>
           </div>
         </ng-container>
       </div>
-      <a href="javascript:void(0)" class="card-footer d-block text-center text-dark small font-weight-semibold"
-         [routerLink]="['/igt/my-task']">SHOW MORE</a>
+      <a
+        href="javascript:void(0)"
+        class="card-footer d-block text-center text-dark small font-weight-semibold"
+        [routerLink]="['/igt/my-task']"
+        >SHOW MORE</a
+      >
     </div>
   </div>
   <!--我发起的-->
@@ -76,42 +110,65 @@
           <div class="badge badge-primary">{{ myInitiateTotal }}</div>
         </div>
       </h5>
-      <div class="card-body" style="height: 450px;padding:3px 18px">
+      <div class="card-body" style="height: 650px; padding: 3px 18px">
         <ng-container *ngIf="myInitiateTotal == 0">
-          <div style="text-align: center">
-            <span>Content Was Empty</span>
-          </div>
+          <div class="card-empty-icon" style="text-align: center"></div>
         </ng-container>
         <ng-container *ngIf="myInitiateTotal > 0">
-          <div *ngFor="let it of myinitiate; index as i;" class="media bottom">
-            <div *ngIf="i < 5" class="media-body" (click)="goToDetail(it,1)">
-              <div class="subject-content" >
+          <div *ngFor="let it of myinitiate; index as i" class="media bottom">
+            <div *ngIf="i < 5" class="media-body" (click)="goToDetail(it, 1)">
+              <div class="subject-content">
                 <strong class="font-weight-semibold global-1line">
                   <div
                     class="lines-1"
                     nz-tooltip
-                    [nzTitle]="it.type=='ZBSQ'?it.biddingName:(it.biddingNameJd?it.biddingNameJd:it.biddingNameJdStock)"
+                    [nzTitle]="
+                      it.type == 'ZBSQ'
+                        ? it.biddingName
+                        : it.biddingNameJd
+                        ? it.biddingNameJd
+                        : it.biddingNameJdStock
+                    "
                   >
-                  {{it.type=='ZBSQ'?(it.bidding_name?it.bidding_name:"N/A"):(it.biddingNameJd?it.biddingNameJd:(it.biddingNameJdStock?it.biddingNameJdStock:"N/A"))}}
+                    {{
+                      it.type == "ZBSQ"
+                        ? it.bidding_name
+                          ? it.bidding_name
+                          : "N/A"
+                        : it.biddingNameJd
+                        ? it.biddingNameJd
+                        : it.biddingNameJdStock
+                        ? it.biddingNameJdStock
+                        : "N/A"
+                    }}
                   </div>
                 </strong>
-                <div class="global-1line"> {{it.process_status|ProcessStatusPipe}}{{it.process_status&&it.task_status?'-':""}}{{it.task_status|ProcessStatusPipe}}</div>
-                <div class="global-1line">{{ProAppType(it.applyType)}}</div>
+                <div class="global-1line">
+                  {{ it.process_status | ProcessStatusPipe
+                  }}{{ it.process_status && it.task_status ? "-" : ""
+                  }}{{ it.task_status | ProcessStatusPipe }}
+                </div>
+                <div class="global-1line">{{ ProAppType(it.applyType) }}</div>
               </div>
-              <small class="data-muted global-1line">{{it.processTime | TimeFormatePipe}}</small>
+              <small class="data-muted global-1line">{{
+                it.processTime | TimeFormatePipe
+              }}</small>
             </div>
           </div>
         </ng-container>
       </div>
       <!-- <a href="javascript:void(0)" class="card-footer d-block text-center text-dark small font-weight-semibold"
          [routerLink]="['/cktake']">SHOW MORE</a> -->
-         <a href="javascript:void(0)" class="card-footer d-block text-center text-dark small font-weight-semibold"
-         [routerLink]="['/igt/my-started']">SHOW MORE</a>
+      <a
+        href="javascript:void(0)"
+        class="card-footer d-block text-center text-dark small font-weight-semibold"
+        [routerLink]="['/igt/my-started']"
+        >SHOW MORE</a
+      >
     </div>
   </div>
 
   <!--我的草稿-->
-
 
   <div class="col-sm-3">
     <div class="card">
@@ -124,37 +181,61 @@
           <div class="badge badge-primary">{{ myDraftTotal }}</div>
         </div>
       </h5>
-      <div class="card-body" style="height: 450px;padding:3px 18px">
+      <div class="card-body" style="height: 650px; padding: 3px 18px">
         <ng-container *ngIf="myDraftTotal == 0">
-          <div style="text-align: center">
-            <span>Content Was Empty</span>
-          </div>
+          <div class="card-empty-icon" style="text-align: center"></div>
         </ng-container>
-        <ng-container *ngIf="myDraftTotal > 0" >
-          <div *ngFor="let it of mydraft; index as i;" class="media bottom">
-            <div  class="media-body" (click)="goToDetail(it,2)">
+        <ng-container *ngIf="myDraftTotal > 0">
+          <div *ngFor="let it of mydraft; index as i" class="media bottom">
+            <div class="media-body" (click)="goToDetail(it, 2)">
               <div class="subject-content">
                 <strong class="font-weight-semibold global-1line">
                   <div
                     class="lines-1"
                     nz-tooltip
-                    [nzTitle]="it.type=='ZBSQ'?it.biddingName:(it.biddingNameJd?it.biddingNameJd:it.biddingNameJdStock)"
+                    [nzTitle]="
+                      it.type == 'ZBSQ'
+                        ? it.biddingName
+                        : it.biddingNameJd
+                        ? it.biddingNameJd
+                        : it.biddingNameJdStock
+                    "
                   >
-                  {{it.type=='ZBSQ'?(it.bidding_name?it.bidding_name:"N/A"):(it.biddingNameJd?it.biddingNameJd:(it.biddingNameJdStock?it.biddingNameJdStock:"N/A"))}}
+                    {{
+                      it.type == "ZBSQ"
+                        ? it.bidding_name
+                          ? it.bidding_name
+                          : "N/A"
+                        : it.biddingNameJd
+                        ? it.biddingNameJd
+                        : it.biddingNameJdStock
+                        ? it.biddingNameJdStock
+                        : "N/A"
+                    }}
                   </div>
                 </strong>
-                <div class="global-1line"> {{it.process_status|ProcessStatusPipe}}{{it.process_status&&it.task_status?'-':""}}{{it.task_status|ProcessStatusPipe}}</div>
-                <div class="global-1line">{{ProAppType(it.applyType)}}</div>
+                <div class="global-1line">
+                  {{ it.process_status | ProcessStatusPipe
+                  }}{{ it.process_status && it.task_status ? "-" : ""
+                  }}{{ it.task_status | ProcessStatusPipe }}
+                </div>
+                <div class="global-1line">{{ ProAppType(it.applyType) }}</div>
               </div>
-              <small class="data-muted global-1line">{{it.processTime | TimeFormatePipe}}</small>
+              <small class="data-muted global-1line">{{
+                it.processTime | TimeFormatePipe
+              }}</small>
             </div>
           </div>
         </ng-container>
       </div>
       <!-- <a href="javascript:void(0)" class="card-footer d-block text-center text-dark small font-weight-semibold"
          [routerLink]="['/cktake']">SHOW MORE</a> -->
-         <a href="javascript:void(0)" class="card-footer d-block text-center text-dark small font-weight-semibold"
-         [routerLink]="['/igt/my-draft']">SHOW MORE</a>
+      <a
+        href="javascript:void(0)"
+        class="card-footer d-block text-center text-dark small font-weight-semibold"
+        [routerLink]="['/igt/my-draft']"
+        >SHOW MORE</a
+      >
     </div>
   </div>
   <!--我的委托-->
@@ -166,39 +247,38 @@
           <span>我的委托</span>
         </div>
         <div class="card-header-elements ml-auto">
-          <div class="badge badge-primary">{{ myun.length }}</div>
+          <div class="badge badge-primary">{{ myEntrust }}</div>
         </div>
       </h5>
-      <div class="card-body" style="height: 450px;padding:3px 18px">
+      <div class="card-body" style="height: 650px; padding: 3px 18px">
         <ng-container *ngIf="myun.length == 0">
-          <div style="text-align: center">
-            <span>Content Was Empty</span>
-          </div>
+          <div class="card-empty-icon" style="text-align: center"></div>
         </ng-container>
         <ng-container *ngIf="myun.length > 0">
-          <div *ngFor="let it of myun; index as i;" class="media bottom">
-            <div *ngIf="i < 5" class="media-body">
+          <div *ngFor="let it of myun; index as i" class="media bottom">
+            <div *ngIf="i < 5" class="media-body" (click)="toEntrust(it)">
               <div class="subject-content">
                 <strong class="font-weight-semibold global-1line">
-                  <div
-                    class="lines-1"
-                    nz-tooltip
-                    [nzTitle]="it.type=='ZBSQ'?it.biddingName:(it.biddingNameJd?it.biddingNameJd:it.biddingNameJdStock)"
-                  >
-                  {{it.type=='ZBSQ'?it.biddingName:(it.biddingNameJd?it.biddingNameJd:it.biddingNameJdStock)}}
+                  <div class="lines-1">
+                    {{ it.entrustNo }}
                   </div>
                 </strong>
                 <div class="global-1line">
-                  {{it.infor}}
+                  <!--                  {{it.infor}}-->
+                  {{ "项目所有人变更" }}
                 </div>
               </div>
-              <small class="data-muted global-1line">{{it.time | date:'yyyy-MM-dd'}}</small>
+              <small class="data-muted global-1line">{{
+                it.createTime | date: "yyyy-MM-dd"
+              }}</small>
             </div>
           </div>
         </ng-container>
       </div>
       <a href="javascript:void(0)" class="card-footer d-block text-center text-dark small font-weight-semibold"
-         [routerLink]="['/cktake']">SHOW MORE</a>
+         >SHOW MORE</a>
+<!--      <a href="javascript:void(0)" class="card-footer d-block text-center text-dark small font-weight-semibold"-->
+<!--         [routerLink]="['/igt/entrust']">SHOW MORE</a>-->
     </div>
   </div>
 </div>

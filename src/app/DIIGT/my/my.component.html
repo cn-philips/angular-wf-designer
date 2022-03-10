@@ -1,23 +1,48 @@
-<h4 class="font-weight-bold py-3">
-  <span>我的任务</span>
-</h4>
+<nz-card class="title_warpper">
+  <div>
+    <h4 class="font-weight-bold">
+      <span>我的任务</span>
+    </h4>
+  </div>
+</nz-card>
 <div class="demo-vertical-spacing">
   <div>
-    <ngb-tabset type="tabs" [destroyOnHide]="true" (tabChange)="changeMytaskTab($event);" class="nav-tabs-top nav-responsive-xl">
+    <ngb-tabset
+      type="tabs"
+      [destroyOnHide]="true"
+      (tabChange)="changeMytaskTab($event)"
+      class="nav-tabs-top nav-responsive-xl"
+    >
       <ngb-tab id="pending-tab">
-        <ng-template ngbTabTitle><span class="tab-title"><strong>我的待办</strong>&ensp;<span *ngIf="pendingTaskCount > 0" [ngClass]="isPending ? 'badge badge-pill badge-danger' : 'badge badge-pill badge-secondary'">{{pendingTaskCount}}</span></span></ng-template>
+        <ng-template ngbTabTitle
+          ><span class="tab-title"
+            ><strong>我的待办</strong>&ensp;<span
+              *ngIf="pendingTaskCount > 0"
+              [ngClass]="
+                isPending
+                  ? 'badge badge-pill badge-danger'
+                  : 'badge badge-pill badge-secondary'
+              "
+              >{{ pendingTaskCount }}</span
+            ></span
+          ></ng-template
+        >
         <ng-template ngbTabContent>
           <div class="card-body">
-            <app-my-ppending (pendingTaskEvent)="onPendingTaskEvent($event)"></app-my-ppending>
-<!--            <my-task-pending (pendingTaskEvent)="onPendingTaskEvent($event)"></my-task-pending>-->
+            <app-my-ppending
+              (pendingTaskEvent)="onPendingTaskEvent($event)"
+            ></app-my-ppending>
+            <!--            <my-task-pending (pendingTaskEvent)="onPendingTaskEvent($event)"></my-task-pending>-->
           </div>
         </ng-template>
       </ngb-tab>
       <ngb-tab id="complete-tab">
-        <ng-template ngbTabTitle><span class="tab-title"><strong>我的已办</strong></span></ng-template>
+        <ng-template ngbTabTitle
+          ><span class="tab-title"><strong>我的已办</strong></span></ng-template
+        >
         <ng-template ngbTabContent>
           <div class="card-body">
-<!--            <my-task-complete></my-task-complete>-->
+            <!--            <my-task-complete></my-task-complete>-->
             <app-my-complete></app-my-complete>
           </div>
         </ng-template>

@@ -10,7 +10,9 @@
 .ngx-datatable {
   overflow: visible !important;
 }
-
+.mlg{
+  margin:10px 10px 10px -20px;
+}
 .modal-xl .modal-lg {
   max-width: 95%;
 }
@@ -101,4 +103,11 @@ button{
   margin-top: 10px !important;
   color: #1e70cd !important;
   display: inline-block;
+}
+.threeTable{
+  // min-width: none;
+  // width:1000px;
+}
+.detailFlex{
+  margin:0px 10px 0px 10px;
 }

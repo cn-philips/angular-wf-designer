@@ -69,7 +69,7 @@
   }
 }
 
-.ant-form-item-label>label {
+.ant-form-item-label > label {
   padding-right: 0.5rem;
 }
 
@@ -98,6 +98,9 @@
 .step {
   text-align: right;
   margin: 10px 0;
+  &.alignleft {
+    text-align: left;
+  }
 }
 
 .global-ant-table-empty {
@@ -197,7 +200,7 @@ button:focus {
 }
 
 //table
-.ant-table-thead>tr>th {
+.ant-table-thead > tr > th {
   .ant-table-header-column {
     width: 100% !important;
   }
@@ -237,7 +240,7 @@ button:focus {
 }
 
 .down {
-  color: #00cc66 !important;  
+  color: #5b8f22 !important;
   white-space: normal !important;
 }
 
@@ -307,7 +310,8 @@ button:focus {
       white-space: nowrap;
 
       .nav-link {
-        .tab-title {}
+        .tab-title {
+        }
       }
     }
   }
@@ -322,23 +326,23 @@ button:focus {
     top: unset;
     right: unset;
     box-shadow: rgb(100, 100, 100) 0 0 2rem;
-    padding: .5rem 1rem;
+    padding: 0.5rem 1rem;
     align-items: center !important;
-    height: unset // pointer-events: none;
+    height: unset; // pointer-events: none;
   }
 }
 
 .nopdtp {
   padding-top: 0px !important;
 }
-.pr{
+.pr {
   position: relative;
-  .rfno{
-    position:absolute;
-    top:17px;
-    left:150px;
+  .rfno {
+    position: absolute;
+    top: 17px;
+    left: 150px;
   }
-  .title{
+  .title {
     font-weight: 600;
   }
 }
@@ -357,32 +361,62 @@ button:focus {
   text-align: left !important;
 
   /*文本显示3行*/
-  &.ant-btn>span {
-      width:100%;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      word-break: break-all;
-      display: block;
-      white-space: nowrap;
-    }
+  &.ant-btn > span {
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-all;
+    display: block;
+    white-space: nowrap;
   }
- .form-control{
-    &:disabled,
+}
+.form-control {
+  &:disabled,
   &[readonly] {
     opacity: 1;
-     color: rgba(0,0,0,.25) !important;
+    color: rgba(0, 0, 0, 0.25) !important;
   }
+}
+.innerbox {
+  white-space: pre-wrap;
+}
+.maxupload {
+  width: 340px;
+  margin: 0 auto;
+}
+.maxuploadto {
+  width: 340px;
+}
+.ant-upload-list-item-name {
+  max-width: 150px;
+}
+
+.largery,
+.warning {
+  color: #999 !important;
+  margin-top: 1px;
+  font-size: 12px;
+  line-height: 18px;
+  white-space: nowrap;
+  text-align: left;
+
+  /* 手机端适配：largery控件手机端超长横向滚动 */
+  @media screen and (max-width: $screen-xs-max) {
+    overflow-x: auto;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE 10+ */
+    &::-webkit-scrollbar {
+      display: none; /* Chrome Safari */
+    }
   }
-  .innerbox{
-    white-space: pre-wrap;
-  }
-  .maxupload{
-    width:340px;
-    margin:0 auto;
-  }
-  .maxuploadto{
-    width:340px;
-  }
- .ant-upload-list-item-name{
-    max-width: 340px;
-  }
+}
+.warning {
+  color: #fff !important;
+  background: #e98300;
+  padding: 3px 6px;
+  border-radius: 3px;
+  animation: 1s rainbow ease-in-out;
+}
+.tranf90 {
+  transform: rotate(90deg);
+}

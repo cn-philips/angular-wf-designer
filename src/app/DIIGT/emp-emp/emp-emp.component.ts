@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { HttpService } from '../../services';
 import { NzMessageService, UploadFile } from 'ng-zorro-antd';
 import { ActivatedRoute, Router } from '@angular/router';
-import { getuuid, disreduce, getType } from "../../../assets/js/tools"
+import {getuuid, disreduce, getType, decodeString} from '../../../assets/js/tools';
 
 @Component({
   selector: 'app-emp-emp',
@@ -14,7 +14,7 @@ export class EmpEmpComponent implements OnInit {
   rem_mess = false;
   authorization_file = false;
   @Input() data: any = {};
-  @Input() mainid: any;
+  public mainid: any;
   bidData: any = [];
   public textLen:any=255;//文本输入限制长度
   pvtextLen:any=100;//PV付款文件文本输入限制长度
@@ -30,11 +30,13 @@ export class EmpEmpComponent implements OnInit {
     remarks: "",  //备注
     status: 0, //status
     supplementaryDocumentId: "", //补充授权文件
+    exportControlFileId: '' // 出口管制文件
     // updateTime: "2021-05-11T02:11:27.593Z",
     // updateUser: "string",
     //createTime: "2021-05-11T02:11:27.593Z"
   };
   fileAuthorizatioList:[]; //授权文件列表
+  public exportControlFileList: []; // 出口管制文件
   fileSupplementList:[]; //补充文件列表
   load:any=false;
   public load2: any = false;
@@ -78,6 +80,7 @@ export class EmpEmpComponent implements OnInit {
   {
     this.viewData('authorizationDocumentId', 'fileAuthorizatioList', 'authorizationDocumentName');
     this.viewData('supplementaryDocumentId', 'fileSupplementList', 'supplementaryDocumentName');
+    this.viewData('exportControlFileId', 'exportControlFileList', 'exportControlFileName');
   }
   viewData(data, fileList, name)
   {
@@ -97,6 +100,7 @@ export class EmpEmpComponent implements OnInit {
 
   }
   ngOnInit() {
+    this.mainid = decodeString(this.activeRoute.queryParams['_value'].id);
     this.flag = this.activeRoute.queryParams['_value'].flag;
     this.changeCp();
     this.getData();
@@ -129,6 +133,21 @@ export class EmpEmpComponent implements OnInit {
       return false;
     }
     this.upload('fileAuthorizatioList', file, 'authorizationDocumentId');
+    return false;
+  }
+  // 出口管制文件
+  public beforeExportControlFileUpload = (file: UploadFile): boolean => {
+    const isLt2M = file.size / 1024 / 1024 < 100; // 文件大小不超过100M
+    const fileType = getType(file);
+    if (fileType === 'exe' || fileType === 'bat') {
+      this.message.create('error', '上传文件格式错误!');
+      return false;
+    }
+    if (!isLt2M) {
+      this.message.create('error', '文件大小不超过100M');
+      return false;
+    }
+    this.upload('exportControlFileList', file, 'exportControlFileId');
     return false;
   }
   //上传文件下载
@@ -215,6 +234,7 @@ export class EmpEmpComponent implements OnInit {
     params.BMClist = '';
     params.BMCExpert = '';
     params.AppExpert = '';
+    params.distributorAgreement = '';
     this.pdfSRC = params;
     this.isPdf = true;
   }
@@ -331,56 +351,43 @@ export class EmpEmpComponent implements OnInit {
   selectClick(index, i) {
     let oppResult = false;
     let market = false;
-    let hospitat = false; //客户
-    let person = false; //申请人
-    let checkArr=[]; //用于验证的数组
-    let search=this.bidData[index].searchResult[i]; //当前选中search;
+    let hospitat = false; // 客户
+    let person = false; // 申请人
+    let checkArr = []; // 用于验证的数组
+    let search = this.bidData[index].searchResult[i]; // 当前选中search;
     let id = search.id;
-    // 获取选中的id
-    let ckid = [];
     this.bidData.map(res => {
       res.isCheak && checkArr.push(res);
     });
-    this.bidData[index].searchResult.map(res => {
-      res.temUser = false;
-    });
+
+    // 取消其他选中
+    for (let i = 0; i < this.bidData.length; i++) {
+      if (this.bidData[i]) {
+        this.bidData[i].searchResult.map( e => {
+          // e.isDisable = false;
+          if (id == this.bidData[i].select && i != index) {
+            this.bidData[i].select = null;
+          }
+        });
+      }
+    }
     search.temUser = true; // 表明当前选中
-    // 筛选出选中
-    this.bidData.map(res => {
-      if (res.searchResult) {
-        res.searchResult.map( e => {
-          e.isDisable = false;
-          if (e.temUser) {
-            ckid.push(e.id);
-          }
-        });
-      }
-    });
-    this.bidData.map(res => {
-      res.isCheak && checkArr.push(res);
-      // 禁用已选中
-      if (res.searchResult) {
-        res.searchResult.map( e => {
-          if (ckid.indexOf(e.id) != -1) {
-            e.isDisable = true;
-          }
-        });
-      }
-    });
+    this.InitDisableAll();
     const opportunityId = this.bidData[index].opportunityId;
     const opportunityIdNow = search.opportunityId;
     const marketBundleName = this.bidData[index].marketBundleName;
     const marketBundleNameNow = search.marketBundleName;
-    const hospitalName = search.hospitalName; //中标客户;
-    let bidApplicant = search.bidApplicant; //中标申请人
+    const hospitalName = search.hospitalName; // 中标客户
+    let bidApplicant = search.bidApplicant; // 中标申请人
     this.bidData[index].orderByCustomerNameCp = hospitalName;
     this.bidData[index].winPerson = bidApplicant;
-    const orderByCustomerName = this.bidData[index].orderByCustomerName//投标客户
-    let appPerson = this.bidData[index].appPerson//投标申请人
+    const orderByCustomerName = this.bidData[index].orderByCustomerName; // 投标客户
+    let appPerson = this.bidData[index].appPerson; // 投标申请人
     oppResult = opportunityId == opportunityIdNow ? true : false;
     market = marketBundleName == marketBundleNameNow ? true : false;
     // hospitat = orderByCustomerName == hospitalName ? true : false;
-    hospitat = search.hospitalId == search.no ? true : false;
+    // hospitat = search.hospitalId == search.no ? true : false;
+    hospitat = this.data.hospitalId == search.hospitalId ? true : false;
     if (bidApplicant) {
       bidApplicant = bidApplicant.toLowerCase();
     }
@@ -390,16 +397,14 @@ export class EmpEmpComponent implements OnInit {
     person = bidApplicant == appPerson ? true : false;
     if (oppResult && market && hospitat && person) {
       this.bidData[index].checkResult = true;
-      this.bidData[index].checkResultReasons = "";
-      let check=checkArr.every(x=>x.checkResult)  //验证是否全部通过
-      if(check)
-      {
-        this.verifiOff=false;
+      this.bidData[index].checkResultReasons = '';
+      let check = checkArr.every(x => x.checkResult) // 验证是否全部通过
+      if (check) {
+        this.verifiOff = false;
       }
-    }
-    else {
+    } else {
       this.bidData[index].checkResult = false;
-      this.verifiOff=true;
+      this.verifiOff = true;
     }
     if (!oppResult) {
       this.bidData[index].checkResultReasons = 'opportunityId不匹配';
@@ -419,6 +424,80 @@ export class EmpEmpComponent implements OnInit {
     }
 
   }
+
+  public selectUnClick(index, i) {
+    const search = this.bidData[index].searchResult[i]; // 当前选中search;
+    search.temUser = false;
+    this.bidData[index].checkResult = false;
+
+    this.InitDisableAll();
+    // this.trunResultDisableAll(index, false);
+  }
+  public CkVerifiOff() {
+    if (this.bidData && this.bidData.length > 0) {
+      let ck = true;
+      for (let i = 0; i < this.bidData.length; i++) {
+        if (this.bidData[i].checkResult != true) {
+          ck = false;
+          break;
+        }
+      }
+      return ck;
+    }
+    return false;
+  }
+
+  public trunResultDisableAll(index, value) {
+    if (this.bidData && this.bidData.length > 0 && this.bidData[index]) {
+      this.bidData[index].searchResult.map(e => {
+        e.isDisable = value;
+        if (value == false) {
+          e.temUser = value;
+        }
+      });
+    }
+  }
+  public InitDisableAll() {
+    let ckid = [];
+    // this.bidData.map(res => {
+    //   res.isCheak && checkArr.push(res);
+    // });
+    // this.bidData[index].searchResult.map(res => {
+    //   res.temUser = false;
+    // });
+    this.bidData.map(res => {
+      if (res.searchResult) {
+        res.searchResult.map( e => {
+          e.isDisable = false;
+        });
+      }
+    });
+    // 筛选出选中
+    for (let i = 0; i < this.bidData.length; i++) {
+      if (this.bidData[i]) {
+        this.bidData[i].searchResult.map( e => {
+          // e.isDisable = false;
+          if (e.temUser) {
+            ckid.push(e.id);
+            this.trunResultDisableAll(i, true);
+          }
+        });
+      }
+    }
+    this.bidData.map(res => {
+      // res.isCheak && checkArr.push(res);
+      // 禁用已选中
+      if (res.searchResult) {
+        res.searchResult.map( e => {
+          if (ckid.indexOf(e.id) != -1) {
+            e.isDisable = true;
+          }
+        });
+      }
+    });
+
+  }
+
   handleCancelWinCheck() {
     this.showCP = false;
     this.verifiOff=true;
@@ -443,20 +522,16 @@ export class EmpEmpComponent implements OnInit {
      * end
      */
   }
-  //单选框判断是否显示cp的结果
-  changeCp()
-  {
+  // 单选框判断是否显示cp的结果
+  changeCp() {
     console.log(this.data.businessType);
-    if(this.param.isCheck==1&&this.data.businessType=='DIRECT'&&this.data.baseDataFrom=='CRM')
-    {
-      this.showBtnCp=true;
-    }
-    else
-    {
-      this.showBtnCp=false;
+    if (this.param.isCheck == 1 && this.data.businessType === 'DIRECT' && (this.data.baseDataFrom === 'CRM' || this.data.baseDataFrom === 'CP Simulation')) {
+      this.showBtnCp = true;
+    } else {
+      this.showBtnCp = false;
     }
   }
-  //提交确认
+  // 提交确认
   save(e) {
     this.rem_mess = false;
     this.authorization_file = false;
@@ -468,8 +543,8 @@ export class EmpEmpComponent implements OnInit {
         return;
       }
     }
-    //授权文件验证, 确认授权时校验
-    if (e == 1){
+    // 授权文件验证, 确认授权时校验
+    if (e == 1) {
       if (!this.param.authorizationDocumentId){
         this.authorization_file = true;
         return;
@@ -502,9 +577,12 @@ export class EmpEmpComponent implements OnInit {
         this.param.supplementaryDocumentName = e.data.supplementaryDocumentName;
         this.param.authorizationDocumentId = e.data.authorizationDocumentId;
         this.param.authorizationDocumentName = e.data.authorizationDocumentName;
+        this.param.exportControlFileId = e.data.exportControlFileId;
+        this.param.exportControlFileName = e.data.exportControlFileName;
       }
       this.viewData('supplementaryDocumentId', 'fileSupplementList', 'supplementaryDocumentName');
       this.viewData('authorizationDocumentId', 'fileAuthorizatioList', 'authorizationDocumentName');
+      this.viewData('exportControlFileId', 'exportControlFileList', 'exportControlFileName');
     });
   }
 

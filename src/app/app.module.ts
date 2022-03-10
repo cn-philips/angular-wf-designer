@@ -103,6 +103,7 @@ import {NumberThousandth} from './pipes/number-thousandth.pipe';
 import{ProcessCompany} from './pipes/process-company.pipe';
 import{proceessAuthor}from'./pipes/proceess-author.pipe';
 import{MyDraftComponents} from './DIIGT/my-draft/my-draft.component';
+import {StatusProject} from './pipes/status-project.pipe';
 // *******************************************************************************
 // Guards
 import {AuthGuard} from './guards/auth-guard.service';
@@ -269,6 +270,17 @@ import { MyViewFormComponent } from './DIIGT/my-task/my-view-form/my-view-form.c
 import { MyViewTableComponent } from './DIIGT/my-task/my-view-table/my-view-table.component';
 import { SupportFileUpComponent } from './DIIGT/support-file-up/support-file-up.component';
 import { TreeboxComponent } from './DIIGT/components/treebox/treebox.component';
+import { EndUserListComponent } from './DIIGT/preOrder/end-user-list/end-user-list.component';
+import { VerMessComponent } from './DIIGT/components/ver-mess/ver-mess.component';
+import { EmpEmpAppComponent } from './DIIGT/emp-emp-app/emp-emp-app.component';
+import { TableShowComponent } from './DIIGT/components/table-show/table-show.component';
+import { ConfirmComponent } from './DIIGT/components/confirm/confirm.component';
+import { EntrustComponent } from './DIIGT/entrust/entrust.component';
+import { ChangeOnwerComponent } from './DIIGT/change-onwer/change-onwer.component';
+import { ConfirmVersionComponent } from './DIIGT/components/confirm-version/confirm-version.component';
+import { ChangeSceneComponent } from './DIIGT/change-scene/change-scene.component';
+import { ApproveChangeComponent } from './DIIGT/complete-oit/approve-change/approve-change.component';
+import { ChangeRecordComponent } from './DIIGT/components/change-record/change-record.component';
 
 
 // registerLocaleData(localeCn, localeCnExtra);
@@ -480,7 +492,19 @@ registerLocaleData(zh);
     MyViewTableComponent,
     ProcessThird,
     SupportFileUpComponent,
-    TreeboxComponent, 
+    TreeboxComponent,
+    EndUserListComponent,
+    VerMessComponent,
+    EmpEmpAppComponent,
+    TableShowComponent,
+    ConfirmComponent,
+    EntrustComponent,
+    ChangeOnwerComponent,
+    ConfirmVersionComponent,
+    ChangeSceneComponent,
+    ApproveChangeComponent,
+    ChangeRecordComponent,
+    StatusProject
   ],
 
   imports: [

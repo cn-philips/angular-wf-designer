@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit,Input } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import {HttpService} from '../../services';
 import {Router} from '@angular/router';
@@ -18,6 +18,7 @@ import { resetComponentState } from '@angular/core/src/render3/instructions';
   styleUrls: ['./emp-acc.component.scss'],
   providers: [ProcessStatusPipe,TimeFormatePipe],
 })
+
 export class EmpAccComponent implements OnInit {
   id = '';
   listOfData = [];
@@ -28,17 +29,17 @@ export class EmpAccComponent implements OnInit {
     private http: HttpService,
     private message: NzMessageService,
   ) { }
-
+  @Input() public disa = false;
   ngOnInit() {
     this.getTableData();
   }
   
-  checkHtml(htmlStr) {
-    if(htmlStr)
+  checkHtml(htmlStr) { 
+       
+    if(htmlStr&&htmlStr!='null')
     {
       var  reg = /<[^>]+>/g;
       return reg.test(htmlStr);
-
     }
    
 }
@@ -53,9 +54,12 @@ export class EmpAccComponent implements OnInit {
   }
 
   getTableData() {
-    // 审批记录
+    // 审批记录    
+    let status=this.activatedRouter.queryParams['_value'].status;
+    let mainBusinessID=((status=='change_oit_approval'||status=='change_oit')&&this.disa)?decodeString(this.activatedRouter.queryParams['_value'].mainId):decodeString(this.activatedRouter.queryParams['_value'].id);
+
     const params = {
-      mainBusinessID: decodeString(this.activatedRouter.queryParams['_value'].id),
+      mainBusinessID:mainBusinessID,
     };
     this.http.post(`/act/process/getProcessWorkHisInfo`, params).subscribe(rest => {
       if (rest.code === '0000') {

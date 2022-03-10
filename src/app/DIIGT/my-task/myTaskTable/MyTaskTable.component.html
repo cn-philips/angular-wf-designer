@@ -1,3 +1,8 @@
+<app-apploading [load]="load"></app-apploading>
+<div style="height: 40px; line-height: 40px" *ngIf="flag == 0 && isMyToDo && (isOA || isBidding || isWinConfirm)">
+  <nz-switch [(ngModel)]="openCheckbox"></nz-switch><label style="margin: 0 20px">批量处理</label>
+  <button *ngIf="openCheckbox" nz-button [nzType]="'primary'" (click)="openAssignShowoff()">转派</button>
+</div>
 <nz-table
   #expandTable
   [nzData]="listOfMapData"
@@ -18,17 +23,26 @@
 >
   <thead>
   <tr>
+    <th nzWidth="50px" *ngIf="openCheckbox">
+      <label
+             [nzChecked]="AllCheck(expandTable.data)"
+             (nzCheckedChange)="CheckAll($event, expandTable.data)"
+             nz-checkbox
+             style="display: inline-block;"
+      >
+      </label>
+    </th>
     <th nzWidth="200px" [nzLeft]="this.utils.isMobile()?null:'0px'"> Ref No</th>
     <th nzWidth="200px">任务状态</th>
     <th nzWidth="200px">医院名称</th>
     <th nzWidth="200px">销售</th>
+    <th nzWidth="300px">本地名称(Market Bundle)</th>
+    <th nzWidth="200px">业务模式</th>
     <th nzWidth="300px">项目名称</th>
     <th nzWidth="300px">招标编号</th>
-    <th nzWidth="300px">本地名称(Market Bundle)</th>
     <th nzWidth="300px">投标公司</th>
     <th nzWidth="200px">提交时间</th>
-    <th nzWidth="200px">项目信息</th>
-    <th nzWidth="200px">业务模式</th>
+<!--    <th nzWidth="200px">项目信息</th>-->
     <th nzWidth="150px">进单模式</th>
     <th nzWidth="150px">进单状态</th>
     <th nzWidth="200px">招标授权模式</th>
@@ -44,6 +58,7 @@
   <ng-container *ngFor="let data of expandTable.data">
     <ng-container *ngFor="let item of mapOfExpandedData[data.key]">
       <tr *ngIf="(item.parent && item.parent.expand) || !item.parent">
+        <td nzWidth="50px" *ngIf="openCheckbox"><label nz-checkbox [(ngModel)]="item.isCheck" [nzDisabled]="item.children"></label></td>
         <!-- Ref No -->
         <td nzWidth="200px"
           [nzLeft]="this.utils.isMobile()?null:'0px'"
@@ -67,8 +82,21 @@
         </td>
         <!-- 销售 -->
         <td nzWidth="200px" style="word-break: break-all;">
-          <div class="innerbox">{{item.sale}}</div>
+          <div class="innerbox">{{emailToName(item.sale)}}</div>
         </td>
+        <!-- 产品名称 -->
+        <td nzWidth="300px">
+          <div
+            class="lines-2"
+            style="width: 268px;"
+            nz-tooltip
+            [nzTitle]="item.type === 'ZBSQ' ? item.product_name : item.productNameJd"
+          >
+            {{ item.type === 'ZBSQ' ? item.product_name : item.productNameJd }}
+          </div>
+        </td>
+        <!-- 业务模式 -->
+        <td nzWidth="200px">{{item.type==="ZBSQ"?(item.business_type|ProcessModel):(item.businessTypeJd | ProcessModel)}}</td>
         <!-- 项目名称 -->
         <td nzWidth="300px">
           <div
@@ -81,33 +109,20 @@
          </div>
         </td>
         <td nzWidth="300px">{{item.type=='ZBSQ'?item.bidding_no:item.biddingNoJd }}</td>
-        <!-- 产品名称 -->
-        <td nzWidth="300px">
-          <div
-            class="lines-2"
-            style="width: 268px;"
-            nz-tooltip
-            [nzTitle]="item.type === 'ZBSQ' ? item.product_name : item.productNameJd"
-          >
-            {{ item.type === 'ZBSQ' ? item.product_name : item.productNameJd }}
-          </div>
-        </td>
         <!-- 投标公司 -->
         <td nzWidth="300px">{{item.type=='ZBSQ'?item.bidding_name1:item.biddingCompanyNameJd}}</td>
         <!-- 提交时间 -->
         <td nzWidth="200px">{{ item.processTime | TimeFormatePipe}}</td>
         <!-- 项目信息 -->
-        <td nzWidth="200px">
-          <a
-            *ngFor="let information of item.projectIformations; index as i;"
-            style="display: block;text-decoration: underline;"
-            [href]="information.link"
-          >
-            {{ item.type=='ZBSQ' ? information.name : item.projectNameJd}}
-          </a>
-        </td>
-        <!-- 业务模式 -->
-        <td nzWidth="200px">{{item.type==="ZBSQ"?(item.business_type|ProcessModel):(item.businessTypeJd | ProcessModel)}}</td>
+<!--        <td nzWidth="200px">-->
+<!--          <a-->
+<!--            *ngFor="let information of item.projectIformations; index as i;"-->
+<!--            style="display: block;text-decoration: underline;"-->
+<!--            [href]="information.link"-->
+<!--          >-->
+<!--            {{ item.type=='ZBSQ' ? information.name : item.projectNameJd}}-->
+<!--          </a>-->
+<!--        </td>-->
         <!-- 进单模式 -->
         <td nzWidth="150px">{{ ProJdType(item.jdType) }}</td>
         <!-- 进单状态 -->
@@ -132,6 +147,7 @@
         <td nzWidth="280px"
           nzRight="0px"
         >
+
           <!--进单oa and 场地审核-->
           <button
             *ngIf="item.task_status === 'DCDSH'||item.task_status === 'DOACS'"
@@ -159,7 +175,7 @@
           >{{ flag === 0&&item.processor.indexOf(user)!=-1? (item.task_status | ProcessStatusPipe) : '查看'}}</button>
           <!--已中标确认-->
           <button
-            *ngIf="item.task_status === 'YZBQR'||item.task_status === 'YZBQRYBCWJ'"
+            *ngIf="item.task_status === 'YZBQR'||item.task_status === 'YZBQRYBCWJ'||item.task_status === 'BIDCANCELLED'"
             style="display: block;margin: 1rem 1rem 1rem 0;"
             nz-button
             nzSize="small"
@@ -200,7 +216,7 @@
           >{{ flag === 0&&item.processor.indexOf(user)!=-1? (item.task_status | ProcessStatusPipe) : '查看'}}</button>
           <!--合同子流程审核  查看-->
           <button
-            *ngIf="item.task_status === 'DZLCSH'||item.task_status === 'JDEND'||item.task_status === 'CANCELLED'"
+            *ngIf="item.task_status === 'DZLCSH'||item.task_status === 'JDEND'||item.task_status === 'CANCELLED'||item.task_status==='CLOSED'"
             style="display: block;margin: 1rem 1rem 1rem 0;"
             nz-button
             nzSize="small"
@@ -209,7 +225,7 @@
           >查看</button>
           <button
             *ngIf="item.task_status === 'OITENDDBCWJSC'"
-            style="display: block;margin: 1rem 1rem 1rem 0;"
+            style="display: inline-block;margin: 1rem 1rem 1rem 0;"
             nz-button
             nzSize="small"
             nzType="primary"
@@ -227,7 +243,7 @@
           <!--待OIT文件上传-->
           <button
             *ngIf="item.task_status === 'OITEND'"
-            style="display: block;margin: 1rem 1rem 1rem 0;"
+            style="display: inline-block;margin: 1rem 1rem 1rem 0;"
             nz-button
             nzSize="small"
             nzType="primary"
@@ -256,7 +272,7 @@
           <!--OA审核-->
           <!--特批进单审核-->
           <button
-            *ngIf="item.task_status === 'DXSBMSH' || item.task_status === 'DXSBM2JSH' || item.task_status === 'DOAJDQR' || item.task_status ==='DHTOASH' || item.task_status ==='DFBSH' || item.task_status ==='DTPJDSH'"
+            *ngIf="item.task_status === 'DXSBMSH' || item.task_status === 'DXSBM2JSH' || item.task_status === 'DOAJDQR' || item.task_status ==='DHTOASH' || item.task_status ==='DFBSH' || item.task_status ==='DTPJDSH'||item.task_status ==='cancel_oa_leader_approval'||item.task_status ==='cancel_sales_approval'||item.task_status==='reject_sales_approval'||item.task_status==='close_dm_approval'||item.task_status==='close_oa_leader_approval'||item.task_status==='reject_oa_leader_approval'"
             style="display: block;margin: 1rem 1rem 1rem 0;"
             nz-button
             nzSize="small"
@@ -264,9 +280,9 @@
             (click)="goExamineOrder(item)"
           >{{ flag === 0&&item.processor.indexOf(user)!=-1? (item.task_status | ProcessStatusPipe) : '查看'}}</button>
           <!--修改合共概要表-->
-          <!--取消进单-->
+          <!--取消进单或者关闭合同概要表-->
           <button
-            *ngIf="item.task_status === 'CANCELLEDSUB'"
+            *ngIf="item.task_status === 'CANCELLEDSUB'||item.task_status==='CLOSEDSUB'"
             style="display: block;margin: 1rem 1rem 1rem 0;"
             nz-button
             nzSize="small"
@@ -302,7 +318,7 @@
           <!--待补充文件上传-->
           <button
             *ngIf="item.task_status === 'DBCWJSC'"
-            style="display: block;margin: 1rem 1rem 1rem 0;"
+            style="display: inline-block;margin: 1rem 1rem 1rem 0;"
             nz-button
             nzSize="small"
             nzType="primary"
@@ -358,7 +374,7 @@
             (click)="goToBid(item)"
           >查看</button>
           <button
-            *ngIf="(item.task_status === 'OITEND'||item.task_status==='DBCWJSC'||item.task_status==='OITENDDBCWJSC')&&flag===1&&item.dealerAudit==='1'&&(!item.oaName==1 || (item.oaName==1 && (item.subProStatusTime == null || item.subProStatusTime == '')))"
+            *ngIf="(item.task_status === 'OITEND'||item.task_status==='DBCWJSC'||item.task_status==='OITENDDBCWJSC')&&flag===1&&item.dealerAudit==='1'&&(item.oaName!=1 || (item.oaName==1 && (item.subProStatusTime == null || item.subProStatusTime == '')))"
             style="display: block;margin: 1rem 1rem 1rem 0;"
             nz-button
             nzSize="small"
@@ -373,7 +389,26 @@
             nzType="primary"
             (click)="goCompleteOit(item,'realTime')"
           >上传SO#</button>
-
+          <!--改单审批-->
+            <button
+              *ngIf="(item.task_status === 'change_oit_approval'||item.task_status ==='change_oit')"
+              style="display: block;margin: 1rem 1rem 1rem 0;"
+              nz-button
+              nzSize="small"
+              nzType="primary"
+              (click)="goChangeApproval(item)"
+            >{{ flag === 0&&item.processor.indexOf(user)!=-1? (item.task_status | ProcessStatusPipe) : '查看'}}</button>
+          <!--发起改单-->
+          <button
+            *ngIf="(item.task_status === 'DBCWJSC'||item.task_status === 'OITEND'||item.task_status === 'OITENDDBCWJSC')&&isMyStart"
+            style="display:inline-block;margin: 1rem 1rem 1rem 0;"
+            nz-button
+            nzSize="small"
+            nzType="primary"
+            (click)="changeOrder(item)"
+          >
+          发起改单
+        </button>
         </td>
       </tr>
     </ng-container>
@@ -381,3 +416,41 @@
   </tbody>
 </nz-table>
 <ng-template #totalTemplate let-total> 数据总条数 {{ total }} </ng-template>
+<nz-modal [(nzVisible)]="isShow" nzWidth="650px" nzTitle="发起改单" (nzOnOk)="isAgregentOk()"  (nzOnCancel)="isAgreCancels()" >
+  <app-confirm-version #child [infor]="showData" ></app-confirm-version>
+</nz-modal>
+
+<!--转派弹出框-->
+<nz-modal
+  *ngIf="flag == 0"
+  [(nzVisible)]="assignShowoff"
+  nzWidth="600px"
+  nzTitle="任务转派"
+  (nzOnCancel)="cancelModeal()"
+  (nzOnOk)="subAssign()"
+  [nzOkLoading]="subAssignLoading"
+>
+  <ng-container>
+<!--    <div style="color: black;font-size: 16px">请选择任务转派给</div>-->
+    <div>
+      <nz-form-label style="width: 20%" nzRequired>角色</nz-form-label>
+      <nz-form-control style="width: 70%; display: inline-block">
+        <nz-select style="width: 100%" [(ngModel)]="role" (ngModelChange)="roleChange()">
+          <ng-container *ngFor="let item of roleList">
+            <nz-option *ngIf="ckRole(item.value)" [nzValue]="item.value" [nzLabel]="item.name"></nz-option>
+          </ng-container>
+        </nz-select>
+      </nz-form-control>
+    </div>
+    <div style="margin-top: 20px">
+      <nz-form-label style="width: 20%" nzRequired>接收人</nz-form-label>
+      <nz-form-control style="width: 70%; display: inline-block">
+        <nz-select style="width: 100%" [(ngModel)]="receiver" nzShowSearch>
+          <ng-container *ngFor="let item of receiverList">
+            <nz-option *ngIf="item.role && role && item.role.toLowerCase().indexOf(role.toLowerCase()) != -1 && item.email != appUser" [nzValue]="item.email" [nzLabel]="item.email"></nz-option>
+          </ng-container>
+        </nz-select>
+      </nz-form-control>
+    </div>
+  </ng-container>
+</nz-modal>

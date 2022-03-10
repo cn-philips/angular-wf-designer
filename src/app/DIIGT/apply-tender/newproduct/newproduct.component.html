@@ -2,19 +2,39 @@
   <nz-card class="mtb1rem" nzTitle="产品信息">
     <div class="red">
       <span *ngIf="!isDisable"
-        >当前数据来源:<ng-container *ngIf="dataBase.baseDataFrom">{{
-          dataBase.baseDataFrom == "CRM" ? "CRM链接" : "CP"
-        }}</ng-container></span
+        >当前数据来源： <ng-container *ngIf="dataBase.baseDataFrom"><a class="black">{{
+          dataBase.baseDataFrom
+        }}</a></ng-container></span
       >
+<!--      <button-->
+<!--        *ngIf="!isDisable"-->
+<!--        nz-button-->
+<!--        class="ml6"-->
+<!--        nzType="primary"-->
+<!--        [nzSize]="6"-->
+<!--        (click)="showDiag()"-->
+<!--      >-->
+<!--        添加Opportunity ID-->
+<!--      </button>-->
       <button
-        *ngIf="!isDisable"
+        *ngIf="!isDisable && dataBase.baseDataFrom == 'CP Deal Form'"
         nz-button
         class="ml6"
         nzType="primary"
         [nzSize]="6"
         (click)="showDiag()"
       >
-        添加Opportunity ID
+        添加Deal Form/Opportunity
+      </button>
+      <button
+        *ngIf="!isDisable && dataBase.baseDataFrom == 'CP Simulation'"
+        nz-button
+        class="ml6"
+        nzType="primary"
+        [nzSize]="6"
+        (click)="showDiag()"
+      >
+        添加Simulation/Opportunity
       </button>
     </div>
     <ng-container *ngIf="productData && productData.length > 0">
@@ -23,8 +43,10 @@
           <div class="opera" style="min-width: 216px" nz-col nzXs="24" nzSm="24" nzMd="24" >
             <div class="opera-oppo" nz-col>
               <div nz-col>
-                <span class="red">Opportunity ID:{{ list.opportunityId }}</span>
+                <span class="red">Opportunity ID : <a class="black">{{ list.opportunityId }}</a></span>
+                <span *ngIf="dataBase.baseDataFrom == 'CP Deal Form'" class="red">Deal Form ID : <a class="black">{{ list.dealFormId }}</a></span>
               </div>
+              <br>
               <nz-form-item>
                 <div class="opera-oppo-input-group">
                   <nz-form-label nzFor="email" >商机层级关系链接</nz-form-label>
@@ -39,14 +61,14 @@
             </div>
             <div nz-col>
               <button *ngIf="!isDisable" [disabled]="isDisable" nz-button class="ml6" nzType="primary" [nzSize]="utils.isMobile() ? 'small' : 'middle'" (click)="showBundle(i)">
-                添加产品信息
+                添加/移除产品信息
               </button>
-              <button *ngIf="!isDisable" [disabled]="isDisable" nz-button class="ml6" nz-popconfirm nzTitle="确定要删除当前opportunityID?"
+              <button *ngIf="!isDisable" [disabled]="isDisable" nz-button class="ml6" nz-popconfirm [nzTitle]="dataBase.baseDataFrom == 'CP Simulation' ? '确定要删除当前Opportunity-Deal Form?':'确定要删除当前opportunityID?'"
                 (nzOnConfirm)="confirm(i)"
                 (nzOnCancel)="cancel()"
                 nzType="default"
                 [nzSize]="utils.isMobile() ? 'small' : 'middle'">
-                删除Opportunity ID
+                {{ dataBase.baseDataFrom == 'CP Deal Form' ? '删除Opportunity-Deal Form':'删除Opportunity ID' }}
               </button>
             </div>
           </div>
@@ -85,7 +107,7 @@
             </nz-form-item>
           </div> -->
         </div>
-        <div *ngIf="dataBase && dataBase.baseDataFrom == 'CRM'" class="product">
+        <div *ngIf="dataBase && (dataBase.baseDataFrom == 'CRM' || dataBase.baseDataFrom == 'CP Simulation')" class="product">
           <div class="product-left"><a style="cursor: default;">该Opportunity ID所包含的Commercial Product Name：</a></div>
           <div class="product-right" *ngIf="list">
             <a *ngFor="let product of list.productnamelist; let i2 = index" style="cursor: default;">{{product.commercialProductName}} <span *ngIf="list&&list.productnamelist&&list.productnamelist.length != 0 &&i2 != list.productnamelist.length-1">  &nbsp;&nbsp;|&nbsp;&nbsp;  </span></a>
@@ -101,41 +123,31 @@
           >
             <thead>
             <tr>
-              <th style="width: 380px;">本地名称</th>
               <!-- <th colspan="2" >产品类型</th> -->
-              <th style="width: 400px;">产品型号</th>
+              <th nzAlign="center" style="width: 400px;">Model No.<br>产品型号</th>
+              <th nzAlign="center" style="width: 400px;">Medical Device Name<br>医疗器械名称</th>
+              <th nzAlign="center" style="width: 380px;">Market Bundle Name<br>本地名称</th>
               <!-- <th>产品名称</th> -->
-               <th style="width: 130px;">产品线</th>
+               <th nzAlign="center" style="width: 130px;">BMC<br>产品线</th>
               <!-- <th>MAG</th> -->
-              <th style="width: 90px;">台数</th>
+              <th nzAlign="center" style="width: 90px;">Qty<br>台数</th>
               <!--            <th>CostCenter</th>-->
-              <th *ngIf="!isDisable" style="width: 90px;">操作</th>
+              <th nzAlign="center" *ngIf="!isDisable" style="width: 90px;">Action<br>操作</th>
             </tr>
             </thead>
             <tbody>
             <ng-container *ngFor="let data of expandTable.data; let m = index">
               <ng-container *ngFor="let item of mapOfExpandedData[data.id]">
                 <tr *ngIf="(item.parent && item.parent.expand) || !item.parent">
-                  <td>{{ item.level == 0 ? item.marketBundleName : "" }}</td>
-                  <!-- <td
-                    [nzIndentSize]="item.level! * 20"
-                    [nzShowExpand]="!!item.productInformations"
-                    [(nzExpand)]="item.expand"
-                    (nzExpandChange)="
-                      collapse(mapOfExpandedData[data.id], item, $event)
-                    "
-                    style="width: 170px;"
-                  >
-                    {{ CkPro(item.level) ? "MarketBundle" : item.productType }}
-                  </td>
-                  <td style="width: 170px;">{{ item.productTypeChild }}</td> -->
-                  <td>{{ item.productModel }}</td>
+                  <td nzAlign="center">{{ item.productModel }}</td>
+                  <td nzAlign="center">{{ item.medicalDeviceName }}</td>
+                  <td nzAlign="center" nz-tooltip [nzTitle]="'Simulation ID: ' + item.simulationId">{{ item.level == 0 ? item.marketBundleName : "" }}</td>
                   <!-- <td>{{ item.productName }}</td> -->
-                  <td>{{ item.bmc }}</td>
+                  <td nzAlign="center">{{ item.bmc }}</td>
                   <!-- <td>{{ item.mag }}</td> -->
-                  <td>{{ item.number }}</td>
+                  <td nzAlign="center">{{ item.number }}</td>
                   <!--                <td>{{item.costCenter}}</td>-->
-                  <td *ngIf="!isDisable">
+                  <td nzAlign="center" *ngIf="!isDisable">
                     <a
                       *ngIf="item.level == 0 && !isDisable"
                       (click)="delProduct(i, m, item)"
@@ -186,7 +198,7 @@
       <div>
         <div class="seachbox">
           <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
-            <div nz-col nzXs="24" nzSm="24" nzMd="10">
+            <div nz-col nzXs="24" nzSm="24" nzMd="8">
               <nz-form-item>
                 <nz-form-label nzXs="24" nzSm="24" nzMd="10" nzFor="email"
                 >Opportunity ID</nz-form-label
@@ -197,7 +209,33 @@
               </nz-form-item>
             </div>
 
-            <div nz-col nzXs="24" nzSm="24" nzMd="10">
+            <div nz-col nzXs="24" nzSm="24" nzMd="8">
+              <nz-form-item>
+                <nz-form-label nzXs="24" nzSm="24" nzMd="10" nzFor="email"
+                >Deal Form ID</nz-form-label
+                >
+                <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                  <!--                <div nz-col nzXs="24" nzSm="24" nzMd="15">-->
+                  <input nz-input [(ngModel)]="oppSeach.dealFormId" nz-tooltip [nzTitle]="oppSeach.dealFormId" />
+                  <!--                </div>-->
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+
+            <div nz-col nzXs="24" nzSm="24" nzMd="8">
+              <nz-form-item>
+                <nz-form-label nzXs="24" nzSm="24" nzMd="10" nzFor="email"
+                >Simulation ID</nz-form-label
+                >
+                <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                  <!--                <div nz-col nzXs="24" nzSm="24" nzMd="15">-->
+                  <input nz-input [(ngModel)]="oppSeach.simulationId" nz-tooltip [nzTitle]="oppSeach.simulationId" />
+                  <!--                </div>-->
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+
+            <div nz-col nzXs="24" nzSm="24" nzMd="8">
               <nz-form-item>
                 <nz-form-label nzXs="24" nzSm="24" nzMd="10" nzFor="email"
                 >Opportunity Name</nz-form-label
@@ -211,20 +249,7 @@
               </nz-form-item>
             </div>
 
-            <div nz-col nzXs="24" nzSm="24" nzMd="10">
-              <nz-form-item>
-                <nz-form-label nzXs="24" nzSm="24" nzMd="10" nzFor="email"
-                >Deal Form ID</nz-form-label
-                >
-                <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-                  <!--                <div nz-col nzXs="24" nzSm="24" nzMd="15">-->
-                  <input nz-input [(ngModel)]="oppSeach.dealFormId" nz-tooltip [nzTitle]="oppSeach.dealFormId" />
-                  <!--                </div>-->
-                </nz-form-control>
-              </nz-form-item>
-            </div>
-
-            <div nz-col nzXs="24" nzSm="24" nzMd="10">
+            <div nz-col nzXs="24" nzSm="24" nzMd="8">
               <nz-form-item>
                 <nz-form-label nzXs="24" nzSm="24" nzMd="10" nzFor="email"
                 >Account Name</nz-form-label
@@ -236,7 +261,8 @@
                 </nz-form-control>
               </nz-form-item>
             </div>
-            <div nz-col nzXs="24" nzSm="24" nzMd="4">
+            <div nz-col nzXs="24" nzSm="24" nzMd="6"></div>
+            <div nz-col nzXs="24" nzSm="24" nzMd="2">
               <nz-form-item>
                 <nz-form-control nzXs="24" nzSm="24" nzMd="24" style="padding-left: 30px">
                   <button
@@ -251,24 +277,41 @@
               </nz-form-item>
             </div>
 
+
           </div>
         </div>
-        <div style="height: 300px; position: relative" *ngIf="OpLoad">
-          <app-loading></app-loading>
-        </div>
-        <div *ngIf="!OpLoad">
-          <div class="heads" *ngIf="arr && arr.tabList && arr.tabList.length > 0">CP中已完成审批的Deal Form查询结果</div>
-          <div class="tabbox" *ngIf="arr && arr.tabList && arr.tabList.length > 0">
+<!--        <div style="height: 300px; position: relative" *ngIf="OpLoad < 2">-->
+<!--          <app-loading></app-loading>-->
+<!--        </div>-->
+        <div>
+<!--          *ngIf="arr && arr.tabList && arr.tabList.length > 0"-->
+          <div class="heads">已完成审批的Deal Form查询结果</div>
+          <div class="tabbox">
             <nz-table
-              [nzScroll]="{ x: '1700px' }"
+              [nzScroll]="{ x: '2200px' }"
               #basicTables
               [nzData]="arr.tabList"
+              [nzTotal]="paramsCP.total"
+              [nzPageIndex]="paramsCP.pageNo"
+              [nzPageSize]="paramsCP.pageSize"
+              [nzShowTotal]="totalTemplateCP"
+              [nzFrontPagination]="false"
+              (nzPageIndexChange)="changePageIndexCP($event)"
+              (nzPageSizeChange)="changePageSizeCP($event)"
+              [nzHideOnSinglePage]="false"
+              [nzPageSizeOptions]="[5, 10, 20, 30, 40, 50 ]"
+              [nzShowQuickJumper]="true"
+              [nzShowSizeChanger]="true"
+              [nzLoading]="loadObj.opportunity"
             >
               <thead>
                 <tr>
                   <th nzAlign="center" nzLeft="0px" nzWidth="40px">&nbsp;</th>
                   <th nzAlign="center" nzWidth="150px">Opportunity ID</th>
                   <th nzAlign="center" nzWidth="150px">Deal Form ID</th>
+                  <th nzAlign="center" nzWidth="150px">Simulation ID</th>
+                  <th nzAlign="center" nzWidth="200px">Market Bundle Name</th>
+                  <th nzAlign="center" nzWidth="150px">产品型号</th>
                   <th nzAlign="center" nzWidth="200px">Opportunity Name</th>
                   <th nzAlign="center" nzWidth="150px">
                     <div>Account Name</div>
@@ -291,15 +334,16 @@
                 </tr>
               </thead>
               <tbody>
-                <tr
-                  *ngFor="let data of basicTables.data; let m = index"
-                  [class]="
-                    data.opportunityHierachyLink ==
-                    data.businessOpportunityHierarchyLink
-                      ? 'won'
-                      : ''
-                  "
-                >
+
+<!--              [class]="-->
+<!--              data.opportunityHierachyLink ==-->
+<!--              data.businessOpportunityHierarchyLink-->
+<!--              ? 'won'-->
+<!--              : ''-->
+<!--              "-->
+
+              <tr
+                  *ngFor="let data of basicTables.data; let m = index">
                   <td nzLeft="0px" nzAlign="center">
                     <label
                       nz-radio
@@ -310,8 +354,11 @@
                   </td>
                   <td nzAlign="center">{{ data.opportunityId }}</td>
                   <td nzAlign="center">{{ data.dealFormId }}</td>
-                  <td nzAlign="center">{{ data.opportunityName }}</td>
-                  <td nzAlign="center">{{ data.accountName }}</td>
+                <td nzAlign="center">{{ data.simulationId }}</td>
+                <td nzAlign="center" class="overflow">{{ data.marketBundleName }}</td>
+                <td nzAlign="center" class="overflow">{{ data.productModel }}</td>
+                  <td nzAlign="center" class="overflow">{{ data.opportunityName }}</td>
+                  <td nzAlign="center" class="overflow">{{ data.accountName }}</td>
                   <td nzAlign="center">
                     {{ data.publicBiddingDate | TimeFormatePipeNow }}
                   </td>
@@ -325,18 +372,35 @@
                 </tr>
               </tbody>
             </nz-table>
+            <ng-template #totalTemplateCP let-total> 数据总条数 {{ paramsCP.total }} </ng-template>
           </div>
-          <div class="heads" *ngIf="arr && arr.crmData && arr.crmData.length > 0">CRM链接查询结果</div>
-          <div class="tabbox" *ngIf="arr && arr.crmData && arr.crmData.length > 0">
+<!--          *ngIf="arr && arr.crmData && arr.crmData.length > 0"-->
+          <div class="heads">已完成审批的Simulation查询结果</div>
+          <div class="tabbox">
             <nz-table
-              [nzScroll]="{ x: '1700px' }"
+              [nzScroll]="{ x: '2200px' }"
               #basicTable
               [nzData]="arr.crmData"
+              [nzTotal]="paramsCRM.total"
+              [nzPageIndex]="paramsCRM.pageNo"
+              [nzPageSize]="paramsCRM.pageSize"
+              [nzShowTotal]="totalTemplateCRM"
+              [nzFrontPagination]="false"
+              (nzPageIndexChange)="changePageIndexCRM($event)"
+              (nzPageSizeChange)="changePageSizeCRM($event)"
+              [nzHideOnSinglePage]="false"
+              [nzPageSizeOptions]="[5, 10, 20, 30, 40, 50 ]"
+              [nzShowQuickJumper]="true"
+              [nzShowSizeChanger]="true"
+              [nzLoading]="loadObj.simulation"
             >
               <thead>
                 <tr>
                   <th nzLeft="0px" nzAlign="center">&nbsp;</th>
                   <th nzAlign="center">Opportunity ID</th>
+                  <th nzAlign="center" nzWidth="150px">Simulation ID</th>
+                  <th nzAlign="center" nzWidth="200px">Market Bundle Name</th>
+                  <th nzAlign="center" nzWidth="150px">产品型号</th>
                   <th nzAlign="center">Opportunity Name</th>
                   <th nzAlign="center">
                     <div>Account Name</div>
@@ -359,25 +423,31 @@
                 </tr>
               </thead>
               <tbody>
-                <tr
-                  *ngFor="let data of basicTable.data; let i = index"
-                  [class]="
-                    data.opportunityHierachyLink ==
-                    data.businessOpportunityHierarchyLink
-                      ? 'won'
-                      : ''
-                  "
-                >
+
+<!--              [class]="-->
+<!--              data.opportunityHierachyLink ==-->
+<!--              data.businessOpportunityHierarchyLink-->
+<!--              ? 'won'-->
+<!--              : ''-->
+<!--              "-->
+
+
+              <tr
+                  *ngFor="let data of basicTable.data; let i = index">
                   <td nzLeft="0px" nzAlign="center">
                     <label
                       nz-radio
                       [ngModel]="data.radio"
                       (ngModelChange)="changModelcrm(i, data)"
+                      [nzDisabled]="data.is"
                     ></label>
                   </td>
                   <td nzAlign="center">{{ data.opportunityId }}</td>
-                  <td nzAlign="center">{{ data.opportunityName }}</td>
-                  <td nzAlign="center">{{ data.accountName }}</td>
+                <td nzAlign="center">{{ data.simulationId }}</td>
+                <td nzAlign="center" class="overflow">{{ data.marketBundleName }}</td>
+                <td nzAlign="center" class="overflow">{{ data.productModel }}</td>
+                  <td nzAlign="center" class="overflow">{{ data.opportunityName }}</td>
+                  <td nzAlign="center" class="overflow">{{ data.accountName }}</td>
                   <td nzAlign="center">
                     {{ data.publicBiddingDate | TimeFormatePipeNow }}
                   </td>
@@ -391,6 +461,7 @@
                 </tr>
               </tbody>
             </nz-table>
+            <ng-template #totalTemplateCRM let-total> 数据总条数 {{ paramsCRM.total }} </ng-template>
           </div>
         </div>
       </div>
@@ -548,7 +619,7 @@
       <div>
         <app-transferbox
           [dataList]="dataBase.dataList"
-          [value]="this.dataBase.productInformations"
+          [value]="dataBase.productInformations"
           #tranf
         ></app-transferbox>
       </div>

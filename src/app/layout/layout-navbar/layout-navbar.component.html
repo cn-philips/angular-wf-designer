@@ -27,15 +27,15 @@
   <div class="navbar-collapse collapse" [ngbCollapse]="!isExpanded">
       <!-- Divider -->
       <hr class="d-lg-none w-100 my-2">
-
+     
       <div class="navbar-nav align-items-lg-center ml-auto">
           <div ngbDropdown [placement]="isRTL ? 'bottom-left' : 'bottom-right'" class="demo-navbar-user nav-item">
               <a ngbDropdownToggle class="nav-link" href="javascript:void(0)">
                 <span class="d-inline-flex flex-lg-row-reverse align-items-center align-middle">
                   <!-- <img src="assets/img/avatars/1.png" alt class="d-block ui-w-30 rounded-circle"> -->
-                  <span class="px-1 mr-lg-2 ml-2 ml-lg-0">{{username}}</span>
-                </span>
-              </a>
+                  <span class="px-1 mr-lg-2 ml-2 ml-lg-0">{{username}}</span>                  
+                </span>   
+              </a>              
               <div ngbDropdownMenu [class.dropdown-menu-right]="!isRTL">
                 <!-- <a href="javascript:void(0)"  [routerLink]="[ '/person-info' ]" routerLinkActive="currentUrl!='/person-info'" class="dropdown-item"><i class="ion ion-ios-person text-light" route="/person-info"></i> &nbsp; 个人信息</a> -->
                 <!-- <a href="javascript:void(0)" class="dropdown-item"><i class="ion ion-ios-mail text-lightest"></i> &nbsp; Messages</a> -->
@@ -73,6 +73,7 @@
                 <a href="javascript:void(0)" (click)="logout()" class="dropdown-item"><i class="ion ion-ios-log-out text-danger"></i> &nbsp; 退出</a>
               </div>
             </div>
+            <i (click)="iconClick()" style="font-size:18px;cursor: pointer;" class="icons" nz-icon nzType="question-circle" nzTheme="outline"></i>
       </div>
 
   </div>

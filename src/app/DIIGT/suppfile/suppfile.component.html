@@ -1,6 +1,10 @@
-<h4 class="font-weight-bold py-3">
-  <span>待补充文件上传</span>
-</h4>
+<nz-card class="title_warpper">
+  <div>
+    <h4 class="font-weight-bold">
+      <span>待补充文件上传</span>
+    </h4>
+  </div>
+</nz-card>
 <igt-approval-flowline></igt-approval-flowline>
 <hr class="border-light container-m--x mt-0 mb-4">
 <div class="tabs-box">
@@ -65,5 +69,22 @@
         </div>
       </ng-template>
     </ngb-tab>
+    <ngb-tab id="change-tab" *ngIf="infor.hsId">
+      <ng-template ngbTabTitle><span class="tab-title"><strong>审核改单</strong></span></ng-template>
+      <ng-template ngbTabContent>
+        <div class="card-body">
+           <app-approve-change [disa]="disa" [dataBase]="infor"></app-approve-change>
+           <!-- <div nz-row nzType="flex" nzJustify="end" nzAlign="middle">
+            <div nz-col nzSpan="4">
+              <nz-form-item>
+                <nz-form-control [nzSm]="24" [nzXs]="24" style="text-align: right;">
+                  <button nz-button [nzType]="'primary'" (click)="myskip('complete-duc3')">上一步</button>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+          </div> -->
+        </div>
+      </ng-template>     
+    </ngb-tab> 
   </ngb-tabset>
 </div>

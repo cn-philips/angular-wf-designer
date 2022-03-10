@@ -56,7 +56,9 @@ export class ApplyTenderModifComponent implements OnInit {
     tenderDeclarationLetter: '', // 在线提交参与投标声明函
     logisticsDescription: '', // 物流条款说明
     afterSalesInstructions: '', // 售后维修条款说明
-    tenderPriceCurrencys: '', // 预计投标价格币种
+    tenderPriceCurrencys: null, // 预计投标价格币种
+    bidPriceCurrency: null, // 预计投标价格币种
+    performanceBondsCurrency: null, // 预计投标价格币种
     tenderPriceCurrency: '', // 预计投标价格金额
     percentageTotalPrice: '', // 总价百分比
     totalPrice: '', // 总金额
@@ -77,7 +79,8 @@ export class ApplyTenderModifComponent implements OnInit {
     logisticsTermsExplain: '', // 物流条款说明
     performanceBonds: '', // 履约保证金金额
     productInformations: [
-    ] // 产品信息
+    ], // 产品信息
+    distributorAgreement: []
   };
 
   public arr: any = {
@@ -88,10 +91,35 @@ export class ApplyTenderModifComponent implements OnInit {
     CkOppo: {}
   };
 
+  public paramsCP = {
+    pageNo: 1,
+    pageSize: 10,
+    total: 0
+  };
+  public paramsCRM = {
+    pageNo: 1,
+    pageSize: 10,
+    total: 0
+  };
+
   public file_arr: any = {
     fileList: [], // 上传招标文件列表
     fileSealList: [], // 上传盖章后的文件列表
     fileAgentList: [], // 协议代理商出具投标委托函
+  };
+
+  // 所有经销商
+  public selAgent_all: any = [];
+
+  // 二次禁用
+  public approved: any = {
+    supResult: false,
+    qaResult: false,
+    marResult: false,
+    finResult: false,
+    proResult: false,
+    lawResult: false,
+    isdRejected: false
   };
 
   // 产品信息
@@ -138,9 +166,11 @@ export class ApplyTenderModifComponent implements OnInit {
          this.dataBase.performanceBonds = chNumber(this.dataBase.performanceBonds);
         }
       }
+      this.childbase.DisableValidateForm();
     }), (error => {
       this.load=false;
       this.message.create('error', '服务器异常!');
+      this.childbase.DisableValidateForm();
     }));
     const params = {
       mainBusinessID: decodeString(this.activatedRouter.queryParams['_value'].id),
@@ -158,12 +188,63 @@ export class ApplyTenderModifComponent implements OnInit {
       }
     });
 
+    this.getApproved(mainId);
+    this.getAllselAgent();
+  }
+  public getAllselAgent() {
+    const url = `/act/ecom/bidding/selAgent`;
+    const data = {
+      pageNo: 1,
+      pageSize: 0x7fffffff
+    };
+    this.http.post(url, data).subscribe(res => {
+      if (res && res.data) {
+        this.selAgent_all = res.data.rows;
+      }
+    }, error => {
+
+    });
+  }
+  public getApproved(mainId) {
+
+    return;
+    this.http.post(`/act/ecom/tender/application/getTenderApproved?mainId=${mainId}`).subscribe(rest => {
+      if (rest && rest.data) {
+        if (rest.data.isdRejected === 'rejected') {
+          this.approved.isdRejected = true;
+          if (rest.data.qaResult && rest.data.qaResult.toLowerCase() === 'approved') {
+            this.approved.qaResult = true;
+          }
+          if (rest.data.marResult && rest.data.marResult.toLowerCase() === 'approved') {
+            this.approved.marResult = true;
+          }
+          if (rest.data.finResult && rest.data.finResult.toLowerCase() === 'approved') {
+            this.approved.finResult = true;
+          }
+          if (rest.data.proResult && rest.data.proResult.toLowerCase() === 'approved') {
+            this.approved.proResult = true;
+          }
+          if (rest.data.lawResult && rest.data.lawResult.toLowerCase() === 'approved') {
+            this.approved.lawResult = true;
+          }
+          if (rest.data.supResult && rest.data.supResult.toLowerCase() === 'approved') {
+            this.approved.supResult = true;
+          }
+        }
+      }
+    });
+  }
+  public disableValidateForm(val) {
+    this.childbase.DisableValidateForm();
   }
   upData(val) {
     this.productData = Object.assign([], val);
   }
   public myskip(val): void {
     this.activedId = val;
+  }
+  public addProduct(val) {
+    this.product.getProductInsert(val.opportunityId, val.dealFormId, val.CpOrCrm);
   }
   public save(): void {
     let url = "/act/ecom/tender/application/modify"
@@ -247,6 +328,10 @@ export class ApplyTenderModifComponent implements OnInit {
     }
     if (this.dataBase.businessType === 'DISTRIBUTOR' && this.dataBase.biddingDdpState === '未通过') {
       this.message.create('error', '投标公司DDP状态未通过');
+      return;
+    }
+    if (this.dataBase.businessType === 'DISTRIBUTOR' && this.dataBase.agreementDealerDdpState === '未通过') {
+      this.message.create('error', '协议经销商DDP状态未通过');
       return;
     }
 

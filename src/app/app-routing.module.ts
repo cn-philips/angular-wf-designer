@@ -87,6 +87,9 @@ import { MyDraftComponents } from "./DIIGT/my-draft/my-draft.component";
 import { AnonymousComponent } from "./DIIGT/anonymous/anonymous.component";
 import {MyViewComponent} from './DIIGT/my-view/my-view.component';
 import { SupportFileUpComponent } from './DIIGT/support-file-up/support-file-up.component';
+import {EntrustComponent} from './DIIGT/entrust/entrust.component';
+import {ChangeOnwerComponent} from './DIIGT/change-onwer/change-onwer.component';
+import {ChangeSceneComponent} from './DIIGT/change-scene/change-scene.component';
 // *******************************************************************************
 // Routes
 
@@ -97,7 +100,6 @@ const routes: Routes = [
     path: "anonymous",
     component: AnonymousComponent,
   },
-
   {
     path: "preOrder",
     component: Layout1Component,
@@ -165,6 +167,10 @@ const routes: Routes = [
         path: "my-draft",
         component: MyDraftComponents,
       },
+      {
+        path: "entrust",
+        component: EntrustComponent
+      }
     ],
   },
   {
@@ -175,6 +181,7 @@ const routes: Routes = [
       {
         path: "",
         component: HomepageComponent,
+        //canActivate: [AuthGuard],
       },
     ],
   },
@@ -318,7 +325,7 @@ const routes: Routes = [
   },
   // {
   //   path:"**",
-  //   redirectTo: '/',    
+  //   redirectTo: '/',
   // },
   // {
   //   path: "admin-tools",
@@ -484,6 +491,16 @@ const routes: Routes = [
     component: Layout1Component,
     children: [{ path: "", component: ViewsubprocesseComponent }],
   },
+  {
+    path: "changeonwer",
+    component: Layout1Component,
+    children: [{ path: "", component: ChangeOnwerComponent }],
+  },
+  {
+    path:"changescene",
+    component: Layout1Component,
+    children: [{ path: "", component: ChangeSceneComponent}],
+  },  
 ];
 
 // *******************************************************************************

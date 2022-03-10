@@ -2,7 +2,7 @@
   <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
     <div nz-col nzSpan="8">
       <nz-form-item>
-        <nz-form-label [nzSm]="8" [nzXs]="24">销售</nz-form-label>
+        <nz-form-label [nzSm]="8" [nzXs]="24">销售邮箱</nz-form-label>
         <nz-form-control [nzSm]="12" [nzXs]="24">
           <input nz-input formControlName="sale" placeholder="" />
         </nz-form-control>
@@ -26,7 +26,8 @@
     </div>
     <div nz-col nzSpan="8" [style.display]="isCollapse ? 'block' : 'none'">
       <nz-form-item>
-        <nz-form-label [nzSm]="8" [nzXs]="24">本地名称(Market Bundle)</nz-form-label>
+        <nz-form-label class="localtion" [nzNoColon]="true" [nzSm]="8" [nzXs]="24">本地名称<br /><small
+            style="display: block; margin-bottom: -40px">(Market Bundle)</small></nz-form-label>
         <nz-form-control [nzSm]="12" [nzXs]="24">
           <input nz-input formControlName="productName" placeholder="" />
         </nz-form-control>
@@ -60,10 +61,7 @@
       <nz-form-item>
         <nz-form-label [nzSm]="4" [nzXs]="24">提交时间</nz-form-label>
         <nz-form-control [nzSm]="18" [nzXs]="24">
-          <nz-range-picker
-            nzFormat="yyyy-MM-dd"
-            formControlName="subDate"
-          ></nz-range-picker>
+          <nz-range-picker nzFormat="yyyy-MM-dd" formControlName="subDate"></nz-range-picker>
         </nz-form-control>
       </nz-form-item>
     </div>
@@ -71,18 +69,8 @@
       <nz-form-item>
         <nz-form-label [nzSm]="8" [nzXs]="24">业务模式</nz-form-label>
         <nz-form-control [nzSm]="12" [nzXs]="24">
-          <nz-select
-            formControlName="businessPattern"
-            style="width: 100%;"
-            nzShowSearch
-            nzAllowClear
-            nzPlaceHolder=""
-          >
-            <nz-option
-              *ngFor="let item of businessModelList"
-              [nzValue]="item.code"
-              [nzLabel]="item.label"
-            ></nz-option>
+          <nz-select formControlName="businessPattern" style="width: 100%" nzShowSearch nzAllowClear nzPlaceHolder="">
+            <nz-option *ngFor="let item of businessModelList" [nzValue]="item.code" [nzLabel]="item.label"></nz-option>
           </nz-select>
         </nz-form-control>
       </nz-form-item>
@@ -91,18 +79,8 @@
       <nz-form-item>
         <nz-form-label [nzSm]="8" [nzXs]="24">进单模式</nz-form-label>
         <nz-form-control [nzSm]="12" [nzXs]="24">
-          <nz-select
-            formControlName="orderPattern"
-            style="width: 100%;"
-            nzShowSearch
-            nzAllowClear
-            nzPlaceHolder=""
-          >
-            <nz-option
-              *ngFor="let item of entryModeList"
-              [nzValue]="item.code"
-              [nzLabel]="item.label"
-            ></nz-option>
+          <nz-select formControlName="orderPattern" style="width: 100%" nzShowSearch nzAllowClear nzPlaceHolder="">
+            <nz-option *ngFor="let item of entryModeList" [nzValue]="item.code" [nzLabel]="item.label"></nz-option>
           </nz-select>
         </nz-form-control>
       </nz-form-item>
@@ -111,19 +89,9 @@
       <nz-form-item>
         <nz-form-label [nzSm]="8" [nzXs]="24">进单状态</nz-form-label>
         <nz-form-control [nzSm]="12" [nzXs]="24">
-          <nz-select
-            formControlName="orderType"
-            style="width: 100%;"
-            nzShowSearch
-            nzAllowClear
-            nzPlaceHolder=""
-          >
-            <nz-option
-              *ngFor="let item of orderTypeList"
-              [nzValue]="item.code"
-              [nzLabel]="item.label"
-              [nzDisabled]="item.disabled"
-            ></nz-option>
+          <nz-select formControlName="orderType" style="width: 100%" nzShowSearch nzAllowClear nzPlaceHolder="">
+            <nz-option *ngFor="let item of orderTypeList" [nzValue]="item.code" [nzLabel]="item.label"
+              [nzDisabled]="item.disabled"></nz-option>
           </nz-select>
         </nz-form-control>
       </nz-form-item>
@@ -132,19 +100,9 @@
       <nz-form-item>
         <nz-form-label [nzSm]="8" [nzXs]="24">招标授权模式</nz-form-label>
         <nz-form-control [nzSm]="12" [nzXs]="24">
-          <nz-select
-            formControlName="applyType"
-            style="width: 100%;"
-            nzShowSearch
-            nzAllowClear
-            nzPlaceHolder=""
-          >
-            <nz-option
-              *ngFor="let item of biddingAuthorizationModeList"
-              [nzValue]="item.code"
-              [nzLabel]="item.label"
-              [nzDisabled]="item.disabled"
-            ></nz-option>
+          <nz-select formControlName="applyType" style="width: 100%" nzShowSearch nzAllowClear nzPlaceHolder="">
+            <nz-option *ngFor="let item of biddingAuthorizationModeList" [nzValue]="item.code" [nzLabel]="item.label"
+              [nzDisabled]="item.disabled"></nz-option>
           </nz-select>
         </nz-form-control>
       </nz-form-item>
@@ -153,19 +111,9 @@
       <nz-form-item>
         <nz-form-label [nzSm]="8" [nzXs]="24">招标授权状态</nz-form-label>
         <nz-form-control [nzSm]="12" [nzXs]="24">
-          <nz-select
-            formControlName="taskStatus"
-            style="width: 100%;"
-            nzShowSearch
-            nzAllowClear
-            nzPlaceHolder=""
-          >
-            <nz-option
-              *ngFor="let item of taskStatusList"
-              [nzValue]="item.code"
-              [nzLabel]="item.label"
-              [nzDisabled]="item.disabled"
-            ></nz-option>
+          <nz-select formControlName="taskStatus" style="width: 100%" nzShowSearch nzAllowClear nzPlaceHolder="">
+            <nz-option *ngFor="let item of taskStatusList" [nzValue]="item.code" [nzLabel]="item.label"
+              [nzDisabled]="item.disabled"></nz-option>
           </nz-select>
         </nz-form-control>
       </nz-form-item>
@@ -174,52 +122,37 @@
       <nz-form-item>
         <nz-form-label [nzSm]="8" [nzXs]="24">是否授权</nz-form-label>
         <nz-form-control [nzSm]="12" [nzXs]="24">
-          <nz-select
-            formControlName="authorize"
-            style="width: 100%;"
-            nzShowSearch
-            nzAllowClear
-            nzPlaceHolder=""
-          >
-            <nz-option
-              *ngFor="let item of isAuthorizedList"
-              [nzValue]="item.code"
-              [nzLabel]="item.label"
-              [nzDisabled]="item.disabled"
-            ></nz-option>
+          <nz-select formControlName="authorize" style="width: 100%" nzShowSearch nzAllowClear nzPlaceHolder="">
+            <nz-option *ngFor="let item of isAuthorizedList" [nzValue]="item.code" [nzLabel]="item.label"
+              [nzDisabled]="item.disabled"></nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzXs="24" nzSm="24" nzMd="8" [style.display]="isCollapse ? 'block' : 'none'">
+      <nz-form-item>
+        <nz-form-label [nzSm]="8" [nzXs]="24">Teams</nz-form-label>
+        <nz-form-control [nzSm]="12" [nzXs]="24">
+          <nz-select formControlName="teams" style="width: 100%;" nzShowSearch nzAllowClear nzPlaceHolder="">
+            <nz-option *ngFor="let item of teamsList" [nzValue]="item.code" [nzLabel]="item.label"
+              [nzDisabled]="item.disabled"></nz-option>
           </nz-select>
         </nz-form-control>
       </nz-form-item>
     </div>
 
-    <div nz-col nzXs="24"
-                nzSm="24"
-                nzMd="8"
-          [style.display]="isCollapse ? 'block' : 'none'">
+    <div nz-col nzXs="24" nzSm="24" nzMd="8" [style.display]="isCollapse ? 'block' : 'none'">
       <nz-form-item>
         <nz-form-label [nzSm]="8" [nzXs]="24">大区</nz-form-label>
         <nz-form-control [nzSm]="12" [nzXs]="24">
-          <nz-select
-            formControlName="bigRegion"
-            style="width: 100%;"
-            nzShowSearch
-            nzAllowClear
-            nzPlaceHolder="大区"
-          >
-            <nz-option
-              *ngFor="let item of bigRegionList"
-              [nzValue]="item.code"
-              [nzLabel]="item.label"
-              [nzDisabled]="item.disabled"
-            ></nz-option>
+          <nz-select formControlName="bigRegion" style="width: 100%" nzShowSearch nzAllowClear nzPlaceHolder="大区">
+            <nz-option *ngFor="let item of bigRegionList" [nzValue]="item.code" [nzLabel]="item.label"
+              [nzDisabled]="item.disabled"></nz-option>
           </nz-select>
         </nz-form-control>
       </nz-form-item>
     </div>
-    <div nz-col nzXs="24"
-                nzSm="24"
-                nzMd="8"
-          [style.display]="isCollapse ? 'block' : 'none'">
+    <div nz-col nzXs="24" nzSm="24" nzMd="8" [style.display]="isCollapse ? 'block' : 'none'">
       <nz-form-item>
         <nz-form-label [nzSm]="8" [nzXs]="24">小区</nz-form-label>
         <nz-form-control [nzSm]="12" [nzXs]="24">
@@ -227,10 +160,7 @@
         </nz-form-control>
       </nz-form-item>
     </div>
-    <div nz-col nzXs="24"
-                nzSm="24"
-                nzMd="8"
-          [style.display]="isCollapse ? 'block' : 'none'">
+    <div nz-col nzXs="24" nzSm="24" nzMd="8" [style.display]="isCollapse ? 'block' : 'none'">
       <nz-form-item>
         <nz-form-label [nzSm]="8" [nzXs]="24">经销商名称</nz-form-label>
         <nz-form-control [nzSm]="12" [nzXs]="24">
@@ -238,34 +168,18 @@
         </nz-form-control>
       </nz-form-item>
     </div>
-    <div nz-col nzXs="24"
-                nzSm="24"
-                nzMd="8"
-          [style.display]="isCollapse ? 'block' : 'none'">
+    <div nz-col nzXs="24" nzSm="24" nzMd="8" [style.display]="isCollapse ? 'block' : 'none'">
       <nz-form-item>
         <nz-form-label [nzSm]="8" [nzXs]="24">BMC</nz-form-label>
         <nz-form-control [nzSm]="12" [nzXs]="24">
-          <nz-select
-            formControlName="bmc"
-            style="width: 100%;"
-            nzShowSearch
-            nzAllowClear
-            nzPlaceHolder=""
-          >
-            <nz-option
-              *ngFor="let item of bmcList"
-              [nzValue]="item.code"
-              [nzLabel]="item.label"
-              [nzDisabled]="item.disabled"
-            ></nz-option>
+          <nz-select formControlName="bmc" style="width: 100%" nzShowSearch nzAllowClear nzPlaceHolder="">
+            <nz-option *ngFor="let item of bmcList" [nzValue]="item.code" [nzLabel]="item.label"
+              [nzDisabled]="item.disabled"></nz-option>
           </nz-select>
         </nz-form-control>
       </nz-form-item>
     </div>
-    <div nz-col nzXs="24"
-                nzSm="24"
-                nzMd="8"
-          [style.display]="isCollapse ? 'block' : 'none'">
+    <div nz-col nzXs="24" nzSm="24" nzMd="8" [style.display]="isCollapse ? 'block' : 'none'">
       <nz-form-item>
         <nz-form-label [nzSm]="8" [nzXs]="24">SO#</nz-form-label>
         <nz-form-control [nzSm]="12" [nzXs]="24">
@@ -273,15 +187,38 @@
         </nz-form-control>
       </nz-form-item>
     </div>
+    <div nz-col nzXs="24" nzSm="24" nzMd="16" [style.display]="isCollapse ? 'block' : 'none'">
+      <nz-form-item>
+        <nz-form-label [nzSm]="4" [nzXs]="24">OIT 月份</nz-form-label>
+        <nz-form-control [nzSm]="18" [nzXs]="24">
+          <nz-month-picker formControlName="oitDateStart" nzPlaceHolder="开始月份"
+            (ngModelChange)="changeStartMonth(validateForm.value);" [nzDisabledDate]="disabledStartDate">
+          </nz-month-picker>
+          <nz-month-picker formControlName="oitDateEnd" nzPlaceHolder="结束月份"
+            (ngModelChange)="changeEndMonth(validateForm.value);" [nzDisabledDate]="disabledEndDate"></nz-month-picker>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+
   </div>
   <div nz-row nzType="flex" nzJustify="end" nzAlign="middle">
-    <div nz-col nzSpan="16">
+    <div nz-col nzSpan="24">
       <nz-form-item style="text-align: right;">
         <!--        <button nz-button [nzType]="'primary'" (click)="addNewItem('999')" style="margin-left: 10px;">向父元素传值999</button>-->
         <button nz-button [nzType]="'primary'" style="margin-left: 10px;">搜索</button>
         <button nz-button [nzType]="'primary'" style="margin-left: 10px;" (click)="resetForm()">清空</button>
-        <button nz-button [nzType]="'primary'" (click)="exportExcel($event)" style="margin-left: 10px;">导出Excel</button>
-        <button nz-button [nzType]="'primary'" (click)="projectReport($event)" style="margin-left: 10px;">Project Report</button>
+        <button nz-button [nzType]="'primary'" (click)="exportExcel($event)" [nzLoading]="loadingButton.exportExcel"
+          style="margin-left: 10px;">导出Excel</button>
+        <button nz-button [nzType]="'primary'" (click)="projectReport($event, validateForm.value)"
+          [nzLoading]="loadingButton.projectReport" style="margin-left: 10px;">OIT Report</button>
+        <button nz-button [nzType]="'primary'" (click)="showModeal()" [nzLoading]="loadingButton.opportunityReport"
+          style="margin-left: 10px;" *ngIf="isOALeader">进单状态-按Opportunity查询</button>
+        <button nz-button [nzType]="'primary'" (click)="BundleReport($event)" [nzLoading]="loadingButton.BundleReport"
+          style="margin-left: 10px;">进单状态-按进单准备表查询</button>
+        <button nz-button [nzType]="'primary'" (click)="biddingReport($event)" [nzLoading]="loadingButton.biddingReport"
+          style="margin-left: 10px;">Bidding Report</button>
+        <button nz-button [nzType]="'primary'" (click)="POSReport($event)" [nzLoading]="loadingButton.POSReport"
+          style="margin-left: 10px;" *ngIf="isOA">POS Report</button>
         <a style="font-size:14px;margin-left: 10px;color: #1890ff;" (click)="toggleCollapse()">
           {{ isCollapse ? '收起' : '展开' }}
           <i nz-icon [type]="isCollapse ? 'up' : 'down'"></i>
@@ -290,3 +227,13 @@
     </div>
   </div>
 </form>
+
+<!--Opportunity Report 输入框-->
+<nz-modal [(nzVisible)]="opportunityReportShow" nzWidth="800px" nzTitle="输入opportunity" (nzOnCancel)="cancelModeal()"
+  (nzOnOk)="opportunityReport()">
+  <ng-container>
+    <div style="text-align: center">
+      <textarea style="width: 90%" rows="4" nz-input [(ngModel)]="opportunityText"></textarea>
+    </div>
+  </ng-container>
+</nz-modal>

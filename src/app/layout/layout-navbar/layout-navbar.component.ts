@@ -6,6 +6,7 @@ import {ToastrService} from 'ngx-toastr';
 import {HttpService} from '../../services';
 import { CookieService } from 'ngx-cookie-service';
 import { environment } from '../../../environments/environment'
+import { NgZorroAntdModule,NzMessageService, NZ_I18N, zh_CN } from 'ng-zorro-antd';
 import * as jwt_decode from 'jwt-decode';
 
 import {
@@ -32,6 +33,7 @@ export class LayoutNavbarComponent {
   @HostBinding('class.layout-navbar') private hostClassMain = true;
 
   username: string = localStorage.getItem('ng_philips_username');
+  applicationName:any;
 
   constructor(private appService: AppService,
               private aRoute: ActivatedRoute,
@@ -40,6 +42,7 @@ export class LayoutNavbarComponent {
               private modalService: NgbModal,
               private toastrService: ToastrService,
               private http: HttpService,
+              private message: NzMessageService,
               private cookieService: CookieService) {
 
     // console.log('env', environment);
@@ -57,6 +60,7 @@ export class LayoutNavbarComponent {
       localStorage.setItem('ng_philips_username', userBaseInfo['username'] || '');
       this.username = localStorage.getItem('ng_philips_username')
     }
+     this.getItopName();
   }
 
   currentBg() {
@@ -66,12 +70,40 @@ export class LayoutNavbarComponent {
   toggleSidenav() {
     this.layoutService.toggleCollapsed();
   }
-
+  //ITOP取字典表里边的参数
+  getItopName()
+  {
+    const params = {
+      dictGroup: 'ITOP',
+    };
+    this.http.get(`/act/ecom/dictData/queryDrop?dictGroup=${params.dictGroup}`).subscribe(rest => {
+      if (rest.code === '0000') {
+        if(rest.data.length>0)
+        {
+          this.applicationName=rest.data[0].label;
+        }
+      } else {
+        this.message.create('error', `${rest.msg}`);
+      }
+    });
+  }
   logout() {
     this.http.logout();
     window.localStorage.clear();
   }
+  iconClick()
+  {
+     let userName=localStorage.getItem('ng_philips_code1');
+     let info={
+       userName:userName,
+       applicationName:this.applicationName,
+     }
+     let jsonString=JSON.stringify(info);
+     let encodeInfo=window.btoa(jsonString);
+     let url=`${location.origin}${environment.itop_href}?info=${encodeInfo}`;
+     window.open(url);
 
+  }
   switchUser(code,name){
     this.resetToken();    
     this.http.get('/act/login?code1=' + code).subscribe(res => {
@@ -134,7 +166,7 @@ export class LayoutNavbarComponent {
   //for dev/debug
   resetToken() {
     var ex = new Date();
-    ex.setTime(ex.getTime() - 1);
+    ex.setTime(ex.getTime() - 1);    
     document.cookie = 'Philips_TOKEN' + '=; expires=' + ex.toUTCString() + ';path=/';
     this.cookieService.delete('Philips_TOKEN', '../');
     this.cookieService.delete('Philips_TOKEN', '/');

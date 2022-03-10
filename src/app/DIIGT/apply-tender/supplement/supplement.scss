@@ -8,7 +8,7 @@
 }
 .ywms{min-width:192px;}
 .zbsq{margin-bottom: 10px;}
-.labelcs{width:218px;text-align: center;display: inline-block;}
+.labelcs{width:230px;text-align: center;display: inline-block;}
 .ml10{margin-left:10px;}
 .wid200 {
     width: 300px;
@@ -124,4 +124,19 @@
         display: block;
 
     }
+}
+.itbox {
+  background-color: #fafafa;
+  border: 1px solid #e8e8e8;
+  padding: 3px 10px;
+  border-radius: 2px;
+}
+::ng-deep .tooltip-pree {
+  width: 1000px !important;
+  min-width: 500px !important;
+}
+pre {
+  width:100%;
+  font-size:14px;
+  color:#efefef;
 }

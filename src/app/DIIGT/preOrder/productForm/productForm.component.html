@@ -3,9 +3,9 @@
   <div *ngIf="disa" nz-row nzType="flex" nzJustify="start" nzAlign="middle">
     <div nz-col nzSpan="8">
       <nz-form-item>
-        <nz-form-label nzXXl="12" nzXl="12" nzRequired nzSm="12">Sofon文件</nz-form-label>
+        <nz-form-label nzXXl="10" nzXl="10" nzRequired nzSm="12">Sofon文件</nz-form-label>
         <nz-form-control [nzSm]="12" [nzXs]="24">
-           <!-- <button
+          <!-- <button
             *ngIf="dataBase.sofonName"
             class="down"
             nz-button
@@ -22,43 +22,59 @@
           >
             由OA上传
           </button>  -->
-          <nz-upload
-            *ngIf="flag2&&installSwitch"
-            class="uploads"
-            [(nzFileList)]="dataBase.sofonNameFileList"
-            [nzBeforeUpload]="sofonNameBeforeUpload"
-            [nzLimit]="1"
-            [nzPreview]="dwonLoad"
-            [nzRemove]="nzRemovsofonName"
-          >
+
+
+<!--       原代码      -->
+<!--          <nz-upload *ngIf="flag2&&installSwitch" class="uploads" [(nzFileList)]="dataBase.sofonNameFileList"-->
+<!--            [nzBeforeUpload]="sofonNameBeforeUpload" [nzLimit]="1" [nzPreview]="dwonLoad" [nzRemove]="nzRemovsofonName">-->
+<!--            <button nz-button>-->
+<!--              <i nz-icon nzType="upload"></i><span>Sofon文件上传</span>-->
+<!--            </button>-->
+<!--          </nz-upload>-->
+
+          <div *ngIf="flag2">
+            <nz-switch  [(ngModel)]="switchValid" (click)="changeupmode(upmode)"></nz-switch><span style="font-size: xx-small;padding-top: 10%">&emsp;从CP选择文件</span>
+
+          </div>
+        <div *ngIf="!upmode">
+
+          <button nz-button *ngIf="flag2" (click)="showModal()" [disabled]="!flag2" style="display: inline-block">
+            <i nz-icon nzType="cloud-upload" nzTheme="outline"></i><span style="font-size: small">选择Sofon文件</span>
+          </button>
+
+<!--          <button *ngIf="flag2" [nzType]="'link'" nz-button (click)="changeupmode(upmode)" style="width: 40%">-->
+<!--            <i nz-icon nzType="sync" nzTheme="outline"></i><span style="font-size: xx-small;padding-top: 10%">改为选择本地文件</span><br>-->
+<!--          </button>-->
+        </div>
+
+        <div *ngIf="upmode">
+          <nz-upload *ngIf="flag2" class="uploads" style="display: inline-block" [(nzFileList)]="dataBase.sofonNameFileList" [nzBeforeUpload]="sofonNameBeforeUpload" [nzLimit]="1" [nzPreview]="dwonLoad" [nzRemove]="nzRemovsofonName" [nzDisabled]="!flag2">
             <button nz-button>
-              <i nz-icon nzType="upload"></i><span>Sofon文件上传</span>
+              <i nz-icon nzType="upload"></i><span style="font-size: small">上传本地文件</span>
             </button>
           </nz-upload>
-          <button
-          *ngIf="state!='DOACS'&&disa&& dataBase.sofonName"
-          nz-tooltip [nzTitle]="dataBase.sofonNames"
-          class="down link-tesk"
-          nz-button
-          nzType="link"
-          (click)="fileDwon(dataBase.sofonName)"
-        >
-          {{dataBase.sofonNames?dataBase.sofonNames:"下载文件"}}
-        </button>
-          <nz-modal
-            [(nzVisible)]="isVisibleSofon"
-            nzTitle="Sofon选择区"
-            nzOkText="确认"
-            nzCancelText="取消"
-            nzCentered
-            nzWidth="900"
-            (nzOnCancel)="handleCancelSofon()"
-            (nzOnOk)="handleOkSofon()"
-          >
-            <app-transferbox-single
-              [dataBase]="sonfonFile"
-              #tranfSingle
-            ></app-transferbox-single>
+<!--          <button *ngIf="flag2" [nzType]="'link'" nz-button (click)="changeupmode(upmode)" style="width: 40%">-->
+<!--            <i nz-icon nzType="sync" nzTheme="outline"></i><span style="font-size: xx-small;padding-top: 10%">改为选择cp文件</span><br>-->
+<!--          </button>-->
+        </div>
+
+
+
+          <button *ngIf="dataBase.sofonName&&(!upmode||!flag2)" nz-tooltip [nzTitle]="dataBase.sofonNames"
+                  class="down link-tesk" nz-button nzType="link" (click)="fileDwon(dataBase.sofonName)">
+            {{dataBase.sofonNames?dataBase.sofonNames:"下载文件"}}
+          </button>
+          <nz-modal [(nzVisible)]="isVisible" nzTitle="选择Sofon文件" (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk()">
+
+            <nz-checkbox-wrapper style="width: 100%;" (nzOnChange)="log($event)">
+              <label nz-checkbox *ngFor="let file of files.thelist; index as i" [nzValue]="file.id">{{file.fileName}}</label>
+            </nz-checkbox-wrapper>
+          </nz-modal>
+
+<!-- =================================================================== 分割线   -->
+          <nz-modal [(nzVisible)]="isVisibleSofon" nzTitle="Sofon选择区" nzOkText="确认" nzCancelText="取消" nzCentered
+            nzWidth="900" (nzOnCancel)="handleCancelSofon()" (nzOnOk)="handleOkSofon()">
+            <app-transferbox-single [dataBase]="sonfonFile" #tranfSingle></app-transferbox-single>
           </nz-modal>
           <!--dataBase.sofonName-->
         </nz-form-control>
@@ -67,360 +83,305 @@
 
   </div>
   <div *ngIf="disa" nz-row nzType="flex" nzJustify="start" nzAlign="middle">
-  <div nz-col nzSpan="8">
-    <nz-form-item>
-      <nz-form-label nzXXl="12" nzXl="12" nzRequired nzSm="12">Sofon No</nz-form-label>
-      <nz-form-control [nzSm]="12" [nzXs]="24" nz-tooltip  [nzTitle]="dataBase.sofonNo">
-        <input type="text" class="form-control" oninput="if(value.length>200)value=value.slice(0,200)"  placeholder=""
-        formControlName="sofonNo" [(ngModel)]="dataBase.sofonNo"
-        />
-        <ng-container *ngIf="dataBase && dataBase.sofonNo">
-          <div>还可以输入:{{dataBase.sofonNo.length}}/{{textLenone}}</div>
-        </ng-container>
-      </nz-form-control>
-    </nz-form-item>
-  </div>
+    <div nz-col nzSpan="8">
+      <nz-form-item>
+        <nz-form-label nzXXl="10" nzXl="10" nzRequired nzSm="12">Sofon No</nz-form-label>
+        <nz-form-control [nzSm]="12" [nzXs]="24" nz-tooltip [nzTitle]="dataBase.sofonNo">
+          <input type="text" class="form-control" oninput="if(value.length>200)value=value.slice(0,200)" placeholder=""
+            formControlName="sofonNo" [(ngModel)]="dataBase.sofonNo" />
+          <ng-container *ngIf="dataBase && dataBase.sofonNo">
+            <div>还可以输入:{{dataBase.sofonNo.length}}/{{textLenone}}</div>
+          </ng-container>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
   </div>
   <!--*ngIf="magnetic"-->
   <div *ngIf="magnetic" nz-row nzType="flex" nzJustify="start" nzAlign="top">
     <div nz-col nzSpan="8">
       <nz-form-item>
-        <nz-form-label nzXXl="12" nzXl="12" nzSm="12" nzRequired [nzXs]="24"
-          >磁屏蔽公司确认文件</nz-form-label
-        >
+        <nz-form-label nzXXl="10" nzXl="10" nzSm="10" nzRequired [nzXs]="24">磁屏蔽公司确认文件</nz-form-label>
         <nz-form-control [nzSm]="12" [nzXs]="24">
           <!--dataBase.mrShieldingCompany-->
           <nz-form-control [nzSm]="18" [nzXs]="24">
-          <div class="pr">
-            <nz-upload
-            *ngIf="!disa"
-            class="uploads"
-            [(nzFileList)]="dataBase.mrShieldingCompanyFileList"
-            [nzBeforeUpload]="mrShieldingCompanyBeforeUpload"
-            [nzLimit]="1"
-            [nzPreview]="dwonLoad"
-            [nzRemove]="nzRemovmrShieldingCompany"
-          >
-            <button [disabled]="disa" nz-button>
-              <i nz-icon nzType="upload"></i><span>上传附件</span>
-            </button>           
-          </nz-upload>
-            <i
-            *ngIf="!disa"
-            class="global-form-control-icon negative"
-            nz-icon
-            nzType="question-circle"
-            nzTheme="outline"
-            nzTitle="MRI订单由销售提供《关于选择磁共振屏蔽公司及屏蔽检测机构确认文件》"
-            nzPlacement="top"
-            nz-tooltip
-          ></i>
-          </div>
-          <div class="pr">
-              <button
-                nz-tooltip [nzTitle]="dataBase.mrShieldingCompanyNames"
-                *ngIf="edit || (disa && dataBase.mrShieldingCompany)"
-                class="down link-tesk"
-                nz-button
-                nzType="link"
-                (click)="fileDwon(dataBase.mrShieldingCompany)"
-              >
+            <div class="pr">
+              <nz-upload *ngIf="!disa" class="uploads" [(nzFileList)]="dataBase.mrShieldingCompanyFileList"
+                [nzBeforeUpload]="mrShieldingCompanyBeforeUpload" [nzLimit]="1" [nzPreview]="dwonLoad"
+                [nzRemove]="nzRemovmrShieldingCompany">
+                <button [disabled]="disa" nz-button>
+                  <i nz-icon nzType="upload"></i><span>上传附件</span>
+                </button>
+              </nz-upload>
+              <i *ngIf="!disa" class="global-form-control-icon negative" nz-icon nzType="question-circle"
+                nzTheme="outline" nzTitle="MRI订单由销售提供《关于选择磁共振屏蔽公司及屏蔽检测机构确认文件》" nzPlacement="top" nz-tooltip></i>
+            </div>
+            <div class="pr">
+              <button nz-tooltip [nzTitle]="dataBase.mrShieldingCompanyNames"
+                *ngIf="edit || (disa && dataBase.mrShieldingCompany)" class="down link-tesk" nz-button nzType="link"
+                (click)="fileDwon(dataBase.mrShieldingCompany)">
                 {{dataBase.mrShieldingCompanyNames}}
               </button>
-              <!-- <i *ngIf="edit || (disa && dataBase.mrShieldingCompany)"
-                class="global-form-control-icon negatives"
-                nz-icon
-                nzType="question-circle"
-                nzTheme="outline"
-                [ngStyle]="{left:left}"
-                nzTitle="MRI订单由销售提供《关于选择磁共振屏蔽公司及屏蔽检测机构确认文件》"
-                nzPlacement="top"
-                nz-tooltip
-              ></i> -->
-          </div>
-        </nz-form-control>        
+            </div>
+          </nz-form-control>
         </nz-form-control>
       </nz-form-item>
     </div>
-    </div>
-    <!--*ngIf="towerCrane"-->
+  </div>
+  <!--*ngIf="towerCrane"-->
 
-    <div *ngIf="towerCrane"  nz-row nzType="flex" nzJustify="start" nzAlign="top">
-      <div  nz-col nzSpan="8">
-        <nz-form-item>
-          <nz-form-label nzXXl="12" nzXl="12" nzSm="12" [nzXs]="24" [nzRequired]="dataBase.confirmationFileFlag=='0'">IGT第三方显示器吊塔确认文件</nz-form-label>
-          <nz-form-control [nzSm]="8" [nzXs]="24">
-            <nz-radio-group class="radioClass" (ngModelChange)="changeConfirmationFile()"  [(ngModel)]="dataBase.confirmationFileFlag"  formControlName="confirmationFileFlag"
-                            [disabled]="!flag2">
-              <label nz-radio nzValue="0">需要</label>
-              <label nz-radio nzValue="1">不需要</label>
-            </nz-radio-group>
-          </nz-form-control>
-          <nz-form-control [nzSm]="4" [nzXs]="24">
-            <i
-              class="global-form-control-icon"
-              nz-icon
-              nzType="question-circle"
-              nzTheme="outline"
-              nzTitle="IGT订单经销商自采悬吊显示器吊塔，需要提供《关于IGT选配悬吊显示器吊塔确认文件》"
-              nzPlacement="top"
-              nz-tooltip
-            ></i>
-          </nz-form-control>
-        </nz-form-item>
-      </div>
-      <div *ngIf="dataBase.confirmationFileFlag=='0'" nz-col nzSpan="8">
-        <nz-form-item>
-          <nz-form-control [nzSm]="14" [nzXs]="24">
-            <!--dataBase.confirmationFile-->
-            <nz-upload
-              *ngIf="!disa"
-              [(nzFileList)]="dataBase.confirmationFileFileList"
-              [nzBeforeUpload]="confirmationFileBeforeUpload"
-              [nzLimit]="1"
-              [nzPreview]="dwonLoad"
-              [nzRemove]="nzRemovconfirmationFile"
-            >
-              <button [disabled]="disa" nz-button><i nz-icon nzType="upload"></i><span>上传附件</span></button>
-            </nz-upload>
-            <button *ngIf="disa && dataBase.confirmationFile" nz-tooltip [nzTitle]="dataBase.confirmationFileNames" class="down link-tesk" nz-button nzType="link" (click)="fileDwon(dataBase.confirmationFile)">{{dataBase.confirmationFileNames}}</button>
-          </nz-form-control>
-        </nz-form-item>
-      </div>
-      <div nz-col nzSpan="8"></div>
+  <div *ngIf="towerCrane" nz-row nzType="flex" nzJustify="start" nzAlign="top">
+    <div nz-col nzSpan="8">
+      <nz-form-item>
+        <nz-form-label nzXXl="10" nzXl="10" nzSm="10" [nzXs]="24" [nzRequired]="dataBase.confirmationFileFlag=='0'">IGT第三方显示器吊塔确认文件</nz-form-label>
+        <nz-form-control [nzSm]="10" [nzXs]="24">
+          <nz-radio-group class="radioClass" (ngModelChange)="changeConfirmationFile()"
+            [(ngModel)]="dataBase.confirmationFileFlag" formControlName="confirmationFileFlag" [disabled]="!flag2">
+            <label nz-radio nzValue="0">需要</label>
+            <label nz-radio nzValue="1">不需要</label>
+          </nz-radio-group>
+        </nz-form-control>
+        <nz-form-control [nzSm]="4" [nzXs]="24">
+          <i class="global-form-control-icon" nz-icon nzType="question-circle" nzTheme="outline"
+            nzTitle="IGT订单经销商自采悬吊显示器吊塔，需要提供《关于IGT选配悬吊显示器吊塔确认文件》" nzPlacement="top" nz-tooltip></i>
+        </nz-form-control>
+      </nz-form-item>
     </div>
-  <!-- 6固定start -->
+    <div *ngIf="dataBase.confirmationFileFlag=='0'" nz-col nzSpan="8">
+      <nz-form-item>
+        <nz-form-control [nzSm]="14" [nzXs]="24">
+          <!--dataBase.confirmationFile-->
+          <nz-upload *ngIf="!disa" [(nzFileList)]="dataBase.confirmationFileFileList"
+            [nzBeforeUpload]="confirmationFileBeforeUpload" [nzLimit]="1" [nzPreview]="dwonLoad"
+            [nzRemove]="nzRemovconfirmationFile">
+            <button [disabled]="disa" nz-button><i nz-icon nzType="upload"></i><span>上传附件</span></button>
+          </nz-upload>
+          <button *ngIf="disa && dataBase.confirmationFile" nz-tooltip [nzTitle]="dataBase.confirmationFileNames"
+            class="down link-tesk" nz-button nzType="link"
+            (click)="fileDwon(dataBase.confirmationFile)">{{dataBase.confirmationFileNames}}</button>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzSpan="8"></div>
+  </div>
+  <div nz-row nzType="flex" *ngIf="dataBases.businessModel=='DISTRIBUTOR'" nzJustify="start" nzAlign="top">
+    <div nz-col nzSpan="16">
+      <nz-form-item>
+        <nz-form-label nzXXl="5" nzXl="5"  nzSm="5" nzRequired>经销商协议号</nz-form-label>
+        <nz-form-control [nzSm]="10" [nzXs]="24">
+            <nz-select class="prodSelect" nzShowSearch nzShowSearch  nzPlaceHolder="请选择"
+
+              [(ngModel)]="dataBase.agreementNo" formControlName="agreementNo" [disabled]="!flag2">
+              <nz-option *ngFor="let item of dealList" [nzLabel]="item.agreementNo" [nzValue]="item.agreementNo">
+              </nz-option>
+            </nz-select>
+        </nz-form-control>
+        <nz-form-control [nzSm]="4" [nzXs]="24">
+          <button class="detailFlex" *ngIf="dataBase.agreementNo" (click)="showDiag()" nz-button nzType="primary">查看详情</button>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+  <div nz-row nzType="flex" nzJustify="start" nzAlign="top">
+    <div nz-col nzSpan="8" *ngIf="solutionOff">
+      <nz-form-item>
+        <nz-form-label nzXXl="10" nzXl="10" nzSm="10">Solution Sales</nz-form-label>
+        <nz-form-control [nzSm]="10" [nzXs]="24">
+          <nz-select class="prodSelect" nzShowSearch nzShowSearch nzAllowClear nzPlaceHolder="请选择"
+            [(ngModel)]="dataBase.solutionSales" formControlName="solutionSales" [disabled]="!flag2">
+            <nz-option *ngFor="let item of userList" [nzLabel]="item.name" [nzValue]="item.email"></nz-option>
+          </nz-select>
+          <nz-form-explain *ngIf="
+                validateForm.get('paymentProvision')?.dirty &&
+                validateForm.get('paymentProvision')?.errors
+              ">
+            此选项必填字段
+          </nz-form-explain>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzSpan="8" *ngIf="dataBases.centralized">
+      <nz-form-item>
+        <nz-form-label nzXXl="10" nzXl="10" nzSm="10" nzRequired>实际销售</nz-form-label>
+        <nz-form-control [nzSm]="10" [nzXs]="24">
+          <input type="text" nzSize="default" oninput="if(value.length>255)value=value.slice(0,255)" defualt
+            class="form-control actualSales" value="" formControlName="actualSales"
+            [(ngModel)]="dataBase.actualSales" />
+            <nz-form-explain *ngIf="
+            validateForm.get('actualSales')?.dirty &&
+            validateForm.get('actualSales')?.errors
+          ">
+          <ng-container *ngIf="
+          validateForm.get('actualSales')?.hasError('required')
+        ">此选项必填字段</ng-container>
+          <ng-container *ngIf="
+          validateForm
+            .get('actualSales')
+            ?.hasError('mailform')
+        ">请输入正确的邮箱地址</ng-container>
+        </nz-form-explain>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
   <div nz-row nzType="flex" nzJustify="start" nzAlign="top">
     <div nz-col nzSpan="8">
       <nz-form-item>
-        <nz-form-label nzXXl="12" nzXl="12" nzSm="12">付款条件</nz-form-label>
-        <nz-form-control [nzSm]="8" [nzXs]="24">
-          <nz-select
-            class="prodSelect"
-            nzShowSearch
-
-            nzPlaceHolder="Select a"
-            [(ngModel)]="dataBase.paymentProvision"
-            formControlName="paymentProvision"
-            [disabled]="!flag2"
-          >
-            <nz-option nzLabel="标准条款" nzValue="0"></nz-option>
-            <nz-option nzLabel="非标准条款" nzValue="1"></nz-option>
+        <nz-form-label nzXXl="10" nzXl="10" nzSm="10" nzRequired>付款条款</nz-form-label>
+        <nz-form-control [nzSm]="10" [nzXs]="24">
+          <nz-select class="prodSelect" nzShowSearch nzPlaceHolder="" [(ngModel)]="dataBase.paymentProvision"
+            formControlName="paymentProvision" (nzOpenChange)="changePayment($event)" [disabled]="!flag2">
+            <nz-option nzCustomContent *ngFor="let item of dataBases.paymentList" [nzLabel]="item.dictLabel"
+              [nzValue]="item.dictId">
+              <div nz-tooltip class="options" [nzTitle]="item.dictLabel">{{item.dictLabel}}</div>
+            </nz-option>
           </nz-select>
-          <nz-form-explain
-            *ngIf="
-              validateForm.get('paymentProvision')?.dirty &&
-              validateForm.get('paymentProvision')?.errors
-            "
-          >
+          <nz-form-explain *ngIf="
+                validateForm.get('paymentProvision')?.dirty &&
+                validateForm.get('paymentProvision')?.errors
+              ">
             此选项必填字段
           </nz-form-explain>
         </nz-form-control>
         <nz-form-control [nzSm]="4" [nzXs]="24">
-          <i
-            class="global-form-control-icon"
-            nz-icon
-            nzType="question-circle"
-            nzTheme="outline"
-            nzTitle="可选择付款条款；如果非飞利浦标准条款，请在备注中描述。可上传支持文件（非必传）"
-            nzPlacement="top"
-            nz-tooltip
-          ></i>
+          <i class="global-form-control-icon" nz-icon nzType="question-circle" nzTheme="outline"
+            nzTitle="可选择付款条款；如果非飞利浦标准条款，请在备注中描述。可上传支持文件（非必传）" nzPlacement="top" nz-tooltip></i>
         </nz-form-control>
       </nz-form-item>
     </div>
-    <div nz-col nzSpan="8" *ngIf="dataBase.paymentProvision == 1">
+    <div nz-col nzSpan="8">
       <nz-form-item>
-        <nz-form-control [nzSm]="20" [nzXs]="24" nz-tooltip  [nzTitle]="dataBase.paymentProvisionRemarks">
-          <textarea
-            nz-input
-            oninput="if(value.length>255)value=value.slice(0,255)"
-            placeholder=""
-            nzPlacement="topLeft"
-            [(ngModel)]="dataBase.paymentProvisionRemarks"
-            [nzAutosize]="{ minRows: 2, maxRows: 6 }"
-            formControlName="paymentProvisionRemarks"
-          ></textarea>
-          <div>还可以输入:{{dataBase.paymentProvisionRemarks.length}}/{{textLen}}</div>
-          <nz-form-explain
-            *ngIf="
-              validateForm.get('paymentProvisionRemarks')?.dirty &&
-              validateForm.get('paymentProvisionRemarks')?.errors
-            "
-          >
-            <ng-container
-              *ngIf="
-                validateForm
-                  .get('paymentProvisionRemarks')
-                  ?.hasError('maxlength')
-              "
-              >输入控制在255个字</ng-container
-            >
-            <ng-container
-              *ngIf="
-                validateForm
-                  .get('paymentProvisionRemarks')
-                  ?.hasError('required')
-              "
-              >此选项必填字段</ng-container
-            >
+        <nz-form-control [nzSm]="20" [nzXs]="24" nz-tooltip [nzTitle]="dataBase.paymentProvisionRemarks">
+          <textarea nz-input oninput="if(value.length>255)value=value.slice(0,255)" placeholder="" nzPlacement="topLeft"
+            [(ngModel)]="dataBase.paymentProvisionRemarks" [nzAutosize]="{ minRows: 2, maxRows: 6 }"
+            formControlName="paymentProvisionRemarks"></textarea>
+          <ng-container *ngIf="dataBase.paymentProvisionRemarks&&dataBase.paymentProvisionRemarks">
+            <div>还可以输入:{{dataBase.paymentProvisionRemarks.length}}/{{textLen}}</div>
+          </ng-container>
+          <nz-form-explain *ngIf="
+                validateForm.get('paymentProvisionRemarks')?.dirty &&
+                validateForm.get('paymentProvisionRemarks')?.errors
+              ">
+            <ng-container *ngIf="
+                  validateForm
+                    .get('paymentProvisionRemarks')
+                    ?.hasError('maxlength')
+                ">输入控制在255个字</ng-container>
+            <ng-container *ngIf="
+                  validateForm
+                    .get('paymentProvisionRemarks')
+                    ?.hasError('required')
+                ">此选项必填字段</ng-container>
           </nz-form-explain>
         </nz-form-control>
       </nz-form-item>
     </div>
-    <div nz-col nzSpan="4" *ngIf="dataBase.paymentProvision == 1">
+    <div nz-col nzSpan="4">
       <nz-form-item>
         <nz-form-control [nzSm]="24" [nzXs]="24">
           <!--          paymentProvisionFileName-->
-          <nz-upload
-            *ngIf="!disa"
-            [(nzFileList)]="dataBase.paymentProvisionFileNameFileList"
-            [nzBeforeUpload]="paymentProvisionFileNameBeforeUpload"
-            [nzLimit]="1"
-            [nzPreview]="dwonLoad"
-            [nzRemove]="nzRemovpaymentProvision"
-          >
-            <button [disabled]="disa" nz-button>
+          <nz-upload *ngIf="!disa||(flag2&&state==='DOACS')" [(nzFileList)]="dataBase.paymentProvisionFileNameFileList"
+            [nzBeforeUpload]="paymentProvisionFileNameBeforeUpload" [nzLimit]="1" [nzPreview]="dwonLoad"
+            [nzRemove]="nzRemovpaymentProvision">
+            <button nz-button>
               <i nz-icon nzType="upload"></i><span>上传附件</span>
             </button>
           </nz-upload>
-          <button
-            *ngIf="disa && dataBase.paymentProvisionFileName"
-            nz-tooltip [nzTitle]="dataBase.paymentProvisionFileNames"
-            class="down link-tesk"
-            nz-button
-            nzType="link"
-            (click)="fileDwon(dataBase.paymentProvisionFileName)"
-          >
+          <button *ngIf="(disa && dataBase.paymentProvisionFileName&&state!=='DOACS')||(disa && dataBase.paymentProvisionFileName&&!flag2)" nz-tooltip
+            [nzTitle]="dataBase.paymentProvisionFileNames" class="down link-tesk" nz-button nzType="link"
+            (click)="fileDwon(dataBase.paymentProvisionFileName)">
             {{dataBase.paymentProvisionFileNames}}
           </button>
         </nz-form-control>
       </nz-form-item>
     </div>
-    <div nz-col nzSpan="4" *ngIf="dataBase.paymentProvision == 1">
+    <div nz-col nzSpan="4">
       <nz-form-item>
         <nz-form-control [nzSm]="24" [nzXs]="24">
-          <button
-            *ngIf="flag2 && !disa"
-            (click)="
-              CopyAdd({
-                key: [
-                  'paymentProvision',
-                  'paymentProvisionRemarks',
-                  'paymentProvisionFileName',
-                  'paymentProvisionFileNameFileList'
-                ],
-                val: [
-                  dataBase.paymentProvision,
-                  dataBase.paymentProvisionRemarks,
-                  dataBase.paymentProvisionFileName,
-                  dataBase.paymentProvisionFileNameFileList
-                ]
-              })
-            "
-            class="global-center"
-            nz-button
-            nzType="primary"
-            nzShape="circle"
-            nz-tooltip nzTitle="非标准条款时，复制按钮可用。点击可将此条款（包括上传文件）复制到该Deal 中所有进单单位中"
-          >
+          <button *ngIf="flag2 && !disa" (click)="
+                CopyAdd({
+                  key: [
+                    'paymentProvision',
+                    'paymentProvisionRemarks',
+                    'paymentProvisionFileName',
+                    'paymentProvisionFileNameFileList'
+                  ],
+                  val: [
+                    dataBase.paymentProvision,
+                    dataBase.paymentProvisionRemarks,
+                    dataBase.paymentProvisionFileName,
+                    dataBase.paymentProvisionFileNameFileList
+                  ]
+                })
+              " class="global-center" nz-button nzType="primary" nzShape="circle" nz-tooltip
+            nzTitle="非标准条款时，复制按钮可用。点击可将此条款（包括上传文件）复制到该Deal 中所有进单单位中">
             <i nz-icon type="copy"></i>
           </button>
         </nz-form-control>
       </nz-form-item>
     </div>
   </div>
-  <div nz-row nzType="flex" nzJustify="start" nzAlign="top">
-    <div nz-col nzSpan="8">
-      <nz-form-item>
-        <nz-form-label nzXXl="12" nzXl="12" nzSm="12">装运及交货</nz-form-label>
-        <nz-form-control [nzSm]="8" [nzXs]="24">
-          <nz-select
-            class="prodSelect"
-            nzShowSearch
+  <!-- 6固定start -->
+  <ng-container
+    *ngIf="dataBases.entryMode==''||dataBases.entryMode=='BIDDING'||(dataBases.sampleAuditFlag=='1'&&dataBases.entryMode=='STOCK')">
 
-            nzPlaceHolder="Select a"
-            [(ngModel)]="dataBase.shipmentDelivery"
-            formControlName="shipmentDelivery"
-            [disabled]="!flag2"
-          >
-            <nz-option nzLabel="标准条款" nzValue="0"></nz-option>
-            <nz-option nzLabel="非标准条款" nzValue="1"></nz-option>
-          </nz-select>
-          <nz-form-explain
-            *ngIf="
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="top">
+      <div nz-col nzSpan="8">
+        <nz-form-item>
+          <nz-form-label nzXXl="10" nzXl="10" nzSm="10">装运及交货</nz-form-label>
+          <nz-form-control [nzSm]="10" [nzXs]="24">
+            <nz-select class="prodSelect" nzShowSearch nzPlaceHolder="Select a" [(ngModel)]="dataBase.shipmentDelivery"
+              formControlName="shipmentDelivery" [disabled]="!flag2">
+              <nz-option nzLabel="标准条款" nzValue="0"></nz-option>
+              <nz-option nzLabel="非标准条款" nzValue="1"></nz-option>
+            </nz-select>
+            <nz-form-explain *ngIf="
               validateForm.get('shipmentDelivery')?.dirty &&
               validateForm.get('shipmentDelivery')?.errors
-            "
-          >
-            此选项必填字段
-          </nz-form-explain>
-        </nz-form-control>
-        <nz-form-control [nzSm]="4" [nzXs]="24">
-          <i
-            class="global-form-control-icon"
-            nz-icon
-            nzType="question-circle"
-            nzTheme="outline"
-            nzTitle="可选择标准或非标准条款；如果非飞利浦标准条款，请在备注中描述。可上传支持文件（非必传）"
-            nzPlacement="top"
-            nz-tooltip
-          ></i>
-        </nz-form-control>
-      </nz-form-item>
-    </div>
-    <div nz-col nzSpan="8" *ngIf="dataBase.shipmentDelivery == 1" nz-tooltip [nzTitle]="dataBase.shipmentDeliveryRemarks">
-      <nz-form-item>
-        <nz-form-control [nzSm]="20" [nzXs]="24">
-          <textarea
-            nz-input
-            oninput="if(value.length>255)value=value.slice(0,255)"
-            placeholder=""
-            nzPlacement="topLeft"
-            [nzAutosize]="{ minRows: 2, maxRows: 6 }"
-            [(ngModel)]="dataBase.shipmentDeliveryRemarks"
-            formControlName="shipmentDeliveryRemarks"
-            [disabled]="!flag2 || disa"
-          ></textarea>
-          <div>还可以输入:{{dataBase.shipmentDeliveryRemarks.length}}/{{textLen}}</div>
-        </nz-form-control>
-      </nz-form-item>
-    </div>
-    <div nz-col nzSpan="4" *ngIf="dataBase.shipmentDelivery == 1">
-      <nz-form-item>
-        <nz-form-control [nzSm]="24" [nzXs]="24">
-          <!--          shipmentDeliveryFileName-->
-          <nz-upload
-            *ngIf="!disa"
-            [(nzFileList)]="dataBase.shipmentDeliveryFileNameFileList"
-            [nzBeforeUpload]="shipmentDeliveryFileNameBeforeUpload"
-            [nzLimit]="1"
-            [nzPreview]="dwonLoad"
-            [nzRemove]="nzRemovshipmentDelivery"
-          >
-            <button [disabled]="disa" nz-button>
-              <i nz-icon nzType="upload"></i><span>上传附件</span>
+            ">
+              此选项必填字段
+            </nz-form-explain>
+          </nz-form-control>
+          <nz-form-control [nzSm]="4" [nzXs]="24">
+            <i class="global-form-control-icon" nz-icon nzType="question-circle" nzTheme="outline"
+              nzTitle="可选择标准或非标准条款；如果非飞利浦标准条款，请在备注中描述。可上传支持文件（非必传）" nzPlacement="top" nz-tooltip></i>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzSpan="8" *ngIf="dataBase.shipmentDelivery == 1" nz-tooltip
+        [nzTitle]="dataBase.shipmentDeliveryRemarks">
+        <nz-form-item>
+          <nz-form-control [nzSm]="20" [nzXs]="24">
+            <textarea nz-input oninput="if(value.length>255)value=value.slice(0,255)" placeholder=""
+              nzPlacement="topLeft" [nzAutosize]="{ minRows: 2, maxRows: 6 }"
+              [(ngModel)]="dataBase.shipmentDeliveryRemarks" formControlName="shipmentDeliveryRemarks"
+              [disabled]="!flag2 || disa"></textarea>
+            <div>还可以输入:{{dataBase.shipmentDeliveryRemarks.length}}/{{textLen}}</div>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzSpan="4" *ngIf="dataBase.shipmentDelivery == 1">
+        <nz-form-item>
+          <nz-form-control [nzSm]="24" [nzXs]="24">
+            <!--          shipmentDeliveryFileName-->
+            <nz-upload *ngIf="!disa||(flag2&&state==='DOACS')" [(nzFileList)]="dataBase.shipmentDeliveryFileNameFileList"
+              [nzBeforeUpload]="shipmentDeliveryFileNameBeforeUpload" [nzLimit]="1" [nzPreview]="dwonLoad"
+              [nzRemove]="nzRemovshipmentDelivery">
+              <button nz-button>
+                <i nz-icon nzType="upload"></i><span>上传附件</span>
+              </button>
+            </nz-upload>
+            <button *ngIf="(disa && dataBase.shipmentDeliveryFileName&&state!=='DOACS')||(disa && dataBase.shipmentDeliveryFileName&&!flag2)" nz-tooltip
+              [nzTitle]="dataBase.shipmentDeliveryFileNames" class="down link-tesk" nz-button nzType="link"
+              (click)="fileDwon(dataBase.shipmentDeliveryFileName)">
+              {{dataBase.shipmentDeliveryFileNames}}
             </button>
-          </nz-upload>
-          <button
-            *ngIf="disa && dataBase.shipmentDeliveryFileName"
-            nz-tooltip [nzTitle]="dataBase.shipmentDeliveryFileNames"
-            class="down link-tesk"
-            nz-button
-            nzType="link"
-            (click)="fileDwon(dataBase.shipmentDeliveryFileName)"
-          >
-           {{dataBase.shipmentDeliveryFileNames}}
-          </button>
-        </nz-form-control>
-      </nz-form-item>
-    </div>
-    <div nz-col nzSpan="4" *ngIf="dataBase.shipmentDelivery == 1">
-      <nz-form-item>
-        <nz-form-control [nzSm]="24" [nzXs]="24">
-          <button
-            *ngIf="flag2 && !disa"
-            (click)="
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzSpan="4" *ngIf="dataBase.shipmentDelivery == 1">
+        <nz-form-item>
+          <nz-form-control [nzSm]="24" [nzXs]="24">
+            <button *ngIf="flag2 && !disa" (click)="
               CopyAdd({
                 key: [
                   'shipmentDelivery',
@@ -435,111 +396,72 @@
                   dataBase.shipmentDeliveryFileNameFileList
                 ]
               })
-            "
-            class="global-center"
-            nz-button
-            nzType="primary"
-            nzShape="circle"
-            nz-tooltip nzTitle="非标准条款时，复制按钮可用。点击可将此条款（包括上传文件）复制到该Deal 中所有进单单位中"
-          >
-            <i nz-icon type="copy"></i>
-          </button>
-        </nz-form-control>
-      </nz-form-item>
+            " class="global-center" nz-button nzType="primary" nzShape="circle" nz-tooltip
+              nzTitle="非标准条款时，复制按钮可用。点击可将此条款（包括上传文件）复制到该Deal 中所有进单单位中">
+              <i nz-icon type="copy"></i>
+            </button>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
     </div>
-  </div>
 
-  <div nz-row nzType="flex" nzJustify="start" nzAlign="top">
-    <div nz-col nzSpan="8">
-      <nz-form-item>
-        <nz-form-label nzXXl="12" nzXl="12" nzSm="12">场地准备</nz-form-label>
-        <nz-form-control [nzSm]="8" [nzXs]="24">
-          <nz-select
-            class="prodSelect"
-            nzShowSearch
-
-            nzPlaceHolder="Select a"
-            [(ngModel)]="dataBase.sitePreparation"
-            formControlName="sitePreparation"
-            [disabled]="!flag2"
-          >
-            <nz-option nzLabel="标准条款" nzValue="0"></nz-option>
-            <nz-option nzLabel="非标准条款" nzValue="1"></nz-option>
-          </nz-select>
-          <nz-form-explain
-            *ngIf="
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="top">
+      <div nz-col nzSpan="8">
+        <nz-form-item>
+          <nz-form-label nzXXl="10" nzXl="10" nzSm="10">场地准备</nz-form-label>
+          <nz-form-control [nzSm]="10" [nzXs]="24">
+            <nz-select class="prodSelect" nzShowSearch nzPlaceHolder="Select a" [(ngModel)]="dataBase.sitePreparation"
+              formControlName="sitePreparation" [disabled]="!flag2">
+              <nz-option nzLabel="标准条款" nzValue="0"></nz-option>
+              <nz-option nzLabel="非标准条款" nzValue="1"></nz-option>
+            </nz-select>
+            <nz-form-explain *ngIf="
               validateForm.get('sitePreparation')?.dirty &&
               validateForm.get('sitePreparation')?.errors
-            "
-          >
-            此选项必填字段
-          </nz-form-explain>
-        </nz-form-control>
-        <nz-form-control [nzSm]="4" [nzXs]="24">
-          <i
-            class="global-form-control-icon"
-            nz-icon
-            nzType="question-circle"
-            nzTheme="outline"
-            nzTitle="可选择标准或非标准条款；如果非飞利浦标准条款，请在备注中描述。可上传支持文件（非必传）"
-            nzPlacement="top"
-            nz-tooltip
-          ></i>
-        </nz-form-control>
-      </nz-form-item>
-    </div>
-    <div nz-col nzSpan="8" *ngIf="dataBase.sitePreparation == 1" nz-tooltip [nzTitle]="dataBase.sitePreparationRemarks">
-      <nz-form-item>
-        <nz-form-control [nzSm]="20" [nzXs]="24">
-          <textarea
-            nz-input
-            placeholder=""
-            oninput="if(value.length>255)value=value.slice(0,255)"
-            nzPlacement="topLeft"
-            [nzAutosize]="{ minRows: 2, maxRows: 6 }"
-            formControlName="sitePreparationRemarks"
-            [(ngModel)]="dataBase.sitePreparationRemarks"
-            [disabled]="!flag2 || disa"
-          ></textarea>
-          <div>还可以输入:{{dataBase.sitePreparationRemarks.length}}/{{textLen}}</div>
-        </nz-form-control>
-      </nz-form-item>
-    </div>
-    <div nz-col nzSpan="4" *ngIf="dataBase.sitePreparation == 1">
-      <nz-form-item>
-        <nz-form-control [nzSm]="24" [nzXs]="24">
-          <!--          sitePreparationFileName-->
-          <nz-upload
-            *ngIf="!disa"
-            [(nzFileList)]="dataBase.sitePreparationFileNameFileList"
-            [nzBeforeUpload]="sitePreparationFileNameBeforeUpload"
-            [nzLimit]="1"
-            [nzPreview]="dwonLoad"
-            [nzRemove]="nzRemovsitePreparation"
-          >
-            <button [disabled]="disa" nz-button>
-              <i nz-icon nzType="upload"></i><span>上传附件</span>
+            ">
+              此选项必填字段
+            </nz-form-explain>
+          </nz-form-control>
+          <nz-form-control [nzSm]="4" [nzXs]="24">
+            <i class="global-form-control-icon" nz-icon nzType="question-circle" nzTheme="outline"
+              nzTitle="可选择标准或非标准条款；如果非飞利浦标准条款，请在备注中描述。可上传支持文件（非必传）" nzPlacement="top" nz-tooltip></i>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzSpan="8" *ngIf="dataBase.sitePreparation == 1" nz-tooltip
+        [nzTitle]="dataBase.sitePreparationRemarks">
+        <nz-form-item>
+          <nz-form-control [nzSm]="20" [nzXs]="24">
+            <textarea nz-input placeholder="" oninput="if(value.length>255)value=value.slice(0,255)"
+              nzPlacement="topLeft" [nzAutosize]="{ minRows: 2, maxRows: 6 }" formControlName="sitePreparationRemarks"
+              [(ngModel)]="dataBase.sitePreparationRemarks" [disabled]="!flag2 || disa"></textarea>
+            <div>还可以输入:{{dataBase.sitePreparationRemarks.length}}/{{textLen}}</div>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzSpan="4" *ngIf="dataBase.sitePreparation == 1">
+        <nz-form-item>
+          <nz-form-control [nzSm]="24" [nzXs]="24">
+            <!--          sitePreparationFileName-->
+            <nz-upload *ngIf="!disa||(flag2&&state==='DOACS')" [(nzFileList)]="dataBase.sitePreparationFileNameFileList"
+              [nzBeforeUpload]="sitePreparationFileNameBeforeUpload" [nzLimit]="1" [nzPreview]="dwonLoad"
+              [nzRemove]="nzRemovsitePreparation">
+              <button  nz-button>
+                <i nz-icon nzType="upload"></i><span>上传附件</span>
+              </button>
+            </nz-upload>
+            <button *ngIf="(disa && dataBase.sitePreparationFileName&&state!=='DOACS')||(disa && dataBase.sitePreparationFileName&&!flag2)" nz-tooltip
+              [nzTitle]="dataBase.sitePreparationFileNames" class="down link-tesk" nz-button nzType="link"
+              (click)="fileDwon(dataBase.sitePreparationFileName)">
+              {{dataBase.sitePreparationFileNames}}
             </button>
-          </nz-upload>
-          <button
-            *ngIf="disa && dataBase.sitePreparationFileName"
-            nz-tooltip [nzTitle]="dataBase.sitePreparationFileNames"
-            class="down link-tesk"
-            nz-button
-            nzType="link"
-            (click)="fileDwon(dataBase.sitePreparationFileName)"
-          >
-          {{dataBase.sitePreparationFileNames}}
-          </button>
-        </nz-form-control>
-      </nz-form-item>
-    </div>
-    <div nz-col nzSpan="4" *ngIf="dataBase.sitePreparation == 1">
-      <nz-form-item>
-        <nz-form-control [nzSm]="24" [nzXs]="24">
-          <button
-            *ngIf="flag2 && !disa"
-            (click)="
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzSpan="4" *ngIf="dataBase.sitePreparation == 1">
+        <nz-form-item>
+          <nz-form-control [nzSm]="24" [nzXs]="24">
+            <button *ngIf="flag2 && !disa" (click)="
               CopyAdd({
                 key: [
                   'sitePreparation',
@@ -554,114 +476,72 @@
                   dataBase.sitePreparationFileNameFileList
                 ]
               })
-            "
-            class="global-center"
-            nz-button
-            nzType="primary"
-            nzShape="circle"
-            nz-tooltip nzTitle="非标准条款时，复制按钮可用。点击可将此条款（包括上传文件）复制到该Deal 中所有进单单位中"
-          >
-            <i nz-icon type="copy"></i>
-          </button>
-        </nz-form-control>
-      </nz-form-item>
+            " class="global-center" nz-button nzType="primary" nzShape="circle" nz-tooltip
+              nzTitle="非标准条款时，复制按钮可用。点击可将此条款（包括上传文件）复制到该Deal 中所有进单单位中">
+              <i nz-icon type="copy"></i>
+            </button>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
     </div>
-  </div>
 
-  <div nz-row nzType="flex" nzJustify="start" nzAlign="top">
-    <div nz-col nzSpan="8">
-      <nz-form-item>
-        <nz-form-label nzXXl="12" nzXl="12" nzSm="12"
-          >安装，验收及保修</nz-form-label
-        >
-        <nz-form-control [nzSm]="8" [nzXs]="24">
-          <nz-select
-            class="prodSelect"
-            nzShowSearch
-
-            nzPlaceHolder="Select a"
-            formControlName="installationWarranty"
-            [(ngModel)]="dataBase.installationWarranty"
-            [disabled]="!flag2"
-          >
-            <nz-option nzLabel="标准条款" nzValue="0"></nz-option>
-            <nz-option nzLabel="非标准条款" nzValue="1"></nz-option>
-          </nz-select>
-          <nz-form-explain
-            *ngIf="
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="top">
+      <div nz-col nzSpan="8">
+        <nz-form-item>
+          <nz-form-label nzXXl="10" nzXl="10" nzSm="10">安装，验收及保修</nz-form-label>
+          <nz-form-control [nzSm]="10" [nzXs]="24">
+            <nz-select class="prodSelect" nzShowSearch nzPlaceHolder="Select a" formControlName="installationWarranty"
+              [(ngModel)]="dataBase.installationWarranty" [disabled]="!flag2">
+              <nz-option nzLabel="标准条款" nzValue="0"></nz-option>
+              <nz-option nzLabel="非标准条款" nzValue="1"></nz-option>
+            </nz-select>
+            <nz-form-explain *ngIf="
               validateForm.get('installationWarranty')?.dirty &&
               validateForm.get('installationWarranty')?.errors
-            "
-          >
-            此选项必填字段
-          </nz-form-explain>
-        </nz-form-control>
-        <nz-form-control [nzSm]="4" [nzXs]="24">
-          <i
-            class="global-form-control-icon"
-            nz-icon
-            nzType="question-circle"
-            nzTheme="outline"
-            nzTitle="可选择标准或非标准条款；如果非飞利浦标准条款，请在备注中描述。可上传支持文件（非必传）"
-            nzPlacement="top"
-            nz-tooltip
-          ></i>
-        </nz-form-control>
-      </nz-form-item>
-    </div>
-    <div nz-col nzSpan="8" *ngIf="dataBase.installationWarranty == 1">
-      <nz-form-item>
-        <nz-form-control [nzSm]="20" [nzXs]="24" nz-tooltip   [nzTitle]="dataBase.installationWarrantyRemarks">
-          <textarea
-            nz-input
-            placeholder=""
-            oninput="if(value.length>255)value=value.slice(0,255)"
-            nzPlacement="topLeft"
-            [nzAutosize]="{ minRows: 2, maxRows: 6 }"
-            [(ngModel)]="dataBase.installationWarrantyRemarks"
-            formControlName="installationWarrantyRemarks"
-            [disabled]="!flag2 || disa"
-          ></textarea>
-          <div>还可以输入:{{dataBase.installationWarrantyRemarks.length}}/{{textLen}}</div>
-        </nz-form-control>
-      </nz-form-item>
-    </div>
-    <div nz-col nzSpan="4" *ngIf="dataBase.installationWarranty == 1">
-      <nz-form-item>
-        <nz-form-control [nzSm]="24" [nzXs]="24">
-          <!--          installationWarrantyFileName-->
-          <nz-upload
-            *ngIf="!disa"
-            [(nzFileList)]="dataBase.installationWarrantyFileNameFileList"
-            [nzBeforeUpload]="installationWarrantyFileNameBeforeUpload"
-            [nzLimit]="1"
-            [nzPreview]="dwonLoad"
-            [nzRemove]="nzRemovinstallationWarranty"
-          >
-            <button [disabled]="disa" nz-button>
-              <i nz-icon nzType="upload"></i><span>上传附件</span>
+            ">
+              此选项必填字段
+            </nz-form-explain>
+          </nz-form-control>
+          <nz-form-control [nzSm]="4" [nzXs]="24">
+            <i class="global-form-control-icon" nz-icon nzType="question-circle" nzTheme="outline"
+              nzTitle="可选择标准或非标准条款；如果非飞利浦标准条款，请在备注中描述。可上传支持文件（非必传）" nzPlacement="top" nz-tooltip></i>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzSpan="8" *ngIf="dataBase.installationWarranty == 1">
+        <nz-form-item>
+          <nz-form-control [nzSm]="20" [nzXs]="24" nz-tooltip [nzTitle]="dataBase.installationWarrantyRemarks">
+            <textarea nz-input placeholder="" oninput="if(value.length>255)value=value.slice(0,255)"
+              nzPlacement="topLeft" [nzAutosize]="{ minRows: 2, maxRows: 6 }"
+              [(ngModel)]="dataBase.installationWarrantyRemarks" formControlName="installationWarrantyRemarks"
+              [disabled]="!flag2 || disa"></textarea>
+            <div>还可以输入:{{dataBase.installationWarrantyRemarks.length}}/{{textLen}}</div>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzSpan="4" *ngIf="dataBase.installationWarranty == 1">
+        <nz-form-item>
+          <nz-form-control [nzSm]="24" [nzXs]="24">
+            <!--          installationWarrantyFileName-->
+            <nz-upload *ngIf="!disa||(flag2&&state==='DOACS')" [(nzFileList)]="dataBase.installationWarrantyFileNameFileList"
+              [nzBeforeUpload]="installationWarrantyFileNameBeforeUpload" [nzLimit]="1" [nzPreview]="dwonLoad"
+              [nzRemove]="nzRemovinstallationWarranty">
+              <button  nz-button>
+                <i nz-icon nzType="upload"></i><span>上传附件</span>
+              </button>
+            </nz-upload>
+            <button *ngIf="(disa && dataBase.installationWarrantyFileName&&state!=='DOACS')||(disa && dataBase.installationWarrantyFileName&&!flag2)" nz-tooltip
+              [nzTitle]="dataBase.installationWarrantyFileNames" class="down link-tesk" nz-button nzType="link"
+              (click)="fileDwon(dataBase.installationWarrantyFileName)">
+              {{dataBase.installationWarrantyFileNames}}
             </button>
-          </nz-upload>
-          <button
-            *ngIf="disa && dataBase.installationWarrantyFileName"
-            nz-tooltip
-            [nzTitle]="dataBase.installationWarrantyFileNames"
-            class="down link-tesk"
-            nz-button
-            nzType="link"
-            (click)="fileDwon(dataBase.installationWarrantyFileName)"
-          >
-            {{dataBase.installationWarrantyFileNames}}
-          </button>
-        </nz-form-control>
-      </nz-form-item>
-    </div>
-    <div nz-col nzSpan="4" *ngIf="dataBase.installationWarranty == 1">
-      <nz-form-item>
-        <nz-form-control [nzSm]="24" [nzXs]="24">
-          <button
-            *ngIf="flag2 && !disa"
-            (click)="
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzSpan="4" *ngIf="dataBase.installationWarranty == 1">
+        <nz-form-item>
+          <nz-form-control [nzSm]="24" [nzXs]="24">
+            <button *ngIf="flag2 && !disa" (click)="
               CopyAdd({
                 key: [
                   'installationWarranty',
@@ -676,139 +556,89 @@
                   dataBase.installationWarrantyFileNameFileList
                 ]
               })
-            "
-            class="global-center"
-            nz-button
-            nzType="primary"
-            nzShape="circle"
-            nz-tooltip nzTitle="非标准条款时，复制按钮可用。点击可将此条款（包括上传文件）复制到该Deal 中所有进单单位中"
-          >
-            <i nz-icon type="copy"></i>
-          </button>
-        </nz-form-control>
-      </nz-form-item>
+            " class="global-center" nz-button nzType="primary" nzShape="circle" nz-tooltip
+              nzTitle="非标准条款时，复制按钮可用。点击可将此条款（包括上传文件）复制到该Deal 中所有进单单位中">
+              <i nz-icon type="copy"></i>
+            </button>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
     </div>
-  </div>
-<div *ngIf="(installSwitch || (disa&&state!='DOACS')) && dataBase.installationWarranty === '1'" nz-row nzType="flex" nzJustify="start" nzAlign="middle">
-  <div nz-col nzSpan="8">
-  </div>
-  <div nz-col nzSpan="8">
-      <nz-form-item>
-        <nz-form-label [nzSm]="9" [nzXs]="24">下一级是否审核</nz-form-label>
-        <nz-form-control [nzSm]="14" [nzXs]="24">
-          <nz-radio-group
-            class="radioClass"
-            formControlName="installationWarrantyRadio"
-            [(ngModel)]="dataBase.installationWarrantyRadio"
-          >
-            <label nz-radio nzValue="1">是</label>
-            <label nz-radio nzValue="0">否</label>
-          </nz-radio-group>
-        </nz-form-control>
-      </nz-form-item>
+    <div *ngIf="(installSwitch || (disa&&state!='DOACS')) && dataBase.installationWarranty === '1'" nz-row nzType="flex"
+      nzJustify="start" nzAlign="middle">
+      <div nz-col nzSpan="8">
+      </div>
+      <div nz-col nzSpan="8">
+        <nz-form-item>
+          <nz-form-label [nzSm]="9" [nzXs]="24">下一级是否审核</nz-form-label>
+          <nz-form-control [nzSm]="14" [nzXs]="24">
+            <nz-radio-group class="radioClass" formControlName="installationWarrantyRadio"
+              [(ngModel)]="dataBase.installationWarrantyRadio">
+              <label nz-radio nzValue="1">是</label>
+              <label nz-radio nzValue="0">否</label>
+            </nz-radio-group>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
     </div>
-  </div>
 
-  <div nz-row nzType="flex" nzJustify="start" nzAlign="top">
-    <div nz-col nzSpan="8">
-      <nz-form-item>
-        <nz-form-label nzXXl="12" nzXl="12" nzSm="12">履约保函</nz-form-label>
-        <nz-form-control [nzSm]="8" [nzXs]="24">
-          <!-- <nz-select
-            class="prodSelect"
-            nzShowSearch
-
-            nzPlaceHolder="Select a"
-            [(ngModel)]="dataBase.performanceBond"
-            formControlName="performanceBond"
-            [disabled]="!flag2"
-          >
-            <nz-option nzLabel="标准条款" nzValue="0"></nz-option>
-            <nz-option nzLabel="非标准条款" nzValue="1"></nz-option>
-          </nz-select> -->
-          <nz-radio-group
-            class="radioClass"
-            [(ngModel)]="dataBase.performanceBond"
-            formControlName="performanceBond"
-            [disabled]="!flag2"
-          >
-            <label nz-radio nzValue="1">需要</label>
-            <label nz-radio nzValue="0">不需要</label>
-          </nz-radio-group>
-          <nz-form-explain
-            *ngIf="
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="top">
+      <div nz-col nzSpan="8">
+        <nz-form-item>
+          <nz-form-label nzXXl="10" nzXl="10" nzSm="10">履约保函</nz-form-label>
+          <nz-form-control [nzSm]="10" [nzXs]="24">
+            <nz-radio-group class="radioClass"  [(ngModel)]="dataBase.performanceBond" formControlName="performanceBond"
+              [disabled]="!flag2">
+              <label nz-radio nzValue="1">需要</label>
+              <label nz-radio nzValue="0">不需要</label>
+            </nz-radio-group>
+            <nz-form-explain *ngIf="
               validateForm.get('performanceBond')?.dirty &&
               validateForm.get('performanceBond')?.errors
-            "
-          >
-            此选项必填字段
-          </nz-form-explain>
-        </nz-form-control>
-        <nz-form-control [nzSm]="4" [nzXs]="24">
-          <i
-            class="global-form-control-icon"
-            nz-icon
-            nzType="question-circle"
-            nzTheme="outline"
-            nzTitle="履约保函如直投项目中客户要求飞利浦出具履约保函，请选择“是”并在备注中详细描述。可上传支持文件（非必传）"
-            nzPlacement="top"
-            nz-tooltip
-          ></i>
-        </nz-form-control>
-      </nz-form-item>
-    </div>
-    <div nz-col nzSpan="8" *ngIf="dataBase.performanceBond == 1">
-      <nz-form-item>
-        <nz-form-control [nzSm]="20" [nzXs]="24" nz-tooltip [nzTitle]="dataBase.performanceBondRemarks">
-          <textarea
-            nz-input
-            oninput="if(value.length>255)value=value.slice(0,255)"
-            placeholder=""
-            nzPlacement="topLeft"
-            [nzAutosize]="{ minRows: 2, maxRows: 6 }"
-            [(ngModel)]="dataBase.performanceBondRemarks"
-            formControlName="performanceBondRemarks"
-            [disabled]="!flag2 || disa"
-          ></textarea>
-          <div>还可以输入:{{dataBase.performanceBondRemarks.length}}/{{textLen}}</div>
-        </nz-form-control>
-      </nz-form-item>
-    </div>
-    <div nz-col nzSpan="4" *ngIf="dataBase.performanceBond == 1">
-      <nz-form-item>
-        <nz-form-control [nzSm]="24" [nzXs]="24">
-          <!--          performanceBondFileName-->
-          <nz-upload
-            *ngIf="!disa"
-            [(nzFileList)]="dataBase.performanceBondFileNameFileList"
-            [nzBeforeUpload]="performanceBondFileNameBeforeUpload"
-            [nzLimit]="1"
-            [nzPreview]="dwonLoad"
-            [nzRemove]="nzRemovperformanceBond"
-          >
-            <button [disabled]="disa" nz-button>
-              <i nz-icon nzType="upload"></i><span>上传附件</span>
+            ">
+              此选项必填字段
+            </nz-form-explain>
+          </nz-form-control>
+          <nz-form-control [nzSm]="4" [nzXs]="24">
+            <i class="global-form-control-icon" nz-icon nzType="question-circle" nzTheme="outline"
+              nzTitle="履约保函如直投项目中客户要求飞利浦出具履约保函，请选择“是”并在备注中详细描述。可上传支持文件（非必传）" nzPlacement="top" nz-tooltip></i>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzSpan="8" *ngIf="dataBase.performanceBond == 1">
+        <nz-form-item>
+          <nz-form-control [nzSm]="20" [nzXs]="24" nz-tooltip [nzTitle]="dataBase.performanceBondRemarks">
+            <textarea nz-input oninput="if(value.length>255)value=value.slice(0,255)" placeholder=""
+              nzPlacement="topLeft" [nzAutosize]="{ minRows: 2, maxRows: 6 }"
+              [(ngModel)]="dataBase.performanceBondRemarks" formControlName="performanceBondRemarks"
+              [disabled]="!flag2 || disa"></textarea>
+            <div>还可以输入:{{dataBase.performanceBondRemarks.length}}/{{textLen}}</div>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzSpan="4" *ngIf="dataBase.performanceBond == 1">
+        <nz-form-item>
+          <nz-form-control [nzSm]="24" [nzXs]="24">
+            <!--          performanceBondFileName-->
+            <nz-upload *ngIf="!disa||(flag2&&state==='DOACS')" [(nzFileList)]="dataBase.performanceBondFileNameFileList"
+              [nzBeforeUpload]="performanceBondFileNameBeforeUpload" [nzLimit]="1" [nzPreview]="dwonLoad"
+              [nzRemove]="nzRemovperformanceBond">
+              <button  nz-button>
+                <i nz-icon nzType="upload"></i><span>上传附件</span>
+              </button>
+            </nz-upload>
+            <button *ngIf="(disa && dataBase.performanceBondFileName&&state!=='DOACS')||(disa && dataBase.performanceBondFileName&&!flag2)" nz-tooltip
+              [nzTitle]="dataBase.performanceBondFileNames" class="down link-tesk" nz-button nzType="link"
+              (click)="fileDwon(dataBase.performanceBondFileName)">
+              {{dataBase.performanceBondFileNames}}
             </button>
-          </nz-upload>
-          <button
-            *ngIf="disa && dataBase.performanceBondFileName"
-            nz-tooltip [nzTitle]="dataBase.performanceBondFileNames"
-            class="down link-tesk"
-            nz-button
-            nzType="link"
-            (click)="fileDwon(dataBase.performanceBondFileName)"
-          >
-            {{dataBase.performanceBondFileNames}}
-          </button>
-        </nz-form-control>
-      </nz-form-item>
-    </div>
-    <div nz-col nzSpan="4" *ngIf="dataBase.performanceBond == 1">
-      <nz-form-item>
-        <nz-form-control [nzSm]="24" [nzXs]="24">
-          <button
-            *ngIf="flag2 && !disa"
-            (click)="
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzSpan="4" *ngIf="dataBase.performanceBond == 1">
+        <nz-form-item>
+          <nz-form-control [nzSm]="24" [nzXs]="24">
+            <button *ngIf="flag2 && !disa" (click)="
               CopyAdd({
                 key: [
                   'performanceBond',
@@ -823,192 +653,184 @@
                   dataBase.performanceBondFileNameFileList
                 ]
               })
-            "
-            class="global-center"
-            nz-button
-            nzType="primary"
-            nzShape="circle"
-            nz-tooltip nzTitle="非标准条款时，复制按钮可用。点击可将此条款（包括上传文件）复制到该Deal 中所有进单单位中"
-          >
-            <i nz-icon type="copy"></i>
-          </button>
-        </nz-form-control>
-      </nz-form-item>
-    </div>
-  </div>
-  <!-- 6固定end -->
-
-  <!-- 其他内容控制select start -->
-  <div nz-row nzType="flex" nzJustify="start" nzAlign="top">
-    <div nz-col nzSpan="8">
-      <nz-form-item>
-        <nz-form-label [nzNoColon]="'true'" [nzSm]="12" [nzXs]="24"
-          ><span class="other">其他条款：</span></nz-form-label
-        >
-        <nz-form-control [nzSm]="10" [nzXs]="24">
-          <div class="product-form-checkbox">
-            <label
-              nz-checkbox
-              formControlName="other1"
-              title="进出口公司选择不在IE pool"
-              [(ngModel)]="dataBase.other1"
-              (ngModelChange)="changeOthers(dataBase.other1, 0)"
-              >进出口公司选择不在IE pool
-            </label
-            >
-            <label
-              nz-checkbox
-              formControlName="other2"
-              title="培训"
-              [(ngModel)]="dataBase.other2"
-              (ngModelChange)="changeOthers(dataBase.other2, 1)"
-              >培训</label
-            >
-            <label
-              nz-checkbox
-              formControlName="other3"
-              title="罚款（不含售后）及违约责任"
-              [(ngModel)]="dataBase.other3"
-              (ngModelChange)="changeOthers(dataBase.other3, 2)"
-              >罚款（不含售后）及违约责任</label
-            >
-            <label
-              nz-checkbox
-              formControlName="other4"
-              title="IP条款"
-              [(ngModel)]="dataBase.other4"
-              (ngModelChange)="changeOthers(dataBase.other4, 3)"
-              >IP条款</label
-            >
-            <label
-              nz-checkbox
-              formControlName="other5"
-              title="非标合同模板"
-              [(ngModel)]="dataBase.other5"
-              (ngModelChange)="changeOthers(dataBase.other5, 4)"
-              >非标合同模板</label
-            >
-            <label
-              nz-checkbox
-              formControlName="other6"
-              title="OCAP"
-              [(ngModel)]="dataBase.other6"
-              (ngModelChange)="changeOthers(dataBase.other6, 5)"
-              >OCAP</label
-            >
-            <div class="freeTextBox">
-              <label
-                nz-checkbox
-                formControlName="other7"
-                title="其他"
-                [(ngModel)]="dataBase.other7"
-                (ngModelChange)="changeOthers(dataBase.other7, 6)"
-              >
-                其他
-              </label>
-              <div *ngIf="dataBase.other7 == true" class="freeText">
-                <nz-form-control nz-tooltip [nzTitle]="dataBase.freeText">
-                <input                
-                  type="text"
-                  oninput="if(value.length>100)value=value.slice(0,100)"
-                  class="textBoxd form-control"
-                  formControlName="freeText"
-                  [(ngModel)]="dataBase.freeText"
-                />
-                <nz-form-explain
-                *ngIf="
-                  validateForm.get('freeText')?.dirty &&
-                  validateForm.get('freeText')?.errors
-                "
-              >
-              <ng-container
-              *ngIf="
-                validateForm
-                  .get('freeText')
-                  ?.hasError('maxlength')
-              "
-              >最大输入100个字符</ng-container>                
-              </nz-form-explain>
-                <!-- <span>还可以输入:{{dataBase.freeText.length}}/{{textLentwo}}</span> -->
-              </nz-form-control>
-              </div>
-            </div>
-          </div>
-          <div class="global-hide">
-            <input
-              type="text"
-              class="form-control"
-              value=""
-              formControlName="other"
-              [(ngModel)]="dataBase.other"
-            />
-          </div>
-        </nz-form-control>
-        <div style="width: 15px; height: 30px; line-height: 30px; display: inline-block">
-          <i
-            class="global-form-control-icon"
-            nz-icon
-            nzType="question-circle"
-            nzTheme="outline"
-            nzTitle="除上述条款外，如有其他非标准条款，请在下表中选择或描述。可上传支持文件（非必传）"
-            nzPlacement="top"
-            nz-tooltip
-          ></i>
-        </div>
-      </nz-form-item>
-    </div>
-    <ng-container *ngIf="otherFile">
-      <div nz-col nzSpan="6" nzOffset="2">
-        <nz-form-item  >
-          <nz-form-control [nzSm]="20" [nzXs]="24" nz-tooltip [nzTitle]="dataBase.otherRemarks">
-            <textarea
-              nz-input
-              placeholder=""
-              oninput="if(value.length>255)value=value.slice(0,255)"
-              nzPlacement="topLeft"
-              [(ngModel)]="dataBase.otherRemarks"
-              [nzAutosize]="{ minRows: 2, maxRows: 6 }"
-              formControlName="otherRemarks"
-              [disabled]="!flag2 || disa"
-            ></textarea>
-            <div>还可以输入:{{dataBase.otherRemarks.length}}/{{textLen}}</div>
-          </nz-form-control>
-        </nz-form-item>
-      </div>
-      <div nz-col nzSpan="4">
-        <nz-form-item>
-          <nz-form-control [nzSm]="24" [nzXs]="24">
-            <!--          otherFilName-->
-            <nz-upload
-              *ngIf="!disa"
-              [(nzFileList)]="dataBase.otherFilNameFileList"
-              [nzBeforeUpload]="otherFilNameBeforeUpload"
-              [nzLimit]="1"
-              [nzPreview]="dwonLoad"
-              [nzRemove]="nzRemovsitePreparation"
-            >
-              <button [disabled]="disa" nz-button>
-                <i nz-icon nzType="upload"></i><span>上传附件</span>
-              </button>
-            </nz-upload>
-            <button
-              *ngIf="disa && dataBase.otherFilName"
-              nz-tooltip [nzTitle]="dataBase.otherFilNames"
-              class="down link-tesk"
-              nz-button
-              nzType="link"
-              (click)="fileDwon(dataBase.otherFilName)"
-            >
-            {{dataBase.otherFilNames}}
+            " class="global-center" nz-button nzType="primary" nzShape="circle" nz-tooltip
+              nzTitle="非标准条款时，复制按钮可用。点击可将此条款（包括上传文件）复制到该Deal 中所有进单单位中">
+              <i nz-icon type="copy"></i>
             </button>
           </nz-form-control>
         </nz-form-item>
       </div>
-      <div nz-col *ngIf="flag2 && !disa" nzSpan="1">
+    </div>
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="top">
+      <div nz-col nzSpan="8">
+        <nz-form-item>
+          <nz-form-label nzXXl="10" nzXl="10" nzSm="10">是否有售后限价</nz-form-label>
+          <nz-form-control [nzSm]="10" [nzXs]="24">
+            <nz-radio-group class="radioClass" [(ngModel)]="dataBase.afterSales"   formControlName="afterSales"
+              [disabled]="!flag2">
+              <label nz-radio class="wid60" nzValue="1">是</label>
+              <label nz-radio class="wid60" nzValue="0">否</label>
+            </nz-radio-group>
+            <nz-form-explain *ngIf="
+              validateForm.get('afterSales')?.dirty &&
+              validateForm.get('afterSales')?.errors
+            ">
+              此选项必填字段
+            </nz-form-explain>
+          </nz-form-control>
+          <nz-form-control [nzSm]="4" [nzXs]="24">
+            <i class="global-form-control-icon" nz-icon nzType="question-circle" nzTheme="outline"
+              nzTitle="选择“是”代表有售后限价，请在备注中描述，需要上传CS的确认邮件（必传）" nzPlacement="top" nz-tooltip></i>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzSpan="8" *ngIf="dataBase.afterSales == 1">
+        <nz-form-item>
+          <nz-form-control [nzSm]="20" [nzXs]="24" nz-tooltip [nzTitle]="dataBase.afterSalesRemarks">
+            <textarea nz-input oninput="if(value.length>255)value=value.slice(0,255)" placeholder=""
+              nzPlacement="topLeft" [nzAutosize]="{ minRows: 2, maxRows: 6 }" [(ngModel)]="dataBase.afterSalesRemarks"
+              formControlName="afterSalesRemarks" [disabled]="!flag2 || disa"></textarea>
+            <ng-container *ngIf="dataBase.afterSalesRemarks">
+              <div>还可以输入:{{dataBase.afterSalesRemarks.length}}/{{textLen}}</div>
+            </ng-container>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzSpan="4" *ngIf="dataBase.afterSales == 1">
         <nz-form-item>
           <nz-form-control [nzSm]="24" [nzXs]="24">
-            <button
-              (click)="
+            <div class="prss">
+              <em>*</em>
+              <nz-upload *ngIf="!disa||(flag2&&state==='DOACS')" [(nzFileList)]="dataBase.afterSalesFileNameFileList"
+                [nzBeforeUpload]="afterSalesFileNameBeforeUpload" [nzLimit]="1" [nzPreview]="dwonLoad"
+                [nzRemove]="nzRemoveafterSales">
+                <button  nz-button>
+                  <i nz-icon nzType="upload"></i><span>上传附件</span>
+                </button>
+              </nz-upload>
+            </div>
+            <button *ngIf="(disa && dataBase.afterSalesFileName&&state!=='DOACS')||(disa && dataBase.afterSalesFileName&&!flag2)" nz-tooltip [nzTitle]="dataBase.afterSalesFileNames"
+              class="down link-tesk" nz-button nzType="link" (click)="fileDwon(dataBase.afterSalesFileName)">
+              {{dataBase.afterSalesFileNames?dataBase.afterSalesFileNames:"文件下载"}}
+            </button>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzSpan="4" *ngIf="dataBase.afterSales == 1">
+        <nz-form-item>
+          <nz-form-control [nzSm]="24" [nzXs]="24">
+            <button *ngIf="flag2 && !disa" (click)="
+              CopyAdd({
+                key: [
+                  'afterSales',
+                  'afterSalesRemarks',
+                  'afterSalesFileName',
+                  'afterSalesFileNameFileList'
+                ],
+                val: [
+                  dataBase.afterSales,
+                  dataBase.afterSalesRemarks,
+                  dataBase.afterSalesFileName,
+                  dataBase.afterSalesFileNameFileList
+                ]
+              })
+            " class="global-center" nz-button nzType="primary" nzShape="circle" nz-tooltip
+              nzTitle="非标准条款时，复制按钮可用。点击可将此条款（包括上传文件）复制到该Deal 中所有进单单位中">
+              <i nz-icon type="copy"></i>
+            </button>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+    <!-- 6固定end -->
+
+    <!-- 其他内容控制select start -->
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="top">
+      <div nz-col nzSpan="8">
+        <nz-form-item>
+          <nz-form-label [nzNoColon]="'true'" [nzSm]="10" [nzXs]="24"><span class="other">其他条款:</span></nz-form-label>
+          <nz-form-control [nzSm]="10" [nzXs]="24">
+            <div class="product-form-checkbox">
+              <label nz-checkbox formControlName="other1" title="进出口公司选择不在IE pool" [(ngModel)]="dataBase.other1"
+                (ngModelChange)="changeOthers(dataBase.other1, 0)">进出口公司选择不在IE pool
+              </label>
+              <label nz-checkbox formControlName="other2" title="培训" [(ngModel)]="dataBase.other2"
+                (ngModelChange)="changeOthers(dataBase.other2, 1)">培训</label>
+              <label nz-checkbox formControlName="other3" title="罚款（不含售后）及违约责任" [(ngModel)]="dataBase.other3"
+                (ngModelChange)="changeOthers(dataBase.other3, 2)">罚款（不含售后）及违约责任</label>
+              <label nz-checkbox formControlName="other4" title="IP条款" [(ngModel)]="dataBase.other4"
+                (ngModelChange)="changeOthers(dataBase.other4, 3)">IP条款</label>
+              <label nz-checkbox formControlName="other5" title="非标合同模板" [(ngModel)]="dataBase.other5"
+                (ngModelChange)="changeOthers(dataBase.other5, 4)">非标合同模板</label>
+              <label nz-checkbox formControlName="other6" title="OCAP" [(ngModel)]="dataBase.other6"
+                (ngModelChange)="changeOthers(dataBase.other6, 5)">OCAP</label>
+              <div class="freeTextBox">
+                <label nz-checkbox formControlName="other7" title="其他" [(ngModel)]="dataBase.other7"
+                  (ngModelChange)="changeOthers(dataBase.other7, 6)">
+                  其他
+                </label>
+                <div *ngIf="dataBase.other7 == true" class="freeText">
+                  <nz-form-control nz-tooltip [nzTitle]="dataBase.freeText">
+                    <input type="text" oninput="if(value.length>100)value=value.slice(0,100)"
+                      class="textBoxd form-control" formControlName="freeText" [(ngModel)]="dataBase.freeText" />
+                    <nz-form-explain *ngIf="
+                  validateForm.get('freeText')?.dirty &&
+                  validateForm.get('freeText')?.errors
+                ">
+                      <ng-container *ngIf="
+                validateForm
+                  .get('freeText')
+                  ?.hasError('maxlength')
+              ">最大输入100个字符</ng-container>
+                    </nz-form-explain>
+                    <!-- <span>还可以输入:{{dataBase.freeText.length}}/{{textLentwo}}</span> -->
+                  </nz-form-control>
+                </div>
+              </div>
+            </div>
+            <div class="global-hide">
+              <input type="text" class="form-control" value="" formControlName="other" [(ngModel)]="dataBase.other" />
+            </div>
+          </nz-form-control>
+          <div style="width: 15px; height: 30px; line-height: 30px; display: inline-block">
+            <i class="global-form-control-icon" nz-icon nzType="question-circle" nzTheme="outline"
+              nzTitle="除上述条款外，如有其他非标准条款，请在下表中选择或描述。可上传支持文件（非必传）" nzPlacement="top" nz-tooltip></i>
+          </div>
+        </nz-form-item>
+      </div>
+      <ng-container *ngIf="otherFile">
+        <div nz-col nzSpan="6" nzOffset="2">
+          <nz-form-item>
+            <nz-form-control [nzSm]="20" [nzXs]="24" nz-tooltip [nzTitle]="dataBase.otherRemarks">
+              <textarea nz-input placeholder="" oninput="if(value.length>255)value=value.slice(0,255)"
+                nzPlacement="topLeft" [(ngModel)]="dataBase.otherRemarks" [nzAutosize]="{ minRows: 2, maxRows: 6 }"
+                formControlName="otherRemarks" [disabled]="!flag2 || disa"></textarea>
+              <div>还可以输入:{{dataBase.otherRemarks.length}}/{{textLen}}</div>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div nz-col nzSpan="4">
+          <nz-form-item>
+            <nz-form-control [nzSm]="24" [nzXs]="24">
+              <!--          otherFilName-->
+              <nz-upload *ngIf="!disa||(flag2&&state==='DOACS')" [(nzFileList)]="dataBase.otherFilNameFileList"
+                [nzBeforeUpload]="otherFilNameBeforeUpload" [nzLimit]="1" [nzPreview]="dwonLoad"
+                [nzRemove]="nzRemovsitePreparation">
+                <button nz-button>
+                  <i nz-icon nzType="upload"></i><span>上传附件</span>
+                </button>
+              </nz-upload>
+              <button *ngIf="(disa && dataBase.otherFilName&&state!=='DOACS')||(disa && dataBase.otherFilName&&!flag2)" nz-tooltip [nzTitle]="dataBase.otherFilNames"
+                class="down link-tesk" nz-button nzType="link" (click)="fileDwon(dataBase.otherFilName)">
+                {{dataBase.otherFilNames}}
+              </button>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div nz-col *ngIf="flag2 && !disa" nzSpan="1">
+          <nz-form-item>
+            <nz-form-control [nzSm]="24" [nzXs]="24">
+              <button (click)="
                 CopyAdd({
                   key: [
                     'other1',
@@ -1035,84 +857,48 @@
                     dataBase.otherFilNameFileList
                   ]
                 })
-              "
-              class="global-center"
-              nz-button
-              nzType="primary"
-              nzShape="circle"
-              nz-tooltip nzTitle="非标准条款时，复制按钮可用。点击可将此条款（包括上传文件）复制到该Deal 中所有进单单位中"
-            >
-              <i nz-icon type="copy"></i>
-            </button>
-          </nz-form-control>
-        </nz-form-item>
-      </div>
-    </ng-container>
-  </div>
+              " class="global-center" nz-button nzType="primary" nzShape="circle" nz-tooltip
+                nzTitle="非标准条款时，复制按钮可用。点击可将此条款（包括上传文件）复制到该Deal 中所有进单单位中">
+                <i nz-icon type="copy"></i>
+              </button>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </ng-container>
+    </div>
+  </ng-container>
   <!-- 其他内容控制select end -->
-  <div *ngIf="dataBases.businessModel=='DIRECT'" nz-row nzType="flex" nzJustify="start" nzAlign="top">
+  <div *ngIf="dataBases.businessModel=='DIRECT'&&dataBases.entryMode=='BIDDING'" nz-row nzType="flex" nzJustify="start"
+    nzAlign="top">
     <div nz-col nzSpan="8">
       <nz-form-item>
-        <nz-form-label nzXXl="12" nzXl="12" nzSm="12"
-          >直投订单合同金额和中标金额有价差</nz-form-label
-        >
-        <nz-form-control [nzSm]="8" [nzXs]="24">
-          <!-- <nz-select
-            class="prodSelect"
-            nzShowSearch
-            nzPlaceHolder="Select a"
-            [(ngModel)]="dataBase.amountDifference"
-            formControlName="amountDifference"
-            [disabled]="!flag2"
-          >
-            <nz-option nzLabel="标准条款" nzValue="0"></nz-option>
-            <nz-option nzLabel="非标准条款" nzValue="1"></nz-option>
-          </nz-select> -->
-          <nz-radio-group
-            class="radioClass"
-            [(ngModel)]="dataBase.amountDifference"
-            formControlName="amountDifference"
-            [disabled]="!flag2"
-          >
+        <nz-form-label nzXXl="10" nzXl="10" nzSm="10">直投订单合同金额和中标金额有价差</nz-form-label>
+        <nz-form-control [nzSm]="10" [nzXs]="24">
+          <nz-radio-group class="radioClass" [(ngModel)]="dataBase.amountDifference" formControlName="amountDifference"
+            [disabled]="!flag2">
             <label nz-radio nzValue="1">是</label>
             <label nz-radio nzValue="0">否</label>
           </nz-radio-group>
-          <nz-form-explain
-            *ngIf="
+          <nz-form-explain *ngIf="
               validateForm.get('amountDifference')?.dirty &&
               validateForm.get('amountDifference')?.errors
-            "
-          >
+            ">
             此选项必填字段
           </nz-form-explain>
         </nz-form-control>
         <nz-form-control [nzSm]="4" [nzXs]="24">
-          <i
-            class="global-form-control-icon"
-            nz-icon
-            nzType="question-circle"
-            nzTheme="outline"
-            nzTitle="销售选择“是”或“否”；如果有价差，需上传支持文件（必传）"
-            nzPlacement="top"
-            nz-tooltip
-          ></i>
+          <i class="global-form-control-icon" nz-icon nzType="question-circle" nzTheme="outline"
+            nzTitle="销售选择“是”或“否”；如果有价差，需上传支持文件（必传）" nzPlacement="top" nz-tooltip></i>
         </nz-form-control>
       </nz-form-item>
     </div>
     <div nz-col nzSpan="8" *ngIf="dataBase.amountDifference == 1">
       <nz-form-item>
         <nz-form-control [nzSm]="20" [nzXs]="24" nz-tooltip [nzTitle]="dataBase.amountDifferenceRemarks">
-          <textarea
-            nz-input
-            placeholder=""
-            oninput="if(value.length>255)value=value.slice(0,255)"
-            nzPlacement="topLeft"
-            [nzAutosize]="{ minRows: 2, maxRows: 6 }"
-            [(ngModel)]="dataBase.amountDifferenceRemarks"
-            formControlName="amountDifferenceRemarks"
-            [disabled]="!flag2 || disa"
-            style="max-height: 9rem;overflow:auto;"
-          ></textarea>
+          <textarea nz-input placeholder="" oninput="if(value.length>255)value=value.slice(0,255)" nzPlacement="topLeft"
+            [nzAutosize]="{ minRows: 2, maxRows: 6 }" [(ngModel)]="dataBase.amountDifferenceRemarks"
+            formControlName="amountDifferenceRemarks" [disabled]="!flag2 || disa"
+            style="max-height: 9rem;overflow:auto;"></textarea>
           <div>还可以输入:{{dataBase.amountDifferenceRemarks.length}}/{{textLen}}</div>
         </nz-form-control>
       </nz-form-item>
@@ -1121,27 +907,16 @@
       <nz-form-item>
         <nz-form-control [nzSm]="24" [nzXs]="24">
           <!--          amountDifferenceFileName-->
-          <nz-upload
-            *ngIf="!disa"
-            [(nzFileList)]="dataBase.amountDifferenceFileNameFileList"
-            [nzBeforeUpload]="amountDifferenceFileNameBeforeUpload"
-            [nzLimit]="1"
-            [nzPreview]="dwonLoad"
-            [nzRemove]="nzRemovamountDifference"
-          >
-            <button [disabled]="disa" nz-button>
+          <nz-upload *ngIf="!disa||(flag2&&state==='DOACS')" [(nzFileList)]="dataBase.amountDifferenceFileNameFileList"
+            [nzBeforeUpload]="amountDifferenceFileNameBeforeUpload" [nzLimit]="1" [nzPreview]="dwonLoad"
+            [nzRemove]="nzRemovamountDifference">
+            <button nz-button>
               <i nz-icon nzType="upload"></i><span>上传附件</span>
             </button>
           </nz-upload>
-          <button
-            style="position: relative; top: -13px"
-            *ngIf="disa && dataBase.amountDifferenceFileName"
-            nz-tooltip [nzTitle]="dataBase.amountDifferenceFileNames"
-            class="down link-tesk"
-            nz-button
-            nzType="link"
-            (click)="fileDwon(dataBase.amountDifferenceFileName)"
-          >
+          <button style="position: relative; top: -13px" *ngIf="(disa && dataBase.amountDifferenceFileName&&state!=='DOACS')||(disa && dataBase.amountDifferenceFileName&&!flag2)" nz-tooltip
+            [nzTitle]="dataBase.amountDifferenceFileNames" class="down link-tesk" nz-button nzType="link"
+            (click)="fileDwon(dataBase.amountDifferenceFileName)">
             {{dataBase.amountDifferenceFileNames}}
           </button>
         </nz-form-control>
@@ -1150,9 +925,7 @@
     <div nz-col nzSpan="4" *ngIf="dataBase.amountDifference == 1">
       <nz-form-item>
         <nz-form-control [nzSm]="24" [nzXs]="24">
-          <button
-            *ngIf="flag2 && !disa"
-            (click)="
+          <button *ngIf="flag2 && !disa" (click)="
               CopyAdd({
                 key: [
                   'amountDifference',
@@ -1167,13 +940,8 @@
                   dataBase.amountDifferenceFileNameFileList
                 ]
               })
-            "
-            class="global-center"
-            nz-button
-            nzType="primary"
-            nzShape="circle"
-            nz-tooltip nzTitle="非标准条款时，复制按钮可用。点击可将此条款（包括上传文件）复制到该Deal 中所有进单单位中"
-          >
+            " class="global-center" nz-button nzType="primary" nzShape="circle" nz-tooltip
+            nzTitle="非标准条款时，复制按钮可用。点击可将此条款（包括上传文件）复制到该Deal 中所有进单单位中">
             <i nz-icon type="copy"></i>
           </button>
         </nz-form-control>
@@ -1185,56 +953,34 @@
   <div *ngIf="dataBases.sampleAuditFlag=='1'" nz-row nzType="flex" nzJustify="start" nzAlign="top">
     <div nz-col nzSpan="8">
       <nz-form-item>
-        <nz-form-label nzXXl="12" nzXl="12" nzSm="12"
-          >支持文件缺失需特批进单</nz-form-label
-        >
-        <nz-form-control [nzSm]="8" [nzXs]="24">
-          <nz-radio-group
-            class="radioClass"
-            [(ngModel)]="dataBase.supportFileMissing"
-            formControlName="supportFileMissing"
-            [disabled]="!flag2"
-            (ngModelChange)="supportChange()"
-          >
+        <nz-form-label nzXXl="10" nzXl="10" nzSm="10">支持文件缺失需特批进单</nz-form-label>
+        <nz-form-control [nzSm]="10" [nzXs]="24">
+          <nz-radio-group class="radioClass" [(ngModel)]="dataBase.supportFileMissing"
+            formControlName="supportFileMissing" [disabled]="!flag2" (ngModelChange)="supportChange($event)">
             <label nz-radio nzValue="1">是</label>
             <label nz-radio nzValue="0">否</label>
           </nz-radio-group>
-          <nz-form-explain
-            *ngIf="
+          <nz-form-explain *ngIf="
               validateForm.get('supportFileMissing')?.dirty &&
               validateForm.get('supportFileMissing')?.errors
-            "
-          >
+            ">
             此选项必填字段
           </nz-form-explain>
         </nz-form-control>
         <nz-form-control [nzSm]="4" [nzXs]="24">
-          <i
-            class="global-form-control-icon"
-            nz-icon
-            nzType="question-circle"
-            nzTheme="outline"
-            nzTitle="销售选择“是”或“否”；如缺少场地报告、用户合同等OIT必备文件，注明缺少文件名称，并可上传支持文件（非必传）"
-            nzPlacement="top"
-            nz-tooltip
-          ></i>
+          <i class="global-form-control-icon" nz-icon nzType="question-circle" nzTheme="outline"
+            nzTitle="销售选择“是”或“否”；如缺少场地报告、用户合同等OIT必备文件，注明缺少文件名称，并可上传支持文件（非必传）" nzPlacement="top" nz-tooltip></i>
         </nz-form-control>
       </nz-form-item>
     </div>
     <ng-container *ngIf="dataBase.supportFileMissing === '1'">
       <div nz-col nzSpan="8">
         <nz-form-item>
-          <nz-form-control [nzSm]="20" [nzXs]="24"  nz-tooltip [nzTitle]="dataBase.supportFileMissingRemarks">
-            <textarea
-              nz-input
-              oninput="if(value.length>255)value=value.slice(0,255)"
-              placeholder=""
-              nzPlacement="topLeft"
-              [nzAutosize]="{ minRows: 2, maxRows: 6 }"
-              formControlName="supportFileMissingRemarks"
-              [disabled]="!flag2 || disa"
-              [(ngModel)]="dataBase.supportFileMissingRemarks"
-            ></textarea>
+          <nz-form-control [nzSm]="20" [nzXs]="24" nz-tooltip [nzTitle]="dataBase.supportFileMissingRemarks">
+            <textarea nz-input oninput="if(value.length>255)value=value.slice(0,255)" placeholder=""
+              nzPlacement="topLeft" [nzAutosize]="{ minRows: 2, maxRows: 6 }"
+              formControlName="supportFileMissingRemarks" [disabled]="!flag2 || disa"
+              [(ngModel)]="dataBase.supportFileMissingRemarks"></textarea>
             <div>还可以输入:{{dataBase.supportFileMissingRemarks.length}}/{{textLen}}</div>
           </nz-form-control>
         </nz-form-item>
@@ -1243,26 +989,16 @@
         <nz-form-item>
           <nz-form-control [nzSm]="24" [nzXs]="24">
             <!--          supportFileMissingFileName-->
-            <nz-upload
-              *ngIf="!disa"
-              [(nzFileList)]="dataBase.supportFileMissingFileNameFileList"
-              [nzBeforeUpload]="supportFileMissingFileNameBeforeUpload"
-              [nzLimit]="1"
-              [nzPreview]="dwonLoad"
-              [nzRemove]="nzRemovsupportFileMissing"
-            >
-              <button [disabled]="disa" nz-button>
+            <nz-upload *ngIf="!disa||(flag2&&state==='DOACS')" [(nzFileList)]="dataBase.supportFileMissingFileNameFileList"
+              [nzBeforeUpload]="supportFileMissingFileNameBeforeUpload" [nzLimit]="1" [nzPreview]="dwonLoad"
+              [nzRemove]="nzRemovsupportFileMissing">
+              <button nz-button>
                 <i nz-icon nzType="upload"></i><span>上传附件</span>
               </button>
             </nz-upload>
-            <button
-              *ngIf="disa && dataBase.supportFileMissingFileName"
-              nz-tooltip [nzTitle]="dataBase.supportFileMissingFileNames"
-              class="down link-tesk"
-              nz-button
-              nzType="link"
-              (click)="fileDwon(dataBase.supportFileMissingFileName)"
-            >
+            <button *ngIf="(disa && dataBase.supportFileMissingFileName&&state!=='DOACS')||(disa && dataBase.supportFileMissingFileName&&!flag2)" nz-tooltip
+              [nzTitle]="dataBase.supportFileMissingFileNames" class="down link-tesk" nz-button nzType="link"
+              (click)="fileDwon(dataBase.supportFileMissingFileName)">
               {{dataBase.supportFileMissingFileNames}}
             </button>
           </nz-form-control>
@@ -1271,14 +1007,8 @@
       <div nz-col nzSpan="4">
         <nz-form-item>
           <nz-form-control [nzSm]="24" [nzXs]="24">
-            <button
-              style="position: relative; top: -13px"
-              *ngIf="flag2 && !disa"
-              class="global-center"
-              nz-button
-              nzType="primary"
-              nzShape="circle"
-              (click)="
+            <button style="position: relative; top: -13px" *ngIf="flag2 && !disa" class="global-center" nz-button
+              nzType="primary" nzShape="circle" (click)="
                 CopyAdd({
                   key: [
                     'supportFileMissing',
@@ -1293,9 +1023,7 @@
                     dataBase.supportFileMissingFileNameFileList
                   ]
                 })
-              "
-              nz-tooltip nzTitle="非标准条款时，复制按钮可用。点击可将此条款（包括上传文件）复制到该Deal 中所有进单单位中"
-            >
+              " nz-tooltip nzTitle="非标准条款时，复制按钮可用。点击可将此条款（包括上传文件）复制到该Deal 中所有进单单位中">
               <i nz-icon type="copy"></i>
             </button>
           </nz-form-control>
@@ -1304,3 +1032,6 @@
     </ng-container>
   </div>
 </form>
+<nz-modal [(nzVisible)]="isAgre" nzWidth="650px" nzTitle="查看详情" [nzFooter]="null" (nzOnCancel)="isAgreCancel()">
+    <app-table-show #child [data]="this.dealshow"></app-table-show>
+</nz-modal>

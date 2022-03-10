@@ -26,7 +26,7 @@
       <td nzWidth="200px" style="word-break: break-all;"  [nzAlign]="nzAlign" nowrap>
        <div class="innerboxs" *ngIf="checkHtml(data.comment)"  [innerHTML]="data.comment"></div>
        <div class="innerbox"  nz-tooltip [nzTitle]="data.comment" *ngIf="!checkHtml(data.comment)">
-        {{data.comment}}
+        {{(data.comment!==null&&data.comment!=="null")?data.comment:""}}
        </div>
       </td>
       <td nzWidth="200px" style="word-break: break-all;"  [nzAlign]="nzAlign">

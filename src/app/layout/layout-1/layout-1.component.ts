@@ -1,10 +1,12 @@
 import { Component, AfterViewInit, OnDestroy } from '@angular/core';
 import { LayoutService } from '../layout.service';
 
+
+
 @Component({
   selector: 'app-layout-1',
   templateUrl: './layout-1.component.html',
-  styles: [':host { display: block; background-color: whitesmoke; }', ':host /deep/ .layout-loading .sidenav-link { transition: none !important; }']
+  styles: [':host { display: block; background-color: #f5f5f5; }', ':host /deep/ .layout-loading .sidenav-link { transition: none !important; }']
 })
 export class Layout1Component implements AfterViewInit, OnDestroy {
   // Prevent "blink" effect

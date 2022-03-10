@@ -3,13 +3,13 @@
   <nz-card class="mtb1rem" [nzTitle]="nzTitle()">
     <form nz-form [formGroup]="validateForm">
       <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
-        <div nz-col nzXs="24" nzSm="24" nzMd="12">
+        <div nz-col nzXs="24" nzSm="24" nzMd="24">
           <nz-form-item class="mb6">
             <nz-form-label nzXs="24" nzSm="24" nzMd="7" class="ywms labelcs" nzRequired nzFor="email">业务模式</nz-form-label>
-            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <nz-form-control nzXs="24" nzSm="24" nzMd="6">
               <ng-template [ngIf]="isDisable">
                 <nz-select nzSize="default" [disabled]="isDisable" name="name" [ngModelOptions]="{standalone: true}"
-                           [(ngModel)]="dataBase.businessType" (ngModelChange)="selectChange($event)"
+                           [(ngModel)]="dataBase.businessType" (ngModelChange)="selectChange()"
                            style="width: 100%;">
                   <nz-option *ngFor="let item of empowerList" [nzValue]="item.code" [nzLabel]="item.label"></nz-option>
                 </nz-select>
@@ -17,7 +17,7 @@
               <ng-template [ngIf]="!isDisable">
                 <nz-select nzSize="default" [disabled]="isDisable" name="name" formControlName="businessType"
                            [(ngModel)]="dataBase.businessType" nzPlaceHolder="请选择"
-                           (ngModelChange)="selectChange($event)"
+                           (ngModelChange)="selectChange()"
                            style="width: 100%;">
                   <nz-option *ngFor="let item of empowerList" [nzValue]="item.code" [nzLabel]="item.label"></nz-option>
                 </nz-select>
@@ -74,13 +74,13 @@
           </div>
         </div>
         <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
-          <div nz-col nzXs="24" nzSm="24" nzMd="12">
+          <div nz-col nzXs="24" nzSm="24" nzMd="24">
             <nz-form-item>
-              <nz-form-label nzXs="24" nzSm="24" nzMd="6" class="ywms labelcs"
-                             [nzRequired]="dataBase.tenderAuthorization=='nonprivate'"
+              <nz-form-label nzXs="24" nzSm="24" nzMd="7" class="ywms labelcs"
+                             [nzRequired]="true"
                              nzFor="email">投标公司名称
               </nz-form-label>
-              <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <nz-form-control nzXs="24" nzSm="24" nzMd="6">
                 <nz-select nzSize="default" style="width: 100%;" formControlName="biddingNames"
                            [(ngModel)]="dataBase.biddingNames" (ngModelChange)="selectName($event)" zShowSearch
                            nzAllowClear
@@ -100,10 +100,10 @@
           <div nzXs="24" nzSm="24" nzMd="12" nz-col>
             <nz-form-item>
               <nz-form-label class="mb0 labelcs ywms" nzXs="24" nzSm="24" nzMd="12"
-                             [nzRequired]="dataBase.tenderAuthorization=='nonprivate'"
+                             [nzRequired]="true"
                              nzFor="email">投标公司注册地址
               </nz-form-label>
-              <nz-form-control nzXs="24" nzSm="24" nzMd="12" nz-tooltip [nzTitle]="dataBase.biddingComRegAddress">
+              <nz-form-control nzXs="24" nzSm="24" nzMd="12" nz-tooltip>
                 <ng-template [ngIf]="isDisable">
                   <input nzSize="default" [disabled]="isDisable" [ngModelOptions]="{standalone: true}" nz-input
                          name="email"
@@ -122,13 +122,12 @@
           </div>
           <div nzXs="24" nzSm="24" nzMd="12" nz-col>
             <nz-form-item>
-              <nz-form-label nzXs="24" nzSm="24" nzMd="12" [nzRequired]="dataBase.tenderAuthorization=='nonprivate'"
-                             class="mb0 ml10 labelcs ywms"
+              <nz-form-label nzXs="24" nzSm="24" nzMd="12" [nzRequired]="true"
+                             class="labelcs ywms"
                              nzFor="email">投标公司注册所在地
               </nz-form-label>
               <nz-form-control nzXs="24" nzSm="24" nzMd="12">
-                <nz-select nzSize="default" disabled="true" formControlName="biddingComRegCode" name="name"
-                           style="min-width:150px;" [(ngModel)]="dataBase.biddingComRegCode">
+                <nz-select nzSize="default" disabled="true" formControlName="biddingComRegCode" name="name"  [(ngModel)]="dataBase.biddingComRegCode">
                   <nz-option *ngFor="let item of processList let i=index" [nzValue]="item.value" [nzLabel]="item.name">
                   </nz-option>
                 </nz-select>
@@ -185,7 +184,7 @@
               </nz-form-explain>
             </nz-form-control>
             <nz-form-control>
-          <textarea [disabled]="isDisable" [readonly]="isReadonly" formControlName="logisticsDescription" rows="4" [ngClass]="{'textarea':!isReadonly,'textarea1':isReadonly||isDisable}"
+          <textarea [disabled]="isDisable || approved.supResult" [readonly]="isReadonly" formControlName="logisticsDescription" rows="4" [ngClass]="{'textarea':!isReadonly,'textarea1':isReadonly||isDisable}"
                     [(ngModel)]="dataBase.logisticsDescription" (ngModelChange)="changeLogisticsDescription()"></textarea>
               <nz-form-explain
                 *ngIf="validateForm.get('logisticsDescription')?.dirty && validateForm.get('logisticsDescription')?.errors">
@@ -200,7 +199,7 @@
               <div class="explain"><span *ngIf="redstar" style="color: #f5222d">*&ensp;</span>售后维修条款说明</div>
             </nz-form-control>
             <nz-form-control>
-          <textarea [disabled]="isDisable" formControlName="afterSalesInstructions" rows="4" [ngClass]="{'textarea':!isDisable,'textarea1':isDisable}"
+          <textarea [disabled]="isDisable || approved.proResult" formControlName="afterSalesInstructions" rows="4" [ngClass]="{'textarea':!isDisable,'textarea1':isDisable}"
                     [(ngModel)]="dataBase.afterSalesInstructions"></textarea>
               <nz-form-explain
                 *ngIf="validateForm.get('afterSalesInstructions')?.dirty && validateForm.get('afterSalesInstructions')?.errors">
@@ -219,9 +218,9 @@
                                                                      style="color: #f5222d">*&ensp;</span>A.预计投标价格：币种
               </nz-form-control>
               <nz-form-control [nzSm]="4" style="width: 130px">
-                <nz-select [disabled]="isDisable" formControlName="tenderPriceCurrencys"
+                <nz-select [disabled]="isDisable || approved.qaResult" formControlName="tenderPriceCurrencys"
                            (ngModelChange)="selectTenderPrice($event)" style="width: 120px;margin-left:10px"
-                           [(ngModel)]="dataBase.tenderPriceCurrencys" nzAllowClear nzPlaceHolder="请选择">
+                           [(ngModel)]="dataBase.tenderPriceCurrencys" nzAllowClear [nzPlaceHolder]="isDisable ? '' : '请选择'">
                   <nz-option nzValue="USD" nzLabel="USD"></nz-option>
                   <nz-option nzValue="CNY" nzLabel="CNY"></nz-option>
                 </nz-select>
@@ -232,7 +231,7 @@
               </nz-form-control>
               <nz-form-control [nzSm]="4" style="width: 40px"><span class="ml10">金额</span></nz-form-control>
               <nz-form-control [nzSm]="4" style="width: 180px">
-                <input #price1 [disabled]="isDisable" formControlName="tenderPriceCurrency" placeholder="" nz-input style="width: 90%"
+                <input #price1 [disabled]="isDisable || approved.qaResult" formControlName="tenderPriceCurrency" placeholder="" nz-input style="width: 90%"
                                  class="flex-short" [(ngModel)]="dataBase.tenderPriceCurrency"
                        (ngModelChange)="toNumber($event)" />
                 <nz-form-explain
@@ -249,11 +248,24 @@
         <div nz-row class="p20 mt10">
           <div nz-col nzXXl="24" nzXl="24" class="explain flex">
             <nz-form-item>
-              <nz-form-control [nzSm]="4" style="width: 230px"><span *ngIf="redstar"
-                                                                     style="color: #f5222d">*&ensp;</span>B.投标保证金：不小于投标总价的
+              <nz-form-control [nzSm]="4" style="width: 142px"><span *ngIf="redstar"
+                                                                     style="color: #f5222d">*&ensp;</span>B.投标保证金：币种
               </nz-form-control>
+              <nz-form-control [nzSm]="4" style="width: 130px">
+                <nz-select [disabled]="isDisable" formControlName="bidPriceCurrency"
+                           style="width: 120px;margin-left:10px"
+                           [(ngModel)]="dataBase.bidPriceCurrency" nzAllowClear [nzPlaceHolder]="isDisable ? '' : '请选择'">
+                  <nz-option nzValue="USD" nzLabel="USD"></nz-option>
+                  <nz-option nzValue="CNY" nzLabel="CNY"></nz-option>
+                </nz-select>
+                <nz-form-explain
+                  *ngIf="validateForm.get('bidPriceCurrency')?.dirty && validateForm.get('bidPriceCurrency')?.errors">
+                  此选项必填字段
+                </nz-form-explain>
+              </nz-form-control>
+              <nz-form-control [nzSm]="4" style="width: 124px"><span class="ml10">不小于投标总价的</span></nz-form-control>
               <nz-form-control [nzSm]="4" style="width: 110px">
-                <input #num1 nz-input [disabled]="isDisable" type="number" formControlName="percentageTotalPrice"
+                <input #num1 nz-input [disabled]="isDisable || approved.qaResult" type="number" formControlName="percentageTotalPrice"
                                  placeholder=""
                                  nzSize="middle" class="flex-min" [(ngModel)]="dataBase.percentageTotalPrice"
                        (ngModelChange)="toNumber4($event)" />
@@ -265,7 +277,7 @@
               </nz-form-control>
               <nz-form-control [nzSm]="4" style="width: 66px"><span class="ml10">或金额</span></nz-form-control>
               <nz-form-control [nzSm]="4" style="width: 180px">
-                <input #price2 [disabled]="isDisable" formControlName="totalPrice" nz-input style="width: 90%"
+                <input #price2 [disabled]="isDisable || approved.qaResult" formControlName="totalPrice" nz-input style="width: 90%"
                                  [(ngModel)]="dataBase.totalPrice" placeholder="" nzSize="middle" class="flex-shor"
                                  (ngModelChange)="toNumber2($event)" />
                 <nz-form-explain
@@ -282,11 +294,24 @@
         <div nz-row class="p20 mt10">
           <div nz-col nzXXl="24" nzXl="24" class="explain flex">
             <nz-form-item>
-              <nz-form-control [nzSm]="4" style="width: 190px"><span *ngIf="redstar"
-                                                                     style="color: #f5222d">*&ensp;</span>C.履约保证金：合同总价的
+              <nz-form-control [nzSm]="4" style="width: 140px"><span *ngIf="redstar"
+                                                                     style="color: #f5222d">*&ensp;</span>C.履约保证金：币种
               </nz-form-control>
+              <nz-form-control [nzSm]="4" style="width: 130px">
+                <nz-select [disabled]="isDisable" formControlName="performanceBondsCurrency"
+                           style="width: 120px;margin-left:10px"
+                           [(ngModel)]="dataBase.performanceBondsCurrency" nzAllowClear [nzPlaceHolder]="isDisable ? '' : '请选择'">
+                  <nz-option nzValue="USD" nzLabel="USD"></nz-option>
+                  <nz-option nzValue="CNY" nzLabel="CNY"></nz-option>
+                </nz-select>
+                <nz-form-explain
+                  *ngIf="validateForm.get('performanceBondsCurrency')?.dirty && validateForm.get('performanceBondsCurrency')?.errors">
+                  此选项必填字段
+                </nz-form-explain>
+              </nz-form-control>
+              <nz-form-control [nzSm]="4" style="width: 80px"><span class="ml10">合同总价的</span></nz-form-control>
               <nz-form-control [nzSm]="4" style="width: 110px">
-                <input #num2 nz-input [disabled]="isDisable" type="number" formControlName="marginLevel" nz-input
+                <input #num2 nz-input [disabled]="isDisable || approved.qaResult" type="number" formControlName="marginLevel" nz-input
                                  placeholder="" [(ngModel)]="dataBase.marginLevel" nzSize="middle" class="flex-min"
                        (ngModelChange)="toNumber5($event)" />
                 %
@@ -297,7 +322,7 @@
               </nz-form-control>
               <nz-form-control [nzSm]="4" style="width: 66px"><span class="ml10">或金额</span></nz-form-control>
               <nz-form-control [nzSm]="4" style="width: 180px">
-                <input #price3 [disabled]="isDisable" formControlName="performanceBonds" nz-input  style="width: 90%"
+                <input #price3 [disabled]="isDisable || approved.qaResult" formControlName="performanceBonds" nz-input  style="width: 90%"
                                  [(ngModel)]="dataBase.performanceBonds" placeholder="" nzSize="middle" class="flex-shor"
                                  (ngModelChange)="toNumber3($event)" />
                 <nz-form-explain
@@ -317,7 +342,7 @@
             <nz-form-item style="width:100%">
               <nz-form-control><span *ngIf="redstar" style="color: #f5222d">*&ensp;</span>付款方式说明</nz-form-control>
               <nz-form-control style="width: 450px">
-                <nz-select [disabled]="isDisable" (nzOpenChange)="changePayment($event)"
+                <nz-select [disabled]="isDisable || approved.finResult" (nzOpenChange)="changePayment()"
                            formControlName="paymentDescription" nzSpan="24"
                            [(ngModel)]="dataBase.paymentDescription" nzAllowClear nzPlaceHolder="请选择">
                   <nz-option *ngFor="let item of dataBase.paymentList" [nzValue]="item.dictValue"
@@ -346,7 +371,7 @@
                 </nz-form-explain>
               </nz-form-control>
               <nz-form-control>
-            <textarea [disabled]="isDisable" formControlName="paymentDescriptions"
+            <textarea [disabled]="isDisable || approved.finResult" formControlName="paymentDescriptions"
                       [(ngModel)]="dataBase.paymentDescriptions" rows="4" [ngClass]="{'textarea':!isDisable,'textarea1':isDisable}"></textarea>
                 <nz-form-explain
                   *ngIf="validateForm.get('paymentDescriptions')?.dirty && validateForm.get('paymentDescriptions')?.errors">
@@ -367,7 +392,7 @@
               <div class="explain"><span *ngIf="redstar" style="color: #f5222d">*&ensp;</span>技术条款说明</div>
             </nz-form-control>
             <nz-form-control>
-            <textarea [disabled]="isDisable" formControlName="technicalTerms" rows="4"
+            <textarea [disabled]="isDisable || approved.marResult" formControlName="technicalTerms" rows="4"
                       [(ngModel)]="dataBase.technicalTerms" [ngClass]="{'textarea':!isDisable,'textarea1':isDisable}"></textarea>
               <nz-form-explain
                 *ngIf="validateForm.get('technicalTerms')?.dirty && validateForm.get('technicalTerms')?.errors">
@@ -382,7 +407,7 @@
               <div class="explain"><span *ngIf="redstar" style="color: #f5222d">*&ensp;</span>涉及法律条款说明</div>
             </nz-form-control>
             <nz-form-control>
-            <textarea [disabled]="isDisable" formControlName="legalProvisions" rows="4"
+            <textarea [disabled]="isDisable || approved.lawResult" formControlName="legalProvisions" rows="4"
                       [(ngModel)]="dataBase.legalProvisions" [ngClass]="{'textarea':!isDisable,'textarea1':isDisable}"></textarea>
               <nz-form-explain
                 *ngIf="validateForm.get('legalProvisions')?.dirty && validateForm.get('legalProvisions')?.errors">
@@ -434,7 +459,7 @@
           </div>
         </div>
         <div nz-row>
-          <div nz-col nzXs="24" nzSm="24" nzMd="12">
+          <div nz-col nzXs="24" nzSm="24" nzMd="24">
             <nz-form-item class="mb6">
               <nz-form-label nzXs="24" nzSm="24" nzMd="7" class="ywms labelcs"
                              [nzRequired]="dataBase.tenderAuthorization=='nonprivate'"
@@ -458,38 +483,28 @@
               </nz-form-control>
             </nz-form-item>
           </div>
-          <div nz-col nzXs="24" nzSm="24" nzMd="12">
+        </div>
+        <div nz-row>
+          <div nz-col nzXs="24" nzSm="24" nzMd="24">
             <nz-form-item class="mb6">
               <nz-form-label nzXs="24" nzSm="24" nzMd="7" class="ywms labelcs"
-                             [nzRequired]="dataBase.tenderAuthorization=='nonprivate'"
+                             [nzRequired]="true"
                              nzFor="email">投标公司名称
               </nz-form-label>
-              <nz-form-control nzXs="24" nzSm="24" nzMd="10">
-                <input [disabled]="isDisable" [title]="dataBase.biddingNames" type="text" nz-input
-                       formControlName="biddingNames" [(ngModel)]="dataBase.biddingNames"/>
-                <!-- <nz-input-group [nzSuffix]="suffixTemplate">
-                  <input [disabled]="isDisable" type="text" nz-input formControlName="biddingNames" [(ngModel)]="dataBase.biddingNames"/>
-                </nz-input-group>
-                <ng-template #suffixTemplate
-                  ><i
-                    nz-icon
-                    nz-tooltip
-                    class="ant-input-clear-icon"
-                    nzTheme="fill"
-                    nzType="close-circle"
-                    *ngIf="dataBase.biddingNames"
-                    (click)="dataBase.biddingNames = null"
-                  ></i
-                ></ng-template> -->
-                <nz-form-explain
-                  *ngIf="validateForm.get('biddingNames')?.dirty && validateForm.get('biddingNames')?.errors">
-                  此选项必填字段
-                </nz-form-explain>
-              </nz-form-control>
-              <nz-form-control nzXs="24" nzSm="24" nzMd="4">
-                <button [disabled]="isDisable||dataBase.agentBidding=='nonagency'" nz-button class="ml6" nzType="primary"
-                        (click)="showAgent()">选择经销商
-                </button>
+              <nz-form-control nzXs="24" nzSm="24" nzMd="7">
+                <div nz-col nzSpan="24">
+                  <div nz-col nzXs="24" nzSm="24" nzMd="14" nzLg="14" nzXl="17" nzXXl="18">
+                    <input [disabled]="isDisable" [title]="dataBase.biddingNames" type="text" nz-input formControlName="biddingNames" [(ngModel)]="dataBase.biddingNames"/>
+                      <nz-form-explain *ngIf="validateForm.get('biddingNames')?.dirty && validateForm.get('biddingNames')?.errors">
+                        此选项必填字段
+                      </nz-form-explain>
+                  </div>
+<!--              <nz-form-control nzXs="24" nzSm="24" nzMd="4">-->
+                  <div nz-col nzXs="24" nzSm="24" nzMd="6" nzLg="6" nzXl="6" nzXXl="6">
+                    <button [disabled]="isDisable||dataBase.agentBidding=='nonagency'" nz-button class="ml6" nzType="primary" (click)="showAgent()">选择经销商</button>
+                  </div>
+<!--              </nz-form-control>-->
+                </div>
               </nz-form-control>
             </nz-form-item>
           </div>
@@ -498,10 +513,10 @@
           <div nz-col nzXs="24" nzSm="24" nzMd="12">
             <nz-form-item>
               <nz-form-label nzXs="24" nzSm="24" nzMd="7" class="ywms labelcs"
-                             [nzRequired]="dataBase.tenderAuthorization=='nonprivate'"
+                             [nzRequired]="true"
                              nzFor="email">投标公司注册地址
               </nz-form-label>
-              <nz-form-control nzXs="24" nzSm="24" nzMd="14" nz-tooltip [nzTitle]="dataBase.biddingComRegAddress">
+              <nz-form-control nzXs="24" nzSm="24" nzMd="12" nz-tooltip>
                 <ng-template [ngIf]="isDisable">
                   <input [disabled]="isDisable" [(ngModel)]="dataBase.biddingComRegAddress"
                          [ngModelOptions]="{standalone: true}" nz-input
@@ -535,16 +550,15 @@
           </div>
           <div nz-col nzXs="24" nzSm="24" nzMd="12">
             <nz-form-item>
-              <nz-form-label nzXs="24" nzSm="24" nzMd="7" class="ywms labelcs"
-                             [nzRequired]="dataBase.tenderAuthorization=='nonprivate'"
+              <nz-form-label nzXs="24" nzSm="24" nzMd="12" class="ywms labelcs"
+                             [nzRequired]="true"
                              nzFor="email">投标公司注册所在地
               </nz-form-label>
-              <nz-form-control nzXs="24" nzSm="24" nzMd="12" nzXl="12" nzXXl="14">
+              <nz-form-control nzXs="24" nzSm="24" nzMd="12">
                 <ng-template [ngIf]="isDisable">
                   <!--                  <input [disabled]="isDisable" [title]="dataBase.biddingComRegCode"  [ngModelOptions]="{standalone: true}" nz-input name="email"-->
                   <!--                    [(ngModel)]="dataBase.biddingComRegCode" type="email">-->
-                  <nz-select nzSize="default" disabled="true" formControlName="biddingComRegCode" name="name"
-                             style="min-width:150px;" [(ngModel)]="dataBase.biddingComRegCode">
+                  <nz-select nzSize="default" disabled="true" formControlName="biddingComRegCode" name="name" [(ngModel)]="dataBase.biddingComRegCode">
                     <nz-option *ngFor="let item of processList let i=index" [nzValue]="item.value"
                                [nzLabel]="item.name">
                     </nz-option>
@@ -553,8 +567,7 @@
                 <ng-template [ngIf]="!isDisable">
                   <!--                  <input nz-input  [title]="dataBase.biddingComRegCode" [(ngModel)]="dataBase.biddingComRegCode" formControlName="biddingComRegCode"-->
                   <!--                    type="text">-->
-                  <nz-select nzSize="default" formControlName="biddingComRegCode" name="name"
-                             style="min-width:150px;" [(ngModel)]="dataBase.biddingComRegCode">
+                  <nz-select nzSize="default" formControlName="biddingComRegCode" name="name" [(ngModel)]="dataBase.biddingComRegCode">
                     <nz-option *ngFor="let item of processList let i=index" [nzValue]="item.value"
                                [nzLabel]="item.name">
                     </nz-option>
@@ -585,12 +598,12 @@
         <div nz-row>
           <div nz-col nzXs="24" nzSm="24" nzMd="12">
             <nz-form-item class="mb6">
-              <nz-form-label [nzSpan]="7" class="ywms labelcs" [nzRequired]="dataBase.tenderAuthorization=='nonprivate'"
+              <nz-form-label [nzSpan]="7" class="ywms labelcs"
                              nzFor="email">投标公司DDP状态
               </nz-form-label>
-              <nz-form-control nzXs="24" nzSm="24" nzMd="14" nzXl="14" nzXXl="14" nz-tooltip [nzTitle]="TrunBiddingDdpState(dataBase.biddingDdpState)">
+              <nz-form-control nzXs="24" nzSm="24" nzMd="12">
                 <ng-template [ngIf]="isDisable">
-                  <nz-select [disabled]="isDisable" style="min-width:180px;width:100%"
+                  <nz-select [disabled]="isDisable"
                              [ngModelOptions]="{standalone: true}" [(ngModel)]="dataBase.biddingDdpState">
                     <nz-option *ngFor="let item of stats let i=index" [nzValue]="item.value" [nzLabel]="item.name">
                     </nz-option>
@@ -598,7 +611,7 @@
                   <a *ngIf="mess_ddp" style="color: #f5222d">无经销商DDP信息，请重新选择或输入经销商/投标公司信息。</a>
                 </ng-template>
                 <ng-template [ngIf]="!isDisable">
-                  <nz-select [disabled]="isDisable" style="min-width:180px;width:100%" formControlName="biddingDdpState"
+                  <nz-select [disabled]="isDisable" formControlName="biddingDdpState"
                              [(ngModel)]="dataBase.biddingDdpState">
                     <nz-option *ngFor="let item of stats let i=index" [nzValue]="item.value" [nzLabel]="item.name">
                     </nz-option>
@@ -612,16 +625,35 @@
               </nz-form-control>
             </nz-form-item>
           </div>
-        </div>
-        <div nz-row>
+
           <div nz-col nzXs="24" nzSm="24" nzMd="12">
+            <nz-form-item class="mb6">
+              <nz-form-label [nzSpan]="7" class="ywms labelcs" 
+                             nzFor="email">投标公司DDP有效期截至日期
+              </nz-form-label>
+              <nz-form-control nzXs="24" nzSm="24" nzMd="12">
+                <nz-date-picker *ngIf="!isDisable" nzSize="large"  style="width: 100%" formControlName="biddingDdpDate" [(ngModel)]="dataBase.biddingDdpDate" (ngModelChange)="biddingDdpDateChange()"></nz-date-picker>
+                <nz-date-picker *ngIf="isDisable" nzSize="large" [nzPlaceHolder]="''" [ngModelOptions]="{ standalone: true }" disabled="true" style="width: 100%" [(ngModel)]="dataBase.biddingDdpDate"></nz-date-picker>
+                <nz-form-explain *ngIf=" validateForm.get('biddingDdpDate')?.dirty && validateForm.get('biddingDdpDate')?.errors">
+                  <ng-container *ngIf="validateForm.get('biddingDdpDate')?.hasError('required')" >此选项必填字段</ng-container>
+                  <ng-container *ngIf="validateForm.get('biddingDdpDate')?.hasError('dataform')">yyyy-mm-dd</ng-container>
+                </nz-form-explain>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+        </div>
+
+
+        <div nz-row>
+          <div nz-col nzXs="24" nzSm="24" nzMd="24">
             <nz-form-item class="mb6">
               <!-- && dataBase.agentBidding != 'nonagency'-->
               <nz-form-label nzXs="24" nzSm="24" nzMd="7" class="ywms labelcs"
                              [nzRequired]="dataBase.tenderAuthorization=='nonprivate' || dataBase.tenderAuthorization=='private'"
                              nzFor="email">协议经销商名称
               </nz-form-label>
-              <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <nz-form-control nzXs="24" nzSm="24" nzMd="7">
                 <div nz-col nzSpan="24">
                   <div nz-col nzXs="24" nzSm="24" nzMd="14" nzLg="14" nzXl="17" nzXXl="18">
                     <ng-template [ngIf]="isDisable">
@@ -654,6 +686,140 @@
               </nz-form-control> -->
             </nz-form-item>
           </div>
+        </div>
+
+        <div nz-row style="margin-top: 10px">
+          <div nz-col nzXs="24" nzSm="24" nzMd="12">
+            <nz-form-item class="mb6">
+              <nz-form-label [nzSpan]="7" class="ywms labelcs" 
+                             nzFor="email">协议经销商DDP状态
+              </nz-form-label>
+              <nz-form-control nzXs="24" nzSm="24" nzMd="12">
+                <ng-template [ngIf]="isDisable">
+                  <nz-select [disabled]="isDisable" style="min-width:180px;width:100%"
+                             [ngModelOptions]="{standalone: true}" [(ngModel)]="dataBase.agreementDealerDdpState">
+                    <nz-option *ngFor="let item of stats let i=index" [nzValue]="item.value" [nzLabel]="item.name">
+                    </nz-option>
+                  </nz-select>
+                  <!--                  <a *ngIf="mess_ddp" style="color: #f5222d">无经销商DDP信息，请重新选择或输入经销商/投标公司信息。</a>-->
+                </ng-template>
+                <ng-template [ngIf]="!isDisable">
+                  <nz-select [disabled]="isDisable" style="min-width:180px;width:100%" formControlName="agreementDealerDdpState"
+                             [(ngModel)]="dataBase.agreementDealerDdpState">
+                    <nz-option *ngFor="let item of stats let i=index" [nzValue]="item.value" [nzLabel]="item.name">
+                    </nz-option>
+                  </nz-select>
+                  <!--                  <a *ngIf="mess_ddp" style="color: #f5222d">无经销商DDP信息，请重新选择或输入经销商/投标公司信息。</a>-->
+                  <nz-form-explain
+                    *ngIf="validateForm.get('agreementDealerDdpState')?.dirty && validateForm.get('agreementDealerDdpState')?.errors">
+                    此选项必填字段
+                  </nz-form-explain>
+                </ng-template>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+          <div nz-col nzXs="24" nzSm="24" nzMd="12">
+            <nz-form-item class="mb6">
+              <nz-form-label [nzSpan]="7" class="ywms labelcs" 
+                             nzFor="email">经销商DDP有效期截至日期
+              </nz-form-label>
+              <nz-form-control nzXs="24" nzSm="24" nzMd="12">
+                <nz-date-picker *ngIf="!isDisable" nzSize="large" style="width: 100%" formControlName="agreementDealerDdpDate" [(ngModel)]="dataBase.agreementDealerDdpDate" (ngModelChange)="agreementDealerDdpDateChange()"></nz-date-picker>
+                <nz-date-picker *ngIf="isDisable" nzSize="large" [nzPlaceHolder]="''" [ngModelOptions]="{ standalone: true }" disabled="true" style="width: 100%" [(ngModel)]="dataBase.agreementDealerDdpDate" ></nz-date-picker>
+                <nz-form-explain *ngIf=" validateForm.get('agreementDealerDdpDate')?.dirty && validateForm.get('agreementDealerDdpDate')?.errors">
+                  <ng-container *ngIf="validateForm.get('agreementDealerDdpDate')?.hasError('required')" >此选项必填字段</ng-container>
+                  <ng-container *ngIf="validateForm.get('agreementDealerDdpDate')?.hasError('dataform')">yyyy-mm-dd</ng-container>
+                </nz-form-explain>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+        </div>
+
+        <div nz-row>
+          <div nz-col nzXs="24" nzSm="24" nzMd="12">
+            <nz-form-item class="mb6">
+              <nz-form-label [nzSpan]="7" class="ywms labelcs" [nzRequired]="true"
+                             nzFor="email">经销商协议
+              </nz-form-label>
+              <nz-form-control nzXs="24" nzSm="24" nzMd="12">
+                <ng-template [ngIf]="isDisable">
+                  <div nz-tooltip [nzTitle]="titleTemplate" (mouseenter)="AgreeTitle()" nzOverlayClassName="tooltip-pree" nzPlacement="bottom" nzMouseLeaveDelay="0.2">
+                  <nz-select [disabled]="isDisable" style="min-width:180px;width:100%"
+                             [ngModelOptions]="{standalone: true}" [(ngModel)]="dataBase.distributorAgreement" nzMode="multiple">
+                    <!--                    <nz-option *ngFor="let item of distributorAgreementList let i=index" [nzValue]="item.value" [nzLabel]="item.name">-->
+                    <!--                    </nz-option>-->
+<!--                    <ng-container *ngFor="let item of selAgent_all let i=index">-->
+<!--                      <nz-option *ngIf="item.dealerCode == this.dataBase.dealerNo" [nzValue]="item.agreementNo" [nzLabel]="item.agreementNo">-->
+<!--                      </nz-option>-->
+<!--                    </ng-container>-->
+                    <ng-container *ngFor="let item of dataBase.distributorAgreement let i=index">
+                      <nz-option [nzValue]="item" [nzLabel]="item">
+                      </nz-option>
+                    </ng-container>
+                  </nz-select>
+                  </div>
+                  <!--                  <a *ngIf="mess_ddp" style="color: #f5222d">无经销商DDP信息，请重新选择或输入经销商/投标公司信息。</a>-->
+                </ng-template>
+                <ng-template [ngIf]="!isDisable">
+                  <div nz-tooltip [nzTitle]="titleTemplate" (mouseenter)="AgreeTitle()" nzOverlayClassName="tooltip-pree" nzPlacement="bottom" nzMouseLeaveDelay="0.2">
+                  <nz-select [disabled]="isDisable" style="min-width:180px;width:100%" formControlName="distributorAgreement"
+                             [(ngModel)]="dataBase.distributorAgreement" nzMode="multiple">
+                    <!--                    <nz-option *ngFor="let item of distributorAgreementList let i=index" [nzValue]="item.value" [nzLabel]="item.name">-->
+                    <!--                    </nz-option>-->
+                    <ng-container *ngFor="let item of selAgent_all let i=index">
+                      <nz-option *ngIf="item.dealerCode == this.dataBase.dealerNo" [nzValue]="item.agreementNo" [nzLabel]="item.agreementNo">
+                      </nz-option>
+                    </ng-container>
+                  </nz-select>
+                  </div>
+                  <!--                  <a *ngIf="mess_ddp" style="color: #f5222d">无经销商DDP信息，请重新选择或输入经销商/投标公司信息。</a>-->
+                  <nz-form-explain
+                    *ngIf="validateForm.get('distributorAgreement')?.dirty && validateForm.get('distributorAgreement')?.errors">
+                    此选项必填字段
+                  </nz-form-explain>
+                </ng-template>
+                <ng-template #titleTemplate>
+                    <pre *ngFor="let item of dataBase.distributorAgreement"><ng-container *ngIf="agreetitleList[item]">{{item}}
+{{'授权产品：' + agreetitleList[item].authorizedProduct}}
+{{'授权区域：' + agreetitleList[item].authorizedArea}}</ng-container>
+                    </pre>
+                </ng-template>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+          <div nz-col nzXs="24" nzSm="24" nzMd="12">
+            <nz-form-item class="mb6">
+              <nz-form-label [nzSpan]="7" class="ywms labelcs" [nzRequired]="true"
+                             nzFor="email">协议经销商类型
+              </nz-form-label>
+              <nz-form-control nzXs="24" nzSm="24" nzMd="12">
+                <ng-template [ngIf]="isDisable">
+                  <nz-select [disabled]="isDisable" style="min-width:180px;width:100%"
+                             [ngModelOptions]="{standalone: true}" [(ngModel)]="dataBase.distributorType">
+                    <nz-option *ngFor="let item of distributorTypeList let i=index" [nzValue]="item.value" [nzLabel]="item.name">
+                    </nz-option>
+                  </nz-select>
+                  <!--                  <a *ngIf="mess_ddp" style="color: #f5222d">无经销商DDP信息，请重新选择或输入经销商/投标公司信息。</a>-->
+                </ng-template>
+                <ng-template [ngIf]="!isDisable">
+                  <nz-select [disabled]="isDisable" style="min-width:180px;width:100%" formControlName="distributorType"
+                             [(ngModel)]="dataBase.distributorType">
+                    <nz-option *ngFor="let item of distributorTypeList let i=index" [nzValue]="item.value" [nzLabel]="item.name">
+                    </nz-option>
+                  </nz-select>
+                  <!--                  <a *ngIf="mess_ddp" style="color: #f5222d">无经销商DDP信息，请重新选择或输入经销商/投标公司信息。</a>-->
+                  <nz-form-explain
+                    *ngIf="validateForm.get('distributorType')?.dirty && validateForm.get('distributorType')?.errors">
+                    此选项必填字段
+                  </nz-form-explain>
+                </ng-template>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
         </div>
 
         <div nz-row class="mt10">
@@ -693,19 +859,31 @@
 
         <div *ngIf="dataBase.agentBidding != 'nonagency'">
         <div nz-row>
-          <div nz-col nzXs="24" nzSm="24" nzMd="12">
+          <div nz-col nzXs="24" nzSm="24" nzMd="24">
             <nz-form-item class="mb6">
               <nz-form-label nzXs="24" nzSm="24" nzMd="7" class="ywms labelcs" nzFor="email">打印投标委托函(2选1)</nz-form-label>
-              <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-                <button class="down nml10" nz-button nzType="link" (click)="joinPdfUrl('TBWT2')">飞利浦不出具投标授权</button>
-                <button class="down nml10" nz-button nzType="link" (click)="joinPdfUrl('TBWT')">飞利浦直接出授权给二级经销商</button>
+
+              <ng-container *ngIf="dataBase.distributorAgreement && dataBase.distributorAgreement.length > 0">
+              <nz-form-control nzXs="24" nzSm="24" nzMd="17">
+                <div *ngFor="let item of dataBase.distributorAgreement">
+                  <span class="itbox">{{item}}</span>
+                  <button class="down nml10" nz-button nzType="link" (click)="joinPdfUrl('TBWT2', item)">飞利浦不出具投标授权</button>
+                  <button class="down nml10" nz-button nzType="link" (click)="joinPdfUrl('TBWT', item)">飞利浦直接出授权给二级经销商</button>
+                </div>
               </nz-form-control>
+              </ng-container>
+              <ng-container *ngIf="!(dataBase.distributorAgreement && dataBase.distributorAgreement.length > 0)">
+                <nz-form-control nzXs="24" nzSm="24" nzMd="17">
+                  <button class="down nml10" nz-button nzType="link" (click)="joinPdfUrl('TBWT2', null)">飞利浦不出具投标授权</button>
+                  <button class="down nml10" nz-button nzType="link" (click)="joinPdfUrl('TBWT', null)">飞利浦直接出授权给二级经销商</button>
+                </nz-form-control>
+              </ng-container>
             </nz-form-item>
           </div>
         </div>
         <div nz-row>
           <div class="flex">
-            <label style="color: rgba(0,0,0,.85); text-align: right;"><span style="color: #f5222d; font-family: SimSun,sans-serif; font-size: 14px"
+            <label style="color: rgba(0,0,0,.85); text-align: right;width: 210px"><span style="color: #f5222d; font-family: SimSun,sans-serif; font-size: 14px"
                          *ngIf="dataBase.agentBidding == 'agency' && dataBase.tenderAuthorization == 'nonprivate'">*&ensp;</span>协议经销商出具投标委托函 :
               <br>非二级经销商投标模式无需上传</label>
             <div style="display: inline-block; margin-left: 12px;max-width:200px;">

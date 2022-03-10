@@ -123,6 +123,9 @@
             此选项必填字段
           </nz-form-explain>
         </nz-form-control>
+        <nz-form-control [nzSm]="4" [nzXs]="24" style="min-width: 265px">
+          <a style="margin-left: 10px">请确保中标价格与中标通知书金额一致</a>
+        </nz-form-control>
       </nz-form-item>
     </div>
     <!--<div nz-col nzSpan="24" *ngIf="isChan">
@@ -149,6 +152,31 @@
         </nz-form-control>
       </nz-form-item>
     </div>
+
+    <div nz-col nzSpan="24">
+      <nz-form-item>
+        <nz-form-label [nzSm]="4" [nzXs]="24" nzRequired>是否特价项目</nz-form-label>
+        <nz-form-control [nzSm]="6" [nzXs]="24">
+          <!--不可编辑-->
+      <nz-radio-group rows="4" *ngIf="(isDisable==2||isDisable==3) || flag" [disabled]="isDisable==2||isDisable==3 || flag" nzSize="default" [ngModelOptions]="{standalone: true}"
+                      [(ngModel)]="data.isSpecial">
+        <label nz-radio nzValue="1">是</label>
+        <label nz-radio nzValue="0">否</label>
+      </nz-radio-group>
+          <!--可编辑-->
+      <nz-radio-group rows="4" *ngIf="!(isDisable==2||isDisable==3) && !flag" nzSize="default" formControlName="isSpecial"
+                      [(ngModel)]="data.isSpecial">
+        <label nz-radio nzValue="1">是</label>
+        <label nz-radio nzValue="0">否</label>
+      </nz-radio-group>
+      <nz-form-explain
+        *ngIf="validateForm.get('isSpecial')?.dirty && validateForm.get('isSpecial')?.errors">
+        此选项必填字段
+      </nz-form-explain>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+
     <!--中标日期   可选择-->
     <div nz-col nzSpan="24" *ngIf="isChan2()&&!(isDisable==2||isDisable==3)&&!flag">
       <nz-form-item class="mb6">
@@ -203,7 +231,8 @@
         <nz-form-control [nzSm]="18" [nzXs]="24">
           <div class="cheabox" *ngFor="let it of data.biddingProductlist">
             <header>
-              <a href="javascript:" style="cursor: default;">Opportunity {{it.opportunityId}}</a>
+              <a href="javascript:" style="cursor: default;">Opportunity : {{it.opportunityId}}</a>
+              <a href="javascript:" style="cursor: default;" *ngIf="it.dealFormId != null && it.dealFormId != ''">&nbsp; Deal Form ID : {{it.dealFormId}}</a>
             </header>
             <div *ngIf="it.biddingProductlist">
             <nz-table
@@ -256,7 +285,7 @@
                 <td>{{ itmk.createdDate | TimeFormatePipeNow}}</td>
                 <td>{{ itmk.createUser }}</td>
 <!--                <td>{{ itmk.status }}</td>-->
-                <td nzRight="0px"><input nz-input style="width: 180px" [id]="'c'+i" [ngModelOptions]="{standalone: true}"  [(ngModel)]="itmk.biddingPrice"  nzSize="default" (ngModelChange)="toNumber2($event, itmk.biddingPrice, 'c'+i)" /></td>
+                <td nzRight="0px"><input nz-input style="width: 180px" [id]="'c'+i+itmk.opportunityId+itmk.dealFormId" [ngModelOptions]="{standalone: true}"  [(ngModel)]="itmk.biddingPrice"  nzSize="default" (ngModelChange)="toNumber2($event, itmk.biddingPrice, 'c'+i+itmk.opportunityId+itmk.dealFormId)" /></td>
               </tr>
               </tbody>
             </nz-table>
@@ -293,7 +322,8 @@
         <nz-form-control [nzSm]="18" [nzXs]="24">
           <div class="cheabox" *ngFor="let it of data.biddingProductlist">
             <header>
-              <a href="javascript:" style="cursor: default;">Opportunity {{it.opportunityId}}</a>
+              <a href="javascript:" style="cursor: default;">Opportunity : {{it.opportunityId}}</a>
+              <a href="javascript:" style="cursor: default;" *ngIf="it.dealFormId != null && it.dealFormId != ''">&nbsp; Deal Form ID : {{it.dealFormId}}</a>
             </header>
 
             <div *ngIf="it.biddingProductlist">

@@ -1,8 +1,9 @@
 import { Component, OnInit,ViewChild} from '@angular/core';
-import { decodeString, formatDatesNow,NumberThousandth} from '../../../assets/js/tools';
+import { decodeString, formatDatesNow,NumberThousandth,standardTime} from '../../../assets/js/tools';
 import { HttpService } from '../../services';
 import { NzMessageService } from 'ng-zorro-antd';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ServesiceService } from '../preOrder/servesice.service';
 
 @Component({
   selector: 'app-consign',
@@ -12,7 +13,17 @@ import { ActivatedRoute, Router } from '@angular/router';
 export class ConsignComponent implements OnInit {
 
   // tab标签
+  isAgres:any=false;
+   //弹窗的数据
+   public showData={  
+    refuseReason:"",
+    remarks:"",
+    file:"",
+    title:"",
+    code:"",
+  }
   activedId: any = 'tab3';
+  @ViewChild('child') child;
   @ViewChild('childbase') public childbase;
   param = {
     mainId: '',
@@ -47,9 +58,13 @@ export class ConsignComponent implements OnInit {
     contractDate: null, // 合同确认日期
     isContract: '', // 正式合同已上传
     contractFile: '', // 合同文件
+    fileList:[], //合同文件多文件上传
     contractFileNames:"",//
     priceTerms: '', // 价格术语
     tmpList: [], //合同模版
+    addressee:"", //收件人
+    addresseeTel:"",//收件人电话
+    reason:"",//退回理由
   };
   public dataBase: any = {
     detail: {
@@ -81,6 +96,8 @@ export class ConsignComponent implements OnInit {
     priceTerms: '', // 价格术语
     fileFileList: [], //文件列表
     tmpList: [],//合同列表
+    addressee:"", //收件人
+    addresseeTel:"",//收件人电话
   };
 
   public osData: any = {};
@@ -88,6 +105,7 @@ export class ConsignComponent implements OnInit {
   constructor(private http: HttpService,
     private message: NzMessageService,
     public activatedRouter: ActivatedRoute,
+    private ServesiceService: ServesiceService,
     private router: Router) { }
 
   ngOnInit() {
@@ -106,10 +124,8 @@ export class ConsignComponent implements OnInit {
       cpData=await this.getCpdata();
       orderData= await this.getOrderSummary(contractData,cpData);      
       signingData= await this.getDataDetail(); 
-      //await this.getBase();
-      orderData.distributor=orderData.agent;    
-      this.mergeData=Object.assign(contractData,orderData,signingData);       
-      console.log(this.dataBase)
+      //await this.getBase();        
+      this.mergeData=Object.assign(contractData,orderData,signingData); 
       await this.getTemplate();
       await this.getBaseOrder();
      
@@ -125,11 +141,15 @@ export class ConsignComponent implements OnInit {
       this.http.get(url2).subscribe((rest => {
         // console.log('ordersum');
         // console.log(rest);        
-        if (rest.data) {
-          this.osData = rest.data;
-          this.osData.entryMode=param.entryMode;
+        if (rest.data) {          
+          this.osData = rest.data;         
           this.osData.entryMode=param.entryMode //进单模式
-          this.osData.region = param.region;//区域
+          this.osData.team=param.team;//team
+          this.osData.region = param.region;//大区域
+          this.osData.smallArea = param.smallArea;//小区域
+          this.osData.endUserId=param.endUserId; //最终用户id
+          this.osData.poolEndDate=standardTime(param.poolEndDate);//外贸易公司日期  
+          this.osData.contractEndDate=standardTime(param.contractEndDate);//经销商日期  
           this.osData.businessModel = param.businessModel; //业务模式
           this.osData.bidWinningNotice = param.bidWinningNotice;//中标通知书
           this.osData.distributor = param.tenderingCompany; //投标公司
@@ -143,6 +163,7 @@ export class ConsignComponent implements OnInit {
           this.osData.contractPrice = param.contractPrice //合同价格
           this.osData.paymentProvision = param.paymentProvision //付款条款
           this.osData.referenceId = param.referenceId; //添加referenceId
+          this.osData.dealFormId =param.dealFormId;//dealFromid
           this.osData.contractDdpStatus = param.contractDdpStatus; //合同买方的ddpstatus
           this.osData.foreignTradeCompany = param.foreignTradeCompany; //外贸易公司
           this.osData.invoiceInformation = param.invoiceInformation;   //币制
@@ -150,22 +171,27 @@ export class ConsignComponent implements OnInit {
           this.osData.relationshipLink = params.businessOpportunityHierarchyLink // 商机层级关系链接
           this.osData.priceRange = params.samplingInspection // 是否抽样审核
           this.osData.sofonFile = params.sofonFile;
-          this.osData.countryOrigin = params.countryOrigin // 原产地
+          this.osData.countryOrigin = params.countryOrigin // 原产地中文
+          this.osData.countryOriginEn=params.countryOriginEn//原产地英文
+          this.osData.medicalDeviceName=params.medicalDeviceName;//医疗器械名称
+          this.osData.nmpaRegistrationExpried=params.nmpaRegistrationExpried;//NMPA证有效期截止日期       
+          this.osData.financialProgramme=params.financialProgramme; //金融方案价格  
+          this.osData.financialProgrammeTxt=params.financialProgrammeTxt; //金融方案文本框的值
+          this.osData.tradeInCost=params.tradeInCost;//tradeIn总额
+          this.osData.financialProgrammeCost=params.financialProgrammeCost; //金融方案总金额
+          this.osData.agreementNo=param.agreementNo; //经销商协议号;
+          this.osData.dealerCode=param.dealerCode; //经销商code;
+          this.osData.centralized=param.centralized; //集采
+          this.osData.actualSales=param.actualSales; //实际销售人
           this.osData.finalSofonQuotation = params.sofonNo //finalSofonQuotation
           this.osData.tradeList =params.cosOppTradeIns!=null&&params.cosOppTradeIns!=""&&params.cosOppTradeIns.length>0?params.cosOppTradeIns:[{name:"",costs1:""}]; // tradeIn
-          this.osData.warrantyList=params.cosOppExtendedWarranties!=null&&params.cosOppExtendedWarranties!=""&&params.cosOppExtendedWarranties.length>0?params.cosOppExtendedWarranties:[{posIdName:"",posLocalCtp:""}] // 延长保修
-          this.osData.productList = params.cosOppThirdParties!=null&&params.cosOppThirdParties!=""&&params.cosOppThirdParties.length>0?params.cosOppThirdParties:[{thirdPartyName:"",total:""}] // 第三方     
+          this.osData.warrantyList=params.cosOppExtendedWarranties!=null&&params.cosOppExtendedWarranties!=""&&params.cosOppExtendedWarranties.length>0?params.cosOppExtendedWarranties:[] // 延长保修
+          this.osData.otherList=params.otherList!=null&&params.otherList!=""&&params.otherList.length>0?params.otherList:[] //其他预留
+          this.osData.productList = params.cosOppThirdParties!=null&&params.cosOppThirdParties!=""&&params.cosOppThirdParties.length>0?params.cosOppThirdParties:[]; // 第三方     
           this.osData.application = params.applications!=null&&params.applications!=""&&params.applications.length>0?params.applications:[{productName:"",localCtp1:""}]
           this.osData.applicationPrice = params.applicationPrice;
           this.osData.applications=params.applications!=null&&params.applications!=""&&params.applications.length>0?params.applications:[{productName:"",localCtp1:""}];     
-          if (this.osData.warrantyList && this.osData.warrantyList.length > 0) {
-            this.osData.warrantyList.map(res => {
-              res.name = res.posIdName;
-              res.price = res.posLocalCtp;
-              delete res.posIdName;
-              delete res.posLocalCtp;
-            });
-          }
+         
           if (this.osData.productList && this.osData.productList.length > 0) {
             this.osData.productList.map(res => {
               res.name = res.thirdPartyName;
@@ -200,6 +226,12 @@ export class ConsignComponent implements OnInit {
             this.dataBase.detail.flag=this.activatedRouter.queryParams['_value'].flag;
             this.dataBase.detail.status=this.activatedRouter.queryParams['_value'].status;
             this.dataBase.sameFlag=this.dataBase.sameFlag.toString();
+            if(this.dataBase.invoiceInformation=='CNY')
+            {
+              this.signingData.invoiceMailingInformation=this.dataBase.billingInfor;
+              this.signingData.addressee=this.dataBase.addressee;
+              this.signingData.addresseeTel=this.dataBase.addresseeTel;
+            }            
             resolve(rest.data)
           } else {
             this.message.create('error', '获取数据失败');
@@ -272,22 +304,10 @@ export class ConsignComponent implements OnInit {
     return new Promise((resolve, reject) => {
     this.http.get(url).subscribe((res => {
           this.load=false;
-          if (res.code === '0000') {       
+          if (res.code === '0000') {                   
             if (res.data) {
-              this.signingData = res.data;
-              //this.signingData.fileFileList = [];
-              //this.signingData.signingData = [];
-              this.signingData.isContract=res.data.isContract!=null?res.data.isContract:'0';       
-              // const contractSignedAttachmentDTOList = this.signingData.contractSignedAttachmentDTOList;
-              // contractSignedAttachmentDTOList.map(vals => {
-              //   let obj = {
-              //     uid: '', name: '', fileId: ''
-              //   };
-              //   obj.uid = vals.attachmentId;
-              //   obj.name = vals.attachmentName;
-              //   obj.fileId = vals.attachmentId;
-              //   this.signingData.fileFileList = this.signingData.fileFileList.concat(obj);
-              // });
+              this.signingData = res.data;              
+              this.signingData.isContract=res.data.isContract!=null?res.data.isContract:'0'; 
               resolve(this.signingData)
               if (res.data.productConfFile && res.data.productConfFile !== '' && res.data.productConfFile != null) {
                 const obj = {
@@ -296,7 +316,19 @@ export class ConsignComponent implements OnInit {
                 this.productConfFileList = [];
                 this.productConfFileList.push(obj);
               }
-
+            }
+            else{
+              if(this.dataBase.invoiceInformation=='USD')
+              {
+                const  url=`/act/preparation/queryInfoForNmpa?registrationNumber=${this.dataBase.nmpaName}`;
+                this.http.get(url).subscribe(rest=>{
+                  
+                  console.log(rest);
+                  //this.signingData.portShipment=rest.data.loadingPort;  //目的港英文
+                  //this.signingData.portDestination=rest.data.dispatching;  //目的港中文
+                  this.signingData.typeShipping=rest.data.modeShipment;   //运输方式
+                })                
+              } 
             }
             resolve({})
           }
@@ -326,17 +358,7 @@ export class ConsignComponent implements OnInit {
   }
 
   // 退回、保存、提交
-  public save(e: any) {
-    // 校验暂时注释
-    // for (const key in this.validateForm.controls) {
-    //   this.validateForm.controls[key].markAsDirty();
-    //   this.validateForm.controls[key].updateValueAndValidity();
-    // }
-    // if (e === 1 && !this.ckFile()) {
-    //   this.message.create('error', `请上传文件!`);
-    //   return;
-    // }
-    //this.childbase.cheakData(e);     
+  public save(e: any) {         
     this.params.check = e;
     if (e == 0) {
       this.childbase.cheakData(e);
@@ -346,14 +368,28 @@ export class ConsignComponent implements OnInit {
         this.message.create("error","请填写退回理由!");
         return;
       }
-    }
-    if (e == 1) {
+    }     
+    let fileList=[];   
+    this.childbase.fileFileList.map(files=>{
+      let obj={
+        fileId:"",
+      }
+      obj.fileId=files.fileId;
+      fileList.push(obj);
+    })
+    this.params.fileList=[...fileList];
+    if (e == 1) {      
       this.childbase.cheakData(e);
       const cheak = this.childbase.checkFormData();
       if (!cheak) {        
         this.myskip('tab3');
         this.message.create("error","有必填项没有填写!");
         return;
+      }  
+      if(this.params.fileList==null||this.params.fileList==undefined||this.params.fileList==[]||this.params.fileList.length<1)
+      {
+        this.message.create("error","请上传合同文件");
+        return false;
       }
     }
     this.params.mainId = decodeString(this.activatedRouter.queryParams['_value'].id);
@@ -368,6 +404,8 @@ export class ConsignComponent implements OnInit {
     this.params.portShipment = this.signingData.portShipment;
     this.params.typeShipping = this.signingData.typeShipping;
     this.params.portDestination = this.signingData.portDestination;
+    this.params.addressee = this.signingData.addressee;
+    this.params.addresseeTel=this.signingData.addresseeTel;
     if (this.signingData.tmpList.length > 0) {
       this.signingData.tmpList.map(res => {
         let obj = {
@@ -383,23 +421,6 @@ export class ConsignComponent implements OnInit {
     this.params.contractDate = this.signingData.contractDate;
     this.params.isContract = this.signingData.isContract;
     this.params.priceTerms = this.signingData.priceTerms; 
-    this.params.contractFile=this.signingData.contractFile;   
-    //const fileFileList = this.signingData.fileFileList;
-    // if(this.params.check=='1')
-    // {
-    //   if(fileFileList.length<1)
-    //   {
-    //     this.message.create("error","请上传合同文件");
-    //     return;
-    //   }
-    // }
-    // this.params.attachmentIds = [];
-    // if (fileFileList.length > 0) {
-    //   fileFileList.map(res => {
-    //     this.params.attachmentIds.push(res.fileId);
-    //   });
-    // }
-    // console.log(this.params); 
     this.load=true;
     const url = '/act/preparation/contractSigned';    
     this.http.post(url, this.params).subscribe((res => {
@@ -413,7 +434,71 @@ export class ConsignComponent implements OnInit {
         this.message.create("error",`${res.msg}`);
       }
     }),(error)=>{
-      this.message.create("error","请求异常!")
+      this.message.create("error","请求异常!");
+      this.load=false;
     });
   }
+
+  //弹出退回合同概要表
+  backContract()
+  {
+    this.isAgres=true;
+    let obj={
+      title:"退回合同概要表",
+      code:"backContract",
+      refuseReason:null,
+      remarks:"",
+      file:"",
+    }
+    this.ServesiceService.confirmTime.emit(obj);
+  }
+  //弹出关闭合同概要表
+  closeContract()
+  {
+    this.isAgres=true;
+    let obj={
+      title:"关闭合同概要表",
+      code:"colseContract",
+      refuseReason:null,
+      remarks:"",
+      file:"",
+    }
+    this.ServesiceService.confirmTime.emit(obj);
+  }
+   //确定
+   isAgregentOk()
+   { 
+      const cheakData = this.child.checkFormData();
+      if(!cheakData)
+      {
+       this.message.create('error', `有必填项没有填写`);
+       return;
+      }
+      this.params.check=this.child.infor.code=='backContract'?'0':'5';   //0退回合同概要表，5为关闭合同概要表
+      this.params.mainId = decodeString(this.activatedRouter.queryParams['_value'].id);
+      this.params.remark = this.child.infor.remarks;
+      this.params.reason=this.child.infor.refuseReason;
+      this.params.productConfFile=this.child.infor.file; 
+      const url='/act/preparation/contractSigned';
+      this.http.post(url, this.params).subscribe((rest => {
+      if (rest.code === '0000') {
+        this.load = false;
+        this.message.create('success', '操作成功');
+        this.router.navigate(['/igt/my-task']);
+        this.child.infor.file = "";
+        this.child.infor.refuseReason = null;
+        this.child.validateForm.reset();
+        this.isAgres = false;
+      }
+    }), (error => {
+      this.load = false;
+      this.message.create("error", "请求异常")
+    }));     
+   }
+   //取消
+   isAgreCancels()
+   {
+     this.isAgres=false;
+     this.child.validateForm.reset();
+   }
 }

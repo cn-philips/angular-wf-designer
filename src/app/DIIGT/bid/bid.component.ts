@@ -81,7 +81,8 @@ export class BidComponent implements OnInit {
     biddingProductlist: [
       // {opportunityId:"ss",opportunityName:'',makertBundleId:'',marketBundleName:''}
     ],
-    productInformation: []
+    productInformation: [],
+    isSpecial: null // 是否特价项目
 
   };
 
@@ -115,9 +116,9 @@ export class BidComponent implements OnInit {
         console.log('infor', this.infor);
         this.baseData = res.data;
         if(this.infor.tenderPriceCurrency != null && this.infor.tenderPriceCurrency != ''){
-          this.infor.tenderPriceCurrency=chNumber(this.infor.tenderPriceCurrency); 
-          this.infor.tenderPriceCurrency=NumberThousandth(this.infor.tenderPriceCurrency); 
-         }  
+          this.infor.tenderPriceCurrency=chNumber(this.infor.tenderPriceCurrency);
+          this.infor.tenderPriceCurrency=NumberThousandth(this.infor.tenderPriceCurrency);
+         }
          if (this.infor && this.infor.totalPrice!=''&&this.infor.totalPrice!=null) {
           this.infor.totalPrice = chNumber(this.infor.totalPrice);
            this.infor.totalPrice = NumberThousandth(this.infor.totalPrice);
@@ -125,7 +126,7 @@ export class BidComponent implements OnInit {
          if (this.infor && this.infor.performanceBonds!=''&&this.infor.performanceBonds!=null) {
           this.infor.performanceBonds = chNumber(this.infor.performanceBonds);
           this.infor.performanceBonds = NumberThousandth(this.infor.performanceBonds);
-         } 
+         }
         this.getBudidingData();
         // resolve(res.data)
       });
@@ -226,6 +227,11 @@ export class BidComponent implements OnInit {
       this.bidck.bidinfor.checkFormData('price');
       ver = false;
     }
+    // 是否特价项目
+    if (this.data.process == 'approved' && (this.data.isSpecial == '' || this.data.isSpecial == null)) {
+      this.bidck.bidinfor.checkFormData('isSpecial');
+      ver = false;
+    }
     // opp productInformation biddingProductlist
     if (this.data.process == 'approved') {
       const businessType = this.infor.businessType;
@@ -234,6 +240,7 @@ export class BidComponent implements OnInit {
       const demandLetter = this.data.demandLetter;
       const statement = this.data.statement;
       const support = this.data.support;
+      const isSpecial = this.data.isSpecial;
       console.log(this.data.biddingProductlist);
       /*
        * 1.	业务模式=Direct Deal，且“是否投标授权”选“否，民营医院直接进单”，则在“中标备案”页面仅显示“上传场地勘验报告”这个字段和“中标产品信息”
@@ -424,7 +431,7 @@ export class BidComponent implements OnInit {
             // 价格保留两位小数
             res.data.biddingPrice = this.chNumber(res.data.biddingPrice);
             const status = this.activeRoute.queryParams['_value'].status;
-            status=='WZB'&&(res.data.biddingPrice = NumberThousandth(res.data.biddingPrice));            
+            status=='WZB'&&(res.data.biddingPrice = NumberThousandth(res.data.biddingPrice));
           }
           if (res.data.biddingProductlist) {
             for (let p1 = 0; p1 < res.data.biddingProductlist.length; p1 ++) {

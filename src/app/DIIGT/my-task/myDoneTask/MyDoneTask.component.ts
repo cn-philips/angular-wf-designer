@@ -56,12 +56,12 @@ export class MyDoneTaskComponent implements OnInit {
       if (rest.code === '0000') {
         const data = rest.data.rows;
         data.map((item, index) => {
-          item.processor=item.processor.toLowerCase();
+          item.processor=item.processor?item.processor.toLowerCase():"";
           if (item.children && item.children.length === 0) {
             delete data[index].children;
           } else if (item.children && item.children.length > 0) {
             item.children.map((ite, inde) => {
-              ite.processor=ite.processor.toLowerCase();
+              ite.processor=ite.processor?ite.processor.toLowerCase():"";
               if (ite.children && ite.children.length === 0) {
                 delete data[index].children[inde].children;
               }

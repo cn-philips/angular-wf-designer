@@ -8,117 +8,119 @@
   </head>
   <body>
     <div class="homepage-container">
-      <div class="row d-flex flex-row first-row mb-4">
-        <div class="flex-fill mr-4 card placeImage"></div>
-        <div class="col-lg-2 col-sm-12 card quick_link">
-          <div class="card-header">
-            <i nz-icon type="link"></i><span>Quick Link</span>
-          </div>
-          <div class="card-body">
-            <ul>
-              <li *ngFor="let item of linkList">
-                <a [href]="item.label" target="_blank" > <i nz-icon type="global"></i>{{item.tag}}</a>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-      <div class="row d-flex flex-row second-row">
-        <div class="mr-4 card user-manual-group">
-          <div class="card-header"><i nz-icon type="read"></i>Q&A</div>
-          <div class="card-body d-flex  user-manual-body" >
-            <div class="user-manual-container">
-              <div *ngFor="let item of manualList" class="user-manual manual-unfold">
-                <a href="javascript:" (click)="openPdf(item.value,item.tag)">
-                  <div class="user-manual-title">{{item.tag}}</div>
-                  <!-- <span class="user-manual-meta" *ngIf="item.unfold">{{item.tag}}</span> -->
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div
-          (click)="handleClick()"
-          (mouseenter)="handleHover()"
-          (mouseleave)="handleLeave()"
-          class="mr-4 card dashboard_nav"
-        >
-          <div class="dashboard_nav_shadow">
-            <div class="dashboard_cycle_decoration"></div>
-          </div>
-          <div
-            [ngClass]="{
-              ShowDashboard: showDashboard,
-              HideDashboard: !showDashboard
-            }"
-            [routerLink]="['']"
-            class="card-body d-flex flex-column"
-          >
-            <div class="dashboard_intro">
-              <span class="nav_title"
-                ><i nz-icon type="dashboard"></i>&nbsp;我的工作台
-                <!-- <b class="todo_count">{{ todoList.length }}</b> -->
-              </span>
-              <!-- <div>
-                <ul>
-                  <li *ngFor="let item of todoList">
-                    <span
-                      [ngClass]="{
-                        entered: item.isEntered
-                      }"
-                      *ngIf="item.isDisplay"
-                      >{{ item.label }}</span
+      <div class="">
+        <div>
+          <div class="float-left carousel-wrapper">
+            <div class="flex-fill mr-4 card placeImage">
+              <nz-carousel
+                [nzEffect]="effect"
+                [nzAutoPlay]="true"
+                [nzAutoPlaySpeed]="5000"
+              >
+                <!-- 入口 -->
+                <div nz-carousel-content>
+                  <div style="display: flex">
+                    <div
+                      (click)="handleClick()"
+                      (mouseenter)="handleHover()"
+                      (mouseleave)="handleLeave()"
+                      class="card dashboard_nav"
                     >
-                  </li>
-                </ul>
-              </div> -->
+                      <div class="dashboard_nav_shadow">
+                        <div class="dashboard_cycle_decoration"></div>
+                      </div>
+                      <div
+                        [ngClass]="{
+                          ShowDashboard: showDashboard,
+                          HideDashboard: !showDashboard
+                        }"
+                        [routerLink]="['']"
+                        class="card-body d-flex flex-column"
+                      >
+                        <div class="dashboard_intro">
+                          <div class="nav_title">
+                            <i nz-icon type="dashboard"></i>&nbsp;我的工作台
+                          </div>
+                        </div>
+                        <div class="dashboard_entry">
+                          <div class="nav_title">
+                            进入工作台&nbsp;<i nz-icon type="dashboard"></i>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- <img src="assets/image/homepage_btn.jpg" /> -->
+                </div>
+                <!-- 图片 -->
+                <div nz-carousel-content>
+                  <img src="assets/image/homepage_banner.jpg" />
+                </div>
+              </nz-carousel>
             </div>
-            <div class="dashboard_entry">
-              <span class="nav_title"
-                >进入工作台&nbsp;<i nz-icon type="dashboard"></i
-              ></span>
+          </div>
+          <div class="card quick_link float-right">
+            <div class="card-header">
+              <i nz-icon type="link"></i><span>Quick Link</span>
+            </div>
+            <div class="card-body">
+              <ul>
+                <li *ngFor="let item of linkList">
+                  <a [href]="item.label" target="_blank">
+                    <i nz-icon type="global"></i>{{ item.tag }}</a
+                  >
+                </li>
+              </ul>
             </div>
           </div>
         </div>
-        <div class="card user-card-group">
-          <div class="card-header">
-            <i nz-icon type="team"></i>System Support
+        <div class="row d-flex flex-row QA_and_Support_row">
+          <div class="mr-4 card user-manual-group">
+            <div class="card-header"><i nz-icon type="read"></i>Q&A</div>
+            <div class="card-body d-flex user-manual-body">
+              <div class="user-manual-container">
+                <div *ngFor="let item of manualList" class="user-manual">
+                  <a href="javascript:" (click)="openPdf(item)">
+                    <div class="user-manual-title">{{ item.tag }}</div>
+                    <!-- <span class="user-manual-meta" *ngIf="item.unfold">{{item.tag}}</span> -->
+                  </a>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="card-content">
-          </div>
-          <!-- <div class="card-body-group">
-            <div *ngFor="let item of supportList;let i = index" class="card-body">
-              <div class="user-card" [ngClass]="{'left-avatar':i%2!==0,'right-avatar':i%2===0}">
-                <div class="user-card-body">
-                  <div class="user-card-avatar">
-                    <img [src]="item.avatar" alt="">
-                  </div>
-                  <div>
-                    <div class="user-card-name">{{item.name}}</div>
+          <div class="card user-card-group">
+            <div class="card-header">
+              <i nz-icon type="team"></i>System Support
+            </div>
+            <div class="card-content"></div>
+            <div class="card-body-group">
+              <div
+                *ngFor="let item of supportList; let i = index"
+                class="card-body"
+                (mouseenter)="item.active = true"
+                (mouseleave)="item.active = false"
+              >
+                <div class="user-card">
+                  <div class="user-card-body">
+                    <div class="user-card-name">
+                      <div>
+                        {{ item.name }}
+                      </div>
+                    </div>
                     <div class="user-card-info">
-                      <span>{{item.job}}</span>
-                      <p>Mobile: {{item.mobile}}</p>
-                      <p>Email: {{item.email}}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div> -->
-          <div class="card-body-group">
-            <div *ngFor="let item of supportList;let i = index" class="card-body">
-              <div class="user-card">
-                <div class="user-card-body">                  
-                  <div>
-                    <div class="user-card-name">{{item.name}}</div>
-                    <div *ngFor="let it of item.comment" class="user-card-info" [innerHTML]="it.name">                      
+                      <div *ngIf="!item.active">Need Help?</div>
+                      <div *ngIf="item.active">
+                        <div
+                          *ngFor="let it of item.comment"
+                          [innerHTML]="it.name"
+                        ></div>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          
         </div>
       </div>
     </div>

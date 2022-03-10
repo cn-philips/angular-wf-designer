@@ -1,8 +1,12 @@
-<h4 class="font-weight-bold py-3">
-  <span>{{this.dataBase.detail.status=="DOAJDQR"?"进单确认":"审核合同概要表"}}</span>
-</h4>
+<nz-card class="title_warpper">
+  <div>
+    <h4 class="font-weight-bold">
+      <span>{{this.dataBase.detail.status=="DOAJDQR"?"进单确认":"审核合同概要表"}}</span>
+    </h4>
+  </div>
+</nz-card>
 <igt-approval-flowline></igt-approval-flowline>
-<ngb-tabset type="tabs" [destroyOnHide]="false"  class="nav-tabs-top nav-responsive-xl">
+<ngb-tabset type="tabs" [destroyOnHide]="false" [activeId]="activedId"  class="nav-tabs-top nav-responsive-xl">
   <ngb-tab id="pending-tab">
     <ng-template ngbTabTitle><span class="tab-title"><strong>合同概要表</strong></span></ng-template>
     <ng-template ngbTabContent>
@@ -19,6 +23,15 @@
             </app-preOrderBaseInfo>
           </form>
         </div>
+        <div nz-row nzType="flex" nzJustify="end" nzAlign="middle">
+          <div nz-col nzSpan="4">
+            <nz-form-item>
+              <nz-form-control [nzSm]="24" [nzXs]="24" style="text-align: right;">
+                <button nz-button [nzType]="'primary'" (click)="myskip('examine-tab')">下一步</button>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        </div>
       </div>
     </ng-template>
   </ngb-tab>
@@ -34,7 +47,34 @@
             [dataBase]="dataBase"
           ></app-examine-form-igt>
         </nz-card>
-      </div>
+        <div nz-row nzType="flex" nzJustify="end" nzAlign="middle">
+          <div nz-col nzSpan="4">
+            <nz-form-item>
+              <nz-form-control [nzSm]="24" [nzXs]="24" style="text-align: right;">
+                <button nz-button [nzType]="'primary'" (click)="myskip('pending-tab')">上一步</button>
+                <button *ngIf="dataBase.hsId" nz-button [nzType]="'primary'" (click)="myskip('change-tab')">下一步</button>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        </div>
+      </div>      
     </ng-template>
   </ngb-tab>
+  <ngb-tab id="change-tab" *ngIf="dataBase.hsId">
+    <ng-template ngbTabTitle><span class="tab-title"><strong>审核改单</strong></span></ng-template>
+    <ng-template ngbTabContent>
+      <div class="card-body">
+         <app-approve-change [disa]="disa" [dataBase]="dataBase"></app-approve-change>
+         <div nz-row nzType="flex" nzJustify="end" nzAlign="middle">
+          <div nz-col nzSpan="4">
+            <nz-form-item>
+              <nz-form-control [nzSm]="24" [nzXs]="24" style="text-align: right;">
+                <button nz-button [nzType]="'primary'" (click)="myskip('examine-tab')">上一步</button>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        </div>
+      </div>
+    </ng-template>     
+  </ngb-tab>  
 </ngb-tabset>

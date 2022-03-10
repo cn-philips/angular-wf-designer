@@ -1,18 +1,23 @@
-<h4 class="font-weight-bold py-3">
-  <span>我的任务</span>
-</h4>
-
-<nz-card class="mtb1rem">
-  <nz-tabset
-    [nzSelectedIndex]="tabIndex"
-    [nzTabPosition]="'top'"
-    [nzType]="'card'"
-  >
-    <nz-tab nzTitle="我的待办">
-      <igt-MyToDoTask></igt-MyToDoTask>
-    </nz-tab>
-    <nz-tab nzTitle="我的已办">
-      <igt-MyDoneTask></igt-MyDoneTask>
-    </nz-tab>
-  </nz-tabset>
+<nz-card class="title_warpper">
+  <div>
+    <h4 class="font-weight-bold">
+      <span>我的任务</span>
+    </h4>
+  </div>
 </nz-card>
+<nz-tabset
+  [nzSelectedIndex]="tabIndex"
+  [nzTabPosition]="'top'"
+  [nzType]="'card'"
+>
+  <nz-tab nzTitle="我的待办">
+    <nz-card>
+      <igt-MyToDoTask></igt-MyToDoTask>
+    </nz-card>
+  </nz-tab>
+  <nz-tab nzTitle="我的已办">
+    <nz-card>
+      <igt-MyDoneTask></igt-MyDoneTask>
+    </nz-card>
+  </nz-tab>
+</nz-tabset>

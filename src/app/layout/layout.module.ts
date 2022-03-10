@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { NgZorroAntdModule, NZ_I18N, zh_CN } from 'ng-zorro-antd';
 
 
 // *******************************************************************************
@@ -46,7 +47,8 @@ import { LayoutService } from './layout.service';
     CommonModule,
     RouterModule,
     NgbModule,
-    SidenavModule
+    SidenavModule,
+    NgZorroAntdModule
   ],
   declarations: [
     Layout1Component,

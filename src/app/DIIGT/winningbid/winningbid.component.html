@@ -1,8 +1,49 @@
-<h4 class="font-weight-bold py-3">
-  <span>中标确认</span>
-</h4>
+<nz-card class="title_warpper">
+  <div>
+    <h4 class="font-weight-bold">
+      <span>中标确认</span>
+    </h4>
+  </div>
+</nz-card>
 <igt-approval-flowline></igt-approval-flowline>
 <div class="pr">
+  <div nz-row nzType="flex" nzJustify="end" nzAlign="middle" class="tabs-box-actions" style="z-index: 999">
+    <div nz-col nzSpan="24">
+      <nz-form-item>
+        <nz-form-control [nzSm]="24" [nzXs]="24" style="text-align: right;">
+<!--          <button *ngIf="bidding_flag" nz-button nzType="default" nz-popconfirm nzTitle="你确定要执行程终止的操作?" (nzOnConfirm)="openBiddingBreak()" style="margin-right:10px;">流程终止</button>-->
+          <button *ngIf="bidding_flag" nz-button nzType="default" (click)="openBiddingBreak()" style="margin-right:10px;">取消项目</button>
+          <!--          <button nz-button nzType="primary" (click)="submit()">流程终止</button>-->
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+  <nz-modal
+    [(nzVisible)]="showoff"
+    nzWidth="600px"
+    nzTitle="取消项目"
+    (nzOnCancel)="handleCancel()"
+    (nzOnOk)="biddingBreak()"
+    nzOkText="确定取消"
+  >
+    <ng-container>
+      <div>
+        <nz-form-item>
+          <nz-form-label [nzSm]="4" [nzXs]="24" [nzRequired]="true">取消原因</nz-form-label>
+          <nz-form-control [nzSm]="18" [nzXs]="24">
+            <textarea nz-input oninput="if(value.length>255)value=value.slice(0,255)" nz-input placeholder=""
+                      [nzAutosize]="{ minRows: 2, maxRows: 6 }" [(ngModel)]="remarks"></textarea>
+<!--            <ng-container *ngIf="odata && odata.remarks">-->
+<!--              <div>还可以输入:{{odata.remarks.length}}/{{textLen}}</div>-->
+<!--            </ng-container>-->
+            <div *ngIf="rem_mess">
+              <a style="color: #f5222d">请填写取消理由</a>
+            </div>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </ng-container>
+  </nz-modal>
     <ngb-tabset type="tabs" [destroyOnHide]="true" class="nav-tabs-top nav-responsive-xl">
         <ngb-tab id="pending-tab">
             <ng-template ngbTabTitle><span class="tab-title"><strong>基础信息</strong></span></ng-template>

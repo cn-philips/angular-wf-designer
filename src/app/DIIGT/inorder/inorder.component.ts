@@ -1,10 +1,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { HttpService, FileService } from '../../services';
-import { decodeString, formatDatesNow,NumberThousandth} from '../../../assets/js/tools';
+import { decodeString, formatDatesNow,NumberThousandth,standardTime} from '../../../assets/js/tools';
 import { Router, ActivatedRoute } from '@angular/router';
 import { NzMessageService } from 'ng-zorro-antd';
 import { PreOrderBaseInfoComponent } from '../preOrder/baseInfo/baseInfo.component';
-
+import { ServesiceService } from '../preOrder/servesice.service';
 
 @Component({
   selector: 'app-inorder',
@@ -13,7 +13,8 @@ import { PreOrderBaseInfoComponent } from '../preOrder/baseInfo/baseInfo.compone
 })
 export class InorderComponent implements OnInit {
 
-  constructor(private http: HttpService, private router: Router, public activatedRouter: ActivatedRoute, private message: NzMessageService,) { }
+  constructor(private http: HttpService, private router: Router, public activatedRouter: ActivatedRoute, private message: NzMessageService,private ServesiceService: ServesiceService,) { }
+  @ViewChild('child') child;
   infor: any = {
     productList: [], // 产品列表
     detail: {
@@ -22,22 +23,37 @@ export class InorderComponent implements OnInit {
       status: 'examine',
     },
   };
+ //弹窗的数据
+ public showData={  
+  refuseReason:"",
+  remarks:"",
+  file:"",
+  title:"",
+  code:"",
+}
+  isAgres:any=false;
   @ViewChild('childbase') public childbase;
   public load: any = false;
   public activedId: any = 'pending-tab';
   flag: any;
   addoff: any = true; //判断是新增还是修改
   public dataBase: any = {
+    laterDay:"",//经销商日期
+    lateDays:"",//外贸日期
+    lateDayOff:false, //控制经销商过期显示
+    lateDateOff:false, //控制外贸公司过期显示
     isRecycle:"0", //是否旧机回收
     contractSummaryId: "",
     entryMode: "", //进单模式
     businessModel: "", //业务模式
-    region: "", //区域
+    region: "", //大区域
+    team:"",//team
+    smallArea:"", //小区
     bidWinningNotice: "", //中标通知书
     bidWinningPrice: "", //中标价格
     isUsdOrRmb: "",//中标价格币制
     distributor: "",//投标商
-    agent: "",//代理商
+    agent: "",//经销商
     endUserContract: "",//合同买方
     ddpStatus: "", //ddp状态
     endUser: "",//最终用户
@@ -50,12 +66,13 @@ export class InorderComponent implements OnInit {
     priceRange: "", //价格区间
     paymentProvision: "", //付款条款
     promotionPlan: "",//促销计划
-    tradeList: "",
+    tradeList:[],
     incentiveScheme: "", //经销商奖励计划
     dealerAudit: "0", //经销商自采第三方核查
-    countryOrigin: "", //原产地
+    countryOrigin: "", //原产地中文
     finalSofonQuotation: "",
     financialProgramme: "",//飞利浦金融方案
+    financialProgrammeTxt:"",//飞利浦金融方案文本框
     sofonFile: "",
     enclosure: "", //附件
     customerRequestLetter:"", //客户要货函日期
@@ -84,16 +101,26 @@ export class InorderComponent implements OnInit {
     performanceBondCheckFlag: "0", //履约保函是否已查
     mrShieldingCompanyCheckFlag: "0", //磁屏蔽是否已查
     confirmationFileCheckFlag: "0",//igt是否已查
+    afterSalesCheckFlag:"0",//是否售后
     warrantyList: [],
-    productList: []
+    productList: [],   
+    agreementNo:"",//经销商协议号 新增的开始
+    centralized:false,//集采项目
+    actualSales:"",//实际销售
+    countryOriginEn:"", //原产地英文
+    medicalDeviceName:"", //医疗器械名称
+    nmpaRegistrationExpried:"",//namp有效日期
+    tradeInCost:"",//tradeIn总金额
+    
   };
   @ViewChild('baseInfo')
   baseInfo: PreOrderBaseInfoComponent
   ngOnInit() {
+    
     this.flag = this.activatedRouter.queryParams['_value'].flag;
     this.load=true;
     const ASYNS = async () => {
-      let rezult = await this.getQuery();//查询order summary 
+      let rezult = await this.getQuery();//查询order summary       
       this.getCpdata();
       let dealData = await this.getContractBase();  //查询合同概要表
       this.baseInfo.setColSpanOfConfirmTable(this.infor);
@@ -102,7 +129,7 @@ export class InorderComponent implements OnInit {
     };
     ASYNS();
   }
-
+  
   getContractBase() {   //来至于合同概要表信息
     // 获取mainid
     const mainId = decodeString(this.activatedRouter.queryParams['_value'].id);
@@ -114,7 +141,9 @@ export class InorderComponent implements OnInit {
           this.infor = res.data;
           this.infor.sameFlag = this.infor.sameFlag.toString();
           this.dataBase.entryMode = res.data.entryMode //进单模式
-          this.dataBase.region = res.data.region;//区域
+          this.dataBase.team=res.data.team;//team
+          this.dataBase.region = res.data.region;//大区域
+          this.dataBase.smallArea = res.data.smallArea;//小区域
           this.dataBase.businessModel = res.data.businessModel; //业务模式
           this.dataBase.bidWinningNotice = res.data.bidWinningNotice;//中标通知书
           this.dataBase.bidWinningNoticeNames = res.data.bidWinningNoticeNames; //中标通知书名称
@@ -123,16 +152,28 @@ export class InorderComponent implements OnInit {
           this.dataBase.ddpStatus = res.data.ddpStatus //经销商的ddpStatus
           this.dataBase.endUser = res.data.endUser; //最终用户
           this.dataBase.agent = res.data.distributor//经销商
+          this.dataBase.agreementNo=res.data.agreementNo; //经销商协议号;
+          this.dataBase.dealerCode=res.data.dealerCode; //经销商code;
           this.dataBase.hospitalNature = res.data.hospitalNature //医院性质
           this.dataBase.productModel = res.data.productModel; //产品型号
           this.dataBase.nmpaName = res.data.nmpaName //nmpaName
           this.dataBase.contractPrice = res.data.contractPrice //合同价格
           this.dataBase.paymentProvision = res.data.paymentProvision //付款条款
           this.dataBase.referenceId = res.data.referenceId; //添加referenceId
+          this.dataBase.dealFormId =res.data.dealFormId;//dealFromid
           this.dataBase.contractDdpStatus = res.data.contractDdpStatus; //合同买方的ddpstatus
           this.dataBase.foreignTradeCompany = res.data.foreignTradeCompany; //外贸易公司
           this.dataBase.invoiceInformation = res.data.invoiceInformation;   //币制
-          this.dataBase.priceRange = res.data.sampleAuditFlag // 是否抽样审核         
+          this.dataBase.priceRange = res.data.sampleAuditFlag; // 是否抽样审核  
+          this.dataBase.endUserId=res.data.endUserId; //最终用户id
+          this.dataBase.poolEndDate=standardTime(res.data.poolEndDate)//外贸易公司日期  
+          this.dataBase.contractEndDate=standardTime(res.data.contractEndDate)//经销商日期          
+          this.dataBase.financialProgramme=res.data.financialProgramme; //金融方案价格  
+          this.dataBase.financialProgrammeTxt=res.data.financialProgrammeTxt; //金融方案文本框的值
+          this.dataBase.tradeInCost=res.data.tradeInCost;//tradeIn总额
+          this.dataBase.financialProgrammeCost=res.data.financialProgrammeCost; //金融方案总金额
+          this.dataBase.centralized=res.data.centralized; //集采          
+          this.dataBase.actualSales=res.data.actualSales; //实际销售人
           this.infor.detail = {
             id: '',
             flag: '',
@@ -184,21 +225,24 @@ export class InorderComponent implements OnInit {
   }
   getCpdata() //来自cp的
   {
-
+    
     const mainId = decodeString(this.activatedRouter.queryParams['_value'].id);
     let url = `/act/preparation/queryInfoForOrderSummaryFromCP?mainId=${mainId}`
     this.http.get(url).subscribe(rest => {
       if (rest.data) {
+        
         this.dataBase.relationshipLink = rest.data.businessOpportunityHierarchyLink // 商机层级关系链接
-
         this.dataBase.sofonFile = rest.data.sofonFile;//sofonFile
         this.dataBase.sofonFileNames = rest.data.sofonFileNames;//名字
-        this.dataBase.countryOrigin = rest.data.countryOrigin?rest.data.countryOrigin:"" // 原产地
-       this.dataBase.finalSofonQuotation=rest.data.sofonNo //finalSofonQuotation
-       
+        this.dataBase.countryOrigin = rest.data.countryOrigin?rest.data.countryOrigin:"" // 原产地中文
+        this.dataBase.medicalDeviceName=rest.data.medicalDeviceName;//医疗器械名称
+        this.dataBase.nmpaRegistrationExpried=rest.data.nmpaRegistrationExpried;//NMPA证有效期截止日期       
+        this.dataBase.countryOriginEn=rest.data.countryOriginEn?rest.data.countryOriginEn:"" //原产地英文
+        this.dataBase.finalSofonQuotation=rest.data.sofonNo //finalSofonQuotation       
         this.dataBase.tradeList = rest.data.cosOppTradeIns!=null&&rest.data.cosOppTradeIns.length>0?rest.data.cosOppTradeIns:[{name:"",costs1:""}]; // tradeIn
-        this.dataBase.warrantyList = rest.data.cosOppExtendedWarranties!=null&&rest.data.cosOppExtendedWarranties!=""&&rest.data.cosOppExtendedWarranties.length>0?rest.data.cosOppExtendedWarranties:[{posIdName:"",posLocalCtp:""}] // 延长保修
-        this.dataBase.productList = rest.data.cosOppThirdParties!=null&&rest.data.cosOppThirdParties!=""&&rest.data.cosOppThirdParties.length>0?rest.data.cosOppThirdParties:[{thirdPartyName:"",total:""}] // 第三方
+        this.dataBase.warrantyList = rest.data.cosOppExtendedWarranties!=null&&rest.data.cosOppExtendedWarranties!=""&&rest.data.cosOppExtendedWarranties.length>0?rest.data.cosOppExtendedWarranties:[] // 延长保修
+        this.dataBase.productList = rest.data.cosOppThirdParties!=null&&rest.data.cosOppThirdParties!=""&&rest.data.cosOppThirdParties.length>0?rest.data.cosOppThirdParties:[] // 第三方
+        this.dataBase.otherList = rest.data.otherList!=null&&rest.data.otherList!=""&&rest.data.otherList.length>0?rest.data.otherList:[] //其他预留
         //  this.dataBase.incentiveScheme=rest.data.OrderRebateDTOList //经销商奖励
         //  this.dataBase.finalSofonQuotation=rest.data.oaSofonNumber //finalSofonQuotation
         //  this.dataBase.productList=rest.data.thirdProductsDTOList //第三方
@@ -210,22 +254,22 @@ export class InorderComponent implements OnInit {
       }
 
 
-      if (this.dataBase.warrantyList && this.dataBase.warrantyList.length > 0) {
-        this.dataBase.warrantyList.map(res => {
-          res.name = res.posIdName ? res.posIdName : "";
-          res.price = res.posLocalCtp ? res.posLocalCtp : "";
-          delete res.posIdName;
-          delete res.posLocalCtp;
-        });
-      }
-      if (this.dataBase.productList && this.dataBase.productList.length > 0) {
-        this.dataBase.productList.map(res => {
-          res.name = res.thirdPartyName ? res.thirdPartyName : "";
-          res.price = res.total ? res.total : "";
-          delete res.thirdPartyName;
-          delete res.total;
-        })
-      }
+      // if (this.dataBase.warrantyList && this.dataBase.warrantyList.length > 0) {
+      //   this.dataBase.warrantyList.map(res => {
+      //     res.name = res.posIdName ? res.posIdName : "";
+      //     res.price = res.posLocalCtp ? res.posLocalCtp : "";
+      //     delete res.posIdName;
+      //     delete res.posLocalCtp;
+      //   });
+      // }
+      // if (this.dataBase.productList && this.dataBase.productList.length > 0) {
+      //   this.dataBase.productList.map(res => {
+      //     res.name = res.thirdPartyName ? res.thirdPartyName : "";
+      //     res.price = res.total ? res.total : "";
+      //     delete res.thirdPartyName;
+      //     delete res.total;
+      //   })
+      // }
     })
 
   }
@@ -254,12 +298,36 @@ export class InorderComponent implements OnInit {
         this.message.create("error","有必填项没有填写!");
         return;
       }
-      if (this.dataBase.bidWinningNoticeCheckFlag != '1') {
-        this.message.create("error", "请核查中标通知书")
-        return;
+      
+      if(this.infor.businessModel!='DIRECT'||(this.infor.businessModel=='DIRECT'&&this.infor.tenderNo!='其他类型'))
+      { 
+        if (this.dataBase.bidWinningNoticeCheckFlag != '1')
+        {
+          let title=this.infor.tenderNo!='其他类型'?'中标通知书':'最终用户合同'
+          this.message.create("error", `请核查${title}`)
+          return;
+        }
       }
       if (this.dataBase.siteReportCheckFlag != '1') {
-        this.message.create("error", "请核查场地报告")
+        let demandLetter;
+         if(this.infor.entryMode == 'STOCK'&&(this.infor.userTeme=='BV'||this.infor.userTeme=='DXR'))
+         {
+           demandLetter = "要货函";
+         }
+         else{
+           if (this.infor.hospitalNature == '民营医院') {
+             demandLetter = "场地勘验报告";
+           }
+           else {
+             if (this.infor.tenderNo != '其他类型') {
+               demandLetter = "要货函";
+             }
+             else {
+               demandLetter = "场地勘验报告";
+             }
+           }
+         }
+        this.message.create("error", `请核查${demandLetter}`)
         return;
       }
       if (this.dataBase.projectSolutionsCheckFlag != '1') {
@@ -279,10 +347,13 @@ export class InorderComponent implements OnInit {
             return;
           }
         }
-        if (this.dataBase.endUserContractCheckFlag != '1') {
-          this.message.create("error", "请核查最终用户合同")
-          return;
-        }
+        if(this.infor.businessModel!='DIRECT')
+        {
+          if (this.dataBase.endUserContractCheckFlag != '1') {
+            this.message.create("error", "请核查最终用户合同")
+            return;
+          }
+        }        
         if (this.infor.businessModel == 'DISTRIBUTOR') {
           if (this.dataBase.projectAnalysisTableCheckFlag != '1') {
             this.message.create("error", "请核查项目分析表")
@@ -294,28 +365,39 @@ export class InorderComponent implements OnInit {
         this.message.create("error", "请核查付款条款")
         return;
       }
-      if (this.dataBase.shipmentDeliveryCheckFlag != '1') {
-        this.message.create("error", "请核查装运及交货")
-        return;
-      }
-      if (this.dataBase.installationWarrantyCheckFlag != '1') {
-        this.message.create("error", "请核查安装及保修")
-        return;
-      }
-      if (this.dataBase.businessModel == 'DIRECT') {
+      if(this.infor.entryMode=='BIDDING'||(this.infor.sampleAuditFlag=='1'&&this.infor.entryMode=='STOCK'))
+      {
+        if(this.dataBase.afterSalesCheckFlag!='1')
+        {
+          this.message.create("error", "请核查是否有售后限价")
+          return;
+        }        
+        if (this.dataBase.shipmentDeliveryCheckFlag != '1') {
+          this.message.create("error", "请核查装运及交货")
+          return;
+        }
+        if (this.dataBase.installationWarrantyCheckFlag != '1') {
+          this.message.create("error", "请核查安装及保修")
+          return;
+        }      
+        if (this.dataBase.sitePreparationCheckFlag != '1') {
+          this.message.create("error", "请核查场地准备")
+          return;
+        }
+        if (this.dataBase.performanceBondCheckFlag != '1') {
+          this.message.create("error", "请核查履约保函")
+          return;
+        }
+        if (this.dataBase.otherCheckFlag != '1') {
+          this.message.create("error", "请核查其他")
+          return;
+        }
+      }     
+      if (this.infor.businessModel == 'DIRECT'&&this.infor.entryMode=='BIDDING') {
         if (this.dataBase.amountDifferenceCheckFlag != '1') {
           this.message.create("error", "请核查直投订单合同金额和中标金额有价差")
           return;
         }
-      }
-      if (this.dataBase.sitePreparationCheckFlag != '1') {
-        this.message.create("error", "请核查场地准备")
-        return;
-      }
-
-      if (this.dataBase.performanceBondCheckFlag != '1') {
-        this.message.create("error", "请核查履约保函")
-        return;
       }
       if (this.infor.sampleAuditFlag == '1') {
         if (this.dataBase.supportFileMissingCheckFlag != '1') {
@@ -331,14 +413,11 @@ export class InorderComponent implements OnInit {
       }
       if (this.infor.confirmationFile != null && this.infor.confirmationFile != undefined && this.infor.confirmationFile != "") {
         if (this.dataBase.confirmationFileCheckFlag != '1') {
-          this.message.create("error", "请核查磁共振屏蔽公司")
+          this.message.create("error", "请核查IGT第三方显示器吊塔确认文件")
           return;
         }
       }
-      if (this.dataBase.otherCheckFlag != '1') {
-        this.message.create("error", "请核查其他")
-        return;
-      }
+      
     }   
     let url = "/act/preparation/saveOrderSummur";    
     this.load = true;
@@ -363,6 +442,57 @@ export class InorderComponent implements OnInit {
   public tabclick(val) {
     this.activedId = val.nextId;
   }
-
+   
+   //弹出退回合同概要表
+   backContract()
+   {
+     this.isAgres=true;
+     let obj={
+       title:"退回合同概要表",
+       code:"backContract",
+       refuseReason:null,
+       remarks:"",
+       file:"",
+     }
+     this.ServesiceService.confirmTime.emit(obj);
+   }
+   //确定
+   isAgregentOk()
+   { 
+      const cheakData = this.child.checkFormData();
+      if(!cheakData)
+      {
+       this.message.create('error', `有必填项没有填写`);
+       return;
+      }        
+      this.dataBase.contractSummaryId = decodeString(this.activatedRouter.queryParams['_value'].id);
+      this.dataBase.flag = 'REJECTED';
+      this.dataBase.status = 1;
+      this.dataBase.remarks=this.child.infor.remarks;
+      this.dataBase.reason=this.child.infor.refuseReason;
+      this.dataBase.enclosure=this.child.infor.file;
+      this.load = true;
+      const url='/act/preparation/saveOrderSummur';
+      this.http.post(url, this.dataBase).subscribe((rest => {
+      if (rest.code === '0000') {
+        this.load = false;
+        this.message.create('success', '操作成功');
+        this.router.navigate(['/igt/my-task']);
+        this.child.infor.file = "";
+        this.child.infor.refuseReason = null;
+        this.child.validateForm.reset();
+        this.isAgres = false;
+      }
+    }), (error => {
+      this.load = false;
+      this.message.create("error", "请求异常")
+    }));
+      
+   }
+   //取消
+   isAgreCancels()
+   {
+     this.isAgres=false;
+   }
 
 }

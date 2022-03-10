@@ -1,11 +1,13 @@
-import {Component, OnInit, Output, EventEmitter, Input} from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { Observable, Observer } from 'rxjs';
-import {Router, ActivatedRoute} from '@angular/router';
-import {HttpService} from '../../../services';
-import {ToastrService} from 'ngx-toastr';
-import {NzMessageService, UploadFile} from 'ng-zorro-antd';
-import {decodeString, getType} from '../../../../assets/js/tools';
+import { Router, ActivatedRoute } from '@angular/router';
+import { HttpService } from '../../../services';
+import { ToastrService } from 'ngx-toastr';
+import { NzMessageService, UploadFile } from 'ng-zorro-antd';
+import { decodeString, getType } from '../../../../assets/js/tools';
+import { ServesiceService } from '../../preOrder/servesice.service';
+
 
 @Component({
   selector: 'app-examine-form-igt',
@@ -22,15 +24,17 @@ export class ExamineFormIGTComponent implements OnInit {
       taskID: this.activatedRouter.queryParams['_value'].taskID,
     },
   };
+  @ViewChild('child') child;
   @Input() disa = false;
-  public textLen:any=255;
-  public cannel=false;
+  public textLen: any = 255;
+  public isAgres: any = false;
+  public cannel = false;
   value: string;
   selectedValue = null;
   validateForm: FormGroup;
   dateFormat = 'yyyy/MM/dd';
   load: any = false;
-  roleCode:any;
+  roleCode: any;
   public fileFileList = []; //
   params = {
     check: 0, // 1 通过， 0 拒绝
@@ -46,6 +50,8 @@ export class ExamineFormIGTComponent implements OnInit {
     updateUser: '',
     paymentProvisionRadio: '0',
     taskID: '',
+    reason: "",
+    mainId:"",
   };
   public DfbshObj = {
     paymentProvision: '待C&C Leader审核',
@@ -55,14 +61,21 @@ export class ExamineFormIGTComponent implements OnInit {
     sitePreparation: '待CFC PM Leader审核',
     performanceBond: '待Cluster BP审核',
   };
-
+  //弹窗的数据
+  public showData = {
+    refuseReason: "",
+    remarks: "",
+    file: "",
+    title: "",
+    code: "",
+  }
   date = null; // new Date();
   dateRange = []; // [ new Date(), addDays(new Date(), 3) ];
   isEnglish = false;
 
   controlArray: any[] = [];
   isCollapse = false;
-  public withdraw:any=false;
+  public withdraw: any = false;
   constructor(
     private fb: FormBuilder,
     private router: Router,
@@ -71,6 +84,7 @@ export class ExamineFormIGTComponent implements OnInit {
     private message: NzMessageService,
     public activatedRouter: ActivatedRoute,
     private nzMessageService: NzMessageService,
+    private ServesiceService: ServesiceService,
   ) {
   }
   /**
@@ -98,10 +112,10 @@ export class ExamineFormIGTComponent implements OnInit {
       } else {
         this.message.create('error', res.msg);
       }
-    }),(error=>{
-      this.load=false;
+    }), (error => {
+      this.load = false;
       this[fileList] = [];
-      this.message.create("error","上传失败请重新上传");
+      this.message.create("error", "上传失败请重新上传");
     }));
   }
   // 上传文件下载
@@ -156,20 +170,20 @@ export class ExamineFormIGTComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.roleCode=localStorage.getItem("roleCode");
-    this.dataBase.detail.taskID = this.activatedRouter.queryParams['_value'].taskID;    
+    this.roleCode = localStorage.getItem("roleCode");
+    this.dataBase.detail.taskID = this.activatedRouter.queryParams['_value'].taskID;
     this.params.taskID = this.activatedRouter.queryParams['_value'].taskID;
-    this.disa = this.dataBase.detail.flag==='1'? true : false;
+    this.disa = this.dataBase.detail.flag === '1' ? true : false;
 
     this.validateForm = this.fb.group({
       // file: [null],
       // remark: [null],
       // paymentProvisionRadio: [null, [Validators.required]],
       // taskID: [null],
-      file: new FormControl({ value: 'Nancy', disabled: this.disa },null),
-      remark: new FormControl({ value: 'Nancy', disabled: this.disa},null),
-      paymentProvisionRadio: new FormControl({ value: 'Nancy', disabled: this.disa },null),
-      taskID: new FormControl({ value: 'Nancy', disabled: this.disa },null),
+      file: new FormControl({ value: 'Nancy', disabled: this.disa }, null),
+      remark: new FormControl({ value: 'Nancy', disabled: this.disa }, null),
+      paymentProvisionRadio: new FormControl({ value: 'Nancy', disabled: this.disa }, null),
+      taskID: new FormControl({ value: 'Nancy', disabled: this.disa }, null),
     });
     //DFBSH这种状态设置为必填项
     if (this.dataBase.detail.status === 'DFBSH' && this.dataBase.detail.taskID === 'paymentProvision') {
@@ -179,8 +193,8 @@ export class ExamineFormIGTComponent implements OnInit {
     this.validateForm.get('paymentProvisionRadio')!.updateValueAndValidity();
     this.getCheck();
   }
-  
-  confirmApproval (value: any, check: number) {
+
+  confirmApproval(value: any, check: number) {
     this.submitForm(value, check);
   }
 
@@ -188,108 +202,123 @@ export class ExamineFormIGTComponent implements OnInit {
     this.nzMessageService.info('Cancel this operation');
   }
   //取消
-  sumbitBack()
-  {
-    const  mainId=decodeString(this.activatedRouter.queryParams['_value'].id);
-    let url=`/act/preparation/childOaTermination`;
-    const params={
-      mainId:mainId,
-      remark:this.params.remark, // 备注
+  sumbitBack() {
+    const mainId = decodeString(this.activatedRouter.queryParams['_value'].id);
+    let url = `/act/preparation/childOaTermination`;
+    const params = {
+      mainId: mainId,
+      remark: this.params.remark, // 备注
     }
     this.validateForm.get('remark')!.setValidators(Validators.required);
     this.validateForm.get('remark')!.markAsDirty();
     this.validateForm.get('remark')!.updateValueAndValidity();
-    this.cannel=true;
-     if(!this.validateForm.valid)
-     {
-        return;
-     }
+    this.cannel = true;
+    if (!this.validateForm.valid) {
+      return;
+    }
     for (const key in this.validateForm.controls) {
       this.validateForm.controls[key].markAsDirty();
       this.validateForm.controls[key].updateValueAndValidity();
     }
-    
+
     if (!this.validateForm.valid) {
       this.nzMessageService.warning('缺少必填字段');
       return false;
     }
-    this.load=true;
-    this.http.post(url,params).subscribe((res=>{
-      this.load=false;
-      if(res.code=='0000')
-      {
-        this.router.navigate(['/igt/my-task']);      
-        this.message.create("success","请求成功!");
+    this.load = true;
+    this.http.post(url, params).subscribe((res => {
+      this.load = false;
+      if (res.code == '0000') {
+        this.router.navigate(['/igt/my-task']);
+        this.message.create("success", "请求成功!");
       }
-    }),(error)=>{
-      this.load=false;
-      this.message.create("error","请求异常!");
+    }), (error) => {
+      this.load = false;
+      this.message.create("error", "请求异常!");
     })
   }
   //检查是否可以撤回
-  getCheck()
+  getCheck() {
+    const mainId = decodeString(this.activatedRouter.queryParams['_value'].id);
+    const url = `/act/preparation/checkCanBeTerminated/${mainId}`
+    this.http.get(url).subscribe(res => {
+      if (res.code == '0000') {
+        this.withdraw = res.data;
+        
+      }
+    })
+  }
+  //是否显示提示文字
+  isshowOrder()
   {
-   const  mainId=decodeString(this.activatedRouter.queryParams['_value'].id);
-   const url=`/act/preparation/checkCanBeTerminated/${mainId}`
-   this.http.get(url).subscribe(res=>{ 
-        if(res.code=='0000')
-        {
-          this.withdraw=res.data;
-        }
-   })
+    if((this.dataBase.detail.status=='cancel_oa_leader_approval'||this.dataBase.detail.status=='cancel_sales_approval')&&!this.withdraw)
+    {
+     return true
+    }
+    else{
+      false
+    } 
   }
   submitForm = (value: any, check: number) => {
-    // $event.preventDefault();
+    // $event.preventDefault();    
     const status = this.activatedRouter.queryParams['_value'].status;
     let url = '';
     switch (status) {
       // 销售部门一级审核
       case 'DXSBMSH': url = '/act/ecom/order/application/checkSale';
-      break;
+        break;
       // 销售 二级部门审核
       case 'DXSBM2JSH': url = '/act/preparation/secondaryDepartmentAudit';
-      break;
+        break;
       // 待非标审核
       case 'DFBSH': url = '/act/preparation/secondaryAudit';
-      break;
+        break;
       // 特批文件进单初审（特批进单审核）
       case 'DTPJDSH': url = '/act/preparation/specialFileReview';
-      break;
+        break;
       // 特批文件进单二审
       case 'b2': url = '/act/preparation/specialFileReview';
-      break;
+        break;
       // 特批文件进单三审
       case 'b3': url = '/act/preparation/specialFileReview';
-      break;
+        break;
       // 进单确认（部门审核）
       case 'DOAJDQR': url = '/act/preparation/childOrderCheck';
-      break;
+        break;
       // OA审核
       case 'DHTOASH': url = '/act/preparation/childOaReview';
-      break;
+        break;
+      //待OA Leader审核,待sale leader审核
+      case 'cancel_oa_leader_approval':
+      case 'cancel_sales_approval':
+      case 'reject_sales_approval':
+      case 'close_dm_approval':
+      case 'close_oa_leader_approval':
+      case 'reject_oa_leader_approval': 
+      url = `/act/preparation/fallback`;
+        break;
     }
     let params = {
       check: check, // 1 通过， 0 拒绝
       file: this.params.file.toString(), // 上传附件
       mainId: decodeString(this.activatedRouter.queryParams['_value'].id),
       remark: this.params.remark, // 备注
-      taskID:this.activatedRouter.queryParams['_value'].taskID,
-      tenderNo:this.dataBase.tenderNo, //招标编号
-      hospitalNature:this.dataBase.hospitalNature, //医院性质
-      entryMode:this.dataBase.entryMode
+      taskID: this.activatedRouter.queryParams['_value'].taskID,
+      tenderNo: this.dataBase.tenderNo, //招标编号
+      hospitalNature: this.dataBase.hospitalNature, //医院性质
+      entryMode: this.dataBase.entryMode,
+      workStatus: status,//
     };
-    this.cannel=false;
-    if(check==0)
-    {
+    this.cannel = false;
+    if (check == 0) {
       this.validateForm.get('remark')!.setValidators(Validators.required);
       this.validateForm.get('remark')!.markAsDirty();
       this.validateForm.get('remark')!.updateValueAndValidity();
-      if(!this.validateForm.valid)
-       {
+      if (!this.validateForm.valid) {
         return;
-       }
+      }
     }
-    else{
+    else {
       this.validateForm.get('remark')!.clearValidators();
       this.validateForm.get('remark')!.markAsPristine();
       this.validateForm.get('remark')!.updateValueAndValidity();
@@ -324,43 +353,124 @@ export class ExamineFormIGTComponent implements OnInit {
         taskId: this.dataBase.detail.taskID,
       });
     }
-    if(status==='DHTOASH')  //oa审核的时候的提交参数
+    if (status === 'DHTOASH')  //oa审核的时候的提交参数
     {
+
+      if (check == 1) {
+        //装运方式清空选项
+        if (this.dataBase.shipmentDelivery == '0') {
+          this.dataBase.shipmentDeliveryRemarks = "";
+          this.dataBase.shipmentDeliveryFileName = "";
+
+        }
+        //安装，验收及保修
+        if (this.dataBase.installationWarranty == '0') {
+          this.dataBase.installationWarrantyRemarks = "";
+          this.dataBase.installationWarrantyFileName = "";
+
+        }
+        //场地准备
+        if (this.dataBase.sitePreparation == '0') {
+          this.dataBase.sitePreparationRemarks = "";
+          this.dataBase.sitePreparationFileName = "";
+        }
+        //履约保函
+        if (this.dataBase.performanceBond == '0') {
+          this.dataBase.performanceBondRemarks = "";
+          this.dataBase.performanceBondFileName = "";
+
+        }
+        //是否有售后限价
+        if (this.dataBase.afterSales == '0') {
+          this.dataBase.afterSalesRemarks = "";
+          this.dataBase.afterSalesFileName = "";
+
+        }
+        //直投订单合同金额和中标金额有价差
+        if (this.dataBase.amountDifference == '0') {
+          this.dataBase.amountDifferenceRemarks = "";
+          this.dataBase.amountDifferenceFileName = "";
+
+        }
+        //支持文件缺失需特批进单
+        if (this.dataBase.supportFileMissing == '0') {
+          this.dataBase.supportFileMissingRemarks = "";
+          this.dataBase.supportFileMissingFileName = "";
+        }
+        //清空其他文件
+        let otherArr = this.dataBase.other.split(',');
+        let otherFile = otherArr.some(res => res === 'true') //控制备注、复制按钮的显示与否;
+        if (!otherFile) {
+          this.dataBase.otherRemarks = "";
+          this.dataBase.otherFilName = "";
+          this.dataBase.freeText = "";
+          this.dataBase.otherFilNameFileList = "";
+        }
+      }
       params = Object.assign(params, {
-        performanceBondRemarks:this.dataBase.performanceBondRemarks,
-        shipmentDeliveryRemarks:this.dataBase.shipmentDeliveryRemarks,
-        installationWarrantyRemarks:this.dataBase.installationWarrantyRemarks,
-        amountDifferenceRemarks:this.dataBase.amountDifferenceRemarks,
-        sitePreparationRemarks:this.dataBase.sitePreparationRemarks,
-        paymentProvisionRemarks:this.dataBase.paymentProvisionRemarks,
-        supportFileMissingRemarks:this.dataBase.supportFileMissingRemarks,
-        otherRemarks:this.dataBase.otherRemarks,
+        paymentProvision: this.dataBase.paymentProvision, //付款条款
+        paymentProvisionFileName: this.dataBase.paymentProvisionFileName,
+        paymentProvisionRemarks: this.dataBase.paymentProvisionRemarks,
+        performanceBond: this.dataBase.performanceBond,//履约保函
+        performanceBondFileName: this.dataBase.performanceBondFileName,
+        performanceBondRemarks: this.dataBase.performanceBondRemarks,
+        shipmentDelivery: this.dataBase.shipmentDelivery,//装运及交货
+        shipmentDeliveryFileName: this.dataBase.shipmentDeliveryFileName,
+        shipmentDeliveryRemarks: this.dataBase.shipmentDeliveryRemarks,
+        installationWarranty: this.dataBase.installationWarranty, //安装，验收及保修
+        installationWarrantyFileName: this.dataBase.installationWarrantyFileName,
+        installationWarrantyRemarks: this.dataBase.installationWarrantyRemarks,
         installationWarrantyRadio: this.dataBase.installationWarrantyRadio,
+        amountDifference: this.dataBase.amountDifference,//直投订单合同金额和中标金额有价差
+        amountDifferenceFileName: this.dataBase.amountDifferenceFileName,
+        amountDifferenceRemarks: this.dataBase.amountDifferenceRemarks,
+        sitePreparation: this.dataBase.sitePreparation, //场地准备
+        sitePreparationFileName: this.dataBase.sitePreparationFileName,
+        sitePreparationRemarks: this.dataBase.sitePreparationRemarks,
+
+        supportFileMissing: this.dataBase.supportFileMissing,//支持文件缺失
+        supportFileMissingFileName: this.dataBase.supportFileMissingFileName,
+        supportFileMissingRemarks: this.dataBase.supportFileMissingRemarks,
+
+        other1: this.dataBase.other1, //other
+        other2: this.dataBase.other2,
+        other3: this.dataBase.other3,
+        other4: this.dataBase.other4,
+        other5: this.dataBase.other5,
+        other6: this.dataBase.other6,
+        other7: this.dataBase.other7,
+        other: this.dataBase.other,
+        otherFilName: this.dataBase.otherFilName,
+        otherRemarks: this.dataBase.otherRemarks,
+        afterSales: this.dataBase.afterSales, //是否有售后限价
+        afterSalesFileName: this.dataBase.afterSalesFileName,
+        afterSalesRemarks: this.dataBase.afterSalesRemarks,
+
       });
     }
-    this.load=true;
+    this.load = true;
     this.http.post(url, params).subscribe((rest => {
       if (rest.code === '0000') {
         console.log(rest.data);
         this.message.create('success', `${rest.msg}`);
         // setTimeout(() => {
-          this.router.navigate(['/igt/my-task']);
-          this.load=false;
-       // }, 3000);
+        this.router.navigate(['/igt/my-task']);
+        this.load = false;
+        // }, 3000);
       } else {
-        this.load=false;
+        this.load = false;
         this.message.create('error', `${rest.msg}`);
       }
-    }),(error=>{
-      this.load=false;
-      this.message.create("error","请求异常!")
+    }), (error => {
+      this.load = false;
+      this.message.create("error", "请求异常!")
     }));
   }
   // 上一步
-  prevStep () {
+  prevStep() {
   }
   // 清空表单选项
-  resetForm () {
+  resetForm() {
     this.validateForm.reset();
   }
 
@@ -387,6 +497,96 @@ export class ExamineFormIGTComponent implements OnInit {
       return { confirm: true, error: true };
     }
     return {};
+  }
+  //弹出退回合同概要表
+  backContract() {
+    this.isAgres = true;
+    let obj = {
+      title: "退回合同概要表",
+      code: "backContract",
+      refuseReason: null,
+      remarks: "",
+      file: "",
+    }
+    this.ServesiceService.confirmTime.emit(obj);
+  }
+  //弹出关闭合同概要表
+  closeContract() {
+    this.isAgres = true;
+    let obj = {
+      title: "关闭合同概要表",
+      code: "colseContract",
+      refuseReason: null,
+      remarks: "",
+      file: "",
+    }
+    this.ServesiceService.confirmTime.emit(obj);
+  }
+  //弹出退回进单准备表
+  backOrder() {
+    this.isAgres = true;
+    let obj = {
+      title: "取消进单准备表",
+      code: "cancelReceipt",
+      refuseReason: null,
+      remarks: "",
+      file: "",
+    }
+    this.ServesiceService.confirmTime.emit(obj);
+  }
+  //确定
+  isAgregentOk() {
+    const status = this.activatedRouter.queryParams['_value'].status;
+    const mainId = decodeString(this.activatedRouter.queryParams['_value'].id);
+    const cheakData = this.child.checkFormData();
+    if (!cheakData) {
+      this.message.create('error', `有必填项没有填写`);
+      return;
+    }
+    const code = this.child.infor.code;
+    switch (code) {
+      case "colseContract":
+        this.params.check = 4;
+        break
+      case "cancelReceipt":
+        this.params.check = 3;
+        break;
+      case "backContract":
+        this.params.check=0;
+        break;  
+    }
+    this.params.remark = this.child.infor.remarks;
+    this.params.file = this.child.infor.file;
+    this.params.reason = this.child.infor.refuseReason;
+    this.params.mainId=mainId;
+    let url
+    switch(status)
+    {
+       case 'DOAJDQR': url = '/act/preparation/childOrderCheck';
+       break;
+       case 'DHTOASH':url='/act/preparation/childOaReview';
+       break;
+    }
+    this.load = true;
+    this.http.post(url, this.params).subscribe((rest => {
+      if (rest.code === '0000') {
+        this.load = false;
+        this.message.create('success', '操作成功');
+        this.router.navigate(['/igt/my-task']);
+        this.child.infor.file = "";
+        this.child.infor.refuseReason = null;
+        this.child.validateForm.reset();
+        this.isAgres = false;
+      }
+    }), (error => {
+      this.load = false;
+      this.message.create("error", "请求异常")
+    }));
+
+  }
+  //取消
+  isAgreCancels() {
+    this.isAgres = false;
   }
 
 }

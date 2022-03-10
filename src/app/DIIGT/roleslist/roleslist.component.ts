@@ -89,6 +89,7 @@ export class RoleslistComponent implements OnInit {
 
   syncCPLoading: boolean = false;
   syncCDLoading: boolean = false;
+  syncOELoading: boolean = false;
 
   ngOnInit() {
   }
@@ -285,5 +286,20 @@ export class RoleslistComponent implements OnInit {
       }
     });
   }
+
+
+  syncOEData () {
+    this.syncOELoading = true;
+    this.http.get(`/act/sync/oe`).subscribe(rest => {
+      if (rest.code === '0000') {
+        this.syncOELoading = false;
+        this.message.create('success', `Success!`);
+      } else {
+        this.syncOELoading = false;
+        this.message.create('error', `Failure, ${rest.msg}`);
+      }
+    });
+  }
+
 
 }

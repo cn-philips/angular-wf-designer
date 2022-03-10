@@ -34,7 +34,7 @@ export class RealTimeComponent implements OnInit {
     const flag = this.activatedRouter.queryParams['_value'].flag;
     this.validateForm = this.fb.group({
       remark: new FormControl({ value:''},null),
-      spa:new FormControl({ value:''},Validators.required),
+      spa:new FormControl({ value:''},[Validators.required,this.cheakSo]),
     })
     this.getBase();
   }
@@ -45,7 +45,7 @@ export class RealTimeComponent implements OnInit {
     const param={
       mainId:mainId,
     }
-    this.http.post(url, param).subscribe(res => {
+    this.http.post(url, param).subscribe(res => {      
       if (res.code === '0000' && res.data) {
         const {subProStatusTime} = res.data;
         if (res.data) {
@@ -62,6 +62,15 @@ export class RealTimeComponent implements OnInit {
       }
     })
 
+  }
+  cheakSo(control: FormControl) {
+    if (control.value) {
+      const reg = /^([\d;\s]{0,1000}$)$/;
+      //const reg=/^[0-9a-zA-Z_\@\.\s\-]*$/g;
+      //const reg = /^(?!\@)+(?!\_)+[0-9a-zA-Z_\@\.\s\-]*$/g;
+      const valid = reg.test(control.value); // true
+      return valid ? null : { soform: true };
+    }
   }
     //附件上传
     public fileBeforeUpload = (file: UploadFile): boolean => {

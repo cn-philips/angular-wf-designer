@@ -1,8 +1,4 @@
 <app-apploading [load]="load"></app-apploading>
-<nz-card class="mtb1rem" nzTitle="审批记录">
-  <!--   <app-bid-record></app-bid-record>-->
-  <app-emp-acc></app-emp-acc>
-</nz-card>
 <nz-card class="mtb1rem" nzTitle="包含非标准条款" *ngIf="data && data.businessType != 'DISTRIBUTOR'">
   <app-app-terms></app-app-terms>
 </nz-card>
@@ -73,6 +69,25 @@
     </nz-form-item>
   </div>
 </div>
+
+  <div nz-row>
+    <div nz-col nzSpan="24">
+      <nz-form-item>
+        <nz-form-label [nzSpan]="6">出口管制文件</nz-form-label>
+        <nz-form-control [nzSpan]="14">
+          <div class="maxuploadto">
+            <nz-upload *ngIf="flag==0"  [(nzFileList)]="exportControlFileList" [nzBeforeUpload]="beforeExportControlFileUpload" [nzLimit]="1" [nzPreview]="dwonLoad">
+              <button  nz-button><i nz-icon nzType="upload"></i><span>上传附件</span></button>
+            </nz-upload>
+          </div>
+          <button nz-tooltip [nzTitle]="param.exportControlFileName" *ngIf="flag==1&&param.exportControlFileId" class="down link-tesk" nz-button nzType="link" (click)="fileDwon(param.exportControlFileId)">{{param.exportControlFileName}}</button>
+          <!--          <nz-upload *ngIf="flag==1"  nzAction="https://jsonplaceholder.typicode.com/posts/">-->
+          <!--            <button disabled  nz-button><i nz-icon nzType="upload"></i><span>上传附件</span></button>-->
+          <!--          </nz-upload>-->
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
 
 <div nz-row>
    <div nz-col nzSpan="24">
@@ -180,7 +195,7 @@
 
 
 <!--弹窗-->
-<nz-modal [(nzVisible)]="showCP" [nzOkDisabled]="verifiOff" nzTitle="授权发放校验结果" nzOkText="授权发放" nzCancelText="取消" nzCentered nzWidth="1600" (nzOnCancel)="handleCancelWinCheck()" (nzOnOk)="handleOkWinCheck()">
+<nz-modal [(nzVisible)]="showCP" [nzOkDisabled]="!CkVerifiOff()" nzTitle="授权发放校验结果" nzOkText="授权发放" nzCancelText="取消" nzCentered nzWidth="1600" (nzOnCancel)="handleCancelWinCheck()" (nzOnOk)="handleOkWinCheck()">
   <div *ngIf="load2" class="load2">
     <nz-spin nzSimple [nzSize]="'large'"></nz-spin>
   </div>
@@ -230,8 +245,12 @@
                     </span>
                   </label>
                 </div>
-                <div *ngIf="item.id==data.select" style="flex: 1;display: flex;align-items: center;justify-content: center">
-                  <button nz-button nzSize="small" nzType="primary" (click)="selectClick(i,j)">选择此项校验</button>
+<!--                <div *ngIf="item.id==data.select" style="flex: 1;display: flex;align-items: center;justify-content: center">-->
+<!--                  <button nz-button nzSize="small" nzType="primary" (click)="selectClick(i,j)">选择此项校验</button>-->
+<!--                </div>-->
+                <div *ngIf="(item.id==data.select||item.temUser)" style="flex: 1;display: flex;align-items: center;justify-content: center">
+                  <button *ngIf="item.temUser != true" nz-button nzSize="small" nzType="primary" (click)="selectClick(i,j)">选择此项校验</button>
+                  <button *ngIf="item.temUser == true" nz-button nzSize="small" nzType="primary" (click)="selectUnClick(i,j)">取消此项校验</button>
                 </div>
               </div>
             </div>
@@ -259,3 +278,7 @@
     <!-- <ngx-extended-pdf-viewer [src]="pdfSRC" useBrowserLocale="true" height="100vh"></ngx-extended-pdf-viewer> -->
   </div>
 </div>
+<nz-card class="mtb1rem" nzTitle="审批记录">
+  <!--   <app-bid-record></app-bid-record>-->
+  <app-emp-acc></app-emp-acc>
+</nz-card>

@@ -30,6 +30,17 @@ export class ApplyTenderComponent implements OnInit {
     fileAgentList: [], // 协议代理商出具投标委托函
   };
 
+  public paramsCP = {
+    pageNo: 1,
+    pageSize: 10,
+    total: 0
+  };
+  public paramsCRM = {
+    pageNo: 1,
+    pageSize: 10,
+    total: 0
+  };
+
   processList: any = [{ name: "默认cp或者CRM链接带入" }, { name: "Distribute Deal" }, { name: "Direct Deal" },];
   public test: string = "";
   public activedId: any = "pending-tab";
@@ -49,7 +60,7 @@ export class ApplyTenderComponent implements OnInit {
     biddingValidDay: 90, // 投标有效期
     purchaseGroup: '', // 采购集团名称
     secondaryAgentBidding: '', // 是否二级代理商
-    biddingComRegCode: '', // 投标公司注册所在地
+    biddingComRegCode: '中国', // 投标公司注册所在地
     hospitalName: '', // 医院名称
     hospitalProvinceCode: '', // 省份
     clientType: '', // 客户类型
@@ -60,7 +71,9 @@ export class ApplyTenderComponent implements OnInit {
     tenderDeclarationLetter: '', // 在线提交参与投标声明函
     logisticsDescription: '', // 物流条款说明
     afterSalesInstructions: '', // 售后维修条款说明
-    tenderPriceCurrencys: '', // 预计投标价格币种
+    tenderPriceCurrencys: null, // 预计投标价格币种
+    bidPriceCurrency: null, // 预计投标价格币种
+    performanceBondsCurrency: null, // 预计投标价格币种
     tenderPriceCurrency: '', // 预计投标价格金额
     percentageTotalPrice: '', // 总价百分比
     totalPrice: '', // 总金额
@@ -84,12 +97,17 @@ export class ApplyTenderComponent implements OnInit {
     paymentList: [], // 支付方式说明列表
     change: false, // 控制清除与否
     logisticsTermsExplain: '', // 物流条款说明
-    performanceBonds: '' // 履约保证金金额
+    performanceBonds: '', // 履约保证金金额
+    bidType: null, // 招标类型
+    distributorAgreement: [],
+    distributorType: '年度协议'
   };
 
   //产品信息
   public productData: any = [];
 
+  // 所有经销商
+  public selAgent_all: any = [];
   constructor(
     private http: HttpService,
     private message: NzMessageService,
@@ -116,14 +134,33 @@ export class ApplyTenderComponent implements OnInit {
     this.validateForm = this.fb.group({
       test: [null, [Validators.required]],
     });
+    this.getAllselAgent();
+  }
+  public getAllselAgent() {
+    const url = `/act/ecom/bidding/selAgent`;
+    const data = {
+      pageNo: 1,
+      pageSize: 0x7fffffff
+    };
+    this.http.post(url, data).subscribe(res => {
+      if (res && res.data) {
+        this.selAgent_all = res.data.rows;
+      }
+    }, error => {
 
-
+    });
+  }
+  public disableValidateForm(val) {
+    this.childbase.DisableValidateForm();
   }
   upData(val) {
     this.productData = Object.assign([], val);
   }
   public myskip(val): void { //外部触发tab选项卡的事件
     this.activedId = val;
+  }
+  public addProduct(val) {
+    this.product.getProductInsert(val.opportunityId, val.dealFormId, val.CpOrCrm);
   }
   tabclick(val) //tab选项卡的点击事件
   {
@@ -204,6 +241,10 @@ export class ApplyTenderComponent implements OnInit {
 
     if (this.dataBase.businessType === 'DISTRIBUTOR' && this.dataBase.biddingDdpState === '未通过') {
       this.message.create('error', '投标公司DDP状态未通过');
+      return;
+    }
+    if (this.dataBase.businessType === 'DISTRIBUTOR' && this.dataBase.agreementDealerDdpState === '未通过') {
+      this.message.create('error', '协议经销商DDP状态未通过');
       return;
     }
 

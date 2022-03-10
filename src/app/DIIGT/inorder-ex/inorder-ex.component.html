@@ -3,10 +3,10 @@
   <div nz-col nzXs="24" nzSm="24" nzMd="24" *ngIf="!disa && dataBase.entryMode != 'STOCK' && mainId" nzAlign="middle"
     style="z-index: 999">
     <nz-form-item>
-      <nz-form-label nzSm="4" nzXl="4" nzXXl="4"><a style="color: #1e70cd!important;font-weight: bold;"
+      <nz-form-label nzSm="4" nzXl="4" nzXXl="4"><a style="color: #337fbf!important;font-weight: bold;"
           nzAlign="middle">投标申请表链接</a></nz-form-label>
       <nz-form-control nzSm="14" nzXl="14" nzXXl="14">
-        <a *ngFor="let item of mainid_winList" style="color: #1e70cd!important;font-weight: bold;"
+        <a *ngFor="let item of mainid_winList" style="color: #337fbf!important;font-weight: bold;"
           (click)="toWin(item)">{{item.referenceId}}</a>
       </nz-form-control>
     </nz-form-item>
@@ -27,7 +27,7 @@
             (infor.detail.status && infor.detail.status !== 'DOACS') || showChek
           ">
           <tr>
-            <td [attr.rowspan]="6" [nzAlign]="alignType">
+            <td [attr.rowspan]="rowspanht" [nzAlign]="alignType">
               合同条款确认
             </td>
             <td [nzAlign]="alignType">付款条款</td>
@@ -36,11 +36,12 @@
                 <nz-form-control [nzSm]="8" [nzXs]="24">
                   <nz-select style="width: 90%" nzShowSearch nzAllowClear nzPlaceHolder=""
                     formControlName="paymentProvision" [(ngModel)]="infor.paymentProvision">
-                    <nz-option nzLabel="标准条款" nzValue="0"></nz-option>
-                    <nz-option nzLabel="非标准条款" nzValue="1"></nz-option>
+                    <nz-option nzCustomContent *ngFor="let item of infor.paymentList"  [nzLabel]="item.dictLabel"  [nzValue]="item.dictId">
+                      <div nz-tooltip class="options"  [nzTitle]="item.dictLabel">{{item.dictLabel}}</div> 
+                     </nz-option>    
                   </nz-select>
                 </nz-form-control>
-                <nz-form-control [nzSm]="8" [nzXs]="24" *ngIf="infor.paymentProvision == 1">
+                <nz-form-control [nzSm]="8" [nzXs]="24" *ngIf="paymentOff">
                   <textarea *ngIf="!oaDisa" nz-input placeholder="备注：" nzAutosize
                     formControlName="paymentProvisionRemarks" nz-tooltip nzPlacement="topLeft"
                     [nzTitle]="infor.paymentProvisionRemarks" [(ngModel)]="infor.paymentProvisionRemarks"></textarea>
@@ -50,7 +51,7 @@
                 </nz-form-control>
                 <nz-form-control [nzSm]="8" [nzXs]="24">
                   <button *ngIf="
-                      infor.paymentProvision == 1 &&
+                      paymentOff == 1 &&
                       infor.paymentProvisionFileName &&
                       infor.detail.status != 'DHTGYBTX'
                     " class="down" nz-button nzType="link" (click)="fileDwon(infor.paymentProvisionFileName)">
@@ -67,233 +68,286 @@
               </nz-radio-group>
             </td>
           </tr>
-          <tr>
-            <td [nzAlign]="alignType">装运及交货</td>
-            <td [nzAlign]="alignType">
-              <nz-form-item>
-                <nz-form-control [nzSm]="8" [nzXs]="24">
-                  <nz-select style="width: 90%" nzShowSearch nzAllowClear nzPlaceHolder=""
-                    formControlName="shipmentDelivery" [(ngModel)]="infor.shipmentDelivery">
-                    <nz-option nzLabel="标准条款" nzValue="0"></nz-option>
-                    <nz-option nzLabel="非标准条款" nzValue="1"></nz-option>
-                  </nz-select>
-                </nz-form-control>
-                <nz-form-control [nzSm]="8" [nzXs]="24" *ngIf="infor.shipmentDelivery == 1">
-                  <textarea *ngIf="!oaDisa" nz-input placeholder="备注：" nzAutosize
-                    formControlName="shipmentDeliveryRemarks" nz-tooltip nzPlacement="topLeft"
-                    [nzTitle]="infor.shipmentDeliveryRemarks" [(ngModel)]="infor.shipmentDeliveryRemarks"></textarea>
-                  <div *ngIf="oaDisa && infor.shipmentDeliveryRemarks" class="textBox">
-                    {{ infor.shipmentDeliveryRemarks }}
-                  </div>
-                </nz-form-control>
-                <nz-form-control [nzSm]="8" [nzXs]="24">
-                  <button class="down" *ngIf="
-                      infor.shipmentDelivery == 1 &&
-                      infor.shipmentDeliveryFileName &&
-                      infor.detail.status != 'DHTGYBTX'
-                    " (click)="fileDwon(infor.shipmentDeliveryFileName)" nz-button nzType="link">
-                    {{infor.shipmentDeliveryFileNames}}
-                  </button>
-                </nz-form-control>
-              </nz-form-item>
-            </td>
-            <td [nzAlign]="alignType">
-              <nz-radio-group formControlName="shipmentDeliveryCheckFlag"
-                [(ngModel)]="dataBase.shipmentDeliveryCheckFlag">
-                <label nz-radio nzValue="1">是</label>
-                <label nz-radio nzValue="0">否</label>
-              </nz-radio-group>
-            </td>
-          </tr>
-          <tr>
-            <td [nzAlign]="alignType">安装，验收及保修</td>
-            <td [nzAlign]="alignType">
-              <nz-form-item>
-                <nz-form-control [nzSm]="8" [nzXs]="24">
-                  <nz-select style="width: 90%" nzShowSearch nzAllowClear nzPlaceHolder=""
-                    formControlName="installationWarranty" [(ngModel)]="infor.installationWarranty">
-                    <nz-option nzLabel="标准条款" nzValue="0"></nz-option>
-                    <nz-option nzLabel="非标准条款" nzValue="1"></nz-option>
-                  </nz-select>
-                </nz-form-control>
-                <nz-form-control [nzSm]="8" [nzXs]="24" *ngIf="infor.installationWarranty == 1">
-                  <textarea *ngIf="!oaDisa" nz-input placeholder="备注：" nzAutosize
-                    formControlName="installationWarrantyRemarks" nz-tooltip nzPlacement="topLeft"
-                    [nzTitle]="infor.installationWarrantyRemarks"
-                    [(ngModel)]="infor.installationWarrantyRemarks"></textarea>
-                  <div *ngIf="oaDisa && infor.installationWarrantyRemarks" class="textBox">
-                    {{ infor.installationWarrantyRemarks }}
-                  </div>
-                </nz-form-control>
-                <nz-form-control [nzSm]="8" [nzXs]="24">
-                  <button class="down" nz-button nzType="link" *ngIf="
-                      infor.installationWarranty == 1 &&
-                      infor.installationWarrantyFileName &&
-                      infor.detail.status != 'DHTGYBTX'
-                    " (click)="fileDwon(infor.installationWarrantyFileName)">
-                    {{infor.installationWarrantyFileNames}}
-                  </button>
-                </nz-form-control>
-              </nz-form-item>
-
-              <br />
-              <div *ngIf="infor.installationWarranty == 1">
+          <ng-container *ngIf="infor.entryMode=='BIDDING'||(infor.sampleAuditFlag=='1'&&infor.entryMode=='STOCK')">            
+            <tr>
+              <td [nzAlign]="alignType">装运及交货</td>
+              <td [nzAlign]="alignType">
                 <nz-form-item>
-                  <nz-form-label [nzSm]="6" [nzXs]="24">下一级是否审核</nz-form-label>
-                  <nz-form-control [nzSm]="14" [nzXs]="24">
-                    <nz-radio-group formControlName="installationWarrantyRadio"
-                      [(ngModel)]="infor.installationWarrantyRadio">
-                      <label nz-radio nzValue="1">是</label>
-                      <label nz-radio nzValue="0">否</label>
-                    </nz-radio-group>
+                  <nz-form-control [nzSm]="8" [nzXs]="24">
+                    <nz-select style="width: 90%" nzShowSearch nzAllowClear nzPlaceHolder=""
+                      formControlName="shipmentDelivery" [(ngModel)]="infor.shipmentDelivery">
+                      <nz-option nzLabel="标准条款" nzValue="0"></nz-option>
+                      <nz-option nzLabel="非标准条款" nzValue="1"></nz-option>
+                    </nz-select>
+                  </nz-form-control>
+                  <nz-form-control [nzSm]="8" [nzXs]="24" *ngIf="infor.shipmentDelivery == 1">
+                    <textarea *ngIf="!oaDisa" nz-input placeholder="备注：" nzAutosize
+                      formControlName="shipmentDeliveryRemarks" nz-tooltip nzPlacement="topLeft"
+                      [nzTitle]="infor.shipmentDeliveryRemarks" [(ngModel)]="infor.shipmentDeliveryRemarks"></textarea>
+                    <div *ngIf="oaDisa && infor.shipmentDeliveryRemarks" class="textBox">
+                      {{ infor.shipmentDeliveryRemarks }}
+                    </div>
+                  </nz-form-control>
+                  <nz-form-control [nzSm]="8" [nzXs]="24">
+                    <button class="down" *ngIf="
+                        infor.shipmentDelivery == 1 &&
+                        infor.shipmentDeliveryFileName &&
+                        infor.detail.status != 'DHTGYBTX'
+                      " (click)="fileDwon(infor.shipmentDeliveryFileName)" nz-button nzType="link">
+                      {{infor.shipmentDeliveryFileNames}}
+                    </button>
                   </nz-form-control>
                 </nz-form-item>
-              </div>
-            </td>
-            <td [nzAlign]="alignType">
-              <nz-radio-group formControlName="installationWarrantyCheckFlag"
-                [(ngModel)]="dataBase.installationWarrantyCheckFlag">
-                <label nz-radio nzValue="1">是</label>
-                <label nz-radio nzValue="0">否</label>
-              </nz-radio-group>
-            </td>
-          </tr>
+              </td>
+              <td [nzAlign]="alignType">
+                <nz-radio-group formControlName="shipmentDeliveryCheckFlag"
+                  [(ngModel)]="dataBase.shipmentDeliveryCheckFlag">
+                  <label nz-radio nzValue="1">是</label>
+                  <label nz-radio nzValue="0">否</label>
+                </nz-radio-group>
+              </td>
+            </tr>
+            <tr>
+              <td [nzAlign]="alignType">安装，验收及保修</td>
+              <td [nzAlign]="alignType">
+                <nz-form-item>
+                  <nz-form-control [nzSm]="8" [nzXs]="24">
+                    <nz-select style="width: 90%" nzShowSearch nzAllowClear nzPlaceHolder=""
+                      formControlName="installationWarranty" [(ngModel)]="infor.installationWarranty">
+                      <nz-option nzLabel="标准条款" nzValue="0"></nz-option>
+                      <nz-option nzLabel="非标准条款" nzValue="1"></nz-option>
+                    </nz-select>
+                  </nz-form-control>
+                  <nz-form-control [nzSm]="8" [nzXs]="24" *ngIf="infor.installationWarranty == 1">
+                    <textarea *ngIf="!oaDisa" nz-input placeholder="备注：" nzAutosize
+                      formControlName="installationWarrantyRemarks" nz-tooltip nzPlacement="topLeft"
+                      [nzTitle]="infor.installationWarrantyRemarks"
+                      [(ngModel)]="infor.installationWarrantyRemarks"></textarea>
+                    <div *ngIf="oaDisa && infor.installationWarrantyRemarks" class="textBox">
+                      {{ infor.installationWarrantyRemarks }}
+                    </div>
+                  </nz-form-control>
+                  <nz-form-control [nzSm]="8" [nzXs]="24">
+                    <button class="down" nz-button nzType="link" *ngIf="
+                        infor.installationWarranty == 1 &&
+                        infor.installationWarrantyFileName &&
+                        infor.detail.status != 'DHTGYBTX'
+                      " (click)="fileDwon(infor.installationWarrantyFileName)">
+                      {{infor.installationWarrantyFileNames}}
+                    </button>
+                  </nz-form-control>
+                </nz-form-item>
 
-          <tr>
-            <td [nzAlign]="alignType">场地准备</td>
-            <td [nzAlign]="alignType">
-              <nz-form-item>
-                <nz-form-control [nzSm]="8" [nzXs]="24">
-                  <nz-select style="width: 90%" nzShowSearch nzAllowClear nzPlaceHolder=""
-                    formControlName="sitePreparation" [(ngModel)]="infor.sitePreparation">
-                    <nz-option nzLabel="标准条款" nzValue="0"></nz-option>
-                    <nz-option nzLabel="非标准条款" nzValue="1"></nz-option>
-                  </nz-select>
-                </nz-form-control>
-                <nz-form-control [nzSm]="8" [nzXs]="24" *ngIf="infor.sitePreparation == 1">
-                  <textarea *ngIf="!oaDisa" nz-input placeholder="备注：" nzAutosize
-                    formControlName="sitePreparationRemarks" nz-tooltip nzPlacement="topLeft"
-                    [nzTitle]="infor.sitePreparationRemarks" [(ngModel)]="infor.sitePreparationRemarks"></textarea>
-                  <div *ngIf="oaDisa && infor.sitePreparationRemarks" class="textBox">
-                    {{ infor.sitePreparationRemarks }}
-                  </div>
-                </nz-form-control>
-                <nz-form-control [nzSm]="8" [nzXs]="24">
-                  <button *ngIf="
-                      infor.sitePreparation == 1 &&
-                      infor.sitePreparationFileName &&
-                      infor.detail.status != 'DHTGYBTX'
-                    " class="down" (click)="fileDwon(infor.sitePreparationFileName)" nz-button nzType="link">
-                    {{infor.sitePreparationFileNames}}
-                  </button>
-                </nz-form-control>
-              </nz-form-item>
-            </td>
-            <td [nzAlign]="alignType">
-              <nz-radio-group formControlName="sitePreparationCheckFlag"
-                [(ngModel)]="dataBase.sitePreparationCheckFlag">
-                <label nz-radio nzValue="1">是</label>
-                <label nz-radio nzValue="0">否</label>
-              </nz-radio-group>
-            </td>
-          </tr>
-          <tr>
-            <td [nzAlign]="alignType">履约保函</td>
-            <td [nzAlign]="alignType">
-              <nz-form-item>
-                <nz-form-control [nzSm]="8" [nzXs]="24">
-                  <!-- <nz-select style="width: 90%" nzShowSearch nzAllowClear nzPlaceHolder=""
-                    formControlName="performanceBond" [(ngModel)]="infor.performanceBond">
-                    <nz-option nzLabel="标准条款" nzValue="0"></nz-option>
-                    <nz-option nzLabel="非标准条款" nzValue="1"></nz-option>
-                  </nz-select> -->
-                  <nz-radio-group [(ngModel)]="infor.performanceBond" formControlName="performanceBond">
-                    <label nz-radio nzValue="1">需要</label>
-                    <label nz-radio nzValue="0">不需要</label>                    
-                  </nz-radio-group>
-                </nz-form-control>
-                <nz-form-control [nzSm]="8" [nzXs]="24" *ngIf="infor.performanceBond == 1">
-                  <textarea *ngIf="!oaDisa" nz-input placeholder="备注：" nzAutosize
-                    formControlName="performanceBondRemarks" nz-tooltip nzPlacement="topLeft"
-                    [nzTitle]="infor.performanceBondRemarks" [(ngModel)]="infor.performanceBondRemarks"></textarea>
-                  <div *ngIf="oaDisa && infor.performanceBondRemarks" class="textBox">
-                    {{ infor.performanceBondRemarks }}
-                  </div>
-                </nz-form-control>
-                <nz-form-control [nzSm]="8" [nzXs]="24">
-                  <button *ngIf="
-                      infor.performanceBond == 1 &&
-                      infor.performanceBondFileName &&
-                      infor.detail.status != 'DHTGYBTX'
-                    " class="down" (click)="fileDwon(infor.performanceBondFileName)" nz-button nzType="link">
-                    {{infor.performanceBondFileNames}}
-                  </button>
-                </nz-form-control>
-              </nz-form-item>
-            </td>
-            <td [nzAlign]="alignType">
-              <nz-radio-group formControlName="performanceBondCheckFlag"
-                [(ngModel)]="dataBase.performanceBondCheckFlag">
-                <label nz-radio nzValue="1">是</label>
-                <label nz-radio nzValue="0">否</label>
-              </nz-radio-group>
-            </td>
-          </tr>
-          <tr>
-            <td [nzAlign]="alignType">其他条款</td>
-            <td [nzAlign]="alignType">
-              <nz-form-item>
-                <nz-form-control [nzSm]="12" [nzXs]="24">
-                  <div class="table-checkbox">
-                    <label nz-checkbox formControlName="other1" [(ngModel)]="infor.other1">进出口公司选择不在IE pool</label>
-                    <label nz-checkbox formControlName="other2" [(ngModel)]="infor.other2">培训</label>
-                    <label nz-checkbox formControlName="other3" [(ngModel)]="infor.other3">罚款（不含售后）及违约责任</label>
-                    <label nz-checkbox formControlName="other4" [(ngModel)]="infor.other4">IP条款</label>
-                    <label nz-checkbox formControlName="other5" [(ngModel)]="infor.other5">非标合同模板</label>
-                    <label nz-checkbox formControlName="other6" [(ngModel)]="infor.other6">OCAP</label>
-                    <div class="freeTextBox">
-                      <label nz-checkbox formControlName="other7" [(ngModel)]="infor.other7">其他</label>
-                      <div *ngIf="infor.other7 == true" class="freeText">
-                        <input type="text" class="textBoxd form-control" formControlName="freeText"
-                          [(ngModel)]="infor.freeText" />
+                <br />
+                <div *ngIf="infor.installationWarranty == 1">
+                  <nz-form-item>
+                    <nz-form-label [nzSm]="6" [nzXs]="24">下一级是否审核</nz-form-label>
+                    <nz-form-control [nzSm]="14" [nzXs]="24">
+                      <nz-radio-group formControlName="installationWarrantyRadio"
+                        [(ngModel)]="infor.installationWarrantyRadio">
+                        <label nz-radio nzValue="1">是</label>
+                        <label nz-radio nzValue="0">否</label>
+                      </nz-radio-group>
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+              </td>
+              <td [nzAlign]="alignType">
+                <nz-radio-group formControlName="installationWarrantyCheckFlag"
+                  [(ngModel)]="dataBase.installationWarrantyCheckFlag">
+                  <label nz-radio nzValue="1">是</label>
+                  <label nz-radio nzValue="0">否</label>
+                </nz-radio-group>
+              </td>
+            </tr>
+
+            <tr>
+              <td [nzAlign]="alignType">场地准备</td>
+              <td [nzAlign]="alignType">
+                <nz-form-item>
+                  <nz-form-control [nzSm]="8" [nzXs]="24">
+                    <nz-select style="width: 90%" nzShowSearch nzAllowClear nzPlaceHolder=""
+                      formControlName="sitePreparation" [(ngModel)]="infor.sitePreparation">
+                      <nz-option nzLabel="标准条款" nzValue="0"></nz-option>
+                      <nz-option nzLabel="非标准条款" nzValue="1"></nz-option>
+                    </nz-select>
+                  </nz-form-control>
+                  <nz-form-control [nzSm]="8" [nzXs]="24" *ngIf="infor.sitePreparation == 1">
+                    <textarea *ngIf="!oaDisa" nz-input placeholder="备注：" nzAutosize
+                      formControlName="sitePreparationRemarks" nz-tooltip nzPlacement="topLeft"
+                      [nzTitle]="infor.sitePreparationRemarks" [(ngModel)]="infor.sitePreparationRemarks"></textarea>
+                    <div *ngIf="oaDisa && infor.sitePreparationRemarks" class="textBox">
+                      {{ infor.sitePreparationRemarks }}
+                    </div>
+                  </nz-form-control>
+                  <nz-form-control [nzSm]="8" [nzXs]="24">
+                    <button *ngIf="
+                        infor.sitePreparation == 1 &&
+                        infor.sitePreparationFileName &&
+                        infor.detail.status != 'DHTGYBTX'
+                      " class="down" (click)="fileDwon(infor.sitePreparationFileName)" nz-button nzType="link">
+                      {{infor.sitePreparationFileNames}}
+                    </button>
+                  </nz-form-control>
+                </nz-form-item>
+              </td>
+              <td [nzAlign]="alignType">
+                <nz-radio-group formControlName="sitePreparationCheckFlag"
+                  [(ngModel)]="dataBase.sitePreparationCheckFlag">
+                  <label nz-radio nzValue="1">是</label>
+                  <label nz-radio nzValue="0">否</label>
+                </nz-radio-group>
+              </td>
+            </tr>
+            <tr>
+              <td [nzAlign]="alignType">履约保函</td>
+              <td [nzAlign]="left">
+                <nz-form-item>
+                  <nz-form-control [nzSm]="8" [nzXs]="24">
+                    <!-- <nz-select style="width: 90%" nzShowSearch nzAllowClear nzPlaceHolder=""
+                      formControlName="performanceBond" [(ngModel)]="infor.performanceBond">
+                      <nz-option nzLabel="标准条款" nzValue="0"></nz-option>
+                      <nz-option nzLabel="非标准条款" nzValue="1"></nz-option>
+                    </nz-select> -->
+                    <nz-radio-group  [(ngModel)]="infor.performanceBond" formControlName="performanceBond">
+                      <label nz-radio nzValue="1">需要</label>
+                      <label nz-radio nzValue="0">不需要</label>                    
+                    </nz-radio-group>
+                  </nz-form-control>
+                  <nz-form-control [nzSm]="8" [nzXs]="24" *ngIf="infor.performanceBond == 1">
+                    <textarea *ngIf="!oaDisa" nz-input placeholder="备注：" nzAutosize
+                      formControlName="performanceBondRemarks" nz-tooltip nzPlacement="topLeft"
+                      [nzTitle]="infor.performanceBondRemarks" [(ngModel)]="infor.performanceBondRemarks"></textarea>
+                    <div *ngIf="oaDisa && infor.performanceBondRemarks" class="textBox">
+                      {{ infor.performanceBondRemarks }}
+                    </div>
+                  </nz-form-control>
+                  <nz-form-control [nzSm]="8" [nzXs]="24" style="text-align:center;">
+                    <button *ngIf="
+                        infor.performanceBond == 1 &&
+                        infor.performanceBondFileName &&
+                        infor.detail.status != 'DHTGYBTX'
+                      " class="down" (click)="fileDwon(infor.performanceBondFileName)" nz-button nzType="link">
+                      {{infor.performanceBondFileNames}}
+                    </button>
+                  </nz-form-control>
+                </nz-form-item>
+              </td>
+              <td [nzAlign]="alignType">
+                <nz-radio-group formControlName="performanceBondCheckFlag"
+                  [(ngModel)]="dataBase.performanceBondCheckFlag">
+                  <label nz-radio nzValue="1">是</label>
+                  <label nz-radio nzValue="0">否</label>
+                </nz-radio-group>
+              </td>
+            </tr>
+            <tr>
+              <td [nzAlign]="alignType">是否有售后限价</td>
+              <td [nzAlign]="left">
+                <nz-form-item>
+                  <nz-form-control [nzSm]="8" [nzXs]="24">                 
+                    <nz-radio-group class="radioClass" [(ngModel)]="infor.afterSales" formControlName="afterSales">
+                      <label nz-radio class="wid60" nzValue="1">是</label>
+                      <label nz-radio class="wid60" nzValue="0">否</label>                    
+                    </nz-radio-group>
+                  </nz-form-control>
+                  <nz-form-control [nzSm]="8" [nzXs]="24" *ngIf="infor.afterSales == 1">
+                    <textarea style="max-height:9rem"  oninput="if(value.length>255)value=value.slice(0,255)" *ngIf="!oaDisa" nz-input placeholder="备注：" nzAutosize
+                      formControlName="afterSalesRemarks" nz-tooltip nzPlacement="topLeft"
+                      [nzTitle]="infor.afterSalesRemarks"
+                      [(ngModel)]="infor.afterSalesRemarks"></textarea>
+                    <div *ngIf="oaDisa && infor.afterSalesRemarks" class="textBox">
+                      {{ infor.afterSalesRemarks }}
+                    </div>
+                  </nz-form-control>
+                  <nz-form-control [nzSm]="8" [nzXs]="24" style="text-align:center;">
+                    <nz-upload *ngIf="
+                      !disa &&
+                      (infor.detail.status == 'XJDHTGYBTX'||infor.detail.status == 'DHTGYBTX') &&
+                      infor.afterSales == 1
+                    " [(nzFileList)]="afterSalesList" [nzRemove]="nzRemovafterSales" [nzBeforeUpload]="afterSalesBeforeUpload" [nzLimit]="1"
+                      [nzPreview]="dwonLoad">
+                      <button [disabled]="disa" nz-button>
+                        <i nz-icon nzType="upload"></i><span>文件上传</span>
+                      </button>
+                    </nz-upload>
+                    <button *ngIf="
+                      (infor.afterSales == 1 &&
+                      infor.afterSalesFileName &&
+                      infor.detail.status != 'DHTGYBTX'&&infor.detail.status != 'XJDHTGYBTX') ||
+                      (infor.detail.flag == '1' &&
+                      infor.afterSales == 1 &&
+                      infor.afterSalesFileName)
+                    " class="down" nz-tooltip [nzTitle]="infor.afterSalesFileNames" (click)="fileDwon(infor.afterSalesFileName)" nz-button nzType="link">
+                      {{infor.afterSalesFileNames}}
+                    </button>
+                  </nz-form-control>
+                </nz-form-item>
+              </td>
+              <td [nzAlign]="alignType">
+                <nz-radio-group formControlName="afterSalesCheckFlag"
+                  [(ngModel)]="dataBase.afterSalesCheckFlag">
+                  <label nz-radio nzValue="1">是</label>
+                  <label nz-radio nzValue="0">否</label>
+                </nz-radio-group>
+              </td>
+            </tr>
+            <tr>
+              <td [nzAlign]="alignType">其他条款</td>
+              <td [nzAlign]="alignType">
+                <nz-form-item>
+                  <nz-form-control [nzSm]="12" [nzXs]="24">
+                    <div class="table-checkbox">
+                      <label nz-checkbox formControlName="other1" [(ngModel)]="infor.other1">进出口公司选择不在IE pool</label>
+                      <label nz-checkbox formControlName="other2" [(ngModel)]="infor.other2">培训</label>
+                      <label nz-checkbox formControlName="other3" [(ngModel)]="infor.other3">罚款（不含售后）及违约责任</label>
+                      <label nz-checkbox formControlName="other4" [(ngModel)]="infor.other4">IP条款</label>
+                      <label nz-checkbox formControlName="other5" [(ngModel)]="infor.other5">非标合同模板</label>
+                      <label nz-checkbox formControlName="other6" [(ngModel)]="infor.other6">OCAP</label>
+                      <div class="freeTextBox">
+                        <label nz-checkbox formControlName="other7" [(ngModel)]="infor.other7">其他</label>
+                        <div *ngIf="infor.other7 == true" class="freeText">
+                          <input type="text" class="textBoxd form-control" formControlName="freeText"
+                            [(ngModel)]="infor.freeText" />
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div class="global-hide">
-                    <input type="text" class="form-control" value="" formControlName="other"
-                      [(ngModel)]="infor.other" />
-                  </div>
-                </nz-form-control>
-                <nz-form-control *ngIf="otherFile" [nzSm]="12" [nzXs]="24" nz-tooltip [nzTitle]="infor.otherRemarks">
-                  <div *ngIf="infor.otherRemarks" class="textBox">
-                    {{ infor.otherRemarks }}
-                  </div>
-                  <!-- <textarea    oninput="if(value.length>255)value=value.slice(0,255)" nz-input placeholder="备注：" ngModel nzAutosize formControlName="otherRemarks"
-                     nzPlacement="topLeft" 
-                    [(ngModel)]="infor.otherRemarks" style="max-height:200px;overflow:auto;"></textarea> -->
-                </nz-form-control>
-                <nz-form-control [nzSm]="12" [nzXs]="24">
-                  <button class="down" *ngIf="
-                      infor.otherFilName && infor.detail.status != 'DHTGYBTX'
-                    " nz-button nzType="link" (click)="fileDwon(infor.otherFilName)">
-                    {{infor.otherFilNames}}
-                  </button>
-                </nz-form-control>
-              </nz-form-item>
-            </td>
-            <td [nzAlign]="alignType">
-              <nz-radio-group formControlName="otherCheckFlag" [(ngModel)]="dataBase.otherCheckFlag">
-                <label nz-radio nzValue="1">是</label>
-                <label nz-radio nzValue="0">否</label>
-              </nz-radio-group>
-            </td>
-          </tr>
-          <tr *ngIf="infor.businessModel == 'DIRECT'">
+                    <div class="global-hide">
+                      <input type="text" class="form-control" value="" formControlName="other"
+                        [(ngModel)]="infor.other" />
+                    </div>
+                  </nz-form-control>
+                  <nz-form-control *ngIf="otherFile" [nzSm]="12" [nzXs]="24" nz-tooltip [nzTitle]="infor.otherRemarks">
+                    <div *ngIf="infor.otherRemarks" class="textBox">
+                      {{ infor.otherRemarks }}
+                    </div>
+                    <!-- <textarea    oninput="if(value.length>255)value=value.slice(0,255)" nz-input placeholder="备注：" ngModel nzAutosize formControlName="otherRemarks"
+                      nzPlacement="topLeft" 
+                      [(ngModel)]="infor.otherRemarks" style="max-height:200px;overflow:auto;"></textarea> -->
+                  </nz-form-control>
+                  <nz-form-control [nzSm]="12" [nzXs]="24">
+                    <button class="down" *ngIf="
+                        infor.otherFilName && infor.detail.status != 'DHTGYBTX'
+                      " nz-button nzType="link" (click)="fileDwon(infor.otherFilName)">
+                      {{infor.otherFilNames}}
+                    </button>
+                  </nz-form-control>
+                </nz-form-item>
+              </td>
+              <td [nzAlign]="alignType">
+                <nz-radio-group formControlName="otherCheckFlag" [(ngModel)]="dataBase.otherCheckFlag">
+                  <label nz-radio nzValue="1">是</label>
+                  <label nz-radio nzValue="0">否</label>
+                </nz-radio-group>
+              </td>
+            </tr>
+          </ng-container>
+          <tr *ngIf="infor.businessModel == 'DIRECT'&&infor.entryMode=='BIDDING'">
             <td [attr.rowspan]="colSpanOfConfirmTable" [nzAlign]="alignType">
               特批进单审核
             </td>
             <td [nzAlign]="alignType">直投订单合同金额和中标金额有价差</td>
-            <td [nzAlign]="alignType">
+            <td [nzAlign]="left">
               <nz-form-item>
                 <nz-form-control [nzSm]="8" [nzXs]="24">
                   <!-- <nz-select style="width: 90%" nzShowSearch nzAllowClear nzPlaceHolder=""
@@ -301,9 +355,9 @@
                     <nz-option nzLabel="标准条款" nzValue="0"></nz-option>
                     <nz-option nzLabel="非标准条款" nzValue="1"></nz-option>
                   </nz-select> -->
-                  <nz-radio-group formControlName="amountDifference" [(ngModel)]="infor.amountDifference">
-                    <label nz-radio nzValue="1">是</label>
-                    <label nz-radio nzValue="0">否</label>
+                  <nz-radio-group class="radioClass" formControlName="amountDifference" [(ngModel)]="infor.amountDifference">
+                    <label nz-radio class="wid60" nzValue="1">是</label>
+                    <label nz-radio class="wid60" nzValue="0">否</label>
                   </nz-radio-group>
                 </nz-form-control>
                 <nz-form-control [nzSm]="8" [nzXs]="24" *ngIf="infor.amountDifference == 1">
@@ -314,7 +368,7 @@
                     {{ infor.amountDifferenceRemarks }}
                   </div>
                 </nz-form-control>
-                <nz-form-control [nzSm]="8" [nzXs]="24">
+                <nz-form-control [nzSm]="8" [nzXs]="24" style="text-align: center;">
                   <button *ngIf="
                       infor.amountDifference == 1 &&
                       infor.amountDifferenceFileName &&
@@ -334,16 +388,16 @@
             </td>
           </tr>
           <tr *ngIf="infor.sampleAuditFlag == '1'">
-            <td *ngIf="infor.businessModel!='DIRECT'" [nzAlign]="alignType">
+            <td *ngIf="(infor.businessModel!='DIRECT'&&infor.entryMode=='BIDDING')||infor.entryMode=='STOCK'" [nzAlign]="alignType">
               特批进单审核
             </td>
             <td [nzAlign]="alignType">支持文件缺失需特批进单</td>
-            <td [nzAlign]="alignType">
+            <td [nzAlign]="left">
               <nz-form-item>
                 <nz-form-control [nzSm]="8" [nzXs]="24">
-                  <nz-radio-group [(ngModel)]="infor.supportFileMissing" formControlName="supportFileMissing">
-                    <label nz-radio nzValue="1">是</label>
-                    <label nz-radio nzValue="0">否</label>
+                  <nz-radio-group class="radioClass" [(ngModel)]="infor.supportFileMissing" formControlName="supportFileMissing">
+                    <label nz-radio class="wid60" nzValue="1">是</label>
+                    <label nz-radio class="wid60" nzValue="0">否</label>
                   </nz-radio-group>
                 </nz-form-control>
                 <nz-form-control [nzSm]="8" [nzXs]="24" *ngIf="infor.supportFileMissing == 1" nz-tooltip  [nzTitle]="dataBase.specialApprovalDocumentsName">                
@@ -358,7 +412,7 @@
                     {{ infor.supportFileMissingRemarks }}
                   </div>
                 </nz-form-control>
-                <nz-form-control [nzSm]="8" [nzXs]="24">
+                <nz-form-control [nzSm]="8" [nzXs]="24" style="text-align:center;">
                   <button class="down" *ngIf="
                       infor.supportFileMissing == 1 &&
                       infor.supportFileMissingFileName &&
@@ -378,8 +432,8 @@
             </td>
           </tr>
         </ng-container>
-        <tr>
-          <td [attr.rowspan]="3" [nzAlign]="alignType">招标文件审核</td>
+        <tr *ngIf="infor.businessModel!='DIRECT'||(infor.businessModel=='DIRECT'&&infor.tenderNo!='其他类型')">
+          <td [attr.rowspan]="3"  [nzAlign]="alignType">招标文件审核</td>
           <td [nzAlign]="alignType">{{infor.tenderNo!='其他类型'?'中标通知书':'最终用户'}}</td>
           <td [nzAlign]="alignType">
             <button *ngIf="disas && infor.bidWinningNotice" class="down" nz-button nzType="link"
@@ -399,12 +453,16 @@
           </td>
         </tr>
         <tr>
+          <td *ngIf="infor.businessModel=='DIRECT'&&infor.tenderNo=='其他类型'" [attr.rowspan]="2"  [nzAlign]="alignType">招标文件审核</td>
           <td [nzAlign]="alignType">{{demandLetter}}</td>
           <td [nzAlign]="alignType">
             <button *ngIf="disas && infor.siteReport" class="down" nz-button nzType="link"
               (click)="fileDwon(infor.siteReport)">
               {{infor.siteReportNames}}
             </button>
+            <div class="red" *ngIf="!infor.siteReport&&infor.entryMode != 'STOCK'">
+              "中标确认"时，该文件缺失
+            </div>
           </td>
           <td [nzAlign]="alignType">
             <nz-radio-group formControlName="siteReportCheckFlag" [(ngModel)]="dataBase.siteReportCheckFlag">
@@ -423,6 +481,9 @@
               (click)="fileDwon(infor.projectSolutions)">
               {{infor.projectSolutionsNames}}
             </button>
+            <div class="red" *ngIf="!infor.projectSolutions&&infor.entryMode != 'STOCK'">
+              未提供，请OA核查
+            </div>
           </td>
           <td [nzAlign]="alignType">
             <nz-radio-group formControlName="projectSolutionsCheckFlag"
@@ -467,7 +528,7 @@
             </nz-radio-group>
           </td>
         </tr>
-        <tr *ngIf="infor.sampleAuditFlag != '0'">
+        <tr *ngIf="infor.sampleAuditFlag != '0'&&infor.businessModel!='DIRECT'">
           <td *ngIf="infor.tenderNo=='其他类型'" [attr.rowspan]="sampleRow" [nzAlign]="alignType">抽样审核订单支持文件</td>
           <td [nzAlign]="alignType">最终用户合同</td>
           <td [nzAlign]="alignType">

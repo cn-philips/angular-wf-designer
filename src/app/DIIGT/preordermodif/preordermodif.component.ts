@@ -36,8 +36,7 @@ export class PreordermodifComponent implements OnInit {
     private ServesiceService: ServesiceService,
   ) { }
 
-  public dataBase: any = {
-    entryMode: 'n-stock',
+  public dataBase: any = {  
     productList: [], // 产品列表
     detail: {
       id: '',
@@ -100,22 +99,25 @@ export class PreordermodifComponent implements OnInit {
             this.dataBase.sameFlag = this.dataBase.sameFlag.toString();
           }
           this.dataBase.detail.id = mainId;
-          this.dataBase.detail.flag = flag;
+          this.dataBase.detail.flag = flag;         
           this.dataBase.detail.status = status ? status : '';
           this.dataBase.productList = this.dataBase.productList ? this.dataBase.productList : [];
           this.dataBase.dataList = [];
           let firstArr = [];//前端排序
           const productList = this.dataBase.productList;
           if (productList.length > 0) {
-            productList.map(res => {
+            productList.map(res => {              
+              res.afterSales=(res.afterSales!=null&&res.afterSales!=undefined&&res.afterSales!="")?res.afterSales:"0";              
               if (res.productList && res.productList.length > 0) {
+                res.productList.map((val, index) => {
+                  val.modalityBmc = val.modalityBmcs ? val.modalityBmcs : []; //modalityBmc用于判定是否显示磁共振和三方塔吊;
+                  val.id = val.simulationId;
+                })
                 res.productList.map((val, index) => {
                   if (val.checked) {
                     firstArr = val;
                     res.productList.splice(index, 1);
-                  }
-                  val.modalityBmc = val.modalityBmcs ? val.modalityBmcs : []; //modalityBmc用于判定是否显示磁共振和三方塔吊;
-                  val.id = val.simulationId;
+                  }                  
                 });
                 if (firstArr) {
                   res.productList.unshift(firstArr)
@@ -145,6 +147,7 @@ export class PreordermodifComponent implements OnInit {
             'installationWarrantyFileNameFileList', // 安装，验收及保修
             'amountDifferenceFileNameFileList', // 直投订单合同金额和中标金额有价差
             'performanceBondFileNameFileList', // 履约保函
+            'afterSalesFileNameFileList', //是否售后
             'supportFileMissingFileNameFileList', // 支持文件缺失需特批进单
             'otherFilNameFileList' // 其他条款
           ];
@@ -157,6 +160,7 @@ export class PreordermodifComponent implements OnInit {
             { id: 'installationWarrantyFileName', name: "installationWarrantyFileNames" }, // 安装，验收及保修
             { id: 'amountDifferenceFileName', name: "amountDifferenceFileNames" }, // 直投订单合同金额和中标金额有价差
             { id: 'performanceBondFileName', name: "performanceBondFileNames" }, // 履约保函
+            { id: 'afterSalesFileName', name: "afterSalesFileNames" }, // 是否售后
             { id: 'supportFileMissingFileName', name: "supportFileMissingFileNames" }, // 支持文件缺失需特批进单
             { id: 'otherFilName', name: "otherFilNames" } // 其他条款
           ];
@@ -245,6 +249,7 @@ export class PreordermodifComponent implements OnInit {
         }
       })
     }
+    this.dataBase.biddingPrice=this.dataBase.biddingPrice?this.dataBase.biddingPrice:"0";
     this.load = true;
     this.http.post(`/act/preparation/saveAndSubmit`, this.dataBase).subscribe(rest => {
       if (rest.code === '0000') {
@@ -331,15 +336,52 @@ export class PreordermodifComponent implements OnInit {
           this.message.create('error', '请填写其他');
           return;
         }
-        //提示勾选其它条款"进出口公司不在IE pool"
-        if(this.dataBase.invoiceInformation=='USD')
+        //判断是否售后文件上传
+        if(productList.afterSales==1&&(productList.afterSalesFileName==null||productList.afterSalesFileName==''||productList.afterSalesFileName==undefined))
         {
-          if(this.dataBase.contractBuyer2!=this.dataBase.foreignTradeCompany&&!productList.other1)
-          {
+          this.message.create('error', '请上传售后限价支持文件!');
+          return;
+        }
+        //提示勾选其它条款"进出口公司不在IE pool"        
+        const foreignTradeCompanys=this.dataBase.foreignTradeCompany?this.dataBase.foreignTradeCompany.replace(/\s+/g,""):"";
+        const distributors=this.dataBase.distributor?this.dataBase.distributor.replace(/\s+/g,""):"";
+        if (this.dataBase.invoiceInformation == 'USD' && this.dataBase.entryMode == 'BIDDING'&&foreignTradeCompanys!=distributors) {
+          if (this.dataBase.contractBuyer2 != this.dataBase.foreignTradeCompany && !productList.other1) {
             this.message.create('error', '外贸公司不在IE Pool！请重新从IE Pool选择外贸公司，或勾选"其它条款：进出口公司选择不在IE Pool"');
             return;
-          }         
+          }
         }
+        //业务模式为DISTRIBUTOR协议号必填
+        if(this.dataBase.businessModel == 'DISTRIBUTOR')
+        {
+          if(productList.agreementNo==''||productList.agreementNo==undefined||productList.agreementNo==null)
+          {
+            this.message.create('error','请选择经销商协议号');
+            return;
+          }  
+        }
+        //实际销售人
+        if(this.dataBase.entryMode=='BIDDING'&&this.dataBase.centralized)
+        {
+          const reg=/^([a-zA-Z0-9_\.\-])+\@(philips.com)+$/;
+          const valid = reg.test(productList.actualSales); // true
+          if(productList.actualSales==''||productList.actualSales==undefined||productList.actualSales==null)
+          {
+            this.message.create('error','请填写实际销售');
+            return;
+          } 
+          if(!valid)
+          {
+            this.message.create('error','实际销售请填写成邮箱格式');
+            return;
+          }          
+        }
+        //提示付款条款        
+        if(productList.paymentProvision==''||productList.paymentProvision==undefined||productList.paymentProvision==null)
+        {
+          this.message.create('error','请选择付款条款');
+          return;
+        }        
         // *******************
         if (!(this.dataBase.productList[i].productList.length > 0)) {
           // 判断是否添加mk
@@ -351,20 +393,70 @@ export class PreordermodifComponent implements OnInit {
       }
     }
      //投标公司不能等于外贸公司
-     if(this.dataBase.invoiceInformation=='USD')
+     if(this.dataBase.invoiceInformation=='USD'&&this.dataBase.businessModel=='DISTRIBUTOR')
      {
-       if(this.dataBase.tenderingCompany.replace(/\s+/g,"")==this.dataBase.foreignTradeCompany.replace(/\s+/g,""))
-       {
-         this.message.create('error', '外贸公司不能等于投标公司,请重新选择!');
-              return;
-       }
+        const tenderingCompany=this.dataBase.tenderingCompany?this.dataBase.tenderingCompany.replace(/\s+/g,""):"";
+        const foreignTradeCompany=this.dataBase.foreignTradeCompany?this.dataBase.foreignTradeCompany.replace(/\s+/g,""):"";
+        const distributor=this.dataBase.distributor?this.dataBase.distributor.replace(/\s+/g,""):"";
+        if(distributor!=tenderingCompany)
+        {
+           if(tenderingCompany==foreignTradeCompany)
+           {
+             this.message.create('error', '外贸公司不能等于投标公司,请重新选择外贸公司!');
+                 return;
+           }
+        }      
      }
     /**
      * 有多个进单单位，只要有一个进单单位中“支持文件缺失需特批进单”=否
      * 抽样审核订单支持文件”里面的4个文件在"是否抽样审核=是"的时候是必填的
+     * bidding模式的时候，招标文件审核里边几个文件为必填字段    
+     * stock模式的时候，看team是否保函VAD,DXR,BV
+     * DIRECT模式的时候，不用上传最终用户合同
      */
-
     sampleAuditFlagArr = this.dataBase.productList.every(vals => vals.supportFileMissing == '1');
+    if(this.dataBase.entryMode=='STOCK')
+    {
+       const teamList=JSON.parse(window.localStorage.getItem("profiles"));
+       const teamRole=teamList.find(val=>val.role=="Sales Rep/Mgr"); 
+       const userTeam=teamRole.team;
+       const userTeamOne=this.dataBase.userTeme=='VAD'||this.dataBase.userTeme=='CT VAD'||this.dataBase.userTeme=='CTVAD';
+       const userTeamTwo=this.dataBase.userTeme=='VAD'||this.dataBase.userTeme=='BV'||this.dataBase.userTeme=='DXR'||this.dataBase.userTeme=='CT VAD'||this.dataBase.userTeme=='CTVAD';
+       if((this.dataBase.bidWinningNotice==''||this.dataBase.bidWinningNotice==null||this.dataBase.bidWinningNotice==undefined)&&userTeamOne)
+       {
+         let title=this.dataBase.tenderNo!='其他类型'?'中标通知书':'最终用户合同'
+         this.myskip('pending-tab');
+         this.message.create("error",`请上传${title}`) 
+         return
+
+       }
+       if((this.dataBase.siteReport==''||this.dataBase.siteReport==null||this.dataBase.siteReport==undefined)&&userTeamTwo)
+       {
+         let demandLetter;
+         if(this.dataBase.entryMode == 'STOCK'&&(this.dataBase.userTeme=='BV'||this.dataBase.userTeme=='DXR'))
+         {
+           demandLetter = "要货函";
+         }
+         else{
+           if (this.dataBase.hospitalNature == '民营医院') {
+             demandLetter = "场地勘验报告";
+           }
+           else {
+             if (this.dataBase.tenderNo != '其他类型') {
+               demandLetter = "要货函";
+             }
+             else {
+               demandLetter = "场地勘验报告";
+             }
+           }
+         }
+           this.myskip('pending-tab');
+           this.message.create("error",`请上传${demandLetter}`) 
+           return   
+
+       }
+    }
+    
     if (this.dataBase.sampleAuditFlag == '1' && !sampleAuditFlagArr) {
       if ((this.dataBase.biddingDocuments == '' || this.dataBase.biddingDocuments == null || this.dataBase.biddingDocuments == undefined) && this.dataBase.tenderNo != '其他类型') {
         this.myskip('pending-tab');
@@ -376,7 +468,7 @@ export class PreordermodifComponent implements OnInit {
         this.message.create("error", "请上传招标文件")
         return
       }
-      if (this.dataBase.endUserContract == '' || this.dataBase.endUserContract == null || this.dataBase.endUserContract == undefined) {
+      if ((this.dataBase.endUserContract == '' || this.dataBase.endUserContract == null || this.dataBase.endUserContract == undefined)&&this.dataBase.businessModel!='DIRECT') {
         this.myskip('pending-tab');
         this.message.create("error", "请上传最终用户合同")
         return
@@ -399,6 +491,7 @@ export class PreordermodifComponent implements OnInit {
     let marketBundLen = []; //marketBund长度 为验证是否分配完marketBundLen长度;
     this.dataBase.productList.map(res => {
       const obj = {
+        'centralized':'',
         'key': '',
         'modelNumber': '', // 进单单位名称
         'opportunityId': '',
@@ -422,12 +515,19 @@ export class PreordermodifComponent implements OnInit {
         'appPerson': '', // 进单申请人
         'winPerson': '', // 中标申请人
         'isCheak': false,
+        "showCheak":false, //预计投标价格和中标价格单元格的显示
+        "estimatedBidPrice":"", //预计投标价
+        "biddingPrice":"",//中标价格
+        "invoiceInformation":"", //cp币制
+        "currency":"",//中标币制
         'select': '',
         'searchResult': [
         ],
         'checkResult': '', // 校验结果
-        'checkResultReasons': ''  // 校验失败原因
+        'checkResultReasons':[]  // 校验失败原因
       };
+      
+      obj.centralized = this.dataBase.centralized;
       obj.modelNumber = res.modelNumber;
       obj.appPerson = localStorage.getItem('ng_philips_code1');
       obj.distributor=this.dataBase.distributor;      
@@ -435,11 +535,14 @@ export class PreordermodifComponent implements OnInit {
       obj.tenderingCompany=this.dataBase.tenderingCompany;
       obj.tenderNo=this.dataBase.tenderNo;
       obj.businessModel=this.dataBase.businessModel;
+      obj.estimatedBidPrice=this.dataBase.estimatedBidPrice;
+      obj.invoiceInformation=this.dataBase.invoiceInformation;
       res.productList.map(val => {
         marketBundLen.push(val);
         const objs = JSON.parse(JSON.stringify(obj));
         objs.key = val.id;
-        objs.accountId = val.accountId;
+        objs.accountId = this.dataBase.endUserId;
+        objs.number=val.marketBundleQuantity;
         objs.opportunityId = val.opportunityId;
         objs.dealFormMarketBundleId = val.dealFormMarketBundleId;
         objs.simulationIds = val.simulationIds;
@@ -478,28 +581,37 @@ export class PreordermodifComponent implements OnInit {
       this.http.post(url, arrIscheak).subscribe((res => {
         if (res.code === '0000') {
           this.tableLoad = false;
+          if(res.data.length>0)
+          {
+            this.dataBase.biddingPrice=res.data[0].biddingPrice?res.data[0].biddingPrice:0;
+            this.dataBase.biddingPrices=res.data[0].biddingPrices;
+          }
           arrIscheak.map((vals, index) => {
            // vals.winningByCustomerName = res.data[index].orderByApplicant;
            // vals.winPerson = res.data[index].winningByApplicant;
+            vals.biddingPrice=res.data[index].biddingPrice;       //中标价格
+            vals.currency=res.data[index].biddingPrices; //中标币制
             vals.searchResult = [...res.data[index].searchResult];
           });
           arr.map(res => {
             arrIscheak.map(vals => {
               if (res.key == vals.key) {
                // vals.winningByCustomerName = vals.orderByApplicant;
-              //  vals.winPerson = vals.winningByApplicant;
+              //  vals.winPerson = vals.winningByApplicant;               
                 vals.searchResult = [...vals.searchResult];
               }
             })
           })
           //this.bidData = [...arr]; //全部效验
-          this.bidData = [...arrIscheak];  //主机效验
-          this.bidData.map(item => {    //添加临时占用
-            let len = item.productList.length;
+          this.bidData = [...arrIscheak];  //主机效验          
+          this.bidData.map((item,index) => {    //添加临时占用
+            let len = this.bidData.length;
             item.rowspan = len > 0 ? len : 1;
+            item.showCheak=index==0?true:false;
             item.searchResult.map(vals => {
               vals.temUser = false;   //已经选中
-              vals.isDisable = false; //是否禁用
+             // vals.isDisable = false; //是否禁用
+             vals.isDisable =vals.useStatus=='0'?false:true; //是否禁用
             })
           })
         }
@@ -558,16 +670,53 @@ export class PreordermodifComponent implements OnInit {
           this.message.create('error', '请填写其他');
           return;
         }
-         //提示勾选其它条款"进出口公司不在IE pool"
-         if(this.dataBase.invoiceInformation=='USD')
+         //判断是否售后文件上传
+         if(productList.afterSales==1&&(productList.afterSalesFileName==null||productList.afterSalesFileName==''||productList.afterSalesFileName==undefined))
          {
-           if(this.dataBase.contractBuyer2!=this.dataBase.foreignTradeCompany&&!productList.other1)
-           {
-             this.message.create('error', '外贸公司不在IE Pool！请重新从IE Pool选择外贸公司，或勾选"其它条款：进出口公司选择不在IE Pool"');
-             return;
-           }         
+           this.message.create('error', '请上传售后限价支持文件!');
+           return;
          }
-
+         //提示勾选其它条款"进出口公司不在IE pool"
+        const foreignTradeCompanys=this.dataBase.foreignTradeCompany?this.dataBase.foreignTradeCompany.replace(/\s+/g,""):"";
+        const distributors=this.dataBase.distributor?this.dataBase.distributor.replace(/\s+/g,""):"";
+        if (this.dataBase.invoiceInformation == 'USD' && this.dataBase.entryMode == 'BIDDING'&&foreignTradeCompanys!=distributors) {
+          if (this.dataBase.contractBuyer2 != this.dataBase.foreignTradeCompany && !productList.other1) {
+            this.message.create('error', '外贸公司不在IE Pool！请重新从IE Pool选择外贸公司，或勾选"其它条款：进出口公司选择不在IE Pool"');
+            return;
+          }
+        }
+        //业务模式为DISTRIBUTOR协议号必填
+        if(this.dataBase.businessModel == 'DISTRIBUTOR')
+        {
+          if(productList.agreementNo==''||productList.agreementNo==undefined||productList.agreementNo==null)
+          {
+            this.message.create('error','请选择经销商协议号');
+            return;
+          }  
+        }
+        //实际销售人
+        if(this.dataBase.entryMode=='BIDDING'&&this.dataBase.centralized)
+        {
+          const reg=/^([a-zA-Z0-9_\.\-])+\@(philips.com)+$/;
+          const valid = reg.test(productList.actualSales); // true
+          if(productList.actualSales==''||productList.actualSales==undefined||productList.actualSales==null)
+          {
+            this.message.create('error','请填写实际销售');
+            return;
+          } 
+          if(!valid)
+          {
+            this.message.create('error','实际销售请填写成邮箱格式');
+            return;
+          }          
+        }
+         //提示付款条款        
+          if(productList.paymentProvision==''||productList.paymentProvision==undefined||productList.paymentProvision==null)
+          {
+            this.message.create('error','请选择付款条款');
+            return;
+          }
+        
         // *******************
         if (!(this.dataBase.productList[i].productList.length > 0)) {
           // 判断是否添加mk
@@ -576,22 +725,132 @@ export class PreordermodifComponent implements OnInit {
         } else {
           mklength += this.dataBase.productList[i].productList.length;
         }
+        //装运方式清空选项
+        if(productList.shipmentDelivery=='0')
+        {
+          productList.shipmentDeliveryRemarks="";
+          productList.shipmentDeliveryFileName="";
+          productList.shipmentDeliveryFileNameFileList=[];   
+        }  
+        //场地准备 
+        if(productList.sitePreparation=='0')
+        {
+          productList.sitePreparationRemarks="";
+          productList.sitePreparationFileName="";
+          productList.sitePreparationFileNameFileList=[];    
+        }
+        //安装与验收
+        if(productList.installationWarranty=='0')
+        {
+          productList.installationWarrantyRemarks="";
+          productList.installationWarrantyFileName="";
+          productList.installationWarrantyFileNameFileList=[];   
+        }
+         //履约保函
+         if(productList.performanceBond=='0')
+         {
+          productList.performanceBondRemarks="";
+          productList.performanceBondFileName="";
+          productList.performanceBondFileNameFileList=[];    
+         }
+         //是否有售后限价
+         if(productList.afterSales=='0')
+         {
+          productList.afterSalesRemarks="";
+          productList.afterSalesFileName="";
+          productList.afterSalesFileNameFileList=[]; 
+         }
+         //直投订单合同金额和中标金额有价差
+         if(productList.amountDifference=='0')
+         {
+          productList.amountDifferenceRemarks="";
+          productList.amountDifferenceFileName="";
+          productList.amountDifferenceFileNameFileList=[];
+         }
+         //支持文件缺失进单
+         if(productList.supportFileMissing=='0')
+         {
+          productList.supportFileMissingRemarks="";
+          productList.supportFileMissingFileName="";
+          productList.supportFileMissingFileNameFileList=[];
+         }
+         let otherArr=productList.other.split(',');
+         let otherFile=otherArr.some(res=>res==='true') //控制备注、复制按钮的显示与否;
+         if(!otherFile)
+         {
+          productList.otherRemarks="";
+          productList.otherFilName="";
+          productList.freeText="";
+          productList.otherFilNameFileList="";
+         } 
       }
     }
     //投标公司不能等于外贸公司
-    if(this.dataBase.invoiceInformation=='USD')
+    if(this.dataBase.invoiceInformation=='USD'&&this.dataBase.businessModel=='DISTRIBUTOR')
     {
-      if(this.dataBase.tenderingCompany.replace(/\s+/g,"")==this.dataBase.foreignTradeCompany.replace(/\s+/g,""))
-      {
-        this.message.create('error', '外贸公司不能等于投标公司,请重新选择!');
-             return;
-      }
+       const tenderingCompany=this.dataBase.tenderingCompany?this.dataBase.tenderingCompany.replace(/\s+/g,""):"";
+       const foreignTradeCompany=this.dataBase.foreignTradeCompany?this.dataBase.foreignTradeCompany.replace(/\s+/g,""):"";
+       const distributor=this.dataBase.distributor?this.dataBase.distributor.replace(/\s+/g,""):"";
+       if(distributor!=tenderingCompany)
+       {
+          if(tenderingCompany==foreignTradeCompany)
+          {
+            this.message.create('error', '外贸公司不能等于投标公司,请重新选择外贸公司!');
+                return;
+          }
+       }      
     }
     /**
      * 有多个进单单位，只要有一个进单单位中“支持文件缺失需特批进单”=否
      * 抽样审核订单支持文件”里面的4个文件在"是否抽样审核=是"的时候是必填的
+     * bidding模式的时候，招标文件审核里边几个文件为必填字段
+     * stock模式的时候，看team是否保函VAD,DXR,BV
+     * DIRECT模式的时候，不用上传最终用户合同
      */
+
     sampleAuditFlagArr = this.dataBase.productList.every(vals => vals.supportFileMissing == '1');
+    if(this.dataBase.entryMode=='STOCK')
+    {
+       const teamList=JSON.parse(window.localStorage.getItem("profiles"));
+       const teamRole=teamList.find(val=>val.role=="Sales Rep/Mgr"); 
+       const userTeam=teamRole.team;
+       const userTeamOne=this.dataBase.userTeme=='VAD'||this.dataBase.userTeme=='CT VAD'||this.dataBase.userTeme=='CTVAD';
+       const userTeamTwo=this.dataBase.userTeme=='VAD'||this.dataBase.userTeme=='BV'||this.dataBase.userTeme=='DXR'||this.dataBase.userTeme=='CT VAD'||this.dataBase.userTeme=='CTVAD';
+       
+       if((this.dataBase.bidWinningNotice==''||this.dataBase.bidWinningNotice==null||this.dataBase.bidWinningNotice==undefined)&&userTeamOne)
+       {
+         let title=this.dataBase.tenderNo!='其他类型'?'中标通知书':'最终用户合同'
+         this.myskip('pending-tab');
+         this.message.create("error",`请上传${title}`) 
+         return
+
+       }
+       if((this.dataBase.siteReport==''||this.dataBase.siteReport==null||this.dataBase.siteReport==undefined)&&userTeamTwo)
+       {
+         let demandLetter;
+         if(this.dataBase.entryMode == 'STOCK'&&(this.dataBase.userTeme=='BV'||this.dataBase.userTeme=='DXR'))
+         {
+           demandLetter = "要货函";
+         }
+         else{
+           if (this.dataBase.hospitalNature == '民营医院') {
+             demandLetter = "场地勘验报告";
+           }
+           else {
+             if (this.dataBase.tenderNo != '其他类型') {
+               demandLetter = "要货函";
+             }
+             else {
+               demandLetter = "场地勘验报告";
+             }
+           }
+         }
+           this.myskip('pending-tab');
+           this.message.create("error",`请上传${demandLetter}`) 
+           return 
+       }
+    }
+    
     if (this.dataBase.sampleAuditFlag == '1' && !sampleAuditFlagArr) {
       if ((this.dataBase.biddingDocuments == '' || this.dataBase.biddingDocuments == null || this.dataBase.biddingDocuments == undefined) && this.dataBase.tenderNo != '其他类型') {
         this.myskip('pending-tab');
@@ -603,7 +862,7 @@ export class PreordermodifComponent implements OnInit {
         this.message.create("error", "请上传招标文件")
         return
       }
-      if (this.dataBase.endUserContract == '' || this.dataBase.endUserContract == null || this.dataBase.endUserContract == undefined) {
+      if ((this.dataBase.endUserContract == '' || this.dataBase.endUserContract == null || this.dataBase.endUserContract == undefined)&&this.dataBase.businessModel!='DIRECT') {
         this.myskip('pending-tab');
         this.message.create("error", "请上传最终用户合同")
         return
@@ -694,6 +953,7 @@ export class PreordermodifComponent implements OnInit {
     //let host;
     this.dataBase.productList.map(res => {
       res.productList.map(vals => {
+        vals.modalityBmcs = vals.modalityBmc;
         delete vals.children;
         delete vals.marketBundle;
       });

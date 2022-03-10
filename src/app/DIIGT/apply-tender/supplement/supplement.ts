@@ -4,7 +4,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { FileService, HttpService } from '../../../services';
 import {
   codeString,
-  decodeString,
+  decodeString, formatDatesNow,
   getType,
   NumberThousandth
 } from '../../../../assets/js/tools';
@@ -41,6 +41,20 @@ export class SupplementComponent implements OnInit {
     fileSealList: [], // 上传盖章后的文件列表
     fileAgentList: [], // 协议代理商出具投标委托函
   };
+  public biddingDDPDate7: any = false;
+  public agreementDDPDate7: any = false;
+  // 经销商所有数据
+  @Input() selAgent_all: any = [];
+  // 二次禁用
+  @Input() approved: any = {
+    supResult: false,
+    qaResult: false,
+    marResult: false,
+    finResult: false,
+    proResult: false,
+    lawResult: false,
+    isdRejected: false
+  };
 
   // 记录历史ddp选择状态
   ddp_history: any = {};
@@ -70,35 +84,76 @@ export class SupplementComponent implements OnInit {
   ) {
 
    }
+   // 二次禁用
+   public IsApproved() {
+    if (this.approved.isdRejected) {
+      if (this.approved.supResult) {
+        this.validateForm.controls.logisticsDescription.disable();
+        this.validateForm.controls.logisticsTermsExplain.disable();
+      }
+      if (this.approved.proResult) {
+        this.validateForm.controls.afterSalesInstructions.disable();
+      }
+      if (this.approved.qaResult) {
+        this.validateForm.controls.tenderPriceCurrencys.disable();
+        this.validateForm.controls.tenderPriceCurrency.disable();
+        this.validateForm.controls.percentageTotalPrice.disable();
+        this.validateForm.controls.totalPrice.disable();
+        this.validateForm.controls.marginLevel.disable();
+        this.validateForm.controls.performanceBonds.disable();
+      }
+      if (this.approved.finResult) {
+        this.validateForm.controls.paymentDescription.disable();
+        this.validateForm.controls.paymentDescriptions.disable();
+      }
+      if (this.approved.marResult) {
+        this.validateForm.controls.technicalTerms.disable();
+      }
+      if (this.approved.lawResult) {
+        this.validateForm.controls.legalProvisions.disable();
+      }
+    }
+   }
+  ngAfterViewInit() {
+    this.IsApproved();
+    let i = 0;
+    const _this = this;
+    const time = setInterval(function() {
+      _this.IsApproved();
+      i++;
+      // 执行5次
+      if (i >= 5) {
+        clearInterval(time);
+      }
+    }, 500);
+  }
   ngOnChanges() {
+    this.IsApproved();
     this.getBusinessModelList();
     this.getLogisticsTermsExplainList();
     this.paymentMethod();
-    //清空数据
+    // 清空数据
     this.ServesiceService.bookEventer.subscribe(res => {
 
-       if(res)
-       {
-         const param={
+       if (res) {
+         const param = {
           total: 0,
           pageNo: 1,
           pageSize: 5,
           dealerName: this.dataBase.biddingNames
-        }
+        };
         const url = `/act/ecom/bidding/selAgent`;
-        if(this.dataBase.biddingNames!=this.dataBase.agreementAgenName)
-        {
-          this.dataBase.biddingDdpState = '非飞利浦授权二级经销商';
+        if (this.dataBase.biddingNames != this.dataBase.agreementAgenName) {
+          // this.dataBase.biddingDdpState = '非飞利浦授权二级经销商';
           this.mess_ddp = false;
-        }
-        else{
+        } else {
           this.http.post(url, param).subscribe((rest => {
             if (rest.data && rest.data.rows && rest.data.rows.length > 0) {
-              if (rest.data.rows[0].ddpStatus === '通过') {
-                this.dataBase.biddingDdpState = rest.data.rows[0].ddpStatus;
-              } else {
-                this.dataBase.biddingDdpState = '未通过';
-              }
+              // if (rest.data.rows[0].ddpStatus === '通过') {
+              //   this.dataBase.biddingDdpState = rest.data.rows[0].ddpStatus;
+              // } else {
+              //   this.dataBase.biddingDdpState = '未通过';
+              // }
               if (rest.data.rows[0].ddpStatus == null || rest.data.rows[0].ddpStatus === '') {
                 this.mess_ddp = true;
                 this.mess_ddp_history[res.data.rows[0].dealerName] = true;
@@ -107,16 +162,15 @@ export class SupplementComponent implements OnInit {
               }
             }
             else{
-              this.dataBase.biddingDdpState = '未通过';
+              // this.dataBase.biddingDdpState = '未通过';
               this.mess_ddp = true;
               this.mess_ddp_history[res.data.rows[0].dealerName] = true;
             }
           }));
         }
 
-       }
-       else{
-        this.dataBase.biddingDdpState = '未通过';
+       } else {
+        // this.dataBase.biddingDdpState = '未通过';
         this.mess_ddp = true;
        }
     });
@@ -227,8 +281,9 @@ public params:any={
     params.BMClist = '';
     params.BMCExpert = '';
     params.AppExpert = '';
-    this.pdfSRC=params;
-    this.isPdf=true;
+    params.distributorAgreement = '';
+    this.pdfSRC = params;
+    this.isPdf = true;
 
   }
   public authorizationApplicationLetter(code) {
@@ -334,10 +389,11 @@ public params:any={
     params.BMClist = '';
     params.BMCExpert = '';
     params.AppExpert = '';
+    params.distributorAgreement = '';
     this.pdfSRC = params;
     this.isPdf = true;
   }
-  public joinPdfUrl(code) {
+  public joinPdfUrl(code, ano) {
 
     // TBWT YCV-M2O-001a3投标委托函（飞利浦）（二级经销商）
     // XSJLTBWT YCV-M2O-001a4销售经理投标委托函
@@ -350,13 +406,15 @@ public params:any={
     }
     if(this.productData&&this.productData.length>0)
     {
-      let arr=[];
-      this.productData.map(res=>{
-        res.productInformations.map(val=>{
-          arr.push(val.productModel)
-        })
-      })
-     arrRrt=arr.join(",")
+      let arr = [];
+      this.productData.map(res => {
+        if (res.productInformations) {
+          res.productInformations.map(val => {
+            arr.push(val.productModel);
+          });
+        }
+      });
+     arrRrt = arr.join(',');
     }
     const today = new Date();
     const params: any = {};
@@ -388,9 +446,14 @@ public params:any={
       params.biddingN = params.biddingProName.replace(/\+/g, '%2B');
     }
     // productModel为空 给空字符串
-    if (params.productModels == null || params.productModels === '') {
-      params.productModels = '';
-      params.region = '';
+    // if (params.productModels == null || params.productModels === '') {
+    //   params.productModels = '';
+    //   params.region = '';
+    // }
+    // productModels 又不要了
+    params.productModels = '';
+    if (ano != null && ano !== '') {
+      params.agreementNo = ano;
     }
     params.dataList = '';
     params.paymentList = '';
@@ -400,6 +463,7 @@ public params:any={
     params.BMClist = '';
     params.BMCExpert = '';
     params.AppExpert = '';
+    params.distributorAgreement = '';
     this.pdfSRC = params;
     this.isPdf = true;
   }
@@ -418,32 +482,40 @@ public params:any={
       businessType: new FormControl({ value: '' }, Validators.required),
       biddingNames:new FormControl({ value: '', disabled: this.isDisable }, Validators.required),
       tenderAuthorization: new FormControl({ value: ''}, Validators.required),
-      biddingComRegAddress: new FormControl({ value: '', disabled: true}, Validators.required),
+      biddingComRegAddress: new FormControl({ value: ''}, Validators.required),
       biddingComRegCode: new FormControl({ value: '', disabled: this.isDisable}, Validators.required),
       agentBidding: new FormControl({ value: '' }, Validators.required),
       biddingDdpState: new FormControl({ value: '', disabled: true}, Validators.required),
       agreementAgenName: new FormControl({ value: '' }, Validators.required),
 
-      logisticsDescription: new FormControl({ value: '', disabled: this.isDisable }, Validators.required),
-      afterSalesInstructions: new FormControl({ value: '', disabled: this.isDisable }, Validators.required),
-      tenderPriceCurrencys: new FormControl({ value: '', disabled: this.isDisable }, Validators.required),
-      tenderPriceCurrency: new FormControl({ value: '', disabled: this.isDisable }, Validators.required),
+      logisticsDescription: new FormControl({ value: '', disabled: (this.isDisable || this.approved.supResult) }, Validators.required),
+      afterSalesInstructions: new FormControl({ value: '', disabled: (this.isDisable || this.approved.proResult) }, Validators.required),
+      tenderPriceCurrencys: new FormControl({ value: '', disabled: (this.isDisable || this.approved.qaResult) }, Validators.required),
+      bidPriceCurrency: new FormControl({ value: '', disabled: (this.isDisable || this.approved.qaResult) }, Validators.required),
+      performanceBondsCurrency: new FormControl({ value: '', disabled: (this.isDisable || this.approved.qaResult) }, Validators.required),
+      tenderPriceCurrency: new FormControl({ value: '', disabled: (this.isDisable || this.approved.qaResult) }, Validators.required),
 
-      percentageTotalPrice: new FormControl({ value: '', disabled: this.isDisable }, null),
-      totalPrice: new FormControl({ value: '', disabled: this.isDisable }, null),
-      marginLevel: new FormControl({ value: '', disabled: this.isDisable }, null),
-      paymentDescription: new FormControl({ value: '', disabled: this.isDisable }, Validators.required),
-      paymentDescriptions: new FormControl({ value: '', disabled: this.isDisable }, Validators.required),
-      technicalTerms: new FormControl({ value: '', disabled: this.isDisable }, Validators.required),
-      legalProvisions: new FormControl({ value: '', disabled: this.isDisable }, Validators.required),
-      logisticsTermsExplain: new FormControl({ value: '', disabled: this.isDisable }, Validators.required),
-      performanceBonds: new FormControl({ value: '', disabled: this.isDisable }, null),
+      percentageTotalPrice: new FormControl({ value: '', disabled: (this.isDisable || this.approved.qaResult) }, null),
+      totalPrice: new FormControl({ value: '', disabled: (this.isDisable || this.approved.qaResult) }, null),
+      marginLevel: new FormControl({ value: '', disabled: (this.isDisable || this.approved.qaResult) }, null),
+      paymentDescription: new FormControl({ value: '', disabled: (this.isDisable || this.approved.finResult) }, Validators.required),
+      paymentDescriptions: new FormControl({ value: '', disabled: (this.isDisable || this.approved.finResult) }, Validators.required),
+      technicalTerms: new FormControl({ value: '', disabled: (this.isDisable || this.approved.marResult) }, Validators.required),
+      legalProvisions: new FormControl({ value: '', disabled: (this.isDisable || this.approved.lawResult) }, Validators.required),
+      logisticsTermsExplain: new FormControl({ value: '', disabled: (this.isDisable || this.approved.supResult) }, Validators.required),
+      performanceBonds: new FormControl({ value: '', disabled: (this.isDisable || this.approved.qaResult) }, null),
 
+      biddingDdpDate: new FormControl({ value: '', disabled: true}, null),
+      distributorAgreement: new FormControl({ value: '', disabled: this.isDisable}, Validators.required),
+      distributorType: new FormControl({ value: '', disabled: this.isDisable}, Validators.required),
+      agreementDealerDdpState: new FormControl({ value: '', disabled: true}, null),
+      agreementDealerDdpDate: new FormControl({ value: '', disabled: true}, null)
 
     });
-    this.dataBase.biddingComRegCode = '中国';
+    // this.dataBase.biddingComRegCode = '中国';
 
   }
+
   load: any = false;
   addIsdisble:any=true; //控制投标公司地址是否禁用
   // fileList: any = []; //上传招标文件列表
@@ -481,6 +553,17 @@ public params:any={
     { name: '通过', value: '通过' },
     { name: '未通过', value: '未通过' },
     { name: '非飞利浦授权二级经销商', value: '非飞利浦授权二级经销商' }];
+
+  public distributorAgreementList: any = [
+    { name: '条目一', value: '条目一' },
+    { name: '条目二', value: '条目二' },
+    { name: '条目三', value: '条目三' },
+    { name: '条目四', value: '条目四' }];
+  public distributorTypeList: any = [
+    { name: '年度协议', value: '年度协议' },
+    { name: '开放区域', value: '开放区域' },
+    { name: '非开放区域超出协议范围', value: '非开放区域超出协议范围' }];
+
   // 业务模式
   public getBusinessModelList () {
     const params = {
@@ -658,29 +741,45 @@ public params:any={
     // this.dataBase.agreementAgenName = this.dataBase.biddingNames;
      this.dataBase.biddingComRegAddress = this.agreementAgenNameAddr;
      this.dataBase.biddingNames = this.dataBase.agreementAgenName;
+     this.dataBase.biddingDdpDate = this.dataBase.agreementDealerDdpDate;
+     this.biddingDdpDateChange();
 
-     if (this.ddp_history[this.dataBase.agreementAgenName] != null) {
-       this.dataBase.biddingDdpState = this.ddp_history[this.dataBase.agreementAgenName];
-       this.mess_ddp = this.mess_ddp_history[this.dataBase.agreementAgenName] == true ? true : false;
-     } else if (this.dataBase.agreementAgenName == null || this.dataBase.agreementAgenName === '') {
-       this.dataBase.biddingDdpState = null;
-     } else {
-       // 查询投标公司ddp状态是否通过
-       const d = {
-         total: 0,
-         pageNo: 1,
-         pageSize: 5,
-         dealerName: this.dataBase.agreementAgenName
-       };
-       this.getSelAgent(d);
-     }
-   } else if (agentBidding === 'agency') {
+     // if (this.ddp_history[this.dataBase.agreementAgenName] != null) {
+     //   this.dataBase.biddingDdpState = this.ddp_history[this.dataBase.agreementAgenName];
+     //   this.mess_ddp = this.mess_ddp_history[this.dataBase.agreementAgenName] == true ? true : false;
+     // } else if (this.dataBase.agreementAgenName == null || this.dataBase.agreementAgenName === '') {
+     //   this.dataBase.biddingDdpState = null;
+     // } else {
+     //   // 查询投标公司ddp状态是否通过
+     //   const d = {
+     //     total: 0,
+     //     pageNo: 1,
+     //     pageSize: 5,
+     //     dealerName: this.dataBase.agreementAgenName
+     //   };
+     //   this.getSelAgent(d);
+     // }
+   } else if (agentBidding === 'agency' && this.dataBase.biddingNames !== '' && this.dataBase.biddingNames != null) {
     this.validateForm.controls.biddingNames.enable();
     this.validateForm.controls.agreementAgenName.disable();
     this.validateForm.controls.biddingComRegAddress.enable();
     this.dataBase.biddingDdpState = '非飞利浦授权二级经销商';
     this.mess_ddp = false;
    }
+    if (this.dataBase.biddingNames === '' || this.dataBase.biddingNames == null) {
+      this.dataBase.biddingDdpState = '非飞利浦授权二级经销商';
+      this.dataBase.biddingComRegCode = null;
+    }
+    // 投标公司注册地址为空再次查询
+    if ((this.dataBase.biddingComRegAddress === '' || this.dataBase.biddingComRegAddress == null) && agentBidding === 'nonagency' && this.dataBase.biddingNames != null && this.dataBase.biddingNames !== '') {
+      const d = {
+        total: 0,
+        pageNo: 1,
+        pageSize: 5,
+        dealerName: this.dataBase.biddingNames
+      };
+      this.getSelAgent2(d);
+    }
   }
   // 选择支付提示框
   changePayment() {
@@ -721,8 +820,7 @@ public params:any={
       this.dataBase.biddingComRegCode = '中国香港';
       this.dataBase.biddingComRegAddress = '香港新界沙田香港科學園科技大道東5號5E大樓3樓';
     } else {
-      this.dataBase.biddingComRegCode = null;
-      this.dataBase.biddingComRegAddress = '';
+      this.dataBase.biddingNames = null;
     }
   }
   prev()//上一步
@@ -733,23 +831,19 @@ public params:any={
   {
     this.myEvent.emit("complete-record");
   }
-  selectChange()  // 业务模式下拉框
-  {
+  // 业务模式下拉框
+  public selectChange() {
     // for (const i in this.validateForm.controls) {
     //   this.validateForm.controls[i].markAsPristine();
     // }
-
     if (this.dataBase.businessType == 'DISTRIBUTOR') {
     //  this.dataBase.tenderAuthorization='nonprivate';
-      //是否二级代理商是的时候不禁用.否的时候禁用
+      // 是否二级代理商是的时候不禁用.否的时候禁用
       this.validateForm.controls.biddingComRegCode.enable();
-      if(this.dataBase.agentBidding=='agency')
-      {
+      if (this.dataBase.agentBidding == 'agency') {
         this.validateForm.controls.biddingComRegCode.enable();
         this.validateForm.controls.biddingComRegAddress.enable();
-      }
-      else if(this.dataBase.agentBidding=='nonagency')
-      {
+      } else if (this.dataBase.agentBidding == 'nonagency') {
         // this.validateForm.controls.biddingComRegCode.disable();
         // this.validateForm.controls.biddingComRegAddress.disable();
         if (this.dataBase.biddingComRegAddress == null || this.dataBase.biddingComRegAddress === '') {
@@ -759,7 +853,10 @@ public params:any={
         }
       }
       this.validateForm.get('agreementAgenName')!.setValidators(Validators.required);
-      //this.validateForm.get('agreementAgenName')!.markAsDirty();
+      // this.validateForm.get('biddingDdpDate')!.setValidators(Validators.required);
+      this.validateForm.get('distributorAgreement')!.setValidators(Validators.required);
+      this.validateForm.get('distributorType')!.setValidators(Validators.required);
+      // this.validateForm.get('agreementDealerDdpDate')!.setValidators(Validators.required);
 
       // 是否需要投标授权 选"是"的时候   验证一下字段
       if (this.dataBase.tenderAuthorization === 'nonprivate') {
@@ -767,12 +864,6 @@ public params:any={
       //  this.validateForm.get('biddingDdpState')!.markAsDirty();
         this.validateForm.get('agentBidding')!.setValidators(Validators.required);
        // this.validateForm.get('agentBidding')!.markAsDirty();
-        this.validateForm.get('biddingNames')!.setValidators(Validators.required);
-       // this.validateForm.get('biddingNames')!.markAsDirty();
-        this.validateForm.get('biddingComRegAddress')!.setValidators(Validators.required);
-       // this.validateForm.get('biddingComRegAddress')!.markAsDirty();
-        this.validateForm.get('biddingComRegCode')!.setValidators(Validators.required);
-       // this.validateForm.get('biddingComRegCode')!.markAsDirty();
         //  清空字段验证
         this.validateForm.get('logisticsDescription')!.clearValidators(); // logisticsDescription 物流条款说明
         this.validateForm.get('logisticsDescription')!.markAsPristine();
@@ -782,15 +873,13 @@ public params:any={
         this.validateForm.get('afterSalesInstructions')!.markAsPristine();
         this.validateForm.get('tenderPriceCurrencys')!.clearValidators(); // tenderPriceCurrencys 投标保证金及履约保证金额说明
         this.validateForm.get('tenderPriceCurrencys')!.markAsPristine();
+        this.validateForm.get('bidPriceCurrency')!.clearValidators(); // bidPriceCurrency 投标保证金及履约保证金额说明
+        this.validateForm.get('bidPriceCurrency')!.markAsPristine();
+        this.validateForm.get('performanceBondsCurrency')!.clearValidators(); // performanceBondsCurrency 投标保证金及履约保证金额说明
+        this.validateForm.get('performanceBondsCurrency')!.markAsPristine();
         this.validateForm.get('tenderPriceCurrency')!.clearValidators(); // tenderPriceCurrency
         this.validateForm.get('tenderPriceCurrency')!.markAsPristine();
 
-        // this.validateForm.get('percentageTotalPrice')!.clearValidators(); // percentageTotalPrice
-        // this.validateForm.get('percentageTotalPrice')!.markAsPristine();
-        // this.validateForm.get('totalPrice')!.clearValidators(); // totalPrice
-        // this.validateForm.get('totalPrice')!.markAsPristine();
-        // this.validateForm.get('marginLevel')!.clearValidators(); // marginLevel
-        // this.validateForm.get('marginLevel')!.markAsPristine();
         this.validateForm.get('paymentDescription')!.clearValidators(); // paymentDescription
         this.validateForm.get('paymentDescription')!.markAsPristine();
         this.validateForm.get('paymentDescriptions')!.clearValidators(); // paymentDescriptions
@@ -801,20 +890,11 @@ public params:any={
         this.validateForm.get('legalProvisions')!.markAsPristine();
         this.redstar = false;
       }
-      else
-      {
+      else {
         this.validateForm.get('biddingDdpState')!.clearValidators();
         this.validateForm.get('biddingDdpState')!.markAsPristine();
-        // this.validateForm.get('agreementAgenName')!.clearValidators();
-        // this.validateForm.get('agreementAgenName')!.markAsPristine();
         this.validateForm.get('agentBidding')!.clearValidators();
         this.validateForm.get('agentBidding')!.markAsPristine();
-        this.validateForm.get('biddingNames')!.clearValidators();
-        this.validateForm.get('biddingNames')!.markAsPristine();
-        this.validateForm.get('biddingComRegAddress')!.clearValidators();
-        this.validateForm.get('biddingComRegAddress')!.markAsPristine();
-        this.validateForm.get('biddingComRegCode')!.clearValidators();
-        this.validateForm.get('biddingComRegCode')!.markAsPristine();
 
       }
       this.validateForm.get('biddingDdpState')!.updateValueAndValidity(); //ddp状态
@@ -827,10 +907,10 @@ public params:any={
       this.validateForm.get('logisticsTermsExplain')!.updateValueAndValidity(); // logisticsTermsExplain 物流条款说明2
         this.validateForm.get('afterSalesInstructions')!.updateValueAndValidity(); // afterSalesInstructions 售后维修条款说明
         this.validateForm.get('tenderPriceCurrencys')!.updateValueAndValidity(); // tenderPriceCurrencys 投标保证金及履约保证金额说明
+      this.validateForm.get('bidPriceCurrency')!.updateValueAndValidity(); // bidPriceCurrency 投标保证金及履约保证金额说明
+      this.validateForm.get('performanceBondsCurrency')!.updateValueAndValidity(); // performanceBondsCurrency 投标保证金及履约保证金额说明
         this.validateForm.get('tenderPriceCurrency')!.updateValueAndValidity(); // tenderPriceCurrency
-        // this.validateForm.get('percentageTotalPrice')!.updateValueAndValidity(); // percentageTotalPrice
-        // this.validateForm.get('totalPrice')!.updateValueAndValidity(); // totalPrice
-        // this.validateForm.get('marginLevel')!.updateValueAndValidity(); // marginLevel
+
         this.validateForm.get('paymentDescription')!.updateValueAndValidity(); // paymentDescription
         this.validateForm.get('paymentDescriptions')!.updateValueAndValidity(); // paymentDescriptions
         this.validateForm.get('technicalTerms')!.updateValueAndValidity(); // technicalTerms
@@ -846,11 +926,9 @@ public params:any={
       this.addIsdisble=false;
       this.paymentMethod();
 
-      this.dataBase.biddingComRegCode = '中国';
+      // this.dataBase.biddingComRegCode = '中国';
     }
     else {
-      // 是否需要投标授权 选"是"的时候   验证一下字段
-      //是否二级代理商是的时候不禁用.否的时候禁用
       // this.dataBase.tenderAuthorization='private';
       this.validateForm.controls.biddingComRegCode.disable();
       // this.validateForm.controls.biddingComRegAddress.disable();
@@ -859,39 +937,34 @@ public params:any={
       this.validateForm.get('agreementAgenName')!.markAsPristine();
       this.validateForm.get('biddingDdpState')!.clearValidators();
       this.validateForm.get('biddingDdpState')!.markAsPristine();
+
+
+
+      // this.validateForm.get('biddingDdpDate')!.clearValidators();
+      // this.validateForm.get('biddingDdpDate')!.markAsPristine();
+      this.validateForm.get('distributorAgreement')!.clearValidators();
+      this.validateForm.get('distributorAgreement')!.markAsPristine();
+      this.validateForm.get('distributorType')!.clearValidators();
+      this.validateForm.get('distributorType')!.markAsPristine();
+      // this.validateForm.get('agreementDealerDdpDate')!.clearValidators();
+      // this.validateForm.get('agreementDealerDdpDate')!.markAsPristine();
+
       if (this.dataBase.tenderAuthorization === 'nonprivate') {
-        this.validateForm.get('biddingNames')!.setValidators(Validators.required);
-      //  this.validateForm.get('biddingNames')!.markAsDirty();
-        this.validateForm.get('biddingComRegAddress')!.setValidators(Validators.required);
-       // this.validateForm.get('biddingComRegAddress')!.markAsDirty();
-        this.validateForm.get('biddingComRegCode')!.setValidators(Validators.required);
-       // this.validateForm.get('biddingComRegCode')!.markAsDirty();
-         //
          this.validateForm.get('logisticsDescription')!.setValidators(Validators.required); // logisticsDescription 物流条款说明
         this.validateForm.get('logisticsTermsExplain')!.setValidators(Validators.required); // logisticsTermsExplain 物流条款说明2
          this.validateForm.get('afterSalesInstructions')!.setValidators(Validators.required); // afterSalesInstructions 售后维修条款说明
          this.validateForm.get('tenderPriceCurrencys')!.setValidators(Validators.required); // tenderPriceCurrencys 投标保证金及履约保证金额说明
+        this.validateForm.get('bidPriceCurrency')!.setValidators(Validators.required); // bidPriceCurrency 投标保证金及履约保证金额说明
+        this.validateForm.get('performanceBondsCurrency')!.setValidators(Validators.required); // performanceBondsCurrency 投标保证金及履约保证金额说明
          this.validateForm.get('tenderPriceCurrency')!.setValidators(Validators.required); // tenderPriceCurrency
-
-         // this.validateForm.get('percentageTotalPrice')!.setValidators(Validators.required);// percentageTotalPrice
-         // this.validateForm.get('totalPrice')!.setValidators(Validators.required);// totalPrice
-         // this.validateForm.get('marginLevel')!.setValidators(Validators.required);// marginLevel
          this.validateForm.get('paymentDescription')!.setValidators(Validators.required);// paymentDescription 付款方式说明
          this.validateForm.get('paymentDescriptions')!.setValidators(Validators.required);// paymentDescriptions 付款方式说明备注
          this.validateForm.get('technicalTerms')!.setValidators(Validators.required);// technicalTerms 技术条款说明
          this.validateForm.get('legalProvisions')!.setValidators(Validators.required);// legalProvisions 涉及法律条款说明
          this.redstar = true;
-      }
-      else
-      {
+      } else {
         this.validateForm.get('agentBidding')!.clearValidators();
         this.validateForm.get('agentBidding')!.markAsPristine();
-        this.validateForm.get('biddingNames')!.clearValidators();
-        this.validateForm.get('biddingNames')!.markAsPristine();
-        this.validateForm.get('biddingComRegAddress')!.clearValidators();
-        this.validateForm.get('biddingComRegAddress')!.markAsPristine();
-        this.validateForm.get('biddingComRegCode')!.clearValidators();
-        this.validateForm.get('biddingComRegCode')!.markAsPristine();
 
          //  清空字段验证
          this.validateForm.get('logisticsDescription')!.clearValidators(); // logisticsDescription 物流条款说明
@@ -902,15 +975,13 @@ public params:any={
          this.validateForm.get('afterSalesInstructions')!.markAsPristine();
          this.validateForm.get('tenderPriceCurrencys')!.clearValidators(); // tenderPriceCurrencys 投标保证金及履约保证金额说明
          this.validateForm.get('tenderPriceCurrencys')!.markAsPristine();
+        this.validateForm.get('bidPriceCurrency')!.clearValidators(); // bidPriceCurrency 投标保证金及履约保证金额说明
+        this.validateForm.get('bidPriceCurrency')!.markAsPristine();
+        this.validateForm.get('performanceBondsCurrency')!.clearValidators(); // performanceBondsCurrency 投标保证金及履约保证金额说明
+        this.validateForm.get('performanceBondsCurrency')!.markAsPristine();
          this.validateForm.get('tenderPriceCurrency')!.clearValidators(); // tenderPriceCurrency
          this.validateForm.get('tenderPriceCurrency')!.markAsPristine();
 
-         // this.validateForm.get('percentageTotalPrice')!.clearValidators(); // percentageTotalPrice
-         // this.validateForm.get('percentageTotalPrice')!.markAsPristine();
-         // this.validateForm.get('totalPrice')!.clearValidators(); // totalPrice
-         // this.validateForm.get('totalPrice')!.markAsPristine();
-         // this.validateForm.get('marginLevel')!.clearValidators(); // marginLevel
-         // this.validateForm.get('marginLevel')!.markAsPristine();
          this.validateForm.get('paymentDescription')!.clearValidators(); // paymentDescription
          this.validateForm.get('paymentDescription')!.markAsPristine();
          this.validateForm.get('paymentDescriptions')!.clearValidators(); // paymentDescriptions
@@ -931,10 +1002,12 @@ public params:any={
       this.validateForm.get('logisticsTermsExplain')!.updateValueAndValidity(); // logisticsTermsExplain 物流条款说明2
         this.validateForm.get('afterSalesInstructions')!.updateValueAndValidity(); // afterSalesInstructions 售后维修条款说明
         this.validateForm.get('tenderPriceCurrencys')!.updateValueAndValidity(); // tenderPriceCurrencys 投标保证金及履约保证金额说明
+      this.validateForm.get('bidPriceCurrency')!.updateValueAndValidity(); // bidPriceCurrency 投标保证金及履约保证金额说明
+      this.validateForm.get('performanceBondsCurrency')!.updateValueAndValidity(); // performanceBondsCurrency 投标保证金及履约保证金额说明
         this.validateForm.get('tenderPriceCurrency')!.updateValueAndValidity(); // tenderPriceCurrency
-        // this.validateForm.get('percentageTotalPrice')!.updateValueAndValidity(); // percentageTotalPrice
-        // this.validateForm.get('totalPrice')!.updateValueAndValidity(); // totalPrice
-        // this.validateForm.get('marginLevel')!.updateValueAndValidity(); // marginLevel
+      this.validateForm.get('bidPriceCurrency')!.updateValueAndValidity(); // tenderPriceCurrency
+      this.validateForm.get('performanceBondsCurrency')!.updateValueAndValidity(); // tenderPriceCurrency
+
         this.validateForm.get('paymentDescription')!.updateValueAndValidity(); // paymentDescription
         this.validateForm.get('paymentDescriptions')!.updateValueAndValidity(); // paymentDescriptions
         this.validateForm.get('technicalTerms')!.updateValueAndValidity(); // technicalTerms
@@ -949,38 +1022,29 @@ public params:any={
       this.dataBase.change=true;
       this.addIsdisble=true;
       this.paymentMethod();
+      this.IsApproved();
     }
-    // 是否需要投标授权 选"是"的时候   验证一下字段
-    // if (this.dataBase.tenderAuthorization === 'nonprivate') {
-    //   this.validateForm.get('biddingDdpState')!.updateValueAndValidity();
-    //   this.validateForm.get('agreementAgenName')!.updateValueAndValidity();
-    // }
-    // this.validateForm.get('agentBidding')!.updateValueAndValidity();
 
 
   }
   // 是否需要投标授权 改变监听
-  changeRad (param) {
+  public changeRad (param) {
     // for (const i in this.validateForm.controls) {
     //   this.validateForm.controls[i].markAsPristine();
     // }
-    if(this.dataBase.businessType=='DISTRIBUTOR')
-    {
+    if (this.dataBase.businessType == 'DISTRIBUTOR') {
             // 是否需要投标授权 选"是"的时候   验证一下字段
-        if (this.dataBase.tenderAuthorization === 'nonprivate')
-        {
+
+      // this.validateForm.get('biddingDdpDate')!.setValidators(Validators.required);
+      this.validateForm.get('distributorAgreement')!.setValidators(Validators.required);
+      this.validateForm.get('distributorType')!.setValidators(Validators.required);
+      // this.validateForm.get('agreementDealerDdpDate')!.setValidators(Validators.required);
+
+        if (this.dataBase.tenderAuthorization === 'nonprivate') {
           this.validateForm.get('biddingDdpState')!.setValidators(Validators.required);
-        //  this.validateForm.get('biddingDdpState')!.markAsDirty();
           this.validateForm.get('agreementAgenName')!.setValidators(Validators.required);
-         // this.validateForm.get('agreementAgenName')!.markAsDirty();
           this.validateForm.get('agentBidding')!.setValidators(Validators.required);
-         // this.validateForm.get('agentBidding')!.markAsDirty();
-          this.validateForm.get('biddingNames')!.setValidators(Validators.required);
-         // this.validateForm.get('biddingNames')!.markAsDirty();
-          this.validateForm.get('biddingComRegAddress')!.setValidators(Validators.required);
-         // this.validateForm.get('biddingComRegAddress')!.markAsDirty();
-          this.validateForm.get('biddingComRegCode')!.setValidators(Validators.required);
-        //  this.validateForm.get('biddingComRegCode')!.markAsDirty();
+
             //  清空字段验证
             this.validateForm.get('logisticsDescription')!.clearValidators(); // logisticsDescription 物流条款说明
             this.validateForm.get('logisticsDescription')!.markAsPristine();
@@ -990,15 +1054,13 @@ public params:any={
             this.validateForm.get('afterSalesInstructions')!.markAsPristine();
             this.validateForm.get('tenderPriceCurrencys')!.clearValidators(); // tenderPriceCurrencys 投标保证金及履约保证金额说明
             this.validateForm.get('tenderPriceCurrencys')!.markAsPristine();
+          this.validateForm.get('bidPriceCurrency')!.clearValidators(); // bidPriceCurrency 投标保证金及履约保证金额说明
+          this.validateForm.get('bidPriceCurrency')!.markAsPristine();
+          this.validateForm.get('performanceBondsCurrency')!.clearValidators(); // performanceBondsCurrency 投标保证金及履约保证金额说明
+          this.validateForm.get('performanceBondsCurrency')!.markAsPristine();
             this.validateForm.get('tenderPriceCurrency')!.clearValidators(); // tenderPriceCurrency
             this.validateForm.get('tenderPriceCurrency')!.markAsPristine();
 
-            // this.validateForm.get('percentageTotalPrice')!.clearValidators(); // percentageTotalPrice
-            // this.validateForm.get('percentageTotalPrice')!.markAsPristine();
-            // this.validateForm.get('totalPrice')!.clearValidators(); // totalPrice
-            // this.validateForm.get('totalPrice')!.markAsPristine();
-            // this.validateForm.get('marginLevel')!.clearValidators(); // marginLevel
-            // this.validateForm.get('marginLevel')!.markAsPristine();
             this.validateForm.get('paymentDescription')!.clearValidators(); // paymentDescription
             this.validateForm.get('paymentDescription')!.markAsPristine();
             this.validateForm.get('paymentDescriptions')!.clearValidators(); // paymentDescriptions
@@ -1010,20 +1072,13 @@ public params:any={
             this.redstar = false;
 
         }
-        else
-        {
+        else {
           this.validateForm.get('biddingDdpState')!.clearValidators();
           this.validateForm.get('biddingDdpState')!.markAsPristine();
-          // this.validateForm.get('agreementAgenName')!.clearValidators();
-          // this.validateForm.get('agreementAgenName')!.markAsPristine();
+
           this.validateForm.get('agentBidding')!.clearValidators();
           this.validateForm.get('agentBidding')!.markAsPristine();
-          this.validateForm.get('biddingNames')!.clearValidators();
-          this.validateForm.get('biddingNames')!.markAsPristine();
-          this.validateForm.get('biddingComRegAddress')!.clearValidators();
-          this.validateForm.get('biddingComRegAddress')!.markAsPristine();
-          this.validateForm.get('biddingComRegCode')!.clearValidators();
-          this.validateForm.get('biddingComRegCode')!.markAsPristine();
+
           //  清空字段验证
         this.validateForm.get('logisticsDescription')!.clearValidators(); // logisticsDescription 物流条款说明
         this.validateForm.get('logisticsDescription')!.markAsPristine();
@@ -1033,15 +1088,17 @@ public params:any={
         this.validateForm.get('afterSalesInstructions')!.markAsPristine();
         this.validateForm.get('tenderPriceCurrencys')!.clearValidators(); // tenderPriceCurrencys 投标保证金及履约保证金额说明
         this.validateForm.get('tenderPriceCurrencys')!.markAsPristine();
+          this.validateForm.get('bidPriceCurrency')!.clearValidators(); // bidPriceCurrency 投标保证金及履约保证金额说明
+          this.validateForm.get('bidPriceCurrency')!.markAsPristine();
+          this.validateForm.get('performanceBondsCurrency')!.clearValidators(); // performanceBondsCurrency 投标保证金及履约保证金额说明
+          this.validateForm.get('performanceBondsCurrency')!.markAsPristine();
+          this.validateForm.get('bidPriceCurrency')!.clearValidators(); // bidPriceCurrency 投标保证金及履约保证金额说明
+          this.validateForm.get('bidPriceCurrency')!.markAsPristine();
+          this.validateForm.get('performanceBondsCurrency')!.clearValidators(); // performanceBondsCurrency 投标保证金及履约保证金额说明
+          this.validateForm.get('performanceBondsCurrency')!.markAsPristine();
         this.validateForm.get('tenderPriceCurrency')!.clearValidators(); // tenderPriceCurrency
         this.validateForm.get('tenderPriceCurrency')!.markAsPristine();
 
-        // this.validateForm.get('percentageTotalPrice')!.clearValidators(); // percentageTotalPrice
-        // this.validateForm.get('percentageTotalPrice')!.markAsPristine();
-        // this.validateForm.get('totalPrice')!.clearValidators(); // totalPrice
-        // this.validateForm.get('totalPrice')!.markAsPristine();
-        // this.validateForm.get('marginLevel')!.clearValidators(); // marginLevel
-        // this.validateForm.get('marginLevel')!.markAsPristine();
         this.validateForm.get('paymentDescription')!.clearValidators(); // paymentDescription
         this.validateForm.get('paymentDescription')!.markAsPristine();
         this.validateForm.get('paymentDescriptions')!.clearValidators(); // paymentDescriptions
@@ -1063,6 +1120,8 @@ public params:any={
       this.validateForm.get('logisticsTermsExplain')!.updateValueAndValidity(); // logisticsTermsExplain 物流条款说明2
         this.validateForm.get('afterSalesInstructions')!.updateValueAndValidity(); // afterSalesInstructions 售后维修条款说明
         this.validateForm.get('tenderPriceCurrencys')!.updateValueAndValidity(); // tenderPriceCurrencys 投标保证金及履约保证金额说明
+      this.validateForm.get('bidPriceCurrency')!.updateValueAndValidity(); // bidPriceCurrency 投标保证金及履约保证金额说明
+      this.validateForm.get('performanceBondsCurrency')!.updateValueAndValidity(); // performanceBondsCurrency 投标保证金及履约保证金额说明
         this.validateForm.get('tenderPriceCurrency')!.updateValueAndValidity(); // tenderPriceCurrency
         // this.validateForm.get('percentageTotalPrice')!.updateValueAndValidity(); // percentageTotalPrice
         // this.validateForm.get('totalPrice')!.updateValueAndValidity(); // totalPrice
@@ -1072,25 +1131,36 @@ public params:any={
         this.validateForm.get('technicalTerms')!.updateValueAndValidity(); // technicalTerms
         this.validateForm.get('legalProvisions')!.updateValueAndValidity(); // legalProvisions
    }
-   else
-   {
+   else {
      this.validateForm.get('agreementAgenName')!.clearValidators();
      this.validateForm.get('agreementAgenName')!.markAsPristine();
      this.validateForm.get('biddingDdpState')!.clearValidators();
      this.validateForm.get('biddingDdpState')!.markAsPristine();
+
+      // this.validateForm.get('biddingDdpDate')!.clearValidators();
+      // this.validateForm.get('biddingDdpDate')!.markAsPristine();
+      this.validateForm.get('distributorAgreement')!.clearValidators();
+      this.validateForm.get('distributorAgreement')!.markAsPristine();
+      this.validateForm.get('distributorType')!.clearValidators();
+      this.validateForm.get('distributorType')!.markAsPristine();
+      // this.validateForm.get('agreementDealerDdpDate')!.clearValidators();
+      // this.validateForm.get('agreementDealerDdpDate')!.markAsPristine();
+
       if (this.dataBase.tenderAuthorization === 'nonprivate') {
-        this.validateForm.get('biddingNames')!.setValidators(Validators.required);
-        //this.validateForm.get('biddingNames')!.markAsDirty();
-        this.validateForm.get('biddingComRegAddress')!.setValidators(Validators.required);
-        //this.validateForm.get('biddingComRegAddress')!.markAsDirty();
-        this.validateForm.get('biddingComRegCode')!.setValidators(Validators.required);
-        //this.validateForm.get('biddingComRegCode')!.markAsDirty();
+        // this.validateForm.get('biddingNames')!.setValidators(Validators.required);
+        // //this.validateForm.get('biddingNames')!.markAsDirty();
+        // this.validateForm.get('biddingComRegAddress')!.setValidators(Validators.required);
+        // //this.validateForm.get('biddingComRegAddress')!.markAsDirty();
+        // this.validateForm.get('biddingComRegCode')!.setValidators(Validators.required);
+        // //this.validateForm.get('biddingComRegCode')!.markAsDirty();
 
         //
         this.validateForm.get('logisticsDescription')!.setValidators(Validators.required); // logisticsDescription 物流条款说明
         this.validateForm.get('logisticsTermsExplain')!.setValidators(Validators.required); // logisticsTermsExplain 物流条款说明2
         this.validateForm.get('afterSalesInstructions')!.setValidators(Validators.required); // afterSalesInstructions 售后维修条款说明
         this.validateForm.get('tenderPriceCurrencys')!.setValidators(Validators.required); // tenderPriceCurrencys 投标保证金及履约保证金额说明
+        this.validateForm.get('bidPriceCurrency')!.setValidators(Validators.required); // bidPriceCurrency 投标保证金及履约保证金额说明
+        this.validateForm.get('performanceBondsCurrency')!.setValidators(Validators.required); // performanceBondsCurrency 投标保证金及履约保证金额说明
         this.validateForm.get('tenderPriceCurrency')!.setValidators(Validators.required); // tenderPriceCurrency
 
         // this.validateForm.get('percentageTotalPrice')!.setValidators(Validators.required);// percentageTotalPrice
@@ -1108,12 +1178,12 @@ public params:any={
         // this.validateForm.get('agreementAgenName')!.markAsPristine();
         this.validateForm.get('agentBidding')!.clearValidators();
         this.validateForm.get('agentBidding')!.markAsPristine();
-        this.validateForm.get('biddingNames')!.clearValidators();
-        this.validateForm.get('biddingNames')!.markAsPristine();
-        this.validateForm.get('biddingComRegAddress')!.clearValidators();
-        this.validateForm.get('biddingComRegAddress')!.markAsPristine();
-        this.validateForm.get('biddingComRegCode')!.clearValidators();
-        this.validateForm.get('biddingComRegCode')!.markAsPristine();
+        // this.validateForm.get('biddingNames')!.clearValidators();
+        // this.validateForm.get('biddingNames')!.markAsPristine();
+        // this.validateForm.get('biddingComRegAddress')!.clearValidators();
+        // this.validateForm.get('biddingComRegAddress')!.markAsPristine();
+        // this.validateForm.get('biddingComRegCode')!.clearValidators();
+        // this.validateForm.get('biddingComRegCode')!.markAsPristine();
 
 
         //  清空字段验证
@@ -1125,6 +1195,10 @@ public params:any={
         this.validateForm.get('afterSalesInstructions')!.markAsPristine();
         this.validateForm.get('tenderPriceCurrencys')!.clearValidators(); // tenderPriceCurrencys 投标保证金及履约保证金额说明
         this.validateForm.get('tenderPriceCurrencys')!.markAsPristine();
+        this.validateForm.get('bidPriceCurrency')!.clearValidators(); // bidPriceCurrency 投标保证金及履约保证金额说明
+        this.validateForm.get('bidPriceCurrency')!.markAsPristine();
+        this.validateForm.get('performanceBondsCurrency')!.clearValidators(); // performanceBondsCurrency 投标保证金及履约保证金额说明
+        this.validateForm.get('performanceBondsCurrency')!.markAsPristine();
         this.validateForm.get('tenderPriceCurrency')!.clearValidators(); // tenderPriceCurrency
         this.validateForm.get('tenderPriceCurrency')!.markAsPristine();
 
@@ -1154,6 +1228,8 @@ public params:any={
      this.validateForm.get('logisticsTermsExplain')!.updateValueAndValidity(); // logisticsTermsExplain 物流条款说明
         this.validateForm.get('afterSalesInstructions')!.updateValueAndValidity(); // afterSalesInstructions 售后维修条款说明
         this.validateForm.get('tenderPriceCurrencys')!.updateValueAndValidity(); // tenderPriceCurrencys 投标保证金及履约保证金额说明
+     this.validateForm.get('bidPriceCurrency')!.updateValueAndValidity(); // bidPriceCurrency 投标保证金及履约保证金额说明
+     this.validateForm.get('performanceBondsCurrency')!.updateValueAndValidity(); // performanceBondsCurrency 投标保证金及履约保证金额说明
         this.validateForm.get('tenderPriceCurrency')!.updateValueAndValidity(); // tenderPriceCurrency
         // this.validateForm.get('percentageTotalPrice')!.updateValueAndValidity(); // percentageTotalPrice
         // this.validateForm.get('totalPrice')!.updateValueAndValidity(); // totalPrice
@@ -1163,6 +1239,7 @@ public params:any={
         this.validateForm.get('technicalTerms')!.updateValueAndValidity(); // technicalTerms
         this.validateForm.get('legalProvisions')!.updateValueAndValidity(); // legalProvisions
    }
+   // this.IsApproved();
   }
   //弹出协议商选择弹出框
   showAgre() {
@@ -1180,15 +1257,23 @@ public params:any={
     //this.agreement.nameEn = arr[0].nameEn;
     // this.dataBase.agreementAgenName = arr[0].dealerName;
 
+    if (arr && arr[0].dealerCode) {
+      this.dataBase.dealerNo = arr[0].dealerCode;
+    }
+    if (arr && arr[0].agreementNo) {
+      this.dataBase.distributorAgreement = [arr[0].agreementNo];
+    }
+    this.dataBase.agreementDealerDdpDate = arr[0].ddpValidUntil;
     this.dataBase.agreementAgenName = arr[0].dealerName;
     if (this.dataBase.agentBidding === 'nonagency') {
       this.dataBase.biddingNames = arr[0].dealerName;
+      this.dataBase.biddingDdpDate = arr[0].ddpValidUntil;
     }
-    if (arr[0].ddpStatus === '通过' && this.dataBase && this.dataBase.agentBidding === 'nonagency') {
-      this.dataBase.biddingDdpState = arr[0].ddpStatus;
-    } else if ( arr[0].ddpStatus !== '通过' && this.dataBase && this.dataBase.agentBidding === 'nonagency') {
-      this.dataBase.biddingDdpState = '未通过';
-    }
+    // if (arr[0].ddpStatus === '通过' && this.dataBase && this.dataBase.agentBidding === 'nonagency') {
+    //   this.dataBase.biddingDdpState = arr[0].ddpStatus;
+    // } else if ( arr[0].ddpStatus !== '通过' && this.dataBase && this.dataBase.agentBidding === 'nonagency') {
+    //   this.dataBase.biddingDdpState = '未通过';
+    // }
     if (arr[0].ddpStatus == null || arr[0].ddpStatus === '') {
       this.mess_ddp = true;
       this.mess_ddp_history[arr[0].dealerName] = true;
@@ -1214,7 +1299,7 @@ public params:any={
     // this.dataBase.biddingComRegCode=arr[0].registeredAddress;
 
     // 记录ddp历史状态
-    this.ddp_history[arr[0].dealerName] = arr[0].ddpStatus === '通过' ? '通过' : '未通过';
+    // this.ddp_history[arr[0].dealerName] = arr[0].ddpStatus === '通过' ? '通过' : '未通过';
 
 
     this.isBid = false;
@@ -1229,6 +1314,11 @@ public params:any={
       this.dataBase.region = '';
     } else {
       this.dataBase.region = arr[0].authorizedArea;
+    }
+    if (arr[0].agreementNo == null) {
+      this.dataBase.agreementNo = '';
+    } else {
+      this.dataBase.agreementNo = arr[0].agreementNo;
     }
 
     // this.getSelAgent({
@@ -1253,21 +1343,9 @@ public params:any={
   //选择代理商确定
   isBidagentOk() {
     let arr = this.child1.selectFind();
-    //this.company.nameEn = arr[0].nameEn;
-    //this.company.nameCn = arr[0].nameCn;
+
     this.dataBase.biddingNames = arr[0].dealerName;
-    // if (arr[0].ddpStatus === '通过' && this.dataBase && this.dataBase.agentBidding === 'nonagency') {
-    //   this.dataBase.biddingDdpState = arr[0].ddpStatus;
-    // } else if ( arr[0].ddpStatus !== '通过' && this.dataBase && this.dataBase.agentBidding === 'nonagency') {
-    //   this.dataBase.biddingDdpState = '未通过';
-    // }
-    // if (arr[0].ddpStatus == null || arr[0].ddpStatus === '') {
-    //   this.mess_ddp = true;
-    //   this.mess_ddp_history[arr[0].dealerName] = true;
-    // } else {
-    //   this.mess_ddp = false;
-    //   this.mess_ddp_history[arr[0].dealerName] = false;
-    // }
+    this.dataBase.biddingDdpDate = arr[0].ddpValidUntil;
     const agentBidding=this.dataBase.agentBidding;
     agentBidding==='nonagency'&&(this.dataBase.agreementAgenName=this.dataBase.biddingNames);
     this.dataBase.biddingComRegAddress = arr[0].registeredAddress;
@@ -1392,7 +1470,7 @@ public paymentMethod(){
          if(!result)
          {
            this.dataBase.paymentDescriptions=this.dataBase.paymentDescription;
-           // this.dataBase.paymentDescription="其他";
+           this.dataBase.paymentDescription="其他";
          }
       } else {
         this.message.create('error', `${rest.msg}`);
@@ -1426,6 +1504,79 @@ changeLogisticsDescription(){
     }
   }
 }
+
+// 查询地址
+  getSelAgent2(data) {
+    const url = `/act/ecom/bidding/selAgent`;
+    this.http.post(url, data).subscribe(
+      (res) => {
+        if (res.code == '0000') {
+          if (res.data.rows.length > 0) {
+            this.dataBase.biddingComRegAddress = res.data.rows[0].registeredAddress; // 投标公司地址
+            if (res.data.rows[0].registeredAddress === '中国' || res.data.rows[0].registeredAddress === '中国香港') {
+              this.dataBase.biddingComRegCode = res.data.rows[0].registeredAddress; // 投标公司所在地
+            }
+            this.agreementAgenNameAddr = this.dataBase.biddingComRegAddress;
+            // this.dataBase.productModels = res.data.rows[0].authorizedProduct;
+          }
+        }
+      },
+      ((error) => {
+        this.message.create('error', '请求异常!');
+      })
+    );
+  }
+
+  // 投标公司DDP状态
+  public biddingDdpDateChange() {
+    if (this.dataBase.agentBidding === 'agency') {
+      this.dataBase.biddingDdpState = '非飞利浦授权二级经销商';
+    } else {
+      if (this.dataBase.biddingDdpDate) {
+        const data1 = new Date(this.dataBase.biddingDdpDate);
+        const data2 = new Date();
+        // console.log(Math.ceil((data1.getTime() - data2.getTime()) / (1000 * 60 * 60 * 24)));
+        const date = Math.ceil((data1.getTime() - data2.getTime()) / (1000 * 60 * 60 * 24));
+        if (date > 0) {
+          this.dataBase.biddingDdpState = '通过';
+          if (date <= 7) {
+            this.biddingDDPDate7 = true;
+          } else {
+            this.biddingDDPDate7 = false;
+          }
+        } else {
+          this.dataBase.biddingDdpState = '未通过';
+        }
+      } else {
+        this.dataBase.biddingDdpState = '未通过';
+      }
+    }
+    if (this.dataBase.biddingNames === '' || this.dataBase.biddingNames == null) {
+      this.dataBase.biddingDdpState = '非飞利浦授权二级经销商';
+      this.dataBase.biddingComRegCode = null;
+    }
+  }
+  public agreementDealerDdpDateChange() {
+    if (this.dataBase.agreementDealerDdpDate) {
+      const data1 = new Date(this.dataBase.agreementDealerDdpDate);
+      const data2 = new Date();
+      // console.log(Math.ceil((data1.getTime() - data2.getTime()) / (1000 * 60 * 60 * 24)));
+      const date = Math.ceil((data1.getTime() - data2.getTime()) / (1000 * 60 * 60 * 24));
+      if (date > 0) {
+        this.dataBase.agreementDealerDdpState = '通过';
+        if (date <= 7) {
+          this.agreementDDPDate7 = true;
+        } else {
+          this.agreementDDPDate7 = false;
+        }
+      } else {
+        this.dataBase.agreementDealerDdpState = '未通过';
+      }
+    } else {
+      this.dataBase.agreementDealerDdpState = '未通过';
+    }
+  }
+
 // 获取模板参数
   getSelAgent (data) {
     const url = `/act/ecom/bidding/selAgent`;
@@ -1444,15 +1595,15 @@ changeLogisticsDescription(){
               this.dataBase.region = res.data.rows[0].authorizedArea;
             }
 
-            if (res.data.rows[0].ddpStatus === '通过' && this.dataBase && this.dataBase.agentBidding === 'nonagency') {
-              this.dataBase.biddingDdpState = res.data.rows[0].ddpStatus;
-              // 记录ddp历史状态
-              this.ddp_history[res.data.rows[0].dealerName] = '通过';
-            } else if (res.data.rows[0].ddpStatus !== '通过' && this.dataBase && this.dataBase.agentBidding === 'nonagency'){
-              // 记录ddp历史状态
-              this.dataBase.biddingDdpState = '未通过';
-              this.ddp_history[res.data.rows[0].dealerName] = '未通过';
-            }
+            // if (res.data.rows[0].ddpStatus === '通过' && this.dataBase && this.dataBase.agentBidding === 'nonagency') {
+            //   this.dataBase.biddingDdpState = res.data.rows[0].ddpStatus;
+            //   // 记录ddp历史状态
+            //   this.ddp_history[res.data.rows[0].dealerName] = '通过';
+            // } else if (res.data.rows[0].ddpStatus !== '通过' && this.dataBase && this.dataBase.agentBidding === 'nonagency'){
+            //   // 记录ddp历史状态
+            //   this.dataBase.biddingDdpState = '未通过';
+            //   this.ddp_history[res.data.rows[0].dealerName] = '未通过';
+            // }
             if (res.data.rows[0].ddpStatus == null || res.data.rows[0].ddpStatus === '') {
               this.mess_ddp = true;
               this.mess_ddp_history[res.data.rows[0].dealerName] = true;
@@ -1462,9 +1613,9 @@ changeLogisticsDescription(){
           } else {
             // 没有查到数据
             this.mess_ddp = true;
-            this.dataBase.biddingDdpState = '未通过';
+            // this.dataBase.biddingDdpState = '未通过';
             // 记录ddp历史状态
-            this.ddp_history[data.dealerName] = '未通过';
+            // this.ddp_history[data.dealerName] = '未通过';
             this.mess_ddp_history[data.dealerName] = true;
           }
       }),
@@ -1562,6 +1713,63 @@ changeLogisticsDescription(){
       return e;
     }
     return e;
+  }
+
+  // 验证日期
+  public cheakDate(control: FormControl) {
+    if (control.value) {
+      let nowData = formatDatesNow(control.value);
+      let res = /^(?:(?!0000)[0-9]{4}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1[0-9]|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[0-9]{2}(?:0[48]|[2468][048]|[13579][26])|(?:0[48]|[2468][048]|[13579][26])00)-02-29)$/
+      const valid = res.test(nowData);
+      return valid ? null : { dataform: true };
+    }
+  }
+  public agreetitleList: any = {};
+  public AgreeTitle() {
+    const url = '/act/ecom/tender/application/queryAgent';
+    if (this.dataBase.distributorAgreement && this.dataBase.distributorAgreement.length > 0) {
+      let data = [];
+      for (let i = 0; i < this.dataBase.distributorAgreement.length; i++) {
+        if (!this.agreetitleList[this.dataBase.distributorAgreement[i]]) {
+          data.push({
+            agreementNo: this.dataBase.distributorAgreement[i]
+          });
+        }
+      }
+      if (data && data.length > 0) {
+        this.http.post(url, data).subscribe(res => {
+          if (res && res.data) {
+            //  authorized_product,authorized_area
+            for (let j = 0; j < res.data.length; j++) {
+              // this.agreetitleList[res.data[j]].authorizedProduct = res.data[j].authorizedProduct;
+              // this.agreetitleList[res.data[j]].authorizedArea = res.data[j].authorizedArea;
+              this.agreetitleList[res.data[j].agreementNo] = {
+                authorizedProduct: res.data[j].authorizedProduct,
+                authorizedArea: res.data[j].authorizedArea
+              };
+              // this.agreeText += '授权产品：' + res.data[j].authorizedProduct + '授权区域：' + res.data[j].authorizedArea + '\t';
+            }
+          }
+        });
+      }
+    }
+
+  }
+  public agreeText() {
+    if (this.dataBase.distributorAgreement && this.dataBase.distributorAgreement.length > 0) {
+      // let data = [];
+      let text = '';
+      for (let i = 0; i < this.dataBase.distributorAgreement.length; i++) {
+        if (this.agreetitleList[this.dataBase.distributorAgreement[i]]) {
+          // data.push({
+          //   agreementNo: this.dataBase.distributorAgreement[i]
+          // });
+          text += '授权产品：' + this.agreetitleList[this.dataBase.distributorAgreement[i]].authorizedProduct + '授权区域：' + this.agreetitleList[this.dataBase.distributorAgreement[i]].authorizedArea + '\t';
+        }
+      }
+      return text;
+    }
+    return '';
   }
 
 }

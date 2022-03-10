@@ -157,6 +157,7 @@ export class HttpService {
     sessionStorage.removeItem('ng_philips_code1');
     sessionStorage.removeItem('ng_philips_roles');
     sessionStorage.removeItem('ng_philips_groups');
+    localStorage.removeItem('profiles');
     this.get('/act/logout').subscribe(rest => {
       if (rest.code == '0000') {
         const logoutUrl = rest.data.logoutUrl;
@@ -176,6 +177,8 @@ export class HttpService {
     sessionStorage.removeItem('ng_philips_code1');
     sessionStorage.removeItem('ng_philips_roles');
     sessionStorage.removeItem('ng_philips_groups');
+    localStorage.removeItem('profiles');
+    localStorage.removeItem('');
     const res = await this.get('/act/logout').toPromise();
   }
 

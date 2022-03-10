@@ -24,7 +24,7 @@ export class PreOrderWinCheckTableComponent implements OnInit {
     lineHeight: '30px'
   };
   @Output() myVerifi = new EventEmitter();
-  @Input() businessModel:any;
+  @Input() dataBase:any;
   @Input() bidData: any;
   @Input() tableLoad: any = false;
   listOfData = [];
@@ -33,7 +33,7 @@ export class PreOrderWinCheckTableComponent implements OnInit {
       res.searchResult.map(val=>{           
            const price=val.price!=null&&val.price!=''&&val.price!='0.00'?NumberThousandth(val.price):"N/A";           
            const useStatus=val.useStatus=='1'?'(已使用)':"(未使用)";
-           val.title=`${val.marketBundleName} 中标价格:${price} ${useStatus}`;
+           val.title=`${val.marketBundleName} ${val.number}台 中标价格: ${price} ${useStatus}`;
       })
     })    
   }
@@ -102,8 +102,8 @@ export class PreOrderWinCheckTableComponent implements OnInit {
       this.bidData[index].agreementAgenName=search.agreementAgenName; //中标的经销商
       const orderByCustomerNameid = this.bidData[index].accountId//进单客户id
       const appPerson = this.bidData[index].appPerson//进单申请人
-      const tenderingCompany=this.bidData[index].tenderingCompany; //进单投标公司
-      const biddingName=search.biddingName; //中标投标公司
+      const tenderingCompany=clearSpaces(this.bidData[index].tenderingCompany); //进单投标公司
+      const biddingName=search.biddingName?clearSpaces(search.biddingName):""; //中标投标公司
       const tenderNo=clearSpaces(this.bidData[index].tenderNo); //进单招标编号
       const biddingNo=clearSpaces(search.biddingNo); //中标招标编号
       const distributor=this.bidData[index].distributor; //进单经销商
@@ -113,11 +113,33 @@ export class PreOrderWinCheckTableComponent implements OnInit {
       market = makertBundleName == makertBundleName ? true : false;
       hospitat = (orderByCustomerNameid == search.accountId)||(hospitalName.replace(/\s+/g,"")==orderByCustomerName.replace(/\s+/g,"")) ? true : false;
       person = bidApplicant == appPerson ? true : false;
-      tenderingCompanyFlag=tenderingCompany.replace(/\s+/g,"")==biddingName.replace(/\s+/g,"")?true:false;
+      tenderingCompanyFlag=tenderingCompany==biddingName?true:false;
       tenderNoFlag=tenderNo==biddingNo?true:false;
       distributorFlag=distributor==agreementAgenName?true:false;
-
-      orderRsult=this.businessModel=='DISTRIBUTOR'?(oppResult && market && hospitat && person&&distributorFlag&&tenderingCompanyFlag&&tenderNoFlag&&(useState == "0")):(oppResult && market && hospitat && person&&tenderingCompanyFlag&&tenderNoFlag&&(useState == "0"))
+      //orderRsult=this.dataBase.businessModel=='DISTRIBUTOR'?(oppResult && market && hospitat && person&&distributorFlag&&tenderingCompanyFlag&&tenderNoFlag&&(useState == "0")):(oppResult && market && hospitat && person&&tenderingCompanyFlag&&tenderNoFlag&&(useState == "0"))
+      if(this.dataBase.businessModel=='DISTRIBUTOR')
+      {
+        if(this.dataBase.centralized)
+        {
+          orderRsult=(oppResult && market && hospitat&&distributorFlag&&tenderingCompanyFlag&&tenderNoFlag&&(useState == "0"))
+          
+        }
+        else
+        {
+          orderRsult=(oppResult && market && hospitat && person&&distributorFlag&&tenderingCompanyFlag&&tenderNoFlag&&(useState == "0"))
+        }        
+      }
+      else
+      {
+        if(this.dataBase.centralized)
+        {
+          orderRsult=(oppResult && market && hospitat&&tenderingCompanyFlag&&tenderNoFlag&&(useState == "0"))
+        }
+        else
+        {
+          orderRsult=(oppResult && market && hospitat && person&&tenderingCompanyFlag&&tenderNoFlag&&(useState == "0"))
+        }        
+      }
       if (orderRsult) 
       {        
         this.bidData[index].checkResult = true;
@@ -133,44 +155,37 @@ export class PreOrderWinCheckTableComponent implements OnInit {
         this.bidData[index].checkResult = false;
         this.myVerifi.emit(true);
       }
-      if (useState == "1") {
-        //this.bidData[index].checkResultReasons = "中标产品已经使用"
-        //return
+      if (useState == "1") {      
         checkResultReasons.push("中标产品已经使用");
       }
       if (!oppResult) {
-        // this.bidData[index].checkResultReasons = "opportunityId不匹配"
-        // return;
+        
         checkResultReasons.push("opportunityId不匹配");
       }
       if (!market) {
-        // this.bidData[index].checkResultReasons = "makertBundleName不匹配"
-        // return
+    
         checkResultReasons.push("makertBundleName不匹配");
       }
       if (!hospitat) {
-        // this.bidData[index].checkResultReasons = "进单客户与投标客户不匹配"
-        // return
+      
         checkResultReasons.push("进单客户与投标客户不匹配");
       }
-      if (!person) {
-        // this.bidData[index].checkResultReasons = "进单申请人与投标人不匹配"
-        // return
-        checkResultReasons.push("进单申请人与投标人不匹配");
+      if(!this.dataBase.centralized)
+      {
+        if (!person) {         
+          checkResultReasons.push("进单申请人与投标人不匹配");
+        }
       }
       if(!tenderingCompanyFlag)
       {
-        // this.bidData[index].checkResultReasons = "进单投标公司与中标投标公司不匹配"
-        // return
+        
         checkResultReasons.push("进单投标公司与中标投标公司不匹配");
       }
       if(!tenderNoFlag)
-      {
-        // this.bidData[index].checkResultReasons = "进单招标编号与中标招标编号不匹配"
-        // return
+      {      
         checkResultReasons.push("进单招标编号与中标招标编号不匹配");
       }
-      if(this.businessModel=='DISTRIBUTOR')
+      if(this.dataBase.businessModel=='DISTRIBUTOR')
       {
         if(!distributorFlag)
         {

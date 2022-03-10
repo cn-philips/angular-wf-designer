@@ -47,6 +47,7 @@ export class MyTaskFormComponent implements OnInit {
     {code: 'ZBQR-YZBQRYBCWJ', label: '中标确认-已中标确认-已补充文件'},
     {code: 'XMZZ-WZB', label: '项目终止-未中标'},
     {code: 'XMZZ-2CKBZZ', label: '项目终止-二次开标'},
+    {code: 'ZBQR-BIDCANCELLED', label: '中标确认-取消投标申请'}
   ];
   businessModelList = [];
   entryModeList = [];
@@ -66,6 +67,7 @@ export class MyTaskFormComponent implements OnInit {
 
   bigRegionList = [];
   bmcList = [];
+  teamsList = [];
 
   ngOnInit(): void {
     this.getOrderTypeList();
@@ -75,6 +77,7 @@ export class MyTaskFormComponent implements OnInit {
     this.getBiddingAuthorizationModeList();
     this.getBigRegionList();
     this.getBmcList();
+    this.getTeamsList();
     this.validateForm = this.fb.group({
       sale:  [null],
       hospital: [null],
@@ -98,6 +101,9 @@ export class MyTaskFormComponent implements OnInit {
       applyType: [null],
       taskStatus: [null],
       thirdPartySelfProcurementVerification: [null],
+      oitDateStart: [null],
+      oitDateEnd: [null],
+      teams: [null]
     });
   }
 
@@ -204,6 +210,17 @@ export class MyTaskFormComponent implements OnInit {
     });
   }
 
+  // teams
+  public getTeamsList() {
+    this.http.get(`/act/ecom/homepage/getAllTeams`).subscribe(rest => {
+      if (rest && rest.data) {
+        this.teamsList = rest.data;
+      } else {
+        this.message.create('error', `${rest.msg}`);
+      }
+    });
+  }
+
   onChange(result: Date): void {
     console.log('Selected Time: ', result);
   }
@@ -286,6 +303,28 @@ export class MyTaskFormComponent implements OnInit {
     }
     return {};
   };
+
+  public startDate = null;
+  public endDate = null;
+  public disabledStartDate = (startValue: Date): boolean => {
+    if (!this.endDate) {
+      return false;
+    }
+    return startValue.getTime() > this.endDate.getTime();
+  }
+  public disabledEndDate = (endValue: Date): boolean => {
+    if (!this.startDate) {
+      return false;
+    }
+    return endValue.getTime() < this.startDate.getTime();
+  }
+
+  public changeStartMonth (data) {
+    this.startDate = data.oitDateStart;
+  }
+  public changeEndMonth (data) {
+    this.endDate = data.oitDateEnd;
+  }
 
   constructor(
     private fb: FormBuilder,

@@ -1,6 +1,10 @@
-<h4 class="font-weight-bold py-3">
-  <span>合同子流程</span>
-</h4>
+<nz-card class="title_warpper">
+  <div>
+    <h4 class="font-weight-bold">
+      <span>合同子流程</span>
+    </h4>
+  </div>
+</nz-card>
 <igt-approval-flowline></igt-approval-flowline>
 <hr class="border-light container-m--x mt-0 mb-4">
 <ngb-tabset type="tabs" [destroyOnHide]="false" class="nav-tabs-top nav-responsive-xl">
@@ -20,7 +24,7 @@
     <ng-template ngbTabTitle><span class="tab-title"><strong>产品信息</strong></span></ng-template>
     <ng-template ngbTabContent>
       <div class="card-body">
-        <app-preOrderProductInfo [dataBase]="dataBase" [sofonoff]="true" [disa]="true" [ishow]="true"></app-preOrderProductInfo>
+        <app-preOrderProductInfo [dataBase]="dataBase" [disaend]="true" [sofonoff]="true" [disa]="true" [ishow]="true"></app-preOrderProductInfo>
       </div>
     </ng-template>
   </ngb-tab>

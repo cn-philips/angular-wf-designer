@@ -13,6 +13,11 @@ import {environment} from '../../../environments/environment';
 })
 export class SupportFileUpComponent implements OnInit {
 
+  public showoff: any = false;
+  public rem_mess: any = false;
+  public take: any = true;
+  public remarks: any = '';
+
   flags:any;
   load: any = false; // 加载
   mainId: any = '';
@@ -62,7 +67,11 @@ export class SupportFileUpComponent implements OnInit {
   filesupplementsList: any = []; // 补充文件2
   filesupplementssList: any = []; // 补充文件3
   fileSpecialList: any = []; // 特批支持文件
+  bidAnnouncementList: any =  []; // 中标公告文件
 
+  public bidding_flag: any = false;
+  public isBidding: any = false;
+  public isAauthorization: any = false;
 
   constructor(
     private router: Router,
@@ -116,7 +125,57 @@ export class SupportFileUpComponent implements OnInit {
     this.flags = this.activatedRouter.queryParams['_value'].flag;
     this.getData();
     this.getWinUrl();
+    this.getBiddingFlag();
   }
+
+  // 获取流程是否可以终止
+  public getBiddingFlag() {
+    const mainId = decodeString(this.activatedRouter.queryParams['_value'].id);
+    const url = '/act/ecom/tender/application/getBiddingFlag?mainId=' + mainId;
+    this.http.get(url).subscribe(res => {
+      if (res && res.data) {
+        if (res.data.biddingFlag == true || res.data.biddingFlag === 'true') {
+          this.bidding_flag = true;
+        }
+        // true 被进单使用过
+        if (res.data.isBidding == true || res.data.isBidding === 'true') {
+          this.isBidding = true;
+        }
+        if (res.data.isAauthorization == true || res.data.isAauthorization === 'true') {
+          this.isAauthorization = true;
+        }
+      }
+    });
+  }
+  // 流程终止
+  public biddingBreak() {
+    if (!this.take) {
+      return;
+    }
+    this.take = false;
+    if (this.remarks === '' || this.remarks == null) {
+      this.rem_mess = true;
+      this.take = true;
+      return;
+    }
+    this.rem_mess = false;
+    const mainId = decodeString(this.activatedRouter.queryParams['_value'].id);
+    const data = {
+      mainId: mainId,
+      cancleReason: this.remarks
+    };
+    const url = '/act/ecom/tender/application/biddingTermination';
+    this.http.post(url, data).subscribe(res => {
+      this.message.create('success', `操作成功`);
+      this.router.navigate(['/igt/my-task']);
+      this.showoff = false;
+      this.take = true;
+    }, error => {
+      this.message.create('error', `错误`);
+      this.take = true;
+    });
+  }
+
   // 文件下载
   fileDwon(id) {
     const urlPath = window.document.location.href;
@@ -140,6 +199,22 @@ export class SupportFileUpComponent implements OnInit {
       return false;
     }
     return true;
+  }
+
+  public openBiddingBreak() {
+    if (this.isBidding) {
+      this.message.create('error', `当前投标授权项目已发起进单，不可取消！如需取消，请先取消所有相关进单项目。`);
+      return;
+    }
+    if (this.isAauthorization) {
+      this.message.create('error', `当前是否需要投标授权为是，不可取消！`);
+      return;
+    }
+    this.showoff = true;
+  }
+  public handleCancel() {
+    this.showoff = false;
+    this.rem_mess = false;
   }
 
   /**
@@ -205,11 +280,15 @@ export class SupportFileUpComponent implements OnInit {
         this.odata.supplementaryFile = this.infor.supplementaryFile;
         this.odata.supplementaryFiles = this.infor.supplementaryFiles;
         this.odata.supplementaryFiless = this.infor.supplementaryFiless;
+        this.odata.bidAnnouncement = this.infor.bidAnnouncement;
         this.odata.specialApprovalFileName = this.infor.specialApprovalFileName;
         this.odata.supplementaryFileName = this.infor.supplementaryFileName;
         this.odata.supplementaryFileNames = this.infor.supplementaryFileNames;
         this.odata.supplementaryFileNamess = this.infor.supplementaryFileNamess;
+        this.odata.bidAnnouncementName = this.infor.bidAnnouncementName;
         this.odata.remarks = this.infor.remarks;
+        this.odata.bidAnnouncementPrice = NumberThousandth(this.infor.bidAnnouncementPrice);
+        this.odata.bidAnnouncementCurrency = this.infor.bidAnnouncementCurrency;
         if (this.odata.other) {
           this.othercheck = true;
         }
@@ -217,6 +296,7 @@ export class SupportFileUpComponent implements OnInit {
         this.viewData2('supplementaryFile', 'filesupplementList', 'supplementaryFileName');
         this.viewData2('supplementaryFiles', 'filesupplementsList', 'supplementaryFileNames');
         this.viewData2('supplementaryFiless', 'filesupplementssList', 'supplementaryFileNamess');
+        this.viewData2('bidAnnouncement', 'bidAnnouncementList', 'bidAnnouncementName');
         // }
       }
     }), ((error) => {
@@ -480,6 +560,22 @@ export class SupportFileUpComponent implements OnInit {
     return true;
   }
 
+  // 中标公告文件
+  bidAnnouncementUpload = (file: UploadFile): boolean => {
+    const isLt2M = file.size / 1024 / 1024 < 100; // 文件大小不超过100M
+    const fileType = getType(file);
+    if (fileType === 'exe' || fileType === 'bat') {
+      this.message.create('error', '上传文件格式错误!');
+      return false;
+    }
+    if (!isLt2M) {
+      this.message.create('error', '文件大小不超过100M');
+      return false;
+    }
+    this.upload2('bidAnnouncementList', file, 'bidAnnouncement');
+    return false;
+  }
+
   // 补充文件
   beforeSupplementUpload = (file: UploadFile): boolean => {
     const isLt2M = file.size / 1024 / 1024 < 100; // 文件大小不超过100M
@@ -670,7 +766,11 @@ export class SupportFileUpComponent implements OnInit {
   toWin(item) {
     const url = this.TaskAsUrl(item.taskStatus);
     const id = item.jdChildMainId ? item.jdChildMainId : item.jdMainId;
-    window.open(location.origin + environment.base_href + '/#/' + url + '?id=' + codeString(id) + '&flag=1' + '&state=' + item.taskStatus);
+    if (item.taskStatus === 'DTJ') {
+      window.open(location.origin + environment.base_href + '/#/' + url + '?id=' + codeString(id) + '&flag=1');
+    } else {
+      window.open(location.origin + environment.base_href + '/#/' + url + '?id=' + codeString(id) + '&flag=1' + '&state=' + item.taskStatus);
+    }
   }
 
   TaskAsUrl(task) {
@@ -679,7 +779,7 @@ export class SupportFileUpComponent implements OnInit {
         return 'preorderaudit';
         break;
       case 'DTJ':
-        return 'applytendermodif';
+        return 'preordermodifs';
         break;
       case 'YZBQR':
         return 'winning';

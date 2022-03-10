@@ -1,24 +1,25 @@
-@import '../../../../node_modules/@swimlane/ngx-datatable/release/index.css';
-@import '../../../vendor/libs/ngx-datatable/ngx-datatable';
-@import '../../../../node_modules/@swimlane/ngx-datatable/release/assets/icons.css';
+@import "../../../../node_modules/@swimlane/ngx-datatable/release/index.css";
+@import "../../../vendor/libs/ngx-datatable/ngx-datatable";
+@import "../../../../node_modules/@swimlane/ngx-datatable/release/assets/icons.css";
+@import "../../../theme/common/dashboard.scss";
 
 .table-responsive {
-    overflow: visible;
+  overflow: visible;
 }
 
 .ngx-datatable {
-    overflow: visible !important;
+  overflow: visible !important;
 }
 
 .modal-xl .modal-lg {
-    max-width: 95%;
+  max-width: 95%;
 }
 
 .modal-xl .modal-content {
-    background-color: whitesmoke;
+  background-color: whitesmoke;
 }
 
-.dropdown-menu.show{
+.dropdown-menu.show {
   max-height: 400px;
   overflow: auto;
 }
@@ -35,7 +36,7 @@
 }
 
 .subject-content > strong {
-  font-size: 13px
+  font-size: 13px;
 }
 
 .subject-content > div {
@@ -51,21 +52,21 @@
   .cancel,
   .submit,
   .save {
-      position: absolute;
-      right: 10px;
-      top: 0px;
-      z-index: 999;
+    position: absolute;
+    right: 10px;
+    top: 0px;
+    z-index: 999;
   }
   .cancel {
-      right: 200px;
+    right: 200px;
   }
   .submit {
-      right: 10px
+    right: 10px;
   }
   .save {
-      right: 188px;
+    right: 188px;
   }
 }
-.tr{
+.tr {
   text-align: right;
 }

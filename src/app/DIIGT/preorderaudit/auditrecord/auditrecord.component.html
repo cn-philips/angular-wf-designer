@@ -4,6 +4,17 @@
 <nz-card class="mtb1rem" [nzTitle]="title">
   <form nz-form [formGroup]="validateForm">
     <div nz-row>
+      <div nz-col nzSpan="24" *ngIf="tipsfun()">
+        <nz-form-item>
+          <nz-form-label [nzSpan]="3" [nzNoColon]="true"  nzFor="email"></nz-form-label>          
+          <nz-form-control [nzSpan]="14" nz-tooltip [nzTitle]="remark">                    
+             <div class="tips">
+                <div>提示:</div>
+                 -抽样审核项目CP Deal Form中预计投标价({{this.dataBase.estimatedBidPrice|NumberThousandth}}{{this.dataBase.invoiceInformation}})和投标授权中标价格({{this.dataBase.biddingPrice|NumberThousandth}}{{this.dataBase.biddingPrices}})价格不一致
+             </div>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
       <div nz-col nzSpan="24">
         <nz-form-item>
           <nz-form-label [nzSpan]="3"  nzFor="email">备注</nz-form-label>          

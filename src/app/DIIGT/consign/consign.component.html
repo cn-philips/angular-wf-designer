@@ -1,6 +1,10 @@
-<h4 class="font-weight-bold py-3">
-  <span>合同签署</span>
-</h4>
+<nz-card class="title_warpper">
+  <div>
+    <h4 class="font-weight-bold">
+      <span>合同签署</span>
+    </h4>
+  </div>
+</nz-card>
 <app-apploading [load]="load"></app-apploading>
 <igt-approval-flowline></igt-approval-flowline>
 <div class="tabs-box">
@@ -8,12 +12,23 @@
     <div nz-col nzSpan="24">
       <nz-form-item>
         <nz-form-control [nzSm]="24" [nzXs]="24" style="text-align: right;">
-          <button nz-button *ngIf="dataBase.detail.flag== 0" nzType="default" style="margin-right:10px;"
-            nz-popconfirm nzTitle="你确定要执行退回的操作?" (nzOnConfirm)="save(0)">退回</button>
+          <!-- <button nz-button *ngIf="dataBase.detail.flag== 0" nzType="default" style="margin-right:10px;"
+            nz-popconfirm nzTitle="你确定要执行退回的操作?" (nzOnConfirm)="save(0)">退回</button> -->
           <button nz-button *ngIf="dataBase.detail.flag== 0" nzType="default" style="margin-right:10px;"
             (click)="save(2)">保存</button>
           <button nz-button *ngIf="dataBase.detail.flag== 0" nzType="primary" style="margin-right:10px;"
             (click)="save(1)">提交</button>
+            <nz-dropdown [nzPlacement]="'bottomRight'" *ngIf="dataBase.detail.flag==0">
+              <button nz-button nz-dropdown><i class="tranf90" nz-icon nzType="more" nzTheme="outline"></i></button>
+              <ul nz-menu>
+                <li  nz-menu-item>
+                  <a href="javascript:" (click)="backContract()">退回到合同概要表</a>
+                </li>
+                <li *ngIf="!dataBase.hsId" nz-menu-item>
+                  <a href="javascript:" (click)="closeContract()">关闭合同概要表</a>
+                </li>   
+              </ul>
+            </nz-dropdown>
         </nz-form-control>
       </nz-form-item>
     </div>
@@ -68,10 +83,31 @@
           <app-consign-consign #childbase [dataBase]="signingData" [mergeData]="mergeData"></app-consign-consign>
           <div style="padding: 10px 0;text-align: right">
             <button nz-button class="nextbtn ml6" nzType="primary" (click)="myskip('tab2')">上一步</button>
+            <button *ngIf="dataBase.hsId" nz-button class="nextbtn ml6" nzType="primary" (click)="myskip('change-tab')">下一步</button>
           </div>
         </div>
       </ng-template>
     </ngb-tab>
+    <ngb-tab id="change-tab" *ngIf="dataBase.hsId">
+      <ng-template ngbTabTitle><span class="tab-title"><strong>审核改单</strong></span></ng-template>
+      <ng-template ngbTabContent>
+        <div class="card-body">
+           <app-approve-change [disa]="disa" [dataBase]="dataBase"></app-approve-change>
+           <div nz-row nzType="flex" nzJustify="end" nzAlign="middle">
+            <div nz-col nzSpan="4">
+              <nz-form-item>
+                <nz-form-control [nzSm]="24" [nzXs]="24" style="text-align: right;">
+                  <button nz-button [nzType]="'primary'" (click)="myskip('tab3')">上一步</button>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+          </div>
+        </div>
+      </ng-template>     
+    </ngb-tab> 
   </ngb-tabset>
 
 </div>
+<nz-modal [(nzVisible)]="isAgres" nzWidth="650px" nzTitle="提示" (nzOnOk)="isAgregentOk()" (nzOnCancel)="isAgreCancels()">
+  <app-confirm #child [infor]="showData" ></app-confirm>
+</nz-modal>

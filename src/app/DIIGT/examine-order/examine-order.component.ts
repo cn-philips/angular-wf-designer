@@ -16,7 +16,7 @@ import {decodeString} from '../../../assets/js/tools';
   encapsulation: ViewEncapsulation.None
 })
 export class ExamineOrderIGTComponent implements OnInit {
-
+  activedId: any = "pending-tab";
   generateContractDraftSwitch = false;
   public title:any; //标题
   public dataBase: any = {
@@ -52,6 +52,10 @@ export class ExamineOrderIGTComponent implements OnInit {
     console.log(this.dataBase.detail);
 
   }
+  public myskip(val): void { // 外部触发tab选项卡的事件
+    
+    this.activedId = val;
+  }
   ngOnInit(): void {
     this.getDataBase();
   }
@@ -66,12 +70,12 @@ export class ExamineOrderIGTComponent implements OnInit {
        this.dataBase=res.data;
         if (this.dataBase.sameFlag != null) {
           this.dataBase.sameFlag = this.dataBase.sameFlag.toString();
-        }
+        }        
        this.dataBase.detail = {
       id: decodeString(this.activatedRouter.queryParams['_value'].id),
       flag: this.activatedRouter.queryParams['_value'].flag,
       status: this.activatedRouter.queryParams['_value'].status,
-      taskID: this.activatedRouter.queryParams['_value'].taskID
+      taskID: this.activatedRouter.queryParams['_value'].taskID      
     };
     this.title=this.dataBase.detail.status=="DOAJDQR"?"进单确认":"审核合同概要表";
         // this.dataBase.paymentProvision=this.dataBase.preparationProductList[0].paymentProvision;

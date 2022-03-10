@@ -51,7 +51,8 @@
               "src/vendor/styles/colors.scss",
               "src/vendor/styles/uikit.scss",
               "node_modules/ng-zorro-antd/ng-zorro-antd.min.css",
-              "node_modules/ng-zorro-antd-mobile/src/ng-zorro-antd-mobile.min.css"
+              "node_modules/ng-zorro-antd-mobile/src/ng-zorro-antd-mobile.min.css",
+              "src/theme/index.scss"
             ],
             "scripts": [
               "./src/assets/echarts/echarts.min.js",

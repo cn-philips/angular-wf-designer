@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, Input } from '@angular/core';
+import {Component, OnInit, Output, Input, ViewChild, ElementRef} from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { HttpService } from '../../../services';
 import { ToastrService } from 'ngx-toastr';
@@ -18,6 +18,11 @@ import {environment} from '../../../../environments/environment';
   styleUrls: ['./winningconfirm.component.scss']
 })
 export class WinningconfirmComponent implements OnInit {
+  public verifiOff: any = true;
+  public showCP: any = false;
+  public load2: any = false;
+  public bidData: any = [];
+  public isSpecial: any = null;
   // 备注提示显示
   rem_mess: any = false;
   return_mess: any = false;
@@ -32,6 +37,7 @@ export class WinningconfirmComponent implements OnInit {
   minitextLen:any=100;//其他备注文本输入限制长度
   load: any = false; //加载
   @Input() fileList: any = {
+    bidAnnouncementList: [], // 中标公告文件
     fileSpecialList: [], // 特批文件
     filesupplementList: [], // 补充文件
     filesupplementsList: [], // 补充文件2
@@ -67,9 +73,14 @@ export class WinningconfirmComponent implements OnInit {
     supplementaryFile: '', // 补充文件
     supplementaryFiles: '', // 补充文件2
     supplementaryFiless: '', // 补充文件3
+    bidAnnouncement: '', // 中标公告文件
     // 其他
     other: '',
-    remarks: ''
+    remarks: '',
+    // 中标公告价格
+    bidAnnouncementPrice: '',
+    // 中标公告币种
+    bidAnnouncementCurrency: null
   };
   // 中标确认信息获取
   infor: any = {};
@@ -89,6 +100,21 @@ export class WinningconfirmComponent implements OnInit {
     this.getData();
     this.getWinUrl();
 
+  }
+  // 中标公告文件
+  bidAnnouncementUpload = (file: UploadFile): boolean => {
+    const isLt2M = file.size / 1024 / 1024 < 100; // 文件大小不超过100M
+    const fileType = getType(file);
+    if (fileType === 'exe' || fileType === 'bat') {
+      this.message.create('error', '上传文件格式错误!');
+      return false;
+    }
+    if (!isLt2M) {
+      this.message.create('error', '文件大小不超过100M');
+      return false;
+    }
+    this.upload('bidAnnouncementList', file, 'bidAnnouncement');
+    return false;
   }
   // 补充文件
   beforeSupplementUpload = (file: UploadFile): boolean => {
@@ -232,19 +258,25 @@ export class WinningconfirmComponent implements OnInit {
           this.odata.bidWinningAnnouncement = this.infor.bidWinningAnnouncement;
           this.odata.demandLetter = this.infor.demandLetter;
           this.odata.otherTypes = this.infor.otherTypes;
-          if(this.infor.other == null){
-            this.odata.other = ''
-          }else{
+          this.odata.bidAnnouncementPrice = this.infor.bidAnnouncementPrice;
+          if (this.infor && this.infor.bidAnnouncementCurrency) {
+            this.odata.bidAnnouncementCurrency = this.infor.bidAnnouncementCurrency;
+          }
+          if (this.infor.other == null) {
+            this.odata.other = '';
+          } else {
             this.odata.other = this.infor.other;
           }
           this.odata.specialApprovalFile = this.infor.specialApprovalFile;
           this.odata.supplementaryFile = this.infor.supplementaryFile;
           this.odata.supplementaryFiles = this.infor.supplementaryFiles;
           this.odata.supplementaryFiless = this.infor.supplementaryFiless;
+          this.odata.bidAnnouncement = this.infor.bidAnnouncement;
           this.odata.specialApprovalFileName = this.infor.specialApprovalFileName;
           this.odata.supplementaryFileName = this.infor.supplementaryFileName;
           this.odata.supplementaryFileNames = this.infor.supplementaryFileNames;
           this.odata.supplementaryFileNamess = this.infor.supplementaryFileNamess;
+          this.odata.bidAnnouncementName = this.infor.bidAnnouncementName;
           if(this.infor.remarks == null){
             this.odata.remarks = ''
           }else{
@@ -254,6 +286,7 @@ export class WinningconfirmComponent implements OnInit {
           this.viewData('supplementaryFile', 'filesupplementList', 'supplementaryFileName');
           this.viewData('supplementaryFiles', 'filesupplementsList', 'supplementaryFileNames');
           this.viewData('supplementaryFiless', 'filesupplementssList', 'supplementaryFileNamess');
+          this.viewData('bidAnnouncement', 'bidAnnouncementList', 'bidAnnouncementName');
           /*BUG1396眼*/
           // 可以操作清空上一次拒绝记录
           if (this.flag == 0) {
@@ -268,6 +301,7 @@ export class WinningconfirmComponent implements OnInit {
     const urls = `/act/ecom/bidding/getBudiding?mainId=${this.mainId}`;
     this.http.get(urls).subscribe((res => {
       if (res.data) {
+        this.isSpecial = res.data.isSpecial;
         if (res.data.biddingPrice) {
           // 价格保留两位小数
           res.data.biddingPrice = this.chNumber(res.data.biddingPrice);
@@ -293,9 +327,9 @@ export class WinningconfirmComponent implements OnInit {
     }))
 
   }
-  submitForm = ($event: any, value: any, check: number, checkLabel: string,done?:number) => {
+  submitForm = (check: number, checkLabel: string, done?: number) => {
      this.rem_mess = false;
-     this.return_mess =false;
+     this.return_mess = false;
     /*for (const key in this.validateForm.controls) {
       this.validateForm.controls[key].markAsDirty();
       this.validateForm.controls[key].updateValueAndValidity();
@@ -323,9 +357,9 @@ export class WinningconfirmComponent implements OnInit {
         return;
       }
     }
-    //判断remarks是否为null或undefined
-    if(this.odata.remarks == null){
-      this.odata.remarks = ''
+    // 判断remarks是否为null或undefined
+    if (this.odata.remarks == null) {
+      this.odata.remarks = '';
     }
     let params;
     // 中标确认
@@ -351,7 +385,7 @@ export class WinningconfirmComponent implements OnInit {
       params = {
         mainId: decodeString(this.activatedRouter.queryParams['_value'].id),
         check: check,
-        //supplementaryFile: value.fileurl,
+        // supplementaryFile: value.fileurl,
         remarks: this.odata.remarks,
         bidWinningNotice: this.odata.bidWinningNotice,
         bidWinningAnnouncement: this.odata.bidWinningAnnouncement,
@@ -362,9 +396,12 @@ export class WinningconfirmComponent implements OnInit {
         supplementaryFile: this.odata.supplementaryFile, // 补充文件
         supplementaryFiles: this.odata.supplementaryFiles, // 补充文件2
         supplementaryFiless: this.odata.supplementaryFiless, // 补充文件3
-        supportFileDone:done,
+        bidAnnouncement: this.odata.bidAnnouncement, // 中标公告文件
+        supportFileDone: done,
+        bidAnnouncementPrice: this.odata.bidAnnouncementPrice, // 中标公告价格
+        bidAnnouncementCurrency: this.odata.bidAnnouncementCurrency // 中标公告币种
       };
-      this.status!=='YZBQRDBCWJ'?this.submitHttp(params,checkLabel):this.submitOver(params,checkLabel);
+      this.status !== 'YZBQRDBCWJ' ? this.submitHttp(params,checkLabel) : this.submitOver(params, checkLabel);
 
     } else {
       params = {
@@ -375,9 +412,12 @@ export class WinningconfirmComponent implements OnInit {
         supplementaryFile: this.odata.supplementaryFile, // 补充文件
         supplementaryFiles: this.odata.supplementaryFiles, // 补充文件2
         supplementaryFiless: this.odata.supplementaryFiless, // 补充文件3
+        bidAnnouncement: this.odata.bidAnnouncement, // 中标公告文件
         remarks: this.odata.remarks,
+        bidAnnouncementPrice: this.odata.bidAnnouncementPrice, // 中标公告价格
+        bidAnnouncementCurrency: this.odata.bidAnnouncementCurrency // 中标公告币种
       };
-      this.submitHttp(params,checkLabel)
+      this.submitHttp(params, checkLabel);
     }
 
 
@@ -495,14 +535,31 @@ export class WinningconfirmComponent implements OnInit {
     };
     this.http.post(url, par).subscribe( e => {
       if (e.data) {
+        const role=JSON.parse(localStorage.getItem("roles"));
+        const roleOff=role.some(val=>val=='Sales Rep/Mgr');
+        const user=localStorage.getItem("ng_philips_code1");
         this.mainid_winList = e.data;
+        this.mainid_winList.map(vals=>{
+          if(roleOff)
+          {
+            vals.winOff=vals.processOwner==user?true:false
+          }
+          else
+          {
+            vals.winOff=true;
+          }
+        })
       }
     });
   }
   toWin(item) {
     const url = this.TaskAsUrl(item.taskStatus);
     const id = item.jdChildMainId ? item.jdChildMainId : item.jdMainId;
-    window.open(location.origin + environment.base_href + '/#/' + url + '?id=' + codeString(id) + '&flag=1' + '&state=' + item.taskStatus);
+    if (item.taskStatus === 'DTJ') {
+      window.open(location.origin + environment.base_href + '/#/' + url + '?id=' + codeString(id) + '&flag=1');
+    } else {
+      window.open(location.origin + environment.base_href + '/#/' + url + '?id=' + codeString(id) + '&flag=1' + '&state=' + item.taskStatus);
+    }
   }
 
   TaskAsUrl(task) {
@@ -511,7 +568,7 @@ export class WinningconfirmComponent implements OnInit {
         return 'preorderaudit';
         break;
       case 'DTJ':
-        return 'applytendermodif';
+        return 'preordermodifs';
         break;
       case 'YZBQR':
         return 'winning';
@@ -623,6 +680,245 @@ export class WinningconfirmComponent implements OnInit {
   public otherChange() {
     if (this.othercheck === false) {
       this.odata.other = '';
+    }
+  }
+
+  price_value: any = '';
+  @ViewChild('price') price: ElementRef;
+  /*监听input设置数字*/
+  toNumber(e) {
+    const reg = /^(0|[1-9][0-9]{0,12})(\.[0-9]{0,2})?$/;
+    if ((!isNaN(+e) && reg.test(e)) || e === '') {
+      this.price_value = e;
+    }
+    if (this.price && this.price.nativeElement) {
+      this.price.nativeElement.value = this.price_value;
+      this.odata.bidAnnouncementPrice = this.price_value;
+    }
+  }
+
+  public openModal() {
+    this.showCP = true;
+    this.getCheckData();
+  }
+  public handleOkWinCheck() {
+    this.submitForm(1, '确定');
+  }
+  public handleCancelWinCheck() {
+    this.showCP = false;
+  }
+  public getCheckData() {
+    const url = '/act/getBiddingCheck';
+    const data = {
+      mainId: this.mainId
+    };
+    this.load2 = true;
+    this.http.post(url, data).subscribe(res => {
+      if (res && res.data) {
+        this.bidData = res.data;
+
+        // 构建bidData
+        this.bidData.map(oppo => {
+          oppo.rowspan = 1;
+          oppo.isCheak = true;
+          oppo.orderByCustomerName = this.dataBase.hospitalName;
+          oppo.appPerson = oppo.createUser;
+        });
+
+      }
+      console.log(this.bidData);
+      this.load2 = false;
+    }, error => {
+      console.log(error);
+      this.load2 = false;
+    });
+  }
+  public modelChang() {
+    // console.log(this.bidData)
+  }
+
+  public selectClick(index, i) {
+    let oppResult = false;
+    let market = false;
+    let hospitat = false; // 客户
+    let person = false; // 申请人
+    let checkArr = []; // 用于验证的数组
+    let search = this.bidData[index].searchResult[i]; // 当前选中search;
+    let id = search.id;
+    this.bidData.map(res => {
+      res.isCheak && checkArr.push(res);
+    });
+    // 取消其他选中
+    for (let i = 0; i < this.bidData.length; i++) {
+      if (this.bidData[i]) {
+        this.bidData[i].searchResult.map( e => {
+          // e.isDisable = false;
+          if (id == this.bidData[i].select && i != index) {
+            this.bidData[i].select = null;
+          }
+        });
+      }
+    }
+    search.temUser = true; // 表明当前选中
+    this.InitDisableAll();
+    const opportunityId = this.bidData[index].opportunityId;
+    const opportunityIdNow = search.opportunityId;
+    const marketBundleName = this.bidData[index].marketBundleName;
+    const marketBundleNameNow = search.marketBundleName;
+    const hospitalName = search.hospitalName; // 中标客户;
+    let bidApplicant = search.bidApplicant; // 中标申请人
+    this.bidData[index].orderByCustomerNameCp = hospitalName;
+    this.bidData[index].winPerson = bidApplicant;
+    const orderByCustomerName = this.bidData[index].orderByCustomerName; // 投标客户
+    let appPerson = this.bidData[index].appPerson; // 投标申请人
+    oppResult = opportunityId == opportunityIdNow ? true : false;
+    market = marketBundleName == marketBundleNameNow ? true : false;
+    // hospitat = orderByCustomerName == hospitalName ? true : false;
+    // hospitat = search.hospitalId == search.no ? true : false;
+    hospitat = this.dataBase.hospitalId == search.hospitalId ? true : false;
+    if (bidApplicant) {
+      bidApplicant = bidApplicant.toLowerCase();
+    }
+    if (appPerson) {
+      appPerson = appPerson.toLowerCase();
+    }
+    person = bidApplicant == appPerson ? true : false;
+    if (oppResult && market && hospitat && person) {
+      this.bidData[index].checkResult = true;
+      this.bidData[index].checkResultReasons = '';
+      let check = checkArr.every(x => x.checkResult);  // 验证是否全部通过
+      if (check) {
+        this.verifiOff = false;
+      }
+    } else {
+      this.bidData[index].checkResult = false;
+      this.verifiOff = true;
+    }
+    if (!oppResult) {
+      this.bidData[index].checkResultReasons = 'opportunityId不匹配';
+      return;
+    }
+    if (!market) {
+      this.bidData[index].checkResultReasons = 'marketBundleName不匹配';
+      return;
+    }
+    if (!hospitat) {
+      this.bidData[index].checkResultReasons = '客户名称不一致';
+      return;
+    }
+    if (!person) {
+      this.bidData[index].checkResultReasons = '申请人名称不一致';
+      return;
+    }
+
+  }
+
+  public selectUnClick(index, i) {
+    const search = this.bidData[index].searchResult[i]; // 当前选中search;
+    search.temUser = false;
+    this.bidData[index].checkResult = false;
+
+    this.InitDisableAll();
+    // this.trunResultDisableAll(index, false);
+  }
+  public CkVerifiOff() {
+    if (this.bidData && this.bidData.length > 0) {
+      let ck = true;
+      for (let i = 0; i < this.bidData.length; i++) {
+        if (this.bidData[i].checkResult != true) {
+          ck = false;
+          break;
+        }
+      }
+      return ck;
+    }
+    return false;
+  }
+
+  public trunResultDisableAll(index, value) {
+    if (this.bidData && this.bidData.length > 0 && this.bidData[index]) {
+      this.bidData[index].searchResult.map(e => {
+        e.isDisable = value;
+        if (value == false) {
+          e.temUser = value;
+        }
+      });
+    }
+  }
+  public InitDisableAll() {
+    let ckid = [];
+    // this.bidData.map(res => {
+    //   res.isCheak && checkArr.push(res);
+    // });
+    // this.bidData[index].searchResult.map(res => {
+    //   res.temUser = false;
+    // });
+    this.bidData.map(res => {
+      if (res.searchResult) {
+        res.searchResult.map( e => {
+          e.isDisable = false;
+        });
+      }
+    });
+    // 筛选出选中
+    for (let i = 0; i < this.bidData.length; i++) {
+      if (this.bidData[i]) {
+        this.bidData[i].searchResult.map( e => {
+          // e.isDisable = false;
+          if (e.temUser) {
+            ckid.push(e.id);
+            this.trunResultDisableAll(i, true);
+          }
+        });
+      }
+    }
+    this.bidData.map(res => {
+      // res.isCheak && checkArr.push(res);
+      // 禁用已选中
+      if (res.searchResult) {
+        res.searchResult.map( e => {
+          if (ckid.indexOf(e.id) != -1) {
+            e.isDisable = true;
+          }
+        });
+      }
+    });
+
+  }
+
+  // 判断当前列是否已经选中
+  public isCkResult(bidData) {
+      // const bidData = this.bidData[index];
+      if (bidData && bidData.searchResult) {
+        // const select = bidData.select;
+        // bidData.searchResult.map(e => {
+        //   if (e.temUser == true) {
+        //     return true;
+        //   }
+        // });
+        for (let i = 0; i < bidData.searchResult.length; i++) {
+          if (bidData.searchResult[i].temUser == true) {
+            return true;
+          }
+        }
+      }
+    return false;
+  }
+
+  // 校验必须有结果和选中
+  public CkResultTitle(checkResult, searchResult) {
+    if (checkResult) {
+      return '成功';
+    } else {
+      if (searchResult && searchResult.length > 0) {
+        for (let i = 0; i < searchResult.length; i++) {
+          // 查询出结果并且必须选中
+          if (searchResult[i].temUser === true) {
+            return '失败';
+          }
+        }
+      }
+      return '';
     }
   }
 

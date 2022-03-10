@@ -416,6 +416,22 @@ export class MyViewTableComponent implements OnInit {
     }
 
   }
+
+   //审核改单
+ goChangeApproval(item,param)
+ {
+   this.router.navigate(['/completeOit'], {
+     skipLocationChange: false,
+     queryParams: {
+       id: codeString(item.lastMainId),
+       mainId:codeString(item.main_id),
+       flag:item.processor.toLowerCase().indexOf(this.user)!=-1 ? this.flag : 1,
+       status: item.task_status,
+       param:param,
+       sale:item.sale
+     },
+   });
+ }
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['listOfMapData']) {
       this.listOfMapData = changes['listOfMapData'].currentValue;
@@ -469,6 +485,7 @@ export class MyViewTableComponent implements OnInit {
     this.user=localStorage.getItem("ng_philips_code1");
     this.getEntryModeList();
     this.getBiddingAuthorizationModeList();
+    this.getAllSeal();
   }
 
   ProJdType(e) {
@@ -550,6 +567,26 @@ export class MyViewTableComponent implements OnInit {
         this.message.create('error', `${rest.msg}`);
       }
     });
+  }
+
+  public saleList = [];
+  public getAllSeal() {
+    const url = '/act/ecom/homepage/querySalesByRole';
+    this.http.post(url, []).subscribe(res => {
+      if (res && res.data) {
+        this.saleList = res.data;
+      }
+    });
+  }
+  public emailToName (email) {
+    if (this.saleList) {
+      for (let i = 0; i < this.saleList.length; i++) {
+        if (this.saleList[i].email == email) {
+          return this.saleList[i].name;
+        }
+      }
+    }
+    return '';
   }
 
 }

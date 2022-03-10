@@ -2,6 +2,7 @@ import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 import {FileService, HttpService} from '../../services';
 import {NzMessageService} from 'ng-zorro-antd';
+import {HttpRequest} from '@angular/common/http';
 
 @Component({
   selector: 'app-my-view',
@@ -78,16 +79,78 @@ export class MyViewComponent implements OnInit {
       }
     });
   }
+
+  public loadingButton = {
+    resetForm: false,
+    exportExcel: false,
+    projectReport: false,
+    opportunityReport: false,
+    BundleReport: false,
+    biddingReport: false,
+    POSReport: false
+  };
   exportData() {
     // this.params['flag'] = 0;
+    this.loadingButton.exportExcel = true;
     this.http.postDownload(`/act/ecom/homepage/myViews/export`, this.params).subscribe(rest => {
       this.fileService.downloadResponse('Tasks', rest);
+      this.loadingButton.exportExcel = false;
+    }, error => {
+      this.message.create('error', '请求错误');
+      this.loadingButton.exportExcel = false;
     });
   }
-  projectReport() {
+  projectReport(value) {
     // this.params['flag'] = 0;
-    this.http.postDownload(`/act/ecom/homepage/myViews/report`, this.params).subscribe(rest => {
+    // 获取时间
+    this.loadingButton.projectReport = true;
+    const subDate = {subDate: value.subDate};
+    this.http.postDownload(`/act/ecom/homepage/myViews/report`, Object.assign(this.params, subDate)).subscribe(rest => {
       this.fileService.downloadResponse('Tasks', rest);
+      this.loadingButton.projectReport = false;
+    }, error => {
+      this.message.create('error', '请求错误');
+      this.loadingButton.projectReport = false;
+    });
+  }
+  biddingReport() {
+    this.loadingButton.biddingReport = true;
+    this.http.postDownload(`/act/ecom/homepage/myViews/biddingReport`, this.params).subscribe(rest => {
+      this.fileService.downloadResponse('Tasks', rest);
+      this.loadingButton.biddingReport = false;
+    }, error => {
+      this.message.create('error', '请求错误');
+      this.loadingButton.biddingReport = false;
+    });
+  }
+  POSReport() {
+    this.loadingButton.POSReport = true;
+    this.http.postDownload(`/act/ecom/homepage/myViews/posReport`, this.params).subscribe(rest => {
+      this.fileService.downloadResponse('Tasks', rest);
+      this.loadingButton.POSReport = false;
+    }, error => {
+      this.message.create('error', '请求错误');
+      this.loadingButton.POSReport = false;
+    });
+  }
+  public opportunityReportEvent(e) {
+    this.loadingButton.opportunityReport = true;
+    this.http.postDownload(`/act/ecom/homepage/myViews/reportByOpportunity`, e).subscribe(rest => {
+      this.fileService.downloadResponse('Tasks', rest);
+      this.loadingButton.opportunityReport = false;
+    }, error => {
+      this.message.create('error', '请求错误');
+      this.loadingButton.opportunityReport = false;
+    });
+  }
+  public BundleReportEvent() {
+    this.loadingButton.BundleReport = true;
+    this.http.postDownload(`/act/ecom/homepage/myViews/reportBundle`, this.params).subscribe(rest => {
+      this.fileService.downloadResponse('Tasks', rest);
+      this.loadingButton.BundleReport = false;
+    }, error => {
+      this.message.create('error', '请求错误');
+      this.loadingButton.BundleReport = false;
     });
   }
 

@@ -33,17 +33,33 @@ export class ApplybaseComponent implements OnInit {
       return { confirm: true, error: true };
     }
     return {};
-  };
+  }
 
-  OpLoad: any = false;
+  public isAgre = false;
+
+  @Input() selAgent_all: any = [];
+  public loadObj: any = {
+    opportunity: false,
+    simulation: false
+  };
   // opp查询参数
   public oppSeach: any = {
     opportunityId: '',
     opportunityName: '',
     accountName: '',
-    dealFormId: ''
+    dealFormId: '',
+    simulationId: ''
   };
-
+  @Input() public paramsCP = {
+    pageNo: 1,
+    pageSize: 10,
+    total: 0
+  };
+  @Input() public paramsCRM = {
+    pageNo: 1,
+    pageSize: 10,
+    total: 0
+  };
   // @Input() firstopp: any = true;
   // 产品信息
   @Input() productData: any = [];
@@ -64,9 +80,9 @@ export class ApplybaseComponent implements OnInit {
     total: 0,
     pageNo: 1,
     pageSize: 5,
-    dealerName: ""
-  }
-  CpOrCrm: any = 'CP';
+    dealerName: ''
+  };
+  CpOrCrm: any = '';
   public agentData: any = [{
     "radio": true,
     "nameEn": "Foxconn",
@@ -151,15 +167,22 @@ export class ApplybaseComponent implements OnInit {
   { name: "香港特别行政区", value: "香港特别行政区" },
   { name: "澳门特别行政区", value: "澳门特别行政区" },
   { name: "台湾省", value: "台湾省" },
-  ]
+  ];
+  public bidTypeModeList: any = [
+    {code: '国内公开标' , label: '国内公开标'},
+    {code: '国际公开标' , label: '国际公开标'},
+    {code: '其他类型' , label: '其他类型'},
+  ];
   @Input() public name:any=false;
   @Input() public isDisable: any = false;
   @Input() public dataBase: any = {};
   public nextId: string = "complete-tab";
-  @Output() myEvent = new EventEmitter()
+  @Output() myEvent = new EventEmitter();
+  @Output() addProduct = new EventEmitter();
   ngOnChanges() {
     this.paymentMethod();
-    console.log(this.dataBase)
+    console.log(this.dataBase);
+    this.DisableValidateForm();
     //清空数据
     // this.ServesiceService.bookEventer.subscribe(res => {
     //      this.validateForm.reset();
@@ -169,7 +192,8 @@ export class ApplybaseComponent implements OnInit {
     this.getBiddingAuthorizationModeList();
     this.getBusinessModelList();
     this.dataBase.biddingManager=this.dataBase.biddingManager?this.dataBase.biddingManager:localStorage.getItem("ng_philips_username");
-    this.dataBase.biddingManagerTitle=this.dataBase.biddingManagerTitle?this.dataBase.biddingManagerTitle:localStorage.getItem("roleCode");
+    // this.dataBase.biddingManagerTitle=this.dataBase.biddingManagerTitle?this.dataBase.biddingManagerTitle:localStorage.getItem("roleCode");
+    this.dataBase.biddingManagerTitle = 'Sales Rep/Mgr';
     let flag = this.activatedRouter.queryParams['_value'].flag;
     if (flag != undefined && flag != null && flag != '') {
       this.flag = flag;
@@ -192,14 +216,40 @@ export class ApplybaseComponent implements OnInit {
       hospitalProvinceCode: [null, [Validators.required]],
       biddingManager: [{ value: '', disabled: true}, [Validators.required]],
       biddingManagerTitle: [{ value: '', disabled: true}, [Validators.required]],
+      bidType: [null, [Validators.required]],
+      clientNo: [{ value: '', disabled: true}, [Validators.required]],
+      isCentralized: [null, null],
     });
     this.paymentMethod();
   }
-  //招标授权模式选择框
+  // 禁用验证
+  public DisableValidateForm() {
+    if (this.dataBase && (this.dataBase.baseDataFrom === 'CP' || this.dataBase.baseDataFrom === 'CP Deal Form') && this.dataBase.hospitalName !== 'Stock' && this.dataBase.hospitalName !== 'stock') {
+      if (this.validateForm && this.validateForm.controls) {
+        this.validateForm.controls.hospitalName.disable();
+        this.validateForm.controls.clientType.disable();
+        this.validateForm.controls.purchaseGroup.disable();
+        this.validateForm.controls.hospitalProvinceCode.disable();
+      }
+    } else {
+      if (this.validateForm && this.validateForm.controls) {
+        // 全部禁用
+        // this.validateForm.controls.hospitalName.enable();
+        // this.validateForm.controls.clientType.enable();
+        // this.validateForm.controls.purchaseGroup.enable();
+        // this.validateForm.controls.hospitalProvinceCode.enable();
+        this.validateForm.controls.hospitalName.disable();
+        this.validateForm.controls.clientType.disable();
+        this.validateForm.controls.purchaseGroup.disable();
+        this.validateForm.controls.hospitalProvinceCode.disable();
+      }
+    }
+  }
+  // 招标授权模式选择框
   public selectApplyType() {
     this.paymentMethod();
   }
-  //支付方式的组合模式
+  // 支付方式的组合模式
   public paymentMethod() {
     const params = {
       dictGroup: '',
@@ -307,7 +357,8 @@ export class ApplybaseComponent implements OnInit {
   // 产品选择框crm
   changModelcrm(index, data) {
     this.Ckdata = data;
-    this.CpOrCrm = 'CRM';
+    // this.CpOrCrm = 'CRM';
+    this.CpOrCrm = 'CP Simulation';
     this.arr.tabList.map(res => {
       res.radio = false;
     });
@@ -321,7 +372,8 @@ export class ApplybaseComponent implements OnInit {
   // 产品选择框cp
   changModel(index, data) {
     this.Ckdata = data;
-    this.CpOrCrm = 'CP';
+    // this.CpOrCrm = 'CP';
+    this.CpOrCrm = 'CP Deal Form';
     this.arr.tabList.map(res => {
       res.radio = false;
     });
@@ -400,6 +452,22 @@ export class ApplybaseComponent implements OnInit {
       res.radio = index == i ? true : false;
     })
   }
+  public changePageIndexCP(e) {
+    this.paramsCP.pageNo = e;
+    this.getDataCP();
+  }
+  public changePageSizeCP(e) {
+    this.paramsCP.pageSize = e;
+    this.getDataCP();
+  }
+  public changePageIndexCRM(e) {
+    this.paramsCRM.pageNo = e;
+    this.getDataCRM();
+  }
+  public changePageSizeCRM(e) {
+    this.paramsCRM.pageSize = e;
+    this.getDataCRM();
+  }
   //弹出窗口id
   showDiag() {
     this.showoff = true;
@@ -410,7 +478,7 @@ export class ApplybaseComponent implements OnInit {
       // this.changModelcrm(0, this.arr.CkOppo);
     }
     this.Ckdata = {};
-    // 将已经添加的opportunityId禁用
+    // 将已经添加的opportunityId禁用 CP
     if (this.arr && this.arr.tabList) {
       for (let i = 0; i < this.arr.tabList.length; i++) {
         this.arr.tabList[i].is = false;
@@ -422,13 +490,34 @@ export class ApplybaseComponent implements OnInit {
         if (this.arr && this.arr.tabList) {
           this.arr.tabList.map( arr => {
             arr.radio = false;
-            if (e.opportunityId == arr.opportunityId) {
+            if (e.opportunityId == arr.opportunityId && e.dealFormId == arr.dealFormId) {
               arr.is = true;
             }
           });
         }
       });
     }
+    // 将已经添加的opportunityId禁用 CRM
+    if (this.arr && this.arr.crmData) {
+      for (let i = 0; i < this.arr.crmData.length; i++) {
+        this.arr.crmData[i].is = false;
+        this.arr.crmData[i].radio = false;
+      }
+    }
+    if (this.productData) {
+      this.productData.map( e => {
+        if (this.arr && this.arr.crmData) {
+          this.arr.crmData.map( arr => {
+            arr.radio = false;
+            if (e.opportunityId == arr.opportunityId) {
+              arr.is = true;
+            }
+          });
+        }
+      });
+    } else {
+    }
+
     // 第一次才加载
     if (this.arr.firstopp) {
       return;
@@ -447,21 +536,213 @@ export class ApplybaseComponent implements OnInit {
     this.showoff = false;
   }
 
-  //加载代理商数据
-  agentInit() {
-    const url = `/act/ecom/bidding/selAgent`;
-    this.http.post(url, this.param).subscribe((res => {
-      if (res.code == '0000') {
-        if (res.data.rows.length > 0) {
-          this.dataBase.biddingComRegAddress = res.data.rows[0].registeredAddress; // 投标公司地址
-          //res.data.rows[0].registeredAddress; // 投标公司所在地
-          this.dataBase.productModels = res.data.rows[0].authorizedProduct;
+
+  // 加载投标公司数据
+  public agentInit_Bidding() {
+    let b = true;
+    if (this.selAgent_all) {
+      for (let i = 0; i < this.selAgent_all.length; i++) {
+        if (this.dataBase.biddingNames == this.selAgent_all[i].dealerName) {
+          this.dataBase.biddingComRegAddress = this.selAgent_all[i].registeredAddress; // 投标公司地址
+          if (this.selAgent_all[i].registeredAddress === '中国' || this.selAgent_all[i].registeredAddress === '中国香港') {
+            this.dataBase.biddingComRegCode = this.selAgent_all[i].registeredAddress; // 投标公司所在地
+          }
+          // this.dataBase.productModels = this.selAgent_all[i].authorizedProduct;
+          // this.dataBase.dealerNo = this.selAgent_all[i].dealerCode;
+          this.dataBase.biddingDdpDate = this.selAgent_all[i].ddpValidUntil;
+          b = false;
         }
       }
-    }),
-      ((error) => {
-        this.message.create("error", "请求异常!")
-      }))
+    }
+    if (b) {
+      const data = {
+        total: 0,
+        pageNo: 1,
+        pageSize: 5,
+        dealerName: this.dataBase.biddingNames
+      };
+      const url = `/act/ecom/bidding/selAgent`;
+      this.http.post(url, data).subscribe((res => {
+          if (res.code == '0000') {
+            if (res.data.rows.length > 0) {
+              this.dataBase.biddingComRegAddress = res.data.rows[0].registeredAddress; // 投标公司地址
+              if (res.data.rows[0].registeredAddress === '中国' || res.data.rows[0].registeredAddress === '中国香港') {
+                this.dataBase.biddingComRegCode = res.data.rows[0].registeredAddress; // 投标公司所在地
+              }
+              // this.dataBase.productModels = res.data.rows[0].authorizedProduct;
+              // this.dataBase.dealerNo = res.data.rows[0].dealerCode;
+              this.dataBase.biddingDdpDate = res.data.rows[0].ddpValidUntil;
+            }
+          }
+        }),
+        ((error) => {
+          this.message.create('error', '请求异常!');
+        }));
+    }
+  }
+
+  // 加载代理商数据
+  public agentInit_Agregent() {
+    let b = true;
+    if (this.selAgent_all) {
+      for (let i = 0; i < this.selAgent_all.length; i++) {
+        if (this.dataBase.agreementAgenName == this.selAgent_all[i].dealerName) {
+          // this.dataBase.biddingComRegAddress = this.selAgent_all[i].registeredAddress; // 投标公司地址
+          this.dataBase.productModels = this.selAgent_all[i].authorizedProduct;
+          this.dataBase.dealerNo = this.selAgent_all[i].dealerCode;
+          this.dataBase.agreementDealerDdpDate = this.selAgent_all[i].ddpValidUntil;
+          b = false;
+        }
+      }
+    }
+    if (b) {
+      const data = {
+        total: 0,
+        pageNo: 1,
+        pageSize: 5,
+        dealerName: this.dataBase.agreementAgenName
+      };
+      const url = `/act/ecom/bidding/selAgent`;
+      this.http.post(url, data).subscribe((res => {
+          if (res.code == '0000') {
+            if (res.data.rows.length > 0) {
+              // this.dataBase.biddingComRegAddress = res.data.rows[0].registeredAddress; // 投标公司地址
+              this.dataBase.productModels = res.data.rows[0].authorizedProduct;
+              this.dataBase.dealerNo = res.data.rows[0].dealerCode;
+              this.dataBase.agreementDealerDdpDate = res.data.rows[0].ddpValidUntil;
+            }
+          }
+        }),
+        ((error) => {
+          this.message.create('error', '请求异常!');
+        }));
+    }
+  }
+
+  // 校验 opportunityId 和 dealFormId 是否已添加
+  public CkOpportunityIdAndDealFormId(opportunity) {
+    for (let i = 0; i < this.productData.length; i++) {
+      if (this.CpOrCrm === 'CP Deal Form') {
+        if (this.productData[i].opportunityId == opportunity.opportunityId && this.productData[i].dealFormId == opportunity.dealFormId) {
+          return false;
+        }
+        // 判断是否重复simulationId
+        if (this.productData[i].simulationId == opportunity.simulationId) {
+          this.message.create('error', 'simulationId:' + opportunity.simulationId + '已存在，' + opportunity.opportunityId + '添加失败！');
+          return false;
+        }
+      } else {
+        if (this.productData[i].opportunityId == opportunity.opportunityId) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+  // 校验Oppo是否可以添加
+  public CkOpportunity (opportunity) {
+    if (this.productData && this.productData.length > 0) {
+      // 校验opportunityId 和 dealFormId 是否存在
+      if (!this.CkOpportunityIdAndDealFormId(opportunity)) {
+        return false;
+      }
+      const ho = this.dataBase.hospitalId;
+      if (ho !== opportunity.hospitalId) {
+        this.message.create('error', opportunity.opportunityId + `客户名称不一致`);
+        return false;
+      }
+    }
+    return true;
+  }
+  // 添加Oppo
+  public AddOpportunity(opportunity) {
+    const obj = {
+      opportunityId: opportunity.opportunityId,
+      opportunityName: opportunity.opportunityName,
+      simulationId: opportunity.simulationId,
+      createdDate: opportunity.createdDate,
+      baseDataFrom: this.CpOrCrm,
+      dealFormId: opportunity.dealFormId,
+      listOfMapData: [],
+      productInformations: [
+      ],
+      productnamelist: [],
+      businessOpportunityHierarchyLink : opportunity.opportunityHierachyLink
+    };
+    this.dataBase.baseDataFrom = this.CpOrCrm;
+    if (this.dataBase.baseDataFrom === 'CRM' || this.dataBase.baseDataFrom === 'CP Simulation') {
+      let url = '/act/ecom/tender/application/tenderQueryOpportunityProduct' + '?opportunityId=' + opportunity.opportunityId;
+      this.http.get(url).subscribe(e => {
+        obj.productnamelist = e.data;
+      });
+    }
+    this.productData.push(obj);
+    // 自动带入产品
+    this.addProduct.emit({
+      opportunityId: opportunity.opportunityId,
+      CpOrCrm: this.dataBase.baseDataFrom,
+      dealFormId: opportunity.dealFormId
+    });
+  }
+  // 导入Oppo数据
+  public AddOpportunityData(opportunity) {
+
+    // this.arr.CkOppo = this.Ckdata;
+
+    console.log('带入');
+    console.log(this.Ckdata);
+    // 模板字段
+    this.dataBase.city = this.Ckdata.city;
+    this.dataBase.hospitalId = this.Ckdata.hospitalId;
+    this.dataBase.clientNo = this.Ckdata.hospitalId;
+    this.dataBase.accountNo = this.Ckdata.accountNo;
+    this.dataBase.accountId = this.Ckdata.accountId;
+    this.dataBase.biddingNames = this.Ckdata.biddingCompanyName; // 投标公司
+    this.dataBase.clientType = this.Ckdata.customerType; // 客户类型
+    this.param.dealerName = this.dataBase.biddingNames; // 代理商名称
+    this.dataBase.agreementAgenName = this.Ckdata.dealerName; // 协议代理商名称
+    this.dataBase.tenderPriceCurrencys = this.Ckdata.currencySystem; // 币制
+    this.dataBase.estimatedBidPriceCurrency = this.Ckdata.currencySystem; // 币制
+    this.dataBase.purchaseGroup = this.Ckdata.groupName; // 集团名称
+    this.dataBase.hospitalProvinceCode = this.Ckdata.provinceName; // 省份
+    this.dataBase.paymentDescription = this.Ckdata.paymentMethodDescription; // 付款方式说明
+    this.dataBase.category = this.Ckdata.category; // 客户分类
+    // this.dataBase.businessOpportunityHierarchyLink=this.Ckdata.businessOpportunityHierarchyLink; // 商家层级链接
+    // this.dataBase.businessOpportunityHierarchyLink = this.Ckdata.opportunityHierachyLink; // 商家层级链接22
+    this.dataBase.tenderPriceCurrency = this.toDecimal2(this.Ckdata.estimatedTenderPrice) ; // 中标金额 ,需判断是否保留两位小数
+    this.dataBase.estimatedBidPrice = this.dataBase.tenderPriceCurrency; // 中标金额，保留两位小数
+    // this.param.dealerName = this.Ckdata.dealerName; // 协议经销商名称
+    this.dataBase.biddingName = this.Ckdata.opportunityName;
+    this.dataBase.biddingNo = this.Ckdata.tenderNo;
+    this.dataBase.clientType = this.Ckdata.customerType;
+    this.dataBase.businessType = this.Ckdata.businessModel;
+    console.log(this.dataBase.baseDataFrom);
+    if (this.dataBase.baseDataFrom === 'CRM' || this.dataBase.baseDataFrom === 'CP Simulation') {
+      this.dataBase.openBiddingDate = this.Ckdata.publicBiddingDate;
+      this.dataBase.businessOpportunityHierarchyLink = this.Ckdata.opportunityHierachyLink; // 商家层级链接
+      this.dataBase.hospitalName = this.Ckdata.hospitalName; // 医院名称
+    }
+    if (this.dataBase.baseDataFrom === 'CP' || this.dataBase.baseDataFrom === 'CP Deal Form') {
+      this.dataBase.openBiddingDate = this.Ckdata.bidDate;
+      this.dataBase.businessOpportunityHierarchyLink = this.Ckdata.opportunityHierachyLink; // 商家层级链接
+      this.dataBase.hospitalName = this.Ckdata.hospitalName; // 医院名称
+    }
+    if (this.dataBase.hospitalName === 'stock' || this.dataBase.hospitalName === 'Stock' || this.dataBase.hospitalName === 'STOCK') {
+      this.hospitalDisable = false;
+    } else {
+      this.hospitalDisable = true;
+    }
+    this.dataBase.change = false; // 控制投标公司是否清空
+    // 如果投标公司和代理商名称相同  补充页是否二级代理商为否 不相同为是
+    this.dataBase.agentBidding = this.dataBase.agreementAgenName == this.dataBase.biddingNames ? 'nonagency' : 'agency';
+    if (this.dataBase.biddingNames == '飞利浦(中国)投资有限公司') {
+      this.dataBase.biddingComRegCode = '中国';
+      this.dataBase.biddingComRegAddress = '地址1';
+    }
+    else if (this.dataBase.biddingNames == '飞利浦电子香港有限公司') {
+      this.dataBase.biddingComRegCode = '中国香港';
+      this.dataBase.biddingComRegAddress = '地址2';
+    }
   }
   // 弹出窗口
   // 确认按钮
@@ -477,138 +758,95 @@ export class ApplybaseComponent implements OnInit {
       this.message.create('error', `请选择opportunity`);
       return;
     }
+
     if (this.productData && this.productData.length > 0) {
-      // const ho = this.dataBase.hospitalName;
       const cporcrm = this.dataBase.baseDataFrom;
-      if (cporcrm === 'CP') {
-        const ho = this.dataBase.hospitalId;
-        if (ho !== this.Ckdata.hospitalId) {
-          this.message.create('error', `客户名称不一致`);
-          return;
-        }
-      }
-      if (cporcrm === 'CRM') {
-        const ho = this.dataBase.accountNo;
-        if (ho !== this.Ckdata.accountNo) {
-          this.message.create('error', `客户名称不一致`);
-          return;
-        }
-      }
       if (cporcrm !== this.CpOrCrm) {
         // 数据来源不一样
         this.message.create('error', `数据来源不一致`);
         return;
       }
     }
-    // tslint:disable-next-line:variable-name
-    let businessOpportunityHierarchyLink_let = '';
-    if (this.CpOrCrm === 'CRM') {
-      businessOpportunityHierarchyLink_let = this.Ckdata.opportunityHierachyLink; // 商家层级链接
-    }
-    if (this.CpOrCrm === 'CP') {
-      businessOpportunityHierarchyLink_let = this.Ckdata.businessOpportunityHierarchyLink; // 商家层级链接
-    }
-    const obj = {
-      opportunityId: this.Ckdata.opportunityId,
-      opportunityName: this.Ckdata.opportunityName,
-      createdDate: this.Ckdata.createdDate,
-      baseDataFrom: this.CpOrCrm,
-      dealFormId: this.Ckdata.dealFormId,
-      listOfMapData: [],
-      productInformations: [
-      ],
-      productnamelist: [],
-      businessOpportunityHierarchyLink : businessOpportunityHierarchyLink_let
-    };
-    if (this.productData.length > 0) {
-      const check = this.productData.some(res => obj.opportunityId === res.opportunityId);
-      if (check) {
-        this.message.create('warning', '已经存在相同Opportunity ID');
-        return;
+    // 获取oppor包含所有dealfrom的oppor
+    const urlCP = '/act/ecom/tender/application/tenderQueryOpportunityCP';
+    if (this.CpOrCrm !== 'CP Deal Form') {
+
+      if (this.CkOpportunity(this.Ckdata)) {
+        if (!(this.productData && this.productData.length > 0)) {
+          this.AddOpportunity(this.Ckdata);
+          this.AddOpportunityData(this.Ckdata);
+        } else {
+          this.AddOpportunity(this.Ckdata);
+        }
+
+        if (this.dataBase.biddingNames != '' && this.dataBase.biddingNames != undefined && this.dataBase.biddingNames != null) {
+          this.agentInit_Bidding();
+          // this.ServesiceService.bookEventer.emit(true);
+        } else {
+          // this.ServesiceService.bookEventer.emit(false);
+        }
+        if (this.dataBase.agreementAgenName != '' && this.dataBase.agreementAgenName != undefined && this.dataBase.agreementAgenName != null) {
+          this.agentInit_Agregent();
+          // this.ServesiceService.bookEventer.emit(true);
+        } else {
+          // this.ServesiceService.bookEventer.emit(false);
+        }
+
+        this.showoff = false;
+        this.paymentMethod();
+        this.Ckdata = {};
+        this.DisableValidateForm();
       }
-    }
-    // 模板字段
-    this.dataBase.city = this.Ckdata.city;
-    // const today = new Date(this.Ckdata.createdDate);
-    // if (today) {
-    //   this.dataBase.opportunityDate = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-    // }
+    } else {
+      const dataCP = {
+        pageNo: 1,
+        pageSize: 0x7fffffff,
+        opportunityId: this.Ckdata.opportunityId
+      };
+      this.http.post(urlCP, dataCP).subscribe(res => {
+        console.log(res.data);
+        // dealFormDtoSimulations     dealFormDtos
+        if (res.data) {
+          const opporList = res.data.rows;
+          if (!(this.productData && this.productData.length > 0)) {
+            // 第一条Oppo数据添加
+            if (this.CkOpportunity(this.Ckdata)) {
+              this.AddOpportunity(this.Ckdata);
+              // 带入第一次选中的数据
+              this.AddOpportunityData(this.Ckdata);
+            }
+          }
+          for (let i = 0; i < opporList.length; i++) {
+            if (this.CkOpportunity(opporList[i])) {
+              this.AddOpportunity(opporList[i]);
+            }
+          }
 
+          if (this.dataBase.biddingNames != '' && this.dataBase.biddingNames != undefined && this.dataBase.biddingNames != null) {
+            this.agentInit_Bidding();
+            // this.ServesiceService.bookEventer.emit(true);
+          } else {
+            // this.ServesiceService.bookEventer.emit(false);
+          }
+          if (this.dataBase.agreementAgenName != '' && this.dataBase.agreementAgenName != undefined && this.dataBase.agreementAgenName != null) {
+            this.agentInit_Agregent();
+            // this.ServesiceService.bookEventer.emit(true);
+          } else {
+            // this.ServesiceService.bookEventer.emit(false);
+          }
 
-    this.dataBase.baseDataFrom = this.CpOrCrm;
-    if (this.dataBase.baseDataFrom === 'CRM') {
-      let url = '/act/ecom/tender/application/tenderQueryOpportunityProduct' + '?opportunityId=' + this.Ckdata.opportunityId;
-      this.http.get(url).subscribe(e => {
-        obj.productnamelist = e.data;
+          this.showoff = false;
+          this.paymentMethod();
+          this.Ckdata = {};
+          this.DisableValidateForm();
+        }
+
+      }, error => {
+        this.message.create('error', '请求异常');
       });
     }
-    this.productData.push(obj);
-
-    this.arr.CkOppo = this.Ckdata;
-
-    this.dataBase.hospitalId = this.Ckdata.hospitalId;
-    this.dataBase.accountNo = this.Ckdata.accountNo;
-    this.dataBase.accountId = this.Ckdata.accountId;
-   this.dataBase.biddingNames = this.Ckdata.biddingCompanyName; // 投标公司
-    this.dataBase.clientType = this.Ckdata.customerType; // 客户类型
-    this.param.dealerName = this.dataBase.biddingNames; // 代理商名称
-    this.dataBase.agreementAgenName = this.Ckdata.dealerName; // 协议代理商名称
-    this.dataBase.tenderPriceCurrencys = this.Ckdata.currencySystem; // 币制
-    this.dataBase.estimatedBidPriceCurrency = this.Ckdata.currencySystem; // 币制
-    this.dataBase.purchaseGroup = this.Ckdata.groupName; // 集团名称
-    this.dataBase.hospitalProvinceCode = this.Ckdata.provinceName; // 省份
-    this.dataBase.paymentDescription = this.Ckdata.paymentMethodDescription; // 付款方式说明
-    this.dataBase.category = this.Ckdata.category; // 客户分类
-    // this.dataBase.businessOpportunityHierarchyLink=this.Ckdata.businessOpportunityHierarchyLink; // 商家层级链接
-    // this.dataBase.businessOpportunityHierarchyLink = this.Ckdata.opportunityHierachyLink; // 商家层级链接22
-    this.dataBase.tenderPriceCurrency = this.toDecimal2(this.Ckdata.estimatedTenderPrice) ; // 中标金额 ,需判断是否保留两位小数
-    this.dataBase.estimatedBidPrice = this.dataBase.tenderPriceCurrency; // 中标金额，保留两位小数
-    this.param.dealerName = this.Ckdata.dealerName; // 协议经销商名称
-    if (this.param.dealerName != '' && this.param.dealerName != undefined && this.param.dealerName != null) {
-      this.agentInit();
-      this.ServesiceService.bookEventer.emit(true);
-    }
-    else{
-      this.ServesiceService.bookEventer.emit(false);
-    }
-    this.dataBase.biddingName = this.Ckdata.opportunityName;
-    this.dataBase.biddingNo = this.Ckdata.tenderNo;
-    this.dataBase.clientType = this.Ckdata.customerType;
-    this.dataBase.businessType = this.Ckdata.businessModel;
-    console.log(this.dataBase.baseDataFrom);
-    if (this.dataBase.baseDataFrom === 'CRM') {
-      this.dataBase.openBiddingDate = this.Ckdata.publicBiddingDate;
-      this.dataBase.businessOpportunityHierarchyLink = this.Ckdata.opportunityHierachyLink; // 商家层级链接
-      this.dataBase.hospitalName = this.Ckdata.accountName; // 医院名称
-    }
-    if (this.dataBase.baseDataFrom === 'CP') {
-      this.dataBase.openBiddingDate = this.Ckdata.bidDate;
-      this.dataBase.businessOpportunityHierarchyLink = this.Ckdata.businessOpportunityHierarchyLink; // 商家层级链接
-      this.dataBase.hospitalName = this.Ckdata.hospitalName; // 医院名称
-    }
-    // if (this.Ckdata.bidFlag == 0) {
-    //   this.dataBase.tenderAuthorization = 'private';
-    // }
-    // if (this.Ckdata.bidFlag == 1) {
-    //   this.dataBase.tenderAuthorization = 'nonprivate';
-    // }
-    this.dataBase.change=false; // 控制投标公司是否清空
-    this.showoff = false;
-    // 如果投标公司和代理商名称相同  补充页是否二级代理商为否 不相同为是
-    this.dataBase.agentBidding = this.dataBase.agreementAgenName == this.dataBase.biddingNames ? "nonagency" : "agency";
-    if (this.dataBase.biddingNames == '飞利浦(中国)投资有限公司') {
-      this.dataBase.biddingComRegCode = '中国';
-      this.dataBase.biddingComRegAddress = '地址1';
-    }
-    else if (this.dataBase.biddingNames == '飞利浦电子香港有限公司') {
-      this.dataBase.biddingComRegCode = '中国香港';
-      this.dataBase.biddingComRegAddress = '地址2';
-    }
-    this.paymentMethod();
-    this.Ckdata = {};
-
   }
-  //代理商确认弹出窗口
+  // 代理商确认弹出窗口
   agentOk() {
     this.isshow = false;
     let obj = this.agentData.filter(res => {
@@ -637,51 +875,19 @@ export class ApplybaseComponent implements OnInit {
 
   // 获取Opp数据
   getDataFormOpp() {
-    const url = '/act/ecom/tender/application/tenderQueryOpportunityIds';
-    const data = {};
-    this.OpLoad = true;
-    this.http.post(url, data).subscribe(res => {
-      if (res.code === '0000') {
-        if (res.data) {
-          this.arr.tabList = res.data.dealFormDtoSimulations;
-          this.arr.crmData = res.data.dealFormDtos;
-        } else {
-          this.arr.tabList = [];
-          this.arr.crmData = [];
-        }
-        // 将已经添加的opportunityId禁用
-        if (this.arr && this.arr.tabList) {
-          for (let i = 0; i < this.arr.tabList.length; i++) {
-            this.arr.tabList[i].is = false;
-            this.arr.tabList[i].radio = false;
-          }
-        }
-        if (this.productData) {
-          this.productData.map( e => {
-            if (this.arr && this.arr.tabList) {
-              this.arr.tabList.map( arr => {
-                arr.radio = false;
-                if (e.opportunityId == arr.opportunityId) {
-                  arr.is = true;
-                }
-              });
-            }
-          });
-        }
-      } else {
-      }
-      this.OpLoad = false;
-    }, error => {
-      this.message.create('error', '请求异常');
-      this.OpLoad = false;
-    });
+    const urlCP = '/act/ecom/tender/application/tenderQueryOpportunityIds';
+    const urlCRM = '/act/ecom/tender/application/tenderQueryOpportunityIds';
+    const dataCP = {
+      pageNo: this.paramsCP.pageNo,
+      pageSize: this.paramsCP.pageSize
+    };
+    const dataCRM = {};
+    this.getDataCP();
+    this.getDataCRM();
   }
 
-  // 搜索框查询
-  SeachOpp() {
-    console.log(this.oppSeach);
-    const url = '/act/ecom/tender/application/tenderQueryOpportunityIds';
-    const data = {};
+  public getDataCP() {
+    const urlCP = '/act/ecom/tender/application/tenderQueryOpportunityCP';
     if (this.oppSeach.accountName === '')
       this.oppSeach.accountName = null;
     if (this.oppSeach.opportunityId === '')
@@ -690,25 +896,169 @@ export class ApplybaseComponent implements OnInit {
       this.oppSeach.opportunityName = null;
     if (this.oppSeach.dealFormId === '')
       this.oppSeach.dealFormId = null;
-    this.OpLoad = true;
-    this.http.post(url, this.oppSeach).subscribe(res => {
-      this.OpLoad = false;
-      if (res.code === '0000') {
-        console.log(res.data);
+    if (this.oppSeach.simulationId === '')
+      this.oppSeach.simulationId = null;
+    const dataCP = {
+      pageNo: this.paramsCP.pageNo,
+      pageSize: this.paramsCP.pageSize
+    };
+    Object.assign(dataCP, this.oppSeach);
+    this.loadObj.opportunity = true;
+    this.http.post(urlCP, dataCP).subscribe(res => {
+      this.loadObj.opportunity = false;
         // dealFormDtoSimulations     dealFormDtos
         if (res.data) {
-          this.arr.tabList = res.data.dealFormDtoSimulations;
-          this.arr.crmData = res.data.dealFormDtos;
+          this.arr.tabList = res.data.rows;
+          this.paramsCP.total = res.data.total;
+          this.paramsCP.pageNo = res.data.page;
+          // this.arr.crmData = res.data.dealFormDtos;
         } else {
           this.arr.tabList = [];
-          this.arr.crmData = [];
+          this.paramsCP.total = 0;
+          // this.arr.crmData = [];
         }
+      // 将已经添加的opportunityId禁用 CP
+      if (this.arr && this.arr.tabList) {
+        for (let i = 0; i < this.arr.tabList.length; i++) {
+          this.arr.tabList[i].is = false;
+          this.arr.tabList[i].radio = false;
+        }
+      }
+      if (this.productData) {
+        this.productData.map( e => {
+          if (this.arr && this.arr.tabList) {
+            this.arr.tabList.map( arr => {
+              arr.radio = false;
+              if (e.opportunityId == arr.opportunityId && e.dealFormId == arr.dealFormId) {
+                arr.is = true;
+              }
+            });
+          }
+        });
       } else {
       }
     }, error => {
+      this.loadObj.opportunity = false;
       this.message.create('error', '请求异常');
-      this.OpLoad = false;
     });
+  }
+  public getDataCRM() {
+    const urlCRM = '/act/ecom/tender/application/tenderQueryOpportunitySimulation';
+    if (this.oppSeach.accountName === '')
+      this.oppSeach.accountName = null;
+    if (this.oppSeach.opportunityId === '')
+      this.oppSeach.opportunityId = null;
+    if (this.oppSeach.opportunityName === '')
+      this.oppSeach.opportunityName = null;
+    if (this.oppSeach.dealFormId === '')
+      this.oppSeach.dealFormId = null;
+    if (this.oppSeach.simulationId === '')
+      this.oppSeach.simulationId = null;
+
+    const dataCRM = {
+      pageNo: this.paramsCRM.pageNo,
+      pageSize: this.paramsCRM.pageSize,
+      dealFormId: null
+    };
+    Object.assign(dataCRM, this.oppSeach);
+    // Simulation 不加 dealFormId 条件
+    // dataCRM.dealFormId = null;
+    this.loadObj.simulation = true;
+    this.http.post(urlCRM, dataCRM).subscribe(res => {
+      this.loadObj.simulation = false;
+        // dealFormDtoSimulations     dealFormDtos
+        if (res.data) {
+          // this.arr.tabList = res.data.dealFormDtoSimulations;
+          this.arr.crmData = res.data.rows;
+          this.paramsCRM.total = res.data.total;
+          this.paramsCRM.pageNo = res.data.page;
+        } else {
+          // this.arr.tabList = [];
+          this.arr.crmData = [];
+          this.paramsCRM.total = 0;
+        }
+      // 将已经添加的opportunityId禁用 CRM
+      if (this.arr && this.arr.crmData) {
+        for (let i = 0; i < this.arr.crmData.length; i++) {
+          this.arr.crmData[i].is = false;
+          this.arr.crmData[i].radio = false;
+        }
+      }
+      if (this.productData) {
+        this.productData.map( e => {
+          if (this.arr && this.arr.crmData) {
+            this.arr.crmData.map( arr => {
+              arr.radio = false;
+              if (e.opportunityId == arr.opportunityId) {
+                arr.is = true;
+              }
+            });
+          }
+        });
+      } else {
+      }
+    }, error => {
+      this.loadObj.simulation = false;
+      this.message.create('error', '请求异常');
+    });
+  }
+
+  // 搜索框查询
+  SeachOpp() {
+    this.getDataCP();
+    this.getDataCRM();
+  }
+
+  public changeBidType() {
+    if (this.dataBase && this.dataBase.bidType === '其他类型') {
+      this.dataBase.biddingNo = '其他类型';
+    }
+  }
+
+  // 选择医院按钮禁用
+  public hospitalDisable = true;
+  // 判断医院按钮禁用规则
+  public hospitalDisableCk() {
+    // (this.productData && this.productData.length > 0)
+    if (this.hospitalDisable == false && (this.dataBase.baseDataFrom === 'CP Deal Form' || this.dataBase.baseDataFrom === 'CP Simulation')) {
+      return false;
+    }
+    if (this.dataBase.hospitalName === 'stock' || this.dataBase.hospitalName === 'Stock' || this.dataBase.hospitalName === 'STOCK') {
+      return false;
+    }
+    // 默认禁用
+    return true;
+  }
+  public pageParam: any = { // 最终用户的弹出窗口
+    total: 0,
+    pageNo: 1,
+    pageSize: 5,
+    customerName: '',
+    endUserId: ''
+  };
+  @ViewChild('child') child;
+  // 取消弹窗
+  public isAgreCancel() {
+    this.isAgre = false;
+  }
+  // 打开选择医院弹出窗口
+  public openAgregent() {
+    this.isAgre = true;
+    // this.child.pageParam.endUserId = this.dataBase.endUserId;
+    this.child.agentInit();
+  }
+  // 选择医院确定
+  public isAgregentOk() {
+    this.isAgre = false;
+    let arr = this.child.selectFind();
+    console.log(arr);
+    if (arr && arr[0]) {
+      this.dataBase.hospitalName = arr[0].customerName;
+      this.dataBase.clientNo = arr[0].no;
+      this.dataBase.clientType = arr[0].customerType;
+      this.dataBase.category = arr[0].category;
+      this.dataBase.hospitalProvinceCode = arr[0].province;
+    }
   }
 
   // 获取Mk数据

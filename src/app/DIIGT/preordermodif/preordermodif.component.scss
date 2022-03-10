@@ -1,26 +1,27 @@
 .pr {
-    position: relative;
-    .cancel,
-    .submit,
-    .save {
-        position: absolute;
-        right: 10px;
-        top: 0px;
-        z-index: 999;
-    }
-    .cancel {
-        right: 200px;
-    }
-    .submit {
-        right: 10px
-    }
-    .save {
-        right: 188px;
-    }
+  position: relative;
+  .cancel,
+  .submit,
+  .save {
+    position: absolute;
+    right: 10px;
+    top: 0px;
+    z-index: 999;
   }
-  .tr{
-      text-align: right;
+  .cancel {
+    right: 200px;
   }
-  .mt10{
-      margin-top:10px;
+  .submit {
+    right: 10px;
   }
+  .save {
+    right: 188px;
+  }
+}
+.tr {
+  text-align: right;
+}
+.mt10 {
+  margin-top: 10px;
+}
+@import "../../../theme/common/dashboard.scss";

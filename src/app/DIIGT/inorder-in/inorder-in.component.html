@@ -1,9 +1,10 @@
 <nz-card class="mtb1rem pr" nzTitle="项目基础信息">
-  <div class="rfno"><span class="title">Reference No:</span><span>{{dataBase.referenceId}}</span></div>
+  <div class="rfno">
+    <span class="title">Reference No:</span><span>{{dataBase.referenceId}}</span>
+    <span class="title">Deal Form ID:</span><span>{{dataBase.dealFormId}}</span>
+  </div>
   <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
-    <div nz-col nzXs="24"
-    nzSm="24"
-    nzMd="12">
+    <div nz-col nzXs="24" nzSm="24" nzMd="12">
       <nz-form-item style="margin-bottom: 6px">
         <nz-form-label [nzSm]="8" [nzXs]="24">进单模式</nz-form-label>
         <nz-form-control [nzSm]="14" [nzXs]="24">
@@ -17,10 +18,8 @@
     </div>
   </div>
   <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
-    <div nz-col nzXs="24"
-    nzSm="24"
-    nzMd="12">
-      <nz-form-item  style="margin-bottom: 6px">
+    <div nz-col nzXs="24" nzSm="24" nzMd="12">
+      <nz-form-item style="margin-bottom: 6px">
         <nz-form-label [nzSm]="8" [nzXs]="24">业务模式</nz-form-label>
         <nz-form-control [nzSm]="14" [nzXs]="24">
           <nz-select style="width: 100%;" nzShowSearch zAllowClear [(ngModel)]="dataBase.businessModel" disabled="true"
@@ -31,19 +30,31 @@
         </nz-form-control>
       </nz-form-item>
     </div>
-    <div nz-col nzXs="24"
-    nzSm="24"
-    nzMd="12">
-      <nz-form-item  style="margin-bottom: 6px">
-        <nz-form-label [nzSm]="8" [nzXs]="24">区域</nz-form-label>
-        <nz-form-control [nzSm]="14" [nzXs]="24">
-          <input type="text" class="form-control" disabled [(ngModel)]="dataBase.region" placeholder="">
-        </nz-form-control>
+    <div nz-col nzXs="24" nzSm="24" nzMd="12">
+      <nz-form-item style="margin-bottom: 6px">
+        <div nz-col nzSm="6" nzXl="6" nzXXl="6">
+          <nz-form-label [nzSm]="8" nzXl="8" nzXXl="8" [nzXs]="24">Team</nz-form-label>
+          <nz-form-control [nzSm]="14" [nzXs]="24">
+            <input type="text" class="form-control" disabled [(ngModel)]="dataBase.team" placeholder="">
+          </nz-form-control>
+        </div>
+        <div nz-col nzSm="8" nzXl="8" nzXXl="8">
+          <nz-form-label [nzSm]="10" nzXl="10" nzXXl="10" [nzXs]="24">大区</nz-form-label>
+          <nz-form-control [nzSm]="14" [nzXs]="24">
+            <input type="text" class="form-control" disabled [(ngModel)]="dataBase.region" placeholder="">
+          </nz-form-control>
+        </div>
+        <div nz-col nzSm="8" nzXl="8" nzXXl="8">
+          <nz-form-label [nzSm]="10" nzXl="10" nzXXl="10" [nzXs]="24">小区</nz-form-label>
+          <nz-form-control [nzSm]="14" [nzXs]="24">
+            <input type="text" class="form-control" disabled [(ngModel)]="dataBase.smallArea" placeholder="">
+          </nz-form-control>
+        </div>
       </nz-form-item>
     </div>
   </div>
   <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
-    <div nz-col nzXs="24"
+    <!-- <div nz-col nzXs="24"
     nzSm="24"
     nzMd="12">
       <nz-form-item  style="margin-bottom: 6px">
@@ -51,29 +62,14 @@
         <nz-form-control [nzSm]="14" [nzXs]="24">
           <button *ngIf="dataBase.bidWinningNotice" nz-tooltip [nzTitle]="dataBase.bidWinningNoticeNames" class="down marginNone paddnon link-tesk" nz-button nzType="link"
             (click)="fileDwon(dataBase.bidWinningNotice)">{{dataBase.bidWinningNoticeNames}}</button>
-
            <ng-container *ngIf="nodata(dataBase.bidWinningNotice)">
                   无
            </ng-container>
           </nz-form-control>
       </nz-form-item>
-    </div>
-    <div nz-col nzXs="24"
-    nzSm="24"
-    nzMd="12">
-      <nz-form-item  style="margin-bottom: 6px">
-        <nz-form-label [nzSm]="8" [nzXs]="24">中标价格</nz-form-label>
-        <nz-form-control [nzSm]="14" [nzXs]="24">
-          <input type="text" class="form-control" [ngModel]="(dataBase.bidWinningPrice|NumberThousandth)+dataBase.isUsdOrRmb" disabled placeholder="-">
-        </nz-form-control>
-      </nz-form-item>
-    </div>
-  </div>
-  <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
-    <div nz-col nzXs="24"
-    nzSm="24"
-    nzMd="12">
-      <nz-form-item  style="margin-bottom: 6px">
+    </div> -->
+    <div nz-col nzXs="24" nzSm="24" nzMd="12">
+      <nz-form-item style="margin-bottom: 6px">
         <!--原名 投标商-->
         <nz-form-label [nzSm]="8" [nzXs]="24">投标公司</nz-form-label>
         <nz-form-control [nzSm]="14" [nzXs]="24">
@@ -81,10 +77,19 @@
         </nz-form-control>
       </nz-form-item>
     </div>
-    <div *ngIf="dataBase.endUserContract" nz-col nzXs="24"
-    nzSm="24"
-    nzMd="12">
-      <nz-form-item  style="margin-bottom: 6px">
+    <div nz-col nzXs="24" nzSm="24" nzMd="12">
+      <nz-form-item style="margin-bottom: 6px">
+        <nz-form-label [nzSm]="8" [nzXs]="24">中标价格</nz-form-label>
+        <nz-form-control [nzSm]="14" [nzXs]="24">
+          <input type="text" class="form-control"
+            [ngModel]="(dataBase.bidWinningPrice|NumberThousandth)+dataBase.isUsdOrRmb" disabled placeholder="-">
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+  <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+    <div *ngIf="dataBase && dataBase.businessModel != 'DISTRIBUTOR'" nz-col nzXs="24" nzSm="24" nzMd="12">
+      <nz-form-item style="margin-bottom: 6px">
         <nz-form-label [nzSm]="8" [nzXs]="24">合同买方</nz-form-label>
         <nz-form-control [nzSm]="14" [nzXs]="24">
           <input type="text" class="form-control" disabled [(ngModel)]="dataBase.endUserContract" placeholder="无">
@@ -92,11 +97,9 @@
       </nz-form-item>
     </div>
   </div>
-  <div nz-row *ngIf="dataBase.agent" nzType="flex" nzJustify="start" nzAlign="middle">
-    <div nz-col nzXs="24"
-    nzSm="24"
-    nzMd="12">
-      <nz-form-item  style="margin-bottom: 6px">
+  <div nz-row *ngIf="dataBase && dataBase.businessModel != 'DIRECT'" nzType="flex" nzJustify="start" nzAlign="top">
+    <div nz-col nzXs="24" nzSm="24" nzMd="12">
+      <nz-form-item style="margin-bottom: 6px">
         <!--原名 代理商-->
         <nz-form-label [nzSm]="8" [nzXs]="24">经销商</nz-form-label>
         <nz-form-control [nzSm]="14" [nzXs]="24">
@@ -104,13 +107,49 @@
         </nz-form-control>
       </nz-form-item>
     </div>
-    <div nz-col nzXs="24"
-    nzSm="24"
-    nzMd="12">
-      <nz-form-item  style="margin-bottom: 6px">
+    <div nz-col nzXs="5" nzSm="5" nzMd="5">
+      <div class="warning mlg" *ngIf="redFlagList">{{redFlagList}}</div>
+    </div>
+  </div>
+  <div nz-row *ngIf="dataBase && dataBase.businessModel != 'DIRECT'" nzType="flex" nzJustify="start" nzAlign="top">
+    <div nz-col nzXXl="24" nzXl="24" nzSm="24">
+      <nz-form-item style="margin-bottom: 6px">
+        <nz-form-label nzXXl="4" nzXl="4" nzSm="4" nzRequired>经销商协议号</nz-form-label>
+        <nz-form-control [nzSm]="7" [nzXs]="24">
+          <nz-select style="width:100%" nzPlaceHolder="请选择" [(ngModel)]="dataBase.agreementNo" disabled="true">
+            <nz-option *ngFor="let item of dealList" [nzLabel]="item.agreementNo" [nzValue]="item.agreementNo">
+            </nz-option>
+          </nz-select>
+        </nz-form-control>
+        <nz-form-control [nzSm]="4" [nzXs]="24">
+          <button class="detailFlex" *ngIf="dataBase.agreementNo" (click)="showDiag()" nz-button
+            nzType="primary">查看详情</button>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+  <!-- <div nz-row *ngIf="dataBase.agent" nzType="flex" nzJustify="start" nzAlign="top">
+      <div nz-col nzXs="24"
+      nzSm="24"
+      nzMd="12">
+        <nz-form-item  style="margin-bottom: 6px">         
+          <nz-form-label [nzSm]="8" [nzXs]="24">经销商协议号</nz-form-label>
+          <nz-form-control [nzSm]="14" [nzXs]="24">
+            <nz-select style="width: 100%" nzShowSearch nzAllowClear nzPlaceHolder="经销商协议号" nzSize="large"
+            [ngModelOptions]="{standalone: true}" disabled="true" [(ngModel)]="dataBase.agreementNo"
+            >
+            <nz-option nzValue="1" nzLabel="2"></nz-option>
+            <nz-option nzValue="1" nzLabel="3"></nz-option>
+          </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </div>        
+  </div> -->
+  <div nz-row *ngIf="dataBase && dataBase.businessModel != 'DIRECT'" nzType="flex" nzJustify="start" nzAlign="middle">
+    <div nz-col nzXs="24" nzSm="24" nzMd="12">
+      <nz-form-item style="margin-bottom: 6px">
         <nz-form-label [nzSm]="8" [nzXs]="24">DDP状态</nz-form-label>
         <nz-form-control [nzSm]="14" [nzXs]="24">
-
           <nz-select [ngModelOptions]="{standalone: true}" disabled="true" style="width:100%" value="实时查询"
             nzPlaceHolder="请选择" [(ngModel)]="dataBase.ddpStatus" zShowSearch nzAllowClear nzSize="large">
             <nz-option nzLabel="通过" nzValue="通过"></nz-option>
@@ -119,24 +158,40 @@
         </nz-form-control>
       </nz-form-item>
     </div>
-  </div>
-
-  <div *ngIf="dataBase.foreignTradeCompany" nz-row nzType="flex" nzJustify="start" nzAlign="middle">
-    <div nz-col nzXs="24"
-    nzSm="24"
-    nzMd="12">
-      <nz-form-item  style="margin-bottom: 6px">
-        <nz-form-label class="global-color-red" [nzSm]="8" [nzXs]="24">外贸公司</nz-form-label>
-        <nz-form-control [nzSm]="14" [nzXs]="24">
-          <input type="text" class="form-control" [(ngModel)]="dataBase.foreignTradeCompany" disabled
-            placeholder="无">
+    <div nz-col nzXXl="12" nzXl="12" nzSm="12" nzXs="24">
+      <nz-form-item style="margin-bottom: 6px">
+        <nz-form-label nzSm="8" nzXl="8" nzXXl="8" nzXs="24" nzRequired>DDP有效期截至日期</nz-form-label>
+        <nz-form-control nzXs="24" nzSm="14" nzXl="14" nzXXl="14">
+          <nz-date-picker nzSize="large" style="width: 100%" [nzStyle]="style" [ngModelOptions]="{standalone: true}"
+            disabled="true" [(ngModel)]="dataBase.contractEndDate">
+          </nz-date-picker>
+          <div class="warning" *ngIf="dataBase.lateDayOff&&dataBase.ddpStatus'通过'">
+            DDP即将在{{dataBase.laterDay}}后到期
+          </div>
         </nz-form-control>
       </nz-form-item>
     </div>
-    <div nz-col nzXs="24"
-    nzSm="24"
-    nzMd="12">
-      <nz-form-item  style="margin-bottom: 6px">
+  </div>
+  <div *ngIf="dataBase.invoiceInformation=='USD'" nz-row nzType="flex" nzJustify="start" nzAlign="top">
+    <div nz-col nzXs="24" nzSm="24" nzMd="12">
+      <nz-form-item style="margin-bottom: 6px">
+        <nz-form-label class="global-color-red" [nzSm]="8" [nzXs]="24">外贸公司</nz-form-label>
+        <nz-form-control [nzSm]="14" [nzXs]="24">
+          <input type="text" class="form-control" [(ngModel)]="dataBase.foreignTradeCompany" disabled placeholder="无">
+          <div *ngIf="foreignTradeOff" class="warning" nzFor="email">
+            注释：所选择的外贸公司不在IE Pool
+          </div>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzXs="5" nzSm="5" nzMd="5" *ngIf="redFlagListPool">
+      <div class="warning mlg">{{redFlagListPool}}</div>
+    </div>
+  </div>
+
+  <div *ngIf="dataBase.invoiceInformation=='USD'" nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+    <div nz-col nzXs="24" nzSm="24" nzMd="12">
+      <nz-form-item style="margin-bottom: 6px">
         <nz-form-label [nzSm]="8" [nzXs]="24">DDP状态</nz-form-label>
         <nz-form-control [nzSm]="14" [nzXs]="24">
 
@@ -148,70 +203,128 @@
         </nz-form-control>
       </nz-form-item>
     </div>
+    <div nz-col nzXs="24" nzSm="24" nzMd="12">
+      <nz-form-item style="margin-bottom: 6px">
+        <nz-form-label [nzSm]="8" [nzXs]="24">DDP有效期截至日期</nz-form-label>
+        <nz-form-control [nzSm]="14" [nzXs]="24">
+          <nz-date-picker nzSize="large" [ngModelOptions]="{standalone: true}" disabled="true" style="width: 100%"
+            [nzStyle]="style" [(ngModel)]="dataBase.poolEndDate">
+          </nz-date-picker>
+          <div class="warning" *ngIf="dataBase.lateDateOff&&dataBase.contractDdpStatus=='通过'" nzFor="email">
+            DDP即将在{{dataBase.lateDays}}后到期
+          </div>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
   </div>
-
   <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
-    <div nz-col nzXs="24"
-    nzSm="24"
-    nzMd="12">
-      <nz-form-item  style="margin-bottom: 6px">
+    <div nz-col nzXs="24" nzSm="24" nzMd="12">
+      <nz-form-item style="margin-bottom: 6px">
         <nz-form-label [nzSm]="8" [nzXs]="24">最终用户</nz-form-label>
         <nz-form-control [nzSm]="14" [nzXs]="24">
           <input type="text" class="form-control" [(ngModel)]="dataBase.endUser" disabled placeholder="无">
         </nz-form-control>
       </nz-form-item>
     </div>
-  </div>
-  <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
-    <div nz-col nzXs="24"
-    nzSm="24"
-    nzMd="12">
-      <nz-form-item  style="margin-bottom: 6px">
-        <nz-form-label [nzSm]="8" [nzXs]="24">产品型号</nz-form-label>
+    <div nz-col nzXs="24" nzSm="24" nzMd="12">
+      <nz-form-item style="margin-bottom: 6px">
+        <nz-form-label [nzSm]="8" [nzXs]="24">最终用户编号</nz-form-label>
         <nz-form-control [nzSm]="14" [nzXs]="24">
-          <input type="text" class="form-control" disabled [(ngModel)]="dataBase.productModel" placeholder="无">
+          <input type="text" class="form-control" [(ngModel)]="dataBase.endUserId" disabled placeholder="无">
         </nz-form-control>
       </nz-form-item>
     </div>
-    <div nz-col nzXs="24"
-    nzSm="24"
-    nzMd="12">
-      <nz-form-item  style="margin-bottom: 6px">
+  </div>
+  <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+    <div nz-col nzXs="24" nzSm="24" nzMd="12">
+      <nz-form-item style="margin-bottom: 6px">
         <nz-form-label [nzSm]="8" [nzXs]="24">医院性质</nz-form-label>
         <nz-form-control [nzSm]="14" [nzXs]="24">
           <input type="text" class="form-control" [(ngModel)]="dataBase.hospitalNature" disabled placeholder="无">
         </nz-form-control>
       </nz-form-item>
     </div>
-
+    <div nz-col nzXs="24" nzSm="24" nzMd="12" *ngIf="dataBase.entryMode=='BIDDING'">
+      <nz-form-item style="margin-bottom: 6px">
+        <nz-form-label [nzNoColon]="true" [nzSm]="8" [nzXs]="24">
+          <label nz-checkbox disabled="true" [(ngModel)]="dataBase.centralized">集采项目</label>
+        </nz-form-label>
+        <ng-container *ngIf="dataBase.centralized">
+          <nz-form-label [nzSm]="4" [nzXs]="24">实际销售</nz-form-label>
+          <nz-form-control [nzSm]="10" [nzXs]="24">
+            <input type="text" class="form-control" [(ngModel)]="dataBase.actualSales" disabled placeholder="无">
+          </nz-form-control>
+        </ng-container>
+      </nz-form-item>
+    </div>
   </div>
   <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
-    <div nz-col nzXs="24"
-    nzSm="24"
-    nzMd="12">
-      <nz-form-item  style="margin-bottom: 6px">
-        <nz-form-label [nzSm]="8" [nzXs]="24">原产地</nz-form-label>
+    <div nz-col nzXs="24" nzSm="24" nzMd="12">
+      <nz-form-item style="margin-bottom: 6px">
+        <nz-form-label [nzSm]="8" [nzXs]="24">产品型号</nz-form-label>
+        <nz-form-control [nzSm]="14" [nzXs]="24">
+          <input type="text" class="form-control" disabled [(ngModel)]="dataBase.productModel" placeholder="无">
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzXs="24" nzSm="24" nzMd="12">
+      <nz-form-item style="margin-bottom: 6px">
+        <nz-form-label [nzSm]="8" [nzXs]="24">医疗器械名称</nz-form-label>
+        <nz-form-control [nzSm]="14" [nzXs]="24">
+          <input type="text" class="form-control" disabled [(ngModel)]="dataBase.medicalDeviceName" placeholder="无">
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+  <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+    <div nz-col nzXs="24" nzSm="24" nzMd="12">
+      <nz-form-item style="margin-bottom: 6px">
+        <nz-form-label [nzSm]="8" [nzXs]="24">原产地中文</nz-form-label>
         <nz-form-control [nzSm]="14" [nzXs]="24">
           <input type="text" class="form-control" [(ngModel)]="dataBase.countryOrigin" disabled placeholder="无">
         </nz-form-control>
       </nz-form-item>
     </div>
-    <div nz-col nzXs="24"
-    nzSm="24"
-    nzMd="12">
-      <nz-form-item  style="margin-bottom: 6px">
-        <nz-form-label [nzSm]="8" [nzXs]="24">NMPA Name</nz-form-label>
+    <div nz-col nzXs="24" nzSm="24" nzMd="12">
+      <nz-form-item style="margin-bottom: 6px">
+        <nz-form-label [nzSm]="8" [nzXs]="24">原产地英文</nz-form-label>
         <nz-form-control [nzSm]="14" [nzXs]="24">
-          <input type="text" class="form-control" [(ngModel)]="dataBase.nmpaName" disabled placeholder="无">
+          <input type="text" class="form-control" [(ngModel)]="dataBase.countryOriginEn" disabled placeholder="无">
         </nz-form-control>
       </nz-form-item>
     </div>
   </div>
   <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
-    <div nz-col nzXs="24"
-    nzSm="24"
-    nzMd="12">
-      <nz-form-item  style="margin-bottom: 6px">
+    <div nz-col nzXs="24" nzSm="24" nzMd="12">
+      <nz-form-item style="margin-bottom: 6px">
+        <nz-form-label [nzSm]="8" [nzXs]="24">NMPA证号</nz-form-label>
+        <nz-form-control [nzSm]="14" [nzXs]="24">
+          <input type="text" class="form-control" [(ngModel)]="dataBase.nmpaName" disabled placeholder="无">
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzXs="24" nzSm="24" nzMd="12">
+      <nz-form-item style="margin-bottom: 6px">
+        <nz-form-label [nzSm]="8" [nzXs]="24">NMPA证有效期截止日期</nz-form-label>
+        <nz-form-control [nzSm]="14" [nzXs]="24">
+          <nz-date-picker nzSize="large" style="width: 100%" [nzStyle]="style" [ngModelOptions]="{standalone: true}"
+            disabled="true" [(ngModel)]="dataBase.nmpaRegistrationExpried">
+          </nz-date-picker>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+  <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+    <div nz-col nzXs="24" nzSm="24" nzMd="12">
+      <nz-form-item style="margin-bottom: 6px">
+        <nz-form-label [nzSm]="8" [nzXs]="24">Opportunity ID</nz-form-label>
+        <nz-form-control [nzSm]="14" [nzXs]="24">
+          <input type="text" class="form-control" [(ngModel)]="dataBase.opportunityId" disabled placeholder="无">
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzXs="24" nzSm="24" nzMd="12">
+      <nz-form-item style="margin-bottom: 6px">
         <nz-form-label [nzSm]="8" [nzXs]="24">商机层级关系链接</nz-form-label>
         <nz-form-control [nzSm]="14" [nzXs]="24">
           <input type="text" class="form-control" [(ngModel)]="dataBase.relationshipLink" disabled placeholder="无">
@@ -220,98 +333,105 @@
     </div>
   </div>
   <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
-    <div nz-col nzXs="24"
-    nzSm="24"
-    nzMd="12">
-      <nz-form-item  style="margin-bottom: 6px">
+    <div nz-col nzXs="24" nzSm="24" nzMd="12">
+      <nz-form-item style="margin-bottom: 6px">
         <nz-form-label [nzSm]="8" [nzXs]="24">进单单位合同价</nz-form-label>
         <nz-form-control [nzSm]="14" [nzXs]="24">
-          <input type="text" class="form-control" disabled [ngModel]="dataBase.contractPrice|NumberThousandth" placeholder="无">
+          <input type="text" class="form-control" disabled [ngModel]="dataBase.contractPrice|NumberThousandth"
+            placeholder="无">
         </nz-form-control>
       </nz-form-item>
     </div>
-    <div nz-col nzXs="24"
-    nzSm="24"
-    nzMd="12">
-      <nz-form-item  style="margin-bottom: 6px">
-        <nz-form-label [nzSm]="8" [nzXs]="24">Opportunity ID</nz-form-label>
-        <nz-form-control [nzSm]="14" [nzXs]="24">
-          <input type="text" class="form-control" [(ngModel)]="dataBase.opportunityId" disabled placeholder="无">
-        </nz-form-control>
-      </nz-form-item>
-    </div>
-  </div>
-  <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
-    <div nz-col nzXs="24"
-    nzSm="24"
-    nzMd="12">
-      <nz-form-item  style="margin-bottom: 6px">
-        <nz-form-label [nzSm]="8" [nzXs]="24">付款条款</nz-form-label>
-        <nz-form-control [nzSm]="14" [nzXs]="24">
-          <!-- <input type="text" class="form-control" disabled [(ngModel)]="dataBase.paymentProvision" placeholder="默认CP带入"> -->
-          <nz-select class="prodSelect" style="width:100%" nzShowSearch nzAllowClear nzPlaceHolder=""
-            [(ngModel)]="dataBase.paymentProvision" disabled="true">
-            <nz-option nzLabel="标准条款" nzValue="0"></nz-option>
-            <nz-option nzLabel="非标准条款" nzValue="1"></nz-option>
+    <div nz-col nzXs="24" nzSm="24" nzMd="12">
+      <nz-form-item style="margin-bottom: 6px">
+        <nz-form-label nzSm="8" nzXl="8" nzXXl="8">币制</nz-form-label>
+        <nz-form-control nzSm="14" nzXl="14" nzXXl="14">
+          <nz-select style="width: 100%;" nzShowSearch zAllowClear disabled [(ngModel)]="dataBase.invoiceInformation"
+            nzPlaceHolder="" nzSize="large">
+            <nz-option nzLabel="人民币" nzValue="CNY"></nz-option>
+            <nz-option nzLabel="美元" nzValue="USD"></nz-option>
           </nz-select>
         </nz-form-control>
       </nz-form-item>
     </div>
-    <div nz-col nzXs="24"
-    nzSm="24"
-    nzMd="12">
-      <nz-form-item>
-        <nz-form-label [nzSm]="8" [nzXs]="24">是否抽样审核</nz-form-label>
+  </div>
+  <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+    <div nz-col nzXs="24" nzSm="24" nzMd="12">
+      <nz-form-item style="margin-bottom: 6px">
+        <nz-form-label [nzSm]="8" [nzXs]="24">付款条款</nz-form-label>
         <nz-form-control [nzSm]="14" [nzXs]="24">
-          <nz-radio-group
-          disabled="true"
-          [(ngModel)]="dataBase.priceRange"
-        >
-          <label nz-radio nzValue="1">是</label>
-          <label nz-radio nzValue="0">否</label>
-        </nz-radio-group>
-
+          <!-- <input type="text" class="form-control" disabled [(ngModel)]="dataBase.paymentProvision" placeholder="默认CP带入"> -->
+          <nz-select disabled="true" class="prodSelect" style="width:100%" nzShowSearch nzAllowClear nzPlaceHolder=""
+            [(ngModel)]="dataBase.paymentProvision">
+            <nz-option nzCustomContent *ngFor="let item of dataBase.paymentList" [nzLabel]="item.dictLabel"
+              [nzValue]="item.dictId">
+              <div nz-tooltip class="options" [nzTitle]="item.dictLabel">{{item.dictLabel}}</div>
+            </nz-option>
+          </nz-select>
         </nz-form-control>
       </nz-form-item>
     </div>
-
-  </div>
-  <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
-    <!-- <div nz-col nzSpan="12">
-     <nz-form-item>
-        <nz-form-label [nzSm]="8" [nzXs]="24">Trade in</nz-form-label>
-        <nz-form-control [nzSm]="14" [nzXs]="24">
-          <input type="text" class="form-control" [(ngModel)]="dataBase.tradeIn" disabled placeholder="默认CP带入">
-        </nz-form-control>
-      </nz-form-item>
-    </div> -->
-    <div nz-col nzXs="24"
-    nzSm="24"
-    nzMd="12">
-      <nz-form-item  style="margin-bottom: 6px">
+    <div nz-col nzXs="24" nzSm="24" nzMd="12">
+      <nz-form-item style="margin-bottom: 6px">
         <nz-form-label [nzSm]="8" [nzXs]="24">促销计划</nz-form-label>
         <nz-form-control [nzSm]="14" [nzXs]="24">
-          <input type="text" class="form-control" readonly nz-tooltip [nzTitle]="dataBase.promotionPlan"  [(ngModel)]="dataBase.promotionPlan" placeholder="无">
+          <input type="text" class="form-control" readonly nz-tooltip [nzTitle]="dataBase.promotionPlan"
+            [(ngModel)]="dataBase.promotionPlan" placeholder="无">
         </nz-form-control>
       </nz-form-item>
     </div>
-    <div nz-col nzXs="24"
-    nzSm="24"
-    nzMd="12">
-      <nz-form-item  style="margin-bottom: 6px">
-        <nz-form-label [nzSm]="8" [nzXs]="24">经销商奖励计划</nz-form-label>
+  </div>
+  <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+    <div nz-col nzXs="24" nzSm="24" nzMd="12">
+      <nz-form-item style="margin-bottom: 6px">
+        <nz-form-label nzSm="8" nzXl="8" nzXXl="8">金融方案</nz-form-label>
+        <nz-form-control nz-tooltip [nzSm]="financiaWidth" [nzXl]="financiaWidth" [nzXXl]="financiaWidth">
+          <nz-select nzSize="large" style="width: 100%" disabled nzPlaceHolder="无"
+            [(ngModel)]="dataBase.financialProgramme" (ngModelChange)="selectFinacial()" nzShowSearch nzAllowClear>
+            <nz-option *ngFor="let item of financialList" [nzValue]="item.code" [nzLabel]="item.label"></nz-option>
+          </nz-select>
+        </nz-form-control>
+        <nz-form-control nz-tooltip [nzTitle]="dataBase.financialProgrammeTxt" *ngIf="dataBase.financialProgramme=='2'"
+          nzSm="7" nzXl="7" nzXXl="7" class="pl10">
+          <input type="text" class="form-control" placeholder="无" [(ngModel)]="dataBase.financialProgrammeTxt"
+            value="" />
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzXs="24" nzSm="24" nzMd="12">
+      <nz-form-item>
+        <nz-form-label nzSm="8" nzXl="8" nzXXl="8">金融方案金额</nz-form-label>
+        <nz-form-control [nzSm]="14" [nzXl]="14" [nzXXl]="14">
+          <input type="text" class="form-control" placeholder="-" value="" disabled
+            [ngModel]="dataBase.financialProgrammeCost|NumberThousandth" />
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+  <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+    <div nz-col nzXs="24" nzSm="24" nzMd="12">
+      <nz-form-item style="margin-bottom: 6px">
+        <nz-form-label [nzSm]="8" [nzXs]="24">经销商奖励金(rebate)总额</nz-form-label>
         <nz-form-control [nzSm]="14" [nzXs]="24">
-          <input type="text" class="form-control" nz-tooltip [nzTitle]="dataBase.incentiveScheme" [(ngModel)]="dataBase.incentiveScheme" readonly placeholder="无">
+          <input type="text" class="form-control" nz-tooltip [nzTitle]="dataBase.incentiveScheme"
+            [(ngModel)]="dataBase.incentiveScheme" readonly placeholder="无">
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzXs="24" nzSm="24" nzMd="12">
+      <nz-form-item style="margin-bottom: 6px">
+        <nz-form-label nzSm="8" nzXl="8" nzXXl="8">以旧换新总额</nz-form-label>
+        <nz-form-control nzSm="14" nzXl="14" nzXXl="14">
+          <input type="text" class="form-control" placeholder="-" disabled="true"
+            [ngModel]="dataBase.tradeInCost|NumberThousandth" />
         </nz-form-control>
       </nz-form-item>
     </div>
   </div>
 
   <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
-    <div *ngIf="dataBase.businessModel=='DISTRIBUTOR'" nz-col nzXs="24"
-    nzSm="24"
-    nzMd="12">
-      <nz-form-item  style="margin-bottom: 6px">
+    <div *ngIf="dataBase.businessModel=='DISTRIBUTOR'&&dataBase.entryMode=='BIDDING'" nz-col nzXs="24" nzSm="24" nzMd="12">
+      <nz-form-item style="margin-bottom: 6px">
         <nz-form-label [nzSm]="8" [nzXs]="24">经销商自采第三方核查</nz-form-label>
         <nz-form-control [nzSm]="14" [nzXs]="24">
           <nz-radio-group [disabled]="disa" nzSize="default" [(ngModel)]="dataBase.dealerAudit">
@@ -321,10 +441,8 @@
         </nz-form-control>
       </nz-form-item>
     </div>
-    <div nz-col nzXs="24"
-    nzSm="24"
-    nzMd="12">
-      <nz-form-item  style="margin-bottom: 6px">
+    <div nz-col nzXs="24" nzSm="24" nzMd="12">
+      <nz-form-item style="margin-bottom: 6px">
         <nz-form-label [nzSm]="8" [nzXs]="24">是否旧机回收</nz-form-label>
         <nz-form-control [nzSm]="14" [nzXs]="24">
           <nz-radio-group [disabled]="disa" nzSize="default" [(ngModel)]="dataBase.isRecycle">
@@ -336,65 +454,56 @@
     </div>
   </div>
   <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
-    <div nz-col nzXs="24"
-    nzSm="24"
-    nzMd="12">
-      <nz-form-item  style="margin-bottom: 6px">
-        <nz-form-label [nzSm]="8" [nzXs]="24">Final sofon quotation #</nz-form-label>
-        <nz-form-control [nzSm]="14" [nzXs]="24" nz-tooltip [nzTitle]="dataBase.finalSofonQuotation">
-          <input type="text" class="form-control" [(ngModel)]="dataBase.finalSofonQuotation" disabled
-            placeholder="无">
+    <div nz-col nzXs="24" nzSm="24" nzMd="12">
+      <nz-form-item>
+        <nz-form-label [nzSm]="8" [nzXs]="24">是否抽样审核</nz-form-label>
+        <nz-form-control [nzSm]="14" [nzXs]="24">
+          <nz-radio-group disabled="true" [(ngModel)]="dataBase.priceRange">
+            <label nz-radio nzValue="1">是</label>
+            <label nz-radio nzValue="0">否</label>
+          </nz-radio-group>
+
         </nz-form-control>
       </nz-form-item>
     </div>
-    <div nz-col nzXs="24"
-    nzSm="24"
-    nzMd="12">
-      <nz-form-item  style="margin-bottom: 6px">
-        <!--原名 Sofon file-->
+  </div>
+  <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+    <div nz-col nzXs="24" nzSm="24" nzMd="12">
+      <nz-form-item style="margin-bottom: 6px">
+        <nz-form-label [nzSm]="8" [nzXs]="24">Final sofon quotation #</nz-form-label>
+        <nz-form-control [nzSm]="14" [nzXs]="24" nz-tooltip [nzTitle]="dataBase.finalSofonQuotation">
+          <input type="text" class="form-control" [(ngModel)]="dataBase.finalSofonQuotation" disabled placeholder="无">
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzXs="24" nzSm="24" nzMd="12">
+      <nz-form-item style="margin-bottom: 6px">
         <nz-form-label [nzSm]="8" [nzXs]="24">Sofon Final Quotation <br>and supporting files</nz-form-label>
         <nz-form-control [nzSm]="14" [nzXs]="24">
-          <!-- <input type="text" class="form-control" [(ngModel)]="dataBase.sofonFile" disabled placeholder="默认CP带入"> -->
-          <button *ngIf="dataBase.sofonFile" class="down link-tesk"  nz-tooltip [nzTitle]="dataBase.sofonFileNames" nz-button nzType="link"
-          (click)="fileDwon(dataBase.sofonFile)">{{dataBase.sofonFileNames?dataBase.sofonFileNames:"文件下载"}}</button>
+          <button *ngIf="dataBase.sofonFile" class="down link-tesk" nz-tooltip [nzTitle]="dataBase.sofonFileNames"
+            nz-button nzType="link"
+            (click)="fileDwon(dataBase.sofonFile)">{{dataBase.sofonFileNames?dataBase.sofonFileNames:"文件下载"}}</button>
           <ng-container *ngIf="!dataBase.sofonFile">无</ng-container>
         </nz-form-control>
       </nz-form-item>
     </div>
   </div>
-
-  <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
-    <div nz-col nzXs="24"
-    nzSm="24"
-    nzMd="12">
-      <nz-form-item  style="margin-bottom: 6px">
-        <nz-form-label nzSm="8" nzXl="8" nzXXl="8">币种</nz-form-label>
-        <nz-form-control nzSm="14" nzXl="14" nzXXl="14">
-          <nz-select style="width: 100%;" nzShowSearch zAllowClear disabled [(ngModel)]="dataBase.invoiceInformation"
-            nzPlaceHolder="" nzSize="large">
-            <nz-option nzLabel="人民币" nzValue="CNY"></nz-option>
-            <nz-option nzLabel="美元" nzValue="USD"></nz-option>
-          </nz-select>
-        </nz-form-control>
-      </nz-form-item>
-    </div>
-  </div>
   <div nz-row nzType="flex" nzJustify="start" nzAlign="middle" *ngFor="let item of dataBase.tradeList;let m=index;">
-    <div nz-col nzXs="24"
-    nzSm="24"
-    nzMd="12">
-      <nz-form-item  style="margin-bottom: 6px">
+    <div nz-col nzXs="24" nzSm="24" nzMd="12">
+      <nz-form-item style="margin-bottom: 6px">
         <nz-form-label [nzSm]="8" [nzNoColon]='true' [nzXs]="24">{{m===0?'Trade in:':''}}</nz-form-label>
         <nz-form-control [nzSm]="14" [nzXs]="24">
           <div nz-row [nzGutter]="8">
             <div nz-col [nzSpan]="12">
-              <input nz-input class="form-control" nz-tooltip placeholder="无" [nzTitle]="item.name" [(ngModel)]="item.name" readonly />
+              <input nz-input class="form-control" nz-tooltip placeholder="无" [nzTitle]="item.name"
+                [(ngModel)]="item.name" readonly />
             </div>
             <div nz-col [nzSpan]="12">
               <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
                 <nz-form-label style="padding:0px !important" [nzSm]="8" [nzXs]="24">价格</nz-form-label>
                 <nz-form-control [nzSm]="14" [nzXs]="24">
-                  <input nz-input class="form-control" placeholder="-" nz-tooltip [nzTitle]="item.costs1" [ngModel]="item.costs1|NumberThousandth" readonly />
+                  <input nz-input class="form-control" placeholder="-" nz-tooltip [nzTitle]="item.costs1"
+                    [ngModel]="item.costs1|NumberThousandth" readonly />
                 </nz-form-control>
               </div>
             </div>
@@ -403,22 +512,23 @@
       </nz-form-item>
     </div>
   </div>
-  <div *ngFor="let item of dataBase.applications;let m=index;"  nz-row nzType="flex" nzJustify="start" nzAlign="middle">
-    <div nz-col nzXs="24"
-    nzSm="24"
-    nzMd="12">
-      <nz-form-item  style="margin-bottom: 6px">
-        <nz-form-label [nzSm]="8" [nzNoColon]='true' class="global-color-red" [nzXs]="24">{{m==0?'Application:':''}}</nz-form-label>
+  <div *ngFor="let item of dataBase.applications;let m=index;" nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+    <div nz-col nzXs="24" nzSm="24" nzMd="12">
+      <nz-form-item style="margin-bottom: 6px">
+        <nz-form-label [nzSm]="8" [nzNoColon]='true' class="global-color-red" [nzXs]="24">{{m==0?'Application:':''}}
+        </nz-form-label>
         <nz-form-control [nzSm]="14" [nzXs]="24">
           <div nz-row [nzGutter]="8">
             <div nz-col [nzSpan]="12">
-              <input nz-input class="form-control" placeholder="无" readonly nz-tooltip [nzTitle]="item.productName"  [(ngModel)]="item.productName" />
+              <input nz-input class="form-control" placeholder="无" readonly nz-tooltip [nzTitle]="item.productName"
+                [(ngModel)]="item.productName" />
             </div>
             <div nz-col [nzSpan]="12">
               <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
                 <nz-form-label style="padding:0px !important" [nzSm]="8" [nzXs]="24">价格</nz-form-label>
                 <nz-form-control [nzSm]="14" [nzXs]="24">
-                  <input nz-input class="form-control" placeholder="-" readonly nz-tooltip [nzTitle]="item.localCtp1" [ngModel]="item.localCtp1|NumberThousandth" />
+                  <input nz-input class="form-control" placeholder="-" readonly nz-tooltip [nzTitle]="item.localCtp1"
+                    [ngModel]="item.localCtp1|NumberThousandth" />
                 </nz-form-control>
               </div>
             </div>
@@ -427,14 +537,52 @@
       </nz-form-item>
     </div>
   </div>
-  <div nz-row nzType="flex" nzJustify="start" nzAlign="middle" *ngFor="let item of dataBase.warrantyList;let m=index;">
-    <div nz-col nzXs="24"
-    nzSm="24"
-    nzMd="12">
-      <nz-form-item  style="margin-bottom: 6px">
-        <nz-form-label [nzSm]="8" [nzNoColon]='true' [nzXs]="24">{{m===0?'延长保修:':''}}</nz-form-label>
-        <nz-form-control [nzSm]="14" [nzXs]="24">
-          <div nz-row [nzGutter]="8">
+  <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+    <div nz-col nzXs="24" nzSm="24" nzMd="24">
+      <nz-form-item style="margin-bottom: 6px">
+        <nz-form-label [nzSm]="4" [nzXs]="24">延长保修</nz-form-label>
+        <nz-form-control [nzSm]="19" [nzXs]="24">
+          <nz-table #rowSelectionTable [nzScroll]="{ x: '1000px' }" [nzFrontPagination]="false"
+            [nzShowPagination]="false" [nzData]="dataBase.warrantyList">
+            <thead>
+              <tr>
+                <th nzAlign="center" nzWidth="80px">主机</th>
+                <th nzAlign="center" nzWidth="150px">Simulation ID</th>
+                <th nzAlign="center" nzWidth="180px">Market Bundle ID</th>
+                <th nzAlign="center" nzWidth="200px">
+                  <div>Maket Bundle Name</div>
+                  <div>本地名称</div>
+                </th>
+                <th nzAlign="center" nzWidth="100px">
+                  Chapter
+                </th>
+                <th nzAlign="center" nzWidth="100px">
+                  POS ID
+                </th>
+                <th nzAlign="center" nzWidth="100px">
+                  POS NAME
+                </th>
+                <th nzAlign="center" nzWidth="100px">
+                  价格
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let data of rowSelectionTable.data let m=index">
+                <td nzAlign="center">
+                  <label nz-radio [ngModel]="data.checked" disabled="true"></label>
+                </td>
+                <td nzAlign="center">{{ data.simulationId}}</td>
+                <td nzAlign="center">{{ data.dealFormMarketBundleId}}</td>
+                <td nzAlign="center">{{data.marketBundleName}}</td>
+                <td nzAlign="center">{{data.chapter}}</td>
+                <td nzAlign="center">{{data.posId}}</td>
+                <td nzAlign="center">{{data.posIdName}}</td>
+                <td nzAlign="center">{{data.posLocalCtp|NumberThousandth}}</td>
+              </tr>
+            </tbody>
+          </nz-table>
+          <!-- <div nz-row [nzGutter]="8">
             <div nz-col [nzSpan]="12">
               <input nz-input class="form-control" placeholder="无" readonly nz-tooltip [nzTitle]="item.name"  [(ngModel)]="item.name"/>
             </div>
@@ -446,20 +594,50 @@
                 </nz-form-control>
               </div>
             </div>
-          </div>
+          </div> -->
         </nz-form-control>
       </nz-form-item>
     </div>
   </div>
 
-  <div nz-row nzType="flex" nzJustify="start" nzAlign="middle" *ngFor="let items of dataBase.productList;let m=index;">
-    <div nz-col nzXs="24"
-    nzSm="24"
-    nzMd="12">
-      <nz-form-item  style="margin-bottom: 6px">
-        <nz-form-label [nzSm]="8" [nzNoColon]='true' [nzXs]="24">{{m===0?'第三方产品:':''}}</nz-form-label>
-        <nz-form-control [nzSm]="14" [nzXs]="24">
-          <div nz-row [nzGutter]="8">
+  <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+    <div nz-col nzXs="24" nzSm="24" nzMd="24">
+      <nz-form-item style="margin-bottom: 6px">
+        <nz-form-label [nzSm]="4" [nzXs]="24">其他预留</nz-form-label>
+        <nz-form-control [nzSm]="19" [nzXs]="24">
+          <nz-table #rowSelectionTables class="threeTable" [nzScroll]="{ x: '1000px' }" [nzFrontPagination]="false"
+            [nzShowPagination]="false" [nzData]="dataBase.otherList">
+            <thead>
+              <tr>
+                <th nzAlign="center" nzWidth="80px">主机</th>
+                <th nzAlign="center" nzWidth="150px">Simulation ID</th>
+                <th nzAlign="center" nzWidth="180px">Market Bundle ID</th>
+                <th nzAlign="center" nzWidth="200px">
+                  <div>Maket Bundle Name</div>
+                  <div>本地名称</div>
+                </th>
+                <th nzAlign="center" nzWidth="300px">
+                  名称
+                </th>
+                <th nzAlign="center" nzWidth="100px">
+                  金额
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let data of rowSelectionTables.data let m=index">
+                <td nzAlign="center">
+                  <label nz-radio [ngModel]="data.checked" disabled="true"></label>
+                </td>
+                <td nzAlign="center">{{data.simulationId}}</td>
+                <td nzAlign="center">{{data.dealFormSimulationMbId}}</td>
+                <td nzAlign="center">{{data.marketBundleName}}</td>
+                <td nzAlign="center">{{data.name}}</td>
+                <td nzAlign="center">{{data.costs1|NumberThousandth}}</td>
+              </tr>
+            </tbody>
+          </nz-table>
+          <!-- <div nz-row [nzGutter]="8">
             <div nz-col [nzSpan]="12">
               <input nz-input class="form-control" placeholder="无" readonly nz-tooltip [nzTitle]="items.name" [(ngModel)]="items.name" />
             </div>
@@ -471,23 +649,28 @@
                 </nz-form-control>
               </div>
             </div>
-          </div>
+          </div> -->
         </nz-form-control>
       </nz-form-item>
     </div>
   </div>
-<ng-container  *ngIf="dataBase&&dataBase.entryMode != 'STOCK' && mainId">
-  <div nz-col nzXs="24" nzSm="24" nzMd="24"  nzAlign="middle" style="z-index: 999">
-    <nz-form-item>
-      <nz-form-label nzSm="4" nzXl="4" nzXXl="4"><a style="color: #1e70cd!important;font-weight: bold;" nzAlign="middle">投标申请表链接</a></nz-form-label>
-      <nz-form-control nzSm="14" nzXl="14" nzXXl="14">
-        <ng-container *ngIf="mainid_winList.length>0">
-          <a *ngFor="let item of mainid_winList" style="color: #1e70cd!important;font-weight: bold;" (click)="toWin(item)">{{item.referenceId}}</a>
-        </ng-container>
-        
-      </nz-form-control>
-    </nz-form-item>
-  </div>
-</ng-container>
+  <ng-container *ngIf="dataBase&&dataBase.entryMode != 'STOCK' && mainId">
+    <div nz-col nzXs="24" nzSm="24" nzMd="24" nzAlign="middle" style="z-index: 999">
+      <nz-form-item>
+        <nz-form-label nzSm="4" nzXl="4" nzXXl="4"><a style="color: #337fbf!important;font-weight: bold;"
+            nzAlign="middle">投标申请表链接</a></nz-form-label>
+        <nz-form-control nzSm="14" nzXl="14" nzXXl="14">
+          <ng-container *ngIf="mainid_winList.length>0">
+            <a *ngFor="let item of mainid_winList" style="color: #337fbf!important;font-weight: bold;"
+              (click)="toWin(item)">{{item.referenceId}}</a>
+          </ng-container>
+
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </ng-container>
 
 </nz-card>
+<nz-modal [(nzVisible)]="isAgres" nzWidth="650px" nzTitle="查看详情" [nzFooter]="null" (nzOnCancel)="isAgreCancels()">
+  <app-table-show #child [data]="this.dealshow"></app-table-show>
+</nz-modal>

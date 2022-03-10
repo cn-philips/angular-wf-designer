@@ -40,15 +40,15 @@ export class BidinforComponent implements OnInit {
   * 读取产品信息便利OpportunityId集合
   * */
   OpportunityId: any = [];
-  flags:any; //判断是已办还是代办
+  flags: any; // 判断是已办还是代办
   mainid: any = '';
-  load:any=false; //load加载
-  fileNoticeList:any=[] //中标通知书
-  fileAnnouncementList:any=[] //中标公告
-  filecommitmentList:any=[] //投标及其他承诺文件
-  filedemandLetterList:any=[] //要货函或者场地勘验报告
-  fileStatementList:any=[] //参与投标声明函
-  fileSupportList:any=[]//项目解决方案售前支持报告
+  load:any = false; // load加载
+  fileNoticeList: any = []; // 中标通知书
+  fileAnnouncementList: any = []; // 中标公告
+  filecommitmentList: any = []; // 投标及其他承诺文件
+  filedemandLetterList: any = []; // 要货函或者场地勘验报告
+  fileStatementList: any = []; // 参与投标声明函
+  fileSupportList: any = []; // 项目解决方案售前支持报告
 
   /*
   * true 招标编号不等于其他类型
@@ -100,7 +100,7 @@ export class BidinforComponent implements OnInit {
       this.message.create('error', '文件大小不超过100M');
       return false;
     }
-    this.upload('fileSupportList', file, 'support');
+    this.upload('fileSupportList', file, 'support', 'supportName');
     return false;
   }
   // 文件删除回调
@@ -121,7 +121,7 @@ export class BidinforComponent implements OnInit {
       this.message.create('error', '文件大小不超过100M');
       return false;
     }
-    this.upload('fileStatementList', file, 'statement');
+    this.upload('fileStatementList', file, 'statement', 'statementName');
     return false;
   }
   // 文件删除回调
@@ -141,7 +141,7 @@ export class BidinforComponent implements OnInit {
       this.message.create('error', '文件大小不超过100M');
       return false;
     }
-    this.upload('filedemandLetterList', file, 'demandLetter');
+    this.upload('filedemandLetterList', file, 'demandLetter', 'demandLetterName');
     return false;
   }
   // 文件删除回调
@@ -161,7 +161,7 @@ export class BidinforComponent implements OnInit {
       this.message.create('error', '文件大小不超过100M');
       return false;
     }
-    this.upload('filecommitmentList', file, 'commitmentDocument');
+    this.upload('filecommitmentList', file, 'commitmentDocument', 'commitmentDocumentName');
     return false;
   }
   // 文件删除回调
@@ -182,7 +182,7 @@ export class BidinforComponent implements OnInit {
       this.message.create('error', '文件大小不超过100M');
       return false;
     }
-    this.upload('fileAnnouncementList', file, 'bidWinningAnnouncement');
+    this.upload('fileAnnouncementList', file, 'bidWinningAnnouncement', 'bidWinningAnnouncementName');
     return false;
   }
   // 文件删除回调
@@ -202,7 +202,7 @@ export class BidinforComponent implements OnInit {
       this.message.create('error', '文件大小不超过100M');
       return false;
     }
-    this.upload('fileNoticeList', file, 'bidWinningNotice');
+    this.upload('fileNoticeList', file, 'bidWinningNotice', 'bidWinningNoticeName');
     return false;
   }
   // 文件删除回调
@@ -237,7 +237,7 @@ export class BidinforComponent implements OnInit {
   /**
    * filist 在线显示的文件 file上传的文件 fileId绑定的上传文件的id
    */
-  upload(fileList, file, fileId) {
+  upload(fileList, file, fileId, fileName) {
 
     this[fileList] = [];
     let type = getType(file);
@@ -255,6 +255,7 @@ export class BidinforComponent implements OnInit {
         this.load = false;
         this[fileList][0].fileId = res.data;
         this.data[fileId] = res.data;
+        this.data[fileName] = file.name;
         this.message.create("success", res.msg)
       }
       else {
@@ -276,6 +277,7 @@ export class BidinforComponent implements OnInit {
       price: [null, [Validators.required]],
       opp: [null, [Validators.required]],
       pricetype: [null, [Validators.required]],
+      isSpecial: [null, [Validators.required]],
       // bidWinningNotice:[null,[Validators.required]]
     });
     // this.inItData();

@@ -30,6 +30,8 @@
                             <th nzWidth="250px" nzAlign="center">英文名称</th>
                             <th nzWidth="250px" nzAlign="center">中文名称</th>
                             <th nzWidth="250px" nzAlign="center">地址</th>
+                          <th nzWidth="200px" nzAlign="center">经销商编号</th>
+                          <th nzWidth="350px" nzAlign="center">经销商协议号</th>
                             <th nzWidth="250px" nzAlign="center">
                                 授权地址
                             </th>
@@ -52,6 +54,10 @@
                             <td nzAlign="center">{{data.dealerNameEn}}</td>
                             <td nzAlign="center">{{data.dealerName}}</td>
                             <td nzAlign="center">{{data.registeredAddress}}</td>
+
+                          <td nzAlign="center">{{data.dealerCode}}</td>
+                          <td nzAlign="center">{{data.agreementNo}}</td>
+
                             <td nzAlign="center"><div class="cc" nz-tooltip [nzTitle]="data.authorizedArea">{{data.authorizedArea}}</div></td>
                             <td nzAlign="center"><div class="cc" nz-tooltip [nzTitle]="data.authorizedProduct">{{data.authorizedProduct}}</div></td>
                             <td nzAlign="center">{{data.authorizedStartTime | TimeFormatePipeNow}}</td>

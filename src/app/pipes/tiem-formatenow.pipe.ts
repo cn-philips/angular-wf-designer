@@ -8,7 +8,7 @@ import * as moment from 'moment';
 export class TimeFormatePipeNow implements PipeTransform {
 
 
-  transform(value: any, args?: any): any {
+  transform(value: any, args?: any): any {    
     if (value == null) {
       return '';
     }
@@ -17,11 +17,14 @@ export class TimeFormatePipeNow implements PipeTransform {
 
     if (value && value.toString().indexOf('-') != -1) {
       currentZoneTime.setHours(currentZoneHours);
+    }    
+    if(args)
+    {
+      return  moment(currentZoneTime).format('YYYY-MM-DD HH:mm:ss');
     }
-
-
-    return  moment(currentZoneTime).format('YYYY-MM-DD');
-
+    else{
+      return  moment(currentZoneTime).format('YYYY-MM-DD');
+    }
   }
 
 

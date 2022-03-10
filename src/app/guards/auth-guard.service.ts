@@ -32,9 +32,10 @@ export class AuthGuard {
     // console.log('state-url',state.url==='/');
 
 
-    // console.log('Philips_TOKEN', this.cookieService.get('Philips_TOKEN'));
-   
+    // console.log('Philips_TOKEN', this.cookieService.get('Philips_TOKEN'));           
     this.loader = true;
+    const cook=this.cookieService.check('Philips_TOKEN')
+    console.log(cook)
     if (this.cookieService.check('Philips_TOKEN') && '' !== this.cookieService.get('Philips_TOKEN')) {
       // console.log('state.url', state.url);      
       if('/' === state.url) {
@@ -54,6 +55,7 @@ export class AuthGuard {
       this.loader = false;
       return true;
     } else {
+      this.router.navigateByUrl(state.url)
       this.http.post('act/relation/isAuthorized', { 'key1': '/relation/isAuthorized' }).subscribe(res => {
         console.log('res->', res);
 
@@ -65,6 +67,8 @@ export class AuthGuard {
           // return false;
         }
       });
+      // this.router.navigateByUrl('/logout')
+      // return false;
     }
   }
 

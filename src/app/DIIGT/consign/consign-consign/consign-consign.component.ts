@@ -17,7 +17,7 @@ export class ConsignConsignComponent implements OnInit {
   @Input() public dataBase: any = {};
   @Input() public infor:any={};
   @Input() public mergeData:any={};  
-  public disas:any=false; //控制上传合同和正式合同是否已传的
+  public disas:any=true; //控制上传合同和正式合同是否已传的
   public disad:any=false;//控制上传合同和正式合同是否已传的
   public businessType:any;
   public validateForm: FormGroup;
@@ -39,8 +39,9 @@ export class ConsignConsignComponent implements OnInit {
   public flag: any=0;
   public params = {
     mainId: '',
-    isContract:"",
-    contractFile:"",
+    isContract:"",  //是否正式文件
+    fileList:[],   //合同文件
+    contractDate:"", //合同日期更新
   };
   constructor(
     private fb: FormBuilder,
@@ -73,22 +74,20 @@ export class ConsignConsignComponent implements OnInit {
     this.flag==1&&(this.disa=true);
         
     this.validateForm = this.fb.group({
-      remark: new FormControl({ value: 'Nancy',disabled:this.disa}),
-      file: new FormControl({ value: 'Nancy',disabled:this.disa}),
-      file2: new FormControl({ value: 'Nancy',disabled:this.disa}),
-      file3: new FormControl({ value: 'Nancy',disabled:this.disa}),
-      salesAgreementNo: new FormControl({ value: 'Nancy',disabled:this.disa}), // 买卖协议号
-      importAgreementNo: new FormControl({ value: 'Nancy',disabled:this.disa}), // 进口协议号
-      purchaseOrderNumber: new FormControl({ value: 'Nancy',disabled:this.disa}), // 采购订单号
-      priceTerms: new FormControl({ value: 'Nancy',disabled:this.disa}), // 价格术语
-      solution: new FormControl({ value: 'Nancy',disabled:this.disa},Validators.required), // 是否含有solution
-      productConf: new FormControl({ value: 'Nancy',disabled:this.disa}), // 产品配置
-      invoiceMailingInformation: new FormControl({ value: 'Nancy',disabled:this.disa}), // 发票邮寄信息
-      portShipment: new FormControl({ value: 'Nancy',disabled:this.disa}), // 发货港
-      typeShipping: new FormControl({ value: 'Nancy',disabled:this.disa}), // 运输方式
-      portDestination: new FormControl({ value: 'Nancy',disabled:this.disa}), // 目的港
+      remark: new FormControl({ value: 'Nancy',disabled:this.disa}),      
+      salesAgreementNo: new FormControl({ value: 'Nancy',disabled:this.disa},Validators.required), // 买卖协议号
+      importAgreementNo: new FormControl({ value: 'Nancy',disabled:this.disa},Validators.required), // 进口协议号
+      purchaseOrderNumber: new FormControl({ value: 'Nancy',disabled:this.disa},Validators.required), // 采购订单号
+      priceTerms: new FormControl({ value: 'Nancy',disabled:this.disa},Validators.required), // 价格术语
+      solution: new FormControl({ value: 'Nancy',disabled:this.disa},Validators.required), // 是否含有solution    
+      invoiceMailingInformation: new FormControl({ value: 'Nancy',disabled:this.disa},Validators.required), // 发票邮寄信息
+      portShipment: new FormControl({ value: 'Nancy',disabled:this.disa},Validators.required), // 发货港
+      typeShipping: new FormControl({ value: 'Nancy',disabled:this.disa},Validators.required), // 运输方式
+      portDestination: new FormControl({ value: 'Nancy',disabled:this.disa},Validators.required), // 目的港
       contractDate: new FormControl({ value: 'Nancy',disabled:this.disa},Validators.required), // 合同确认日期
       isContract: new FormControl({ value: 'Nancy'}), // 正式合同已上传
+      addressee:new FormControl({ value: 'Nancy',disabled:this.disa},Validators.required),//收件人
+      addresseeTel:new FormControl({ value: 'Nancy',disabled:this.disa},[Validators.required,this.checkPhone]),//收件人
     });
     this.getTableData()  
   }
@@ -100,10 +99,17 @@ export class ConsignConsignComponent implements OnInit {
     };
     this.http.post(`/act/process/getProcessWorkHisInfo`, params).subscribe(rest => {
       if (rest.code === '0000') {
+        
         let listOfData =  rest.data.reverse();
-        this.user=localStorage.getItem("ng_philips_code1");
-        let owner=listOfData.find(vals=>vals.name=='ORDERCG');        
-        this.disas=owner.assignee==this.user?false:true;              
+        let roleList=JSON.parse(localStorage.getItem("roles"));
+        let roleOff=roleList.some(val=>val=='OA');
+        if(roleOff)
+        {
+          this.user=localStorage.getItem("ng_philips_code1");
+          let owner=listOfData.some(vals=>vals.assignee==this.user);          
+          this.disas=(owner&&this.state!='change_oit_approval'&&this.state!='change_oit')?false:true;
+          this.disas==true?this.validateForm.controls.contractDate.disable():this.validateForm.controls.contractDate.enable();
+        }                   
       } else {
         this.message.create('error', `${rest.msg}`);
       }
@@ -152,21 +158,37 @@ export class ConsignConsignComponent implements OnInit {
   public updata() {
     this.params.mainId = decodeString(this.activatedRouter.queryParams['_value'].id);
     this.params.isContract=this.dataBase.isContract;
-    this.params.contractFile=this.dataBase.contractFile;
-    const url = '/act/preparation/editFile';
-    if(this.params.contractFile!=null&&this.params.contractFile!=undefined&&this.params.contractFile!="")
+    this.params.contractDate=this.dataBase.contractDate;    
+    const url = '/act/preparation/editFile'; 
+    if(this.fileFileList.length>0)
     {
-      this.http.post(url, this.params).subscribe( res => {
+      let fileList=[];
+      this.fileFileList.map(vals=>{
+        let obj={
+          fileId: vals.fileId,
+        }  
+        fileList.push(obj)
+      })
+      this.params.fileList=fileList;
+      this.load=true;    
+      this.http.post(url, this.params).subscribe((res => {
         if (res.code === '0000') {
           this.message.create('success', '操作成功');
+          
         }
         const url = `/act/preparation/queryContractSigned?mainId=${this.params.mainId}`
-        this.http.get(url).subscribe((rest => {
+        this.http.get(url).subscribe(((rest => {
+          this.load=false;
            if(rest.data.isContract=='1')
            {
              this.disad=true;
            }
-        }))
+        })),(error)=>{
+            this.message.create("error","请求异常!");
+        })
+      }),(error)=>{
+        this.load=false;
+        this.message.create("error","请求异常!");
       });
     }
     else
@@ -210,6 +232,9 @@ export class ConsignConsignComponent implements OnInit {
   }
    //删除合同文件
    nzRemovcontractFile=(file:UploadFile):any=>{
+     this.fileFileList.map((vals,index)=>{
+       vals.fileId==file.fileId&&this.fileFileList.splice(index,1);
+     })
     this.dataBase.contractFile="";
     return true;
   }
@@ -218,6 +243,20 @@ export class ConsignConsignComponent implements OnInit {
    nzRemovsitePreparation=(file:UploadFile):any=>{
     this.dataBase.productConfFile="";
     return true;
+  }
+
+  // 电话号码正则表达式的验证
+  checkPhone(control: FormControl) {
+    if (control.value) {
+      //const reg = /^1[3|4|5|7|8][0-9]{9}$/; // 验证规则
+      // const reg = /^([\d\+\-\*\/x]\d{0,15}$)*$/
+      //const reg=/^([\d +()-\s]{0,20}$)$/;
+      const reg = /^([\d +()-\s]{0,1000}$)$/;
+      //const reg = /^[0-9]*$/g;      
+      //const phoneNum = '15507621999'; // 手机号码
+      const valid = reg.test(control.value); // true
+      return valid ? null : { phoneform: true };
+    }
   }
   // 文件下载
   public fileDwon(id) {
@@ -250,10 +289,10 @@ export class ConsignConsignComponent implements OnInit {
       this.message.create('error', '文件大小不超过100M');
       return false;
     }
-   // let upLoadFilesNow=upLoadFiles.bind(this)
-   // upLoadFilesNow('fileFileList',file,'attachmentIds',"dataBase");
+    let upLoadFilesNow=upLoadFiles.bind(this)
+   upLoadFilesNow('fileFileList',file);
    //this.uploads('fileFileList',file,'attachmentIds',"dataBase")
-     this.upload('fileFileList',file,"contractFile");
+   //  this.upload('fileFileList',file,"contractFile");
     return false;
   }
   // 上传——file2    产品配置文件
@@ -297,7 +336,11 @@ export class ConsignConsignComponent implements OnInit {
       this.validateForm.get('salesAgreementNo')!.clearValidators();
       this.validateForm.get('salesAgreementNo')!.markAsPristine();
       this.validateForm.get('invoiceMailingInformation')!.clearValidators();
-      this.validateForm.get('invoiceMailingInformation')!.markAsPristine();  
+      this.validateForm.get('invoiceMailingInformation')!.markAsPristine();
+      this.validateForm.get('addressee')!.clearValidators();
+      this.validateForm.get('addressee')!.markAsPristine();   
+      this.validateForm.get('addresseeTel')!.clearValidators();
+      this.validateForm.get('addresseeTel')!.markAsPristine();     
     }
     else
     { 
@@ -306,7 +349,7 @@ export class ConsignConsignComponent implements OnInit {
       this.validateForm.get('contractDate')!.setValidators(Validators.required);
       this.validateForm.get('contractDate')!.markAsDirty(); 
       this.validateForm.get('solution')!.setValidators(Validators.required);
-      this.validateForm.get('solution')!.markAsDirty();    
+      this.validateForm.get('solution')!.markAsDirty();   
     }
     if(param==1)
     {
@@ -339,7 +382,11 @@ export class ConsignConsignComponent implements OnInit {
         this.validateForm.get('priceTerms')!.setValidators(Validators.required);
         this.validateForm.get('priceTerms')!.markAsDirty();
         this.validateForm.get('invoiceMailingInformation')!.clearValidators();
-        this.validateForm.get('invoiceMailingInformation')!.markAsPristine();       
+        this.validateForm.get('invoiceMailingInformation')!.markAsPristine(); 
+        this.validateForm.get('addressee')!.clearValidators();
+        this.validateForm.get('addressee')!.markAsPristine(); 
+        this.validateForm.get('addresseeTel')!.clearValidators();
+        this.validateForm.get('addresseeTel')!.markAsPristine();      
       }
       else{
         this.validateForm.get('portDestination')!.clearValidators();
@@ -354,6 +401,10 @@ export class ConsignConsignComponent implements OnInit {
         this.validateForm.get('priceTerms')!.markAsPristine();         
         this.validateForm.get('invoiceMailingInformation')!.setValidators(Validators.required);
         this.validateForm.get('invoiceMailingInformation')!.markAsDirty();
+        this.validateForm.get('addressee')!.setValidators(Validators.required);
+        this.validateForm.get('addressee')!.markAsDirty();
+        this.validateForm.get('addresseeTel')!.setValidators([Validators.required, this.checkPhone]);
+        this.validateForm.get('addresseeTel')!.markAsDirty();
       }
     }      
     this.validateForm.get('contractDate')!.updateValueAndValidity();
@@ -366,7 +417,9 @@ export class ConsignConsignComponent implements OnInit {
     this.validateForm.get('portDestination')!.updateValueAndValidity();
     this.validateForm.get('purchaseOrderNumber')!.updateValueAndValidity();
     this.validateForm.get('salesAgreementNo')!.updateValueAndValidity();
-    this.validateForm.get('remark')!.updateValueAndValidity();
+    this.validateForm.get('remark')!.updateValueAndValidity();    
+    this.validateForm.get('addressee')!.updateValueAndValidity();
+    this.validateForm.get('addresseeTel')!.updateValueAndValidity();    
     
   }
   checkFormData = () => {
@@ -378,9 +431,9 @@ export class ConsignConsignComponent implements OnInit {
   };
   ngOnChanges() {
     this.viewData("productConfFile","productConfFileList",this.dataBase.productConfFileNames); 
-    this.viewData("contractFile","fileFileList",this.dataBase.contractFileNames);      
+    this.viewDatas("fileFileList",'fileList');      
     let state=this.activatedRouter.queryParams['_value'].status;
-    this.dataBase.remark=this.dataBase.remark?this.dataBase.remark:"";
+    this.dataBase.remark=this.dataBase.remark?this.dataBase.remark:"";    
     if(this.dataBase.isContract=='1'&&state!='DHTQS')
     {
       this.disad=true;
@@ -401,6 +454,27 @@ export class ConsignConsignComponent implements OnInit {
     obj.fileId = this.dataBase[data];
     obj.name =name?name:"文件下载";
     this[fileList].push(obj);
+  }
+}
+
+/**  
+   * @param   fileList 回显数组
+   * @param   name 接口返回数组
+   */
+ viewDatas(fileList,name:any) {
+
+  const bidWinningNotice = this.dataBase[name];
+  if (bidWinningNotice != null&&bidWinningNotice!=""&&bidWinningNotice.length>0) {
+
+    this[fileList] = [];    
+    bidWinningNotice.map(vals=>{
+      let obj = { uid: "", name: "", fileId: "" }
+      obj.uid = vals.fileId;
+      obj.fileId = vals.fileId;
+      obj.name =vals.fileName?vals.fileName:"文件下载";
+      this[fileList]=this[fileList].concat(obj);
+    })
+    
   }
 }
   // 打开pdf查看器
@@ -448,7 +522,7 @@ export class ConsignConsignComponent implements OnInit {
       priceTerms: this.dataBase.priceTerms?this.dataBase.priceTerms:"", // 价格术语
       tenderNo: this.mergeData.tenderNo?this.mergeData.tenderNo:"",//招标编号 
       dealFormId:this.mergeData.dealFormId, //dealfromid
-      distributor:this.mergeData.distributor?this.mergeData.distributor:"", //经销商
+      distributor:this.mergeData.agent?this.mergeData.agent:"", //经销商
       orderSignNam:this.mergeData.orderSignName?this.mergeData.orderSignName:"",//采购订单签署人
       orderSignPost:this.mergeData.orderSignPost?this.mergeData.orderSignPost:"",//采购订单签署人职务
       distributorAddress:this.mergeData.distributorAddress?this.mergeData.distributorAddress:"", //经销商地址
@@ -487,6 +561,15 @@ export class ConsignConsignComponent implements OnInit {
       
      
       countryOrigin:this.mergeData.countryOrigin?this.mergeData.countryOrigin:"",//原产地
+      
+      accountName:this.mergeData.accountName?this.mergeData.accountName:"", //开户名称
+      bankName:this.mergeData.bankName?this.mergeData.bankName:"",//开户行
+      accountNo:this.mergeData.accountNo?this.mergeData.accountNo:"", //账号
+      taxNumber:this.mergeData.taxNumber?this.mergeData.taxNumber:"",//税号
+      telTax:this.mergeData.telTax?this.mergeData.telTax:"", //电话/传真
+      accountAddress:this.mergeData.accountAddress?this.mergeData.accountAddress:"", //注册地址
+      addressee:this.mergeData.addressee?this.mergeData.addressee:"", //收件人
+      addresseeTel:this.mergeData.addresseeTel?this.mergeData.addresseeTel:"", //收件人电话
 
       dateYear:dateYear,
       dateMonth:dateMonth,

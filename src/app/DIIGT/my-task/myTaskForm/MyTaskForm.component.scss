@@ -11,3 +11,13 @@
     }
   }
 }
+/deep/.ant-form-item-label.localtion>label::after{
+  content: ':';
+  position: relative;
+  top: -.5px;
+  margin: 0 8px 0 2px;
+  left:12px;
+}
+/deep/.ant-form-item-label.localtion > label{
+  padding-right:18px;
+}

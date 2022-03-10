@@ -14,7 +14,7 @@ export class DevloginComponent implements OnInit {
 
   ngOnInit() {    
     this.aRoute.queryParams.subscribe(async res => {
-      if (res['code']) {
+      if (res['code']) {        
         if(!environment.isProduction)
         {
           const out = await this.http.silentLogout();

@@ -1,8 +1,51 @@
-<h4 class="font-weight-bold py-3">
-  <span>中标确认-待补充文件上传</span>
-</h4>
+<nz-card class="title_warpper">
+  <div>
+    <h4 class="font-weight-bold">
+      <span>中标确认-待补充文件上传</span>
+    </h4>
+  </div>
+</nz-card>
 <igt-approval-flowline></igt-approval-flowline>
 <div class="pr">
+  <div nz-row nzType="flex" nzJustify="end" nzAlign="middle" class="tabs-box-actions" style="z-index: 999">
+    <div nz-col nzSpan="24">
+      <nz-form-item>
+        <nz-form-control [nzSm]="24" [nzXs]="24" style="text-align: right;">
+<!--          <button *ngIf="bidding_flag" nz-button nzType="default" nz-popconfirm nzTitle="你确定要执行程终止的操作?" (nzOnConfirm)="biddingBreak()" style="margin-right:10px;">流程终止</button>-->
+          <button *ngIf="bidding_flag" nz-button nzType="default" (click)="openBiddingBreak()" style="margin-right:10px;">取消项目</button>
+<!--          <button nz-button nzType="primary" (click)="submit()">流程终止</button>-->
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+
+  <nz-modal
+    [(nzVisible)]="showoff"
+    nzWidth="600px"
+    nzTitle="取消项目"
+    (nzOnCancel)="handleCancel()"
+    (nzOnOk)="biddingBreak()"
+    nzOkText="确定取消"
+  >
+    <ng-container>
+      <div>
+        <nz-form-item>
+          <nz-form-label [nzSm]="4" [nzXs]="24" [nzRequired]="true">取消原因</nz-form-label>
+          <nz-form-control [nzSm]="18" [nzXs]="24">
+            <textarea nz-input oninput="if(value.length>255)value=value.slice(0,255)" nz-input placeholder=""
+                      [nzAutosize]="{ minRows: 2, maxRows: 6 }" [(ngModel)]="remarks"></textarea>
+            <!--            <ng-container *ngIf="odata && odata.remarks">-->
+            <!--              <div>还可以输入:{{odata.remarks.length}}/{{textLen}}</div>-->
+            <!--            </ng-container>-->
+            <div *ngIf="rem_mess">
+              <a style="color: #f5222d">请填写取消理由</a>
+            </div>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </ng-container>
+  </nz-modal>
+
   <ngb-tabset type="tabs" [destroyOnHide]="true" class="nav-tabs-top nav-responsive-xl">
     <ngb-tab id="pending-tab">
       <ng-template ngbTabTitle><span class="tab-title"><strong>基础信息</strong></span></ng-template>
@@ -23,9 +66,6 @@
         <div class="card-body">
 
           <app-apploading [load]="load"></app-apploading>
-          <nz-card class="mtb1rem" nzTitle="审批记录">
-            <app-emp-acc></app-emp-acc>
-          </nz-card>
           <nz-card class="mtb1rem" nzTitle="包含非标准条款" *ngIf="dataBase && dataBase.businessType != 'DISTRIBUTOR'">
             <app-app-terms></app-app-terms>
           </nz-card>
@@ -66,7 +106,7 @@
                     </div>
                     <div nz-col nzSpan="24" *ngIf="dataBase&&dataBase.businessType!='DISTRIBUTOR'&&isChan2()">
                       <nz-form-item>
-                        <nz-form-label [nzSm]="4" [nzXs]="24">投标及其他承诺文件</nz-form-label>
+                        <nz-form-label nzRequired [nzSm]="4" [nzXs]="24">投标及其他承诺文件</nz-form-label>
                         <nz-form-control [nzSm]="7" [nzXs]="24">
                           <div class="maxuploadto">
                           <nz-upload *ngIf="isDisable==1||isDisable==3" [(nzFileList)]="filecommitmentList" [nzBeforeUpload]="beforecommitmentUpload" [nzLimit]="1" [nzPreview]="dwonLoad" [nzRemove]="beforecommitmentDel">
@@ -79,7 +119,7 @@
                     </div>
                     <div nz-col nzSpan="24" *ngIf="dataBase&&dataBase.businessType!='DISTRIBUTOR'&&isChan2()">
                       <nz-form-item>
-                        <nz-form-label [nzSm]="4" [nzXs]="24">参与投标声明函</nz-form-label>
+                        <nz-form-label nzRequired [nzSm]="4" [nzXs]="24">参与投标声明函</nz-form-label>
                         <nz-form-control [nzSm]="7" [nzXs]="24">
                           <div class="maxuploadto">
                           <nz-upload *ngIf="isDisable==1||isDisable==3" [(nzFileList)]="fileStatementList" [nzBeforeUpload]="beforeStatementUpload" [nzLimit]="1" [nzPreview]="dwonLoad" [nzRemove]="beforeStatementDel">
@@ -92,7 +132,7 @@
                     </div>
                     <div nz-col nzSpan="24">
                       <nz-form-item>
-                        <nz-form-label [nzRequired]="showFile('demandLetter')" [nzSm]="4" [nzXs]="24">{{biddingNoTypeDemend?'要货函':'场地勘验报告'}}</nz-form-label>
+                        <nz-form-label nzRequired [nzSm]="4" [nzXs]="24">{{biddingNoTypeDemend?'要货函':'场地勘验报告'}}</nz-form-label>
                         <nz-form-control [nzSm]="7" [nzXs]="24">
                           <div class="maxuploadto">
                           <nz-upload *ngIf="isDisable==1||isDisable==3 || showFile('demandLetter')"  [(nzFileList)]="filedemandLetterList" [nzBeforeUpload]="beforeDemandLetterUpload" [nzLimit]="1" [nzPreview]="dwonLoad" [nzRemove]="beforeDemandLetterDel">
@@ -143,7 +183,7 @@
 <!--                            此选项必填字段-->
 <!--                          </nz-form-explain>-->
                         </nz-form-control>
-                        <nz-form-control [nzSm]="7" [nzXs]="24">
+                        <nz-form-control [nzSm]="3" [nzXs]="24" style="width: 120px;">
                           <!--不可编辑-->
                           <nz-select *ngIf="(isDisable==2||isDisable==3) || flag"  [ngModelOptions]="{standalone:true}" [disabled]="isDisable==2||isDisable==3 || flag" style="width: 120px;margin-left:4px" [(ngModel)]="dataInfor.isUsdOrRmb"  nzAllowClear nzPlaceHolder="Choose">
                             <nz-option nzValue="USD" nzLabel="USD"></nz-option>
@@ -158,6 +198,9 @@
 <!--                            *ngIf="validateForm.get('pricetype')?.dirty && validateForm.get('pricetype')?.errors">-->
 <!--                            此选项必填字段-->
 <!--                          </nz-form-explain>-->
+                        </nz-form-control>
+                        <nz-form-control [nzSm]="4" [nzXs]="24" style="min-width: 265px">
+                          <a style="margin-left: 10px">请确保中标价格与中标通知书金额一致</a>
                         </nz-form-control>
                       </nz-form-item>
                     </div>
@@ -185,6 +228,31 @@
                         </nz-form-control>
                       </nz-form-item>
                     </div>
+
+                    <div nz-col nzSpan="24">
+                      <nz-form-item>
+                        <nz-form-label [nzSm]="4" [nzXs]="24" nzRequired>是否特价项目</nz-form-label>
+                        <nz-form-control [nzSm]="6" [nzXs]="24">
+                          <!--不可编辑-->
+                          <nz-radio-group rows="4" *ngIf="(isDisable==2||isDisable==3) || flag" [disabled]="isDisable==2||isDisable==3 || flag" nzSize="default" [ngModelOptions]="{standalone: true}"
+                                          [(ngModel)]="dataInfor.isSpecial">
+                            <label nz-radio nzValue="1">是</label>
+                            <label nz-radio nzValue="0">否</label>
+                          </nz-radio-group>
+                          <!--可编辑-->
+                          <nz-radio-group rows="4" *ngIf="!(isDisable==2||isDisable==3) && !flag" nzSize="default" formControlName="isSpecial"
+                                          [(ngModel)]="dataInfor.isSpecial">
+                            <label nz-radio nzValue="1">是</label>
+                            <label nz-radio nzValue="0">否</label>
+                          </nz-radio-group>
+<!--                          <nz-form-explain-->
+<!--                            *ngIf="validateForm.get('isSpecial')?.dirty && validateForm.get('isSpecial')?.errors">-->
+<!--                            此选项必填字段-->
+<!--                          </nz-form-explain>-->
+                        </nz-form-control>
+                      </nz-form-item>
+                    </div>
+
                     <!--中标日期   可选择-->
                     <div nz-col nzSpan="24" *ngIf="isChan2()&&!(isDisable==2||isDisable==3)&&!flag">
                       <nz-form-item class="mb6">
@@ -317,7 +385,8 @@
                         <nz-form-control [nzSm]="18" [nzXs]="24">
                           <div class="cheabox" *ngFor="let it of dataInfor.biddingProductlist">
                             <header>
-                              <a href="javascript:" style="cursor:default;">Opportunity {{it.opportunityId}}</a>
+                              <a href="javascript:" style="cursor:default;">Opportunity : {{it.opportunityId}}</a>
+                              <a href="javascript:" style="cursor: default;" *ngIf="it.dealFormId != null && it.dealFormId != ''">&nbsp; Deal Form ID : {{it.dealFormId}}</a>
                             </header>
 
                             <div *ngIf="it.biddingProductlist">
@@ -390,6 +459,9 @@
               </div>
             </div>
           </nz-card>
+
+          <app-emp-emp-app [data]="dataBase"></app-emp-emp-app>
+
           <nz-card class="mtb1rem" nzTitle="中标确认">
             <form nz-form>
               <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
@@ -413,7 +485,7 @@
                           <a class="is" *ngIf="IsOtherInput()"></a>
                           <!-- <input  [disabled]="true" [(ngModel)]="odata.other" [ngModelOptions]="{standalone: true}" nz-input
                                   placeholder="" nzSize="default" style="width: 190px;margin-left:0px;" /> -->
-                                <div class="text" [(ngModel)]="odata.other" nz-tooltip [nzTitle]="odata.other" >
+                                <div class="text" [(ngModel)]="odata.other" nz-tooltip [nzTitle]="odata.other" [ngModelOptions]="{standalone: true}" >
                                   {{ odata.other }}
                                 </div>
                           </div>
@@ -456,6 +528,42 @@
                   </nz-form-item>
                 </div>
               </div>
+
+              <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+                <div nz-col nzSpan="12">
+                  <nz-form-item>
+                    <nz-form-label [nzSm]="8" [nzXs]="24">中标公告</nz-form-label>
+                    <nz-form-control [nzSm]="14" [nzXs]="24" nzHasFeedback>
+<!--                      <nz-upload *ngIf="flag==0" [(nzFileList)]="bidAnnouncementList"-->
+<!--                                 [nzBeforeUpload]="bidAnnouncementUpload" [nzLimit]="1" [nzPreview]="dwonLoad" [nzRemove]="beforeSupplementRemo">-->
+<!--                        <button nz-button><i nz-icon nzType="upload"></i><span>上传附件</span></button>-->
+<!--                        <button *ngIf="flag==1" disabled="true" nz-button><i nz-icon nzType="upload"></i><span>上传附件</span></button>-->
+<!--                      </nz-upload>-->
+                      <button nz-tooltip [nzTitle]="odata.bidAnnouncementName" *ngIf="odata.bidAnnouncement" class="down link-tesk" nz-button nzType="link"
+                              (click)="fileDwon(odata.bidAnnouncement)">{{odata.bidAnnouncementName}}</button>
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+              </div>
+
+              <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+                <div nz-col nzSpan="12">
+                  <nz-form-item>
+                    <nz-form-label [nzSm]="8" [nzXs]="24">中标公告价格</nz-form-label>
+                    <nz-form-control [nzSm]="10" [nzXs]="24">
+                      <input nz-input #price [(ngModel)]="odata.bidAnnouncementPrice" [ngModelOptions]="{standalone:true}" disabled />
+
+                    </nz-form-control>
+                    <nz-form-control [nzSm]="4" [nzXs]="24" style="padding-left:4px;">
+                      <nz-select [ngModelOptions]="{standalone:true}" style="width: 100%;" [(ngModel)]="odata.bidAnnouncementCurrency"  nzAllowClear nzPlaceHolder="请选择币制" disabled>
+                        <nz-option nzValue="USD" nzLabel="USD"></nz-option>
+                        <nz-option nzValue="RMB" nzLabel="RMB"></nz-option>
+                      </nz-select>
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+              </div>
+
               <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
                 <div nz-col nzSpan="12">
                   <nz-form-item>
@@ -535,6 +643,10 @@
       <a class="a-url a-url-left" (click)="toWin(item)">{{item.referenceId}}</a>
 <!--      <a class="a-url" (click)="toWin(item)">{{item.jdChildMainId ? item.jdChildMainId : item.jdMainId}}</a>-->
     </div>
+  </nz-card>
+
+  <nz-card class="mtb1rem" nzTitle="审批记录">
+    <app-emp-acc></app-emp-acc>
   </nz-card>
 </div>
 

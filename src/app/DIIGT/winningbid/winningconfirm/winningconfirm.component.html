@@ -1,7 +1,4 @@
 <app-apploading [load]="load"></app-apploading>
-<nz-card class="mtb1rem" nzTitle="审批记录">
-  <app-emp-acc></app-emp-acc>
-</nz-card>
 <nz-card class="mtb1rem" nzTitle="包含非标准条款" *ngIf="dataBase && dataBase.businessType != 'DISTRIBUTOR'">
   <app-app-terms></app-app-terms>
 </nz-card>
@@ -12,6 +9,9 @@
     </div>
   </div>
 </nz-card>
+
+<app-emp-emp-app [data]="dataBase"></app-emp-emp-app>
+
 <nz-card class="mtb1rem" nzTitle="中标确认">
   <form nz-form [formGroup]="validateForm">
     <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
@@ -52,7 +52,7 @@
           <nz-form-label [nzRequired]="IsspecialApprovalFile()" [nzSm]="8" [nzXs]="24">特批支持文件</nz-form-label>
           <nz-form-control [nzSm]="14" [nzXs]="24" nzHasFeedback>
             <div class="maxuploadto">
-            <nz-upload *ngIf="flag==0" formControlName="fileurl" [(nzFileList)]="fileList.fileSpecialList"
+            <nz-upload *ngIf="flag==0" [(nzFileList)]="fileList.fileSpecialList"
               [nzBeforeUpload]="beforeSpecialUpload" [nzLimit]="1" [nzPreview]="dwonLoad">
               <button nz-button><i nz-icon nzType="upload"></i><span>上传附件</span></button>
               <!-- <button *ngIf="flag==1" disabled="true"    nz-button><i nz-icon nzType="upload"></i><span>上传附件</span></button> -->
@@ -89,6 +89,54 @@
         </nz-form-item>
       </div>
     </div>
+
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzSpan="12">
+        <nz-form-item>
+          <nz-form-label [nzSm]="8" [nzXs]="24">中标公告</nz-form-label>
+          <nz-form-control [nzSm]="14" [nzXs]="24" nzHasFeedback>
+            <div>
+              <div class="maxuploadto">
+                <nz-upload *ngIf="flag==0" [(nzFileList)]="fileList.bidAnnouncementList"
+                           [nzBeforeUpload]="bidAnnouncementUpload" [nzLimit]="1" [nzPreview]="dwonLoad">
+                  <button nz-button><i nz-icon nzType="upload"></i><span>上传附件</span></button>
+                  <!-- <button *ngIf="flag==1" disabled="true"    nz-button><i nz-icon nzType="upload"></i><span>上传附件</span></button> -->
+                </nz-upload>
+              </div>
+              <button nz-tooltip [nzTitle]="odata.bidAnnouncementName" *ngIf="flag==1&&odata.bidAnnouncement" class="down link-tesk" nz-button nzType="link"
+                      (click)="fileDwon(odata.bidAnnouncement)">{{odata.bidAnnouncementName}}</button>
+            </div>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzSpan="12">
+      <nz-form-item>
+        <nz-form-label [nzSm]="8" [nzXs]="24">中标公告价格</nz-form-label>
+        <nz-form-control [nzSm]="10" [nzXs]="24">
+          <!--可编辑-->
+          <input *ngIf="flag==0" nz-input #price [(ngModel)]="odata.bidAnnouncementPrice" [ngModelOptions]="{standalone:true}" (ngModelChange)="toNumber($event)" />
+          <!--不可编辑-->
+          <input *ngIf="flag==1" nz-input #price [(ngModel)]="odata.bidAnnouncementPrice" [ngModelOptions]="{standalone:true}" (ngModelChange)="toNumber($event)" disabled />
+        </nz-form-control>
+        <nz-form-control [nzSm]="4" [nzXs]="24" style="padding-left:4px;">
+          <!--可编辑-->
+          <nz-select *ngIf="flag==0" [ngModelOptions]="{standalone:true}" style="width: 100%;" [(ngModel)]="odata.bidAnnouncementCurrency"  nzAllowClear nzPlaceHolder="请选择币制">
+            <nz-option nzValue="USD" nzLabel="USD"></nz-option>
+            <nz-option nzValue="RMB" nzLabel="RMB"></nz-option>
+          </nz-select>
+          <!--不可编辑-->
+          <nz-select *ngIf="flag==1" [ngModelOptions]="{standalone:true}" style="width: 100%;" [(ngModel)]="odata.bidAnnouncementCurrency"  nzAllowClear nzPlaceHolder="请选择币制" disabled>
+            <nz-option nzValue="USD" nzLabel="USD"></nz-option>
+            <nz-option nzValue="RMB" nzLabel="RMB"></nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+      </div>
+    </div>
+
     <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
       <div nz-col nzSpan="12">
         <nz-form-item>
@@ -96,7 +144,7 @@
           <nz-form-control [nzSm]="14" [nzXs]="24" nzHasFeedback>
             <div>
               <div class="maxuploadto">
-              <nz-upload formControlName="fileurl" *ngIf="flag==0" [(nzFileList)]="fileList.filesupplementList"
+              <nz-upload *ngIf="flag==0" [(nzFileList)]="fileList.filesupplementList"
                 [nzBeforeUpload]="beforeSupplementUpload" [nzLimit]="1" [nzPreview]="dwonLoad">
                 <button nz-button><i nz-icon nzType="upload"></i><span>上传附件</span></button>
                 <!-- <button *ngIf="flag==1" disabled="true"    nz-button><i nz-icon nzType="upload"></i><span>上传附件</span></button> -->
@@ -173,16 +221,17 @@
         <nz-form-item style="text-align: right;">
           <ng-container *ngIf="!showSupplt">
             <button nz-button nz-popconfirm nzTitle="你确定要执行退回的操作?" nzType="primary" class="ml10" [nzSize]="6"
-            (nzOnConfirm)="submitForm($event, validateForm.value, 2, '退回至投标申请表')">退回至投标申请表</button>
-            <button nz-button nz-popconfirm nzTitle="你确定要执行通过的操作?" nzType="primary" class="ml10" [nzSize]="6"
-            (nzOnConfirm)="submitForm($event, validateForm.value, 1, '确定')">确认中标</button>
+            (nzOnConfirm)="submitForm(2, '退回至投标申请表')">退回至投标申请表</button>
+            <button *ngIf="!(dataBase && dataBase.baseDataFrom == 'CP Simulation' && (isSpecial == 1 || isSpecial == '1') && dataBase.businessType == 'DISTRIBUTOR')" nz-button nz-popconfirm nzTitle="你确定要执行通过的操作?" nzType="primary" class="ml10" [nzSize]="6"
+            (nzOnConfirm)="submitForm(1, '确定')">确认中标</button>
+            <button *ngIf="dataBase && dataBase.baseDataFrom == 'CP Simulation' && (isSpecial == 1 || isSpecial == '1') && dataBase.businessType == 'DISTRIBUTOR'" nz-button nzType="primary" class="ml10" [nzSize]="6" (click)="openModal()">中标确认校验</button>
             <button nz-button nz-popconfirm nzTitle="你确定要执行拒绝的操作?" [nzSize]="6" class="ml10" nzType="primary"
-            (nzOnConfirm)="submitForm($event, validateForm.value, 0, '拒绝')" style="margin-left: 10px!important;">拒绝</button>
+            (nzOnConfirm)="submitForm(0, '拒绝')" style="margin-left: 10px!important;">拒绝</button>
           </ng-container>
           <ng-container *ngIf="showSupplt">
             <button nz-button nzType="primary" nzSize="6" class="ml10"
-              (click)="submitForm($event, validateForm.value,1,'保存',0)">保存</button>
-            <button nz-button nzType="primary" nz-popconfirm nzTitle="你确定要执行结束的操作?" nzSize="6" class="ml10" (nzOnConfirm)="submitForm($event, validateForm.value,1,'结束',1)">结束</button>
+              (click)="submitForm(1,'保存',0)">保存</button>
+            <button nz-button nzType="primary" nz-popconfirm nzTitle="你确定要执行结束的操作?" nzSize="6" class="ml10" (nzOnConfirm)="submitForm(1,'结束',1)">结束</button>
           </ng-container>
         </nz-form-item>
       </div>
@@ -193,7 +242,91 @@
 <nz-card class="mtb1rem" nzTitle="相关进单进程链接" *ngIf="flag==1 && CkUrlLength()">
   <div>《进单准备表》/《合同概要表》/《OrderSummary》/《合同签署》/《OIT完成》链接（进程状态以实际状态为准）：</div>
   <div *ngFor="let item of mainid_winList">
-    <a class="a-url a-url-left" (click)="toWin(item)">{{item.referenceId}}</a>
+    <a *ngIf="item.winOff" class="a-url a-url-left" (click)="toWin(item)">{{item.referenceId}}</a>
 <!--    <a class="a-url" (click)="toWin(item)">{{item.jdChildMainId ? item.jdChildMainId : item.jdMainId}}</a>-->
   </div>
 </nz-card>
+
+
+<nz-card class="mtb1rem" nzTitle="审批记录">
+  <app-emp-acc></app-emp-acc>
+</nz-card>
+
+<!--弹窗-->
+<nz-modal [(nzVisible)]="showCP" [nzOkDisabled]="!CkVerifiOff()" nzTitle="中标确认校验结果" nzOkText="确认中标" nzCancelText="取消" nzCentered nzWidth="1600" (nzOnCancel)="handleCancelWinCheck()" (nzOnOk)="handleOkWinCheck()">
+  <div *ngIf="load2" class="load2">
+    <nz-spin nzSimple [nzSize]="'large'"></nz-spin>
+  </div>
+  <ng-container>
+    <nz-table
+      #columnTable
+      nzBordered
+      [nzData]="bidData"
+      [nzScroll]="{ x:'2700px' , y:'500px' }"
+      [nzFrontPagination]="false"
+    >
+      <thead>
+      <tr>
+        <th nzWidth="200px" nzLeft="0px">Opportunity</th>
+        <th nzWidth="250px" nzLeft="200px">Market Bundle</th>
+<!--        <th nzWidth="200px">产品型号</th>-->
+        <th nzWidth="200px">数量</th>
+        <th nzWidth="200px">客户名称（投标)</th>
+        <th nzWidth="200px">客户名称（cp）</th>
+        <th nzWidth="250px">申请人（投标）</th>
+        <th nzWidth="250px">申请人（cp）</th>
+        <th nzWidth="850px">cp审核查询结果</th>
+        <th nzWidth="150px">校验结果</th>
+        <th nzWidth="150px">校验失败原因</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let data of columnTable.data; index as i">
+        <td nzWidth="200px" nzLeft="0px" [attr.rowspan]="data.rowspan" *ngIf="data.isCheak" >{{ data.opportunityId}}</td>
+        <td nzWidth="250px" nzLeft="200px" [attr.rowspan]="data.rowspan" *ngIf="data.isCheak">{{ data.marketBundleName}}</td>
+<!--        <td >{{ data.productModel }}</td>-->
+        <td >{{ data.number }}</td>
+        <td  [attr.rowspan]="data.rowspan" *ngIf="data.isCheak">{{ data.orderByCustomerName}}</td>
+        <td  [attr.rowspan]="data.rowspan" *ngIf="data.isCheak">{{ data.orderByCustomerNameCp}}</td>
+        <td  [attr.rowspan]="data.rowspan" *ngIf="data.isCheak">{{ data.appPerson}}</td>
+        <td  [attr.rowspan]="data.rowspan" *ngIf="data.isCheak">{{ data.winPerson}}</td>
+        <td [attr.rowspan]="data.rowspan" *ngIf="data.isCheak">
+          <nz-radio-group
+            [(ngModel)]="data.select"
+            (ngModelChange)="modelChang(i)"
+          >
+            <div class="mkbox">
+              <div *ngFor="let item of data.searchResult; index as j;" style="display:flex;">
+                <div style="flex: 2;display: flex;align-items: center;justify-content: flex-start;">
+                  <label nz-radio [nzValue]="item.id" [nzDisabled]="item.isDisable">
+                    <span  nz-tooltip [nzTitle]=" 'Simulation ID:'+item.dealFormSimulationId +';'+ 'Deal Form ID:' +item.dealFormId +';'+'MarketBundle Id:'+item.marketBundleId+';'+item.marketBundleName" class="win-check-link down">
+                      {{ 'Simulation ID:'+item.dealFormSimulationId +';'+ 'Deal Form ID:' +item.dealFormId +';'+'MarketBundle Id:'+item.marketBundleId+';'+item.marketBundleName}}{{item.useStatus=='0'?'(未使用)':"(已使用)"}}
+                      <i class="check" *ngIf="item.temUser==true">(已选中)</i>
+                    </span>
+                  </label>
+                </div>
+<!--                <div *ngIf="item.id==data.select&&item.temUser!=true" style="flex: 1;display: flex;align-items: center;justify-content: center">-->
+<!--                  <button nz-button nzSize="small" nzType="primary" (click)="selectClick(i,j)">选择此项校验</button>-->
+<!--                </div>-->
+<!--                <div *ngIf="item.id==data.select&&item.temUser==true" style="flex: 1;display: flex;align-items: center;justify-content: center">-->
+<!--                  <button nz-button nzSize="small" nzType="primary" (click)="selectClick(i,j)">取消此项校验</button>-->
+<!--                </div>-->
+                <div *ngIf="(item.id==data.select||item.temUser)" style="flex: 1;display: flex;align-items: center;justify-content: center">
+                  <button *ngIf="item.temUser != true" nz-button nzSize="small" nzType="primary" (click)="selectClick(i,j)">选择此项校验</button>
+                  <button *ngIf="item.temUser == true" nz-button nzSize="small" nzType="primary" (click)="selectUnClick(i,j)">取消此项校验</button>
+                </div>
+              </div>
+            </div>
+          </nz-radio-group>
+        </td>
+        <td [attr.rowspan]="data.rowspan" *ngIf="data.isCheak">
+          <div *ngIf="data.checkResult!==''" [ngClass]="data.checkResult?'green':'red'">
+            {{ CkResultTitle(data.checkResult,data.searchResult)}}
+          </div>
+        </td>
+        <td [attr.rowspan]="data.rowspan" *ngIf="data.isCheak">{{ data.checkResultReasons }}</td>
+      </tr>
+      </tbody>
+    </nz-table>
+  </ng-container>
+</nz-modal>

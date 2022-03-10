@@ -1,8 +1,9 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, Output, EventEmitter } from '@angular/core';
 import { HttpService, FileService } from '../../services';
-import { decodeString, formatDatesNowMth, formatDatesNow } from '../../../assets/js/tools';
+import { decodeString, formatDatesNowMth, formatDatesNow, standardTime } from '../../../assets/js/tools';
 import { Router, ActivatedRoute } from '@angular/router';
 import { NzMessageService } from 'ng-zorro-antd';
+import { ServesiceService } from '../preOrder/servesice.service';
 
 @Component({
   selector: 'app-complete-oit',
@@ -10,14 +11,26 @@ import { NzMessageService } from 'ng-zorro-antd';
   styleUrls: ['./complete-oit.component.scss']
 })
 export class CompleteOitComponent implements OnInit {
+  @ViewChild('child') child;
   @ViewChild('childbase') public childbase;
+  isAgres: any = false;
+  status:any;
+  //弹窗的数据
+  public showData = {
+    refuseReason: "",
+    remarks: "",
+    file: "",
+    title: "",
+    code: "",
+  }
+  // tab标签
   activedId: any = "pending-tab";
   thirdOff: any = false; //第三方自采核查是否显示;
   realTimeOff: any = false; //realTimeoff是否显示;
-  disa:any=false //是否禁用子菜单
-  mergeData:any={} //合并后的数据
+  disa: any = false //是否禁用子菜单
+  mergeData: any = {} //合并后的数据
   flag: any;
-  load:any=false; //加载
+  load: any = false; //加载
   infor: any = {   //合同概要表数据
     productList: [], // 产品列表
     detail: {
@@ -40,37 +53,42 @@ export class CompleteOitComponent implements OnInit {
     productVerification: "0",//是否经销商第三方产品核查
     //specialSupportName: "",//特批支持文件名称
     logistician: "", //物流人员id
-    oMlist:[],//下拉列表
-    expertList:[], //选中的人员
-    name:"",//物流人员姓名
-    email:"",//物流人员邮件
-    logisticsTime:formatDatesNowMth(new Date),//日期选择
+    oMlist: [],//下拉列表
+    expertList: [], //选中的人员
+    name: "",//物流人员姓名
+    email: "",//物流人员邮件
+    logisticsTime: formatDatesNowMth(new Date),//日期选择
     file: "",//进出口凭证
-    other:"", //其它
-    exportControl:"",//进出口管制
+    other: "", //其它
+    otherFiles: "", //其它多文件
+    exportControl: "",//进出口管制
     check: 0, //1同意 0拒绝
+    deBook: "0",
+    deBookDate: "",
+    reBook: "0",
+    reBookDate: "",
   };
-  isDisable:any=false;
+  isDisable: any = false;
   constructor(
     private http: HttpService,
     private router: Router,
     public activatedRouter: ActivatedRoute,
     private message: NzMessageService,
+    private ServesiceService: ServesiceService,
   ) { }
-  public ngOnInit() {      
+  public ngOnInit() {
     this.init();
-    const ASYNS = async () => { 
-     this.load=true;    
-     const  detailData=await this.getDataDetail();       
-     const contractData=await this.getDataBase();
-     const cpData=await this.getCpdata();
-     const orderData:any=await this.getOrderSummary(contractData,cpData);
-     await this.getBaseOrder();
-     orderData.distributor=orderData.agent;   
-     this.mergeData=Object.assign(detailData,orderData,contractData);
-     const getTemplates=await this.getTemplate();
-     const getFormDetailsd= await this.getFormDetails();      
-     const getUsers=this.getUser();
+    const ASYNS = async () => {
+      this.load = true;
+      const detailData = await this.getDataDetail();
+      const contractData = await this.getDataBase();
+      const cpData = await this.getCpdata();
+      const orderData: any = await this.getOrderSummary(contractData, cpData);
+      await this.getBaseOrder();
+      this.mergeData = Object.assign(detailData, orderData, contractData);
+      const getTemplates = await this.getTemplate();
+      const getFormDetailsd = await this.getFormDetails();
+      const getUsers = this.getUser();
     }
     ASYNS()
   }
@@ -78,19 +96,20 @@ export class CompleteOitComponent implements OnInit {
 
     const param = this.activatedRouter.queryParams['_value'].param;
     this.flag = this.activatedRouter.queryParams['_value'].flag;
+    this.status = this.activatedRouter.queryParams['_value'].status;
     switch (param) {
       case "third":
         this.thirdOff = true;
-        this.disa=true
+        this.disa = true
         break;
       case "realTime":
-        this.realTimeOff = true; 
-        this.disa=true;       
+        this.realTimeOff = true;
+        this.disa = true;
         break;
       default:
         this.thirdOff = false;
         this.realTimeOff = false;
-        this.disa=false;
+        this.disa = false;
 
     }
 
@@ -104,15 +123,15 @@ export class CompleteOitComponent implements OnInit {
       this.http.post(url, {}).subscribe(res => {
         if (res.data) {
           this.infor = res.data;
-          this.infor.sameFlag=this.infor.sameFlag.toString();
+          this.infor.sameFlag = this.infor.sameFlag.toString();
           this.infor.detail = {
             id: '',
             flag: '',
             status: '',
           }
           this.infor.detail.flag = this.activatedRouter.queryParams['_value'].flag;
-          this.infor.detail.status=this.activatedRouter.queryParams['_value'].status;
-          this.infor.referenceId=res.data.referenceId;
+          this.infor.detail.status = this.activatedRouter.queryParams['_value'].status;
+          this.infor.referenceId = res.data.referenceId;
           this.oitData.productVerification = this.dataBase.dealerAudit;
           resolve(res.data)
           //this.oitData.productVerification = this.dataBase.dealerAudit ? '1' : '0';
@@ -122,7 +141,7 @@ export class CompleteOitComponent implements OnInit {
       });
     })
   }
-  getOrderSummary(param,params) {
+  getOrderSummary(param, params) {
     const mainId = decodeString(this.activatedRouter.queryParams['_value'].id);
     let url = `/act/preparation/queryOrderSummary?mainId=${mainId}`;
     return new Promise((resolve, reject) => {
@@ -133,7 +152,12 @@ export class CompleteOitComponent implements OnInit {
           this.dataBase.contractConfirmationDate = formatDatesNow(this.dataBase.contractConfirmationDate);
           resolve(res.data);
           this.dataBase.entryMode = param.entryMode //进单模式
-          this.dataBase.region = param.region;//区域
+          this.dataBase.team = param.team;//team
+          this.dataBase.region = param.region;//大区域
+          this.dataBase.smallArea = param.smallArea;//小区域
+          this.dataBase.endUserId = param.endUserId; //最终用户id
+          this.dataBase.poolEndDate = standardTime(param.poolEndDate);//外贸易公司日期  
+          this.dataBase.contractEndDate = standardTime(param.contractEndDate);//经销商日期  
           this.dataBase.businessModel = param.businessModel; //业务模式
           this.dataBase.bidWinningNotice = param.bidWinningNotice;//中标通知书
           this.dataBase.distributor = param.tenderingCompany; //投标公司
@@ -147,33 +171,40 @@ export class CompleteOitComponent implements OnInit {
           this.dataBase.contractPrice = param.contractPrice //合同价格
           this.dataBase.paymentProvision = param.paymentProvision //付款条款
           this.dataBase.referenceId = param.referenceId; //添加referenceId
+          this.dataBase.dealFormId = param.dealFormId;//dealFromid
           this.dataBase.contractDdpStatus = param.contractDdpStatus; //合同买方的ddpstatus
           this.dataBase.foreignTradeCompany = param.foreignTradeCompany; //外贸易公司
           this.dataBase.invoiceInformation = param.invoiceInformation;   //币制
-          this.dataBase.bidWinningPrice=res.data.bidWinningPrice?res.data.bidWinningPrice:"";//中标价格
+          this.dataBase.bidWinningPrice = res.data.bidWinningPrice ? res.data.bidWinningPrice : "";//中标价格
           this.dataBase.relationshipLink = params.businessOpportunityHierarchyLink // 商机层级关系链接
           this.dataBase.priceRange = params.samplingInspection // 是否抽样审核
           this.dataBase.sofonFile = params.sofonFile;
-          this.dataBase.countryOrigin = params.countryOrigin // 原产地
+          this.dataBase.countryOrigin = params.countryOrigin // 原产地中文
+          this.dataBase.countryOriginEn = params.countryOriginEn ? params.countryOriginEn : ""; // 原产地英文
+
+          this.dataBase.medicalDeviceName = params.medicalDeviceName;//医疗器械名称
+          this.dataBase.nmpaRegistrationExpried = params.nmpaRegistrationExpried;//NMPA证有效期截止日期       
+          this.dataBase.financialProgramme = params.financialProgramme; //金融方案价格  
+          this.dataBase.financialProgrammeTxt = params.financialProgrammeTxt; //金融方案文本框的值
+          this.dataBase.tradeInCost = params.tradeInCost;//tradeIn总额
+          this.dataBase.financialProgrammeCost = params.financialProgrammeCost; //金融方案总金额
+          this.dataBase.agreementNo=param.agreementNo; //经销商协议号;
+          this.dataBase.dealerCode=param.dealerCode; //经销商code;
+          this.dataBase.centralized = param.centralized; //集采
+          this.dataBase.actualSales = param.actualSales; //实际销售人
           this.dataBase.finalSofonQuotation = params.sofonNo //finalSofonQuotation
-          this.dataBase.tradeList =params.cosOppTradeIns!=null&&params.cosOppTradeIns!=""&&params.cosOppTradeIns.length>0?params.cosOppTradeIns:[{name:"",costs1:""}]; // tradeIn
-          this.dataBase.warrantyList = params.cosOppExtendedWarranties!=null&&params.cosOppExtendedWarranties!=""&&params.cosOppExtendedWarranties.length>0?params.cosOppExtendedWarranties:[{posIdName:"",posLocalCtp:""}] // 延长保修
-          this.dataBase.productList = params.cosOppThirdParties!=null&&params.cosOppThirdParties!=""&&params.cosOppThirdParties.length>0?params.cosOppThirdParties:[{thirdPartyName:"",total:""}] // 第三方       
-          this.dataBase.application = params.applications!=null&&params.applications!=""&&params.applications.length>0?params.applications:[{productName:"",localCtp1:""}];
+          this.dataBase.tradeList = params.cosOppTradeIns != null && params.cosOppTradeIns != "" && params.cosOppTradeIns.length > 0 ? params.cosOppTradeIns : [{ name: "", costs1: "" }]; // tradeIn
+          this.dataBase.warrantyList = params.cosOppExtendedWarranties != null && params.cosOppExtendedWarranties != "" && params.cosOppExtendedWarranties.length > 0 ? params.cosOppExtendedWarranties:[] // 延长保修
+          this.dataBase.otherList=params.otherList!=null&&params.otherList!=""&&params.otherList.length>0?params.otherList:[] //其他预留
+          this.dataBase.productList = params.cosOppThirdParties != null && params.cosOppThirdParties != "" && params.cosOppThirdParties.length > 0 ? params.cosOppThirdParties : [{ thirdPartyName: "", total: "" }] // 第三方       
+          this.dataBase.application = params.applications != null && params.applications != "" && params.applications.length > 0 ? params.applications : [{ productName: "", localCtp1: "" }];
           this.dataBase.applicationPrice = params.applicationPrice;
-          this.dataBase.applications=params.applications!=null&&params.applications!=""&&params.applications.length>0?params.applications:[{productName:"",localCtp1:""}]      
-          if (this.dataBase.warrantyList && this.dataBase.warrantyList.length > 0) {
-            this.dataBase.warrantyList.map(res => {
-              res.name = res.posIdName;
-              res.price = res.posLocalCtp;
-              delete res.posIdName;
-              delete res.posLocalCtp;
-            });
-          }
+          this.dataBase.applications = params.applications != null && params.applications != "" && params.applications.length > 0 ? params.applications : [{ productName: "", localCtp1: "" }]
+         
           if (this.dataBase.productList && this.dataBase.productList.length > 0) {
             this.dataBase.productList.map(res => {
               res.name = res.thirdPartyName;
-              res.price = res.total?res.total:"";
+              res.price = res.total ? res.total : "";
               delete res.thirdPartyName;
               delete res.total;
             })
@@ -186,8 +217,7 @@ export class CompleteOitComponent implements OnInit {
     })
   }
   //来自cp的
-  getCpdata() 
-  {
+  getCpdata() {
 
     const mainId = decodeString(this.activatedRouter.queryParams['_value'].id);
     let url = `/act/preparation/queryInfoForOrderSummaryFromCP?mainId=${mainId}`
@@ -201,14 +231,13 @@ export class CompleteOitComponent implements OnInit {
   }
 
   //查询order summary的
-  getBaseOrder()
-  {
+  getBaseOrder() {
     const mainId = decodeString(this.activatedRouter.queryParams['_value'].id);
     let url = `/act/preparation/queryInfoForOrderSummary?mainId=${mainId}`;
     return new Promise((resolve, reject) => {
-      this.http.get(url).subscribe(res => {         
-        this.dataBase.isUsdOrRmb=(res.data.isUsdOrRmb!=null&&res.data.isUsdOrRmb!=""&&res.data.isUsdOrRmb!=undefined)?res.data.isUsdOrRmb:"";  
-        resolve(res);     
+      this.http.get(url).subscribe(res => {
+        this.dataBase.isUsdOrRmb = (res.data.isUsdOrRmb != null && res.data.isUsdOrRmb != "" && res.data.isUsdOrRmb != undefined) ? res.data.isUsdOrRmb : "";
+        resolve(res);
       })
     })
   }
@@ -219,119 +248,116 @@ export class CompleteOitComponent implements OnInit {
   {
     this.activedId = val.nextId;
   }
-  public getFormDetails() {    
-     
+  //oit完成查询接口
+  public getFormDetails() {
     return new Promise((reslove, reject) => {
       this.http.get(`/act/preparation/oitCheck?mainId=` + decodeString(this.activatedRouter.queryParams['_value'].id)).subscribe(res => {
-      
-        if (res.code === '0000') { 
+
+        if (res.code === '0000') {
           this.oitData = res.data;
-          this.oitData.exportControl=this.oitData.exportControl?this.oitData.exportControl:"";
-          this.oitData.other=this.oitData.other?this.oitData.other:"";
-          this.oitData.expertList=this.oitData.expertList?this.oitData.expertList:[];
-          !this.oitData.logisticsTime&&(this.oitData.logisticsTime=formatDatesNowMth(new Date()))
-          this.oitData.specialApprovalSupporting=this.oitData.specialApprovalSupporting!=null?this.oitData.specialApprovalSupporting:"0";
-          this.oitData.remark=this.oitData.remark!=null?this.oitData.remark:"";
+          this.oitData.deBook = this.oitData.deBook ? this.oitData.deBook : "0";
+          this.oitData.reBook = this.oitData.reBook ? this.oitData.reBook : "0";
+          this.oitData.exportControl = this.oitData.exportControl ? this.oitData.exportControl : "";
+          this.oitData.other = this.oitData.other ? this.oitData.other : "";
+          this.oitData.expertList = this.oitData.expertList ? this.oitData.expertList : [];
+          !this.oitData.logisticsTime && (this.oitData.logisticsTime = formatDatesNowMth(new Date()))
+          this.oitData.specialApprovalSupporting = this.oitData.specialApprovalSupporting != null ? this.oitData.specialApprovalSupporting : "0";
+          this.oitData.remark = this.oitData.remark != null ? this.oitData.remark : "";
           reslove(res.data)
         } else {
           this.message.create('error', res.msg);
         }
       });
     })
-
   }
 
-    //获取人员下拉列表
-    getUser()
-    {
-        
-        let marinId = decodeString(this.activatedRouter.queryParams['_value'].id);
-        let url=`/act/preparation/getOitExpert?mainId=${marinId}`;
-        return new Promise((reslove, reject) => {
-          this.http.get(url).subscribe((res=>{ 
-            this.load=false;
-            if(res.code=="0000")
-            {
-              this.oitData.oMlist=res.data;
-              if(this.oitData.oMlist.length==1)
-              {
-                  this.oitData.logistician=this.oitData.oMlist[0].email;
-              }              
-              reslove(res.data)
-            }
-            else
-            {
-              this.message.create("error",res.msg)
-            }
-          }),(error=>{
-            this.load=false;
-            this.message.create("error","请求异常")
-          }))
-        })
-    }
+  //获取人员下拉列表
+  getUser() {
+
+    let marinId = decodeString(this.activatedRouter.queryParams['_value'].id);
+    let url = `/act/preparation/getOitExpert?mainId=${marinId}`;
+    return new Promise((reslove, reject) => {
+      this.http.get(url).subscribe((res => {
+        this.load = false;
+        if (res.code == "0000") {
+          this.oitData.oMlist = res.data;
+          if (this.oitData.oMlist.length == 1) {
+            this.oitData.logistician = this.oitData.oMlist[0].email;
+          }
+          reslove(res.data)
+        }
+        else {
+          this.message.create("error", res.msg)
+        }
+      }), (error => {
+        this.load = false;
+        this.message.create("error", "请求异常")
+      }))
+    })
+  }
   //合同修改
-  public getTemplate() {    
-    const url = `/act/ecom/bidding/getTemplate`;       
-    let additionalCondition=this.infor.businessModel=='DISTRIBUTOR'&&this.infor.invoiceInformation=='USD'?this.infor.sameFlag:null;
+  public getTemplate() {
+    const url = `/act/ecom/bidding/getTemplate`;
+    let additionalCondition = this.infor.businessModel == 'DISTRIBUTOR' && this.infor.invoiceInformation == 'USD' ? this.infor.sameFlag : null;
     const param = {
       dealModel: this.infor.businessModel,
       currencySystem: this.infor.invoiceInformation,
-      additionalCondition:additionalCondition,
+      additionalCondition: additionalCondition,
     }
     return new Promise((resolve, reject) => {
-        this.http.post(url, param).subscribe((res => {
-          if (res.code == '0000') {
+      this.http.post(url, param).subscribe((res => {
+        if (res.code == '0000') {
 
-            this.signingData.tmpList = res.data;
-          }
-          else {
-            this.message.create("error", res.msg)
-          }
-          resolve(this.signingData);
-        }),
-          (error => {
-            this.message.create("error", "请求异常!")
-          }))
+          this.signingData.tmpList = res.data;
+        }
+        else {
+          this.message.create("error", res.msg)
+        }
+        resolve(this.signingData);
+      }),
+        (error => {
+          this.message.create("error", "请求异常!")
+        }))
     })
   }
   //合同签署页
-  public getDataDetail() {    
+  public getDataDetail() {
     const url = `/act/preparation/queryContractSigned?mainId=${decodeString(this.activatedRouter.queryParams['_value'].id)}`;
     return new Promise((resolve, reject) => {
-        this.http.get(url).subscribe(res => {
-          if (res.code === '0000') {
-            if (res.data) {
-              this.signingData = res.data;
-              this.signingData.fileFileList=[];
-              this.signingData.isContract=res.data.isContract!=null?res.data.isContract:'0'; 
-              const { contractSignedAttachmentDTOList } = res.data;
-              contractSignedAttachmentDTOList.map(vals => {
-                let obj = {
-                  uid: "", name: "", fileId: ""
-                }
-                obj.uid = vals.attachmentId;
-                obj.name = vals.attachmentName;
-                obj.fileId = vals.attachmentId;
-                this.signingData.fileFileList = this.signingData.fileFileList.concat(obj);
-              })
-              resolve(this.signingData)
-            }
+      this.http.get(url).subscribe(res => {
+        if (res.code === '0000') {
+          if (res.data) {
+            this.signingData = res.data;
+            this.signingData.fileFileList = [];
+            this.signingData.isContract = res.data.isContract != null ? res.data.isContract : '0';
+            const { contractSignedAttachmentDTOList } = res.data;
+            contractSignedAttachmentDTOList.map(vals => {
+              let obj = {
+                uid: "", name: "", fileId: ""
+              }
+              obj.uid = vals.attachmentId;
+              obj.name = vals.attachmentName;
+              obj.fileId = vals.attachmentId;
+              this.signingData.fileFileList = this.signingData.fileFileList.concat(obj);
+            })
+            resolve(this.signingData)
           }
-        });
+        }
+      });
     })
   }
 
-  
+
   submit(number: number, flag?: any) {
     this.oitData.check = number;
-    this.oitData.mainId = decodeString(this.activatedRouter.queryParams['_value'].id);        
-    this.oitData.logisticsTime&&(this.oitData.logisticsTime = formatDatesNowMth(this.oitData.logisticsTime))    
+    this.oitData.mainId = decodeString(this.activatedRouter.queryParams['_value'].id);
+    this.oitData.logisticsTime && (this.oitData.logisticsTime = formatDatesNowMth(this.oitData.logisticsTime))
     let url = "/act/preparation/oitUpload";
     if (number == 0) {
       this.childbase.cheakData(number);
       const cheak = this.childbase.checkFormData();
       if (!cheak) {
-        this.message.create("error","请填写退回理由");
+        this.message.create("error", "请填写退回理由");
         this.myskip("complete-padd");
         return;
       }
@@ -343,27 +369,26 @@ export class CompleteOitComponent implements OnInit {
         this.myskip("complete-padd");
         return;
       }
-      
+
       if (this.oitData.exportControl == "" || this.oitData.exportControl == null || this.oitData.exportControl == null) {
         this.myskip("complete-padd");
         this.message.create("error", "请上传出口管制文件");
         return;
       }
-    }    
+    }
     //提交下拉人员
-    if(this.oitData.logistician) 
-    {
-      let usrArr=this.oitData.oMlist.find(res=>this.oitData.logistician==res.email);
-      let obj={
-        name:usrArr.name,
-        userId:usrArr.id,
-        email:usrArr.email
+    if (this.oitData.logistician) {
+      let usrArr = this.oitData.oMlist.find(res => this.oitData.logistician == res.email);
+      let obj = {
+        name: usrArr.name,
+        userId: usrArr.id,
+        email: usrArr.email
       }
-      this.oitData.expertList.push(obj);        
-    } 
-    this.load=true;   
+      this.oitData.expertList.push(obj);
+    }
+    this.load = true;
     this.http.post(url, this.oitData).subscribe((res => {
-      this.load=false;
+      this.load = false;
       if (res.code == '0000') {
         this.message.create('success', `操作成功`);
         this.router.navigate(['/igt/my-task']);
@@ -371,11 +396,70 @@ export class CompleteOitComponent implements OnInit {
       else {
         this.message.create('error', res.msg);
       }
-    }),(error=>{
-      this.load=false;
-      this.message.create("error","请求异常!");
+    }), (error => {
+      this.load = false;
+      this.message.create("error", "请求异常!");
     }));
   }
+  //弹出退回合同概要表
+  backContract() {
+    this.isAgres = true;
+    let obj = {
+      title: "退回合同概要表",
+      code: "backContract",
+      refuseReason: null,
+      remarks: "",
+      file: "",
+    }
+    this.ServesiceService.confirmTime.emit(obj);
+  }
+  //弹出关闭合同概要表
+  closeContract() {
+    this.isAgres = true;
+    let obj = {
+      title: "关闭合同概要表",
+      code: "colseContract",
+      refuseReason: null,
+      remarks: "",
+      file: "",
+    }
+    this.ServesiceService.confirmTime.emit(obj);
+  }
+  //确定
+  isAgregentOk() {
 
+    const cheakData = this.child.checkFormData();
+    if (!cheakData) {
+      this.message.create('error', `有必填项没有填写`);
+      return;
+    }
+    this.oitData.mainId = decodeString(this.activatedRouter.queryParams['_value'].id);
+    this.oitData.check = this.child.infor.code == 'backContract' ? '0' : '5';
+    this.oitData.remark = this.child.infor.remarks;
+    this.oitData.reason = this.child.infor.refuseReason;
+    this.oitData.file = this.child.infor.file;
+    let url = "/act/preparation/oitUpload";
+    this.load=true;
+    this.http.post(url, this.oitData).subscribe((rest => {
+      if (rest.code === '0000') {
+        this.load = false;
+        this.message.create('success', '操作成功');
+        this.router.navigate(['/igt/my-task']);
+        this.child.infor.file = "";
+        this.child.infor.refuseReason = null;
+        this.child.validateForm.reset();
+        this.isAgres = false;
+      }
+    }), (error => {
+      this.load = false;
+      this.message.create("error", "请求异常")
+    }));
+
+  }
+  //取消
+  isAgreCancels() {
+    this.isAgres = false;
+    this.child.validateForm.reset();
+  }
 
 }

@@ -1,5 +1,5 @@
 import { FormControl, FormGroup } from '@angular/forms';
-
+import * as moment from 'moment';
 // string code
 export function codeString(id) {
   if (id != undefined && id != null && id != "") {
@@ -31,7 +31,6 @@ export function formatDate(date)  // 格式
     d = d < 10 ? ('0' + d) : d;
     return y + '-' + m + '-' + d
   }
-
 }
 //格式表达式
 export function formatDates(date)  //格式
@@ -130,6 +129,57 @@ export function getType(file)  //取文件后缀
 		return file.name.substring(startIndex+1, file.name.length).toLowerCase();
 	else return ""
 }
+
+/**
+ * 上传文件@file 表单获取到的file值 
+ */
+ export function upLoadFileNew(file:any)
+ { 
+    const isLt2M = file.size / 1024 / 1024 < 100; // 文件大小不超过100M
+    const fileType = getType(file);
+    if (fileType === 'exe' || fileType === 'bat') {
+      this.message.create('error', '上传文件格式错误!');
+      return false;
+    }
+    if (!isLt2M) {
+      this.message.create('error', '文件大小不超过100M');
+      return false;
+    }
+    let fileList = [];
+     const type = file.name.split('.');
+     fileList.push(file);
+     const formData = new FormData();
+     // tslint:disable-next-line:no-shadowed-variable
+     fileList.forEach((file: any) => {
+       formData.append('file', file);
+       formData.append('fileType', type[1]);
+       formData.append('filename', file.name);
+     });
+     this.load = true;
+     const url = '/act/system/upload';
+     return new Promise((resolve,rejcet)=>{
+      this.http.posts(url, formData).subscribe((res => {
+        if (res.code === '0000') {
+          this.load = false;
+          fileList[0].fileId = res.data;
+          let fileId=res.data;
+          let obj={
+            fileList:fileList,
+            fileId:fileId,
+          }
+          resolve(obj);
+          this.message.create('success', res.msg);
+        } else {
+          this.message.create('error', res.msg);
+        }
+      }),(error)=>{
+           this.load=false; 
+           rejcet(this.load);         
+           this.message.create('error',"上传失败!");
+      });
+    })
+ }
+
 /**
  * 上传文件 @fileList 上传文件的回显参数 @file 表单获取到的file值 @fileId 保存后端返回来值
  */
@@ -159,11 +209,41 @@ export function upLoadFile(fileList:any, file:any, fileId:any,dataBase='dataBase
     });
 
 }
+
+/**  
+  * 用于多文件回上传回显使用
+   * @param   fileList 回显数组
+   * @param   name 接口返回数组
+   */
+ export function viewDatas(fileList,name:any) {    
+ if(name)
+ {
+  const bidWinningNotice = name
+  if (bidWinningNotice != null&&bidWinningNotice!=""&&bidWinningNotice.length>0) {
+    fileList= [];    
+    bidWinningNotice.map(vals=>{
+      let obj = { uid: "", name: "", fileId: "" }
+      obj.uid = vals.fileId;
+      obj.fileId = vals.fileId;
+      obj.name =vals.fileName?vals.fileName:"文件下载";
+      fileList=fileList.concat(obj);
+    })  
+    return  fileList;
+  }
+  else{
+    return [];
+  }
+ }
+ else{
+   return [];
+ }       
+  
+}
 /**
  * 多个文件上传
  * 上传文件 @fileList 上传文件的回显参数 @file 表单获取到的file值 @fileId 保存后端返回来值
  */
- export function upLoadFiles(fileList:any, file:any, fileId:any,dataBase?:any)
+ export function upLoadFiles(fileList:any, file:any,dataBase?:any)
  {
 
      const type = getType(file);
@@ -176,30 +256,43 @@ export function upLoadFile(fileList:any, file:any, fileId:any,dataBase='dataBase
     // });
      this.load = true;
      const url = '/act/system/upload';
-     this.http.posts(url, formData).subscribe((res => {
-       if (res.code === '0000') {
-         this.load = false;
-         if(dataBase!=null&&dataBase!=undefined&&dataBase!="")
-         {
-            this[dataBase][fileList]=this[dataBase][fileList].concat(file);  //多文件
-            this[dataBase][fileList].map(vals=>{
+     if(this[fileList].length<5)
+     {
+       return new Promise((resolve,rejcet)=>{
+        this.http.posts(url, formData).subscribe((res => {
+          if (res.code === '0000') {
+            this.load = false;
+            if(dataBase!=null&&dataBase!=undefined&&dataBase!="")
+            {
+              this[dataBase][fileList]=this[dataBase][fileList].concat(file);  //多文件
+              this[dataBase][fileList].map(vals=>{
+                vals.uid==file.uid&&(vals.fileId=res.data);
+              });
+                this[dataBase].contractDate=formatDates(new Date())
+            }
+            else
+            {
+            this[fileList]=this[fileList].concat(file);
+            this[fileList].map(vals=>{
               vals.uid==file.uid&&(vals.fileId=res.data);
             });
-              this[dataBase].contractDate=formatDates(new Date())
-         }
-         else
-         {
-          this[fileList]=this[fileList].concat(file);
-         }
-         this.message.create('success', res.msg);
-       } else {
-         this.message.create('error', res.msg);
-       }
-     }),(error=>{
-      this.message.create('error',"上传失败请重新上传!");
-      this.load = false;
-     }));
-
+             resolve(this[fileList])
+            }
+            this.message.create('success', res.msg);
+          } else {
+            this.message.create('error', res.msg);
+          }
+        }),(error=>{
+          this.message.create('error',"上传失败请重新上传!");
+          this.load = false;
+        }));
+       })
+     }
+     else
+     {
+       this.message.create('error','最多上传5个文件!');
+       this.load = false;
+     }
  }
 //电话号码正则表达式验证
 export function checkPhone(params)
@@ -211,23 +304,20 @@ export function checkPhone(params)
   var flag = reg.test(params); //true
 
 }
-//千分位转换
-export function NumberThousandth(value)
-{
-    if(value!=null&&value!=undefined&&value!="") 
-    { value.toString();    
-      const index=value.indexOf(".")
-      if(index!=-1)
-      {
-        value=value.replace(/(\d)(?=(\d{3})+\.)/g, '$1,')        
+// 千分位转换
+export function NumberThousandth(value) {
+    if (value != null && value != undefined && value !== '') {
+      value = value.toString();
+      const index = value.indexOf('.');
+      if (index != -1) {
+        value = value.replace(/(\d)(?=(\d{3})+\.)/g, '$1,');
+        return value;
+      } else {
+        value = value.replace(/(?=(?!(\b))(\d{3})+$)/g, '$1,');
         return value;
       }
-      else{
-        value=value.replace(/(?=(?!(\b))(\d{3})+$)/g, '$1,')      
-        return value;
-      } 
     }
-  
+
 }
   // 截取数字保留两位小数
   export function chNumber(e) {
@@ -249,3 +339,29 @@ export function NumberThousandth(value)
   {
     return e.replace(/\s+/g,"");
   }
+//后端返时间差8小时
+export function standardTime(value)
+{
+  if (value) {
+    let currentZoneTime = new Date(value);
+    let currentZoneHours = currentZoneTime.getHours();
+      currentZoneTime.setHours(currentZoneHours-8);
+      return currentZoneTime
+    }
+}
+Date.prototype.toLocaleString = function() {
+  return this.getFullYear() + "/" + (this.getMonth() + 1) + "/" + this.getDate() + "/" + this.getHours() + ":" + this.getMinutes() + ":" + this.getSeconds();
+};
+//后端返时间差8小时
+export function standardTimes(value)
+{
+
+  if (value && value.toString().indexOf('-') != -1) {
+    let currentZoneTime = new Date(value);
+    let currentZoneHours = currentZoneTime.getHours();
+      currentZoneTime.setHours(currentZoneHours-8);
+      return currentZoneTime
+    }
+}
+
+

@@ -7,14 +7,14 @@
     nzMd="12">
       <nz-form-item>
         <nz-form-label [nzSm]="8" [nzXs]="24" nzRequired>买卖协议号</nz-form-label>
-        <nz-form-control [nzSm]="14" [nzXs]="24">
-          <input type="text" class="form-control" placeholder="" formControlName="salesAgreementNo" [(ngModel)]="dataBase.salesAgreementNo">
-          <nz-form-explain *ngIf="
-          validateForm.get('salesAgreementNo')?.dirty &&
-          validateForm.get('salesAgreementNo')?.errors
-        ">
-        此选项必填字段
-      </nz-form-explain>
+            <nz-form-control [nzSm]="14" [nzXs]="24">
+              <input type="text" class="form-control" placeholder="" formControlName="salesAgreementNo" [(ngModel)]="dataBase.salesAgreementNo">
+              <nz-form-explain *ngIf="
+              validateForm.get('salesAgreementNo')?.dirty &&
+              validateForm.get('salesAgreementNo')?.errors
+            ">
+            此选项必填字段
+          </nz-form-explain>
         </nz-form-control>
       </nz-form-item>
     </div>
@@ -106,6 +106,44 @@
         </nz-form-control>       
       </nz-form-item>
     </div>
+    <div nz-col nzXs="24"
+    nzSm="24"
+    nzMd="12" *ngIf="mergeData.invoiceInformation=='CNY'">
+      <nz-form-item>
+        <nz-form-label [nzSm]="8" [nzXs]="24" nzRequired>收件人</nz-form-label>
+        <nz-form-control [nzSm]="14" [nzXs]="24">
+          <input type="text" class="form-control" placeholder="" formControlName="addressee" [(ngModel)]="dataBase.addressee">
+          <nz-form-explain *ngIf="
+              validateForm.get('addressee')?.dirty &&
+              validateForm.get('addressee')?.errors
+            ">
+            此选项必填字段
+          </nz-form-explain>
+        </nz-form-control>       
+      </nz-form-item>
+    </div>
+    <div nz-col nzXs="24"
+    nzSm="24"
+    nzMd="12" *ngIf="mergeData.invoiceInformation=='CNY'">
+      <nz-form-item>
+        <nz-form-label [nzSm]="8" [nzXs]="24" nzRequired>收件人电话</nz-form-label>
+        <nz-form-control [nzSm]="14" [nzXs]="24">
+          <input type="text" class="form-control" placeholder="" formControlName="addresseeTel" [(ngModel)]="dataBase.addresseeTel">          
+          <nz-form-explain *ngIf="
+              validateForm.get('addresseeTel')?.dirty &&
+              validateForm.get('addresseeTel')?.errors
+            ">
+              <ng-container *ngIf="validateForm.get('addresseeTel')?.hasError('required')">
+                此选项必填字段</ng-container>
+              <ng-container *ngIf="
+                      validateForm
+                        .get('addresseeTel')
+                        ?.hasError('phoneform')
+                    ">请输入正确的电话号码</ng-container>
+            </nz-form-explain>
+        </nz-form-control>       
+      </nz-form-item>
+    </div>
 
     <div nz-col nzXs="24"
     *ngIf="mergeData.invoiceInformation=='USD'"
@@ -124,30 +162,6 @@
         </nz-form-control>       
       </nz-form-item>
     </div>
-
-    <div nz-col nzXs="24"
-    *ngIf="mergeData.invoiceInformation=='USD'"
-    nzSm="24"
-    nzMd="12">
-      <nz-form-item>
-        <nz-form-label [nzSm]="8" [nzXs]="24" nzRequired>运输方式</nz-form-label>
-        <nz-form-control [nzSm]="14" [nzXs]="24">         
-          <nz-select style="width: 100%" zAllowClear [(ngModel)]="dataBase.typeShipping"
-          nzPlaceHolder=""
-          formControlName="typeShipping">
-          <nz-option nzLabel="-海运或空运 By sea or by air" nzValue="-海运或空运 By sea or by air"></nz-option>
-          <nz-option nzLabel="-空运By air" nzValue="-空运By air"></nz-option>
-        </nz-select>
-        <nz-form-explain *ngIf="
-          validateForm.get('typeShipping')?.dirty &&
-          validateForm.get('typeShipping')?.errors
-        ">
-        此选项必填字段
-      </nz-form-explain>
-        </nz-form-control>
-      </nz-form-item>
-    </div>
-
     <div nz-col nzXs="24"
     *ngIf="mergeData.invoiceInformation=='USD'"
     nzSm="24"
@@ -163,6 +177,29 @@
             此选项必填字段
           </nz-form-explain>
         </nz-form-control>       
+      </nz-form-item>
+    </div>
+
+    <div nz-col nzXs="24"
+    *ngIf="mergeData.invoiceInformation=='USD'"
+    nzSm="24"
+    nzMd="12">
+      <nz-form-item>
+        <nz-form-label [nzSm]="8" [nzXs]="24" nzRequired>运输方式</nz-form-label>
+        <nz-form-control [nzSm]="14" [nzXs]="24">         
+          <nz-select style="width: 100%" zAllowClear [(ngModel)]="dataBase.typeShipping"
+          nzPlaceHolder=""
+          formControlName="typeShipping">
+          <nz-option nzLabel="海运或空运 By sea or by air" nzValue="海运或空运 By sea or by air"></nz-option>
+          <nz-option nzLabel="空运By air" nzValue="空运 By air"></nz-option>
+        </nz-select>
+        <nz-form-explain *ngIf="
+          validateForm.get('typeShipping')?.dirty &&
+          validateForm.get('typeShipping')?.errors
+        ">
+        此选项必填字段
+      </nz-form-explain>
+        </nz-form-control>
       </nz-form-item>
     </div>
 
@@ -217,7 +254,7 @@
     <div nz-col nzSpan="24">
       <nz-form-item>
         <!--nzRequired-->
-        <nz-form-label [nzSm]="4" [nzXs]="24">合同文件</nz-form-label>
+        <nz-form-label [nzSm]="4" [nzXs]="24" nzRequired>合同文件</nz-form-label>
         <nz-form-control [nzSm]="7" [nzXs]="24">
           <div class="flex">
             <nz-upload 
@@ -227,13 +264,13 @@
             [nzPreview]="dwonLoad"
             [nzRemove]="nzRemovcontractFile"
           >
-            <button [disabled]="disas" nz-button><i nz-icon nzType="upload"></i><span>上传合同文件</span></button>
+            <button [disabled]="disas" nz-button><i nz-icon nzType="upload"></i><span>{{state=='DHTQS'?'上传合同文件':'更新合同文件'}}</span></button>
           </nz-upload>
           
           <!-- <ng-container *ngIf="state!='DHTQS'&&dataBase.fileFileList.length>0">
              <button *ngFor="let item of dataBase.fileFileList" class="down" nz-button nzType="link" (click)="fileDwon(item.fileId)">{{item.name}}</button>
           </ng-container> -->
-          <button nz-button [disabled]="dataBase.contractFile==null||dataBase.contractFile==undefined||dataBase.contractFile==''"  *ngIf="!disas&&state!='DHTQS'" class="updata" nzType="primary"
+          <button nz-button [disabled]="this.fileFileList.length<=0"  *ngIf="!disas&&state!='DHTQS'" class="updata" nzType="primary"
           (click)="updata()">更新</button>
           </div>          
         </nz-form-control>

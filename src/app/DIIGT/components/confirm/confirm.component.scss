@@ -1,0 +1,17 @@
+.warnings{
+    padding: 0px 6px;
+    background-color: #fffbe5;
+    border-radius: 5px;
+    border: 1px solid #f4bc00;
+    color: #5c3c00;  
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    .icon{
+        color:#f7a543;
+        font-size:18px;
+        margin-right:10px;
+    }
+}

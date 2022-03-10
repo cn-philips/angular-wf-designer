@@ -52,8 +52,10 @@ export class ViewsubprocesseComponent implements OnInit {
           let firstArr = [];//前端排序
          if (productList.length > 0) {
           productList.map(vals => {            
-            let totalContractPrice=vals.totalContractPrice.split(".");
-            vals.totalContractPrice=NumberThousandth(totalContractPrice[0]);
+            let financialPrice=vals.financialPrice;
+            financialPrice&&(vals.financialPrice=this.returnFloat(vals.financialPrice,2)); //金融方案价格
+            let totalContractPrice=vals.totalContractPrice;  
+            totalContractPrice&&(vals.totalContractPrice=this.returnFloat(vals.totalContractPrice,4)); //金融方案价格       
             if (vals.productList && vals.productList.length > 0) {
               vals.productList.map((val,index) => { 
                 if (val.checked) {
@@ -72,6 +74,32 @@ export class ViewsubprocesseComponent implements OnInit {
         this.message.create('error', '获取数据失败');
       }
     });
+  }
+
+  //小数后自动补零
+  returnFloat(value: any, num) {
+    var a, b, c, i;
+    a = value.toString();
+    b = a.indexOf(".");
+    c = a.length;
+    if (num == 0) {
+      if (b != -1) {
+        a = a.substring(0, b);
+      }
+    } else {//如果没有小数点
+      if (b == -1) {
+        a = a + ".";
+        for (i = 1; i <= num; i++) {
+          a = a + "0";
+        }
+      } else {//有小数点，超出位数自动截取，否则补0
+        a = a.substring(0, b + num + 1);
+        for (i = c; i <= b + num; i++) {
+          a = a + "0";
+        }
+      }
+    }
+    return a;
   }
 
 }

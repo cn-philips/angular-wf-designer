@@ -4,10 +4,12 @@ import {
   decodeString,
   formatDatesNow,
   getType,
+  standardTime
 } from "../../../assets/js/tools";
 import { Router, ActivatedRoute } from "@angular/router";
 import { NzMessageService, UploadFile } from "ng-zorro-antd";
 import { PreOrderBaseInfoComponent } from "../preOrder/baseInfo/baseInfo.component";
+import { debug } from "console";
 @Component({
   selector: "app-inorder-examine",
   templateUrl: "./inorder-examine.component.html",
@@ -39,7 +41,7 @@ export class InorderExamineComponent implements OnInit {
       this.baseInfo.setColSpanOfConfirmTable(this.infor);
       const params = await this.getCpdata();
       const results = await this.getQuery(result, params);
-      const baseInfo=await this.getBase();
+      const baseInfos=await this.getBase();
     };
     ASYNS();
   }
@@ -52,8 +54,7 @@ export class InorderExamineComponent implements OnInit {
     return new Promise((resolve, reject) => {
       this.http.post(url).subscribe((res) => {
         if (res.data) {
-         // this.infor = Object.assign(this.infor, res.data);
-         this.infor=res.data;
+         this.infor= JSON.parse(JSON.stringify(res.data)) ;
          this.infor.referenceId = res.data.referenceId; //添加referenceId
           resolve(res.data);
           if (this.infor.sameFlag != null) {
@@ -80,9 +81,14 @@ export class InorderExamineComponent implements OnInit {
     return new Promise((resolve, reject) => {
       this.http.get(url).subscribe((res) => {
         if (res.code === "0000" && res.data) {
-          this.dataBase = Object.assign({}, res.data);
+          this.dataBase = res.data
           this.dataBase.entryMode = param.entryMode; //进单模式
-          this.dataBase.region = param.region; //区域
+          this.dataBase.team=param.team;//team
+          this.dataBase.region = param.region;//大区域
+          this.dataBase.smallArea = param.smallArea;//小区域
+          this.dataBase.endUserId=param.endUserId; //最终用户id                    
+          this.dataBase.poolEndDate=standardTime(this.infor.poolEndDate);//外贸易公司日期  
+          this.dataBase.contractEndDate=standardTime(param.contractEndDate);//经销商日期
           this.dataBase.businessModel = param.businessModel; //业务模式
           this.dataBase.bidWinningNotice = param.bidWinningNotice; //中标通知书
           this.dataBase.distributor = param.tenderingCompany; //投标公司
@@ -96,6 +102,7 @@ export class InorderExamineComponent implements OnInit {
           this.dataBase.contractPrice = param.contractPrice; //合同价格
           this.dataBase.paymentProvision = param.paymentProvision; //付款条款
           this.dataBase.referenceId = param.referenceId; //添加referenceId
+          this.dataBase.dealFormId =param.dealFormId;//dealFromid
           this.dataBase.contractDdpStatus = param.contractDdpStatus; //合同买方的ddpstatus
           this.dataBase.foreignTradeCompany = param.foreignTradeCompany; //外贸易公司
           this.dataBase.invoiceInformation = param.invoiceInformation; //币制
@@ -105,24 +112,26 @@ export class InorderExamineComponent implements OnInit {
           this.dataBase.priceRange = params.samplingInspection; // 是否抽样审核
           this.dataBase.sofonFile = params.sofonFile;
           this.dataBase.countryOrigin = params.countryOrigin; // 原产地
+          this.dataBase.countryOriginEn = params.countryOriginEn?params.countryOriginEn:""; // 原产地
+          this.dataBase.medicalDeviceName=params.medicalDeviceName;//医疗器械名称
+          this.dataBase.nmpaRegistrationExpried=params.nmpaRegistrationExpried;//NMPA证有效期截止日期       
+          this.dataBase.financialProgramme=params.financialProgramme; //金融方案价格  
+          this.dataBase.financialProgrammeTxt=params.financialProgrammeTxt; //金融方案文本框的值
+          this.dataBase.tradeInCost=params.tradeInCost;//tradeIn总额
+          this.dataBase.financialProgrammeCost=params.financialProgrammeCost; //金融方案总金额
+          this.dataBase.agreementNo=param.agreementNo; //经销商协议号;
+          this.dataBase.dealerCode=param.dealerCode; //经销商code;
+          this.dataBase.centralized=param.centralized; //集采
+          this.dataBase.actualSales=param.actualSales; //实际销售人
           this.dataBase.finalSofonQuotation = params.sofonNo; //finalSofonQuotation
           this.dataBase.tradeList = params.cosOppTradeIns!=null&&params.cosOppTradeIns.length>0?params.cosOppTradeIns:[{name:"",costs1:""}]; // tradeIn
-          this.dataBase.warrantyList = params.cosOppExtendedWarranties!=null&&params.cosOppExtendedWarranties!=""&&params.cosOppExtendedWarranties.length>0?params.cosOppExtendedWarranties:[{posIdName:"",posLocalCtp:""}] // 延长保修
+          this.dataBase.otherList = params.otherList!=null&&params.otherList!=""&&params.otherList.length>0?params.otherList:[] //其他预留
+          this.dataBase.warrantyList = params.cosOppExtendedWarranties!=null&&params.cosOppExtendedWarranties!=""&&params.cosOppExtendedWarranties.length>0?params.cosOppExtendedWarranties:[]; // 延长保修
           this.dataBase.productList = params.cosOppThirdParties!=null&&params.cosOppThirdParties!=""&&params.cosOppThirdParties.length>0?params.cosOppThirdParties:[{thirdPartyName:"",total:""}] // 第三方
           this.dataBase.application = params.applications!=null&&params.applications!=""&&params.applications.length>0?params.applications:[{productName:"",localCtp1:""}]
           this.dataBase.applicationPrice = params.applicationPrice;          
           this.dataBase.applications=params.applications!=null&&params.applications!=""&&params.applications.length>0?params.applications:[{productName:"",localCtp:""}]      
-          if (
-            this.dataBase.warrantyList &&
-            this.dataBase.warrantyList.length > 0
-          ) {
-            this.dataBase.warrantyList.map((res) => {
-              res.name = res.posIdName;
-              res.price = res.posLocalCtp;
-              delete res.posIdName;
-              delete res.posLocalCtp;
-            });
-          }
+         
           if (
             this.dataBase.productList &&
             this.dataBase.productList.length > 0

@@ -1,4 +1,4 @@
-import {Component, OnInit, Input, SimpleChanges, Output, EventEmitter} from '@angular/core';
+import {Component, OnInit, Input, SimpleChanges, Output, EventEmitter,ViewChild} from '@angular/core';
 import {fromArray} from 'rxjs-compat/observable/fromArray';
 import {Router, ActivatedRoute} from '@angular/router';
 import {HttpService, UtilityService} from '../../../services';
@@ -10,6 +10,7 @@ import { ProcessModel } from '../../../pipes/process-model.pipe';
 import { ProcessCompany } from '../../../pipes/process-company.pipe';
 import { TimeFormatePipe } from '../../../pipes/time-formate.pipe';
 import { ProcessThird } from '../../../pipes/process-third.pipe'
+import { ServesiceService } from '../../preOrder/servesice.service';
 
 
 import { ProcessProject } from '../../../pipes/process-project.pipe';
@@ -17,6 +18,7 @@ import {
   codeString,
 } from '../../../../assets/js/tools';
 import { proceessAuthor } from '../../../pipes/proceess-author.pipe';
+import { isThisSecond } from 'date-fns';
 
 export interface TreeNodeInterface {
   key: string;
@@ -47,6 +49,7 @@ export interface TreeNodeInterface {
   operations: [];
   level: number;
   expand: boolean;
+  isCheck: null;
   children?: TreeNodeInterface[];
 }
 
@@ -66,14 +69,24 @@ export interface TreeNodeInterface {
 export class MyTaskTableComponent implements OnInit {
   @Input() listOfMapData: []; // decorate the property with @Input()
   @Input() total: 0;
-  @Input() loading: false;
+  @Input() loading:any=false;
   @Input() flag: any;
   @Input() isMyStart: any = false;
+  @ViewChild('child') child;
+  @Input() public isMyToDo: any = false;
+  @Output() myEvent = new EventEmitter();
   // ZBSQ 招标授权
   // task_status 待提交 DTJ  编辑、提交、删除;招标授权
   // task_status 待备案 DBA  编辑；待备案
   // task_status 待商务专员确认 DSWZYQR 编辑；中标确认
   mapOfExpandedData: { [key: string]: TreeNodeInterface[] } = {};
+  public showData:any={
+    refuseReason:null,
+    remarks:"",
+    file:"",
+    title:"",
+    code:"change",
+  }
   nzLoading = false;
   public pagination = {
     pageNo: 1,
@@ -83,9 +96,12 @@ export class MyTaskTableComponent implements OnInit {
   user:any;
   @Output() updateTable = new EventEmitter<any>();
   @Output() setLoading = new EventEmitter<boolean>();
-
+  public openCheckbox = false;
+  public load:any=false;
+  public mainId:any;
   public entryModeList: any = [];
   public biddingAuthorizationModeList: any = [];
+  public isShow:any=false;
 
   // 记录已经查询过的id 防止多次查询
   dealerCkAuditId = [];
@@ -96,12 +112,15 @@ export class MyTaskTableComponent implements OnInit {
     private http: HttpService,
     private message: NzMessageService,
     private nzMessageService: NzMessageService,
-    public utils:UtilityService
+    public utils:UtilityService,
+    private ServesiceService: ServesiceService,
   ) {
   }
   cancelSecondBid(): void {
     this.nzMessageService.info('Cancel this operation');
   }
+
+
 
   confirmSecondBid (item, operation) {
     this.secondBidding(item, operation);
@@ -179,6 +198,7 @@ export class MyTaskTableComponent implements OnInit {
     this.setLoading.emit(this.nzLoading);
     this.updateTable.emit(this.pagination);
   }
+
   //待oit文件上传
   goCompleteOit(item,param)
   {
@@ -311,7 +331,6 @@ export class MyTaskTableComponent implements OnInit {
   // 待填写合同
   // 待非标审核DFBSH, taskID === paymentProvision,显示installationWarranty下的"下一级是否审核"
   goExamineOrder(item) {
-
     if (item.task_status === 'DFBSH') {
       this.router.navigate(['/igt/examine-order'], {
         skipLocationChange: false,
@@ -327,14 +346,14 @@ export class MyTaskTableComponent implements OnInit {
         skipLocationChange: false,
         queryParams: {
           id: codeString(item.main_id),
-          flag: this.flag,
+          flag:item.processor.indexOf(this.user)!=-1?this.flag:1,
           status: item.task_status,
           taskID: item.taskID,
         },
       });
     }
   }
- //取消进单
+ //取消进单或者关闭合同概要表
   goExamineOrderEnd(item) {
       this.router.navigate(['/igt/examine-order'], {
         skipLocationChange: false,
@@ -346,6 +365,7 @@ export class MyTaskTableComponent implements OnInit {
         },
       });
   }
+
   // 修改合同概要表
   goInconmodif(item) {
     this.router.navigate(['/inconmodif'], {
@@ -512,10 +532,28 @@ export class MyTaskTableComponent implements OnInit {
     }
   }
 
+  public appUser = null;
   ngOnInit(): void {
+    this.appUser = localStorage.getItem('ng_philips_code1');
     this.user=localStorage.getItem("ng_philips_code1").toLowerCase();
     this.getEntryModeList();
     this.getBiddingAuthorizationModeList();
+    this.addSales();
+    this.getAllSeal();
+    const roleCode = JSON.parse(localStorage.getItem('roles'));
+    if (roleCode) {
+      roleCode.map(e => {
+        if (e.toLowerCase() === 'oa' || e.toLowerCase() === 'oa leader') {
+          this.isOA = true;
+        }
+        if (e.toLowerCase() === 'bidding') {
+          this.isBidding = true;
+        }
+        if (e.toLowerCase() === 'win confirm') {
+          this.isWinConfirm = true;
+        }
+      });
+    }
   }
 
   ProJdType(e) {
@@ -598,5 +636,280 @@ export class MyTaskTableComponent implements OnInit {
       }
     });
   }
+
+  //改单
+  changeOrder(param)
+  {
+   this.mainId=param.main_id
+   const url=`/act/preparation/checkCanBeOitChange/${this.mainId}`;
+   this.http.get(url).subscribe(rest=>{
+     if(rest.data)
+     {
+      this.isShow=true;
+      this.ServesiceService.confirmTime.emit(this.showData);
+     }
+     else
+     {
+       this.message.create("error","此进单已经发起过改单请勿重复提交")
+     }
+   })
+  }
+
+  //发起改单确定
+  public isAgregentOk()
+  {
+
+    this.showData=this.child.infor;
+    let param={
+      mainId:this.mainId,
+      check:this.child.infor.refuseReason,
+      orderChangeId:this.child.infor.refuseReason,
+      file:this.child.infor.file,
+      remark:this.child.infor.remarks,
+    }
+    let vaild=this.child.checkFormData();
+    if(!vaild)
+    {
+     // this.message.create("error","有必填项没有填写")
+      return
+    }
+    this.load = true;
+    const url=`/act/preparation/changeRecord`;
+    this.isShow=false;
+    this.http.post(url,param).subscribe((rest => {
+      if (rest.code === '0000') {
+        this.load = false;
+        this.message.create('success', '操作成功');
+        this.myEvent.emit()
+        this.child.infor.file = "";
+        this.child.infor.refuseReason = null;
+        this.child.validateForm.reset();
+        this.isShow = false;
+      }
+    }), (error => {
+      this.load = false;
+      this.message.create("error", "请求异常")
+    }));
+  }
+
+  //取消改单
+  public isAgreCancels()
+  {
+    this.child.validateForm.reset();
+    this.isShow=false;
+  }
+ //审核改单
+ goChangeApproval(item,param)
+ {
+   this.router.navigate(['/completeOit'], {
+     skipLocationChange: false,
+     queryParams: {
+       id: codeString(item.lastMainId),
+       mainId:codeString(item.main_id),
+       flag:item.processor.toLowerCase().indexOf(this.user)!=-1 ? this.flag : 1,
+       status: item.task_status,
+       param:param,
+       sale:item.sale
+     },
+   });
+ }
+
+ public saleList = [];
+  public getAllSeal() {
+    const url = '/act/ecom/homepage/querySalesByRole';
+    this.http.post(url, []).subscribe(res => {
+      if (res && res.data) {
+        this.saleList = res.data;
+      }
+    });
+  }
+  public emailToName (email) {
+    if (this.saleList) {
+      for (let i = 0; i < this.saleList.length; i++) {
+        if (this.saleList[i].email == email) {
+          return this.saleList[i].name;
+        }
+      }
+    }
+    return '';
+  }
+
+  /*转派逻辑*/
+  // 转派弹出框
+  public assignShowoff = false;
+  public role = null;
+  public roleList = [
+    {name: 'OA', value: 'OA'},
+    {name: 'Bidding', value: 'Bidding'},
+    {name: 'Win Confirm', value: 'Win Confirm'}
+  ];
+  public receiver = null;
+  public receiverList = [];
+  public cancelModeal() {
+    this.assignShowoff = false;
+  }
+
+  public openAssignShowoff() {
+    this.receiver = null;
+    this.role = null;
+    this.assignShowoff = true;
+  }
+
+  public subAssignLoading: any = false;
+  public subAssign() {
+    // listOfMapData
+    // 遍历mapOfExpandedData获取选中
+    const arr = [];
+    // if (this.mapOfExpandedData) {
+    //   const mapOfExpandedData = this.mapOfExpandedData;
+    //   const keys = Object.keys(mapOfExpandedData);
+    //   const mapOfExpandedDataList = [];
+    //   // 读取mapOfExpandedData所有数组
+    //   if (keys) {
+    //     keys.map(k => {
+    //       if (mapOfExpandedData[k]) {
+    //         mapOfExpandedData[k].map(map => {
+    //           mapOfExpandedDataList.push(map);
+    //         });
+    //       }
+    //     });
+    //   }
+      const mapOfExpandedDataList = this.getMapOfExpandedDataListAllData();
+      // 获取选中记录mainid
+      if (mapOfExpandedDataList) {
+        mapOfExpandedDataList.map(map => {
+          if (map && map.isCheck == true) {
+            arr.push({
+              mainId: map.main_id,
+              role: this.role,
+              receiver: this.receiver
+            });
+          }
+        });
+      // }
+        if (!(arr && arr.length > 0)) {
+          this.message.create('error', '未选择项目');
+          return;
+        }
+        if (this.role == null || this.role === '') {
+          this.message.create('error', '请选择角色');
+          return;
+        }
+        if (this.receiver == null || this.receiver === '') {
+          this.message.create('error', '请选择接收人');
+          return;
+        }
+        if (this.subAssignLoading) {
+          return;
+        }
+        this.subAssignLoading = true;
+        const url = '/act/ecom/homepage/transferOrderRecord';
+        this.http.post(url, arr).subscribe(e => {
+          this.subAssignLoading = false;
+          this.assignShowoff = false;
+          if (e && e.code === '0000') {
+            this.message.create('success', '请求成功');
+            // this.router.navigate(['/igt/my-task']);
+            setTimeout(() => {
+              // 刷新当前页面
+              this.router.navigateByUrl('', {skipLocationChange: true}).then(() => {
+                this.router.navigate(['/igt/my-task']);
+              });
+            }, 1000);
+          }
+        }, error => {
+          this.subAssignLoading = false;
+          this.message.create('error', '请求失败');
+        });
+    }
+    console.log(arr);
+  }
+
+  public getMapOfExpandedDataListAllData() {
+    if (this.mapOfExpandedData) {
+      const mapOfExpandedData = this.mapOfExpandedData;
+      const keys = Object.keys(mapOfExpandedData);
+      const mapOfExpandedDataList = [];
+      // 读取mapOfExpandedData所有数组
+      if (keys) {
+        keys.map(k => {
+          if (mapOfExpandedData[k]) {
+            mapOfExpandedData[k].map(map => {
+              mapOfExpandedDataList.push(map);
+            });
+          }
+        });
+      }
+      return mapOfExpandedDataList;
+    }
+    return [];
+  }
+
+  public addSales() {
+    const url = '/act/ecom/homepage/querySalesByRole';
+    const par = [
+      'OA', 'OA Leader', 'Bidding', 'Win Confirm'
+    ];
+    this.http.post(url, par).subscribe(res => {
+      if (res && res.data) {
+        this.receiverList = res.data;
+      }
+    });
+  }
+  public roleChange() {
+    this.receiver = null;
+  }
+
+  public AllCheck(e) {
+    const mapOfExpandedDataList = this.getMapOfExpandedDataListAllData();
+    if (mapOfExpandedDataList) {
+      for (let i = 0; i < mapOfExpandedDataList.length; i++) {
+        if (mapOfExpandedDataList[i].children == null && (mapOfExpandedDataList[i].isCheck == false || mapOfExpandedDataList[i].isCheck === 'false' || mapOfExpandedDataList[i].isCheck == null)) {
+          return false;
+        }
+      }
+      return true;
+    }
+    return false;
+  }
+
+
+  public CheckAll(eve, e) {
+    if (this.mapOfExpandedData) {
+      const keys = Object.keys(this.mapOfExpandedData);
+      // 读取mapOfExpandedData所有数组
+      if (keys) {
+        for (let k = 0; k < keys.length; k++) {
+          if (this.mapOfExpandedData[keys[k]]) {
+            for (let i = 0; i < this.mapOfExpandedData[keys[k]].length; i++) {
+              if (this.mapOfExpandedData[keys[k]][i].children == null) {
+                this.mapOfExpandedData[keys[k]][i].isCheck = eve;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  public isOA = false;
+  public isBidding = false;
+  public isWinConfirm = false;
+
+  // 判断角色下拉框显示
+  public ckRole(e) {
+    if (e) {
+      if (this.isOA && (e.toLowerCase() === 'oa' || e.toLowerCase() === 'oa leader')) {
+        return true;
+      }
+      if (this.isBidding && e.toLowerCase() === 'bidding') {
+        return true;
+      }
+      if (this.isWinConfirm && e.toLowerCase() === 'win confirm') {
+        return true;
+      }
+    }
+  }
+
 
 }

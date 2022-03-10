@@ -1,6 +1,6 @@
 @import '../node_modules/angular-tree-component/dist/angular-tree-component.css';
 @import './vendor/libs/ngx-toastr/ngx-toastr.scss';
-@import './global.scss';
+@import './global.scss'; 
 
 @mixin keyframes($name) {
   @-webkit-keyframes #{$name} {
@@ -318,3 +318,5 @@ ngb-typeahead-window .dropdown-item {
       display: block !important;
   }
 }
+
+

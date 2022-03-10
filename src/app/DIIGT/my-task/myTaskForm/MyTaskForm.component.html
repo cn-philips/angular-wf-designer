@@ -1,20 +1,18 @@
-<form nz-form [formGroup]="validateForm" (ngSubmit)="submitForm($event, validateForm.value)">
+<form
+  nz-form
+  [formGroup]="validateForm"
+  (ngSubmit)="submitForm($event, validateForm.value)"
+>
   <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
-    <div nz-col nzXs="24"
-                nzSm="24"
-                nzMd="8"
-          >
+    <div nz-col nzXs="24" nzSm="24" nzMd="8">
       <nz-form-item>
-        <nz-form-label [nzSm]="8" [nzXs]="24">销售</nz-form-label>
+        <nz-form-label [nzSm]="8" [nzXs]="24">销售邮箱</nz-form-label>
         <nz-form-control [nzSm]="12" [nzXs]="24">
           <input nz-input formControlName="sale" placeholder="" />
         </nz-form-control>
       </nz-form-item>
     </div>
-    <div nz-col nzXs="24"
-                nzSm="24"
-                nzMd="8"
-          >
+    <div nz-col nzXs="24" nzSm="24" nzMd="8">
       <nz-form-item>
         <nz-form-label [nzSm]="8" [nzXs]="24">医院</nz-form-label>
         <nz-form-control [nzSm]="12" [nzXs]="24">
@@ -22,10 +20,7 @@
         </nz-form-control>
       </nz-form-item>
     </div>
-    <div nz-col nzXs="24"
-                nzSm="24"
-                nzMd="8"
-          >
+    <div nz-col nzXs="24" nzSm="24" nzMd="8">
       <nz-form-item>
         <nz-form-label [nzSm]="8" [nzXs]="24">Reference No</nz-form-label>
         <nz-form-control [nzSm]="12" [nzXs]="24">
@@ -33,21 +28,31 @@
         </nz-form-control>
       </nz-form-item>
     </div>
-    <div nz-col nzXs="24"
-                nzSm="24"
-                nzMd="8"
-          [style.display]="isCollapse ? 'block' : 'none'">
+    <div
+      nz-col
+      nzXs="24"
+      nzSm="24"
+      nzMd="8"
+      [style.display]="isCollapse ? 'block' : 'none'"
+    >
       <nz-form-item>
-        <nz-form-label [nzSm]="8" [nzXs]="24">本地名称(Market Bundle)</nz-form-label>
+        <nz-form-label class="localtion" [nzNoColon]="true" [nzSm]="8" [nzXs]="24"
+          >本地名称<br /><small style="display: block; margin-bottom: -40px"
+            >(Market Bundle)</small
+          ></nz-form-label
+        >
         <nz-form-control [nzSm]="12" [nzXs]="24">
           <input nz-input formControlName="productName" placeholder="" />
         </nz-form-control>
       </nz-form-item>
     </div>
-    <div nz-col nzXs="24"
-                nzSm="24"
-                nzMd="8"
-          [style.display]="isCollapse ? 'block' : 'none'">
+    <div
+      nz-col
+      nzXs="24"
+      nzSm="24"
+      nzMd="8"
+      [style.display]="isCollapse ? 'block' : 'none'"
+    >
       <nz-form-item>
         <nz-form-label [nzSm]="8" [nzXs]="24">项目名称</nz-form-label>
         <nz-form-control [nzSm]="12" [nzXs]="24">
@@ -55,10 +60,13 @@
         </nz-form-control>
       </nz-form-item>
     </div>
-    <div nz-col nzXs="24"
-                nzSm="24"
-                nzMd="8"
-          [style.display]="isCollapse ? 'block' : 'none'">
+    <div
+      nz-col
+      nzXs="24"
+      nzSm="24"
+      nzMd="8"
+      [style.display]="isCollapse ? 'block' : 'none'"
+    >
       <nz-form-item>
         <nz-form-label [nzSm]="8" [nzXs]="24">招标编号</nz-form-label>
         <nz-form-control [nzSm]="12" [nzXs]="24">
@@ -66,10 +74,13 @@
         </nz-form-control>
       </nz-form-item>
     </div>
-    <div nz-col nzXs="24"
-                nzSm="24"
-                nzMd="8"
-          [style.display]="isCollapse ? 'block' : 'none'">
+    <div
+      nz-col
+      nzXs="24"
+      nzSm="24"
+      nzMd="8"
+      [style.display]="isCollapse ? 'block' : 'none'"
+    >
       <nz-form-item>
         <nz-form-label [nzSm]="8" [nzXs]="24">投标公司</nz-form-label>
         <nz-form-control [nzSm]="12" [nzXs]="24">
@@ -77,9 +88,13 @@
         </nz-form-control>
       </nz-form-item>
     </div>
-    <div nz-col nzXs="24"
-    nzSm="24"
-    nzMd="16" [style.display]="isCollapse ? 'block' : 'none'">
+    <div
+      nz-col
+      nzXs="24"
+      nzSm="24"
+      nzMd="16"
+      [style.display]="isCollapse ? 'block' : 'none'"
+    >
       <nz-form-item>
         <nz-form-label [nzSm]="4" [nzXs]="24">提交时间</nz-form-label>
         <nz-form-control [nzSm]="18" [nzXs]="24">
@@ -90,16 +105,19 @@
         </nz-form-control>
       </nz-form-item>
     </div>
-    <div nz-col nzXs="24"
-                nzSm="24"
-                nzMd="8"
-          [style.display]="isCollapse ? 'block' : 'none'">
+    <div
+      nz-col
+      nzXs="24"
+      nzSm="24"
+      nzMd="8"
+      [style.display]="isCollapse ? 'block' : 'none'"
+    >
       <nz-form-item>
         <nz-form-label [nzSm]="8" [nzXs]="24">业务模式</nz-form-label>
         <nz-form-control [nzSm]="12" [nzXs]="24">
           <nz-select
             formControlName="businessPattern"
-            style="width: 100%;"
+            style="width: 100%"
             nzShowSearch
             nzAllowClear
             nzPlaceHolder=""
@@ -113,16 +131,19 @@
         </nz-form-control>
       </nz-form-item>
     </div>
-    <div nz-col nzXs="24"
-                nzSm="24"
-                nzMd="8"
-          [style.display]="isCollapse ? 'block' : 'none'">
+    <div
+      nz-col
+      nzXs="24"
+      nzSm="24"
+      nzMd="8"
+      [style.display]="isCollapse ? 'block' : 'none'"
+    >
       <nz-form-item>
         <nz-form-label [nzSm]="8" [nzXs]="24">进单模式</nz-form-label>
         <nz-form-control [nzSm]="12" [nzXs]="24">
           <nz-select
             formControlName="orderPattern"
-            style="width: 100%;"
+            style="width: 100%"
             nzShowSearch
             nzAllowClear
             nzPlaceHolder=""
@@ -136,16 +157,19 @@
         </nz-form-control>
       </nz-form-item>
     </div>
-    <div nz-col nzXs="24"
-                nzSm="24"
-                nzMd="8"
-          [style.display]="isCollapse ? 'block' : 'none'">
+    <div
+      nz-col
+      nzXs="24"
+      nzSm="24"
+      nzMd="8"
+      [style.display]="isCollapse ? 'block' : 'none'"
+    >
       <nz-form-item>
         <nz-form-label [nzSm]="8" [nzXs]="24">进单状态</nz-form-label>
         <nz-form-control [nzSm]="12" [nzXs]="24">
           <nz-select
             formControlName="orderType"
-            style="width: 100%;"
+            style="width: 100%"
             nzShowSearch
             nzAllowClear
             nzPlaceHolder=""
@@ -160,16 +184,19 @@
         </nz-form-control>
       </nz-form-item>
     </div>
-    <div nz-col nzXs="24"
-                nzSm="24"
-                nzMd="8"
-          [style.display]="isCollapse ? 'block' : 'none'">
+    <div
+      nz-col
+      nzXs="24"
+      nzSm="24"
+      nzMd="8"
+      [style.display]="isCollapse ? 'block' : 'none'"
+    >
       <nz-form-item>
         <nz-form-label [nzSm]="8" [nzXs]="24">招标授权模式</nz-form-label>
         <nz-form-control [nzSm]="12" [nzXs]="24">
           <nz-select
             formControlName="applyType"
-            style="width: 100%;"
+            style="width: 100%"
             nzShowSearch
             nzAllowClear
             nzPlaceHolder=""
@@ -184,16 +211,19 @@
         </nz-form-control>
       </nz-form-item>
     </div>
-    <div nz-col nzXs="24"
-                nzSm="24"
-                nzMd="8"
-          [style.display]="isCollapse ? 'block' : 'none'">
+    <div
+      nz-col
+      nzXs="24"
+      nzSm="24"
+      nzMd="8"
+      [style.display]="isCollapse ? 'block' : 'none'"
+    >
       <nz-form-item>
         <nz-form-label [nzSm]="8" [nzXs]="24">招标授权状态</nz-form-label>
         <nz-form-control [nzSm]="12" [nzXs]="24">
           <nz-select
             formControlName="taskStatus"
-            style="width: 100%;"
+            style="width: 100%"
             nzShowSearch
             nzAllowClear
             nzPlaceHolder=""
@@ -208,16 +238,19 @@
         </nz-form-control>
       </nz-form-item>
     </div>
-    <div nz-col nzXs="24"
-                nzSm="24"
-                nzMd="8"
-          [style.display]="isCollapse ? 'block' : 'none'">
+    <div
+      nz-col
+      nzXs="24"
+      nzSm="24"
+      nzMd="8"
+      [style.display]="isCollapse ? 'block' : 'none'"
+    >
       <nz-form-item>
         <nz-form-label [nzSm]="8" [nzXs]="24">是否授权</nz-form-label>
         <nz-form-control [nzSm]="12" [nzXs]="24">
           <nz-select
             formControlName="authorize"
-            style="width: 100%;"
+            style="width: 100%"
             nzShowSearch
             nzAllowClear
             nzPlaceHolder=""
@@ -233,15 +266,42 @@
       </nz-form-item>
     </div>
     <div nz-col nzXs="24"
-                nzSm="24"
-                nzMd="8"
-          [style.display]="isCollapse ? 'block' : 'none'">
+         nzSm="24"
+         nzMd="8"
+         [style.display]="isCollapse ? 'block' : 'none'">
+      <nz-form-item>
+        <nz-form-label [nzSm]="8" [nzXs]="24">Teams</nz-form-label>
+        <nz-form-control [nzSm]="12" [nzXs]="24">
+          <nz-select
+            formControlName="teams"
+            style="width: 100%;"
+            nzShowSearch
+            nzAllowClear
+            nzPlaceHolder=""
+          >
+            <nz-option
+              *ngFor="let item of teamsList"
+              [nzValue]="item.code"
+              [nzLabel]="item.label"
+              [nzDisabled]="item.disabled"
+            ></nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div
+      nz-col
+      nzXs="24"
+      nzSm="24"
+      nzMd="8"
+      [style.display]="isCollapse ? 'block' : 'none'"
+    >
       <nz-form-item>
         <nz-form-label [nzSm]="8" [nzXs]="24">大区</nz-form-label>
         <nz-form-control [nzSm]="12" [nzXs]="24">
           <nz-select
             formControlName="bigRegion"
-            style="width: 100%;"
+            style="width: 100%"
             nzShowSearch
             nzAllowClear
             nzPlaceHolder="大区"
@@ -256,10 +316,13 @@
         </nz-form-control>
       </nz-form-item>
     </div>
-    <div nz-col nzXs="24"
-                nzSm="24"
-                nzMd="8"
-          [style.display]="isCollapse ? 'block' : 'none'">
+    <div
+      nz-col
+      nzXs="24"
+      nzSm="24"
+      nzMd="8"
+      [style.display]="isCollapse ? 'block' : 'none'"
+    >
       <nz-form-item>
         <nz-form-label [nzSm]="8" [nzXs]="24">小区</nz-form-label>
         <nz-form-control [nzSm]="12" [nzXs]="24">
@@ -267,10 +330,13 @@
         </nz-form-control>
       </nz-form-item>
     </div>
-    <div nz-col nzXs="24"
-                nzSm="24"
-                nzMd="8"
-          [style.display]="isCollapse ? 'block' : 'none'">
+    <div
+      nz-col
+      nzXs="24"
+      nzSm="24"
+      nzMd="8"
+      [style.display]="isCollapse ? 'block' : 'none'"
+    >
       <nz-form-item>
         <nz-form-label [nzSm]="8" [nzXs]="24">经销商名称</nz-form-label>
         <nz-form-control [nzSm]="12" [nzXs]="24">
@@ -278,16 +344,19 @@
         </nz-form-control>
       </nz-form-item>
     </div>
-    <div nz-col nzXs="24"
-                nzSm="24"
-                nzMd="8"
-          [style.display]="isCollapse ? 'block' : 'none'">
+    <div
+      nz-col
+      nzXs="24"
+      nzSm="24"
+      nzMd="8"
+      [style.display]="isCollapse ? 'block' : 'none'"
+    >
       <nz-form-item>
         <nz-form-label [nzSm]="8" [nzXs]="24">BMC</nz-form-label>
         <nz-form-control [nzSm]="12" [nzXs]="24">
           <nz-select
             formControlName="bmc"
-            style="width: 100%;"
+            style="width: 100%"
             nzShowSearch
             nzAllowClear
             nzPlaceHolder=""
@@ -302,10 +371,13 @@
         </nz-form-control>
       </nz-form-item>
     </div>
-    <div nz-col nzXs="24"
-                nzSm="24"
-                nzMd="8"
-          [style.display]="isCollapse ? 'block' : 'none'">
+    <div
+      nz-col
+      nzXs="24"
+      nzSm="24"
+      nzMd="8"
+      [style.display]="isCollapse ? 'block' : 'none'"
+    >
       <nz-form-item>
         <nz-form-label [nzSm]="8" [nzXs]="24">SO#</nz-form-label>
         <nz-form-control [nzSm]="12" [nzXs]="24">
@@ -314,19 +386,61 @@
       </nz-form-item>
     </div>
 
+    
+
+    <div nz-col nzXs="24"
+         nzSm="24"
+         nzMd="16" [style.display]="isCollapse ? 'block' : 'none'">
+      <nz-form-item>
+        <nz-form-label [nzSm]="4" [nzXs]="24">OIT 月份</nz-form-label>
+        <nz-form-control [nzSm]="18" [nzXs]="24">
+          <nz-month-picker
+            formControlName="oitDateStart"
+            nzPlaceHolder="开始月份"
+            (ngModelChange)="changeStartMonth(validateForm.value);"
+            [nzDisabledDate]="disabledStartDate"
+          ></nz-month-picker>
+          <nz-month-picker
+            formControlName="oitDateEnd"
+            nzPlaceHolder="结束月份"
+            (ngModelChange)="changeEndMonth(validateForm.value);"
+            [nzDisabledDate]="disabledEndDate"
+          ></nz-month-picker>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+
   </div>
   <div nz-row nzType="flex" nzJustify="end" nzAlign="middle">
-    <div nz-col nzXs="24"
-    nzSm="24"
-    nzMd="16">
-      <nz-form-item class="btns-group" style="text-align: right;">
-<!--        <button nz-button [nzType]="'primary'" (click)="addNewItem('999')" style="margin-left: 10px;">向父元素传值999</button>-->
-        <button nz-button [nzType]="'primary'" style="margin-left: 10px;">搜索</button>
-        <button nz-button [nzType]="'primary'" style="margin-left: 10px;" (click)="resetForm()">清空</button>
-        <button nz-button [nzType]="'primary'" (click)="exportExcel($event)" style="margin-left: 10px;">导出Excel</button>
+    <div nz-col nzXs="24" nzSm="24" nzMd="16">
+      <nz-form-item class="btns-group" style="text-align: right">
+        <!--        <button nz-button [nzType]="'primary'" (click)="addNewItem('999')" style="margin-left: 10px;">向父元素传值999</button>-->
+        <button nz-button [nzType]="'primary'" style="margin-left: 10px">
+          搜索
+        </button>
+        <button
+          nz-button
+          [nzType]="'primary'"
+          style="margin-left: 10px"
+          (click)="resetForm()"
+        >
+          清空
+        </button>
+        <button
+          nz-button
+          [nzType]="'primary'"
+          (click)="exportExcel($event)"
+          style="margin-left: 10px"
+        >
+          导出Excel
+        </button>
         <!-- <button nz-button [nzType]="'primary'" (click)="projectReport($event)" style="margin-left: 10px;">Project Report</button> -->
-        <a class="btn-collapse" style="font-size:14px;margin-left: 10px;color: #1890ff;" (click)="toggleCollapse()">
-          {{ isCollapse ? '收起' : '展开' }}
+        <a
+          class="btn-collapse"
+          style="font-size: 14px; margin-left: 10px; color: #1890ff"
+          (click)="toggleCollapse()"
+        >
+          {{ isCollapse ? "收起" : "展开" }}
           <i nz-icon [type]="isCollapse ? 'up' : 'down'"></i>
         </a>
       </nz-form-item>

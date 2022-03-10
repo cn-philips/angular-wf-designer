@@ -9,7 +9,7 @@ export class NumberThousandth implements PipeTransform {
     
     if(value!=null&&value!=undefined&&value!="") 
     {   
-      value.toString();  
+      value=value.toString();  
       const index=value.indexOf(".")
       if(index!=-1)
       {

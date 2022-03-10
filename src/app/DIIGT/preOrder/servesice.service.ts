@@ -15,6 +15,11 @@ export class ServesiceService {
   recive:any=new EventEmitter();
   host:any=new EventEmitter();
   supportFileMissing:any=new EventEmitter();
+  payment:any=new EventEmitter();
+  dealerCode:any=new EventEmitter();
+  dealTable:any=new EventEmitter();
+  confirmTime:any=new EventEmitter();
+  centralizeds:any=new EventEmitter();
   cheakItem:any=[];
   constructor() {}
 }

@@ -30,19 +30,25 @@ export class PreOrderProductFormComponent implements OnInit {
   public state:any;
   public magnetic:any=false; //磁共震
   public towerCrane:any=false; //塔吊
+  public solutionOff:any=false; //solution显示与否
   public test:any=false;
   //public left:any;
   public sonfonFile:any=[];
   public validateForm: FormGroup;
   public isVisibleSofon = false;
   public fileList = [];
-  public textLen=255; 
+  public textLen=255;
   public textLenone=200;
   public textLentwo=100;
   public tableColOff=false;
   public otherFile=false; //控制其实备注和复制按钮的显示与否
   // upload组件fileList
   public load: any = false;
+  public userList:any;
+  public paymentOff:any=false;
+  public dealList:any=[];
+  public dealshow:any={tablehead:[{name:"授权地区",width:"300px"},{name:"授权产品",width:"300px"}],data:[]};
+  public isAgre:any=false;
   // public mrShieldingCompanyFileList = []; // 磁共振屏蔽公司
   // public confirmationFileFileList = []; // IGT第三方吊塔确认文件
   // public paymentProvisionFileNameFileList = []; // 付款条件
@@ -66,6 +72,7 @@ export class PreOrderProductFormComponent implements OnInit {
    */
   public upload(fileList, file, fileId) {
     this.dataBase[fileList] = [];
+    this.dataBase.sofonNames = file.name;
     const type = getType(file);
     this.dataBase[fileList].push(file);
     const formData = new FormData();
@@ -82,6 +89,7 @@ export class PreOrderProductFormComponent implements OnInit {
         this.load = false;
         this.dataBase[fileList][0].fileId = res.data;
         this.dataBase[fileId] = res.data;
+        this.dataBase.sofonName = res.data;
         this.message.create('success', '操作成功');
       } else {
         this.message.create('error', res.msg);
@@ -123,7 +131,7 @@ export class PreOrderProductFormComponent implements OnInit {
   nzRemovsofonName=(file:UploadFile):any=>{
     this.dataBase.sofonName="";
     return true;
-  } 
+  }
    //支持文件缺失需特批进单
    nzRemovsupportFileMissing=(file:UploadFile):any=>{
     this.dataBase.supportFileMissingFileName="";
@@ -137,6 +145,11 @@ export class PreOrderProductFormComponent implements OnInit {
    //其它
    nzRemovother=(file:UploadFile):any=>{
     this.dataBase.otherFilName="";
+    return true;
+  }
+  //是否售后
+  nzRemoveafterSales=(file:UploadFile):any=>{
+    this.dataBase.afterSalesFileName="";
     return true;
   }
   //履约保函
@@ -168,7 +181,7 @@ export class PreOrderProductFormComponent implements OnInit {
    nzRemovmrShieldingCompany=(file:UploadFile):any=>{
     this.dataBase.mrShieldingCompany="";
     return true;
-  } 
+  }
   //删除塔吊文件
   nzRemovconfirmationFile=(file: UploadFile,): any=>
   {
@@ -295,8 +308,8 @@ export class PreOrderProductFormComponent implements OnInit {
     this.upload('amountDifferenceFileNameFileList', file, 'amountDifferenceFileName');
     return false;
   }
-  // 上传——履约保函
-  public performanceBondFileNameBeforeUpload = (file: UploadFile): boolean => {
+   // 上传——履约保函
+   public performanceBondFileNameBeforeUpload = (file: UploadFile): boolean => {
     const isLt2M = file.size / 1024 / 1024 < 100; // 文件大小不超过100M
     const fileType = getType(file);
     if (fileType === 'exe' || fileType === 'bat') {
@@ -308,6 +321,21 @@ export class PreOrderProductFormComponent implements OnInit {
       return false;
     }
     this.upload('performanceBondFileNameFileList', file, 'performanceBondFileName');
+    return false;
+  }
+  // 上传是否有售后限价
+  public afterSalesFileNameBeforeUpload = (file: UploadFile): boolean => {
+    const isLt2M = file.size / 1024 / 1024 < 100; // 文件大小不超过100M
+    const fileType = getType(file);
+    if (fileType === 'exe' || fileType === 'bat') {
+      this.message.create('error', '上传文件格式错误!');
+      return false;
+    }
+    if (!isLt2M) {
+      this.message.create('error', '文件大小不超过100M');
+      return false;
+    }
+    this.upload('afterSalesFileNameFileList', file, 'afterSalesFileName');
     return false;
   }
   // 上传——支持文件缺失需特批进单
@@ -340,10 +368,16 @@ export class PreOrderProductFormComponent implements OnInit {
     this.upload('otherFilNameFileList', file, 'otherFilName');
     return false;
   }
-//
-supportChange()
+//支持文件缺失需特批进单向基础信息组件传参数
+supportChange(event)
 {
   this.ServesiceService.supportFileMissing.emit()
+  // if(event=='0')
+  // {
+  //   this.dataBase.supportFileMissingRemarks="";
+  //   this.dataBase.supportFileMissingFileName="";
+  //   this.dataBase.supportFileMissingFileNameFileList=[];
+  // }
 }
 
   public changeOthers(value: boolean, num: number): void {
@@ -361,7 +395,6 @@ supportChange()
     this.otherFile=arr.some(res=>res=="true");
     this.other = arr.toString();
     this.dataBase.other = arr.toString();
-
   }
   public submitForm(): void {
     for (const i in this.validateForm.controls) {
@@ -395,42 +428,99 @@ supportChange()
   }
   public ngAfterViewChecked()
   {
-    
-    // let dom = this.el.nativeElement.querySelectorAll('.down');
-    // let doms=this.el.nativeElement.querySelectorAll('.negatives'); 
-    // this.left=dom[0].offsetWidth;   
+
   }
-  public ngOnChanges() { 
+  public ngOnChanges() {
     let that=this;
-   
-    this.ServesiceService.host.subscribe(res=>{ 
-      // if(this.dataBase.productList&&this.dataBase.productList.length>0)
-      // {
-      //   let host=this.dataBase.productList.find(vals=>vals.checked);
-      //   if(host&&host.modalityBmc&&host.modalityBmc.length>0)
-      //   {
-      //     this.magnetic=host.modalityBmc.some(val=>val=="MR") 
-      //   }
-      //   else{
-      //     this.magnetic=false;
-      //   }
-      //   if(host&&host.modalityBmc&&host.modalityBmc.length>0)
-      //   {
-      //     this.towerCrane=host.modalityBmc.some(val=>val=="IGT-S") 
-      //   }
-      //   else
-      //   {
-      //     this.towerCrane=false;
-      //   }  
-      // }
-      // else
-      // {
-      //   this.magnetic=false;
-      //   this.towerCrane=false;
-      // }
-      // that.test=true; 
+    this.ServesiceService.host.subscribe(res=>{
       this.getBase();
-    })  
+    })
+    //经销商code
+    this.ServesiceService.dealerCode.subscribe(val=>{
+         this.dealerCodeList();
+    })
+    //集采项目
+    this.ServesiceService.centralizeds.subscribe(val=>{
+       this.dataBase.actualSales="";
+    })
+    if(this.dataBases.businessModel=='DISTRIBUTOR'&&this.dataBases.dealerCode)
+    {
+      this.dealerCodeList();
+    }
+
+    //触发付款条款
+    this.ServesiceService.payment.subscribe((res,params)=>{
+
+      this.dataBases.paymentList=res;
+      !this.dataBases.paymentList&&(this.dataBase.paymentProvision=null);
+      if(this.dataBases.detail.status=='')
+      {
+
+        if(this.dataBases.paymentmethod&&this.dataBases.paymentOff&&(this.dataBase.paymentProvision==null||this.dataBase.paymentProvision==""))
+        {
+          this.dataBase.paymentProvision=this.dataBases.paymentmethods?this.dataBases.paymentmethods:null;
+        }
+      }
+      if(this.dataBase.paymentProvision&&this.dataBases.paymentList)
+      {
+        if(this.dataBase.paymentProvision=='0'||this.dataBase.paymentProvision=='1')
+        {
+          let selectId=this.dataBases.paymentList.find(val=>val.remark==this.dataBase.paymentProvision);
+          this.dataBase.paymentProvision=selectId.dictId
+        }
+
+        let selectId=this.dataBases.paymentList.find(val=>val.dictId==this.dataBase.paymentProvision);
+
+        if(selectId)
+        {
+          this.paymentOff=selectId.remark=='1'?true:false;
+          (this.paymentOff&&this.state==='DOACS'&&this.flag2)&&this.validateForm.controls.paymentProvision.enable();
+        }
+        else{
+          this.paymentOff=false;
+          this.dataBase.paymentProvision=null;
+          this.dataBase.paymentProvisionRemarks="";
+        }
+      }
+    })
+    //付款条款
+    if(this.dataBases.paymentList)
+    {
+
+      this.dataBase.paymentList=this.dataBases.paymentList;
+      if(this.dataBases.detail.status=='')
+      {
+        if(this.dataBases.paymentmethod&&this.dataBases.paymentOff&&(this.dataBase.paymentProvision==null||this.dataBase.paymentProvision==""))
+        {
+        this.dataBase.paymentProvision=this.dataBases.paymentmethods?this.dataBases.paymentmethods:null;
+        }
+      }
+      if(this.dataBase.paymentProvision)
+      {
+        if(this.dataBases.paymentList)
+        {
+            if(this.dataBase.paymentProvision=='0'||this.dataBase.paymentProvision=='1')
+            {
+              let selectId=this.dataBases.paymentList.find(val=>val.remark==this.dataBase.paymentProvision);
+              this.dataBase.paymentProvision=selectId.dictId;
+            }
+            let selectId=this.dataBases.paymentList.find(val=>val.dictId==this.dataBase.paymentProvision);
+            if(selectId)
+            {
+              this.paymentOff=selectId.remark=='1'?true:false;
+              (this.paymentOff&&this.state==='DOACS'&&this.flag2)&&this.validateForm.controls.paymentProvision.enable();
+            }
+            else
+            {
+              this.paymentOff=false;
+              this.dataBase.paymentProvision=null;
+              this.dataBase.paymentProvisionRemarks="";
+            }
+
+        }
+      }
+    }
+
     this.getBase();
     this.ServesiceService.bookEventer.subscribe(res => {
       if (!this.dataBase.checked) {
@@ -438,16 +528,78 @@ supportChange()
       }
     });
   }
+
+//支持文件缺失按钮是否禁用问题
+  public supportFileMissingFlag()
+  {
+
+    const state=this.activatedRouter.queryParams['_value'].state;
+    let flag=false;
+    if(state==='DOACS')
+    {
+      if ((this.dataBases.biddingDocuments == '' || this.dataBases.biddingDocuments == null || this.dataBases.biddingDocuments == undefined) && this.dataBases.tenderNo != '其他类型') {
+        flag=true;
+      }
+      if ((this.dataBases.tenderDocuments == '' || this.dataBases.tenderDocuments == null || this.dataBases.tenderDocuments == undefined) && this.dataBases.tenderNo != '其他类型') {
+        flag=true;
+      }
+      if ((this.dataBases.endUserContract == '' || this.dataBases.endUserContract == null || this.dataBases.endUserContract == undefined)&&this.dataBases.businessModel!='DIRECT') {
+        flag=true;
+      }
+      if ((this.dataBases.projectAnalysisTable == '' || this.dataBases.projectAnalysisTable == null || this.dataBases.projectAnalysisTable == undefined) && this.dataBases.businessModel == 'DISTRIBUTOR') {
+        flag=true;
+      }
+     (this.dataBase.supportFileMissing=='1'&&!flag)&&this.validateForm.controls.supportFileMissing.enable();
+    }
+  }
+  //取消弹出窗口
+  public isAgreCancel()
+  {
+    this.isAgre=false;
+  }
+  //弹出详情
+  public showDiag()
+  {
+    this.dealshow.data=[];
+    let dealerAgreementNo=this.dataBase.agreementNo;
+    this.isAgre=true;
+    let select=this.dealList.find(val=>dealerAgreementNo==val.agreementNo);
+    if(select)
+    {
+      let obj={
+        authorizedArea:select.authorizedArea,
+        authorizedProduct:select.authorizedProduct
+      }
+      this.dealshow.data.push(obj)
+      this.ServesiceService.dealTable.emit(this.dealshow);
+    }
+  }
+
+  //经销商协议号列表
+  public dealerCodeList()
+  {
+    let dealerCode=this.dataBases.dealerCode;
+    if(dealerCode&&this.dataBases.businessModel=='DISTRIBUTOR')
+    {
+      let url=`/act/preparation/chooseDealer?dealerCode=${dealerCode}`;
+      this.http.get(url).subscribe(rest => {
+          this.dealList=rest.data;
+          let dealerAgreementNo=this.dataBase.agreementNo;
+          let select=this.dealList.find(val=>dealerAgreementNo==val.agreementNo);
+          !select&&(this.dataBase.agreementNo=null);
+      })
+    }
+  }
   //查看是否有三方塔吊和磁共振
   public getBase()
   {
-    
+
     if(this.dataBase.productList&&this.dataBase.productList.length>0)
       {
         let host=this.dataBase.productList.find(vals=>vals.checked);
         if(host&&host.modalityBmc&&host.modalityBmc.length>0)
         {
-          this.magnetic=host.modalityBmc.some(val=>val=="MR") 
+          this.magnetic=host.modalityBmc.some(val=>val=="MR")
         }
         else{
           this.magnetic=false;
@@ -456,19 +608,28 @@ supportChange()
         }
         if(host&&host.modalityBmc&&host.modalityBmc.length>0)
         {
-          this.towerCrane=host.modalityBmc.some(val=>val=="IGT-S") 
+          this.towerCrane=host.modalityBmc.some(val=>val=="IGT-S")
         }
         else
         {
           this.towerCrane=false;
           this.dataBase.confirmationFile="";
           this.dataBase.confirmationFileFileList=[];
-        }  
+        }
+        if(host&&host.businessOpportunityHierarchyLink!=null&&host.businessOpportunityHierarchyLink!=""&&host.businessOpportunityHierarchyLink!=undefined)
+        {
+          this.solutionOff=true;
+        }
+        else{
+          this.solutionOff=false;
+          this.dataBase.solutionSales="";
+        }
       }
       else
       {
         this.magnetic=false;
         this.towerCrane=false;
+        this.solutionOff=false;
         this.dataBase.mrShieldingCompany="";
         this.dataBase.confirmationFile="";
         this.dataBase.confirmationFileFileList=[];
@@ -487,12 +648,50 @@ supportChange()
     private aRoute: ActivatedRoute,
     private el:ElementRef
   ) {}
-  public cheakbox() {      
+  public cheakbox() {
     const cheaks = this.checkFormData();
     this.ServesiceService.recive.emit(cheaks);
   }
+  //选择支持条款选择框
+  changePayment(params) {
+   // this.dataBase.paymentProvision=params
+
+    let applyType = this.dataBases.entryMode;
+    let clientType = this.dataBases.hospitalNature;
+    let tenderPriceCurrencys = this.dataBases.invoiceInformation;
+    let businessType = this.dataBases.businessModel;
+    if (applyType == null || applyType == undefined || applyType == '') {
+      this.dataBases.paymentList = [];
+      this.message.create('error', '请选择进单模式');
+      return;
+    }
+    if (businessType == null || businessType == undefined || businessType == '') {
+      this.dataBases.paymentList = [];
+      this.message.create('error', '请选择业务模式');
+      return;
+    }
+    if (clientType == null || clientType == undefined || clientType == '') {
+      this.dataBases.paymentList = [];
+      this.message.create('error','请选择医院类型');
+      return;
+    }
+    if (tenderPriceCurrencys == null || tenderPriceCurrencys == undefined || tenderPriceCurrencys == '') {
+      this.dataBases.paymentList = [];
+      this.message.create('error', '请选择币种');
+      return;
+    }
+    if(this.dataBases.paymentList&&this.dataBases.paymentList.length>0)
+    {
+      let selectId=this.dataBases.paymentList.find(val=>val.dictId==this.dataBase.paymentProvision)
+      selectId&&(this.paymentOff=selectId.remark=='1'?true:false);
+    }
+    else{
+      this.paymentOff=false;
+    }
+  }
   public ngOnInit(): void {
-    // this.dataBase.other = 'true,false,false,false,false,true,true';   
+    // this.dataBase.other = 'true,false,false,false,false,true,true';
+    this.userListFun();
     if (!this.dataBase.other1) {
       this.dataBase.other1 = false;
     }
@@ -533,7 +732,7 @@ supportChange()
     this.dataBase.other6 = arr[5];
     this.dataBase.other7 = arr[6];
     const roleCode=localStorage.getItem("roleCode");
-    const roles=JSON.parse(localStorage.getItem("roles"));  
+    const roles=JSON.parse(localStorage.getItem("roles"));
     //this.installSwitch=roleCode=="OA"?true:false;
     this.installSwitch=roles.some(item=>item=='OA');
     //this.sofonNameOff=roleCode!="Sales Rep/Mgr"?true:false;
@@ -542,8 +741,13 @@ supportChange()
     this.state=this.activatedRouter.queryParams['_value'].state;
     if (flag === '1') {
       this.flag2 = false;
-    }  
+    }
     this.validateForm = this.fb.group({
+      actualSales:new FormControl({value: '',disabled: this.disa},[Validators.required,this.cheakMail] ),
+      agreementNo:new FormControl({value: '',disabled: this.disa}, ),
+      solutionSales:new FormControl({value: '', disabled: this.disa}, ),
+      afterSales:new FormControl({value: '', disabled: this.disa}, ),
+      afterSalesRemarks:new FormControl({value: '', disabled: this.disa}, ),
       sofonNo:new FormControl({ value: '', disabled: this.disa},),
       paymentProvision: new FormControl({ value: '', disabled: this.disa},),
      // paymentProvisionRemarks: new FormControl({ value: '', disabled:this.disa},[Validators.required,Validators.minLength(1),Validators.maxLength(255)]),
@@ -583,10 +787,12 @@ supportChange()
       other5: new FormControl({value: '', disabled: this.disa}, null),
       other6: new FormControl({value: '', disabled: this.disa}, null),
       other7: new FormControl({value: '', disabled: this.disa}, null),
+      checkedFile: new FormControl({value: '', disabled: false}, null),
       freeText:new FormControl({value: '', disabled: this.disa}, [Validators.required,Validators.minLength(1),Validators.maxLength(99)]),
     });
     if(this.state==='DOACS'&&this.flag2)
     {
+
       this.validateForm.controls.paymentProvisionRemarks.enable();
       this.validateForm.controls.shipmentDeliveryRemarks.enable();
       this.validateForm.controls.installationWarrantyRemarks.enable();
@@ -595,9 +801,72 @@ supportChange()
       this.validateForm.controls.otherRemarks.enable();
       this.validateForm.controls.performanceBondRemarks.enable();
       this.validateForm.controls.supportFileMissingRemarks.enable();
+      this.validateForm.controls.afterSalesRemarks.enable();
       this.validateForm.controls.sofonNo.enable();
+      this.dataBase.sitePreparation=='1'&&this.validateForm.controls.sitePreparation.enable();
+      this.dataBase.performanceBond=='1'&&this.validateForm.controls.performanceBond.enable();
+      this.dataBase.shipmentDelivery=='1'&&this.validateForm.controls.shipmentDelivery.enable();
+      this.dataBase.installationWarranty=='1'&&this.validateForm.controls.installationWarranty.enable();
+      this.dataBase.afterSales=='1'&&this.validateForm.controls.afterSales.enable();
+      this.supportFileMissingFlag()
+      this.dataBase.amountDifference=='1'&&this.validateForm.controls.amountDifference.enable();
+      if(this.dataBase.other7 == true)
+      {
+       // this.validateForm.controls.other1.enable();
+        this.validateForm.controls.other2.enable();
+        this.validateForm.controls.other3.enable();
+        this.validateForm.controls.other4.enable();
+        this.validateForm.controls.other5.enable();
+        this.validateForm.controls.other6.enable();
+        this.validateForm.controls.other7.enable();
+        this.validateForm.controls.freeText.enable();
+      }
     }
 
+    if (this.dataBase.productList!=null && this.dataBase.productList != undefined){
+      // ============================   产品列表循环
+      this.dataBase.productList.forEach(vals => {
+        if (vals.configurationFile == null || vals.configurationFile == undefined || vals.configurationFile == ''){
+          const confFiles = [];
+          vals.sofonName = this.dataBase.sofonName;
+          if (vals.simulationIds != '' && vals.simulationIds != undefined && vals.simulationIds != null) {
+            // 读取配置文件===========================
+            this.http.get(`/act/preparation/getAttachmentFromCP/` + vals.simulationIds + this.configFile_ClassType).subscribe((res2 => {
+              for (let i = 0; i < res2.data.length; i++) {
+                confFiles[i] = res2.data[i].id;
+              }
+              if (confFiles != null && confFiles != undefined){
+                // 上传并打包配置文件========================
+                this.http.post('/act/system/upload/cp', confFiles).subscribe((res3 => {
+                  vals.configurationFile = res3.data.FileId;
+                  vals.configurationFileList = [{
+                    id: '' + res3.data.FileId,
+                    preparationProductId: '',
+                    preparationId: '',
+                    fileId: '',
+                    configurationFile: res3.data.FileName
+                  }];
+
+                }), error => {
+
+                });
+              }
+            }), error => {
+
+            });
+          }
+        }
+
+      });
+    }
+  }
+  //人员名称列表
+  public userListFun()
+  {
+    let url=`/act/preparation/getUsers`
+    this.http.post(url,{}).subscribe(rest=>{
+         this.userList=rest.data;
+    })
   }
   //验证长度
   maxlang(control: FormControl)
@@ -607,6 +876,16 @@ supportChange()
       let reg =/^\S{1,200}$/; //验证规则
       let valid = reg.test(control.value.replace(/[\u4e00-\u9fa5]{1}/g, 'xx')) //true
       return valid ? null:{langform: true};
+    }
+  }
+   //邮箱的正则表大式
+   cheakMail(control: FormControl) {
+    if (control.value) {
+      const reg=/^([a-zA-Z0-9_\.\-])+\@(philips.com)+$/;
+      //const reg=/^[0-9a-zA-Z_\@\.\s\-]*$/g;
+      //const reg = /^(?!\@)+(?!\_)+[0-9a-zA-Z_\@\.\s\-]*$/g;
+      const valid = reg.test(control.value); // true
+      return valid ? null : { mailform: true };
     }
   }
   //弹出sofon框
@@ -654,4 +933,250 @@ supportChange()
     // console.log('copy');
     this.copy.emit(a);
   }
+  //装运方式
+  public shipmentDeliverySelect(event)
+  {
+    if(event=='0')
+    {
+      this.dataBase.shipmentDeliveryRemarks="";
+      this.dataBase.shipmentDeliveryFileName="";
+      this.dataBase.shipmentDeliveryFileNameFileList=[];
+    }
+  }
+  //场地准备
+  public sitePreparationSelect(event)
+  {
+    if(event=='0')
+    {
+      this.dataBase.sitePreparationRemarks="";
+      this.dataBase.sitePreparationFileName="";
+      this.dataBase.sitePreparationFileNameFileList=[];
+    }
+  }
+  //安装，验收及保修
+  public installationWarrantySelect(event)
+  {
+    if(event=='0')
+    {
+      this.dataBase.installationWarrantyRemarks="";
+      this.dataBase.installationWarrantyFileName="";
+      this.dataBase.installationWarrantyFileNameFileList=[];
+    }
+  }
+  //履约保函
+  public performanceBondSelect(event)
+  {
+    if(event=='0')
+    {
+      this.dataBase.performanceBondRemarks="";
+      this.dataBase.performanceBondFileName="";
+      this.dataBase.performanceBondFileNameFileList=[];
+    }
+  }
+  //是否有售后限价
+  public afterSalesSelect(event)
+  {
+    if(event=='0')
+    {
+      this.dataBase.afterSalesRemarks="";
+      this.dataBase.afterSalesFileName="";
+      this.dataBase.afterSalesFileNameFileList=[];
+    }
+  }
+  //直投订单合同金额和中标金额有价差
+  public amountDifferenceSelect(event)
+  {
+    if(event=='0')
+    {
+      this.dataBase.amountDifferenceRemarks="";
+      this.dataBase.amountDifferenceFileName="";
+      this.dataBase.amountDifferenceFileNameFileList=[];
+    }
+  }
+
+
+  // tslint:disable-next-line:variable-name
+    public configFile_ClassType: String = '/simulationConf';
+  // tslint:disable-next-line:variable-name
+    public sofonFile_ClassType: String = '/SofonOAReturnDoc,SofonOAReturnXml';
+
+
+
+
+
+  public files: any = {
+   thelist: []
+  };
+
+
+
+  getfilelist() {
+    const dealFormId = this.dataBases.dealFormId;
+    if (dealFormId != '' && dealFormId != undefined && dealFormId != null) {
+      this.http.get(`/act/preparation/getAttachmentFromCP/` + dealFormId + this.sofonFile_ClassType).subscribe((res => {
+        for (let i = 0; i < res.data.length; i++) {
+          this.files.thelist[i] = res.data[i];
+        }
+      }), error => {
+
+        });
+    } else {
+      this.message.create('error', '请先查询dealFormId');
+    }
+  }
+
+  //   sofon文件选择框
+  isVisible = false;
+
+
+  @ViewChild('sofonModal')public sofonModal;
+
+  public uploadZipFileName: String;
+
+  public upmode = true;
+
+  public switchValid = true;
+
+  changeupmode(mode): void{
+    this.upmode = !mode;
+    this.dataBase.sofonName = '';
+    this.dataBase.sofonNames = '';
+    this.dataBase.sofonNameFileList = [];
+  }
+
+
+
+  // 对话框事件方法
+  showModal(): void {
+    this.isVisible = true;
+    this.getfilelist();
+  }
+
+  handleOk(): void {
+    // 只选一个文件时不打包
+    if (this.fileChecked != null && this.fileChecked.length == 1){
+      this.http.get('/act/system/upload/cp/' + this.fileChecked[0]).subscribe((res1 => {
+        if (res1.code == '0000') {
+          this.uploadZipFileName = res1.data.FileName;
+          this.dataBase.sofonNames = res1.data.FileName;
+          this.dataBase.sofonName = res1.data.FileId;
+          this.dataBases.sofonName = res1.data.FileId;
+          this.message.create('success', '文件上传成功！');
+
+          // ============================   产品列表循环
+          // this.dataBase.productList.forEach(vals => {
+          //   const confFiles = [];
+          //   vals.sofonName = this.dataBase.sofonName;
+          //   if (vals.simulationIds != '' && vals.simulationIds != undefined && vals.simulationIds != null) {
+          //     // 读取配置文件===========================
+          //
+          //     this.http.get(`/act/preparation/getAttachmentFromCP/` + vals.simulationIds + this.configFile_ClassType).subscribe((res2 => {
+          //       for (let i = 0; i < res2.data.length; i++) {
+          //         confFiles[i] = res2.data[i].id;
+          //       }
+          //       if (confFiles != null && confFiles != undefined){
+          //
+          //
+          //         // 上传并打包配置文件========================
+          //         this.http.post('/act/system/upload/cp', confFiles).subscribe((res3 => {
+          //           vals.configurationFile = res3.data.FileId;
+          //           vals.configurationFileList = [{
+          //             id: '' + res3.data.FileId,
+          //             preparationProductId: '',
+          //             preparationId: '',
+          //             fileId: '',
+          //             configurationFile: res3.data.FileName
+          //           }];
+          //
+          //         }), error => {
+          //
+          //         });
+          //       }
+          //     }), error => {
+          //     });
+          //
+          //   }
+          //
+          //
+          // });
+        }
+      }), error => {
+        this.message.create('error', '文件上传失败！');
+      });
+
+      this.isVisible = false;
+    }// 多选文件打包
+    else if (this.fileChecked != null && this.fileChecked.length > 1){
+      // ======================================  上传sofon文件
+      this.http.post('/act/system/upload/cp', this.fileChecked).subscribe((res1 => {
+        if (res1.code == '0000') {
+          this.uploadZipFileName = res1.data.FileName;
+          this.dataBase.sofonNames = res1.data.FileName;
+          this.dataBase.sofonName = res1.data.FileId;
+          this.dataBases.sofonName = res1.data.FileId;
+          this.message.create('success', '文件上传成功！');
+
+// ============================   产品列表循环
+//           this.dataBase.productList.forEach(vals => {
+//             vals.sofonName = this.dataBase.sofonName;
+//             const simuID = vals.simulationIds;
+//             if (simuID != '' && simuID != undefined && simuID != null) {
+//               // 读取配置文件===========================
+//               this.http.get(`/act/preparation/getAttachmentFromCP/` + simuID + this.configFile_ClassType).subscribe((res2 => {
+//                 const confFiles = [];
+//                 for (let i = 0; i < res2.data.length; i++) {
+//                    confFiles[i] = res2.data[i].id;
+//                 }
+//                 if (confFiles != null && confFiles != undefined){
+//
+//                   // 上传并打包配置文件========================
+//                   this.http.post('/act/system/upload/cp', confFiles).subscribe((res3 => {
+//                     vals.configurationFile = res3.data.FileId;
+//                     vals.configurationFileList = [{
+//                       id: '' + res3.data.FileId,
+//                       preparationProductId: '',
+//                       preparationId: '',
+//                       fileId: '',
+//                       configurationFile: res3.data.FileName
+//                     }];
+//                     console.log(vals);
+//
+//                   }), error => {
+//                   });
+//                 }
+//               }), error => {
+//
+//               });
+//
+//
+//             }
+//
+//
+//           });
+        }
+      }), error => {
+        this.message.create('error', '文件上传失败！');
+      });
+
+
+      this.isVisible = false;
+    }else {
+     this.message.create('error', '请选择文件！');
+    }
+
+  }
+
+
+  handleCancel(): void {
+    this.isVisible = false;
+  }
+
+  public fileChecked: String[];//选中的文件数组
+
+
+
+  log(value: string[]): void {
+    this.fileChecked = value;
+  }
+
 }

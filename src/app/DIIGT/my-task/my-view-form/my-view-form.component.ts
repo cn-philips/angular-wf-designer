@@ -23,6 +23,23 @@ export class MyViewFormComponent implements OnInit {
   @Output() public passFormValues = new EventEmitter<any>();
   @Output() public exportEvent = new EventEmitter<any>();
   @Output() public projectReportEvent = new EventEmitter<any>();
+  @Output() public biddingReportEvent = new EventEmitter<any>();
+  @Output() public POSReportEvent = new EventEmitter<any>();
+  @Output() public opportunityReportEvent = new EventEmitter<any>();
+  @Output() public BundleReportEvent = new EventEmitter<any>();
+
+  @Input() public loadingButton = {
+    resetForm: false,
+    exportExcel: false,
+    projectReport: false,
+    opportunityReport: false,
+    BundleReport: false,
+    biddingReport: false,
+    POSReport: false
+  };
+
+  public isOA = false;
+  public isOALeader = false;
   value: string;
   selectedValue = null;
   validateForm: FormGroup;
@@ -56,6 +73,7 @@ export class MyViewFormComponent implements OnInit {
     {code: 'ZBQR-YZBQRYBCWJ', label: '中标确认-已中标确认-已补充文件'},
     {code: 'XMZZ-WZB', label: '项目终止-未中标'},
     {code: 'XMZZ-2CKBZZ', label: '项目终止-二次开标'},
+    {code: 'ZBQR-BIDCANCELLED', label: '中标确认-取消投标申请'}
   ];
   businessModelList = [];
   entryModeList = [];
@@ -75,6 +93,7 @@ export class MyViewFormComponent implements OnInit {
 
   bigRegionList = [];
   bmcList = [];
+  teamsList = [];
 
   ngOnInit(): void {
    // this.getOrderTypeList();
@@ -84,6 +103,7 @@ export class MyViewFormComponent implements OnInit {
     this.getBiddingAuthorizationModeList();
     this.getBigRegionList();
     this.getBmcList();
+    this.getTeamsList();
     this.validateForm = this.fb.group({
       sale:  [null],
       hospital: [null],
@@ -107,7 +127,24 @@ export class MyViewFormComponent implements OnInit {
       applyType: [null],
       taskStatus: [null],
       thirdPartySelfProcurementVerification: [null],
+      oitDateStart: [null],
+      oitDateEnd: [null],
+      teams: [null]
     });
+    const roleCode = JSON.parse(localStorage.getItem('roles'));
+    if (roleCode) {
+      roleCode.map(e => {
+        if (e === 'OA' || e === 'OA Leader') {
+          this.isOA = true;
+        }
+        if (e === 'OA Leader') {
+          this.isOALeader = true;
+        }
+      });
+    }
+    // if (roleCode === 'OA' || roleCode === 'OA Leader') {
+    //   this.isOA = true;
+    // }
   }
 
   public getOrderTypeList () {
@@ -213,6 +250,17 @@ export class MyViewFormComponent implements OnInit {
     });
   }
 
+  // teams
+  public getTeamsList() {
+    this.http.get(`/act/ecom/homepage/getAllTeams`).subscribe(rest => {
+      if (rest && rest.data) {
+        this.teamsList = rest.data;
+      } else {
+        this.message.create('error', `${rest.msg}`);
+      }
+    });
+  }
+
   onChange(result: Date): void {
     console.log('Selected Time: ', result);
   }
@@ -234,10 +282,43 @@ export class MyViewFormComponent implements OnInit {
     console.log('exportExcel');
   }
 
-  projectReport(e: MouseEvent): void {
+  projectReport(e: MouseEvent, value): void {
     e.preventDefault();
-    this.projectReportEvent.emit();
+    this.projectReportEvent.emit(value);
     console.log('projectReport');
+  }
+
+  biddingReport(e: MouseEvent): void {
+    e.preventDefault();
+    this.biddingReportEvent.emit();
+  }
+
+  POSReport(e: MouseEvent): void {
+    e.preventDefault();
+    this.POSReportEvent.emit();
+  }
+
+  public BundleReport(e: MouseEvent): void {
+    e.preventDefault();
+    this.BundleReportEvent.emit();
+  }
+
+  public opportunityReportShow = false;
+  public opportunityText = null;
+  public showModeal() {
+    this.opportunityReportShow = true;
+  }
+  public cancelModeal () {
+    this.opportunityReportShow = false;
+  }
+  public opportunityReport () {
+    if (this.opportunityText == null || this.opportunityText === '') {
+      this.message.create('error', '请输入opportunity');
+      return;
+    }
+    const arr = this.opportunityText.replace(/[,，\s]+/gmi, ',').split(',').filter(_ => _);
+    this.opportunityReportEvent.emit(arr);
+    this.opportunityReportShow = false;
   }
 
   updateConfirmValidator(): void {
@@ -296,6 +377,29 @@ export class MyViewFormComponent implements OnInit {
     }
     return {};
   };
+
+
+  public startDate = null;
+  public endDate = null;
+  public disabledStartDate = (startValue: Date): boolean => {
+    if (!this.endDate) {
+      return false;
+    }
+    return startValue.getTime() > this.endDate.getTime();
+  }
+  public disabledEndDate = (endValue: Date): boolean => {
+    if (!this.startDate) {
+      return false;
+    }
+    return endValue.getTime() < this.startDate.getTime();
+  }
+
+  public changeStartMonth (data) {
+    this.startDate = data.oitDateStart;
+  }
+  public changeEndMonth (data) {
+    this.endDate = data.oitDateEnd;
+  }
 
   constructor(
     private fb: FormBuilder,

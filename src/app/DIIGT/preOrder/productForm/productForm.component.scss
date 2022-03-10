@@ -50,6 +50,9 @@
 .radioClass {
   position: relative;
   top: -3px;
+  .wid60{
+    width:60px;
+  }
 }
 
 .ant-checkbox+span,
@@ -62,7 +65,19 @@
 .freeTextBox {
   position: relative;
 }
-
+.options{
+  width:100%;
+  overflow: hidden;
+  text-overflow:ellipsis;
+  white-space: nowrap;
+  font-weight: 300;
+  color:#666;
+}
+.detailFlex{
+  position: relative;
+    left: 10px;
+    top: -5px;
+}
 .freeText {
   // position: absolute;
   // right: -155px;
@@ -86,4 +101,18 @@
     position: relative;
     top: 9px;
   }
+}
+.prss{
+  position: relative;
+  em{
+      position: absolute;
+        left:-16px;
+        top: -7px;
+        font-size: 14px;
+        color: #f5222d;
+    }  
+}
+.actualSales{
+  height: 32px;
+  min-height:0px;
 }

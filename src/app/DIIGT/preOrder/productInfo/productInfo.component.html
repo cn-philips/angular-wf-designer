@@ -31,7 +31,7 @@
             </nz-form-control>
           </div>
         </nz-form-item>
-      </div> 
+      </div>
       <ng-container *ngIf="dataBase.invoiceInformation=='CNY'">
         <div nz-col>
           <nz-form-item>
@@ -40,9 +40,9 @@
                 税率
               </nz-form-label>
               <nz-form-control>
-                <nz-select class="select" [disabled]="disa" nz-tooltip [nzTitle]="dataBase.taxrate" nzShowSearch  [(ngModel)]="dataBase.taxrate"
+                <nz-select class="select" [disabled]="disa" nz-tooltip [nzTitle]="dataBase.taxrate" (ngModelChange)="changeTaxrate($event)" nzShowSearch  [(ngModel)]="dataBase.taxrate"
                   nzPlaceHolder="" nzSize="large">
-                  <nz-option *ngFor="let item of rateList" [nzValue]="item.code" [nzLabel]="item.code">
+                  <nz-option *ngFor="let item of this.dataBase.rateList" [nzValue]="item.label" [nzLabel]="item.label">
                   </nz-option>
                 </nz-select>
               </nz-form-control>
@@ -65,7 +65,7 @@
               </nz-form-control>
             </div>
           </nz-form-item>
-        </div>      
+        </div>
     </div>
     <nz-modal [(nzVisible)]="isVisibleMarketBundle" nzTitle="匹配的Deal Form产品选择区（Deal Form ID）" nzCentered nzWidth="700"
       (nzOnCancel)="handleCancelMarketBundle()" (nzOnOk)="handleOkMarketBundle()">
@@ -87,13 +87,17 @@
             <label class="font16" [nzDisabled]="ishow==true" [ngModel]="itemData.checked"
               (ngModelChange)="modelChange(i)" nz-checkbox>{{ itemData.modelNumber}}</label>
           </div>
-          <nz-form-item *ngIf="dataBase.tableColOff">
+          <nz-form-item *ngIf="dataBase.tableColOff&&(dataBase.financialProgramme=='2'||dataBase.financialProgramme=='1')&&dataBase.financialProgrammeCost!=0.0000">
             <div class="opera-oppo-input-group">
               <nz-form-label nzFor="email">
-                进单单位Net Price审批价
+                金融方案金额
               </nz-form-label>
-              <nz-form-control>
-                <input [ngModel]="itemData.totalPrice|NumberThousandth" class="form-control" readonly nz-input nz-tooltip [nzTitle]="itemData.totalPrice"
+              <nz-form-control *ngIf="!disaend">
+                <input [(ngModel)]="itemData.financialPrice" autocomplete="off" [id]="'c'+i" [ngModelOptions]="{standalone: true}" (keyup)="orderCount(itemData)" (ngModelChange)="toNumberPrice($event, itemData, 'c'+i)" [disabled]="priceEdit" class="form-control"  nz-input nz-tooltip [nzTitle]="itemData.financialPrice|NumberThousandth"
+                  type="text" />
+              </nz-form-control>
+              <nz-form-control *ngIf="disaend">
+                <input [ngModel]="itemData.financialPrice|NumberThousandth" autocomplete="off" [id]="'c'+i" [ngModelOptions]="{standalone: true}" (keyup)="orderCount(itemData)" (ngModelChange)="toNumberPrice($event, itemData, 'c'+i)" [disabled]="priceEdit" class="form-control"  nz-input nz-tooltip [nzTitle]="itemData.financialPrice|NumberThousandth"
                   type="text" />
               </nz-form-control>
             </div>
@@ -103,13 +107,24 @@
               <nz-form-label nzFor="email">
                 进单单位合同价
               </nz-form-label>
-              <nz-form-control nz-tooltip [nzTitle]="itemData.totalContractPrice">
+              <nz-form-control *ngIf="!disaend" nz-tooltip [nzTitle]="itemData.totalContractPrice|NumberThousandth">
                 <input nz-input style="width:175px;"
                 oninput="if(value.length>18)value=value.slice(0,18)"
-                onkeyup="if(this.value.length==1){this.value=this.value.replace(/[^1-9\,]/g,'')}else{this.value=this.value.replace(/\D/g,'')}"
-                onafterpaste="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}" (keyup)="toNumber(event,itemData.totalContractPrice, 'c'+i,i)"  [id]="'c'+i" 
-                   [ngModelOptions]="{standalone: true}"  [(ngModel)]="itemData.totalContractPrice" nz-input 
-                [disabled]="priceEdit"    >
+                 (ngModelChange)="toNumber($event,itemData, 'd'+i,i)"  [id]="'d'+i"
+                   [ngModelOptions]="{standalone: true}"  [(ngModel)]="itemData.totalContractPrice" nz-input
+                   [disabled]="itemData.inputoff"
+                    >
+              </nz-form-control>
+              <nz-form-control *ngIf="disaend" nz-tooltip [nzTitle]="itemData.totalContractPrice|NumberThousandth">
+                <input nz-input style="width:175px;"
+                oninput="if(value.length>18)value=value.slice(0,18)"
+                 (ngModelChange)="toNumber($event,itemData, 'd'+i,i)"  [id]="'d'+i"
+                   [ngModelOptions]="{standalone: true}"  [ngModel]="itemData.totalContractPrice|NumberThousandth" nz-input
+                   [disabled]="true"
+                    >
+              </nz-form-control>
+              <nz-form-control *ngIf="!disaend" nz-tooltip>
+               <div class="ml10">合同参考价:{{itemData.totalContractPrices}}</div>
               </nz-form-control>
             </div>
           </nz-form-item>
@@ -127,21 +142,26 @@
       </div>
     </div>
     <div class="mtb1rem">
-      <nz-table #rowSelectionTable nzTableLayout="fixed" [nzScroll]="{ x: '2000px' }" [nzFrontPagination]="false"
+      <nz-table #rowSelectionTable nzTableLayout="fixed" [nzScroll]="{ x: '2200px' }" [nzFrontPagination]="false"
         [nzPageIndex]="1" [nzPageSize]="10" [nzShowPagination]="false" [nzShowTotal]="totalTemplate"
         [nzTotal]="itemData.productList.length" [nzData]="itemData.productList"
         (nzCurrentPageDataChange)="currentPageDataChange($event)">
         <thead>
           <tr>
             <th nzLeft="0px" nzAlign="center" nzWidth="200px">主机</th>
-            <th nzAlign="center" nzWidth="200px">产品名称</th>
+            <th nzAlign="center" nzWidth="200px">本地名称</th>
             <th nzAlign="center" nzWidth="100px">台数</th>
+            <th nzAlign="center" nzWidth="100px">产品线</th>
             <th nzAlign="center" nzWidth="200px">产品型号</th>
+            <th nzAlign="center" nzWidth="200px">医疗器械名称</th>
             <th nzAlign="center" nzWidth="200px">NMPA证号</th>
+            <th nzAlign="center" nzWidth="200px">证书有效期</th>
             <th nzAlign="center" nzWidth="150px">Simulation ID</th>
-            <th nzAlign="center" nzWidth="200px">Market Bundle ID</th>
+            <th nzAlign="center" nzWidth="220px">Market Bundle ID</th>
             <th *ngIf="dataBase.tableColOff" nzAlign="center" nzWidth="200px">Net price审批价</th>
+            <th *ngIf="dataBase.tableColOff" nzAlign="center" nzWidth="200px">Trade In</th>
             <th nzAlign="center" nzWidth="200px">Opportunity ID</th>
+            <th nzAlign="center" nzWidth="200px">商机层级链接</th>
             <th nzAlign="center" nzWidth="200px">产品专家</th>
             <th *ngIf="dataBase.tableColOff" nzAlign="center" nzWidth="200px">促销号</th>
             <th *ngIf="dataBase.tableColOff" nzAlign="center" nzWidth="200px">Rebate</th>
@@ -157,19 +177,29 @@
             </td>
             <td nzAlign="center">{{ data.marketBundleName}}</td>
             <td nzAlign="center">{{ data.marketBundleQuantity}}</td>
+            <td nzAlign="center">{{ data.bmc}}</td>
             <td nzAlign="center">{{ data.modelNumber}}</td>
-            <td nzAlign="center">{{data.registrationNumber}}</td>
+            <td nzAlign="center">{{data.medicalDeviceName}}</td>
+            <td nzAlign="center">{{data.nmpaRegistrationNo}}</td>
+            <td nzAlign="center">{{data.nmpaRegistrationExpried|TimeFormatePipeNow}}</td>
             <td nzAlign="center">{{data.simulationIds}}</td>
             <td nzAlign="center">{{data.dealFormMarketBundleId}}</td>
             <td *ngIf="dataBase.tableColOff" nzAlign="center">{{data.approvalPrice|NumberThousandth}}</td>
+            <td *ngIf="dataBase.tableColOff" nzAlign="center">{{data.tradeCost|NumberThousandth}}</td>
             <td nzAlign="center">{{data.opportunityId}}</td>
+            <td nzAlign="center">{{data.businessOpportunityHierarchyLink}}</td>
             <td nzAlign="center">{{data.productExpert!=""&&data.productExpert!=null?data.productExpert:"无"}}</td>
             <td *ngIf="dataBase.tableColOff" nzAlign="center">{{data.promotions!=""&&data.promotions!=null?data.promotions:"无"}}</td>
             <td *ngIf="dataBase.tableColOff" nzAlign="center">{{data.rebates!=""&&data.rebates!=null?data.rebates:"无"}}</td>
             <td nzAlign="center">
-              <div *ngFor="let file of data.configurationFileList; index as j;">
+<!--              <div *ngFor="let file of data.configurationFileList; index as j;" (click)="fileDwon(this.file.id)" >-->
+<!--                <a>{{file.configurationFile}}</a>-->
+<!--              </div>-->
+              <button *ngFor="let file of data.configurationFileList; index as j;"  nz-tooltip [nzTitle]="file.configurationFile"
+                      class="down link-tesk" nz-button nzType="link" (click)="fileDwon(file.id)" >
                 {{file.configurationFile}}
-              </div>
+              </button>
+<!--                {{data.configurationFile}}-->
             </td>
             <td *ngIf="flag!=='1'&&ishow==false" nzAlign="center" nzRight="0px">
               <button *ngIf="flag!=='1'&&ishow==false" class="global-center" nz-button nzType="primary"

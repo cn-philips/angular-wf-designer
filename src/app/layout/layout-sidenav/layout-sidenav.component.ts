@@ -81,6 +81,8 @@ export class LayoutSidenavComponent implements OnInit, AfterViewInit {
     this.http.post('/act/role/getDiigtUserInfo').subscribe(res=>{
       if("0000"==res.code&&res.data&&res.data.jurisdictions&&res.data.jurisdictions.length>0)
       {
+        let profiles=JSON.stringify(res.data.profiles) ;
+        window.localStorage.setItem("profiles",profiles)
         window.localStorage.setItem("roleCode",res.data.roleCode);        
         window.localStorage.setItem("roles",JSON.stringify(res.data.roles));
         this.list=res.data.jurisdictions;

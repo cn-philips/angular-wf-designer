@@ -1,7 +1,3 @@
-<nz-card class="mtb1rem" nzTitle="审批记录">
-<!--   <app-bid-record></app-bid-record>-->
-  <app-emp-acc></app-emp-acc>
-</nz-card>
 <nz-card class="mtb1rem" nzTitle="包含非标准条款" *ngIf="infor && infor.businessType != 'DISTRIBUTOR'">
   <app-app-terms></app-app-terms>
 </nz-card>
@@ -102,4 +98,9 @@
     </div>
 
   </div>
+</nz-card>
+<app-emp-emp-app [data]="infor"></app-emp-emp-app>
+<nz-card class="mtb1rem" nzTitle="审批记录">
+  <!--   <app-bid-record></app-bid-record>-->
+  <app-emp-acc></app-emp-acc>
 </nz-card>

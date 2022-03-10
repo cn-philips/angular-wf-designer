@@ -5,6 +5,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { environment } from '../../../environments/environment';
 import { resolve } from 'url';
 import { validateStyleParams } from '@angular/animations/browser/src/util';
+import { NzCarouselModule } from 'ng-zorro-antd/carousel';
 @Component({
   selector:'igt-homepage',
   templateUrl:'./homepage.component.html',
@@ -19,7 +20,8 @@ export class HomepageComponent implements OnInit {
   linkList:Array<any> = []
   // todoList:Array<any> = [] 
   supportList:Array<any> = []
-  manualList:Array<any> = []
+  manualList:Array<any> = [] 
+  effect = 'scrollx';
   // index:number = 0
   // displayCountPertime:number=4
   // duration:number = 6000
@@ -36,32 +38,7 @@ export class HomepageComponent implements OnInit {
     this.initManuals()
   }
   private async initLinks(){
-    this.linkList=[
-      {label:`Philips - China`,url:`#`},
-      {label:`Philips - ECOM DIIGT`,url:`#`},
-      {label:`Philips Official Website`,url:`#`},
-      {label:`Philips Official Website`,url:`#`},
-      {label:`Philips Official Website`,url:`#`},
-      {label:`Philips Official Website`,url:`#`}, 
-      {label:`Philips Official Website`,url:`#`},
-      {label:`Philips Official Website`,url:`#`},
-      {label:`Philips Official Website`,url:`#`},
-      {label:`Philips Official Website`,url:`#`},
-      {label:`Philips Official Website`,url:`#`},
-      {label:`Philips Official Website`,url:`#`},
-      {label:`Philips Official Website`,url:`#`},
-      {label:`Philips Official Website`,url:`#`},
-      {label:`Philips Official Website`,url:`#`},
-      {label:`Philips Official Website`,url:`#`},
-      {label:`Philips Official Website`,url:`#`},
-      {label:`Philips Official Website`,url:`#`},
-      {label:`Philips Official Website`,url:`#`},
-      {label:`Philips Official Website`,url:`#`},
-      {label:`Philips Official Website`,url:`#`},
-      {label:`Philips Official Website`,url:`#`},
-      {label:`Philips Official Website`,url:`#`},
-      {label:`Philips Official Website`,url:`#`},
-      {label:`Philips Official Website`,url:`#`},
+    this.linkList=[ 
     ]
     const params = {
       dictGroup: 'LINK_QUICK_LINK',
@@ -72,74 +49,16 @@ export class HomepageComponent implements OnInit {
       } else {
         this.message.create('error', `${rest.msg}`);
       }
-    });
-
-  }
-  // private async initTodoList(){
-  //   //API here
-  //   await new Promise((res,rej)=>{
-  //     setTimeout(()=>{
-  //       for(var i =0 ; i < 10; i ++){
-  //         this.todoList.push({
-  //           label:`代办事项${i+1}` ,
-  //           isDisplay : false,
-  //           isEntered:false
-  //         })
-  //       }
-
-  //       if(this.displayCountPertime<=0)this.displayCountPertime=1
-  //       if(this.displayCountPertime>this.todoList.length)this.displayCountPertime = this.todoList.length
-  //       res(true)
-  //     },500)
-  //   })
-  // }
-  private async initSupport(){
-    this.supportList = [{
-      name:'System Admin',
-      job:'System Admin',
-      mobile:'17600000000',
-      email:'IT-Support@Philips.com',
-      avatar:'assets/image/avatar/avatar1.png'
-    },
-    {
-      name:'IT Support Specialist',
-      job:'IT Support',
-      mobile:'17600000000',
-      email:'IT-Support@Philips.com',
-      avatar:'assets/image/avatar/avatar2.png'
-    },
-    {
-      name:'IT Support Specialist',
-      job:'IT Support',
-      mobile:'17600000000',
-      email:'IT-Support@Philips.com',
-      avatar:'assets/image/avatar/avatar3.png'
-    },{
-      name:'IT Support Specialist',
-      job:'IT Support',
-      mobile:'17600000000',
-      email:'IT-Support@Philips.com',
-      avatar:'assets/image/avatar/avatar3.png'
-    },{
-      name:'IT Support Specialist',
-      job:'IT Support',
-      mobile:'17600000000',
-      email:'IT-Support@Philips.com',
-      avatar:'assets/image/avatar/avatar3.png'
-    },{
-      name:'IT Support Specialist',
-      job:'IT Support',
-      mobile:'17600000000',
-      email:'IT-Support@Philips.com',
-      avatar:'assets/image/avatar/avatar3.png'
-    },]
+    }); 
+  } 
+  private async initSupport(){ 
     const params = {
       dictGroup:'LINK_SUPPORT_CONTENT',
     };
     this.http.get(`/act/ecom/dictData/queryDrop?dictGroup=${params.dictGroup}`).subscribe(rest => {
         if (rest.code === '0000') {
-         this.supportList=[...rest.data];
-         this.supportList.map(vals=>{           
+          this.supportList=[...rest.data];
+          this.supportList.map(vals=>{           
             let arr=vals.tag.split("&&");
             let nowArr=[...arr];
             nowArr.shift();
@@ -151,7 +70,8 @@ export class HomepageComponent implements OnInit {
               arrs.push(obj)
             })
             vals.comment=arrs;
-         })
+            vals.active=false;
+          })
         } else {
           this.message.create('error', `${rest.msg}`);
         }
@@ -168,30 +88,36 @@ initManuals(){
   {
     const params = {
       dictGroup: 'LINK_QA_PDF',
-    };
+    }; 
     this.http.get(`/act/ecom/dictData/queryDrop?dictGroup=${params.dictGroup}`).subscribe(rest => {
-        if (rest.code === '0000') {
-          this.manualList=[...rest.data]; 
-          this.manualList.map(vals=>{
-            vals.unfold=true;
+        if (rest.code === '0000') {            
+          let manualList=[...rest.data]; 
+          manualList.map(val=>{
+            val.type='pdf';
           })
-          setTimeout(() => {
-           // this.handleMouseWheel() 
-          },0);
-        } else {
-          this.message.create('error', `${rest.msg}`);
+            const obj={
+              dictGroup:'LINK_QA_LINK'
+            }
+            this.http.get(`/act/ecom/dictData/queryDrop?dictGroup=${obj.dictGroup}`).subscribe(res=> {               
+                let videoData=[...res.data];
+                videoData.map(val=>{
+                  val.type='video';
+                })
+                this.manualList=[...videoData,...manualList];
+            })
         }
-    });
+    }); 
   }
   //打开pdf
-  openPdf(item,param)
+  openPdf(item)
   {
     var urlPath = window.document.location.href;
     var docPath = window.document.location.pathname;
     var index = urlPath.indexOf('#');
     var serverPath = urlPath.substring(0, index);
     // pdfPreview
-    const url = `${serverPath}act/system/preview/pdf/dict/${item}/${param}`;   
+    let url;
+    url=item.type=='pdf'?`${serverPath}act/system/preview/pdf/dict/${item.value}/${item.tag}`: item.label; 
     window.open(url);
   }
   // private play(){
@@ -255,8 +181,7 @@ initManuals(){
     // })
   }
   public isElementInViewport (el, container) {
-    //获取元素是否在可视区域
-    console.log(container)
+    //获取元素是否在可视区域 
     var rect = el.getBoundingClientRect(); 
     var Container_Y = 0
     // var Container_X = 0

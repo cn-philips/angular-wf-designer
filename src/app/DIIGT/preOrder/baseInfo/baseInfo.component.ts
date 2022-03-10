@@ -1,4 +1,4 @@
-import { Component, EventEmitter, ChangeDetectorRef, Input, OnInit, Output, ViewEncapsulation,SimpleChange} from '@angular/core';
+import { Component, EventEmitter, ChangeDetectorRef, Input, OnInit, Output, ViewEncapsulation, SimpleChange, ViewChild, ElementRef } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { Observable, Observer } from 'rxjs';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -8,13 +8,13 @@ import { ToastrService } from 'ngx-toastr';
 import { ApprovalMainModalComponent } from '../../../approval-main-modal/approval-main-modal.component';
 import { NgbModal, ModalDismissReasons, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { NzMessageService, UploadFile } from 'ng-zorro-antd';
-import { timeStamp } from 'console';
-import { getType, upLoadFile, checkPhone, decodeString } from '../../../../assets/js/tools';
+import { getType, upLoadFile, checkPhone, decodeString, standardTime, formatDatesNow, formatDate } from '../../../../assets/js/tools';
 import { connectableObservableDescriptor } from 'rxjs/internal/observable/ConnectableObservable';
 import { environment } from '../../../../environments/environment';
 import {
   codeString,
 } from '../../../../assets/js/tools';
+import { differenceInCalendarDays, setHours } from 'date-fns';
 import { ServesiceService } from '../servesice.service';
 @Component({
   selector: 'app-preOrderBaseInfo',
@@ -28,12 +28,14 @@ export class PreOrderBaseInfoComponent implements OnInit {
   /*
   * true禁用
   * */
-  public bidwinningNotice="中标通知书/最终用户合同";
-  public demandLetter="场地勘验报告/要货函";
+  public dealList:any=[];//经销商协议号列表
+  public bidwinningNotice = "中标通知书/最终用户合同";
+  public demandLetter = "场地勘验报告/要货函";
   public otherFile = false; //控制其实备注和复制按钮的显示与否
   public oaDisa = false; //控制div还是长文本框的显示
   public style: any = { width: '100%' };//控制日期控件样式
   public financiaWidth: any = "14";
+  @ViewChild('child') child;
   @Input() public disa = false;
   // 是否为合同概要表
   @Input() public conTable = false;
@@ -55,7 +57,7 @@ export class PreOrderBaseInfoComponent implements OnInit {
     productList: [], // 产品列表
     detail: {
       id: '',
-      flag:'0',
+      flag: '0',
       status: '',
     },
     // projectAnalysisTable: [], // 盖章后的项目分析表/上传
@@ -81,8 +83,32 @@ export class PreOrderBaseInfoComponent implements OnInit {
   @Output() public updateDataBaseInfo = new EventEmitter<any>();
   @Output() public updateData = new EventEmitter<any>();
   @Output() public updateBase = new EventEmitter<any>();
+  public isAgre: any = false; //最终用户弹出窗口控制
+  public isAgres:any=false; //经销商协议号弹窗口控制
+  public pageParam: any = {    //最终用户的弹出窗口
+    total: 0,
+    pageNo: 1,
+    pageSize: 5,
+    customerName: "",
+    endUserId: ""
+  }
+  public dealshow:any={tablehead:[{name:"授权地区",width:"300px"},{name:"授权产品",width:"300px"}],data:[]};
+  public StockOff: any = true;//最终用户安扭是否禁用
+  public distributorOff: any = false; //经销商是否在经销商列表
+  public foreignTradeOff: any = false;//外贸公司是否在iepool
+  public pricevalue: any = { id: "" };
+  public paymentOff: any = false;//控制付款条款备注和附件的显示与否
+  public today = new Date();
+  public laterDay: any;  //经销商
+  public lateDays: any; //外贸
+  public redFlagList: any //控制redflag的经销商内容
+  public redFlagListPool: any //控制redflag的外贸公司内容
+  public lateDayOff: any = false; //控制经销商过期显示
+  public lateDateOff: any = false; //控制外贸公司过期显示
+  public userTeme: any = false; //显示招标文件审核是否必填
   public currId: any;
   public entryMode: any;
+  public rowspanht: any = 1;
   public rowspans: any = 2;
   public sampleRow: any = 4;
   public modelTalbe: any = false;
@@ -106,6 +132,7 @@ export class PreOrderBaseInfoComponent implements OnInit {
   public amountDifferenceList = [];//直投订单合同金额和中标金额有价差
   public sitePreparatList = [];//场地准备
   public performanceBondList = [];//履约保函
+  public afterSalesList = [];//是否售后
   public supportFileMissingList = [];//支持文件缺失需特批进单
   public otherFilNameList = [];//其它上传
   public mrShieldingCompanyList = [];//磁共振屏蔽公司
@@ -129,6 +156,7 @@ export class PreOrderBaseInfoComponent implements OnInit {
   public colSpanOfConfirmTable = 1;//合同条款确认 部分竖跨表格拦数
   public isVisibleCPResult = false;
   public entryModeList = [];
+  public entryModeLists = []; //零时存一下
   public businessModelList = [];
   public listOfData = [];
   public other = 'false,false,false,false,false,false,false';
@@ -144,20 +172,245 @@ export class PreOrderBaseInfoComponent implements OnInit {
     private cd: ChangeDetectorRef,
     public activatedRouter: ActivatedRoute,
     private ServesiceService: ServesiceService,
+    private el: ElementRef
   ) {
     this.mainId = decodeString(this.activatedRouter.queryParams['_value'].id);
     this.appService.pageTitle = '主页';
-    this.getDistributorList();   
+    this.getDistributorList();
+    this.getRateList();
     this.getPoolList();
-    this.ServesiceService.supportFileMissing.subscribe(res=>{ 
-      if(this.dataBase&&this.dataBase.productList.length>0)
-      {
-        const miss=this.dataBase.productList.every(vals=>vals.supportFileMissing=='1')
-        this.dataBase.supportFileMissing=miss?'1':'0';
-      }  
+    this.ServesiceService.supportFileMissing.subscribe(res => {
+      if (this.dataBase && this.dataBase.productList && this.dataBase.productList.length > 0) {
+        const miss = this.dataBase.productList.every(vals => vals.supportFileMissing == '1')
+        this.dataBase.supportFileMissing = miss ? '1' : '0';
+      }
+    })
+  }
+  //集采
+  centralizedChange(param)
+  {
+    const status = this.dataBase.detail.status;   
+    if(param&&(status==''||status=='DHTGYBTX'||status=='XJDHTGYBTX'))
+    {  this.validateForm.controls.region.enable();
+      this.validateForm.controls.team.enable();
+      this.validateForm.controls.smallArea.enable();
+      this.validateForm.controls.agreementNo.enable();
+      this.validateForm.controls.distributor.enable();
+    }
+    else{
+      this.validateForm.controls.region.disable();
+      this.validateForm.controls.team.disable();
+      this.validateForm.controls.smallArea.disable();
+      this.validateForm.controls.agreementNo.disable();
+      this.validateForm.controls.distributor.disable();
+      this.ServesiceService.centralizeds.emit()
+    }  
+  }
+  //税率列表
+  public getRateList() {
+    const params = {
+      dictGroup: 'tax_rate',
+      listClass: 'rmb',
+    };
+    return new Promise((resolve, reject) => {
+      this.http.get(`/act/ecom/dictData/queryDrop?dictGroup=${params.dictGroup}`).subscribe(rest => {
+        if (rest.code === '0000') {
+          this.dataBase.rateList = rest.data;
+          resolve(rest.data)
+          if (this.dataBase.taxrate) {
+            let select = this.dataBase.rateList.find(val => val.label == this.dataBase.taxrate)
+            !select && this.dataBase.rateList.push({ label: this.dataBase.taxrate });
+          }
+        } else {
+          this.message.create('error', `${rest.msg}`);
+        }
+      });
     })
   }
 
+  //选择支持条款选择框
+  changePayment(state) {
+
+    let applyType = this.dataBase.entryMode;
+    let clientType = this.dataBase.hospitalNature;
+    let tenderPriceCurrencys = this.dataBase.invoiceInformation;
+    let businessType = this.dataBase.businessModel;
+    if (applyType == null || applyType == undefined || applyType == '') {
+      this.dataBase.paymentList = [];
+      this.message.create('error', '请选择进单模式');
+      return;
+    }
+    if (businessType == null || businessType == undefined || businessType == '') {
+      this.dataBase.paymentList = [];
+      this.message.create('error', '请选择业务模式');
+      return;
+    }
+    if (clientType == null || clientType == undefined || clientType == '') {
+      this.dataBase.paymentList = [];
+      this.message.create('error', '请选择医院类型');
+      return;
+    }
+    if (tenderPriceCurrencys == null || tenderPriceCurrencys == undefined || tenderPriceCurrencys == '') {
+      this.dataBase.paymentList = [];
+      this.message.create('error', '请选择币种');
+      return;
+    }
+    if (this.dataBase.paymentList && this.dataBase.paymentList.length > 0) {
+      let selectId = this.dataBase.paymentList.find(val => val.dictId == this.dataBase.paymentProvision)
+      selectId && (this.paymentOff = selectId.remark == '1' ? true : false);
+    }
+    else {
+      this.paymentOff = false;
+    }
+  }
+
+ 
+  //付款条款列表的组合模式
+  public paymentMethod() {
+    
+    const params = {
+      dictGroup: '',
+    };
+    let applyTypeoff = false;
+    applyTypeoff = this.dataBase.entryMode == 'BIDDING' || this.dataBase.entryMode == 'STOCK' ? true : false;
+    let applyType = this.dataBase.entryMode;
+    let clientType = this.dataBase.hospitalNature;
+    let tenderPriceCurrencys = this.dataBase.invoiceInformation;
+    let businessType = this.dataBase.businessModel;
+    if (applyTypeoff && clientType && tenderPriceCurrencys && businessType) {
+      if (applyType == "BIDDING" && businessType == "DIRECT" && tenderPriceCurrencys == "CNY" && clientType == "公立医院") {
+        params.dictGroup = 'BDCG';
+        // this.dataBase.paymentDescription="";
+      }
+      else if (applyType == 'BIDDING' && businessType == 'DIRECT' && tenderPriceCurrencys == 'USD' && clientType == '公立医院') {
+        params.dictGroup = 'BDUG';
+        // this.dataBase.paymentDescription="";
+      }
+      else if (applyType == 'BIDDING' && businessType == 'DIRECT' && tenderPriceCurrencys == 'CNY' && clientType == '民营医院') {
+        params.dictGroup = 'BDCM';
+        // this.dataBase.paymentDescription="";
+      }
+      else if (applyType == 'BIDDING' && businessType == 'DIRECT' && tenderPriceCurrencys == 'USD' && clientType == '民营医院') {
+        params.dictGroup = 'BDUM';
+        // this.dataBase.paymentDescription="";
+      }
+      else if (applyType == 'BIDDING' && businessType == 'DISTRIBUTOR' && tenderPriceCurrencys == 'USD' && clientType == '民营医院') {
+        params.dictGroup = 'BDisUM';
+        // this.dataBase.paymentDescription="";
+      }
+      else if (applyType == 'BIDDING' && businessType == 'DISTRIBUTOR' && tenderPriceCurrencys == 'CNY' && clientType == '民营医院') {
+        params.dictGroup = 'BDisCM';
+        // this.dataBase.paymentDescription="";
+      }
+      else if (applyType == 'BIDDING' && businessType == 'DISTRIBUTOR' && tenderPriceCurrencys == 'USD' && clientType == '公立医院') {
+        params.dictGroup = 'BDisUG';
+        // this.dataBase.paymentDescription="";
+      }
+      else if (applyType == 'BIDDING' && businessType == 'DISTRIBUTOR' && tenderPriceCurrencys == 'CNY' && clientType == '公立医院') {
+        params.dictGroup = 'BDisCG';
+        // this.dataBase.paymentDescription="";
+      }
+      else if (applyType == 'BIDDING' && businessType == 'DIRECT' && tenderPriceCurrencys == 'CNY' && clientType == '其他') {
+        params.dictGroup = 'BDCQ';
+        // this.dataBase.paymentDescription="";
+      }
+      else if (applyType == 'BIDDING' && businessType == 'DIRECT' && tenderPriceCurrencys == 'USD' && clientType == '其他') {
+        params.dictGroup = 'BDUQ';
+        // this.dataBase.paymentDescription="";
+      }
+      else if (applyType == 'BIDDING' && businessType == 'DISTRIBUTOR' && tenderPriceCurrencys == 'CNY' && clientType == '其他') {
+        params.dictGroup = 'BDisCQ';
+        // this.dataBase.paymentDescription="";
+      }
+      else if (applyType == 'BIDDING' && businessType == 'DISTRIBUTOR' && tenderPriceCurrencys == 'USD' && clientType == '其他') {
+        params.dictGroup = 'BDisUQ';
+        // this.dataBase.paymentDescription="";
+      }
+      else if (applyType == 'STOCK' && businessType == 'DISTRIBUTOR' && tenderPriceCurrencys == 'CNY') {
+        params.dictGroup = 'SDisC';
+        // this.dataBase.paymentDescription="";
+      }
+      else if (applyType == 'STOCK' && businessType == 'DISTRIBUTOR' && tenderPriceCurrencys == 'USD') {
+        params.dictGroup = 'SDisU';
+        // this.dataBase.paymentDescription="";
+      }
+    }
+    
+    if (params.dictGroup != '') {
+      this.http.post(`/act/ecom/dictData/queryGroupDictData`, params).subscribe((rest => {
+        if (rest.code === '0000') {
+          this.dataBase.paymentList = rest.data;
+          if (this.dataBase.paymentProvision == '0' || this.dataBase.paymentProvision == '1') {
+            let selectId = this.dataBase.paymentList.find(val => val.remark == this.dataBase.paymentProvision);
+            this.dataBase.paymentProvision = selectId.dictId
+          }          
+          const ASYNS = async () => { 
+            
+            if (this.dataBase.paymentmethod) {
+              let paymentmethod = this.dataBase.paymentList.find(val => val.dictLabel == this.dataBase.paymentmethod)
+              if (paymentmethod) {
+                this.dataBase.paymentmethods = paymentmethod.dictId;
+              }              
+            }
+            else{
+               if(this.edit&&this.dataBase.dealFormId)
+               {
+                 let dealFrom:any;
+                 dealFrom=await this.GetDealLists(this.dataBase.dealFormId);                 
+                 this.dataBase.paymentmethod=dealFrom.paymentMethodDescription;
+                 let paymentmethod = this.dataBase.paymentList.find(val => val.dictLabel == this.dataBase.paymentmethod)
+                  if (paymentmethod) {
+                    this.dataBase.paymentmethods = paymentmethod.dictId;
+                  }                    
+               }
+            }
+            this.ServesiceService.payment.emit(this.dataBase.paymentList)
+          }
+        ASYNS();
+          
+          this.dataBase.paymentOff = true;
+          let selectId = this.dataBase.paymentList.find(val => val.dictId == this.dataBase.paymentProvision);
+          if (selectId) {
+            const status = this.dataBase.detail.status;
+            const flag = this.dataBase.detail.flag;
+            this.paymentOff = selectId.remark == '1' ? true : false;         
+            (this.paymentOff&&status==='DHTOASH'&&flag=='0')&&this.validateForm.controls.paymentProvision.enable();
+          }
+          else {
+            this.paymentOff = false;
+            this.dataBase.paymentProvision = "";
+          }
+        }
+      }), (error => {
+        this.message.create("error", "请求异常");
+      }));
+    }
+    else {
+      this.dataBase.paymentList = null;
+      this.dataBase.paymentOff = true;
+      this.ServesiceService.payment.emit(this.dataBase.paymentList)
+    }
+  }
+  //打开最终用户选择弹出窗口
+  showAgent() {
+    this.isAgre = true;
+    this.child.pageParam.endUserId = this.dataBase.endUserId;
+    this.child.agentInit();
+  }
+  //取消弹窗
+  isAgreCancel() {
+    this.isAgre = false;
+  }
+  //最终用户选择确定
+  isAgregentOk() {
+    this.isAgre = false;
+    let arr = this.child.selectFind();
+    this.dataBase.endUser = arr[0].customerName
+    this.dataBase.hospitalNature = arr[0].customerType;
+    this.dataBase.endUserAddress = arr[0].address;
+    this.dataBase.endUserId = arr[0].no;
+    this.pageParam.endUserId = arr[0].no;
+  }
   // 打开pdf查看器
   public isPdfCancel() {
     this.isPdf = false;
@@ -177,13 +430,21 @@ export class PreOrderBaseInfoComponent implements OnInit {
     this.other = arr.toString();
     this.dataBase.other = arr.toString();
     this.otherFile = arr.some(res => res === 'true') //控制备注、复制按钮的显示与否;
+    
+    // if(value==false&&num==6)
+    // {
+    //     this.dataBase.otherRemarks="";
+    //     this.dataBase.otherFilName="";
+    //     this.dataBase.freeText="";
+    //     this.otherFilNameList=[];
+    // }
   }
 
 
   //非标提示"审核按钮"
   Tips() {
 
-    if (this.taskId == 'paymentProvision' && this.dataBase.paymentProvision == '1' && this.dataBase.detail.flag == '0') {
+    if (this.taskId == 'paymentProvision' && this.paymentOff && this.dataBase.detail.flag == '0') {
       return true;
     }
     else if (this.taskId == 'performanceBond' && this.dataBase.performanceBond == '1' && this.dataBase.detail.flag == '0') {
@@ -212,19 +473,20 @@ export class PreOrderBaseInfoComponent implements OnInit {
       return false;
     }
   }
-   //金融方案
-   selectFinacial() {
-   
+  //金融方案
+  selectFinacial() {
     if (this.dataBase.financialProgramme == "2") {
       this.financiaWidth = "7"
     }
     else {
       this.financiaWidth = "14"
     }
-    if(this.financialList.length>0)
-    {
-      let select=this.financialList.find(val=>val.code==this.dataBase.financialProgramme);
-      select&&(this.dataBase.financialProgrammeTitle=select.label)    
+    if (this.financialList.length > 0) {
+      let select = this.financialList.find(val => val.code == this.dataBase.financialProgramme);
+      this.dataBase.financialProgrammeTitle = select ? select.label : "无";
+    }
+    else {
+      this.dataBase.financialProgrammeTitle = "无";
     }
   }
   public generateAnalysisTemplate(code) {
@@ -257,7 +519,7 @@ export class PreOrderBaseInfoComponent implements OnInit {
     this.isPdf = true;
 
   }
-  
+
   /**
    * filist 在线显示的文件 file上传的文件 fileId绑定的上传文件的id
    */
@@ -284,7 +546,7 @@ export class PreOrderBaseInfoComponent implements OnInit {
     // let upload=xhr.upload;
     // upload.onprogress=function(ev)
     // {
-      
+
     //   console.log('总进度:'+ev.total,"当前进度:"+ev.loaded)
     // }
     // xhr.open("post",url,true);
@@ -366,6 +628,21 @@ export class PreOrderBaseInfoComponent implements OnInit {
       return false;
     }
     this.upload('supportFileMissingList', file, 'supportFileMissingFileName');
+    return false;
+  }
+  //是否售后
+  public afterSalesBeforeUpload = (file: UploadFile): boolean => {
+    const isLt2M = file.size / 1024 / 1024 < 100; // 文件大小不超过100M
+    const fileType = getType(file);
+    if (fileType === 'exe' || fileType === 'bat') {
+      this.message.create('error', '上传文件格式错误!');
+      return false;
+    }
+    if (!isLt2M) {
+      this.message.create('error', '文件大小不超过100M');
+      return false;
+    }
+    this.upload('afterSalesList', file, 'afterSalesFileName');
     return false;
   }
   //履约保函
@@ -583,7 +860,7 @@ export class PreOrderBaseInfoComponent implements OnInit {
   }
   //最终用户上传
   public endUserContractBeforeUpload = (file: UploadFile): boolean => {
-    const isLt2M = file.size / 1024 / 1024 <100; // 文件大小不超过100M
+    const isLt2M = file.size / 1024 / 1024 < 100; // 文件大小不超过100M
     const fileType = getType(file);
     if (fileType === 'exe' || fileType === 'bat') {
       this.message.create('error', '上传文件格式错误!');
@@ -651,8 +928,7 @@ export class PreOrderBaseInfoComponent implements OnInit {
                 });
               });
             });
-            this.dataBase.dataList = children;
-            //this.GetPrice(simulationIdSList, this.dataBase.dataList);
+            this.dataBase.dataList = children;          
             // this.dataBase=Object.assign({},this.dataBase)
             this.updateData.emit(this.dataBase);
             this.isVisibleCPResult = false;
@@ -682,7 +958,8 @@ export class PreOrderBaseInfoComponent implements OnInit {
           const { dealer } = rest.data;
           if (cosOppDealForm != null && cosOppDealForm != undefined && cosOppDealForm != "") {
             this.dataBase.businessModel = cosOppDealForm.businessModel; //业务模式;
-            this.dataBase.region = cosOppDealForm.region + '/' + cosOppDealForm.residentialQuarters; //区域
+            this.dataBase.region = cosOppDealForm.region; //大区区域
+            this.dataBase.smallArea = cosOppDealForm.residentialQuarters;//小区区域
             this.dataBase.tenderNo = cosOppDealForm.tenderNo;//招标编号
             this.dataBase.tenderingCompany = cosOppDealForm.biddingCompanyName; //投标公司
             this.dataBase.distributor = cosOppDealForm.dealerName; //经销商
@@ -696,6 +973,7 @@ export class PreOrderBaseInfoComponent implements OnInit {
             this.dataBase.contractBuyerAddress = cosOppDealForm.registeredAddress; //合同买方地址
             this.dataBase.contractBuyerEmail = cosOppDealForm.dealerEmail; //合同邮箱
             this.dataBase.endUser = cosOppDealForm.hospitalName; //最终用户
+            this.dataBase.endUsers = cosOppDealForm.hospitalNames; //最终用户原名
             this.dataBase.hospitalNature = cosOppDealForm.customerType; //医院性质
             this.dataBase.endUserAddress = cosOppDealForm.endUserAddress; //最终用户地址
             this.dataBase.endUserPhone = cosOppDealForm.endUserPhone; //最终用户电话
@@ -709,7 +987,7 @@ export class PreOrderBaseInfoComponent implements OnInit {
               this.dataBase.contractBuyerContacts = this.dataBase.endUserContacts;
               this.dataBase.contractBuyerPhone = this.dataBase.endUserPhone;
               this.dataBase.contractBuyerEmail = this.dataBase.endUserEmail;
-              this.validateForm.controls.contractBuyer1.disable();
+             
               this.validateForm.controls.contractBuyer2.disable();
             }
             else if (this.dataBase.businessModel === 'DISTRIBUTOR' && this.dataBase.invoiceInformation == 'CNY') {
@@ -718,7 +996,7 @@ export class PreOrderBaseInfoComponent implements OnInit {
               this.dataBase.contractBuyerContacts = this.dataBase.distributorContacts;
               this.dataBase.contractBuyerPhone = this.dataBase.distributorPhone;
               this.dataBase.contractBuyerEmail = this.dataBase.distributorEmail;
-              this.validateForm.controls.contractBuyer1.disable();
+              
               this.validateForm.controls.contractBuyer2.disable();
             }
             this.updateData.emit(this.dataBase)
@@ -737,67 +1015,119 @@ export class PreOrderBaseInfoComponent implements OnInit {
   selectInvoice($event) {
     this.ifForeignTradeCompany();
     if (this.dataBase.invoiceInformation == 'CNY') {
-      this.validateForm.controls.contractBuyer1.disable();
+      
       this.validateForm.controls.contractBuyer2.disable();
     }
     else {
-      this.validateForm.controls.contractBuyer1.enable();
+     
       this.validateForm.controls.contractBuyer2.enable();
     }
   }
   //外贸公司联动
-  foreignup()
-  { 
-    const contractBuyer2=this.poolList.find(val=>val.corporateName.replace(/\s+/g,"")==this.dataBase.foreignTradeCompany.replace(/\s+/g,""))
-    if(!contractBuyer2)
-    {
-      this.dataBase.contractBuyer2=null;  
-      this.validateForm.controls.contractBuyer2.clearAsyncValidators(); 
-      if((this.dataBase.detail.status==''||this.dataBase.detail.status=='XJDHTGYBTX'||this.dataBase.detail.status=='DHTGYBTX')&&this.dataBase.detail.flag=='0')
-      {     
-         this.validateForm.controls.contractDdpStatus.enable();
-         this.validateForm.controls.poolEndDate.enable();  
-      }      
+  foreignup() {
+    const foreignTradeCompany = this.dataBase.foreignTradeCompany ? this.dataBase.foreignTradeCompany.replace(/\s+/g, "") : "";
+    const distributors = this.dataBase.distributor ? this.dataBase.distributor.replace(/\s+/g, "") : "";
+    const contractBuyer2 = this.poolList.find(val => val.corporateName.replace(/\s+/g, "") == foreignTradeCompany);
+    let select = this.poolList.find(vals => vals.corporateName.replace(/\s+/g, "") == foreignTradeCompany);
+    this.foreignTradeOff = foreignTradeCompany != distributors ? (select ? false : true) : false;
+    if (!contractBuyer2) {
+      this.dataBase.contractBuyer2 = null;
+      this.validateForm.controls.contractBuyer2.clearAsyncValidators();
+      if ((this.dataBase.detail.status == '' || this.dataBase.detail.status == 'XJDHTGYBTX' || this.dataBase.detail.status == 'DHTGYBTX') && this.dataBase.detail.flag == '0') {
+        // this.validateForm.controls.contractDdpStatus.enable();
+        this.validateForm.controls.poolEndDate.enable();
+      }
     }
-    else
-    {
-      this.dataBase.contractBuyer2=this.dataBase.foreignTradeCompany;
-      this.dataBase.poolEndDate=contractBuyer2.ddpValidUntil;
-      this.dataBase.contractDdpStatus= contractBuyer2.ddpStatus;      
-      this.validateForm.controls.contractDdpStatus.disable();
+    else {
+      this.dataBase.contractBuyer2 = contractBuyer2.corporateName;
+      this.dataBase.poolEndDate = standardTime(contractBuyer2.ddpValidUntil);
+      this.dataBase.contractDdpStatus = this.isadopt(this.dataBase.poolEndDate, 2);
+      // this.validateForm.controls.contractDdpStatus.disable();
       this.validateForm.controls.poolEndDate.disable();
-        
-    }    
+    }
   }
+
+   //经销商协议号列表
+   public dealerCodeList()
+   {  
+     let dealerCode=this.dataBase.dealerCode;
+     if(dealerCode&&this.dataBase.businessModel=='DISTRIBUTOR')
+     {
+       let url=`/act/preparation/chooseDealer?dealerCode=${dealerCode}`;
+       this.http.get(url).subscribe(rest => {          
+           this.dealList=rest.data;
+           let dealerAgreementNo=this.dataBase.agreementNo;  
+           let select=this.dealList.find(val=>dealerAgreementNo==val.agreementNo);
+           !select&&(this.dataBase.agreementNo=null);
+       })
+     }  
+   }
   //选择经销商1
-  public changeDistributor(value) {
-    
-    this.dataBase.distributor1 = value;
-    this.dataBase.distributorAddress = ""; //清除经销商地址;
-    this.dataBase.distributorContacts = ""; //经销商联系人;
-    this.dataBase.distributorPhone = ""; //经销商电话;
-    this.dataBase.distributorEmail = "";//经销商邮箱
-    this.dataBase.contractEndDate=""; 
-    this.dataBase.distributor = this.dataBase.distributor1;
+  public changeDistributor() {
+    this.getDistributorList();
+    this.dataBase.distributor = this.dataBase.distributor1 ? this.dataBase.distributor1 : this.dataBase.distributor;
     if (this.distributorList && this.distributorList.length > 0) {
-      let select = this.distributorList.find((val) => value == val.dealerName);
+      let select = this.distributorList.find((val) => this.dataBase.distributor1 == val.dealerName);
       if (select) {
+        this.dataBase.distributorAddress = ""; //清除经销商地址;
+        this.dataBase.distributorContacts = ""; //经销商联系人;
+        this.dataBase.distributorPhone = ""; //经销商电话;
+        this.dataBase.distributorEmail = "";//经销商邮箱
+        this.dataBase.contractEndDate = "";
         this.dataBase.distributorEmail = select.dealerEmail;
         this.dataBase.distributorPhone = select.dealerTelephone;
         this.dataBase.distributorAddress = select.registeredAddress;
-        this.dataBase.ddpStatus = select.ddpStatus;
-        this.dataBase.contractEndDate=select.ddpValidUntil;
+        this.dataBase.contractEndDate = standardTime(select.ddpValidUntil);
+        this.dataBase.ddpStatus = this.isadopt(this.dataBase.contractEndDate, 1);
+        this.dataBase.dealerCode = select.dealerCode; //经销商code;
+        this.ServesiceService.dealerCode.emit(this.dataBase.dealerCode)
       }
     }
     this.cd.detectChanges();
     if (this.dataBase.businessModel === 'DISTRIBUTOR' && this.dataBase.invoiceInformation === 'CNY') {
-      this.dataBase.contractBuyer = this.dataBase.distributor;
-      this.dataBase.contractBuyerAddress = this.dataBase.distributorAddress;
-      this.dataBase.contractBuyerContacts = this.dataBase.distributorContacts;
-      this.dataBase.contractBuyerPhone = this.dataBase.distributorPhone;
-      this.dataBase.contractBuyerEmail = this.dataBase.distributorEmail;
-      this.validateForm.controls.contractBuyer1.disable();
+      // this.dataBase.contractBuyer = this.dataBase.distributor;
+      // this.dataBase.contractBuyerAddress = this.dataBase.distributorAddress;
+      // this.dataBase.contractBuyerContacts = this.dataBase.distributorContacts;
+      // this.dataBase.contractBuyerPhone = this.dataBase.distributorPhone;
+      // this.dataBase.contractBuyerEmail = this.dataBase.distributorEmail;
+      //this.validateForm.controls.contractBuyer1.disable();
       this.validateForm.controls.contractBuyer2.disable();
+    }
+    this.dealerCodeList();
+  }
+  //限制今天之前的日期不能选中
+  disabledDate = (current: Date): boolean => differenceInCalendarDays(current, this.today) < 0;
+  changeDate(val) {
+    this.dataBase.contractDdpStatus = this.isadopt(val, 2);
+  }
+
+  //判断ddpstatus是否通过
+  isadopt(param, number) {
+    if (param) {
+      let endDates = new Date(param);
+      let year = endDates.getFullYear();
+      let month = endDates.getMonth() + 1;
+      let day = endDates.getDate();
+      let overdue = `${year}-${month}-${day}`;
+      let overDate = new Date(overdue).setHours(0, 0, 0, 0);
+      let endDate = new Date(overDate).getTime();
+      let nowDate = new Date(new Date().setHours(0, 0, 0, 0)).getTime()
+      let iRemain: any = (endDate - nowDate) / 1000;
+      iRemain = iRemain / 86400;
+      iRemain = parseInt(iRemain) + 1;
+      number == 1 && (this.lateDayOff = iRemain <= 7 ? true : false);
+      number == 2 && (this.lateDateOff = iRemain <= 7 ? true : false);
+      number == 1 && (this.laterDay = iRemain);
+      number == 2 && (this.lateDays = iRemain);
+      if (iRemain >= 1) {
+        return "通过";
+      }
+      else {
+        return "不通过";
+      }
+    }
+    else {
+      return null
     }
   }
   //选择经销商1
@@ -814,56 +1144,96 @@ export class PreOrderBaseInfoComponent implements OnInit {
   // }
   //选择iepool
   public changeAgentCnName() {
-    // this.dataBase.contractBuyer2 = value?value:"";  
-      
-    this.dataBase.foreignTradeCompany = "";
-    this.dataBase.foreignTradeCompanyAddress = "";
-    this.dataBase.foreignTradeCompanyContacts = "";
-    this.dataBase.foreignTradeCompanyPhone = "";
-    this.dataBase.foreignTradeCompanyEmail = "";
-    this.dataBase.poolEndDate="";
-    // this.dataBase.contractBuyer = this.dataBase.contractBuyer2;
-    this.dataBase.foreignTradeCompany = this.dataBase.contractBuyer2;
+    this.getPoolList();
+    this.dataBase.foreignTradeCompany = this.dataBase.contractBuyer2 ? this.dataBase.contractBuyer2 : this.dataBase.foreignTradeCompany;
     if (this.poolList && this.poolList.length > 0) {
       let select = this.poolList.find((val) => this.dataBase.contractBuyer2 == val.corporateName);
-      // this.dataBase.contractBuyerAddress = select.corporateAddress;
+      if (select) {
+        this.dataBase.contractDdpStatus = this.isadopt(this.dataBase.poolEndDate, 2);
+        this.dataBase.foreignTradeCompanyAddress = "";
+        this.dataBase.foreignTradeCompanyContacts = "";
+        this.dataBase.foreignTradeCompanyPhone = "";
+        this.dataBase.foreignTradeCompanyEmail = "";
+        this.dataBase.poolEndDate = "";
+      }
       this.dataBase.foreignTradeCompanyAddress = select && select.corporateAddress ? select.corporateAddress : "";
-      this.dataBase.contractDdpStatus = select && select.ddpStatus ? select.ddpStatus : "";
-      this.dataBase.poolEndDate = select && select.ddpValidUntil ? select.ddpValidUntil :"";
-      this.foreignup();//是否禁用ddp-status
+      this.dataBase.poolEndDate = select && select.ddpValidUntil ? standardTime(select.ddpValidUntil) : "";
+      this.foreignup();//是否禁用ddp-status  
     }
   }
   public getDistributorList() {
     // 进单准备表-选择经销商
-    this.http.get(`/act/preparation/chooseDistributor`).subscribe((rest => {
-      if (rest.code === '0000') {
-        this.distributorList = rest.data;
-      } else {
-        this.message.create('error', `${rest.msg}`);
-      }
-    }), (error => {
-      this.message.create("error", "请求异常")
-    }));
+    return new Promise((resolve, reject) => {
+      this.http.get(`/act/preparation/chooseDistributor`).subscribe((rest => {
+        if (rest.code === '0000') {
+          this.distributorList = rest.data;
+          resolve(rest.data);
+          this.dataBase.distributor = this.dataBase.distributor ? this.dataBase.distributor.replace(/\s+/g, "") : "";
+          if (this.dataBase.distributor) {
+            let select = this.distributorList.find(vals => vals.dealerName.replace(/\s+/g, "") == this.dataBase.distributor);            
+            if(select)
+            {
+              this.dataBase.distributor1 = select.dealerName;
+              if(this.dataBase.dealerCode==null)
+              {
+                this.dataBase.dealerCode=select.dealerCode;
+              }
+            }
+            this.distributorOff = select ? false : true;
+            if (select && select.reminderMessage) {
+              this.redFlagList = select.reminderMessage;
+            }
+            else {
+              this.redFlagList = "";
+            }
+          }
+        } else {
+          // this.message.create('error', `${rest.msg}`);
+        }
+
+      }), (error => {
+        this.message.create("error", "请求异常")
+      }));
+    })
   }
   public getPoolList() {
     // 进单准备表-IE Pool选择
-    this.http.get(`/act/preparation/chooseIePool`).subscribe((rest => {
-      if (rest.code === '0000') {        
-        this.poolList = rest.data;
-        if(this.dataBase.invoiceInformation=='USD')
-        {
-          const contractBuyer2=this.poolList.find(val=>val.corporateName==this.dataBase.foreignTradeCompany);          
-          contractBuyer2&&(this.dataBase.contractBuyer2=contractBuyer2.corporateName);          
-          this.foreignup();               
-        } 
-      } else {
-        this.message.create('error', `${rest.msg}`);
-      }
-    }), (error => {
-      this.message.create("error", "请求异常")
-    }));
+    return new Promise((resolve, reject) => {
+      this.http.get(`/act/preparation/chooseIePool`).subscribe((rest => {
+        if (rest.code === '0000') {
+          this.poolList = rest.data;
+          if (this.dataBase.invoiceInformation == 'USD') {
+            const foreignTradeCompany = this.dataBase.foreignTradeCompany ? this.dataBase.foreignTradeCompany.replace(/\s+/g, "") : "";
+            const distributors = this.dataBase.distributor ? this.dataBase.distributor.replace(/\s+/g, "") : "";
+            let select = this.poolList.find(vals => vals.corporateName.replace(/\s+/g, "") == foreignTradeCompany);
+            if (this.dataBase.foreignTradeCompany) {
+              this.foreignTradeOff = foreignTradeCompany != distributors ? (select ? false : true) : false;
+            }
+            else {
+              this.foreignTradeOff = false;
+            }
+            if (select && select.reminderMessage) {
+              this.redFlagListPool = select.reminderMessage;
+            }
+            else {
+              this.redFlagListPool = "";
+            }
+            const contractBuyer2 = this.poolList.find(val => val.corporateName == this.dataBase.foreignTradeCompany);
+            contractBuyer2 && (this.dataBase.contractBuyer2 = contractBuyer2.corporateName);
+            this.foreignup();
+          }
+        } else {
+          //this.message.create('error', `${rest.msg}`);
+        }
+        resolve(rest.data)
+      }), (error => {
+        this.message.create("error", "请求异常")
+      }));
+    })
   }
+
   public checkFormData = () => {
+
     for (const i in this.validateForm.controls) {
       this.validateForm.controls[i].markAsDirty();
       this.validateForm.controls[i].updateValueAndValidity();
@@ -871,34 +1241,42 @@ export class PreOrderBaseInfoComponent implements OnInit {
     return this.validateForm.valid;
   }
   // 业务模式
-  public ngModelChang(state) {
-    
+  public ngModelChang() {
+
     this.selectModelFile();
     this.ifBusinessModel();
-    if (state === 'DIRECT') {
+
+    if (this.dataBase.businessModel === 'DIRECT' && (this.dataBase.entryMode == 'STOCK')) {
+      this.dataBase.entryMode = null;
+    }
+    if (this.dataBase.businessModel === 'DIRECT') {
       this.dataBase.contractBuyer = this.dataBase.endUser;
       this.dataBase.contractBuyerAddress = this.dataBase.endUserAddress;
       this.dataBase.contractBuyerContacts = this.dataBase.endUserContacts;
       this.dataBase.contractBuyerPhone = this.dataBase.endUserPhone;
       this.dataBase.contractBuyerEmail = this.dataBase.endUserEmail;
     }
-    if (state === 'DIRECT' && this.dataBase.invoiceInformation === 'CNY') {
+    if (this.dataBase.businessModel === 'DIRECT' && this.dataBase.invoiceInformation === 'CNY') {
       // this.dataBase.contractBuyer = this.dataBase.endUser;
       // this.dataBase.contractBuyerAddress = this.dataBase.endUserAddress;
       // this.dataBase.contractBuyerContacts = this.dataBase.endUserContacts;
       // this.dataBase.contractBuyerPhone = this.dataBase.endUserPhone;
       // this.dataBase.contractBuyerEmail = this.dataBase.endUserEmail;
-      this.validateForm.controls.contractBuyer1.disable();
+    
       this.validateForm.controls.contractBuyer2.disable();
-    } else if (state === 'DISTRIBUTOR' && this.dataBase.invoiceInformation === 'CNY') {
-      this.dataBase.contractBuyer = this.dataBase.distributor;
-      this.dataBase.contractBuyerAddress = this.dataBase.distributorAddress;
-      this.dataBase.contractBuyerContacts = this.dataBase.distributorContacts;
-      this.dataBase.contractBuyerPhone = this.dataBase.distributorPhone;
-      this.dataBase.contractBuyerEmail = this.dataBase.distributorEmail;
-      this.validateForm.controls.contractBuyer1.disable();
+    } else if (this.dataBase.businessModel === 'DISTRIBUTOR' && this.dataBase.invoiceInformation === 'CNY') {
+      // this.dataBase.contractBuyer = this.dataBase.distributor;
+      // this.dataBase.contractBuyerAddress = this.dataBase.distributorAddress;
+      // this.dataBase.contractBuyerContacts = this.dataBase.distributorContacts;
+      // this.dataBase.contractBuyerPhone = this.dataBase.distributorPhone;
+      // this.dataBase.contractBuyerEmail = this.dataBase.distributorEmail;      
       this.validateForm.controls.contractBuyer2.disable();
     }
+    else if (this.dataBase.businessModel === 'DISTRIBUTOR') {
+      this.entryModeList = JSON.parse(JSON.stringify(this.entryModeLists));
+    }
+    this.paymentMethod();
+    this.setType();
   }
   // 进单模式
   public getEntryModeList() {
@@ -908,6 +1286,7 @@ export class PreOrderBaseInfoComponent implements OnInit {
     this.http.get(`/act/ecom/dictData/queryDrop?dictGroup=${params.dictGroup}`).subscribe(rest => {
       if (rest.code === '0000') {
         this.entryModeList = rest.data;
+        this.entryModeLists = JSON.parse(JSON.stringify(this.entryModeList));
       } else {
         this.message.create('error', `${rest.msg}`);
       }
@@ -928,12 +1307,25 @@ export class PreOrderBaseInfoComponent implements OnInit {
   }
 
   // 进单模式
-  public changeEntryMode(state: any, value: any) {    
+  public changeEntryMode(value: any) {
+
+    if (this.dataBase.businessModel == 'DIRECT') {
+      this.entryModeList.map((val, index) => {
+        val.code == 'STOCK' && (this.entryModeList.splice(index, 1));
+      });
+      //this.el.nativeElement.querySelector('#entryMode').value = "BIDDING";
+    }
+    else {
+      this.entryModeList = JSON.parse(JSON.stringify(this.entryModeLists));;
+    }
+
     this.entryMode = this.dataBase.entryMode;
+    this.StockOff = ((this.dataBase.entryMode == 'BIDDING' && this.dataBase.endUsers == 'Stock') || this.dataBase.entryMode == 'STOCK'||this.dataBase.centralized) ? false : true;
     this.selectModelFile();
-    this.ifBusinessModel();
-    if (state === 'STOCK') {
+    this.ifBusinessModel();    
+    if (this.dataBase.entryMode === 'STOCK') {
       /*业务模式 插眼*/
+      
 
       /* 业务模式为stock时 以下字段为非必选项目 */
       // 投标公司               tenderingCompany
@@ -965,8 +1357,12 @@ export class PreOrderBaseInfoComponent implements OnInit {
       this.validateForm.get('endUserEmail')!.clearValidators();
       this.validateForm.get('endUserEmail')!.markAsPristine();
       this.validateForm.get('endUserEmail')!.setValidators([this.cheakMail]);
-     ;      
+      this.conTable&&this.validateForm.get('actualSales')!.clearValidators();// 实际销售人
+      this.dataBase.centralized=false;
+      this.dataBase.actualSales="";
+      this.ServesiceService.centralizeds.emit()
     } else {
+      this.conTable&&this.validateForm.get('actualSales')!.setValidators([Validators.required,this.cheakMail]); // 实际销售人
       this.validateForm.get('tenderingCompany')!.setValidators(Validators.required);
       // this.validateForm.get('tenderingCompany')!.markAsDirty();
       this.validateForm.get('tenderNo')!.setValidators(Validators.required);
@@ -979,11 +1375,11 @@ export class PreOrderBaseInfoComponent implements OnInit {
       // this.validateForm.get('endUserAddress')!.markAsDirty();
       this.validateForm.get('endUserContacts')!.setValidators(Validators.required);
       // this.validateForm.get('endUserContacts')!.markAsDirty();
-      this.validateForm.get('endUserPhone')!.setValidators([Validators.required,this.checkPhone]);
+      this.validateForm.get('endUserPhone')!.setValidators([Validators.required, this.checkPhone]);
       // this.validateForm.get('endUserPhone')!.markAsDirty();
       this.validateForm.get('importAgreementSignPost')!.setValidators(Validators.required);
       // this.validateForm.get('importAgreementSignPost')!.markAsDirty();
-      this.validateForm.get('endUserEmail')!.setValidators([Validators.required,this.cheakMail]);
+      this.validateForm.get('endUserEmail')!.setValidators([Validators.required, this.cheakMail]);
     }
     this.validateForm.get('tenderingCompany')!.updateValueAndValidity();
     this.validateForm.get('tenderNo')!.updateValueAndValidity();
@@ -993,31 +1389,169 @@ export class PreOrderBaseInfoComponent implements OnInit {
     this.validateForm.get('endUserContacts')!.updateValueAndValidity();
     this.validateForm.get('endUserPhone')!.updateValueAndValidity();
     this.validateForm.get('importAgreementSignPost')!.updateValueAndValidity();
-    this.validateForm.get('endUserEmail')!.updateValueAndValidity();    
+    this.validateForm.get('endUserEmail')!.updateValueAndValidity();
+    this.validateForm.get('actualSales')!.updateValueAndValidity();    
+    this.paymentMethod() //付款条款列表
+    this.setType();
     this.updateDataBaseInfo.emit(value);
   }
   ngAfterViewInit() {
     this.cd.detectChanges();
   }
-  ngOnChanges(changes:SimpleChange) {
-    
-    console.log(this.dataBase.detail.flag)
-    if(this.dataBase.invoiceInformation=='USD')
-    {
-      this.getPoolList();
-    }
+  ngOnChanges(changes: SimpleChange) {
+
     this.setType();
     if (this.dataBase) {
+      this.setBaseInfor();
+      if (this.dataBase.invoiceInformation == 'USD') {
+
+        this.dataBase.ddpStatus = this.isadopt(this.dataBase.contractEndDate, 1);
+        this.dataBase.contractDdpStatus = this.isadopt(this.dataBase.poolEndDate, 2);
+      }
+      if (this.dataBase.hospitalNature) {        
+        this.load = true;
+        const flag = this.dataBase.detail.flag;
+        const status = this.dataBase.detail.status;
+        const ASYNS = async () => {
+          let getPool = await this.getPoolList();
+          let getDistributor = await this.getDistributorList();
+          let getRateLists = await this.getRateList();
+          
+          this.paymentMethod(); //付款条款的列表        
+          this.dataBase.afterSales = this.dataBase.afterSales != null ? this.dataBase.afterSales : "0";
+          this.load = false;  
+          await this.GetDealLists(this.dataBase.dealFormId);
+          this.selectModelFile();
+          this.ifBusinessModel();
+          this.setType();
+          if(this.dataBase.businessModel=='DISTRIBUTOR'&&this.dataBase.dealerCode)
+          {
+            this.ServesiceService.dealerCode.emit(this.dataBase.dealerCode)
+          }
+        }
+        ASYNS();
+        if (this.dataBase.cteam) {
+          this.dataBase.userTeme = this.dataBase.cteam;
+        }
+        else {
+          let teamList = JSON.parse(window.localStorage.getItem("profiles"));
+          let teamRole = teamList.find(val => val.role == "Sales Rep/Mgr");
+          teamRole && (this.dataBase.userTeme = teamRole.team);
+        }
+        this.StockOff = ((this.dataBase.entryMode == 'BIDDING' && this.dataBase.endUsers == 'Stock') || this.dataBase.entryMode == 'STOCK'||this.dataBase.centralized) ? false : true;
+             
+        if(this.dataBase.businessModel=='DISTRIBUTOR'&&this.conTable)
+        {
+          this.dealerCodeList()
+        }
+        if (status === 'DHTOASH' && flag == '0')  //如果是oa审核节点放开备注的禁用
+        {
+          this.dataBase.shipmentDelivery=='1'&&this.validateForm.controls.shipmentDelivery.enable();
+          this.dataBase.performanceBond=='1'&&this.validateForm.controls.performanceBond.enable(); 
+          this.dataBase.installationWarranty=='1'&&this.validateForm.controls.installationWarranty.enable();
+          this.dataBase.sitePreparation=='1'&&this.validateForm.controls.sitePreparation.enable();
+          this.dataBase.afterSales=='1'&&this.validateForm.controls.afterSales.enable(); 
+          this.supportFileMissingFlag();
+          this.dataBase.amountDifference=='1'&&this.validateForm.controls.amountDifference.enable();        
+          if(this.dataBase.other7)
+          {
+            //this.validateForm.controls.other1.enable();
+            this.validateForm.controls.other2.enable();
+            this.validateForm.controls.other3.enable();
+            this.validateForm.controls.other4.enable();
+            this.validateForm.controls.other5.enable();
+            this.validateForm.controls.other6.enable();
+            this.validateForm.controls.other7.enable();
+            this.validateForm.controls.freeText.enable();
+          }
+        }
+      }
+      this.entryMode = this.dataBase.entryMode;
+      if (this.dataBase.entryMode == '' || this.dataBase.entryMode == 'BIDDING' || (this.dataBase.sampleAuditFlag == '1' && this.dataBase.entryMode == 'STOCK')) {
+        this.rowspanht = 7;
+      }
+      else {
+        this.rowspanht = 1;
+      }
+    }
+    if (this.dataBase && this.dataBase.entryMode) {
+      if (this.dataBase.entryMode === 'STOCK') {
+        /*业务模式 插眼*/
+
+        /* 业务模式为stock时 以下字段为非必选项目 */
+        // 投标公司               tenderingCompany
+        // 招标编号               tenderNo
+        // 进口协议签署人职务      importAgreementSignPost
+        // 最终用户                endUser
+        // 医院性质                hospitalNature
+        // 最终用户地址            endUserAddress
+        // 最终用户联系人           endUserContacts
+        // 最终用户电话             endUserPhone
+        /*end*/
+        this.validateForm.get('tenderingCompany')!.clearValidators();
+        this.validateForm.get('tenderingCompany')!.markAsPristine();
+        this.validateForm.get('tenderNo')!.clearValidators();
+        this.validateForm.get('tenderNo')!.markAsPristine();
+        this.validateForm.get('endUser')!.clearValidators();
+        this.validateForm.get('endUser')!.markAsPristine();
+        this.validateForm.get('hospitalNature')!.clearValidators();
+        this.validateForm.get('hospitalNature')!.markAsPristine();
+        this.validateForm.get('endUserAddress')!.clearValidators();
+        this.validateForm.get('endUserAddress')!.markAsPristine();
+        this.validateForm.get('endUserContacts')!.clearValidators();
+        this.validateForm.get('endUserContacts')!.markAsPristine();
+        this.validateForm.get('endUserPhone')!.clearValidators();
+        this.validateForm.get('endUserPhone')!.markAsPristine();
+        this.validateForm.get('endUserPhone')!.setValidators([this.checkPhone]);
+        this.validateForm.get('importAgreementSignPost')!.clearValidators();
+        this.validateForm.get('importAgreementSignPost')!.markAsPristine();
+        this.validateForm.get('endUserEmail')!.clearValidators();
+        this.validateForm.get('endUserEmail')!.markAsPristine();
+        this.validateForm.get('endUserEmail')!.setValidators([this.cheakMail]);
+        this.conTable&&this.validateForm.get('actualSales')!.clearValidators();// 实际销售人
+        
+      } else {
+        this.conTable&&this.validateForm.get('actualSales')!.setValidators([Validators.required,this.cheakMail]); // 实际销售人
+        this.validateForm.get('tenderingCompany')!.setValidators(Validators.required);
+        // this.validateForm.get('tenderingCompany')!.markAsDirty();
+        this.validateForm.get('tenderNo')!.setValidators(Validators.required);
+        // this.validateForm.get('tenderNo')!.markAsDirty();
+        this.validateForm.get('endUser')!.setValidators(Validators.required);
+        // this.validateForm.get('endUser')!.markAsDirty();
+        this.validateForm.get('hospitalNature')!.setValidators(Validators.required);
+        // this.validateForm.get('hospitalNature')!.markAsDirty();
+        this.validateForm.get('endUserAddress')!.setValidators(Validators.required);
+        // this.validateForm.get('endUserAddress')!.markAsDirty();
+        this.validateForm.get('endUserContacts')!.setValidators(Validators.required);
+        // this.validateForm.get('endUserContacts')!.markAsDirty();
+        this.validateForm.get('endUserPhone')!.setValidators([Validators.required, this.checkPhone]);
+        // this.validateForm.get('endUserPhone')!.markAsDirty();
+        this.validateForm.get('importAgreementSignPost')!.setValidators(Validators.required);
+        // this.validateForm.get('importAgreementSignPost')!.markAsDirty();
+        this.validateForm.get('endUserEmail')!.setValidators([Validators.required, this.cheakMail]);
+      }
+      this.validateForm.get('tenderingCompany')!.updateValueAndValidity();
+      this.validateForm.get('tenderNo')!.updateValueAndValidity();
+      this.validateForm.get('endUser')!.updateValueAndValidity();
+      this.validateForm.get('hospitalNature')!.updateValueAndValidity();
+      this.validateForm.get('endUserAddress')!.updateValueAndValidity();
+      this.validateForm.get('endUserContacts')!.updateValueAndValidity();
+      this.validateForm.get('endUserPhone')!.updateValueAndValidity();
+      this.validateForm.get('importAgreementSignPost')!.updateValueAndValidity();
+      this.validateForm.get('endUserEmail')!.updateValueAndValidity();
+      this.validateForm.get('actualSales')!.updateValueAndValidity();
+
       if (this.dataBase.entryMode && this.dataBase.entryMode == 'BIDDING') {
         this.getWinUrl();
-      } 
+      }
     }
-    if (this.dataBase.financialProgramme == "2") {
+    if (this.dataBase && this.dataBase.financialProgramme == "2") {
       this.financiaWidth = "7"
     }
     else {
       this.financiaWidth = "14"
-    }   
+    }
+
     this.viewData("bidWinningNotice", "bidWinningNoticeFileList", this.dataBase.bidWinningNoticeNames);
     this.viewData("siteReport", "siteReportFileList", this.dataBase.siteReportNames);
     this.viewData("projectSolutions", "projectSolutionsFileList", this.dataBase.projectSolutionsNames);
@@ -1028,38 +1562,57 @@ export class PreOrderBaseInfoComponent implements OnInit {
     this.viewData("installationWarrantyFileName", "installationWarrantyList", this.dataBase.installationWarrantyFileNames);
     this.viewData("amountDifferenceFileName", "amountDifferenceList", this.dataBase.amountDifferenceFileNames);
     this.viewData("sitePreparationFileName", "sitePreparatList", this.dataBase.sitePreparationFileNames);
+
     this.viewData("performanceBondFileName", "performanceBondList", this.dataBase.performanceBondFileNames);
+
+    this.viewData("afterSalesFileName", "afterSalesList", this.dataBase.afterSalesFileNames);
     this.viewData("supportFileMissingFileName", "supportFileMissingList", this.dataBase.supportFileMissingFileNames);
     this.viewData("otherFilName", "otherFilNameList", this.dataBase.otherFilNames);
     this.viewData("projectAnalysisTable", "projectAnalysisTableFileList", this.dataBase.projectAnalysisTableNames);
     this.viewData("tenderDocuments", "tenderDocumentsList", this.dataBase.tenderDocumentsNames);
     this.viewData("confirmationFile", "confirmationFileFileList", this.dataBase.confirmationFileNames);
     this.viewData("mrShieldingCompany", "mrShieldingCompanyList", this.dataBase.mrShieldingCompanyNames);
-    this.setColSpanOfConfirmTable();    
-    this.setBaseInfor();
+    this.setColSpanOfConfirmTable();
+    
   }
   //招标编号
-  keyupNo()
-  {
-   this.setType();
-   this.selectModelFile();
+  keyupNo() {
+    this.setType();
+    this.selectModelFile();
   }
-//招标文件的编辑类型
-  setType()
-  {
-    if(this.dataBase.hospitalNature=='民营医院')
-    {
-      this.demandLetter="场地勘验报告";
+  //招标文件的编辑类型
+  setType() {
+    if (this.dataBase.entryMode == 'STOCK' && (this.dataBase.userTeme == 'BV' || this.dataBase.userTeme == 'DXR')) {
+      this.demandLetter = "要货函";
     }
-    else{
-      if(this.dataBase.tenderNo!='其它类型')
-      {
-        this.demandLetter="要货函";
+    else {
+      if (this.dataBase.hospitalNature == '民营医院') {
+        this.demandLetter = "场地勘验报告";
       }
-      else{
-        this.demandLetter="场地勘验报告";
+      else {
+        if (this.dataBase.tenderNo != '其他类型') {
+          this.demandLetter = "要货函";
+        }
+        else {
+          this.demandLetter = "场地勘验报告";
+        }
       }
     }
+  }
+  keyTaxNumber(e, params) {
+    if (e) {
+      if (/^[\d\s]*$/.test(e)) {
+        if (/\S{5}/.test(e)) {
+          this.pricevalue.id = e.replace(/\s/g, '').replace(/(.{4})/g, "$1 ");
+        }
+        else {
+          this.pricevalue.id = e;
+        }
+      }
+      this.el.nativeElement.querySelector("#tax").value = this.pricevalue.id;
+      params = this.pricevalue.id;
+    }
+    ///\S{5}/.test(params) && $this.val(v.replace(/\s/g, '').replace(/(.{4})/g, "$1 "));
   }
   //项目分析表
   nzRemovprojectAnalysisTable = (file: UploadFile): any => {
@@ -1111,6 +1664,11 @@ export class PreOrderBaseInfoComponent implements OnInit {
     this.dataBase.otherFilName = "";
     return true;
   }
+  //是否售后
+  nzRemovafterSales = (file: UploadFile): any => {
+    this.dataBase.afterSalesFileName = "";
+    return true;
+  }
   //履约保函
   nzRemovperformanceBond = (file: UploadFile): any => {
     this.dataBase.performanceBondFileName = "";
@@ -1147,47 +1705,52 @@ export class PreOrderBaseInfoComponent implements OnInit {
     return true;
   }
   //直投或非直投的需要上传和显示的文件
-  selectModelFile()
-  {
-    if (this.dataBase.detail.status == "" || this.dataBase.detail.status == "DHTGYBTX"||this.dataBase.detail.status == "XJDHTGYBTX"||this.dataBase.detail.status == "DBCWJSC") {
+  selectModelFile() {    
+    if (this.dataBase.detail.status == "" || this.dataBase.detail.status == "DHTGYBTX" || this.dataBase.detail.status == "XJDHTGYBTX" || this.dataBase.detail.status == "DBCWJSC") {
       this.rowspans = 2;
       this.modelTalbe = true;
-      if(this.dataBase.businessModel!='DIRECT')
-      {
-        this.sampleRow = 5;
-      }
-      else{
-        if(this.dataBase.tenderNo!='其他类型')
-        {
+      if (this.dataBase.businessModel != 'DIRECT') {
+        if (this.dataBase.tenderNo != '其他类型') {
+          this.sampleRow = 5;
+        }
+        else {
           this.sampleRow = 3;
         }
-        else{
+      }
+      else {
+        if (this.dataBase.tenderNo != '其他类型') {
+          this.sampleRow = 2;
+        }
+        else {
           this.sampleRow = 1;
         }
-        
+
       }
-      
+
     }
     else {
       this.rowspans = 1;
       this.modelTalbe = false;
-      if(this.dataBase.businessModel!='DIRECT')
-      {
-        this.sampleRow = 4;
-      }
-      else{
-        if(this.dataBase.tenderNo!='其他类型')
-        {
-          this.sampleRow = 3;
+      if (this.dataBase.businessModel != 'DIRECT') {
+        if (this.dataBase.tenderNo != '其他类型') {
+          this.sampleRow = 4;
         }
-        else{
+        else {
+          this.sampleRow = 2;
+        }
+      }
+      else {
+        if (this.dataBase.tenderNo != '其他类型') {
+          this.sampleRow = 2;
+        }
+        else {
           this.sampleRow = 1;
         }
-        
+
       }
     }
   }
-  
+
   setBaseInfor()  //设置合同概要表其它信息
   {
     if (this.dataBase.detail.status && this.dataBase.detail.status !== 'DOACS' || this.showChek) {
@@ -1241,38 +1804,54 @@ export class PreOrderBaseInfoComponent implements OnInit {
     this.getBusinessModelList();
     this.getfinancialList();
     this.oaDisa = this.disa;
-
     this.taskId = this.activatedRouter.queryParams['_value'].taskID;
+    this.dataBase.centralized=false;
     this.validateForm = this.fb.group({
+      agreementNo:new FormControl({ value: 'Nancy', disabled: this.disa }),     
+      centralized:new FormControl({ value: 'Nancy', disabled: this.disa }), //集采项目
+      afterSales: new FormControl({ value: 'Nancy', disabled: this.disa }), //是否售后
+      actualSales:new FormControl({ value: 'Nancy', disabled: this.disa }), //实际销售人
+      afterSalesRemarks: new FormControl({ value: 'Nancy', disabled: this.disa }), //是否售后文本框
+      addresseeTel: new FormControl({ value: 'Nancy', disabled: this.disa }, [this.checkPhone]), //收件人电话
+      addressee: new FormControl({ value: 'Nancy', disabled: this.disa }), //收件人
+      telTax: new FormControl({ value: 'Nancy', disabled: this.disa }, [this.checkPhone]), //tel/tax
+      accountAddress: new FormControl({ value: 'Nancy', disabled: this.disa }), //开户地址
+      taxNumber: new FormControl({ value: 'Nancy', disabled: this.disa }, [Validators.required, this.taxNumberCheck]), //税号
+      accountNo: new FormControl({ value: 'Nancy', disabled: this.disa }), //账号
+      bankName: new FormControl({ value: 'Nancy', disabled: this.disa }),   //开户行
+      accountName: new FormControl({ value: 'Nancy', disabled: this.disa }), //开户名称
       freeText: new FormControl({ value: 'Nancy', disabled: this.disa }),
-      contractEndDate: new FormControl({ value: 'Nancy', disabled:true}, Validators.required), //经销商ddp结束日期
+      contractEndDate: new FormControl({ value: 'Nancy', disabled: true }, Validators.required), //经销商ddp结束日期
       poolEndDate: new FormControl({ value: 'Nancy', disabled: this.disa }, Validators.required), //外贸公司ddp结束日期
-      financialProgrammeCost:new FormControl({ value: 'Nancy', disabled:true}), //金融金额
-      financialProgramme: new FormControl({ value: 'Nancy', disabled:true}), //金融方案  
-      financialProgrammeTxt:new FormControl({ value: 'Nancy', disabled:true}), //金融文本框
-      tradeInCost:new FormControl({ value: 'Nancy', disabled:true}), //tradeIn金额
-      rebateCost:new FormControl({ value: 'Nancy', disabled:true}),//rebate金额
-      ddpStatus: new FormControl({ value: 'Nancy', disabled:true}, Validators.required),
+      financialProgrammeCost: new FormControl({ value: 'Nancy', disabled: true }), //金融金额
+      financialProgramme: new FormControl({ value: 'Nancy', disabled: true }), //金融方案  
+      financialProgrammeTxt: new FormControl({ value: 'Nancy', disabled: true }), //金融文本框
+      tradeInCost: new FormControl({ value: 'Nancy', disabled: true }), //tradeIn金额
+      rebateCost: new FormControl({ value: 'Nancy', disabled: true }),//rebate金额
+      ddpStatus: new FormControl({ value: 'Nancy', disabled: true }, Validators.required),
       billingInfor: new FormControl({ value: 'Nancy', disabled: this.disa }, Validators.required),
       contractBuyer: new FormControl({ value: 'Nancy', disabled: this.disa }, Validators.required),
-      contractBuyer1: new FormControl({ value: 'Nancy', disabled: this.disa }),
+    
       contractBuyer2: new FormControl({ value: 'Nancy', disabled: this.disa }),
       businessModel: new FormControl({ value: 'Nancy', disabled: this.disa }, Validators.required),
-      region: new FormControl({ value: 'Nancy', disabled: this.disa }, Validators.required),
+      team: new FormControl({ value: 'Nancy', disabled: true }, Validators.required), //team
+      region: new FormControl({ value: 'Nancy', disabled: true }, Validators.required), //大区
+      smallArea: new FormControl({ value: 'Nancy', disabled: true }, Validators.required), //小区
       distributorAddress: new FormControl({ value: 'Nancy', disabled: this.disa }, Validators.required),
       distributorContacts: new FormControl({ value: 'Nancy', disabled: this.disa }, Validators.required),
-      distributorPhone: new FormControl({ value:'', disabled: this.disa },[Validators.required,this.checkPhone]),
-      distributorEmail: new FormControl({ value: 'Nancy', disabled: this.disa }, [Validators.required,this.cheakMail]),
+      distributorPhone: new FormControl({ value: '', disabled: this.disa }, [Validators.required, this.checkPhone]),
+      distributorEmail: new FormControl({ value: 'Nancy', disabled: this.disa }, [Validators.required, this.cheakMail]),
       orderSignName: new FormControl({ value: 'Nancy', disabled: this.disa }, Validators.required),
       orderSignPost: new FormControl({ value: 'Nancy', disabled: this.disa }, Validators.required),
-      contractDdpStatus: new FormControl({ value: 'Nancy', disabled: this.disa }, Validators.required),
+      contractDdpStatus: new FormControl({ value: 'Nancy', disabled: true }, Validators.required),
       contractBuyerAddress: new FormControl({ value: 'Nancy', disabled: this.disa }, Validators.required),
       contractBuyerContacts: new FormControl({ value: 'Nancy', disabled: this.disa }, null),
       contractBuyerPhone: new FormControl({ value: 'Nancy', disabled: this.disa }, null),
       contractBuyerEmail: new FormControl({ value: 'Nancy', disabled: this.disa }, null),
       importAgreementSignName: new FormControl({ value: 'Nancy', disabled: this.disa }, Validators.required),
       importAgreementSignPost: new FormControl({ value: 'Nancy', disabled: this.disa }, Validators.required),
-      endUserEmail: new FormControl({ value: 'Nancy', disabled: this.disa }, [Validators.required,this.cheakMail]),
+      endUserId: new FormControl({ value: 'Nancy', disabled: this.disa }, Validators.required),
+      endUserEmail: new FormControl({ value: 'Nancy', disabled: this.disa }, [Validators.required, this.cheakMail]),
       endUser: new FormControl({ value: 'Nancy', disabled: this.disa }, Validators.required),
       endUserContacts: new FormControl({ value: 'Nancy', disabled: this.disa }, Validators.required),
       endUserPhone: new FormControl({ value: 'Nancy', disabled: this.disa }, [Validators.required]),
@@ -1311,63 +1890,64 @@ export class PreOrderBaseInfoComponent implements OnInit {
       sitePreparationRemarks: new FormControl({ value: 'Nancy', disabled: this.disa }, Validators.required),
       performanceBondRemarks: new FormControl({ value: 'Nancy', disabled: this.disa }, Validators.required),
       otherRemarks: new FormControl({ value: 'Nancy', disabled: this.disa }, Validators.required),
-      contractPrice: new FormControl({ value: 'Nancy', disabled:true}, Validators.required),
-      productModel: new FormControl({ value: 'Nancy', disabled:true}, Validators.required),
-      nmpaName: new FormControl({ value: 'Nancy', disabled:true}, Validators.required),
-      installationWarrantyRadio: new FormControl({ value: 'Nancy', disabled: this.disa || this.dataBase.detail.status == 'DHTGYBTX'||this.dataBase.detail.status == 'XJDHTGYBTX' }, Validators.required),
+      contractPrice: new FormControl({ value: 'Nancy', disabled: true }, Validators.required),
+      productModel: new FormControl({ value: 'Nancy', disabled: true }, Validators.required),
+      nmpaName: new FormControl({ value: 'Nancy', disabled: true }, Validators.required),
+      installationWarrantyRadio: new FormControl({ value: 'Nancy', disabled: this.disa || this.dataBase.detail.status == 'DHTGYBTX' || this.dataBase.detail.status == 'XJDHTGYBTX' }, Validators.required),
 
       foreignTradeCompany: new FormControl({ value: 'Nancy', disabled: this.disa }, Validators.required), // 外贸公司
       foreignTradeCompanyAddress: new FormControl({ value: 'Nancy', disabled: this.disa }, Validators.required), // 外贸地址
       foreignTradeCompanyContacts: new FormControl({ value: 'Nancy', disabled: this.disa }, Validators.required), // 外贸联系人
       foreignTradeCompanyPhone: new FormControl({ value: 'Nancy', disabled: this.disa }, Validators.required), // 外贸公司电话
-      foreignTradeCompanyEmail: new FormControl({ value: 'Nancy', disabled: this.disa }, [Validators.required,this.cheakMail]), // 外贸公司邮箱
+      foreignTradeCompanyEmail: new FormControl({ value: 'Nancy', disabled: this.disa }, [Validators.required, this.cheakMail]), // 外贸公司邮箱
       sameFlag: new FormControl({ value: 'Nancy', disabled: this.disa }, null), // 外贸公司是否与经销商相同
       contractSignatory: new FormControl({ value: 'Nancy', disabled: this.disa }, Validators.required), // 合同签署人
       contractSignatoryPost: new FormControl({ value: 'Nancy', disabled: this.disa }, Validators.required), // 合同签署人职务
     });
     //this.dataBase.sameFlag = '0';
-    if (this.dataBase.detail.status === '' || this.showChek === false) {
-      this.validateForm.get('paymentProvision')!.clearValidators();
-      // this.validateForm.get('paymentProvision')!.markAsPristine();
-      this.validateForm.get('installationWarrantyRadio')!.clearValidators();
-      // this.validateForm.get('installationWarrantyRadio')!.markAsPristine();
-      this.validateForm.get('shipmentDelivery')!.clearValidators();
-      // this.validateForm.get('shipmentDelivery')!.markAsPristine();
-      this.validateForm.get('installationWarranty')!.clearValidators();
-      // this.validateForm.get('installationWarranty')!.markAsPristine();
-      this.validateForm.get('amountDifference')!.clearValidators();
-      // this.validateForm.get('amountDifference')!.markAsPristine();
-      this.validateForm.get('train')!.clearValidators();
-      // this.validateForm.get('train')!.markAsPristine();
-      this.validateForm.get('sitePreparation')!.clearValidators();
-      // this.validateForm.get('sitePreparation')!.markAsPristine();
-      this.validateForm.get('performanceBond')!.clearValidators();
-      // this.validateForm.get('performanceBond')!.markAsPristine();
-      this.validateForm.get('punishment')!.clearValidators();
-      // this.validateForm.get('punishment')!.markAsPristine();
-      this.validateForm.get('other')!.clearValidators();
-      // this.validateForm.get('other')!.markAsPristine();
-      this.validateForm.get('paymentProvisionRemarks')!.clearValidators();
-      // this.validateForm.get('paymentProvisionRemarks')!.markAsPristine();
-      this.validateForm.get('shipmentDeliveryRemarks')!.clearValidators();
-      // this.validateForm.get('shipmentDeliveryRemarks')!.markAsPristine();
-      this.validateForm.get('installationWarrantyRemarks')!.clearValidators();
-      // this.validateForm.get('installationWarrantyRemarks')!.markAsPristine();
-      this.validateForm.get('amountDifferenceRemarks')!.clearValidators();
-      // this.validateForm.get('amountDifferenceRemarks')!.markAsPristine();
-      this.validateForm.get('sitePreparationRemarks')!.clearValidators();
-      // this.validateForm.get('sitePreparationRemarks')!.markAsPristine();
-      this.validateForm.get('performanceBondRemarks')!.clearValidators();
-      // this.validateForm.get('performanceBondRemarks')!.markAsPristine();
-      this.validateForm.get('otherRemarks')!.clearValidators();
-      // this.validateForm.get('otherRemarks')!.markAsPristine();
-      this.validateForm.get('contractPrice')!.clearValidators();
-      // this.validateForm.get('contractPrice')!.markAsPristine();
-      this.validateForm.get('productModel')!.clearValidators();
-      // this.validateForm.get('productModel')!.markAsPristine();
-      this.validateForm.get('nmpaName')!.clearValidators();
-      // this.validateForm.get('nmpaName')!.markAsPristine();
-    }
+    // if (this.dataBase.detail.status === '' || this.showChek === false) {
+    this.validateForm.get('paymentProvision')!.clearValidators();
+    // this.validateForm.get('paymentProvision')!.markAsPristine();
+    this.validateForm.get('installationWarrantyRadio')!.clearValidators();
+    // this.validateForm.get('installationWarrantyRadio')!.markAsPristine();
+    this.validateForm.get('shipmentDelivery')!.clearValidators();
+    // this.validateForm.get('shipmentDelivery')!.markAsPristine();
+    this.validateForm.get('installationWarranty')!.clearValidators();
+    // this.validateForm.get('installationWarranty')!.markAsPristine();
+    this.validateForm.get('amountDifference')!.clearValidators();
+    // this.validateForm.get('amountDifference')!.markAsPristine();
+    this.validateForm.get('train')!.clearValidators();
+    // this.validateForm.get('train')!.markAsPristine();
+    this.validateForm.get('sitePreparation')!.clearValidators();
+    // this.validateForm.get('sitePreparation')!.markAsPristine();
+    this.validateForm.get('performanceBond')!.clearValidators();
+    // this.validateForm.get('performanceBond')!.markAsPristine();
+    this.validateForm.get('punishment')!.clearValidators();
+    // this.validateForm.get('punishment')!.markAsPristine();
+    this.validateForm.get('other')!.clearValidators();
+    // this.validateForm.get('other')!.markAsPristine();
+    this.validateForm.get('paymentProvisionRemarks')!.clearValidators();
+    // this.validateForm.get('paymentProvisionRemarks')!.markAsPristine();
+    this.validateForm.get('shipmentDeliveryRemarks')!.clearValidators();
+    // this.validateForm.get('shipmentDeliveryRemarks')!.markAsPristine();
+    this.validateForm.get('installationWarrantyRemarks')!.clearValidators();
+    // this.validateForm.get('installationWarrantyRemarks')!.markAsPristine();
+    this.validateForm.get('amountDifferenceRemarks')!.clearValidators();
+    // this.validateForm.get('amountDifferenceRemarks')!.markAsPristine();
+    this.validateForm.get('sitePreparationRemarks')!.clearValidators();
+    // this.validateForm.get('sitePreparationRemarks')!.markAsPristine();
+    this.validateForm.get('performanceBondRemarks')!.clearValidators();
+    // this.validateForm.get('performanceBondRemarks')!.markAsPristine();
+    this.validateForm.get('otherRemarks')!.clearValidators();
+    // this.validateForm.get('otherRemarks')!.markAsPristine();
+    this.validateForm.get('contractPrice')!.clearValidators();
+    // this.validateForm.get('contractPrice')!.markAsPristine();
+    this.validateForm.get('productModel')!.clearValidators();
+    // this.validateForm.get('productModel')!.markAsPristine();
+    this.validateForm.get('nmpaName')!.clearValidators();
+    // this.validateForm.get('nmpaName')!.markAsPristine();
+    //}
+
     this.validateForm.get('installationWarrantyRadio')!.updateValueAndValidity();
     this.validateForm.get('paymentProvision')!.updateValueAndValidity();
     this.validateForm.get('shipmentDelivery')!.updateValueAndValidity();
@@ -1388,20 +1968,26 @@ export class PreOrderBaseInfoComponent implements OnInit {
     // this.validateForm.get('contractPrice')!.markAsPristine();
     // this.validateForm.get('productModel')!.markAsPristine();
     // this.validateForm.get('nmpaName')!.markAsPristine();
-    const status = this.dataBase.detail.status; 
-    const flag=this.dataBase.detail.flag;
+
+    const status = this.dataBase.detail.status;
+    const flag = this.dataBase.detail.flag;
     this.setType();
-    if(status=='XJDHTGYBTX'||status=='DHTGYBTX')
-    {
+    if (status == 'XJDHTGYBTX' || status == 'DHTGYBTX') {
       this.validateForm.controls.tenderNo.disable();
-      this.validateForm.controls.businessModel.disable(); 
+      this.validateForm.controls.businessModel.disable();
       this.validateForm.controls.region.disable();
+      this.validateForm.controls.team.disable();
+      this.validateForm.controls.smallArea.disable();
       this.validateForm.controls.tenderingCompany.disable();
       this.validateForm.controls.entryMode.disable();
+      this.validateForm.controls.centralized.disable();
+      this.validateForm.controls.agreementNo.disable();
     }
-    if (status === 'DHTOASH'&&flag=='0')  //如果是oa审核节点放开备注的禁用
+    if (status === 'DHTOASH' && flag == '0')  //如果是oa审核节点放开备注的禁用
     {
+      
       this.validateForm.controls.paymentProvisionRemarks.enable();
+      this.validateForm.controls.afterSalesRemarks.enable();
       this.validateForm.controls.shipmentDeliveryRemarks.enable();
       this.validateForm.controls.installationWarrantyRemarks.enable();
       this.validateForm.controls.amountDifferenceRemarks.enable();
@@ -1410,10 +1996,10 @@ export class PreOrderBaseInfoComponent implements OnInit {
       this.validateForm.controls.performanceBondRemarks.enable();
       this.validateForm.controls.supportFileMissingRemarks.enable();
       this.validateForm.controls.installationWarrantyRadio.enable();
-      this.oaDisa = false;
+      this.oaDisa = false;      
     }
   }
- 
+
   // 飞利浦金融方案
   public getfinancialList() {
     const params = {
@@ -1435,30 +2021,36 @@ export class PreOrderBaseInfoComponent implements OnInit {
     this.box = false;
     this.isVisibleCPResult = true;
   }
+  taxNumberCheck(control: FormControl) {
 
-
+    if (control.value) {
+      const reg = /^([\da-zA-z]{0,18}$)$/;
+      const valid = reg.test(control.value); // true
+      return valid ? null : { taxform: true };
+    }
+  }
   // 电话号码正则表达式的验证
   checkPhone(control: FormControl) {
     if (control.value) {
       //const reg = /^1[3|4|5|7|8][0-9]{9}$/; // 验证规则
       // const reg = /^([\d\+\-\*\/x]\d{0,15}$)*$/
       //const reg=/^([\d +()-\s]{0,20}$)$/;
-      const reg=/^([\d +()-\s]{0,1000}$)$/;
-      const phoneNum = '15507621999'; // 手机号码
+      const reg = /^([\d +()-\s]{0,1000}$)$/;
+      //const reg = /^[0-9]*$/g;      
+      //const phoneNum = '15507621999'; // 手机号码
       const valid = reg.test(control.value); // true
       return valid ? null : { phoneform: true };
     }
   }
   //邮箱的正则表大式
-  cheakMail(control: FormControl)
-  {
+  cheakMail(control: FormControl) {
     if (control.value) {
       //const reg=/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/; 
       //const reg=/^[0-9a-zA-Z_\@\.\s\-]*$/g;  
-      const reg=/^(?!\@)+(?!\_)+[0-9a-zA-Z_\@\.\s\-]*$/g; 
+      const reg = /^(?!\@)+(?!\_)+[0-9a-zA-Z_\@\.\s\-]*$/g;
       const valid = reg.test(control.value); // true
       return valid ? null : { mailform: true };
-    }    
+    }
   }
   // public handleOkCPResult(): void {
 
@@ -1479,17 +2071,26 @@ export class PreOrderBaseInfoComponent implements OnInit {
   // }
   public clearFrom() {
 
-    this.dataBase = {
-      productList: [], // 产品列表
-      detail: {
-        id: '',
-        flag: '0',
-        status: '',
-      },
-      dataList: [],
-      count: 0,
-      sameFlag: "0",
-    };
+    // this.dataBase = {
+    //   productList: [], // 产品列表
+    //   detail: {
+    //     id: '',
+    //     flag: '0',
+    //     status: '',
+    //   },
+    //   dataList: [],
+    //   count: 0,
+    //   sameFlag: "0",
+    // };
+    this.dataBase.productList = [];
+    this.dataBase.detail = {
+      id: '',
+      flag: '0',
+      status: '',
+    }
+    this.dataBase.dataList = [];
+    this.dataBase.count = 0;
+    this.dataBase.sameFlag = "0";
     this.dataBase.siteReport = "";
     this.dataBase.confirmationFile = "";
     this.dataBase.mrShieldingCompany = "";
@@ -1506,6 +2107,7 @@ export class PreOrderBaseInfoComponent implements OnInit {
     this.dataBase.endUserContract = "";
     this.dataBase.projectAnalysisTable = "";
     this.dataBase.otherFilName = "";
+    this.bidWinningNoticeFileList = [];
     this.siteReportFileList = [];
     this.projectAnalysisTableFileList = [];
     this.confirmationFileFileList = [];
@@ -1523,21 +2125,22 @@ export class PreOrderBaseInfoComponent implements OnInit {
     this.otherFilNameList = [];
     this.mrShieldingCompanyList = [];
     this.tenderDocumentsList = [];
-    this.dataBase.tableColOff=false;
-    this.dataBase.financialProgramme=""; 
+    this.afterSalesList = [];
+    this.dataBase.tableColOff = false;
+    this.dataBase.financialProgramme = "";
   }
   public handleOkCPResult2() {
     if (this.dealformlist.length < 1) {
       this.message.create('error', '请先点击查询');
       return;
-    } 
+    }
     if (!this.ckdealformlist.radio) {
       this.message.create('error', '未选择Deal Form ID');
       return;
     }
     this.validateForm.reset();
     this.clearFrom();
-    
+
     this.dataBase.dealFormId = this.ckdealformlist.dealFormId;
     // for (const key in this.validateForm.controls) {
     //   this.validateForm.controls[key].markAsPristine()
@@ -1549,65 +2152,106 @@ export class PreOrderBaseInfoComponent implements OnInit {
         this.dataBase.entryUnitPrice = "";//所有进单单总价;
         this.dataBase.dealContractPrice = this.ckdealformlist.dealPrice; //deal总价
         this.dataBase.businessModel = this.ckdealformlist.businessModel; //业务模式;
-        this.dataBase.region = this.ckdealformlist.region + '/' + this.ckdealformlist.residentialQuarters; //区域
+        this.dataBase.estimatedBidPrice = this.ckdealformlist.estimatedTenderPrice ? this.ckdealformlist.estimatedTenderPrice : 0; //预计投标价格
+        this.dataBase.region = this.ckdealformlist.region;//大区域
+        this.dataBase.smallArea = this.ckdealformlist.residentialQuarters; //小区域
+        this.dataBase.team = this.ckdealformlist.team; //team
         this.dataBase.tenderNo = this.ckdealformlist.tenderNo;//招标编号
         this.dataBase.tenderingCompany = this.ckdealformlist.biddingCompanyName; //投标公司
-        this.dataBase.distributor = this.ckdealformlist.dealerName; //经销商
-        this.dataBase.ddpStatus = this.ckdealformlist.ddpStatus //ddp状态 经销商
+        this.dataBase.distributor = this.ckdealformlist.dealerName; //经销商 
+        this.dataBase.dealerCode=this.ckdealformlist.dealerId;//经销商code    
+        if (this.dataBase.businessModel != 'DIRECT') {
+          let distributor = this.dataBase.distributor ? this.dataBase.distributor.replace(/\s+/g, "") : "";
+          let select = this.distributorList.find(vals => vals.dealerName.replace(/\s+/g, "") == distributor);
+          select && (this.dataBase.distributor1 = select.dealerName);
+          this.distributorOff = select ? false : true;  //经销商没在列表时提示框显示
+        }
+        // this.dataBase.ddpStatus = this.ckdealformlist.ddpStatus //ddp状态 经销商
         this.dataBase.distributorAddress = this.ckdealformlist.registeredAddress; //经销商地址
         this.dataBase.distributorPhone = this.ckdealformlist.dealerTelephone; //经销商电话
         this.dataBase.distributorEmail = this.ckdealformlist.dealerEmail; //邮箱地址
         this.dataBase.billingInfor = this.ckdealformlist.vatBillingInfo; //开票信息
-        this.dataBase.contractDdpStatus = this.ckdealformlist.ddpStatus1; //外贸公司的ddp状态
+        // this.dataBase.contractDdpStatus = this.ckdealformlist.ddpStatus1; //外贸公司的ddp状态
         this.dataBase.contractBuyerAddress = this.ckdealformlist.registeredAddress; //合同买方地址
         this.dataBase.contractBuyerEmail = this.ckdealformlist.dealerEmail; //合同邮箱
         this.dataBase.endUser = this.ckdealformlist.hospitalName; //最终用户
+        this.dataBase.endUsers = this.ckdealformlist.hospitalNames; //最终用户
+        this.dataBase.endUserId = this.ckdealformlist.hospitalId;//用户id
+        this.pageParam.endUserId = this.ckdealformlist.hospitalId;//弹窗口的选中的值
         this.dataBase.hospitalNature = this.ckdealformlist.customerType; //医院性质
         this.dataBase.endUserAddress = this.ckdealformlist.endUserAddress; //最终用户地址
         this.dataBase.endUserPhone = this.ckdealformlist.endUserPhone; //最终用户电话
         this.dataBase.invoiceInformation = this.ckdealformlist.currencySystem //币制
         this.dataBase.sampleAuditFlag = this.ckdealformlist.samplingInspection //是否抽样审核
-        this.dataBase.foreignTradeCompany = this.ckdealformlist.foreignCompanyName.replace(/\s+/g,""); //外贸公司
+        this.dataBase.foreignTradeCompany = this.ckdealformlist.foreignCompanyName ? this.ckdealformlist.foreignCompanyName.replace(/\s+/g, "") : ""; //外贸公司
+
         this.dataBase.foreignTradeCompanyAddress = this.ckdealformlist.foreignTradeCompanyAddress //外贸公司
         this.dataBase.foreignTradeCompanyContacts = this.ckdealformlist.foreignCompanyContact; //外贸公司联系人
-        this.dataBase.foreignTradeCompanyPhone = this.ckdealformlist.foreignCompanyContactInformation //外贸公司电话
+        let foreignCompanyContactInformation = this.ckdealformlist.foreignCompanyContactInformation;
+        if(this.dataBase.businessModel=='DISTRIBUTOR'&&this.dataBase.dealerCode)
+        {
+          this.ServesiceService.dealerCode.emit(this.dataBase.dealerCode)
+        }
+
+        if (foreignCompanyContactInformation) {
+          if ((foreignCompanyContactInformation.indexOf(' ') == -1 || foreignCompanyContactInformation.indexOf('-') == -1 || foreignCompanyContactInformation.indexOf('(') == -1) || foreignCompanyContactInformation.indexOf(')') == -1) {
+            this.dataBase.foreignTradeCompanyPhone = parseInt(this.ckdealformlist.foreignCompanyContactInformation).toString()//外贸公司电话
+          }
+          else {
+            this.dataBase.foreignTradeCompanyPhone = foreignCompanyContactInformation;
+          }
+        }
+        else {
+          this.dataBase.foreignTradeCompanyPhone = foreignCompanyContactInformation;
+        }
         this.dataBase.sonfonFile = this.ckdealformlist.sonfonFile;
-        this.dataBase.financialProgramme=this.ckdealformlist.financialSchemeId!=""?this.ckdealformlist.financialSchemeId:'0'; //金融方案
-        this.dataBase.financialProgrammeTxt=this.ckdealformlist.otherFinancialSolutions;//金融方案文本框
-        this.dataBase.financialProgrammeCost=this.ckdealformlist.financialProgrammePrice;//金融方案总价格
-        this.dataBase.rebateCost=this.ckdealformlist.rebateCost; //rebate金额
-        this.dataBase.tradeInCost=this.ckdealformlist.tradeInCost; //tradeIn金额
+        this.dataBase.financialProgramme = (this.ckdealformlist.financialSchemeId != "" && this.ckdealformlist.financialSchemeId != null) ? this.ckdealformlist.financialSchemeId : '0'; //金融方案
+        this.dataBase.financialProgrammeTxt = this.ckdealformlist.otherFinancialSolutions;//金融方案文本框        
+        this.dataBase.financialProgrammeCost = this.ckdealformlist.financialProgrammePrice;//金融方案总价格
+        this.dataBase.rebateCost = this.ckdealformlist.rebateCost; //rebate金额
+        this.dataBase.tradeInCost = this.ckdealformlist.tradeInCost; //tradeIn金额
+        this.dataBase.taxrate = this.ckdealformlist.vatRate; //税率
+        this.getRateList()
+        this.dataBase.paymentmethod = this.ckdealformlist.paymentMethodDescription;//支付方式
         //financialProgrammeCost
-        this.dataBase.contractEndDate=this.ckdealformlist.ddpValidUntil;
-        this.dataBase.poolEndDate= this.ckdealformlist.ddpValidUntil1;
-      }, 0); 
-      if(this.dataBase.invoiceInformation=='USD')
-      {
-        const contractBuyer2=this.poolList.find(val=>val.corporateName==this.dataBase.foreignTradeCompany);
-        contractBuyer2&&(this.dataBase.contractBuyer2=contractBuyer2.corporateName);
-        this.foreignup();
-      }      
+        this.dataBase.contractEndDate = standardTime(this.ckdealformlist.ddpValidUntil);
+        this.dataBase.ddpStatus = this.isadopt(this.dataBase.contractEndDate, 1);
+        this.dataBase.poolEndDate = standardTime(this.ckdealformlist.ddpValidUntil1);
+        this.dataBase.contractDdpStatus = this.isadopt(this.dataBase.poolEndDate, 2);
+        if (this.dataBase.invoiceInformation == 'USD') {
+          const contractBuyer2 = this.poolList.find(val => val.corporateName == this.dataBase.foreignTradeCompany);
+          contractBuyer2 && (this.dataBase.contractBuyer2 = contractBuyer2.corporateName);
+          this.foreignup();
+        }
+        this.paymentMethod();
+        this.entryModeList = JSON.parse(JSON.stringify(this.entryModeLists));
+        if (this.dataBase.businessModel == 'DIRECT') {
+          this.dataBase.entryMode = null;
+        }      
+        this.StockOff = ((this.dataBase.entryMode == 'BIDDING' && this.dataBase.endUsers == 'Stock') || this.dataBase.entryMode == 'STOCK') ? false : true;
+        if (this.dataBase.businessModel === 'DIRECT') {
+          this.dataBase.contractBuyer = this.dataBase.endUser;
+          this.dataBase.contractBuyerAddress = this.dataBase.endUserAddress;
+          this.dataBase.contractBuyerContacts = this.dataBase.endUserContacts;
+          this.dataBase.contractBuyerPhone = this.dataBase.endUserPhone;
+          this.dataBase.contractBuyerEmail = this.dataBase.endUserEmail;         
+          this.validateForm.controls.contractBuyer2.disable();
+        } else if (this.dataBase.businessModel === 'DISTRIBUTOR' && this.dataBase.invoiceInformation == 'CNY') {
+          // this.dataBase.contractBuyer = this.dataBase.distributor;
+          // this.dataBase.contractBuyerAddress = this.dataBase.distributorAddress;
+          // this.dataBase.contractBuyerContacts = this.dataBase.distributorContacts;
+          // this.dataBase.contractBuyerPhone = this.dataBase.distributorPhone;
+          // this.dataBase.contractBuyerEmail = this.dataBase.distributorEmail;          
+          this.validateForm.controls.contractBuyer2.disable();
+        }
+      }, 0);
+
+
       //this.dataBase = Object.assign(this.dataBase, rest.data);
-      if (this.dataBase.businessModel === 'DIRECT' && this.dataBase.invoiceInformation == 'CNY') {
-        this.dataBase.contractBuyer = this.dataBase.endUser;
-        this.dataBase.contractBuyerAddress = this.dataBase.endUserAddress;
-        this.dataBase.contractBuyerContacts = this.dataBase.endUserContacts;
-        this.dataBase.contractBuyerPhone = this.dataBase.endUserPhone;
-        this.dataBase.contractBuyerEmail = this.dataBase.endUserEmail;
-        this.validateForm.controls.contractBuyer1.disable();
-        this.validateForm.controls.contractBuyer2.disable();
-      } else if (this.dataBase.businessModel === 'DISTRIBUTOR' && this.dataBase.invoiceInformation == 'CNY') {
-        this.dataBase.contractBuyer = this.dataBase.distributor;
-        this.dataBase.contractBuyerAddress = this.dataBase.distributorAddress;
-        this.dataBase.contractBuyerContacts = this.dataBase.distributorContacts;
-        this.dataBase.contractBuyerPhone = this.dataBase.distributorPhone;
-        this.dataBase.contractBuyerEmail = this.dataBase.distributorEmail;
-        this.validateForm.controls.contractBuyer1.disable();
-        this.validateForm.controls.contractBuyer2.disable();
-      }
+      
       // this.updateData.emit(this.dataBase);
       this.setColSpanOfConfirmTable();
-      this.ngModelChang(this.dataBase.businessModel);
+      this.ngModelChang();
     }
     this.getProduct(this.ckdealformlist.dealFormId);
   }
@@ -1630,23 +2274,23 @@ export class PreOrderBaseInfoComponent implements OnInit {
   public next() {
     this.myEvent.emit('complete-tab'); // 传参给父组件;
   }
-  public submitForm = ($event: any, value: any) => {
-    $event.preventDefault();
-    for (const key in this.validateForm.controls) {
-      this.validateForm.controls[key].markAsDirty();
-      this.validateForm.controls[key].updateValueAndValidity();
-    }
-    this.updateDataBaseInfo.emit(value);
-  }
+  // public submitForm = ($event: any, value: any) => {
+  //   $event.preventDefault();
+  //   for (const key in this.validateForm.controls) {
+  //     this.validateForm.controls[key].markAsDirty();
+  //     this.validateForm.controls[key].updateValueAndValidity();
+  //   }
+  //   this.updateDataBaseInfo.emit(value);
+  // }
 
-  public resetForm(e: MouseEvent): void {
-    e.preventDefault();
-    this.validateForm.reset();
-    for (const key in this.validateForm.controls) {
-      this.validateForm.controls[key].markAsPristine();
-      this.validateForm.controls[key].updateValueAndValidity();
-    }
-  }
+  // public resetForm(e: MouseEvent): void {
+  //   e.preventDefault();
+  //   this.validateForm.reset();
+  //   for (const key in this.validateForm.controls) {
+  //     this.validateForm.controls[key].markAsPristine();
+  //     this.validateForm.controls[key].updateValueAndValidity();
+  //   }
+  // }
 
   public validateConfirmPassword(): void {
     setTimeout(() => this.validateForm.controls.confirm.updateValueAndValidity());
@@ -1688,12 +2332,13 @@ export class PreOrderBaseInfoComponent implements OnInit {
       this.validateForm.get('orderSignName')!.clearValidators(); // 采购订单签署人
       this.validateForm.get('orderSignPost')!.clearValidators(); // 采购订单签署人职务
       /*添加合同买方*/
-
       this.validateForm.get('contractBuyer')!.setValidators(Validators.required); // 合同买方
       this.validateForm.get('contractBuyerAddress')!.setValidators(Validators.required); // 合同买方地址
       this.validateForm.get('contractSignatory')!.setValidators(Validators.required); // 合同签署人
       this.validateForm.get('contractSignatoryPost')!.setValidators(Validators.required); // 采购订单签署人职务
-
+      this.validateForm.get('agreementNo')!.clearValidators(); //经销商协议号  
+      
+      
     } else {
       /*业务模式为 DISTRIBUTOR  添加经销商*/
       this.validateForm.get('distributor')!.setValidators(Validators.required);
@@ -1702,16 +2347,17 @@ export class PreOrderBaseInfoComponent implements OnInit {
       this.validateForm.get('poolEndDate')!.setValidators(Validators.required);
       this.validateForm.get('distributorAddress')!.setValidators(Validators.required);
       this.validateForm.get('distributorContacts')!.setValidators(Validators.required);
-      this.validateForm.get('distributorPhone')!.setValidators([Validators.required,this.checkPhone]);
-      this.validateForm.get('distributorEmail')!.setValidators([Validators.required,this.cheakMail]);
+      this.validateForm.get('distributorPhone')!.setValidators([Validators.required, this.checkPhone]);
+      this.validateForm.get('distributorEmail')!.setValidators([Validators.required, this.cheakMail]);
       this.validateForm.get('orderSignName')!.setValidators(Validators.required);
       this.validateForm.get('orderSignPost')!.setValidators(Validators.required);
-      /*删除合同买方*/
-
+      /*删除合同买方*/     
+      this.conTable&&this.validateForm.get('agreementNo')!.setValidators(Validators.required); //经销商协议号
       this.validateForm.get('contractBuyer')!.clearValidators(); // 合同买方
       this.validateForm.get('contractBuyerAddress')!.clearValidators(); // 合同买方地址
       this.validateForm.get('contractSignatory')!.clearValidators(); // 合同签署人
       this.validateForm.get('contractSignatoryPost')!.clearValidators(); // 采购订单签署人职务
+          
     }
     if (this.dataBase && this.dataBase.businessModel === 'DIRECT' && this.dataBase.invoiceInformation === 'USD') {
       this.validateForm.get('contractEndDate')!.clearValidators(); //经销商DDP-Status截止日期
@@ -1731,6 +2377,7 @@ export class PreOrderBaseInfoComponent implements OnInit {
     }
     this.validateForm.get('poolEndDate')!.updateValueAndValidity();
     this.validateForm.get('contractEndDate')!.updateValueAndValidity();
+    this.validateForm.get('agreementNo')!.updateValueAndValidity();
   }
 
   // 判断业务模式和币制
@@ -1768,18 +2415,32 @@ export class PreOrderBaseInfoComponent implements OnInit {
       this.validateForm.get('importAgreementSignPost')!.clearValidators(); // 合同签署人职务
       this.validateForm.get('contractDdpStatus')!.clearValidators(); // DDP-Status //contractDdpStatus
       this.validateForm.get('billingInfor')!.setValidators(Validators.required);
+      this.validateForm.get('accountName')!.setValidators(Validators.required);
+      this.validateForm.get('bankName')!.setValidators(Validators.required);
+      this.validateForm.get('accountNo')!.setValidators(Validators.required);
+      this.validateForm.get('taxNumber')!.setValidators([Validators.required, this.taxNumberCheck]);
+      this.validateForm.get('accountAddress')!.setValidators(Validators.required);
+      this.validateForm.get('addressee')!.setValidators(Validators.required);
+      this.validateForm.get('addresseeTel')!.setValidators([Validators.required, this.checkPhone]);
       return false;
     } else {
       /* 添加外贸公司验证 */
       this.validateForm.get('foreignTradeCompany')!.setValidators(Validators.required); // 外贸公司
       this.validateForm.get('foreignTradeCompanyAddress')!.setValidators(Validators.required); // 外贸公司地址
       this.validateForm.get('foreignTradeCompanyContacts')!.setValidators(Validators.required); // 外贸公司联系人
-      this.validateForm.get('foreignTradeCompanyPhone')!.setValidators([Validators.required,this.checkPhone]); // 外贸公司电话
-      this.validateForm.get('foreignTradeCompanyEmail')!.setValidators([Validators.required,this.cheakMail]); // 外贸公司邮箱
+      this.validateForm.get('foreignTradeCompanyPhone')!.setValidators([Validators.required, this.checkPhone]); // 外贸公司电话
+      this.validateForm.get('foreignTradeCompanyEmail')!.setValidators([Validators.required, this.cheakMail]); // 外贸公司邮箱
       this.validateForm.get('importAgreementSignName')!.setValidators(Validators.required); // 合同签署人
       this.validateForm.get('importAgreementSignPost')!.setValidators(Validators.required); // 合同签署人职务
       this.validateForm.get('contractDdpStatus')!.setValidators(Validators.required); // DDP-Status
       this.validateForm.get('billingInfor')!.clearValidators();
+      this.validateForm.get('accountName')!.clearValidators();
+      this.validateForm.get('bankName')!.clearValidators();
+      this.validateForm.get('accountNo')!.clearValidators();
+      this.validateForm.get('taxNumber')!.clearValidators();
+      this.validateForm.get('accountAddress')!.clearValidators();
+      this.validateForm.get('addressee')!.clearValidators();
+      this.validateForm.get('addresseeTel')!.clearValidators();
     }
     if (this.dataBase.entryMode == 'STOCK') {
       this.validateForm.get('importAgreementSignPost')!.clearValidators(); // 合同签署人职务
@@ -1794,6 +2455,13 @@ export class PreOrderBaseInfoComponent implements OnInit {
     this.validateForm.get('importAgreementSignPost')!.updateValueAndValidity();
     this.validateForm.get('contractDdpStatus')!.updateValueAndValidity();
     this.validateForm.get('billingInfor')!.updateValueAndValidity();
+    this.validateForm.get('accountName')!.updateValueAndValidity();
+    this.validateForm.get('bankName')!.updateValueAndValidity();
+    this.validateForm.get('accountNo')!.updateValueAndValidity();
+    this.validateForm.get('taxNumber')!.updateValueAndValidity();
+    this.validateForm.get('accountAddress')!.updateValueAndValidity();
+    this.validateForm.get('addressee')!.updateValueAndValidity();
+    this.validateForm.get('addresseeTel')!.updateValueAndValidity();
     return true;
   }
 
@@ -1801,9 +2469,10 @@ export class PreOrderBaseInfoComponent implements OnInit {
   ChangForeign() {
     if (this.dataBase.sameFlag === '1') {
       // 将经销商信息赋值给外贸公司
+      this.getPoolList();
       this.dataBase.foreignTradeCompany = this.dataBase.distributor;
       this.dataBase.contractDdpStatus = this.dataBase.ddpStatus;
-      this.dataBase.poolEndDate=this.dataBase.contractEndDate;
+      this.dataBase.poolEndDate = this.dataBase.contractEndDate;
       this.dataBase.foreignTradeCompanyAddress = this.dataBase.distributorAddress;
       this.dataBase.foreignTradeCompanyContacts = this.dataBase.distributorContacts;
       this.dataBase.foreignTradeCompanyPhone = this.dataBase.distributorPhone;
@@ -1826,7 +2495,19 @@ export class PreOrderBaseInfoComponent implements OnInit {
     // console.log(this.ckdealformlist);
 
   }
-
+   //查询dealfromid
+   GetDealLists(param)
+   {
+    return new Promise((resolve, reject) => {
+      this.http.get(`/act/preparation/queryCp?dealFormId=`+param).subscribe(e => {
+          resolve(e.data[0]);
+          if(e.data&&e.data.length>0)
+          {
+            this.currId=e.data[0].id; 
+          }                 
+      })
+    })
+   }
   // 查询
   GetDealList() {
     this.deal_load = true;
@@ -1835,10 +2516,7 @@ export class PreOrderBaseInfoComponent implements OnInit {
       this.deal_load = false;
       if (e.data) {
         this.dealformlist = e.data;
-        if (this.dealformlist.length > 0) {
-          this.dealformlist.map(vals => {
-            vals.isDisable = false;
-          })
+        if (this.dealformlist.length > 0) { 
           this.dealformlist.find(vals => {
             if (vals.id == this.currId) {
               vals.radio = true;
@@ -1858,43 +2536,7 @@ export class PreOrderBaseInfoComponent implements OnInit {
       this.deal_load = false;
     });
   }
-  // 获取中标价格
-  // GetPrice(simulationList, datalist) {
-  //   console.log(simulationList);
-  //   console.log(datalist);
-  //   const url = '/act/preparation/queryAuditNetPrice';
-  //   this.http.post(url, {
-  //     mbIds: simulationList
-  //   }).subscribe(e => {
-  //      debugger
-  //     let pricelist = [];
-  //     if (e.data && e.data.list) {
-  //       pricelist = e.data.list;
-  //     }
-  //     if (datalist) {
-  //       datalist.map( va => {
-  //         va.children.map( val => {
-  //           val.approvalPrice = '0';
-  //         });
-  //       });
-  //     }
-  //     // pricelist = [{dealFormMarketBundleId: '223' , auditNetPrice: '554'},
-  //     //   {dealFormMarketBundleId: '224' , auditNetPrice: '113'}];
-  //     if (datalist) {
-  //       datalist.map( va => {
-  //         va.children.map( val => {
-  //           pricelist.map( price => {
-  //             if (val.simulationIdS === price.dealFormMarketBundleId) {
-  //               val.approvalPrice = price.auditNetPrice;
-  //             }
-  //           });
-  //         });
-  //       });
-  //     }
-  //     // console.log(datalist);
 
-  //   });
-  // }
   /*投标申请表链接眼*/
   getWinUrl() {
     const url = '/act/preparation/getMainId';
@@ -1914,6 +2556,121 @@ export class PreOrderBaseInfoComponent implements OnInit {
       window.open(location.origin + environment.base_href + '/#/' + 'winning?id=' + codeString(item.zbMainId) + '&flag=1' + '&status=' + item.taskStatus);
     }
   }
+  //装运及交货
+  public shipmentDeliverySelect(event)
+  {
+    if(event=='0')
+    {
+      this.dataBase.shipmentDeliveryRemarks="";
+      this.dataBase.shipmentDeliveryFileName="";
+      this.shipmentDeliveryList=[];    
+    } 
+  }
+  //安装，验收及保修
+  public installationWarrantySelect(event)
+  {
+    if(event=='0')
+    {
+      this.dataBase.installationWarrantyRemarks="";
+      this.dataBase.installationWarrantyFileName="";
+      this.installationWarrantyList=[];    
+    } 
 
+  }
+  //场地准备
+  public sitePreparationSelect(event)
+  {
+    if(event=='0')
+    {
+      this.dataBase.sitePreparationRemarks="";
+      this.dataBase.sitePreparationFileName="";
+      this.sitePreparatList=[];    
+    } 
+  }
+  //履约保函
+  public performanceBondSelect(event)
+  {
+    if(event=='0')
+    {
+      this.dataBase.performanceBondRemarks="";
+      this.dataBase.performanceBondFileName="";
+      this.performanceBondList=[];    
+    }
+  }
+  //是否有售后限价
+  public afterSalesSelect(event)
+  {
+    if(event=='0')
+    {
+      this.dataBase.afterSalesRemarks="";
+      this.dataBase.afterSalesFileName="";
+      this.afterSalesList=[];    
+    }
+  }
+  //直投订单合同金额和中标金额有价差
+  public amountDifferenceSelect(event)
+  {
+    if(event=='0')
+    {
+      this.dataBase.amountDifferenceRemarks="";
+      this.dataBase.amountDifferenceFileName="";
+      this.amountDifferenceList=[];    
+    } 
+  }
+  //支持文件缺失需特批进单
+   public supportFileMissingSelect(event)
+   {
+    if(event=='0')
+    {
+      this.dataBase.supportFileMissingRemarks="";
+      this.dataBase.supportFileMissingFileName="";
+      this.supportFileMissingList=[];    
+    } 
+   }
+   //查看最终用户编号
+   showDiag()
+   {
+    this.dealshow.data=[];
+    let dealerAgreementNo=this.dataBase.agreementNo;  
+    this.isAgres=true;
+    let select=this.dealList.find(val=>dealerAgreementNo==val.agreementNo);
+    if(select)
+    {
+      let obj={
+        authorizedArea:select.authorizedArea,
+        authorizedProduct:select.authorizedProduct
+      } 
+      this.dealshow.data.push(obj) 
+      this.ServesiceService.dealTable.emit(this.dealshow);
+    }   
 
+   }
+     //取消弹出窗口
+  public isAgreCancels()
+  {
+    this.isAgres=false;
+  }
+  //支持文件缺失按钮是否禁用问题
+  public supportFileMissingFlag()
+  {
+    
+    const state=this.activatedRouter.queryParams['_value'].status;
+    let flag=false;
+    if(state==='DHTOASH')
+    {
+      if ((this.dataBase.biddingDocuments == '' || this.dataBase.biddingDocuments == null || this.dataBase.biddingDocuments == undefined) && this.dataBase.tenderNo != '其他类型') {
+        flag=true;
+      }
+      if ((this.dataBase.tenderDocuments == '' || this.dataBase.tenderDocuments == null || this.dataBase.tenderDocuments == undefined) && this.dataBase.tenderNo != '其他类型') {
+        flag=true;
+      }
+      if ((this.dataBase.endUserContract == '' || this.dataBase.endUserContract == null || this.dataBase.endUserContract == undefined)&&this.dataBase.businessModel!='DIRECT') {
+        flag=true;
+      }
+      if ((this.dataBase.projectAnalysisTable == '' || this.dataBase.projectAnalysisTable == null || this.dataBase.projectAnalysisTable == undefined) && this.dataBase.businessModel == 'DISTRIBUTOR') {
+        flag=true;
+      }  
+     (this.dataBase.supportFileMissing=='1'&&!flag)&&this.validateForm.controls.supportFileMissing.enable();
+    }    
+  }
 }

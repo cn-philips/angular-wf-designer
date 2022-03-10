@@ -19,6 +19,7 @@ export class ShomeComponent implements OnInit {
   myTasksTotal = 0;
   myInitiateTotal = 0;
   myDraftTotal = 0;
+  public myEntrust = 0;
   menuList:any=[];
   public user:any;
   public biddingAuthorizationModeList:any; //授权列表
@@ -94,11 +95,11 @@ export class ShomeComponent implements OnInit {
       if (rest.code === '0000') {
         this.mytaks = [...rest.data.rows];
         this.mytaks.map(vals=>{
-          vals.processor=vals.processor.toLowerCase();
+          vals.processor=vals.processor?vals.processor.toLowerCase():"";
           if(vals.children&&vals.children.length>0)
           {
             vals.children.map(val=>{
-              val.processor=val.processor.toLowerCase();
+              val.processor=val.processor?val.processor.toLowerCase():"";
             })
           }
         })
@@ -114,11 +115,11 @@ export class ShomeComponent implements OnInit {
       if (rest.code === '0000') {
         this.myinitiate = [...rest.data.rows];
         this.myinitiate.map(vals=>{
-          vals.processor=vals.processor.toLowerCase();
+          vals.processor=vals.processor?vals.processor.toLowerCase():"";
           if(vals.children&&vals.children.length>0)
           {
             vals.children.map(val=>{
-              val.processor=val.processor.toLowerCase();
+              val.processor=val.processor?val.processor.toLowerCase():"";
             })
           }
         })
@@ -135,11 +136,11 @@ export class ShomeComponent implements OnInit {
       if (rest.code === '0000') {
         this.mydraft = [...rest.data.rows];
         this.mydraft.map(vals=>{
-          vals.processor=vals.processor.toLowerCase();
+          vals.processor=vals.processor?vals.processor.toLowerCase():"";
           if(vals.children&&vals.children.length>0)
           {
             vals.children.map(val=>{
-              val.processor=val.processor.toLowerCase();
+              val.processor=val.processor?val.processor.toLowerCase():"";
             })
           }
         })
@@ -150,6 +151,18 @@ export class ShomeComponent implements OnInit {
         this.message.create('error', `${rest.msg}`);
       }
     });
+
+    // 我的委托
+    // const url = '/act/ecom/homepage/getMyEntrust';
+    // this.http.post(url, params).subscribe(res => {
+    //   if (res.data) {
+    //     this.myun = [...res.data.rows];
+    //     this.myEntrust = res.data.total;
+    //     this.changeDetectorRef.markForCheck(); // 数据更新检查
+    //     this.changeDetectorRef.detectChanges();
+    //   }
+    // }, error => {
+    // });
   }
   //转换业务模式
   ProAppType(e) {
@@ -171,13 +184,12 @@ export class ShomeComponent implements OnInit {
     return e;
   }
     //跳转到详情
-    goToDetail(item,param)
-    {
-      switch(item.task_status)
-      {
-        case "DZLCSH":
-        case "JDEND":
-        case "CANCELLED":
+    goToDetail(item, param) {
+      switch (item.task_status) {
+        case 'DZLCSH':
+        case 'JDEND':
+        case 'CANCELLED':
+        case 'CLOSED':
           if (param == 0) {
             this.router.navigate(['/igt/my-task'], {
               skipLocationChange: false,
@@ -203,7 +215,7 @@ export class ShomeComponent implements OnInit {
             });
           }
           break;
-        case "DTJ":
+        case 'DTJ':
           if (item.type === 'ZBSQ') {
             this.router.navigate(['/applytendermodif'], {
               skipLocationChange: false,
@@ -223,7 +235,7 @@ export class ShomeComponent implements OnInit {
             });
           }
           break;
-        case "DBA":
+        case 'DBA':
           this.router.navigate(['/bid'], {
             skipLocationChange: false,
             queryParams: {
@@ -232,7 +244,7 @@ export class ShomeComponent implements OnInit {
             },
           });
           break;
-        case "DSWYSH":
+        case 'DSWYSH':
           this.router.navigate(['/tenderreview'], {
             skipLocationChange: false,
             queryParams: {
@@ -242,9 +254,9 @@ export class ShomeComponent implements OnInit {
             },
           });
           break;
-        case "XSBMDMSH":
-        case "XSBMZSLSH":
-        case "2JSH":
+        case 'XSBMDMSH':
+        case 'XSBMZSLSH':
+        case '2JSH':
           this.router.navigate(['/tenderreview_sale'], {
             skipLocationChange: false,
             queryParams: {
@@ -255,7 +267,7 @@ export class ShomeComponent implements OnInit {
             },
           });
          break;
-        case "DSWZYSQ":
+        case 'DSWZYSQ':
           this.router.navigate(['/emp'], {
             skipLocationChange: false,
             queryParams: {
@@ -294,8 +306,8 @@ export class ShomeComponent implements OnInit {
              },
            });
           break;
-         case"DOACS":
-         case"DCDSH":
+         case 'DOACS':
+         case 'DCDSH':
          this.router.navigate(['/preorderaudit'], {
           skipLocationChange: false,
           queryParams: {
@@ -306,9 +318,8 @@ export class ShomeComponent implements OnInit {
           },
         });
         break;
-        case "DSWZYQR":
-        case "YZBQR":
-        case "YZBQRDBCWJ":
+        case 'DSWZYQR':
+        case 'YZBQR':
         this.router.navigate(['/winning'], {
           skipLocationChange: false,
           queryParams: {
@@ -319,7 +330,18 @@ export class ShomeComponent implements OnInit {
           },
         });
         break;
-        case "DHTQS":
+        case 'YZBQRDBCWJ':
+          this.router.navigate(['/support-up'], {
+            skipLocationChange: false,
+            queryParams: {
+              id: codeString(item.main_id),
+              flag:item.processor.indexOf(this.user)!=-1? 0 : 1,
+              status:item.task_status,
+              taskid:item.taskID
+            },
+          });
+        break;
+        case 'DHTQS':
           this.router.navigate(['/consign'], {
             skipLocationChange: false,
             queryParams: {
@@ -331,12 +353,12 @@ export class ShomeComponent implements OnInit {
             },
           });
           break;
-          case "DXSBMSH":
-          case "DXSBM2JSH":
-          case "DOAJDQR":
-          case "DFBSH":
-          case "DTPJDSH":
-          case "DHTOASH":
+          case 'DXSBMSH':
+          case 'DXSBM2JSH':
+          case 'DOAJDQR':
+          case 'DFBSH':
+          case 'DTPJDSH':
+          case 'DHTOASH':
           this.router.navigate(['/igt/examine-order'], {
             skipLocationChange: false,
             queryParams: {
@@ -347,8 +369,8 @@ export class ShomeComponent implements OnInit {
             },
           });
           break;
-          case "DHTGYBTX":
-          case "XJDHTGYBTX":
+          case 'DHTGYBTX':
+          case 'XJDHTGYBTX':
             this.router.navigate(['/inconmodif'], {
               skipLocationChange: false,
               queryParams: {
@@ -358,8 +380,8 @@ export class ShomeComponent implements OnInit {
                 taskID: item.taskID,
               },
             });
-            break
-          case "DTXHT":
+            break;
+          case 'DTXHT':
             this.router.navigate(['/inorder'], {
               skipLocationChange: false,
               queryParams: {
@@ -370,7 +392,7 @@ export class ShomeComponent implements OnInit {
               },
             });
             break;
-          case "DODSH":
+          case 'DODSH':
             this.router.navigate(['/inorderexam'], {
               skipLocationChange: false,
               queryParams: {
@@ -380,7 +402,7 @@ export class ShomeComponent implements OnInit {
               },
             });
             break;
-        case "YZBQRYBCWJ":
+        case 'YZBQRYBCWJ':
           this.router.navigate(['/winning'], {
             skipLocationChange: false,
             queryParams: {
@@ -390,17 +412,14 @@ export class ShomeComponent implements OnInit {
             },
           });
           break;
-        case "DOITWJSC":
-        case "JDEND":
-        case "OITEND":
+        case 'DOITWJSC':
+        case 'JDEND':
+        case 'OITEND':
           let params;
-          if(item.dealerAudit=='1')
-          {
-            params='third';
-          }
-          else if(item.oaName=='1')
-          {
-            params="realTime";
+          if (item.dealerAudit == '1') {
+            params = 'third';
+          } else if (item.oaName == '1') {
+            params = 'realTime';
           }
           this.router.navigate(['/completeOit'], {
             skipLocationChange: false,
@@ -412,10 +431,32 @@ export class ShomeComponent implements OnInit {
               sale:item.sale
             },
           });
+          break;
+        case 'BIDCANCELLED':
+          this.router.navigate(['/winning'], {
+            skipLocationChange: false,
+            queryParams: {
+              id: codeString(item.id),
+              flag: 1,
+              status: item.task_status,
+            },
+          });
+          break;
 
       }
 
     }
+
+    toEntrust(item) {
+      this.router.navigate(['/changeonwer'], {
+        skipLocationChange: false,
+        queryParams: {
+          id: codeString(item.id),
+          flag: 1
+        },
+      });
+    }
+
     // 招标授权模式
     public getBiddingAuthorizationModeList () {
       const params = {
