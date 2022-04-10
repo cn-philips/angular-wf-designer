@@ -1,0 +1,72 @@
+@import "../../../../node_modules/@swimlane/ngx-datatable/release/index.css";
+@import "../../../vendor/libs/ngx-datatable/ngx-datatable";
+@import "../../../../node_modules/@swimlane/ngx-datatable/release/assets/icons.css";
+@import "../../../theme/common/dashboard.scss";
+
+.table-responsive {
+  overflow: visible;
+}
+
+.ngx-datatable {
+  overflow: visible !important;
+}
+
+.modal-xl .modal-lg {
+  max-width: 95%;
+}
+
+.modal-xl .modal-content {
+  background-color: whitesmoke;
+}
+
+.dropdown-menu.show {
+  max-height: 400px;
+  overflow: auto;
+}
+
+.product-info-actions {
+  text-align: right;
+  .ant-btn {
+    margin-left: 10px;
+  }
+}
+
+.data-muted {
+  color: darkgray;
+}
+
+.subject-content > strong {
+  font-size: 13px;
+}
+
+.subject-content > div {
+  font-size: 12px;
+  color: darkgray;
+}
+
+.bottom {
+  margin-bottom: 10px;
+}
+.pr {
+  position: relative;
+  .cancel,
+  .submit,
+  .save {
+    position: absolute;
+    right: 10px;
+    top: 0px;
+    z-index: 999;
+  }
+  .cancel {
+    right: 200px;
+  }
+  .submit {
+    right: 10px;
+  }
+  .save {
+    right: 188px;
+  }
+}
+.tr {
+  text-align: right;
+}

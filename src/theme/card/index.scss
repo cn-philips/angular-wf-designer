@@ -1,0 +1,13 @@
+.card-empty-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  &::before {
+    display: block;
+    content: "";
+    width: 7rem;
+    height: 7.25rem;
+    background: url(assets/image/icons/empty.svg) no-repeat center;
+  }
+}

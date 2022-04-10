@@ -1,0 +1,69 @@
+<ng-content select="div"></ng-content>
+<form nz-form [formGroup]="validateForm">
+  <app-apploading [load]="load"></app-apploading>
+    <nz-card class="pr" nzTitle="Site Ready 场地准备">
+      <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+        <div nz-col nzSpan="24">
+          <nz-form-item>
+            <nz-form-label [nzSm]="4" [nzXs]="24" [nzRequired]="status=='prebook_zpm_approval'"  style="min-width: 160px"><span>Expected Site Ready Date</span><br>预计场地Ready时间</nz-form-label>
+            <nz-form-control [nzSm]="8" [nzXs]="24">
+              <nz-date-picker nzSize="large" formControlName="readyTime" style="width: 100%" [nzStyle]="style"
+                  [(ngModel)]="params.readyTime" nzPlaceHolder=""></nz-date-picker>
+                  <nz-form-explain *ngIf="
+                  validateForm.get('readyTime')?.dirty &&
+                  validateForm.get('readyTime')?.errors
+                ">
+                此选项必填字段
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+  </nz-card>
+  <nz-card class="pr mtb1rem" nzTitle="Pre-Book Request Review 审核Pre-Book申请表">
+      <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+        <div nz-col nzSpan="24">
+          <nz-form-item>
+            <nz-form-label [nzSm]="4" [nzXs]="24" style="min-width: 160px"><span>Remarks</span><br>备注</nz-form-label>
+            <nz-form-control [nzSm]="8" [nzXs]="24">
+              <textarea nz-input oninput="if(value.length>255)value=value.slice(0,255)" nz-input placeholder=""
+                formControlName="remarks" [(ngModel)]="params.remarks" [nzAutosize]="{ minRows: 3, maxRows: 6 }"></textarea>
+              <div>还可以输入:{{params.remarks.length}}/{{textLen}}</div>
+              <nz-form-explain *ngIf="validateForm.get('remarks')?.dirty && validateForm.get('remarks')?.errors">
+               {{this.cannel?'请填写取消理由':'请填写拒绝理由'}}
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+      <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+        <div nz-col nzSpan="24">
+          <nz-form-item>
+            <nz-form-label [nzSm]="4" [nzXs]="24"><span>Upload Attachment</span><br>上传附件</nz-form-label>
+            <nz-form-control [nzSm]="8" [nzXs]="24">
+                <nz-upload *ngIf="!disa" [(nzFileList)]="fileList" [nzBeforeUpload]="fileBeforeUpload"
+                  [nzLimit]="1" [nzPreview]="dwonLoad" [nzRemove]="nzRemovefile">
+                  <button  nz-button style="margin-top: 18px">
+                    <i nz-icon nzType="upload"></i><span>Upload 文件上传</span>
+                  </button>
+                </nz-upload>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+      <div nz-row nzType="flex" nzJustify="end" nzAlign="middle">
+        <div nz-col nzXs="24" nzSm="24" nzMd="16">
+          <nz-form-item style="text-align: right;">
+            <button *ngIf="status=='prebook_zpm_approval' && dataBase.detail.flag==0" nz-button [nzType]="'primary'" style="margin-left: 10px;"
+            (click)="cancelContract()">Cancel 取消</button>
+            <button [disabled]="false" *ngIf="dataBase.detail.flag==0" nz-button [nzType]="'primary'" style="margin-left: 10px;" nz-popconfirm
+              [nzTitle]="status=='prebook_zpm_approval'?'你确定要执行提交的操作':'你确定要执行通过的操作'" (nzOnConfirm)="confirmApproval(validateForm.value, 1)"
+              (nzOnCancel)="cancelAction()">{{status=='prebook_zpm_approval'?'Submit 提交':'Approve 审核通过'}}</button>
+            <button *ngIf="dataBase.detail.flag==0&&status=='prebook_dsi_approval'" nz-button [nzType]="'primary'" style="margin-left: 10px;" nz-popconfirm
+              nzTitle="你确定要执行拒绝的操作?" (nzOnConfirm)="confirmApproval(validateForm.value, 0)"
+              (nzOnCancel)="cancelAction()">Refuse 拒绝</button>
+          </nz-form-item>
+        </div>
+      </div>
+  </nz-card>
+</form>

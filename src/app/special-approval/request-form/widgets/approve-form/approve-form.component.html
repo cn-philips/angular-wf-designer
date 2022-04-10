@@ -1,0 +1,127 @@
+<nz-card class="mtb1rem" nzTitle="审批">
+  <form nz-form [formGroup]="formValues">
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="12">
+        <nz-form-item>
+          <nz-form-label nzXl="8" nzXXl="6" nzFor="remark">备注</nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <textarea rows="4" nz-input formControlName="remark" id="remark" (ngModelChange)="showWarnMsg=false"></textarea>
+            <nz-form-explain *ngIf="showWarnMsg">
+              <span style="color:#f5222d">拒绝申请需要填写该字段</span>
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="12">
+        <nz-form-item>
+          <nz-form-label nzXl="8" nzXXl="6">支持文件</nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <nz-upload 
+              nzType="drag" 
+              nzAction="/act/system/upload"
+              [nzMultiple]="true" 
+              [nzFileList]="supportFileList" 
+              [nzBeforeUpload]="onBeforeUpload"
+              [nzCustomRequest]="onUploadFile"
+              [nzRemove]="onRemoveFile"
+            >
+              <p class="ant-upload-drag-icon">
+                <i nz-icon nzType="inbox"></i>
+              </p>
+              <p class="ant-upload-text">点击或者拖拽上传</p>
+            </nz-upload>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="12">
+        <nz-form-item>
+          <nz-form-label nzXl="8" nzXXl="6">通知</nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14" style="margin-top: 8px;">
+              <nz-radio-group formControlName="notify" #notify>
+                <label nz-radio [nzValue]="0">无</label>
+                <label nz-radio [nzValue]="1">指定用户</label>
+              </nz-radio-group>
+            </nz-form-control>
+        </nz-form-item>
+      </div>
+
+      <div nz-col nzXs="24" nzSm="24" nzMd="12" *ngIf="notify.value">
+        <nz-form-item>
+          <nz-form-label nzXl="8" nzXXl="6">指定用户</nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <nz-select 
+              style="width: 100%" 
+              nzMode="multiple"
+              nzPlaceHolder="输入邮箱查询" 
+              nzShowSearch 
+              nzAllowClear
+              formControlName="notifier"
+              [nzServerSearch]="true"
+              (nzOnSearch)="onSearchUser($event)"
+            >
+              <ng-container *ngFor="let user of userList">
+                <nz-option *ngIf="!isSearchLoading" [nzValue]="user.email" [nzLabel]="user.name || user.email" [nzCustomContent]="true">
+                  {{ user.displayName || user.email }}
+                </nz-option>
+              </ng-container>
+              <nz-option *ngIf="isSearchLoading" nzDisabled nzCustomContent>
+                <i nz-icon type="loading" class="loading-icon"></i> 查询中...
+              </nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <div nz-row>
+      <div nz-col nzXs="24" nzSm="24" nzMd="12">
+        <nz-form-item>
+          <nz-form-label nzXl="8" nzXXl="6">联系申请人</nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <div class="chat-icon" (click)="onStartChat()"></div>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+
+      <div nz-col nzXs="24" nzSm="24" nzMd="12">
+        <nz-form-item>
+          <nz-form-label nzXl="8" nzXXl="6">发起群聊</nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <nz-input-group style="width: 100%" [nzAddOnAfter]="startGroupChatIcon">
+              <nz-select
+                style="width: 100%"
+                nzMode="multiple"
+                nzAllowClear
+                formControlName="chatUsers"
+              >
+                <nz-option *ngFor="let user of processUsers" [nzValue]="user" [nzLabel]="user"></nz-option>
+              </nz-select>
+            </nz-input-group>
+
+            <ng-template #startGroupChatIcon>
+              <div class="group-chat-icon" (click)="onStartGroupChat()"></div>
+            </ng-template>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <div nz-row>
+      <div nz-col nzXs="24" nzSm="24" nzMd="12">
+        <nz-form-item>
+          <nz-form-label nzXl="8" nzXXl="6" nzNoColon></nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14" style="text-align: right;">
+            <button nz-button nz-popconfirm nzType="primary" nzTitle="确定批准申请?" (nzOnConfirm)="onSubmit('APPROVED')" [disabled]="submitLoading">批准</button>
+            <button nz-button nz-popconfirm nzType="default" nzTitle="确定拒绝申请?" (nzOnConfirm)="onSubmit('REJECTED')" [disabled]="submitLoading">拒绝</button>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+  </form>
+</nz-card>

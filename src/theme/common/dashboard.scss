@@ -1,0 +1,33 @@
+.title_warpper {
+  margin-bottom: 1rem !important;
+  border-radius: 5px !important;
+  overflow: hidden !important;
+  .ant-card-body {
+    position: relative;
+    padding: 1rem;
+    min-height: 4.5rem;
+    & > div:first-child {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      h4 {
+        span {
+          display: block;
+        }
+      }
+      float: left;
+    }
+    & > div:last-child {
+      float: right;
+    }
+  }
+}
+::ng-deep .ant-tabs-bar {
+  margin: 0 !important;
+  .ant-tabs-tab {
+    border-left: 0.25rem solid #c4c4c4 !important;
+    &.ant-tabs-tab-active {
+      border-left: 0.25rem solid #337fbf !important;
+    }
+  }
+}

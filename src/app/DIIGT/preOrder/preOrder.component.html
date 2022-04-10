@@ -1,0 +1,178 @@
+<nz-card class="title_warpper">
+  <div>
+    <h4 class="font-weight-bold">
+      <span>New Order Preparation Form  新建进单准备表</span>
+    </h4>
+  </div>
+</nz-card>
+<div class="tabs-box">
+  <app-apploading [load]="load"></app-apploading>
+  <div
+    nz-row
+    nzType="flex"
+    nzJustify="end"
+    nzAlign="middle"
+    class="tabs-box-actions"
+  >
+    <div nz-col nzSpan="24">
+      <nz-form-item>
+        <nz-form-control [nzSm]="24" [nzXs]="24" style="text-align: right">
+          <button
+            nz-button
+            nzType="default"
+            (click)="cancelContract()"
+            style="margin-right: 10px"
+          >
+            Cancel 取消
+          </button>
+          <button
+            nz-button
+            nzType="default"
+            (click)="saveContract()"
+            style="margin-right: 10px"
+          >
+            Sava 保存
+          </button>
+          <button
+            *ngIf="dataBase.entryMode === 'BIDDING'"
+            nz-button
+            nzType="primary"
+            (click)="winningBid()"
+          >
+            Check Result and Submit 校验中标结果并提交
+          </button>
+          <button
+            *ngIf="dataBase.entryMode !== 'BIDDING'"
+            nzType="primary"
+            nz-button
+            [nzLoading]="nzLoading"
+            (click)="handleOkWinCheck()"
+          >
+            Submit 提交进单准备表
+          </button>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+  <ngb-tabset
+    type="tabs"
+    [destroyOnHide]="false"
+    (tabChange)="tabclick($event)"
+    [activeId]="activedId"
+    class="nav-tabs-top nav-responsive-xl"
+  >
+    <ngb-tab id="pending-tab">
+      <ng-template ngbTabTitle>
+        <span class="tab-title"><strong>General Information<br> 基础信息</strong></span>
+      </ng-template>
+      <ng-template ngbTabContent>
+        <div class="card-body">
+          <form #searchForm="ngForm">
+            <app-preOrderBaseInfo
+              #childbase
+              [dataBase]="dataBase"
+              (updateDataBaseInfo)="updateDataBase($event)"
+              (updateData)="updateData($event)"
+              (myEvent)="myskip($event)"
+              (myVerifi)="myVerifi($event)"
+            >
+            </app-preOrderBaseInfo>
+            <div nz-row nzType="flex" nzJustify="end" nzAlign="middle">
+              <div nz-col nzSpan="4">
+                <nz-form-item>
+                  <nz-form-control
+                    [nzSm]="24"
+                    [nzXs]="24"
+                    style="text-align: right"
+                  >
+                    <button
+                      nz-button
+                      [nzType]="'primary'"
+                      (click)="myskip('complete-tab')"
+                    >
+                      Next 下一步
+                    </button>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+            </div>
+          </form>
+        </div>
+      </ng-template>
+    </ngb-tab>
+    <ngb-tab id="complete-tab">
+      <ng-template ngbTabTitle
+      ><span class="tab-title"><strong>Product Details<br>产品信息</strong></span></ng-template
+      >
+      <ng-template ngbTabContent>
+        <div class="card-body">
+          <app-preOrderProductInfo
+            [dataBase]="dataBase"
+            [paySwitch]="paySwitch"
+            [installSwitch]="installSwitch"
+            (openLoad)="openLoad()"
+            (closeLoad)="closeLoad()"
+            (myEvent)="myskip($event)"
+          >
+          </app-preOrderProductInfo>
+          <div nz-row nzType="flex" nzJustify="end" nzAlign="middle">
+            <div nz-col nzSpan="4">
+              <nz-form-item>
+                <nz-form-control
+                  [nzSm]="24"
+                  [nzXs]="24"
+                  style="text-align: right"
+                >
+                  <button
+                    nz-button
+                    [nzType]="'primary'"
+                    (click)="myskip('pending-tab')"
+                  >
+                    Back 上一步
+                  </button>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+          </div>
+        </div>
+      </ng-template>
+    </ngb-tab>
+  </ngb-tabset>
+</div>
+<nz-modal  [(nzVisible)]="isVisiblePrebook"  nzTitle="正在流转中的Pre-book" (nzOnCancel)="handleCancelPrebook()"
+(nzOnOk)="handleApply()">
+   <p>
+    提交进单后将中止Pre-book申请，是否确认提交？
+   </p>
+</nz-modal>
+<nz-modal
+  [(nzVisible)]="isVisibleWinCheck"
+  [nzOkDisabled]="verifiOff"
+  nzTitle="Bid-winning Confirmation Check Result 中标确认校验结果 "
+  nzOkText="Submit 提交进单准备表"
+  nzCancelText="Cancel 取消"
+  nzCentered
+  nzWidth="1600"
+
+  (nzOnCancel)="handleCancelWinCheck()"
+  (nzOnOk)="handleOkWinCheck()"
+>
+  <ng-container>
+    <app-preOrderWinCheckTable
+      (myVerifi)="myVerifi($event)"
+      [bidData]="bidData"
+      [dataBase]="dataBase"
+      [tableLoad]="tableLoad"
+    ></app-preOrderWinCheckTable>
+  </ng-container>
+</nz-modal>
+<nz-modal [(nzVisible)]="isShowDate" nzWidth="650px" nzTitle="提醒" [nzFooter]="null" (nzOnCancel)="isshowDateCancel()">
+  <div>
+    经销商DDP有效期为{{dataBase.contractEndDate}}日，当前已过有效期，请重新选经销商
+  </div>
+</nz-modal>
+<nz-modal [(nzVisible)]="isShowDates" nzWidth="650px" nzTitle="提醒" [nzFooter]="null" (nzOnCancel)="isshowDateCancels()">
+  <div>
+    外贸公司DDP有效期为{{dataBase.poolEndDate}}日，当前已过有效期，请重新选外贸公司
+  </div>
+</nz-modal>

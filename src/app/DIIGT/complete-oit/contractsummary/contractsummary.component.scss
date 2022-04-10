@@ -1,0 +1,39 @@
+.ml6 {
+    margin-left: 6px;
+}
+
+.mt4 {
+    margin-top: 4px;
+}
+
+.ml10 {
+    margin-left: 10px;
+}
+
+.mt20 {
+    margin-top: 20px;
+}
+
+.pl30 {
+    padding-left: 30px !important;
+}
+
+.form {    
+    position: relative;    
+    .tab {
+        width: 1000px;
+        td {
+            border: 1px solid #ddd;
+            text-align: center;
+            padding: 6px 0px;
+        }
+    }
+    .flex {
+        display: flex;
+        align-items: center;
+        .w200 {
+            width: 210px;
+            margin: 0px 10px;
+        }
+    }
+}

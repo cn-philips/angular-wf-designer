@@ -1,0 +1,111 @@
+<nav class="navbar navbar-expand-lg align-items-lg-center container-p-x" [ngClass]="currentBg()">
+  <!-- Brand -->
+  <div class="navbar-brand navbar-logo">
+    <a routerLink="/"></a>
+  </div>
+
+  <!-- Sidenav toggle -->
+  <div class="navbar-nav align-items-lg-center mr-auto mr-lg-4" *ngIf="sidenavToggle">
+    <a class="nav-item nav-link px-0 ml-2" href="javascript:void(0)" (click)="toggleSidenav()">
+      <i class="ion ion-md-menu text-large align-middle"></i>
+    </a>
+  </div>
+
+  <!-- Navbar toggle -->
+  <button class="navbar-toggler" type="button" (click)="isExpanded = !isExpanded">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="navbar-collapse collapse" [ngbCollapse]="!isExpanded">
+    <div class="navbar-nav align-items-lg-center">
+      <div class="navbar-item navbar-title"><a class="nav-link" routerLink="/">Commercial Operation</a></div>
+      <!-- <div class="nav-item"><a class="nav-link" href="#">Link 1</a></div> -->
+      <!-- <div class="nav-item"><a class="nav-link" href="#">Link 2</a></div> -->
+    </div>
+  </div>
+
+  <div class="navbar-collapse collapse" [ngbCollapse]="!isExpanded">
+      <!-- Divider -->
+      <hr class="d-lg-none w-100 my-2">
+     
+      <div class="navbar-nav align-items-lg-center ml-auto">
+          <div ngbDropdown [placement]="isRTL ? 'bottom-left' : 'bottom-right'" class="demo-navbar-user nav-item">
+              <a ngbDropdownToggle class="nav-link" href="javascript:void(0)">
+                <span class="d-inline-flex flex-lg-row-reverse align-items-center align-middle">
+                  <!-- <img src="assets/img/avatars/1.png" alt class="d-block ui-w-30 rounded-circle"> -->
+                  <span class="px-1 mr-lg-2 ml-2 ml-lg-0">{{username}}</span>                  
+                </span>   
+              </a>              
+              <div ngbDropdownMenu [class.dropdown-menu-right]="!isRTL">
+                <!-- <a href="javascript:void(0)"  [routerLink]="[ '/person-info' ]" routerLinkActive="currentUrl!='/person-info'" class="dropdown-item"><i class="ion ion-ios-person text-light" route="/person-info"></i> &nbsp; 个人信息</a> -->
+                <!-- <a href="javascript:void(0)" class="dropdown-item"><i class="ion ion-ios-mail text-lightest"></i> &nbsp; Messages</a> -->
+                <!-- <a href="javascript:void(0)" class="dropdown-item"><i class="ion ion-md-settings text-lightest"></i> &nbsp; Account settings</a> -->
+                <!-- TODO below to be commented before build prod -->
+                <!-- <div class="dropdown-divider"></div> -->
+                <!-- <a href="javascript:void(0)" (click)="resetToken();" class="dropdown-item"><i class="ion ion-ios-swap text-danger"></i> &nbsp; 清token(debug)</a> -->
+                <!-- <a href="javascript:void(0)" (click)="switchUser('sysadmin','Admin')" class="dropdown-item"><i class="ion ion-ios-swap text-danger"></i> &nbsp; 切换用户sysadmin</a> -->
+                <!-- <div class="dropdown-divider"></div>
+                <a href="javascript:void(0)" (click)="switchUser('cnh31628','孙博')" class="dropdown-item"><i
+                    class="ion ion-ios-swap text-danger"></i> &nbsp; 切换用户Sales</a>
+                <a href="javascript:void(0)" (click)="switchUser('320021690','李芳')" class="dropdown-item"><i
+                    class="ion ion-ios-swap text-danger"></i> &nbsp; 切换用户DM</a>
+                <a href="javascript:void(0)" (click)="switchUser('310158199','刘欣')" class="dropdown-item"><i
+                    class="ion ion-ios-swap text-danger"></i> &nbsp; 切换用户RSM</a>
+                <a href="javascript:void(0)" (click)="switchUser('310148660','庞靓')" class="dropdown-item"><i
+                    class="ion ion-ios-swap text-danger"></i> &nbsp; 切换用户Product Sales</a>
+                <a href="javascript:void(0)" (click)="switchUser('320047143','王佳宁')" class="dropdown-item"><i
+                    class="ion ion-ios-swap text-danger"></i> &nbsp; 切换用户Pricing Analyst</a>
+                <a href="javascript:void(0)" (click)="switchUser('320044215','Ouyang Zhen')" class="dropdown-item"><i
+                    class="ion ion-ios-swap text-danger"></i> &nbsp; 切换用户Finance Controller</a>
+                <a href="javascript:void(0)" (click)="switchUser('320051671','刘红')" class="dropdown-item"><i
+                    class="ion ion-ios-swap text-danger"></i> &nbsp; 切换用户Product Manager</a>
+                <a href="javascript:void(0)" (click)="switchUser('cnh01195','梁涛')" class="dropdown-item"><i
+                    class="ion ion-ios-swap text-danger"></i> &nbsp; 切换用户Market Director</a>
+                <a href="javascript:void(0)" (click)="switchUser('cnh00368','Jeffery Cheng')" class="dropdown-item"><i
+                    class="ion ion-ios-swap text-danger"></i> &nbsp; 切换用户Finance BP</a>
+                <a href="javascript:void(0)" (click)="switchUser('cnh57007','Rosa Chen')" class="dropdown-item"><i
+                    class="ion ion-ios-swap text-danger"></i> &nbsp; 切换用户GM</a>
+                <a href="javascript:void(0)" (click)="switchUser('320024685','Richard Li')" class="dropdown-item"><i
+                      class="ion ion-ios-swap text-danger"></i> &nbsp; 切换用户OA</a>
+                <div class="dropdown-divider"></div> -->
+                <!-- <a *ngIf="!isProduction" href="javascript:void(0)" (click)="switchUserManual(defaultModal)" class="dropdown-item"><i class="ion ion-ios-swap text-danger"></i> &nbsp; 自定义切换用户</a> -->
+                <!-- <div *ngIf="!isProduction" class="dropdown-divider"></div> -->
+                <a href="javascript:void(0)" (click)="logout()" class="dropdown-item"><i class="ion ion-ios-log-out text-danger"></i> &nbsp; 退出</a>
+              </div>
+            </div>
+            <i (click)="iconClick()" style="font-size:18px;cursor: pointer;" class="icons" nz-icon nzType="question-circle" nzTheme="outline"></i>
+      </div>
+
+  </div>
+
+</nav>
+
+
+<!-- Modal template -->
+<ng-template #defaultModal let-c="close" let-d="dismiss">
+  <div class="modal-header">
+    <h5 class="modal-title">
+      切换用户<br>
+      <small class="text-muted">请输入正确的code1、用户名</small>
+    </h5>
+    <button type="button" class="close" (click)="d('Cross click')">&times;</button>
+  </div>
+  <div class="modal-body">
+    <div class="form-row">
+      <div class="form-group col mb-0">
+        <label class="form-label">Code1</label>
+        <!-- <input type="text" class="form-control" placeholder="" [(ngModel)]="testcode1"> -->
+        <input type="text" class="form-control" placeholder="" value="" #aaa>
+      </div>
+      <div class="form-group col mb-0">
+        <label class="form-label">用户名</label>
+        <!-- <input type="text" class="form-control" placeholder="" [(ngModel)]="testname"> -->
+        <input type="text" class="form-control" placeholder="" value="" #bbb>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-default" (click)="c('Close click')">Close</button>
+    <button type="button" class="btn btn-primary" (click)="saveTestUserInfo(aaa,bbb);">切换</button>
+  </div>
+</ng-template>

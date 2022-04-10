@@ -1,0 +1,11 @@
+<nz-tree
+  #nzTreeComponent
+  [nzData]="filteredArr"
+  nzCheckable
+  [nzCheckedKeys]="defaultCheckedKeys"
+  nzExpandAll
+  (nzClick)="nzClick($event)"
+  (nzDblClick)="nzDbClick($event)"
+  class="treebox"
+>
+</nz-tree>

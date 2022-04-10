@@ -1,0 +1,30 @@
+<nz-spin [nzSpinning]="isLoading">
+  <div [hidden]="isLoading" class="flexbox">
+    <app-treebox
+      #leftBox
+      [data]="nodes"
+      [dataSet]="nodes"
+      (onDBClick)="handleDoubleClick($event, nodes)"
+    ></app-treebox>
+    <div class="opera">
+      <div (click)="tranRight()">
+        <i nz-icon nzType="right" nzTheme="outline"></i>
+      </div>
+      <div (click)="tranLeft()">
+        <i nz-icon nzType="left" nzTheme="outline"></i>
+      </div>
+      <div (click)="tranAllRight()">
+        <i nz-icon nzType="double-right" nzTheme="outline"></i>
+      </div>
+      <div (click)="tranAllLeft()">
+        <i nz-icon nzType="double-left" nzTheme="outline"></i>
+      </div>
+    </div>
+    <app-treebox
+      #rightBox
+      [data]="checkOptionsOne"
+      [dataSet]="nodes"
+      (onDBClick)="handleDoubleClick($event, checkOptionsOne)"
+    ></app-treebox>
+  </div>
+</nz-spin>

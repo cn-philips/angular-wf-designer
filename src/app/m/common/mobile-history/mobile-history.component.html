@@ -1,0 +1,11 @@
+<div style="margin-top: 10px;">
+  <nz-timeline nzMode="alternate">
+    <ng-container *ngFor="let item of historyRows">
+      <nz-timeline-item [nzDot]="item.nzDot"><div [innerHtml]="item.htmlStr"></div></nz-timeline-item>
+    </ng-container>
+  </nz-timeline>
+</div>
+
+<ng-template #dotTemplate>
+  <i nz-icon type="clock-circle-o" style="font-size: 16px;"></i>
+</ng-template>

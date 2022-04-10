@@ -1,0 +1,182 @@
+<nz-card class="title_warpper mb-4">
+  <div>
+    <h4 class="font-weight-bold">
+      <span>Role Management 角色管理</span>
+    </h4>
+  </div>
+</nz-card>
+<hr class="border-light container-m--x mt-0 mb-4">
+<nz-modal [nzVisible]="modalAttribute.isVisible" [nzTitle]="modalAttribute.title" nzWidth="800" [nzFooter]="modalFooter" (nzOnCancel)="modalAttribute.modalCancel()">
+    <form nz-form [formGroup]="modalAttribute.modalForm">
+        <input formControlName="id" type="hidden" />
+        <div nz-row [nzGutter]="24">
+            <div nz-col [nzSpan]="12">
+                <nz-form-item>
+                    <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="modalName"><span>Name</span><br>名称</nz-form-label>
+                    <nz-form-control [nzSm]="14" [nzXs]="24">
+                        <input nz-input formControlName="roleName" id="modalName" />
+                        <nz-form-explain *ngIf="modalAttribute.modalForm.get('roleName')?.dirty && modalAttribute.modalForm.get('roleName')?.errors">
+                            名称必填
+                        </nz-form-explain>
+                    </nz-form-control>
+                </nz-form-item>
+            </div>
+            <div nz-col [nzSpan]="12">
+                <nz-form-item>
+                    <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="modalRoleCode"><span>Flag</span><br>标标识</nz-form-label>
+                    <nz-form-control [nzSm]="14" [nzXs]="24">
+                        <input nz-input formControlName="roleCode" id="modalRoleCode" />
+                        <nz-form-explain *ngIf="modalAttribute.modalForm.get('roleCode')?.dirty && modalAttribute.modalForm.get('roleCode')?.errors">
+                            标识必填
+                        </nz-form-explain>
+                    </nz-form-control>
+                </nz-form-item>
+            </div>
+
+            <!-- <div nz-col [nzSpan]="12">
+                <nz-form-item>
+                    <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="modalGroup">角色组</nz-form-label>
+                    <nz-form-control [nzSm]="14" [nzXs]="24">
+                        <nz-select nzShowSearch nzServerSearch nzPlaceHolder="input search text" formControlName="group" id="modalGroup" [nzShowArrow]="false" (nzOnSearch)="modalSearchGroup($event)">
+                            <nz-option *ngFor="let option of modalAttribute.modalListOfGroup" [nzLabel]="option.text" [nzValue]="option.value"></nz-option>
+                        </nz-select>
+                        <nz-form-explain *ngIf="modalAttribute.modalForm.get('role')?.dirty && modalAttribute.modalForm.get('role')?.errors">
+                            所属角色组必填
+                        </nz-form-explain>
+                    </nz-form-control>
+                </nz-form-item>
+                <nz-form-item>
+                    <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="modalDescription">描述</nz-form-label>
+                    <nz-form-control [nzSm]="14" [nzXs]="24">
+                        <textarea nz-input formControlName="description" id="modalDescription" [nzAutosize]="{ minRows: 2, maxRows: 6 }"></textarea>
+                    </nz-form-control>
+                </nz-form-item>
+            </div> -->
+        </div>
+        <div nz-row [nzGutter]="24">
+            <div nz-col [nzSpan]="12">
+                <nz-form-item>
+                    <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="modalDescription"><span>Description</span><br>描述</nz-form-label>
+                    <nz-form-control [nzSm]="14" [nzXs]="12">
+                        <textarea nz-input formControlName="describe" id="modalDescription" [nzAutosize]="{ minRows: 1, maxRows: 6 }"></textarea>
+                    </nz-form-control>
+                  <ng-template #modalFooter>
+                    <button nz-button nzType="default" (click)="modalAttribute.modalCancel()">Cancel 取消</button>
+                    <button nz-button nzType="primary" (click)="modalAttribute.modalOk()" >OK 确定</button>
+                  </ng-template>
+                </nz-form-item>
+            </div>
+        </div>
+    </form>
+    <!-- <div class="table-operations">
+        <nz-select [(ngModel)]="modalAttribute.selectedUser" style="width: 200px;" nzShowSearch nzServerSearch nzPlaceHolder="搜索用户" [nzShowArrow]="false" (nzOnSearch)="modalAttribute.searchUser($event)">
+            <nz-option *ngFor="let option of modalAttribute.userList" [nzLabel]="option.text" [nzValue]="option"></nz-option>
+        </nz-select>
+        <button nz-button nzType="primary" nzSearch (click)="modalAttribute.addUser()">添加</button>
+    </div> -->
+    <!-- <nz-table #selectedUserTable nzSize="small" [nzData]="modalAttribute.referenceUserList">
+        <thead>
+            <tr>
+                <th>Code</th>
+                <th>姓名</th>
+                <th>邮箱</th>
+                <th>电话</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let data of selectedUserTable.data">
+                <td>{{ data.code }}</td>
+                <td>{{ data.name }}</td>
+                <td>{{ data.email }}</td>
+                <td>{{ data.phone }}</td>
+                <td>
+                    <a nz-icon type="delete" title="移除" nz-popconfirm nzTitle="删除" (nzOnConfirm)="modalAttribute.removeUser(data)"></a>
+                </td>
+            </tr>
+        </tbody>
+    </nz-table> -->
+</nz-modal>
+<div class="demo-vertical-spacing">
+    <div>
+        <nz-card nzTitle="Search 搜索" style="margin-bottom: 20px">
+            <form nz-form [formGroup]="queryParams.queryForm" class="ant-advanced-search-form">
+                <div nz-row [nzGutter]="24">
+                    <div nz-col [nzSpan]="6">
+                        <nz-form-item nzFlex>
+                            <nz-form-label nzFor="roleCode"><span>Flag</span><br>标识</nz-form-label>
+                            <nz-form-control>
+                                <input nz-input formControlName="roleCode" id="roleCode" />
+                            </nz-form-control>
+                        </nz-form-item>
+                    </div>
+                    <div nz-col [nzSpan]="6">
+                        <nz-form-item nzFlex>
+                            <nz-form-label nzFor="roleName"><span>Name</span><br>名称</nz-form-label>
+                            <nz-form-control>
+                                <input nz-input formControlName="roleName" id="roleName" />
+                            </nz-form-control>
+                        </nz-form-item>
+                    </div>
+                    <!-- <div nz-col [nzSpan]="6">
+                        <nz-form-item nzFlex>
+                            <nz-form-label nzFor="group">角色组</nz-form-label>
+                            <nz-form-control>
+                                <nz-select style="width: 150px;" nzShowSearch nzServerSearch formControlName="group" id="group" [nzShowArrow]="false" (nzOnSearch)="searchGroup($event)">
+                                    <nz-option *ngFor="let option of listOfGroup" [nzLabel]="option.text" [nzValue]="option.value">
+                                    </nz-option>
+                                </nz-select>
+                            </nz-form-control>
+                        </nz-form-item>
+                    </div> -->
+                </div>
+                <div nz-row>
+                    <div nz-col nzSpan="24" style="text-align: right;">
+                        <button nz-button nzType="primary" (click)="queryForm()">Search 查询</button>
+                        <button nz-button (click)="resetQueryForm()">Reset 重置</button>
+                    </div>
+                </div>
+            </form>
+        </nz-card>
+
+        <div>
+            <div class="table-operations">
+                <button nz-button nzType="primary" (click)="addRole()">New 新增</button>
+                <!-- <button nz-button nzType="primary" (click)="syncCPData()" [disabled]="syncCPLoading"><i nz-icon type="sync" [nzSpin]="syncCPLoading"></i>同步CP数据</button>
+                <button nz-button nzType="primary" (click)="syncCDData()" [disabled]="syncCDLoading"><i nz-icon type="sync" [nzSpin]="syncCDLoading"></i>同步CD数据</button>
+                <button nz-button nzType="primary" (click)="syncOEData()" [disabled]="syncOELoading"><i nz-icon type="sync" [nzSpin]="syncOELoading"></i>同步OE数据</button> -->
+            </div>
+            <div class="whitebg">
+                <nz-table #roleTable [nzData]="listOfRole" [nzFrontPagination]="false" [nzTotal]="queryParams.total" [nzPageIndex]="queryParams.pageNo" [nzPageSize]="queryParams.pageSize" [nzShowTotal]="rangeTemplate" [nzLoading]="queryParams.loading" [nzShowSizeChanger]="true"
+                    [nzPageSizeOptions]="[10,20,50,100]" (nzPageIndexChange)="changeIndex($event)" (nzPageSizeChange)="changeSize($event)">
+                    <ng-template #rangeTemplate let-range="range" let-total>
+                        数据总条数{{ total }}
+                    </ng-template>
+                    <thead>
+                        <tr>
+                            <th><span>Name</span><br>名称</th>
+                            <th><span>Flag</span><br>标识</th>
+                            <!-- <th>角色组</th> -->
+                            <th><span>Description</span><br>描述信息</th>
+                            <th nzWidth="150px"><span>Action</span><br>操作</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr *ngFor="let data of roleTable.data">
+                            <td>{{data.roleName}}</td>
+                            <td>{{data.roleCode}}</td>
+                            <!-- <td>{{data.group ? data.group.name : ''}}</td> -->
+                            <td>{{data.describe}}</td>
+                            <td>
+                                <a nz-icon type="edit" title="编辑" (click)="editRole(data)"></a>
+                                <nz-divider nzType="vertical"></nz-divider>
+                                <a nz-icon type="delete" title="移除" nz-popconfirm nzTitle="删除" (nzOnConfirm)="removeRole(data)"></a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </nz-table>
+            </div>
+        </div>
+    </div>
+</div>

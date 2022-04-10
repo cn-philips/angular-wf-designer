@@ -1,0 +1,128 @@
+<nz-card class="title_warpper mb-4">
+  <div>
+    <h4 class="font-weight-bold">
+      <span>统计报表</span>
+    </h4>
+  </div>
+</nz-card>
+<hr class="border-light container-m--x mt-0 mb-4">
+<div class="demo-vertical-spacing">
+  <div style="padding:10px 10px; margin-bottom:10px;">
+    <nz-card nzTitle="查询条件" style="margin-bottom: 20px">
+      <form nz-form [formGroup]="validateForm" class="ant-advanced-search-form">
+        <div nz-row [nzGutter]="16" nzType="flex" nzJustify="start" nzAlign="top">
+          <div nz-col [nzSpan]="8" style="height: 100%;" *ngFor="let control of searchControlArray"
+               [style.display]="control.show ? 'block' : 'none'">
+            <nz-form-item>
+              <nz-form-label [nzNoColon]="true" [nzFor]="control.col">{{ control.label }}</nz-form-label>
+              <nz-form-control *ngIf="control.type == 'like'">
+                <input nz-input placeholder="" autocomplete="off" [formControlName]="control.col"
+                       [attr.id]="control.col"/>
+              </nz-form-control>
+              <nz-form-control *ngIf="control.type == 'in'">
+                <nz-select nzNoAnimation [nzMaxTagCount]="99" [attr.id]="control.col"
+                           [nzMaxTagPlaceholder]="'tagPlaceHolder' + control.index" nzMode="multiple"
+                           nzPlaceHolder="" [formControlName]="control.col">
+                  <nz-option *ngFor="let option of getSelectArray(control.list) | async"
+                             [nzLabel]="option[control.listText]" [nzValue]="option[control.listValue]"></nz-option>
+                </nz-select>
+                <ng-template #tagPlaceHolder let-selectedList> and {{ selectedList.length }} more selected</ng-template>
+              </nz-form-control>
+              <nz-form-control *ngIf="control.type == 'isnull'">
+                <nz-select nzNoAnimation [nzMaxTagCount]="99" [attr.id]="control.col"
+                           [nzMaxTagPlaceholder]="'tagPlaceHolder' + control.index" nzPlaceHolder="" nzAllowClear
+                           [formControlName]="control.col" [nzSize]="'default'">
+                  <nz-option nzLabel="是" nzValue="1"></nz-option>
+                  <nz-option nzLabel="否" nzValue="0"></nz-option>
+                </nz-select>
+                <ng-template #tagPlaceHolder let-selectedList> and {{ selectedList.length }} more selected</ng-template>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        </div>
+        <div nz-row>
+          <div nz-col [nzSpan]="24" style="text-align: right;">
+            <button nz-button [nzType]="'primary'" [nzLoading]="isProcessing" (click)="filterData();">查询</button>
+            <button nz-button (click)="resetForm()">重置</button>
+            <a style="margin-left:8px;font-size:12px;" (click)="toggleCollapse()">
+              {{collapseText}}
+              <i nz-icon [type]="isCollapse ? 'down' : 'up'"></i>
+            </a>
+          </div>
+        </div>
+      </form>
+    </nz-card>
+
+    <button nz-button [nzType]="'primary'" [nzLoading]="isProcessing" (click)="getNoPagingDataExport();">导出报表</button>
+    <br/>
+    <br/>
+    <!-- report table -->
+    <div>
+      <nz-table #reportTable
+                nzNoAnimation
+                [nzData]="reportRows"
+                [nzFrontPagination]="false"
+                [nzTotal]="currentTotal"
+                [nzPageIndex]="queryParams.pageIndex"
+                [nzPageSize]="queryParams.pageSize"
+                [nzShowTotal]="rangeTemplate"
+                [nzLoading]="isProcessing"
+                [nzScroll]="{ x: '100%' }"
+                [nzShowSizeChanger]="true"
+                [nzSize]="'small'"
+                [nzPageSizeOptions]="[10,20,50,100]"
+                (nzPageIndexChange)="changeIndex($event)"
+                (nzPageSizeChange)="changeSize($event)">
+        <ng-template #rangeTemplate let-range="range" let-total>
+          {{ range[0] }}-{{ range[1] }} 共 {{ total }}
+        </ng-template>
+        <thead>
+        <tr>
+          <th nowrap="nowrap">Status</th>
+          <th nowrap="nowrap">系统参考号</th>
+          <th nowrap="nowrap" style="min-width: 240px;">最终用户名称</th>
+          <th nowrap="nowrap">临床细分</th>
+          <th nowrap="nowrap">产品名称</th>
+          <th nowrap="nowrap" style="min-width: 120px;">亚型名称</th>
+          <th nowrap="nowrap">销售</th>
+          <th nowrap="nowrap">小区</th>
+          <th nowrap="nowrap">大区</th>
+          <th nowrap="nowrap" style="min-width: 200px;">经销商名称</th>
+          <th nowrap="nowrap">合同净价</th>
+          <th nowrap="nowrap">OIT Month</th>
+          <th nowrap="nowrap">渠道类型</th>
+          <th nowrap="nowrap">d2c订单类型</th>
+          <th nowrap="nowrap">销售邮箱</th>
+          <!-- <th>操作</th> -->
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let data of reportTable.data">
+          <td>{{data.oitStatus}}</td>
+          <td>{{data.systemNumber}}</td>
+          <td>{{data.finalUserName}}</td>
+          <td>{{data.clinicalSegments}}</td>
+          <td>{{data.productName}}</td>
+          <td>{{data.subtypeName}}</td>
+          <td>{{data.sales}}</td>
+          <td>{{data.smallAreaName}}</td>
+          <td>{{data.bigArea}}</td>
+          <td>{{data.distributorName}}</td>
+          <td>{{data.contractPrice}}</td>
+          <td>{{data.oitMonth}}</td>
+          <td>{{data.channelType}}</td>
+          <td>{{data.distributorType}}</td>
+          <td>{{data.saleEmail}}</td>
+          <!-- <td>
+            <a nz-icon type="edit" title="编辑" (click)="editRole(data)"></a>
+            <nz-divider nzType="vertical"></nz-divider>
+            <a nz-icon type="delete" title="移除" nz-popconfirm nzTitle="删除" (nzOnConfirm)="removeRole(data)"></a>
+          </td> -->
+        </tr>
+        </tbody>
+      </nz-table>
+
+    </div>
+
+  </div>
+</div>

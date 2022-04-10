@@ -1,0 +1,23 @@
+@import '../../../../media_query.scss';
+@media screen and (max-width: $screen-xs-max) {
+  .btns-group{ 
+    display: flex;
+    overflow-x: auto; 
+    .btn-collapse{
+      display: block;
+      position: relative;
+      // width: 100px;
+      white-space: nowrap;
+    }
+  }
+}
+/deep/.ant-form-item-label.localtion>label::after{
+  content: ':';
+  position: relative;
+  top: -.5px;
+  margin: 0 8px 0 2px;
+  left:12px;
+}
+/deep/.ant-form-item-label.localtion > label{
+  padding-right:18px;
+}

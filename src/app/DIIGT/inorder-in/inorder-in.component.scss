@@ -1,0 +1,113 @@
+@import '../../../../node_modules/@swimlane/ngx-datatable/release/index.css';
+@import '../../../vendor/libs/ngx-datatable/ngx-datatable';
+@import '../../../../node_modules/@swimlane/ngx-datatable/release/assets/icons.css';
+@import '../../../vendor/libs/ngb-datepicker/ngb-datepicker';
+
+.table-responsive {
+  overflow: visible;
+}
+
+.ngx-datatable {
+  overflow: visible !important;
+}
+.mlg{
+  margin:10px 10px 10px -20px;
+}
+.modal-xl .modal-lg {
+  max-width: 95%;
+}
+.datatable-body-cell-label{
+  text-align: center !important;
+}
+.ck{
+  width: 40px !important;
+  height: 20px !important;
+}
+.tit1{
+  margin-top: 40px;
+  width: 100%;
+  font-size: 16px;
+  height: 35px;
+  line-height: 35px;
+  font-weight: bold;
+  border-bottom: 1px solid rgba(24, 28, 33, 0.06);
+  margin-bottom: 20px;
+}
+.cks{
+  margin: 20px auto;
+}
+.cks a{
+  margin-right: 20px;
+}
+.cks a:nth-child(1){
+  font-weight: bold;
+}
+.next{
+  text-align: right;
+}
+.a1{
+  font-weight: bold;
+  margin-right: 20px;
+}
+.a2{
+  margin-right: 20px;
+}
+.radio{
+  margin-right: 10px;
+}
+.p1{
+  margin: 20px auto;
+}
+.ckselect{
+  width: 100px !important;
+  display: inline !important;
+}
+.ckinput{
+  width: 150px !important;
+  display: inline !important;
+}
+.ckinput2{
+  width: 80px !important;
+  display: inline !important;
+}
+.lan{
+  display: block;
+  width: 100%;
+  margin: 10px auto;
+  padding: 0 10px;
+}
+button{
+  margin-top: 10px;
+}
+.myd{
+  width: 100%;
+  display: flex;
+  align-items: self-start;
+}
+.left{
+  display: inline-block;
+  width: 15%;
+  height: 100%;
+}
+.right{
+  display: inline-block;
+  width: 65%;
+}
+.right input{
+  display: inline-block;
+}
+.right-nav{
+  margin: 10px 0;
+}
+.a{
+  margin-top: 10px !important;
+  color: #1e70cd !important;
+  display: inline-block;
+}
+.threeTable{
+  // min-width: none;
+  // width:1000px;
+}
+.detailFlex{
+  margin:0px 10px 0px 10px;
+}

@@ -1,0 +1,29 @@
+.user-management-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  .umc-wrap {
+    margin-top: 1rem;
+    width: 100%;
+    flex: 1 1 auto;
+    /deep/.ant-card-body {
+      height: 100%;
+    }
+  }
+}
+.user-management-draw {
+  /deep/.ant-drawer-body {
+    position: relative;
+  }
+}
+/deep/.ant-drawer-content-wrapper {
+  transition: width 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+    transform 0.5s ease-in-out;
+}
+.draw-size-btn {
+  position: absolute;
+  cursor: pointer;
+  top: 1.75rem;
+  right: 4rem;
+  transform: translateY(-50%);
+}

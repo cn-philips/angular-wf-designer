@@ -1,0 +1,374 @@
+<nz-card class="title_warpper">
+  <div>
+    <h4 class="font-weight-bold">
+      <span>Business Configuration 业务配置</span>
+    </h4>
+  </div>
+</nz-card>
+<app-apploading [load]="load"></app-apploading>
+<ngb-tabset type="tabs" [destroyOnHide]="false" (tabChange)="tabclick($event)" [activeId]="activedId"
+            class="nav-tabs-top nav-responsive-xl mtb1rem">
+
+<!--  改单场景配置 -->
+  <ngb-tab id="complete-tab">
+    <ng-template ngbTabTitle><span class="tab-title"><strong>Change Order Scenario Config<br> 改单场景配置</strong></span></ng-template>
+    <ng-template ngbTabContent>
+      <div class="card-body">
+        <div class="demo-vertical-spacing">
+          <div class="table-operations">
+            <button nz-button nzType="primary" (click)="addScene()">New 新增</button>
+          </div>
+          <div class="whitebg">
+            <nz-table #roleTable [nzData]="listData" [nzFrontPagination]="false" [nzTotal]="queryParams.total" [nzPageIndex]="queryParams.pageNo" [nzPageSize]="queryParams.pageSize" [nzShowTotal]="rangeTemplate" [nzLoading]="queryParams.loading" [nzShowSizeChanger]="true"
+                [nzPageSizeOptions]="[10,20,50,100]" (nzPageIndexChange)="changeIndex($event)" (nzPageSizeChange)="changeSize($event)">
+                <ng-template #rangeTemplate let-range="range" let-total>
+                    数据总条数{{ total }}
+                </ng-template>
+                <thead>
+                    <tr>
+                        <th width="200" nzAlign="center"><span>Reason of Change</span><br>改单原因</th>
+                        <th width="200" nzAlign="center"><span>Description</span><br>场景描述</th>
+                        <th width="200" nzAlign="center"><span>Approver</span><br>改单审批人</th>
+                        <th nzAlign="center">Creator<br>创建人</th>
+                        <th width="200" nzAlign="center"><span>Create Date</span><br>创建时间</th>
+                        <th width="200" nzAlign="center"><span>Enable/Disable</span><br>启用/禁用</th>
+                        <th width="230" nzAlign="center"><span>Allow Change Deal Form</span><br>允许更换Deal Form</th>
+                        <th nzAlign="center" nzWidth="150px"><span>Action</span><br>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let data of roleTable.data">
+                        <td style="word-break:break-word;" nzAlign="center">
+                           <div nz-tooltip [nzTitle]="data.orderChange" class="innerboxs">{{data.orderChange}}</div>
+                        </td>
+                        <td nzAlign="center" style="word-break:break-word;">
+                          <div nz-tooltip [nzTitle]="data.describes" class="innerboxs">{{data.describes}}</div>
+                        </td>
+                        <td nzAlign="center" >
+                          <div nz-tooltip [nzTitle]="data.approver" class="innerboxs">{{data.approver}}</div>
+                        </td>
+                        <td nzAlign="center">{{data.createUser}}</td>
+                        <td nzAlign="center">{{data.createTime|TimeFormatePipeNow}}</td>
+                        <td nzAlign="center">
+                          <nz-switch [(ngModel)]="data.status" (click)="clickSwitch(data)"></nz-switch>
+                        </td>
+                        <td nzAlign="center">
+                           {{data.changeDealForm=='1'?"是":"否"}}
+                        </td>
+                        <td nzAlign="center">
+                            <a nz-icon type="edit" title="编辑" (click)="editScene(data)"></a>
+                            <nz-divider nzType="vertical"></nz-divider>
+                            <a nz-icon type="delete" title="移除" nz-popconfirm nzTitle="删除" (nzOnConfirm)="removeOrder(data)"></a>
+                        </td>
+                    </tr>
+                </tbody>
+            </nz-table>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  </ngb-tab>
+
+<!--  项目所有人变更-->
+  <ngb-tab id="entrust-tab">
+    <ng-template ngbTabTitle><span class="tab-title"><strong>Project Owner Change<br> 项目所有人变更</strong></span></ng-template>
+    <ng-template ngbTabContent>
+      <div class="card-body">
+        <div class="short_new">
+          <button nz-button [nzType]="'primary'" [routerLink]="['/changeonwer']">New 新建项目所有人变更</button>
+        </div>
+        <div class="short_title">
+          <div nz-col nzXs="24" nzSm="24" nzMd="16">
+            <nz-form-item style="margin: 0">
+              <nz-form-control [nzSm]="8" [nzXs]="24" style="width: 240px"><span>Created Date</span>  任务创建起止时间：</nz-form-control>
+              <nz-form-control [nzSm]="12" [nzXs]="24" style="width: 380px">
+                <nz-range-picker
+                  nzFormat="yyyy-MM-dd"
+                  [(ngModel)]="subDateOnwer"
+                ></nz-range-picker>
+              </nz-form-control>
+              <nz-form-control [nzSm]="2" [nzXs]="24">
+                <button nz-button [nzType]="'primary'" (click)="sub_Onwer()">Search 搜索</button>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        </div>
+        <div>
+
+          <nz-table
+            #tabListShortTable
+            [nzScroll]="{ x: '2200px' }"
+            [nzData]="tabListShort"
+            [nzLoading]="loadingOnwer"
+            [nzTotal]="paramsOnwer.total"
+            [nzPageIndex]="paramsOnwer.pageNo"
+            [nzPageSize]="paramsOnwer.pageSize"
+            [nzShowTotal]="totalTemplateOnwer"
+            [nzFrontPagination]="false"
+            (nzPageIndexChange)="changePageIndexOnwer($event)"
+            (nzPageSizeChange)="changePageSizeOnwer($event)"
+            [nzHideOnSinglePage]="false"
+            [nzPageSizeOptions]="[5, 10, 20, 30, 40, 50 ]"
+            [nzShowQuickJumper]="true"
+            [nzShowSizeChanger]="true"
+          >
+            <thead>
+            <tr>
+              <th nzAlign="center" nzWidth="200px">No.<br>编号</th>
+              <th nzAlign="center" nzWidth="200px">Description<br>委托描述</th>
+              <th nzAlign="center" nzWidth="150px">Created Date<br>任务创建时间</th>
+              <th nzAlign="center" nzWidth="100px"><span>Status</span><br>状态</th>
+              <th nzAlign="center" nzWidth="150px">Start Date<br>开始时间</th>
+              <!--            <th nzAlign="center" nzWidth="150px">End Date<br>结束时间</th>-->
+              <th nzAlign="center" nzWidth="200px">Applicant<br>申请人</th>
+              <th nzAlign="center" nzWidth="200px"><span>Original Owner</span><br>原所有人</th>
+              <th nzAlign="center" nzWidth="200px">Receiver<br>接收人</th>
+              <th nzAlign="center" nzWidth="100px" nzRight="0px">Action<br>操作</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr *ngFor="let data of tabListShortTable.data; let m = index">
+              <td nzAlign="center">{{data.entrustNo}}</td>
+              <td nzAlign="center">
+                <div class="ellipsis" nz-tooltip [nzTitle]="data.entrustDescription">{{data.entrustDescription}}</div>
+              </td>
+              <td nzAlign="center">{{data.createTime | date:'yyyy-MM-dd'}}</td>
+              <td nzAlign="center">{{data.status == 1 ? '已完成' : ''}}</td>
+              <td nzAlign="center">{{data.createTime | date:'yyyy-MM-dd'}}</td>
+              <!--            <td nzAlign="center">{{data.endTime | date:'yyyy-MM-dd'}}</td>-->
+              <td nzAlign="center">{{data.applicant}}</td>
+              <td nzAlign="center">{{data.originalOwner}}</td>
+              <td nzAlign="center">{{data.receiver}}</td>
+              <td nzAlign="center" nzRight="0px">
+                <button
+                  nz-button
+                  nzSize="small"
+                  nzType="primary"
+                  (click)="toEntrust(data.id)"
+                >查看
+                </button>
+              </td>
+            </tr>
+            </tbody>
+
+          </nz-table>
+          <ng-template #totalTemplateOnwer let-total>Total 数据总条数 {{ paramsOnwer.total }} </ng-template>
+
+        </div>
+      </div>
+    </ng-template>
+  </ngb-tab>
+
+<!--  数据同步-->
+  <ngb-tab id="pending-tab">
+    <ng-template ngbTabTitle><span class="tab-title"><strong>Data Synchronization<br> 数据同步</strong></span></ng-template>
+    <ng-template ngbTabContent>
+      <div class="card-body">
+        <button nz-button nzType="primary" (click)="syncCPData()" [disabled]="syncCPLoading"><i nz-icon type="sync"
+                                                                                                [nzSpin]="syncCPLoading"></i>CP Sync 同步CP数据
+        </button>
+        <button nz-button nzType="primary" (click)="syncCDData()" [disabled]="syncCDLoading"><i nz-icon type="sync"
+                                                                                                [nzSpin]="syncCDLoading"></i>CD Sync 同步CD数据
+        </button>
+        <button nz-button nzType="primary" (click)="syncOEData()" [disabled]="syncOELoading"><i nz-icon type="sync"
+                                                                                                [nzSpin]="syncOELoading"></i>OE Sync 同步OE数据
+        </button>
+      </div>
+    </ng-template>
+  </ngb-tab>
+
+
+  <!--本地数据更新维护-->
+  <ngb-tab id="updating-tab">
+    <ng-template ngbTabTitle><span class="tab-title"><strong>Local Database Update<br> 本地数据更新</strong></span></ng-template>
+    <ng-template ngbTabContent>
+      <div class="card-body">
+        <div class="short_new">
+          <div>
+            <nz-radio-group [(ngModel)]="radioValue" [nzButtonStyle]="'solid'">
+              <label nz-radio-button nzValue="NMPA" style="height: 46px;line-height:46px;padding-right: 20px;"><i nz-icon nzType="file-excel" nzTheme="twotone"></i>NMPA</label>
+              <label nz-radio-button nzValue="Market Bundle-NMPA" style="height: 46px;line-height:46px;padding-right: 20px;"><i nz-icon nzType="file-excel" nzTheme="twotone"></i>Market Bundle-NMPA</label>
+              <label nz-radio-button nzValue="RedFlag" style="height: 46px;line-height:46px;padding-right: 20px;"><i nz-icon nzType="file-excel" nzTheme="twotone"></i>RedFlag</label>
+              <label nz-radio-button nzValue="Chapter Type" style="height: 46px;line-height:46px;padding-right: 20px;"><i nz-icon nzType="file-excel" nzTheme="twotone"></i>Chapter Type</label>
+              <label nz-radio-button nzValue="IePoolData" style="height: 46px;line-height:46px;padding-right: 20px;"><i nz-icon nzType="file-excel" nzTheme="twotone"></i>IE Pool</label>
+            </nz-radio-group>
+          </div> <br>
+          <span style="font-size: 14px"><strong>上传Excel 文件，将其中的数据导入到表单</strong> </span>
+          <ol class="ol_list">
+            <span>说明：</span><br>
+            <li>导出文件不支持下载工具；</li>
+            <li>上传文件为全量覆盖，请务必在导出数据模板的基础上修改：
+              <ol class="ol_list_child">
+              <li> (1).不可新增列;</li>
+              <li> (2).不可修改、删除表头；</li>
+              <li> (3).不可修改工作表（worksheet）名称；</li>
+              <li> (4).不可合并单元格;</li>
+              </ol>
+            </li>
+            <li>导入只做简单的数据类型校验及空格去除，请自行确保导入数据的正确性</li>
+          </ol>
+        </div>
+
+        <div class="card-body" style="height: 200px">
+          <table>
+            <!--NMPA的导入导出-->
+            <b *ngIf="radioValue=='NMPA'">
+              <tr>
+                <td style="width:300px;height:50px;" >
+                  <button nz-button (click)="ExportNMPAData()" ><i nz-icon [nzType]="nmpaDownloadStatus"></i><span>Export 导出NMPA数据</span></button>
+                </td>
+                <td style="width:300px;height:50px;" >
+                  <nz-upload nzAction="https://jsonplaceholder.typicode.com/posts/" [nzShowUploadList]="false" [(nzFileList)]="fileNmpaList" [nzBeforeUpload]="ImportNMPAData">
+                    <button nz-button><i nz-icon nzType="upload"></i><span>Import 导入NMPA数据</span></button>
+                  </nz-upload>
+                </td>
+              </tr>
+            </b>
+            <!--Market Bundle-NMPA的导入导出-->
+            <b *ngIf="radioValue=='Market Bundle-NMPA'">
+              <tr>
+              <td style="width:300px;height:50px;" >
+                <button nz-button (click)="ExportMBNMPAData()" ><i nz-icon [nzType]="MBnmpaDownloadStatus"></i><span>Export 导出Market Bundle-NMPA数据</span></button>
+              </td>
+              <td style="width:300px;height:50px;" >
+                <nz-upload nzAction="https://jsonplaceholder.typicode.com/posts/" [nzShowUploadList]="false" [(nzFileList)]="fileNmpaList" [nzBeforeUpload]="ImportMBNMPAData">
+                  <button nz-button><i nz-icon nzType="upload"></i><span>Import 导入Market Bundle-NMPA数据</span></button>
+                </nz-upload>
+              </td>
+            </tr>
+            </b>
+            <!--RedFlag的导入导出-->
+            <b *ngIf="radioValue=='RedFlag'">
+              <tr>
+                <td style="width:300px;height:50px;" >
+                  <button nz-button (click)="ExportRedFlagData()" ><i nz-icon [nzType]="RedFlagDownloadStatus"></i><span>Export 导出RedFlag数据</span></button>
+                </td>
+                <td style="width:300px;height:50px;" >
+                  <nz-upload nzAction="https://jsonplaceholder.typicode.com/posts/" [nzShowUploadList]="false" [(nzFileList)]="fileNmpaList" [nzBeforeUpload]="ImportRedFlagData">
+                    <button nz-button><i nz-icon nzType="upload"></i><span>Import 导入RedFlag数据</span></button>
+                  </nz-upload>
+                </td>
+              </tr>
+            </b>
+            <!--Chapter Type的导入导出-->
+            <b *ngIf="radioValue=='Chapter Type'">
+              <tr>
+                <td style="width:300px;height:50px;" >
+                  <button nz-button (click)="ExportChapterTypeData()" ><i nz-icon [nzType]="ChapterDownloadStatus"></i><span>Export 导出ChapterType数据</span></button>
+                </td>
+                <td style="width:300px;height:50px;" >
+                  <nz-upload nzAction="https://jsonplaceholder.typicode.com/posts/" [nzShowUploadList]="false" [(nzFileList)]="fileNmpaList" [nzBeforeUpload]="ImportChapterTypeData">
+                    <button nz-button><i nz-icon nzType="upload"></i><span>Import 导入ChapterType数据</span></button>
+                  </nz-upload>
+                </td>
+              </tr>
+            </b>
+
+            <!--IePoolData的导入导出-->
+            <b *ngIf="radioValue=='IePoolData'">
+              <tr>
+                <td style="width:300px;height:50px;" >
+                  <button nz-button (click)="ExportIePoolData()" ><i nz-icon [nzType]="IePoolDownloadStatus"></i><span>Export 导出IE Pool数据</span></button>
+                </td>
+                <td style="width:300px;height:50px;" >
+                  <nz-upload nzAction="https://jsonplaceholder.typicode.com/posts/" [nzShowUploadList]="false" [(nzFileList)]="fileNmpaList" [nzBeforeUpload]="ImportIePoolData">
+                    <button nz-button><i nz-icon nzType="upload"></i><span>Import 导入IE Pool数据</span></button>
+                  </nz-upload>
+                </td>
+              </tr>
+            </b>
+          </table>
+
+        </div>
+
+      </div>
+    </ng-template>
+  </ngb-tab>
+
+
+</ngb-tabset>
+<nz-modal [nzVisible]="modalAttribute.isVisible" [nzTitle]="modalAttribute.title" nzWidth="600"
+          (nzOnCancel)="modalAttribute.modalCancel()" [nzFooter]="modalFooter" >
+  <form nz-form [formGroup]="modalAttribute.modalForm">
+    <input formControlName="id" type="hidden"/>
+    <div nz-row [nzGutter]="24">
+      <div nz-col [nzSpan]="24">
+        <nz-form-item>
+          <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="modalName"><span>Reason of Change</span><br>改单原因</nz-form-label>
+          <nz-form-control [nzSm]="14" [nzXs]="24">
+            <input oninput="if(value.length>255)value=value.slice(0,255)" nz-input formControlName="orderChange"
+                   id="modalName"/>
+            <nz-form-explain
+              *ngIf="modalAttribute.modalForm.get('orderChange')?.dirty && modalAttribute.modalForm.get('orderChange')?.errors">
+              改单原因必填
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col [nzSpan]="24">
+        <nz-form-item>
+          <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="modalRoleCode"><span>Description</span><br>场景描述</nz-form-label>
+          <nz-form-control [nzSm]="14" [nzXs]="24">
+            <textarea oninput="if(value.length>255)value=value.slice(0,255)" nz-input formControlName="describes"
+                      id="modalRoleCode" [nzAutosize]="{ minRows: 1, maxRows: 6 }"></textarea>
+            <nz-form-explain
+              *ngIf="modalAttribute.modalForm.get('describes')?.dirty && modalAttribute.modalForm.get('describes')?.errors">
+              情况描述必填
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+    <div nz-row [nzGutter]="24">
+      <div nz-col [nzSpan]="24">
+        <nz-form-item>
+          <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="modalDescription"><span>Approver</span><br>改单审批人</nz-form-label>
+          <nz-form-control [nzSm]="14" [nzXs]="24">
+            <nz-select
+              style="width: 100%"
+              nzMode="multiple"
+              nzPlaceHolder="Please Select"
+              formControlName="approver"
+            >
+              <nz-option *ngFor="let option of roleList" [nzLabel]="option.roleName"
+                         [nzValue]="option.roleCode"></nz-option>
+            </nz-select>
+            <nz-form-explain
+              *ngIf="modalAttribute.modalForm.get('approver')?.dirty && modalAttribute.modalForm.get('approver')?.errors">
+              改单审批人必填
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+    <div nz-row [nzGutter]="24" nzType="flex" nzJustify="space-between" nzAlign="bottom">
+        <div nz-col [nzSpan]="24">
+          <nz-form-item>
+            <nz-form-label [nzSm]="10" [nzXs]="24" [nzSpan]="16" nzRequired nzFor="modalDealForm">Allow Change Deal Form<br> 允许更换Deal Form</nz-form-label>
+            <nz-form-control [nzSm]="7" [nzXs]="24" style="margin-top: 20px">
+              <nz-radio-group id="modalDealForm" formControlName="changeDealForm">
+                <label nz-radio disabled nzValue="1">Y 是</label>
+                <label nz-radio disabled nzValue="0">N 否</label>
+              </nz-radio-group>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+    </div>
+    <div nz-row [nzGutter]="24">
+      <div nz-col [nzSpan]="24">
+        <nz-form-item>
+          <nz-form-label [nzSm]="10" [nzXs]="24" [nzSpan]="16" nzFor="enableOffId">Enable<br> 启用</nz-form-label>
+          <nz-form-control [nzSm]="14" [nzXs]="24" id="enableOffId">
+            <nz-switch formControlName="status"></nz-switch>
+          </nz-form-control>
+        </nz-form-item>
+        <ng-template #modalFooter>
+          <button nz-button nzType="default" (click)="modalAttribute.modalCancel()">Cancel 取消</button>
+          <button nz-button nzType="primary" (click)="modalAttribute.modalOk()" >OK 确定</button>
+        </ng-template>
+      </div>
+    </div>
+  </form>
+
+</nz-modal>

@@ -1,0 +1,100 @@
+<!-- 特价 备案 starts -->
+<div *ngIf="processType === '0' && display">
+  <div class="am-list-body">
+    <TextareaItem [title]="'最终用户名称:'" [autoHeight]="true" [autoFocus]="true" [labelNumber]="7" [editable]="false" [value]="formDataObj.zuizhongyonghumingcheng">
+    </TextareaItem>
+    <TextareaItem [title]="'经销商名称:'" [labelNumber]="7" [editable]="false" [autoHeight]="true" [value]="formDataObj.jingxiaoshangmingcheng">
+    </TextareaItem>
+    <TextareaItem [title]="'产品:'" [labelNumber]="7" [editable]="false" [value]="formDataObj.chanpin">
+    </TextareaItem>
+    <InputItem [labelNumber]="7" [editable]="false" [value]="processTypeStr">申请类型:
+    </InputItem>
+    <InputItem [labelNumber]="7" [editable]="false" [value]="processStatusStr">申请状态:
+    </InputItem>
+    <TextareaItem [title]="'备案理由:'" [autoHeight]="true" [labelNumber]="7" [editable]="false" [value]="formDataObj.beianliyou">
+    </TextareaItem>
+  </div>
+</div>
+<!-- 特价 备案 ends -->
+
+<!-- 特价 starts -->
+<div *ngIf="processType === '1' && display">
+  <div class="am-list-body">
+    <TextareaItem [title]="'最终用户名称:'" [labelNumber]="7" [editable]="false" [autoHeight]="true" [value]="quotationadd.quotationBaseInfo?.enduserName">
+    </TextareaItem>
+    <TextareaItem *ngIf="isZhitou" [title]="'订单类型:'" [labelNumber]="7" [editable]="false" [value]="'直投'">
+    </TextareaItem>
+    <TextareaItem *ngIf="!isZhitou" [title]="'经销商名称:'" [labelNumber]="7" [editable]="false" [autoHeight]="true" [value]="quotationadd.quotationBaseInfo?.distributorName">
+    </TextareaItem>
+    <InputItem [labelNumber]="7" [editable]="false" [value]="processTypeStr">申请类型:
+    </InputItem>
+    <InputItem [labelNumber]="7" [editable]="false" [value]="processStatusStr">申请状态:
+    </InputItem>
+    <TextareaItem [title]="'备案理由:'" [autoHeight]="true" [labelNumber]="7" [editable]="false"
+      [value]="formDataObj.beianliyou">
+    </TextareaItem>
+  </div>
+  <WhiteSpace></WhiteSpace>
+  <div class="am-list-header">亚型订单</div>
+  <Accordion [accordion]="false">
+    <AccordionPanel *ngFor="let item of quotationList4Accordion; let i = index;" 
+      [key]="i" [header]="item.title">
+      <List className="my-list">
+        <TextareaItem *ngFor="let content of item.children" [autoHeight]="true" [editable]="false" [value]="content">
+        </TextareaItem>
+        <ListItem style="padding:12px;">
+          <!-- <div Button [type]="'primary'" [size]="'small'" (onClick)="pdfViewerModalOpen(item)">主配置PDF</div> -->
+          <div *ngIf="'2' == quotationadd.quotationBaseInfo?.version" Button [type]="'primary'"
+            [size]="'small'" (onClick)="exportExcel(item, true)">导出xlsx</div>
+        </ListItem>
+      </List>
+    </AccordionPanel>
+  </Accordion>
+
+</div>
+<!-- 特价 ends -->
+
+<!-- 进单 starts -->
+<div *ngIf="processType === '2' && display">
+  <div class="am-list-body">
+    <TextareaItem [title]="'最终用户名称:'" [labelNumber]="7" [editable]="false" [autoHeight]="true"
+      [value]="commercialquotationadd.quotationBaseInfo?.enduserName">
+    </TextareaItem>
+    <TextareaItem *ngIf="isZhitou" [title]="'订单类型:'" [labelNumber]="7" [editable]="false" [value]="'直投'">
+    </TextareaItem>
+    <TextareaItem *ngIf="!isZhitou" [title]="'经销商名称:'" [labelNumber]="7" [editable]="false" [autoHeight]="true"
+      [value]="commercialquotationadd.quotationBaseInfo?.distributorName">
+    </TextareaItem>
+    <InputItem [labelNumber]="7" [editable]="false" [value]="processTypeStr">申请类型:
+    </InputItem>
+    <InputItem [labelNumber]="7" [editable]="false" [value]="processStatusStr">申请状态:
+    </InputItem>
+    <TextareaItem *ngIf="formDataObj.beianliyou && ''!== formDataObj.beianliyou" [title]="'备案理由:'" [autoHeight]="true" [labelNumber]="7" [editable]="false"
+      [value]="formDataObj.beianliyou">
+    </TextareaItem>
+    <InputItem [labelNumber]="7" [editable]="false"
+      [value]="receiveDateStr">要求到货日期:
+    </InputItem>
+    <InputItem [labelNumber]="7" [editable]="false"
+      [value]="installDateStr">预计安装日期:
+    </InputItem>
+  </div>
+  <WhiteSpace></WhiteSpace>
+  <div class="am-list-header">亚型订单</div>
+  <Accordion [accordion]="false">
+    <AccordionPanel *ngFor="let item of quotationList4Accordion; let i = index;" [key]="i" [header]="item.title">
+      <List className="my-list">
+        <TextareaItem *ngFor="let content of item.children" [autoHeight]="true" [editable]="false"
+          [value]="content">
+        </TextareaItem>
+        <ListItem style="padding:12px;">
+          <!-- <div Button [type]="'primary'" [size]="'small'" (onClick)="pdfViewerModalOpen(item)">主配置PDF</div> -->
+          <div *ngIf="'2' == commercialquotationadd.quotationBaseInfo?.version" Button [type]="'primary'"
+            [size]="'small'"
+            (onClick)="exportExcel(item, false)">导出xlsx</div>
+        </ListItem>
+      </List>
+    </AccordionPanel>
+  </Accordion>
+</div>
+<!-- 进单 ends -->

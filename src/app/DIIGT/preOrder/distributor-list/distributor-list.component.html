@@ -1,0 +1,78 @@
+<div>
+  <ng-container>
+    <div>
+      <div nz-row class="seachs">
+          <div nz-col nzSpan="16">
+              <div nz-row>
+                  <div nz-col nzSpan="32">
+                      <nz-form-item>
+                          <nz-form-label [nzSpan]="5" nzFor="email">Distributor Name<br> 经销商名称</nz-form-label>
+                          <nz-form-control [nzSpan]="10">
+                              <input nz-input nz-tooltip [nzTitle]="pageParam.dealerName" [nzAutocomplete]="auto" (input)="onInput($event.target?.value)" [(ngModel)]="pageParam.dealerName">
+                              <nz-autocomplete #auto>
+                                <nz-auto-option *ngFor="let option of filteredOptions" [nzValue]="option.dealerName">
+                                 {{option.dealerName}}
+                                </nz-auto-option>
+                              </nz-autocomplete>
+                            </nz-form-control>
+                          <nz-form-control [nzSpan]="5">
+                              <button nz-button class="ml10" nzType="primary" (click)="agentInit()" [nzSize]="6">Search 搜索</button>
+                          </nz-form-control>
+                          <nz-form-control [nzSpan]="3">
+                             <button nz-button  nzType="default" (click)="clearAll()" [nzSize]="6">Clear 清空</button>
+                          </nz-form-control>
+                      </nz-form-item>
+                  </div>
+              </div>
+          </div>
+      </div>
+      <div class="tabbox">
+          <nz-table #basicTabled [nzData]="agentDatas"
+          [nzLoading]="loading"
+          [nzShowTotal]="totalTemplate"
+          [nzPageSizeOptions]="[5, 10, 20, 30, 40, 50 ]"
+          [nzShowQuickJumper]="true"
+          [nzShowSizeChanger]="true" [nzScroll]="{ x: '1900px' }" [nzFrontPagination]="false" [nzTotal]="pageParam.total" (nzPageIndexChange)="changePageIndex($event)"
+          (nzPageSizeChange)="changePageSize($event)" [nzPageIndex]="pageParam.pageNo" [nzPageSize]="pageParam.pageSize">
+              <thead>
+                  <tr>
+                      <th nzWidth="40px" nzLeft="0px" nzAlign="left">&nbsp;</th>
+                      <th nzWidth="250px" nzAlign="left">English Name<br> 英文名称</th>
+                      <th nzWidth="250px" nzAlign="left">Chinese Name<br> 中文名称</th>
+                      <th nzWidth="250px" nzAlign="left">Distributor Address <br>经销商地址</th>
+                      <th nzWidth="180px" nzAlign="left">
+                        Distributor Code<br> 经销商Code
+                     </th>
+                     <th nzWidth="250px" nzAlign="left">
+                       DDP Validity<br> DDP 有效期截至日期
+                     </th>
+                  </tr>
+              </thead>
+              <tbody>
+                  <tr *ngFor="let data of basicTabled.data let m=index">
+                      <td nzLeft="0px" nzAlign="left">
+                          <label nz-radio [ngModel]="data.radio" (ngModelChange)="agentChange(m)"></label>
+                      </td>
+                      <td   nzAlign="left" style="word-break: break-all;">
+                       <div>
+                        {{data.dealerNameEn}}
+                       </div>
+                      </td>
+                      <td  nzAlign="left">{{data.dealerName}}</td>
+                      <td  nzAlign="left">
+                        <div>{{data.registeredAddress}}</div>
+                      </td>
+                      <td  nzAlign="left">
+                        {{data.dealerCode}}
+                      </td>
+                      <td nzAlign="left">
+                        {{data.ddpValidUntil|TimeFormatePipeNow}}
+                      </td>
+                  </tr>
+              </tbody>
+          </nz-table>
+          <ng-template #totalTemplate let-total>Total 数据总条数 {{ total }} </ng-template>
+       </div>
+    </div>
+  </ng-container>
+</div>

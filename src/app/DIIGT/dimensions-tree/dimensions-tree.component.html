@@ -1,0 +1,87 @@
+<nz-card class="title_warpper">
+  <div>
+    <h4 class="font-weight-bold">
+      <span>维度树管理</span>
+    </h4>
+  </div>
+</nz-card>
+<nz-modal [nzVisible]="modalAttribute.isVisible" [nzTitle]="modalAttribute.title" (nzOnCancel)="modalAttribute.modalCancel()" (nzOnOk)="modalAttribute.modalOk()">
+    <form nz-form [formGroup]="modalAttribute.validateForm">
+        <nz-form-item>
+            <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="dimensionType">类型</nz-form-label>
+            <nz-form-control [nzSm]="14" [nzXs]="24">
+                <input nz-input formControlName="dimensionType" id="dimensionType" />
+                <nz-form-explain *ngIf="modalAttribute.validateForm.get('dimensionType')?.dirty && modalAttribute.validateForm.get('dimensionType')?.errors">
+                    维度类型必填
+                </nz-form-explain>
+            </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+            <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="dimensionCode">标识</nz-form-label>
+            <nz-form-control [nzSm]="14" [nzXs]="24">
+                <input nz-input formControlName="dimensionCode" id="dimensionCode" />
+                <nz-form-explain *ngIf="modalAttribute.validateForm.get('dimensionCode')?.dirty && modalAttribute.validateForm.get('dimensionCode')?.errors">
+                    维度标示必填
+                </nz-form-explain>
+            </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+            <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="dimensionName">名称</nz-form-label>
+            <nz-form-control [nzSm]="14" [nzXs]="24">
+                <input nz-input formControlName="dimensionName" id="dimensionName" />
+            </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+            <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="roleId">Role 角色</nz-form-label>
+            <nz-form-control [nzSm]="14" [nzXs]="24">
+                <nz-select style="width: 200px;" nzShowSearch nzServerSearch nzPlaceHolder="input search text" formControlName="role" id="role" [nzShowArrow]="false" (nzOnSearch)="modalAttribute.searchRole($event)">
+                    <nz-option *ngFor="let option of modalAttribute.listOfRoles" [nzLabel]="option.text" [nzValue]="option.value"></nz-option>
+                </nz-select>
+                <nz-form-explain *ngIf="modalAttribute.validateForm.get('role')?.dirty && modalAttribute.validateForm.get('role')?.errors">
+                    相关角色必填
+                </nz-form-explain>
+            </nz-form-control>
+        </nz-form-item>
+    </form>
+</nz-modal>
+<div class="demo-vertical-spacing">
+    <div>
+        <div style="width: 100%">
+            <button nz-button nzType="primary" (click)="createTreeRoot()"><i nz-icon type="plus"></i>新增维度树</button>
+        </div>
+        <nz-select style="width: 100%;margin-top: 20px" nzAllowClear nzSize="large" [(ngModel)]="selectedDimensionType" nzPlaceHolder="选择维度类型" (ngModelChange)="changeDimensionType($event)">
+            <nz-option *ngFor="let dimensionType of dimensionTypeList" [nzValue]="dimensionType" [nzLabel]="dimensionType"></nz-option>
+        </nz-select>
+
+        <nz-table #expandTable [nzData]="dimensionTreeList" [nzShowPagination]="false" [nzLoading]="dimensionLoading" style="margin-top: 20px">
+            <thead>
+                <tr>
+                    <th nzWidth="30%">标识</th>
+                    <th nzWidth="20%">名称</th>
+                    <th nzWidth="20%">角色</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <ng-container *ngFor="let data of expandTable.data">
+                    <ng-container *ngFor="let item of mapOfExpandedData[data.key]">
+                        <tr *ngIf="(item.parent && item.parent.expand) || !item.parent">
+                            <td [nzIndentSize]="item.level * 20" [nzShowExpand]="!!item.children" [(nzExpand)]="item.expand" (nzExpandChange)="collapse(mapOfExpandedData[data.key], item, $event)">
+                                {{ item.dimensionCode }}
+                            </td>
+                            <td>{{ item.dimensionName }}</td>
+                            <td>{{ item.role.name }}</td>
+                            <td>
+                                <a nz-icon type="edit" title="编辑" (click)="edit(item)"></a>
+                                <nz-divider nzType="vertical"></nz-divider>
+                                <a nz-icon type="plus" title="插入子节点" (click)="insert(item)"></a>
+                                <nz-divider nzType="vertical"></nz-divider>
+                                <a nz-icon type="delete" nz-popconfirm nzTitle="是否移除" (nzOnConfirm)="remove(item)"></a>
+                            </td>
+                        </tr>
+                    </ng-container>
+                </ng-container>
+            </tbody>
+        </nz-table>
+    </div>
+</div>

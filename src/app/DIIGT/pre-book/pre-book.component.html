@@ -1,0 +1,190 @@
+<nz-card class="title_warpper">
+  <div>
+    <h4 class="font-weight-bold">
+      <span>New Pre-Book Request Form  Pre-Book申请表</span>
+    </h4>
+  </div>
+</nz-card>
+<div class="tabs-box">
+  <app-apploading [load]="load"></app-apploading>
+  <div
+    nz-row
+    nzType="flex"
+    nzJustify="end"
+    nzAlign="middle"
+    class="tabs-box-actions"
+  >
+    <div nz-col nzSpan="24">
+      <nz-form-item>
+        <nz-form-control [nzSm]="24" [nzXs]="24" style="text-align: right">
+          <button
+            *ngIf="dataBase.detail.flag == '1'"
+            nz-button
+            nzType="default"
+            (click)="toReturn()"
+            style="margin-right: 10px"
+          >
+           Return 返回
+          </button>
+          <button
+            *ngIf="dataBase.detail.flag != '1'"
+            nz-button
+            nzType="default"
+            (click)="cancelFn()"
+            style="margin-right: 10px"
+          >
+           Cancel 取消
+          </button>
+          <button
+          *ngIf="dataBase.detail.flag != '1'"
+            nz-button
+            nzType="default"
+            (click)="saveContract(0)"
+            style="margin-right: 10px"
+          >
+           Save 保存
+          </button>
+          <button
+           *ngIf="dataBase.detail.flag != '1'"
+            nz-button
+            nzType="primary"
+            (click)="saveContract(1)"
+          >
+          Submit 提交Pre-Book申请表
+          </button>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+  <ngb-tabset
+  type="tabs"
+  [destroyOnHide]="false"
+  (tabChange)="tabclick($event)"
+  [activeId]="activedId"
+  class="nav-tabs-top nav-responsive-xl"
+>
+  <ngb-tab id="pending-tab">
+    <ng-template ngbTabTitle
+      ><span class="tab-title"><strong>Request Information<br> 申请信息</strong></span></ng-template
+    >
+    <ng-template ngbTabContent>
+      <div class="card-body">
+        <form #searchForm="ngForm">
+          <app-prebase-info
+            #childbase
+            [dataBase]="dataBase"
+            [conTable]="true"
+            [disa]="disa"
+          >
+          </app-prebase-info>
+          <div nz-row nzType="flex" nzJustify="end" nzAlign="middle">
+            <div nz-col nzSpan="4">
+              <nz-form-item>
+                <nz-form-control
+                  [nzSm]="24"
+                  [nzXs]="24"
+                  style="text-align: right"
+                >
+                  <button
+                    nz-button
+                    [nzType]="'primary'"
+                    (click)="myskip('complete-tab')"
+                  >
+                    Next 下一步
+                  </button>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+          </div>
+        </form>
+      </div>
+    </ng-template>
+  </ngb-tab>
+  <ngb-tab id="complete-tab">
+    <ng-template ngbTabTitle
+      ><span class="tab-title"><strong>Product Details<br> 产品信息</strong></span></ng-template
+    >
+    <ng-template ngbTabContent>
+      <div class="card-body">
+        <app-preproduct-info
+          [dataBase]="dataBase"
+          [disa]="disa"
+        >
+        </app-preproduct-info>
+        <div nz-row nzType="flex" nzJustify="end" nzAlign="middle">
+          <div nz-col nzSpan="4">
+            <nz-form-item>
+              <nz-form-control
+                [nzSm]="24"
+                [nzXs]="24"
+                style="text-align: right"
+              >
+                <button
+                  nz-button
+                  [nzType]="'primary'"
+                  (click)="myskip('pending-tab')"
+                >
+                 Back 上一步
+                </button>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  </ngb-tab>
+  <ngb-tab *ngIf="completed" id="complete-record">
+    <ng-template ngbTabTitle>
+      <span class="tab-title"><strong>Approval<br> 审批</strong></span>
+    </ng-template>
+    <ng-template ngbTabContent>
+      <div class="card-body">
+        <nz-card class="mtb1rem" nzTitle="Approved History 审批记录">
+          <app-emp-acc></app-emp-acc>
+          <div class="pr tr mt10">
+            <button
+              nz-button
+              class="nextbtn ml6"
+              nzType="primary"
+              (click)="myskip('complete-tab')"
+            >
+             Back 上一步
+            </button>
+            <button
+              nz-button
+              class="nextbtn ml6"
+              nzType="primary"
+              (click)="myskip('complete-remarks')"
+            >
+              Next 下一步
+            </button>
+          </div>
+        </nz-card>
+      </div>
+    </ng-template>
+  </ngb-tab>
+  <ngb-tab *ngIf="completed" id="complete-remarks">
+    <ng-template ngbTabTitle><span class="tab-title"><strong>Alter Remark<br> 修改备注</strong></span></ng-template>
+    <ng-template ngbTabContent>
+      <div class="card-body">
+        <app-apply-remarks
+          #remarks
+          [dataBase]="dataBase"
+          (myEvent)="myskip($event)"
+        ></app-apply-remarks>
+      </div>
+      <div class="tr mb10 mr10">
+        <button
+          nz-button
+          class="nextbtn ml6"
+          nzType="primary"
+          (click)="myskip('complete-record')"
+        >
+         Back 上一步
+        </button>
+      </div>
+    </ng-template>
+  </ngb-tab>
+</ngb-tabset>
+
+</div>

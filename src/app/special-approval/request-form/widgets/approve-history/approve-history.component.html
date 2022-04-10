@@ -1,0 +1,32 @@
+<nz-card class="mtb1rem" nzTitle="审批记录">
+  <nz-table [nzData]="approveHistory">
+    <thead>
+      <tr>
+        <th>步骤</th>
+        <th>操作者</th>
+        <th>审批结果</th>
+        <th nzWidth="300px">备注</th>
+        <th nzWidth="350px">附件</th>
+        <th nzWidth="180px">操作时间</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let history of approveHistory; let i=index">
+        <td>{{ history.spProcNodeName }}</td>
+        <td>{{ history.approveUser }}</td>
+        <td>{{ i === 0 ? '已提交' : formatTaskStatus(history) }}</td>
+        <td>
+          <div style="max-width: 360px;word-break: break-word;">
+            {{ history.remark }}
+          </div>
+        </td>
+        <td>
+          <div style="max-width: 360px;">
+            <app-upload-file-list [fileList]="history.attachments"></app-upload-file-list>
+          </div>
+        </td>
+        <td>{{ history.updateTime }}</td>
+      </tr>
+    </tbody>
+  </nz-table>
+</nz-card>

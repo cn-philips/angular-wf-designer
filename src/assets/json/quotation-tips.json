@@ -1,0 +1,17 @@
+{
+    "opportunityId": "通过医院关键字搜索",
+    "enduserName": "通过医院关键字搜索",
+    "enduserNameSpecial": "通过关键字搜索；进单时不可修改",
+    "distributorName": "通过关键字搜索",
+    "distributorNameSpecial": "通过关键字搜索；进单时不可修改",
+    "otherSupportFiles": "必须上传代理商盖章配置",
+    "otherSupportFilesSpecial": "必须提供代理商盖章配置；updateTableData；最终用户合同；其他支持文件及邮件如有",
+    "updateTotalBtn": "点击查看金额明细",
+    "showSelectedBtn": "点击查看有数量配置",
+    "onsiteTrainingCount": "赠送培训需在选促销后额外增加一份",
+    "maintenanceCostHeader": "主机及探头保修年份必须一致",
+    "otherfeeHeaderSpecial": "指机器相关费用",
+    "otherfeeHeader0": "价格增减在“其他”自定义内容并输入金额",
+    "otherfeeHeader1": "价格增减在“其他”自定义内容并输入金额",
+    "configfilesHeader": "多台配置不同时可分别上传"
+}

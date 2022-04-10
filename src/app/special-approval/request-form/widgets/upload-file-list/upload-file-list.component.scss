@@ -1,0 +1,18 @@
+/deep/ .file-item {
+  margin-bottom: 4px;
+  color: #00CC66;
+  cursor: pointer;
+  line-height: normal;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.upload-file-list {
+  margin-top: 10px;
+}

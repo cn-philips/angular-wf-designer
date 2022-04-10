@@ -1,0 +1,522 @@
+<nz-card class="title_warpper">
+  <div>
+    <h4 class="font-weight-bold">
+      <span>Project Owner Change Request 申请</span>
+    </h4>
+  </div>
+</nz-card>
+<nz-card class="global-1rem">
+<div *ngIf="flag">
+<div nz-col nzXs="24" nzSm="24" nzMd="24" style="margin-top: 30px">
+  <nz-form-item>
+    <nz-form-label [nzSm]="4" [nzXs]="24" style="width: 130px" nzRequired><span>Description</span><br>变更描述</nz-form-label>
+    <nz-form-control [nzSm]="12" [nzXs]="24" style="width: 380px">
+      <textarea
+        nz-input
+        placeholder=""
+        [(ngModel)]="changeDescription"
+        [nzAutosize]="{ minRows: 1, maxRows: 6 }"
+        oninput="if(value.length>255)value=value.slice(0,255)"
+      ></textarea>
+      <ng-container *ngIf="changeDescription">
+        <div>还可以输入:{{changeDescription.length}}/{{textLen}}</div>
+      </ng-container>
+    </nz-form-control>
+  </nz-form-item>
+</div>
+
+<div nz-col nzXs="24" nzSm="24" nzMd="24">
+  <nz-form-item>
+    <nz-form-label [nzSm]="4" [nzXs]="24" style="width: 130px" nzRequired><span>Reason</span><br> 变更原因</nz-form-label>
+    <nz-form-control [nzSm]="12" [nzXs]="24" style="width: 380px">
+        <nz-select style="min-width:180px;width:100%" [(ngModel)]="changeReason">
+          <nz-option *ngFor="let item of changeReasonList let i=index" [nzValue]="item.value" [nzLabel]="item.name">
+          </nz-option>
+        </nz-select>
+    </nz-form-control>
+  </nz-form-item>
+</div>
+
+<div nz-col nzXs="24" nzSm="24" nzMd="24">
+  <nz-form-item>
+    <nz-form-label [nzSm]="4" [nzXs]="24" style="width: 130px"><span>Applicant</span><br>申请人</nz-form-label>
+    <nz-form-control [nzSm]="12" [nzXs]="24" style="width: 380px;margin-top: 20px">
+      <a>{{applicant}}</a>
+    </nz-form-control>
+  </nz-form-item>
+</div>
+
+<div nz-col nzXs="24" nzSm="24" nzMd="24">
+  <nz-form-item>
+    <nz-form-label [nzSm]="4" [nzXs]="24" style="width: 130px" nzRequired><span>Original Owner</span><br>原所有人</nz-form-label>
+    <nz-form-control [nzSm]="12" [nzXs]="24" style="width: 380px">
+      <nz-select style="min-width:180px;width:100%" [(ngModel)]="originalOwner" nzShowSearch [disabled]="ckAddCosOrDealForm()">
+        <ng-container *ngFor="let item of originalOwnerList let i=index">
+        <nz-option [nzValue]="item.email" [nzLabel]="item.email" *ngIf="item.email != receiver">
+        </nz-option>
+        </ng-container>
+      </nz-select>
+    </nz-form-control>
+    <nz-form-control [nzSm]="2" [nzXs]="24" style="width: 100px">
+      <button nz-button nzType="primary" (click)="openOriginalOwner()" style="margin-left: 20px"><span>Add Original Owner</span>  添加原所有人</button>
+    </nz-form-control>
+  </nz-form-item>
+</div>
+
+  <nz-modal
+    [(nzVisible)]="showOriginalOwner"
+    nzWidth="500"
+    nzTitle="Add Original Owner  添加原所有人"
+    [nzFooter]="modalFooter"
+  >
+    <ng-container>
+      <input nz-input [(ngModel)]="originalOwnerAdd" />
+      <a style="color: #f5222d;margin-top: 10px;display: inline-block" *ngIf="emailMessage">请输入飞利浦邮箱</a>
+    </ng-container>
+  </nz-modal>
+  <ng-template #modalFooter>
+    <button nz-button nzType="default" (click)="cancelShowOriginalOwner()">Cancel 取消</button>
+    <button nz-button nzType="primary" (click)="addOriginalOwner()" >Submit 保存</button>
+  </ng-template>
+
+<div nz-col nzXs="24" nzSm="24" nzMd="24">
+  <nz-form-item>
+    <nz-form-label [nzSm]="4" [nzXs]="24" style="width: 130px" nzRequired><span>Receiver</span><br>接收人</nz-form-label>
+    <nz-form-control [nzSm]="12" [nzXs]="24" style="width: 380px">
+      <nz-select style="min-width:180px;width:100%" [(ngModel)]="receiver" nzShowSearch>
+        <ng-container *ngFor="let item of receiverList let i=index">
+        <nz-option [nzValue]="item.email" [nzLabel]="item.email" *ngIf="item.email != originalOwner">
+        </nz-option>
+        </ng-container>
+      </nz-select>
+    </nz-form-control>
+  </nz-form-item>
+</div>
+
+<div nz-col nzXs="24" nzSm="24" nzMd="24">
+  <nz-form-item>
+    <nz-form-label [nzSm]="4" [nzXs]="24" style="width: 130px" nzRequired><span>Scope</span><br>变更范围</nz-form-label>
+    <nz-form-control [nzSm]="20" [nzXs]="24" style="margin-top: 10px">
+      <button nz-button nzType="default" (click)="referenceSeachOpp()" [disabled]="!(originalOwner != null && originalOwner != '')"> Add(添加) Reference ID</button>
+
+      <nz-table
+        #cosListTable
+        [nzData]="cosList"
+        [nzFrontPagination]="false"
+        [nzHideOnSinglePage]="false"
+        style="margin: 20px 0"
+      >
+        <thead>
+        <tr>
+          <th nzAlign="center">Reference ID</th>
+          <th nzAlign="center"style="width:150px;">Project Type<br>项目类型</th>
+          <th nzAlign="center">Account Name</th>
+          <th nzAlign="center"><span>Project Status</span><br>项目状态</th>
+          <th nzAlign="center" nzWidth="100px"><span>Action</span><br>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let data of cosListTable.data; let m = index">
+          <td nzAlign="center">{{data.referenceId}}</td>
+          <td nzAlign="center">{{data.projectType}}</td>
+          <td nzAlign="center">{{data.accountName}}</td>
+          <td nzAlign="center">
+            {{data.processStatus|ProcessStatusPipe}}{{data.processStatus&&data.taskStatus?'-':""}}{{data.taskStatus|ProcessStatusPipe}}
+          </td>
+          <td nzAlign="center" style="color: #1890ff; cursor:pointer;" (click)="remRef(m)">
+            Delete 删除
+          </td>
+        </tr>
+        </tbody>
+      </nz-table>
+
+      <button nz-button nzType="default" (click)="dealSeachOpp()" [disabled]="!(originalOwner != null && originalOwner != '')">Add(添加) Deal Form ID/ Simulation ID</button>
+
+      <nz-table
+        #dealFormListTable
+        [nzData]="dealFormList"
+        [nzFrontPagination]="false"
+        [nzHideOnSinglePage]="false"
+        style="margin: 20px 0"
+      >
+        <thead>
+        <tr>
+          <th nzAlign="center" nzWidth="40px">Deal Form ID</th>
+          <th nzAlign="center" nzWidth="40px">Simulation ID</th>
+          <th nzAlign="center" nzWidth="40px">Account Name</th>
+          <th nzAlign="center" nzWidth="40px"><span>Status</span><br>状态</th>
+          <th nzAlign="center" nzWidth="40px"><span>Action</span><br>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let data of dealFormListTable.data; let m = index">
+          <td nzAlign="center">{{data.dealFormId}}</td>
+          <td nzAlign="center">{{data.simulationId}}</td>
+          <td nzAlign="center">{{data.accountName}}</td>
+          <td nzAlign="center">
+            {{data.status}}
+          </td>
+          <td nzAlign="center" style="color: #1890ff; cursor:pointer;" (click)="remDeal(m)">
+            Delete 删除
+          </td>
+        </tr>
+        </tbody>
+      </nz-table>
+
+    </nz-form-control>
+  </nz-form-item>
+</div>
+<div nz-col nzXs="24" nzSm="24" nzMd="24">
+  <nz-form-control [nzSm]="4" [nzXs]="24" style="width: 130px"></nz-form-control>
+  <nz-form-control [nzSm]="20" [nzXs]="24" style="text-align: right">
+  <button nz-button [nzType]="'primary'" nz-popconfirm [nzTitle]="'确认提交项目所有人变更申请'" (nzOnConfirm)="confirm()" (nzOnCancel)="cancel()">Submit 提交</button>
+  </nz-form-control>
+</div>
+
+<nz-modal
+  [(nzVisible)]="referenaceShowoff"
+  nzWidth="1200px"
+  nzTitle="Add Reference ID 添加Reference ID"
+  [nzFooter]="modalFooter_Reference"
+  (nzOnCancel)="cancelModeal()"
+  (nzOnOk)="addRef()"
+>
+  <ng-container>
+    <div class="seach" nz-row>
+      <div nz-col nzXs="24" nzSm="24" nzMd="24">
+        <div nz-col nzXs="24" nzSm="24" nzMd="12">
+          <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzFor="email">Reference ID</nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="16">
+            <input nz-input [(ngModel)]="refSeach.referenceId" nz-tooltip [nzTitle]="refSeach.referenceId" style="width: 350px"/>
+          </nz-form-control>
+        </div>
+        <div nz-col nzXs="24" nzSm="24" nzMd="12">
+          <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzFor="email">Account Name</nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="16">
+            <input nz-input [(ngModel)]="refSeach.accountName" nz-tooltip [nzTitle]="refSeach.accountName" style="width: 350px"/>
+          </nz-form-control>
+        </div>
+      </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="24">
+          <div nz-col nzXs="24" nzSm="24" nzMd="12">
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzFor="email">Submit Date<br> 提交时间</nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="16">
+              <nz-range-picker [(ngModel)]="refSeach.subDate" nzShowTime></nz-range-picker>
+            </nz-form-control>
+          </div>
+          <div nz-col nzXs="24" nzSm="24" nzMd="12">
+            <nz-form-control nzXs="24" nzSm="24" nzMd="20">
+              <label nz-checkbox [(ngModel)]="refSeach.bidding"><span>Bidding</span>招标授权</label>
+              <label nz-checkbox [(ngModel)]="refSeach.order"><span>Stock</span>进单</label>
+              <label nz-checkbox [(ngModel)]="refSeach.preBook"><span>Pre-Book</span> </label>
+            </nz-form-control>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="4" style="text-align: right">
+              <button nz-button [nzType]="'primary'" (click)="addReferenceData()">Search 查询</button>
+            </nz-form-control>
+          </div>
+        </div>
+    </div>
+
+    <nz-table
+      #cosListSeachtable
+      [nzScroll]="{ x: '1050px'}"
+      [nzData]="cosListSeach"
+      [nzLoading]="refSeach.loading"
+      [nzTotal]="refSeach.total"
+      [nzPageIndex]="refSeach.pageNo"
+      [nzPageSize]="refSeach.pageSize"
+      [nzShowTotal]="totalTemplateReference"
+      (nzPageIndexChange)="changePageIndexReference($event)"
+      (nzPageSizeChange)="changePageSizeReference($event)"
+      [nzPageSizeOptions]="[5, 10, 20, 30, 40, 50 ]"
+      [nzShowQuickJumper]="true"
+      [nzShowSizeChanger]="true"
+      [nzFrontPagination]="false"
+      [nzHideOnSinglePage]="false"
+      style="margin: 20px 0"
+    >
+      <thead>
+      <tr>
+        <th nzAlign="center" nzLeft="0px" nzWidth="20px">
+          <label
+            [nzChecked]="AllCheckRef()"
+            (nzCheckedChange)="CheckAllRef($event)"
+            nz-checkbox
+            style="display: inline-block;">
+          </label>
+        </th>
+        <th nzAlign="center" nzWidth="200px">Reference ID</th>
+        <th nzAlign="center" nzWidth="150px"><span>Project Type</span><br>项目类型</th>
+        <th nzAlign="center" nzWidth="350px">Account Name</th>
+        <th nzAlign="center" nzWidth="200px"><span>Submit Date</span><br>提交时间</th>
+        <th nzAlign="center" nzWidth="200px"><span>Status</span><br>状态</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let data of cosListSeachtable.data; let m = index">
+        <td nzLeft="0px" nzAlign="center" nzWidth="20px">
+          <label nz-checkbox [(ngModel)]="data.isCheck" [nzDisabled]="data.disabled"></label>
+        </td>
+        <td nzAlign="center" nzWidth="200px">{{data.referenceId}}</td>
+        <td nzAlign="center">{{data.projectType}}</td>
+        <td nzAlign="center" nzWidth="350px">{{data.accountName}}</td>
+        <td nzAlign="center" nzWidth="200px">{{data.createTime | TimeFormatePipeNow:true}}</td>
+        <td nzAlign="center">
+          {{data.processStatus|ProcessStatusPipe}}{{data.processStatus&&data.taskStatus?'-':""}}{{data.taskStatus|ProcessStatusPipe}}
+        </td>
+      </tr>
+      </tbody>
+    </nz-table>
+    <ng-template #totalTemplateReference let-total> 数据总条数 {{ refSeach.total }} </ng-template>
+    <ng-template #modalFooter_Reference>
+      <button nz-button nzType="default" (click)="cancelModeal()">Cancel 取消</button>
+      <button nz-button nzType="primary" (click)="addRef()">OK 确定</button>
+    </ng-template>
+  </ng-container>
+</nz-modal>
+
+<nz-modal
+  [(nzVisible)]="dealformShowoff"
+  nzWidth="1200px"
+  nzTitle="Add(添加)Deal Form ID/Simulation ID"
+  [nzFooter]="modalFooter_Deal"
+  (nzOnCancel)="cancelModeal()"
+  (nzOnOk)="addDeal()"
+>
+  <ng-container>
+
+    <div class="seach" nz-row>
+      <div nz-col nzXs="24" nzSm="24" nzMd="24">
+        <div nz-col nzXs="24" nzSm="24" nzMd="12">
+          <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzFor="email">Deal Form ID</nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="16">
+            <input nz-input [(ngModel)]="dealSeach.dealFormId" nz-tooltip [nzTitle]="dealSeach.dealFormId" style="width: 350px"/>
+          </nz-form-control>
+        </div>
+        <div nz-col nzXs="24" nzSm="24" nzMd="12">
+          <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzFor="email">Simulation ID</nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="16">
+            <input nz-input [(ngModel)]="dealSeach.simulationId" nz-tooltip [nzTitle]="dealSeach.simulationId" style="width: 350px"/>
+          </nz-form-control>
+        </div>
+      </div>
+
+      <div nz-col nzXs="24" nzSm="24" nzMd="24">
+        <div nz-col nzXs="24" nzSm="24" nzMd="12">
+          <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzFor="email">Account Name</nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="16">
+            <input nz-input [(ngModel)]="dealSeach.accountName" nz-tooltip [nzTitle]="dealSeach.accountName" style="width: 350px"/>
+          </nz-form-control>
+        </div>
+        <div nz-col nzXs="24" nzSm="24" nzMd="12">
+          <nz-form-control nzXs="24" nzSm="24" nzMd="20">
+<!--            <label nz-checkbox [(ngModel)]="refSeach.biddingCheck">招标授权</label>-->
+<!--            <label nz-checkbox [(ngModel)]="refSeach.orderCheck">进单</label>-->
+          </nz-form-control>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="4" style="text-align: right">
+            <button nz-button [nzType]="'primary'" (click)="addDealFormData()">Search 查询</button>
+          </nz-form-control>
+        </div>
+      </div>
+    </div>
+
+    <nz-table
+      #dealFormListSeachTable
+      [nzData]="dealFormListSeach"
+      [nzLoading]="dealSeach.loading"
+      [nzTotal]="dealSeach.total"
+      [nzPageIndex]="dealSeach.pageNo"
+      [nzPageSize]="dealSeach.pageSize"
+      [nzShowTotal]="totalTemplateDeal"
+      (nzPageIndexChange)="changePageIndexDeal($event)"
+      (nzPageSizeChange)="changePageSizeDeal($event)"
+      [nzPageSizeOptions]="[5, 10, 20, 30, 40, 50 ]"
+      [nzShowQuickJumper]="true"
+      [nzShowSizeChanger]="true"
+      [nzFrontPagination]="false"
+      [nzHideOnSinglePage]="false"
+      style="margin: 20px 0"
+    >
+      <thead>
+      <tr>
+        <th nzAlign="center" nzLeft="0px" nzWidth="20px">
+          <label
+            [nzChecked]="AllCheckDeal()"
+            (nzCheckedChange)="CheckAllDeal($event)"
+            nz-checkbox
+            style="display: inline-block;">
+          </label>
+        </th>
+        <th nzAlign="center" nzWidth="200px">Deal Form ID</th>
+        <th nzAlign="center" nzWidth="200px">Simulation ID</th>
+        <th nzAlign="center" nzWidth="350px">Account Name</th>
+        <th nzAlign="center">Status<br> 状态</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let data of dealFormListSeachTable.data; let m = index">
+        <td nzLeft="0px" nzAlign="center" nzWidth="20px">
+          <label nz-checkbox [(ngModel)]="data.isCheck" [nzDisabled]="data.disabled"></label>
+        </td>
+        <td nzAlign="center">{{data.dealFormId}}</td>
+        <td nzAlign="center">{{data.simulationId}}</td>
+        <td nzAlign="center">{{data.accountName}}</td>
+        <td nzAlign="center">
+          {{data.status}}
+        </td>
+      </tr>
+      </tbody>
+    </nz-table>
+    <ng-template #totalTemplateDeal let-total> 数据总条数 {{ dealSeach.total }} </ng-template>
+
+  </ng-container>
+  <ng-template #modalFooter_Deal>
+    <button nz-button nzType="default" (click)="cancelModeal()">Cancel 取消</button>
+    <button nz-button nzType="primary" (click)="addDeal()">OK 确定</button>
+  </ng-template>
+
+</nz-modal>
+</div>
+
+<!--******************查看页*****************************-->
+
+<div *ngIf="!flag">
+  <div nz-col nzXs="24" nzSm="24" nzMd="24" style="margin-top: 30px">
+    <nz-form-item>
+      <nz-form-label [nzSm]="4" [nzXs]="24" style="width: 130px">变更描述</nz-form-label>
+      <nz-form-control [nzSm]="12" [nzXs]="24" style="width: 380px">
+      <textarea
+        nz-input
+        placeholder=""
+        [(ngModel)]="dataBase.entrustDescription"
+        [nzAutosize]="{ minRows: 1, maxRows: 6 }"
+        disabled
+      ></textarea>
+      </nz-form-control>
+    </nz-form-item>
+  </div>
+
+  <div nz-col nzXs="24" nzSm="24" nzMd="24">
+    <nz-form-item>
+      <nz-form-label [nzSm]="4" [nzXs]="24" style="width: 130px">变更原因</nz-form-label>
+      <nz-form-control [nzSm]="12" [nzXs]="24" style="width: 380px">
+        <nz-select style="min-width:180px;width:100%" [(ngModel)]="dataBase.changeReason" disabled>
+          <nz-option [nzValue]="dataBase.changeReason" [nzLabel]="dataBase.changeReason"></nz-option>
+<!--          <nz-option *ngFor="let item of changeReasonList let i=index" [nzValue]="item.value" [nzLabel]="item.name">-->
+<!--          </nz-option>-->
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+  </div>
+
+  <div nz-col nzXs="24" nzSm="24" nzMd="24">
+    <nz-form-item>
+      <nz-form-label [nzSm]="4" [nzXs]="24" style="width: 130px">申请人</nz-form-label>
+      <nz-form-control [nzSm]="12" [nzXs]="24" style="width: 380px">
+        <a>{{dataBase.applicant}}</a>
+      </nz-form-control>
+    </nz-form-item>
+  </div>
+
+  <div nz-col nzXs="24" nzSm="24" nzMd="24">
+    <nz-form-item>
+      <nz-form-label [nzSm]="4" [nzXs]="24" style="width: 130px">原所有人</nz-form-label>
+      <nz-form-control [nzSm]="12" [nzXs]="24" style="width: 380px">
+        <nz-select style="min-width:180px;width:100%" [(ngModel)]="dataBase.originalOwner" nzShowSearch disabled>
+          <nz-option [nzValue]="dataBase.originalOwner" [nzLabel]="dataBase.originalOwner"></nz-option>
+<!--          <nz-option *ngFor="let item of originalOwnerList let i=index" [nzValue]="item.email" [nzLabel]="item.email">-->
+<!--          </nz-option>-->
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+  </div>
+
+  <div nz-col nzXs="24" nzSm="24" nzMd="24">
+    <nz-form-item>
+      <nz-form-label [nzSm]="4" [nzXs]="24" style="width: 130px">接收人</nz-form-label>
+      <nz-form-control [nzSm]="12" [nzXs]="24" style="width: 380px">
+        <nz-select style="min-width:180px;width:100%" [(ngModel)]="dataBase.receiver" nzShowSearch disabled>
+          <nz-option [nzValue]="dataBase.receiver" [nzLabel]="dataBase.receiver"></nz-option>
+<!--          <nz-option *ngFor="let item of receiverList let i=index" [nzValue]="item.email" [nzLabel]="item.email">-->
+<!--          </nz-option>-->
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+  </div>
+
+  <div nz-col nzXs="24" nzSm="24" nzMd="24">
+    <nz-form-item>
+      <nz-form-label [nzSm]="4" [nzXs]="24"><span>Scope</span><br>变更范围</nz-form-label>
+      <nz-form-control [nzSm]="20" [nzXs]="24">
+<!--        <button nz-button nzType="default" (click)="referenceSeachOpp()">添加Reference ID</button>-->
+
+        <nz-table
+          #cosProjectsDTOSTable
+          [nzData]="dataBase.cosProjectsDTOS"
+          [nzFrontPagination]="false"
+          [nzHideOnSinglePage]="false"
+          style="margin: 20px 0"
+        >
+          <thead>
+          <tr>
+            <th nzAlign="center">Reference ID</th>
+            <th nzAlign="center">Project Type<br>项目类型</th>
+            <th nzAlign="center">Account Name</th>
+            <th nzAlign="center"><span>Project Status</span><br>项目状态</th>
+<!--            <th nzAlign="center" nzWidth="100px">操作</th>-->
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let data of cosProjectsDTOSTable.data; let m = index">
+            <td nzAlign="center">{{data.referenceId}}</td>
+            <td nzAlign="center">{{data.projectType}}</td>
+            <td nzAlign="center">{{data.accountName}}</td>
+            <td nzAlign="center">
+              {{data.projectStatus}}
+            </td>
+<!--            <td nzAlign="center" style="color: #1890ff; cursor:pointer;" (click)="remRef(m)">-->
+<!--              删除-->
+<!--            </td>-->
+          </tr>
+          </tbody>
+        </nz-table>
+
+<!--        <button nz-button nzType="default" (click)="dealSeachOpp()">添加Deal Form ID/Simulation ID</button>-->
+
+        <nz-table
+          #dealFormAndSimulationsDTOSTable
+          [nzData]="dataBase.dealFormAndSimulationsDTOS"
+          [nzFrontPagination]="false"
+          [nzHideOnSinglePage]="false"
+          style="margin: 20px 0"
+        >
+          <thead>
+          <tr>
+            <th nzAlign="center" nzWidth="40px">Deal Form ID</th>
+            <th nzAlign="center" nzWidth="40px">Simulation ID</th>
+            <th nzAlign="center" nzWidth="40px">Account Name</th>
+            <th nzAlign="center" nzWidth="40px"><span>Status</span><br>状态</th>
+<!--            <th nzAlign="center" nzWidth="40px">操作</th>-->
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let data of dealFormAndSimulationsDTOSTable.data; let m = index">
+            <td nzAlign="center">{{data.dealFormId}}</td>
+            <td nzAlign="center">{{data.simulationId}}</td>
+            <td nzAlign="center">{{data.accountName}}</td>
+            <td nzAlign="center">
+              {{data.projectStatus}}
+            </td>
+<!--            <td nzAlign="center" style="color: #1890ff; cursor:pointer;" (click)="remDeal(m)">-->
+<!--              删除-->
+<!--            </td>-->
+          </tr>
+          </tbody>
+        </nz-table>
+
+      </nz-form-control>
+    </nz-form-item>
+  </div>
+</div>
+</nz-card>

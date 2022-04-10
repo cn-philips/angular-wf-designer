@@ -1,0 +1,76 @@
+<!-- Table -->
+<div>
+  <div
+    style="padding: 1.5rem"
+    nzType="flex"
+    nz-row
+    nz-row
+    nzAlign="middle"
+    nzJustify="space-between"
+  >
+    <div nz-col>
+      <h4>人员管理</h4>
+    </div>
+    <div nz-col>
+      <button nz-button (click)="handleCreate()" nzType="primary">添加</button>
+    </div>
+  </div>
+  <nz-table
+    [nzPageSize]="pageSize"
+    [nzPageIndex]="currentPage"
+    [nzData]="userTable"
+    nzTableLayout="fixed"
+    nzSize="small"
+  >
+    <thead>
+      <tr>
+        <th *ngFor="let column of tableHeader" [nzWidth]="column.width">
+          {{ column.name }}
+        </th>
+        <th nzWidth="120px" nzRight="0px">Action 操作</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let data of userTable">
+        <td>{{ data.cycle_group }}</td>
+        <td>{{ data.big_area }}</td>
+        <td>{{ data.small_area }}</td>
+        <td>{{ data.province }}</td>
+        <td nzRight="0px">
+          <button
+            nz-button
+            nzSize="small"
+            nzType="primary"
+            (click)="handleEdit(data.id)"
+          >
+            编辑
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </nz-table>
+</div>
+<!-- End Table -->
+<!-- Drawer -->
+<nz-drawer
+  [nzClosable]="true"
+  [nzVisible]="isShowDraw"
+  nzPlacement="left"
+  [nzMaskClosable]="false"
+  [nzTitle]="title"
+  [nzWidth]="fullDraw ? '100%' : '50%'"
+  (nzOnClose)="handleClose()"
+  class="role-management-draw"
+>
+  <app-role-management-form [id]="focusRoleId" [type]="FormType">
+  </app-role-management-form>
+
+  <div (click)="toggleDrawerSize()" class="draw-size-btn">
+    <i
+      nz-icon
+      [nzType]="fullDraw ? 'fullscreen-exit' : 'fullscreen'"
+      nzTheme="outline"
+    ></i>
+  </div>
+</nz-drawer>
+<!-- End Drawer -->

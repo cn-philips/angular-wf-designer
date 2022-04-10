@@ -1,0 +1,36 @@
+<div class="role-management-container">
+  <nz-card class="title_warpper">
+    <div>
+      <h4 class="font-weight-bold">
+        <span>Role Management 角色管理</span>
+      </h4>
+    </div>
+  </nz-card>
+  <nz-card class="rmc-wrap">
+    <div nz-row [nzGutter]="16" class="rmc-content">
+      <div nz-col nzSpan="6" style="height: 100%">
+        <nz-card class="side-tree">
+          <app-role-management-tree
+            (onChange)="handleTreeChange($event)"
+          ></app-role-management-tree>
+        </nz-card>
+      </div>
+      <div nz-col nzSpan="18">
+        <div nz-row>
+          <div nz-col="24">
+            <app-role-management-filter
+              [roleNode]="this.activeNode"
+            ></app-role-management-filter>
+          </div>
+          <div nz-col="24" class="mtb1rem roleTable">
+            <nz-card>
+              <app-role-management-table
+                [roleNode]="this.activeNode"
+              ></app-role-management-table>
+            </nz-card>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nz-card>
+</div>

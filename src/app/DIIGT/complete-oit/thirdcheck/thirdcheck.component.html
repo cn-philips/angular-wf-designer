@@ -1,0 +1,42 @@
+<app-apploading [load]="load"></app-apploading>
+<form nz-form [formGroup]="validateForm">
+  <div nz-row>
+    <div nz-col nzSpan="13">
+      <nz-form-item>
+        <nz-form-label [nzSpan]="6" style="width: 35%" nzFor="email"><span>Buyer Purchase 3rd Party Item Check Status</span><br>第三方自采核查状态</nz-form-label>
+        <nz-form-control [nzSpan]="14">
+          <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Select 请选择" [(ngModel)]="selectVal"  formControlName="selectVal">
+            <nz-option *ngFor="let item of thirdPartyList" [nzValue]="item.label" [nzLabel]="item.label"></nz-option>
+          </nz-select>
+          <nz-form-explain *ngIf="validateForm.get('selectVal')?.dirty && validateForm.get('selectVal')?.errors">
+            此选项必填字段
+          </nz-form-explain>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+  <div nz-row>
+    <div nz-col nzSpan="13">
+      <nz-form-item>
+        <nz-form-label style="width: 35%" [nzSpan]="6" nzFor="email"><span>Document</span><br>文件上传</nz-form-label>
+        <nz-form-control [nzSpan]="14">
+          <nz-upload  [(nzFileList)]="fileFileList" [nzBeforeUpload]="fileBeforeUpload"
+            [nzLimit]="1" [nzRemove]="nzRemoveFile" [nzPreview]="dwonLoad">
+            <button nz-button><i nz-icon nzType="upload"></i><span>Upload 上传附件</span></button>
+          </nz-upload>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+  <div nz-row>
+    <div nz-col nzSpan="13">
+      <nz-form-item>
+        <nz-form-label [nzNoColon]="true" [nzSpan]="6" nzFor="email"></nz-form-label>
+        <nz-form-control [nzSpan]="14">
+          <!-- <button nz-button  nzType="primary">保存</button> -->
+          <button nz-button class="ml6" nzType="primary" (click)="submit()">Submit 提交</button>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+</form>

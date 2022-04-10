@@ -1,0 +1,139 @@
+<nz-card class="title_warpper">
+  <div>
+    <h4 class="font-weight-bold">
+      <span>{{ pageTitle }}</span>
+    </h4>
+  </div>
+</nz-card>
+
+<div class="tabs-box">
+  <div
+    nz-row
+    nzType="flex"
+    nzJustify="end"
+    nzAlign="middle"
+    class="tabs-box-actions"
+  >
+    <div nz-col nzSpan="24">
+      <nz-form-item>
+        <nz-form-control [nzSm]="24" [nzXs]="24" style="text-align: right">
+          <button nz-button nz-popconfirm nzType="text" nzTitle="确定保存草稿?" class="bg-success text-white" *ngIf="showSaveBtn" [disabled]="submitLoading" (nzOnConfirm)="onSaveDraft()">保存</button>
+          <button nz-button nz-popconfirm nzType="primary" nzTitle="确定提交申请?" *ngIf="showSubmitBtn" [disabled]="submitLoading" (nzOnConfirm)="onSubmit()">提交</button>
+          <button nz-button nz-popconfirm nzDanger nzTitle="确定撤回申请?" *ngIf="showWithdrawBtn" (nzOnConfirm)="onWithdrawRequest()">撤回</button>
+          <button nz-button nz-popconfirm nzDanger nzTitle="确定取消申请?" *ngIf="showCancelBtn" (nzOnConfirm)="onCancelRequest()">取消申请</button>
+          <button nz-button nz-popconfirm nzDanger nzTitle="确定删除草稿?" *ngIf="showDeleteBtn" (nzOnConfirm)="onDeleteRequest()">删除</button>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+</div>
+
+<ngb-tabset
+  type="tabs"
+  [destroyOnHide]="false"
+  [activeId]="acitveTabId"
+  class="nav-tabs-top nav-responsive-xl mtb1rem"
+>
+  <ngb-tab [id]="TAB_TYPES.BASIC_INFO">
+    <ng-template ngbTabTitle>
+      <span class="tab-title"><strong>申请详情</strong></span>
+    </ng-template>
+    <ng-template ngbTabContent>
+      <div class="card-body">
+        <special-approval-basic-info [executed]="executed" [editable]="editable" [applyItems]="applyItems" [formValues]="formValues.get('basicInfo')" [supportFileList]="supportFileList"></special-approval-basic-info>
+      </div>
+    </ng-template>
+  </ngb-tab>
+  <ngb-tab [id]="TAB_TYPES.ORDER_INFO">
+    <ng-template ngbTabTitle>
+      <span class="tab-title"><strong>订单信息</strong></span>
+    </ng-template>
+    <ng-template ngbTabContent>
+      <div class="card-body">
+        <special-approval-order-info [bmcs]="bmcs" [applyItem]="applyItem" [applyType]="applyType" [editable]="editable" [formValues]="formValues.get('orderInfo')"></special-approval-order-info>
+      </div>
+    </ng-template>
+  </ngb-tab>
+  <ngb-tab [id]="TAB_TYPES.WARRANTY_INFO" *ngIf="applyType === APPLY_TYPES.EXT_WARRANTY">
+    <ng-template ngbTabTitle>
+      <span class="tab-title"><strong>延保信息</strong></span>
+    </ng-template>
+    <ng-template ngbTabContent>
+      <div class="card-body">
+        <special-approval-warranty-info [minMon]="minMon" [maxMon]="maxMon" [editable]="editable" [formValues]="formValues.get('warrantyInfo')"></special-approval-warranty-info>
+      </div>
+    </ng-template>
+  </ngb-tab>
+  <ngb-tab [id]="TAB_TYPES.APPROVER_INFO" *ngIf="applyType === APPLY_TYPES.EXT_INSTALL_COST">
+    <ng-template ngbTabTitle>
+      <span class="tab-title"><strong>审批人选择</strong></span>
+    </ng-template>
+    <ng-template ngbTabContent>
+      <div class="card-body">
+        <special-approval-approver-info></special-approval-approver-info>
+      </div>
+    </ng-template>
+  </ngb-tab>
+  <ngb-tab [id]="TAB_TYPES.CC_INFO">
+    <ng-template ngbTabTitle>
+      <span class="tab-title"><strong>抄送人选择</strong></span>
+    </ng-template>
+    <ng-template ngbTabContent>
+      <div class="card-body">
+        <special-approval-cc-info [editable]="editable" [formValues]="formValues.get('ccInfo')" [userList]="userList"></special-approval-cc-info>
+      </div>
+    </ng-template>
+  </ngb-tab>
+  <ngb-tab [id]="TAB_TYPES.FLOW_INFO" *ngIf="false">
+    <ng-template ngbTabTitle>
+      <span class="tab-title"><strong>审批流</strong></span>
+    </ng-template>
+    <ng-template ngbTabContent>
+      <div class="card-body">
+        <special-approval-flow-info></special-approval-flow-info>
+      </div>
+    </ng-template>
+  </ngb-tab>
+  <ngb-tab [id]="TAB_TYPES.APPROVE" *ngIf="showApproveTab">
+    <ng-template ngbTabTitle>
+      <span class="tab-title"><strong>审批</strong></span>
+    </ng-template>
+    <ng-template ngbTabContent>
+      <div class="card-body">
+        <special-approval-approve-form [applicantEmail]="applicantEmail" [processUsers]="processUsers" [taskId]="taskId" [requestId]="requestId"></special-approval-approve-form>
+      </div>
+    </ng-template>
+  </ngb-tab>
+  <ngb-tab [id]="TAB_TYPES.FEEDBACK" *ngIf="showFeedbackTab">
+    <ng-template ngbTabTitle>
+      <span class="tab-title"><strong>反馈</strong></span>
+    </ng-template>
+    <ng-template ngbTabContent>
+      <div class="card-body">
+        <special-approval-feedback [taskId]="taskId" [requestId]="requestId"></special-approval-feedback>
+      </div>
+    </ng-template>
+  </ngb-tab>
+  <ngb-tab [id]="TAB_TYPES.FLOW_INFO" *ngIf="approveNodeList.length">
+    <ng-template ngbTabTitle>
+      <span class="tab-title"><strong>审批流</strong></span>
+    </ng-template>
+    <ng-template ngbTabContent>
+      <div class="card-body">
+        <special-approval-flow-info [approveNodeList]="approveNodeList"></special-approval-flow-info>
+      </div>
+    </ng-template>
+  </ngb-tab>
+  <ngb-tab [id]="TAB_TYPES.APPROVE_HISTORY" *ngIf="approveHistory.length">
+    <ng-template ngbTabTitle>
+      <span class="tab-title"><strong>审批记录</strong></span>
+    </ng-template>
+    <ng-template ngbTabContent>
+      <div class="card-body">
+        <special-approval-approve-history [approveHistory]="approveHistory"></special-approval-approve-history>
+      </div>
+    </ng-template>
+  </ngb-tab>
+</ngb-tabset>
+
+<app-apploading [load]="pageLoading"></app-apploading>

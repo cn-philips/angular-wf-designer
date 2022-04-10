@@ -1,0 +1,201 @@
+<form nz-form [formGroup]="validateForm">
+  <app-apploading [load]="load"></app-apploading>
+    <nz-card class="pr mtb1rem" nzTitle="Site Ready 场地准备">
+      <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+        <div nz-col nzSpan="24">
+          <nz-form-item>
+            <nz-form-label [nzSm]="4" [nzXs]="24" style="min-width: 160px"><span>Expected Site Ready Date</span><br>预计场地Ready时间</nz-form-label>
+            <nz-form-control [nzSm]="8" [nzXs]="24">
+              <nz-date-picker nzSize="large" formControlName="readyTime" style="width: 100%" [nzStyle]="style"
+                  [(ngModel)]="params.readyTime" nzPlaceHolder=""></nz-date-picker>
+                  <nz-form-explain *ngIf="
+                  validateForm.get('readyTime')?.dirty &&
+                  validateForm.get('readyTime')?.errors
+                ">
+                此选项必填字段
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+  </nz-card>
+  <nz-card class="pr" nzTitle="OA Supplemental Information OA补充信息">
+      <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+        <div nz-col nzSpan="24">
+          <nz-form-item>
+            <nz-form-label [nzSm]="4" [nzXs]="24" style="min-width: 160px" nzRequired><span>Export Controls Documents</span><br>外贸公司出口管制</nz-form-label>
+            <nz-form-control [nzSm]="8" [nzXs]="24">
+              <div class="maxuploadto">
+              <nz-upload *ngIf="!disa" [(nzFileList)]="foreignTradeFileList" [nzBeforeUpload]="exportFileUpload"
+                  [nzLimit]="1" [nzPreview]="dwonLoad" [nzRemove]="nzRemoveExportFile">
+                  <button  nz-button>
+                    <i nz-icon nzType="upload"></i><span>Upload 上传附件</span>
+                  </button>
+                </nz-upload>
+               </div>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div nz-col nzXs="24" class="pb10"
+        nzSm="24"
+        nzMd="12">
+          <nz-form-item>
+            <nz-form-label [nzSm]="8" [nzXs]="24" nzRequired><span>Stock Agreement Draft</span><br>备货协议草稿</nz-form-label>
+                <nz-form-control [nzSm]="14" [nzXs]="24">
+                  <div class="maxuploadto">
+                  <nz-upload *ngIf="!disa" [(nzFileList)]="draftFileList" [nzBeforeUpload]="draftFileUpload"
+                  [nzLimit]="1" [nzPreview]="dwonLoad" [nzRemove]="nzRemoveDraftFile">
+                  <button  nz-button>
+                    <i nz-icon nzType="upload"></i><span>Upload 上传附件</span>
+                  </button>
+                </nz-upload>
+                </div>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div nz-col class="pb10" nzXs="24"
+        nzSm="24"
+        nzMd="12">
+          <nz-form-item>
+            <nz-form-label [nzSm]="8" [nzXs]="24" nzRequired><span>Stock Agreement</span><br>备货协议正本</nz-form-label>
+                <nz-form-control [nzSm]="14" [nzXs]="24">
+                  <div class="maxuploadto">
+                  <nz-upload *ngIf="!disa" [(nzFileList)]="originalFileList" [nzBeforeUpload]="originalFileUpload"
+                  [nzLimit]="1" [nzPreview]="dwonLoad" [nzRemove]="nzRemoveOriginalFile">
+                  <button  nz-button>
+                    <i nz-icon nzType="upload"></i><span>Upload 上传附件</span>
+                  </button>
+                </nz-upload>
+              </div>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div nz-col nzXs="24"
+        nzSm="24"
+        nzMd="12">
+          <nz-form-item>
+            <nz-form-label [nzSm]="8" [nzXs]="24" nzRequired><span>Sofon File</span><br>Sofon文件</nz-form-label>
+                <nz-form-control [nzSm]="14" [nzXs]="24">
+                  <ng-container *ngIf="!disa">
+                  <div>
+                    <nz-switch [(ngModel)]="switchValid" formControlName="switchValid" (click)="changeupmode(upmode)"></nz-switch><span style="font-size: xx-small;padding-top: 10%">&emsp;Select Sofon File From CP 从CP选择文件</span>
+                  </div>
+                  <div *ngIf="upmode">
+                    <button nz-button  (click)="showModal()" style="display: inline-block">
+                      <i nz-icon nzType="cloud-upload" nzTheme="outline"></i><span style="font-size: small">Select Sofon File 选择Sofon文件</span>
+                    </button>
+                  </div>
+                  <div *ngIf="!upmode">
+                    <div class="maxuploadto">
+                    <nz-upload *ngIf="!disa" [(nzFileList)]="sofonFileList" [nzBeforeUpload]="sonfonFileUpload"
+                      [nzLimit]="1" [nzPreview]="dwonLoad" [nzRemove]="nzRemoveSofonFile">
+                      <button  nz-button>
+                        <i nz-icon nzType="upload"></i><span>Upload 上传附件</span>
+                      </button>
+                    </nz-upload>
+                    </div>
+                  </div>
+                  <button *ngIf="params.sofonFile&&upmode" nz-tooltip [nzTitle]="params.sofonFileName"
+                    class="down link-tesk" nz-button nzType="link" (click)="fileDwon(params.sofonFile)">
+                    {{params.sofonFileName?params.sofonFileName:"下载文件"}}
+                  </button>
+                </ng-container>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div nz-col nzXs="24"
+        nzSm="24"
+        nzMd="12">
+          <nz-form-item>
+            <nz-form-label [nzSm]="8" [nzXs]="24" nzRequired>Sofon No.</nz-form-label>
+                <nz-form-control [nzSm]="14" [nzXs]="24" nz-tooltip [nzTitle]="params.sofonNo">
+                  <input type="text" oninput="if(value.length>200)value=value.slice(0,200)"  class="form-control" value="" formControlName="sofonNo"
+                  [(ngModel)]="params.sofonNo" />
+                  <ng-container *ngIf="params.sofonNo" >
+                    <div>还可以输入:{{params.sofonNo.length}}/{{textLens}}</div>
+                    <nz-form-explain *ngIf="validateForm.get('sofonNo')?.dirty && validateForm.get('sofonNo')?.errors">
+                      此选项必填字段
+                  </nz-form-explain>
+                  </ng-container>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div nz-col nzXs="24"
+        nzSm="24"
+        nzMd="12">
+          <nz-form-item>
+            <nz-form-label [nzSm]="8" [nzXs]="24" nzRequired><span>Proof of Payment</span><br>付款凭证</nz-form-label>
+                <nz-form-control [nzSm]="14" [nzXs]="24">
+                  <div class="maxuploadto">
+                  <nz-upload *ngIf="!disa" [(nzFileList)]="paymentFileList" [nzBeforeUpload]="paymentFileUpload"
+                  [nzLimit]="1" [nzPreview]="dwonLoad" [nzRemove]="nzRemovePaymentFile">
+                  <button  nz-button>
+                    <i nz-icon nzType="upload"></i><span>Upload 上传附件</span>
+                  </button>
+                </nz-upload>
+              </div>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div nz-col nzSpan="24">
+          <nz-form-item>
+            <nz-form-label [nzSm]="4" [nzXs]="24" nzRequired style="min-width: 160px"><span>OM </span><br>需要发送邮件的物流专员</nz-form-label>
+            <nz-form-control [nzSm]="8" [nzXs]="24">
+              <nz-select formControlName="logisticsSpecialist" [(ngModel)]="params.logisticsSpecialist" nzAllowClear
+                nzPlaceHolder="Select Personnel 请选择人员">
+                <nz-option *ngFor="let item of oMlist" [nzValue]="item.email" [nzLabel]="item.name"></nz-option>
+              </nz-select>
+              <nz-form-explain *ngIf="validateForm.get('logisticsSpecialist')?.dirty && validateForm.get('logisticsSpecialist')?.errors">
+                 此选项必填字段
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div nz-col nzSpan="24">
+          <nz-form-item>
+            <nz-form-label [nzSm]="4" [nzXs]="24" style="min-width: 160px"><span>Remarks</span><br>备注</nz-form-label>
+            <nz-form-control [nzSm]="8" [nzXs]="24">
+              <textarea nz-input oninput="if(value.length>255)value=value.slice(0,255)" nz-input placeholder=""
+                formControlName="remarks" [(ngModel)]="params.remarks" [nzAutosize]="{ minRows: 3, maxRows: 6 }"></textarea>
+              <div>还可以输入:{{params.remarks.length}}/{{textLen}}</div>
+              <nz-form-explain *ngIf="validateForm.get('remarks')?.dirty && validateForm.get('remarks')?.errors">
+               {{this.cannel?'请填写取消理由':'请填写拒绝理由'}}
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div nz-col nzSpan="24">
+          <nz-form-item>
+            <nz-form-label [nzSm]="4" [nzXs]="24" style="min-width: 160px">Upload Attachment<br> 上传附件</nz-form-label>
+            <nz-form-control [nzSm]="4" [nzXs]="24">
+              <div class="maxuploadto">
+              <nz-upload *ngIf="!disa" [(nzFileList)]="fileList" [nzBeforeUpload]="fileBeforeUpload"
+                [nzLimit]="1" [nzPreview]="dwonLoad" [nzRemove]="nzRemovefile">
+                <button  nz-button>
+                  <i nz-icon nzType="upload"></i><span>Upload 文件上传</span>
+                </button>
+              </nz-upload>
+              </div>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+      <div nz-row nzType="flex" nzJustify="end" nzAlign="middle">
+        <div nz-col nzXs="24" nzSm="24" nzMd="16">
+          <nz-form-item style="text-align: right;">
+            <button *ngIf="dataBase.detail.flag==0" nz-button [nzType]="'primary'" style="margin-left: 10px;"
+            (click)="cancelContract()">Cancel 取消</button>
+            <button [disabled]="false" *ngIf="dataBase.detail.flag==0" nz-button [nzType]="'primary'" style="margin-left: 10px;" nz-popconfirm
+              nzTitle="你确定要执行提交的操作" (nzOnConfirm)="confirmApproval(validateForm.value, 1)"
+              (nzOnCancel)="cancelAction()">Submit 提交</button>
+          </nz-form-item>
+        </div>
+      </div>
+      <!-- =================================================================== 分割线   -->
+      <nz-modal [(nzVisible)]="isVisible" nzTitle="Select Sofon File 选择Sofon文件" (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk()">
+        <nz-checkbox-wrapper style="width: 100%;" (nzOnChange)="log($event)">
+          <label nz-checkbox *ngFor="let file of files.thelist; index as i" [nzValue]="file.id">{{file.fileName}}</label>
+        </nz-checkbox-wrapper>
+      </nz-modal>
+  </nz-card>
+</form>

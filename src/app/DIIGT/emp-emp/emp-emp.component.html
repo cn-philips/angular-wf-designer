@@ -1,0 +1,284 @@
+<app-apploading [load]="load"></app-apploading>
+<nz-card class="mtb1rem" nzTitle="Contains non-standard terms 包含非标准条款" *ngIf="data && data.businessType != 'DISTRIBUTOR'">
+  <app-app-terms></app-app-terms>
+</nz-card>
+<nz-card class="mtb1rem" nzTitle="Authorization Grant 授权发放">
+<!--<div class="bz" >-->
+<!--  <label class="form-label a1">备注</label>-->
+<!--  <textarea *ngIf="flag==0" nz-input placeholder="" [nzAutosize]="{ minRows: 3, maxRows: 5 }" [(ngModel)]="param.remarks"></textarea>-->
+<!--  <textarea *ngIf="flag==1" disabled="true" nz-input placeholder="" [nzAutosize]="{ minRows: 3, maxRows: 5 }" [(ngModel)]="param.remarks"></textarea>-->
+<!--</div>-->
+<!--<div class="bz">-->
+<!--  <button class="down" nz-button nzType="link" (click)="manufacturerAuthorizationLetter('SQSQH')">9-4制造商出具的授权函</button>-->
+<!--  <a style="color: #1DA1F2;margin-left: 20px"></a>-->
+<!--  <a style="color: #1DA1F2;margin-left: 20px">经销商委托函</a>-->
+<!--</div>-->
+
+
+<div nz-row>
+  <div nz-col nzSpan="24">
+    <nz-form-item>
+      <nz-form-label [nzSpan]="6">Data Source<br>投标申请表数据来源 </nz-form-label>
+      <nz-form-control [nzSpan]="14" style="margin-top: 20px">
+        {{data.baseDataFrom}}链接
+      </nz-form-control>
+    </nz-form-item>
+  </div>
+</div>
+<div nz-row>
+  <div nz-col nzSpan="24">
+    <nz-form-item>
+      <nz-form-label [nzSpan]="6"><span>Business Mode</span><br>业务模式</nz-form-label>
+      <nz-form-control [nzSpan]="14" style="margin-top: 20px">
+        {{data.businessType=='DISTRIBUTOR'?'Distributor Deal':'Direct Deal'}}
+      </nz-form-control>
+    </nz-form-item>
+  </div>
+</div>
+<div nz-row>
+  <div nz-col nzSpan="24">
+      <nz-form-item>
+         <nz-form-label [nzSpan]="6">Need Confirm CP Approval<br>是否需要校验CP审批结果</nz-form-label>
+         <nz-form-control [nzSpan]="14" style="margin-top: 20px">
+          <nz-radio-group [disabled]="flag==1"  [(ngModel)]="param.isCheck" (ngModelChange)="changeCp()" >
+            <label nz-radio nzValue="1">Y 是</label>
+            <label nz-radio nzValue="0">N 否，无需校验CP</label>
+          </nz-radio-group>
+         </nz-form-control>
+      </nz-form-item>
+    </div>
+</div>
+<div nz-row>
+  <div nz-col nzSpan="24">
+    <nz-form-item>
+      <nz-form-label [nzSpan]="6" nzRequired>Authorization Document<br>授权文件</nz-form-label>
+      <nz-form-control [nzSpan]="14" >
+        <div class="maxuploadto">
+          <nz-upload *ngIf="flag==0"  [(nzFileList)]="fileList.fileAuthorizatioList" [nzBeforeUpload]="beforeAuthorizationUpload" [nzLimit]="1" [nzPreview]="dwonLoad">
+            <button  nz-button><i nz-icon nzType="upload"></i><span>Upload 上传附件</span></button>
+          </nz-upload>
+        </div>
+        <button nz-tooltip [nzTitle]="param.authorizationDocumentName" *ngIf="flag==1&&param.authorizationDocumentId" class="down link-tesk" nz-button nzType="link" (click)="fileDwon(param.authorizationDocumentId)">{{param.authorizationDocumentName}}</button>
+<!--          <nz-upload *ngIf="flag==1"  nzAction="https://jsonplaceholder.typicode.com/posts/">-->
+<!--            <button disabled  nz-button><i nz-icon nzType="upload"></i><span>上传附件</span></button>-->
+<!--          </nz-upload>-->
+        <nz-form-explain *ngIf="authorization_file" style="color: #f5222d">
+          *此选项必填字段
+        </nz-form-explain>
+      </nz-form-control>
+    </nz-form-item>
+  </div>
+</div>
+
+  <div nz-row>
+    <div nz-col nzSpan="24">
+      <nz-form-item>
+        <nz-form-label [nzSpan]="6">Export Controls Document<br>出口管制文件</nz-form-label>
+        <nz-form-control [nzSpan]="14">
+          <div class="maxuploadto">
+            <nz-upload *ngIf="flag==0"  [(nzFileList)]="fileList.exportControlFileList" [nzBeforeUpload]="beforeExportControlFileUpload" [nzLimit]="1" [nzPreview]="dwonLoad">
+              <button  nz-button><i nz-icon nzType="upload"></i><span>Upload 上传附件</span></button>
+            </nz-upload>
+          </div>
+          <button nz-tooltip [nzTitle]="param.exportControlFileName" *ngIf="flag==1&&param.exportControlFileId" class="down link-tesk" nz-button nzType="link" (click)="fileDwon(param.exportControlFileId)">{{param.exportControlFileName}}</button>
+          <!--          <nz-upload *ngIf="flag==1"  nzAction="https://jsonplaceholder.typicode.com/posts/">-->
+          <!--            <button disabled  nz-button><i nz-icon nzType="upload"></i><span>上传附件</span></button>-->
+          <!--          </nz-upload>-->
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+
+<div nz-row>
+   <div nz-col nzSpan="24">
+    <nz-form-item>
+      <nz-form-label [nzSpan]="6">PV Payment Documents No.<br>PV付款文件编号</nz-form-label>
+      <nz-form-control [nzSpan]="14">
+        <input *ngIf="flag==0"  oninput="if(value.length>100)value=value.slice(0,100)" nz-input [(ngModel)]="param.fileNo" type="text" style="width: 200px">
+        <input *ngIf="flag==1" disabled nz-input  [(ngModel)]="param.fileNo" type="text" style="width: 200px">
+        <ng-container *ngIf="param && param.fileNo">
+          <div>还可以输入:{{param.fileNo.length}}/{{pvtextLen}}</div>
+        </ng-container>
+      </nz-form-control>
+      </nz-form-item>
+   </div>
+</div>
+<div nz-row>
+  <div nz-col nzSpan="24">
+    <nz-form-item>
+      <nz-form-label [nzSpan]="6">Remarks<br>备注</nz-form-label>
+      <nz-form-control [nzSpan]="10">
+        <textarea *ngIf="flag==0" nz-input oninput="if(value.length>255)value=value.slice(0,255)" nz-input placeholder="" [nzAutosize]="{ minRows: 1, maxRows: 5 }" [(ngModel)]="param.remarks"></textarea>
+        <textarea *ngIf="flag==1" disabled="true" nz-input placeholder="" [nzAutosize]="{ minRows: 1, maxRows: 5 }" [(ngModel)]="param.remarks"></textarea>
+        <ng-container *ngIf="param && param.remarks">
+          <div>还可以输入:{{param.remarks.length}}/{{textLen}}</div>
+        </ng-container>
+        <div *ngIf="rem_mess">
+          <!-- <button class="down paddnon" nz-button nzType="link" (click)="manufacturerAuthorizationLetter('SQSQH')">9-4制造商出具的授权函</button>
+          <a style="color: #1DA1F2;margin-left: 20px">经销商委托函</a> -->
+          <a style="color: #f5222d">请填写拒绝理由</a>
+        </div>
+      </nz-form-control>
+    </nz-form-item>
+  </div>
+</div>
+<div nz-row>
+  <div nz-col nzSpan="24">
+    <nz-form-item>
+      <nz-form-label [nzSpan]="6">Other Document<br>其他文件</nz-form-label>
+      <nz-form-control [nzSpan]="14" style="margin-top: 10px">
+        <div nz-col nzXl="6" nzXXl="5">
+          <nz-upload *ngIf="flag==0"  [(nzFileList)]="fileList.fileSupplementList" [nzBeforeUpload]="beforeSupplementUpload" [nzLimit]="1" [nzPreview]="dwonLoad">
+            <button  nz-button><i nz-icon nzType="upload"></i><span>Upload 上传附件</span></button>
+          </nz-upload>
+          <button nz-tooltip [nzTitle]="param.supplementaryDocumentName" *ngIf="flag==1&&param.supplementaryDocumentId" class="down link-tesk" nz-button nzType="link" (click)="fileDwon(param.supplementaryDocumentId)">{{param.supplementaryDocumentName}}</button>
+<!--          <nz-upload *ngIf="flag==1"  nzAction="https://jsonplaceholder.typicode.com/posts/">-->
+<!--            <button disabled  nz-button><i nz-icon nzType="upload"></i><span>上传附件</span></button>-->
+<!--          </nz-upload>-->
+        </div>
+        <div *ngIf="flag != 1">
+        <div nz-col nzSpan="14">
+          <div *ngIf="data.businessType!='DISTRIBUTOR'">
+            <button class="down paddnon" nz-button nzType="link" (click)="manufacturerAuthorizationLetter('DirectSQHL')">9-4制造商出具的授权函-荷兰格式</button>
+            <br>
+            <button class="down paddnon" nz-button nzType="link" (click)="manufacturerAuthorizationLetter('DirectSQsz')">9-4制造商出具的授权函-苏州格式</button>
+          </div>
+         <div *ngIf="data.businessType=='DISTRIBUTOR'">
+           <button class="down paddnon" nz-button nzType="link" (click)="manufacturerAuthorizationLetter('DisSQHL')">9-4制造商出具的授权函-荷兰格式</button>
+           <br>
+           <button class="down paddnon" nz-button nzType="link" (click)="manufacturerAuthorizationLetter('DisSQSZ')">9-4制造商出具的授权函-苏州格式</button>
+         </div>
+        </div>
+          <!-- <a style="color: #1DA1F2;margin-left: 20px">经销商委托函</a> -->
+        </div>
+      </nz-form-control>
+    </nz-form-item>
+  </div>
+</div>
+
+<!--    <div nz-row>-->
+<!--      <div nz-col nzSpan="24">-->
+<!--        <nz-form-item>-->
+<!--          <nz-form-label [nzSpan]="6">备注</nz-form-label>-->
+<!--          <nz-form-control [nzSpan]="10">-->
+<!--            <textarea *ngIf="flag==0" nz-input placeholder="" [nzAutosize]="{ minRows: 3, maxRows: 5 }" [(ngModel)]="param.remarks"></textarea>-->
+<!--            <textarea *ngIf="flag==1" disabled="true" nz-input placeholder="" [nzAutosize]="{ minRows: 3, maxRows: 5 }" [(ngModel)]="param.remarks"></textarea>-->
+<!--            <div class="bz">-->
+<!--              <button class="down" nz-button nzType="link" (click)="manufacturerAuthorizationLetter('SQSQH')">9-4制造商出具的授权函</button>-->
+<!--              <a style="color: #1DA1F2;margin-left: 20px"></a>-->
+<!--              <a style="color: #1DA1F2;margin-left: 20px">经销商委托函</a>-->
+<!--            </div>-->
+<!--          </nz-form-control>-->
+<!--        </nz-form-item>-->
+<!--      </div>-->
+<!--    </div>-->
+
+<!-- <div class="p1">
+  <div class="leftone"><a class="a1">PV付款文件编号</a></div>
+  <div class="rightone">
+    <input *ngIf="flag==0" class="form-control"  [(ngModel)]="param.fileNo" type="text" style="width: 200px">
+    <input *ngIf="flag==1" disabled class="form-control"  [(ngModel)]="param.fileNo" type="text" style="width: 200px">
+  </div>
+</div> -->
+
+<div *ngIf="flag==0" nz-row nzType="flex" nzJustify="end" nzAlign="middle">
+  <div nz-col nzXs="24" nzSm="24" nzMd="16">
+      <nz-form-item style="text-align: right;">
+<!--        <button nz-button class="ml10" nzType="primary"  *ngIf="flag==0&&!showBtnCp"  (click)="save(1)">授权确认</button>-->
+        <button nz-button class="ml10" nzType="primary"  *ngIf="flag==0&&!showBtnCp" nz-popconfirm nzTitle="你确定要执行授权确认的操作?" (nzOnConfirm)="save(1)">Authorization Confirm 授权确认</button>
+        <button nz-button class="ml10" nzType="primary"  *ngIf="flag==0&&showBtnCp"  (click)="CP(true)">CP results and authorization confirm 检验CP结果并授权确认</button>
+        <button nz-button class="ml10" nzType="primary" *ngIf="flag==0" nz-popconfirm nzTitle="你确定要执行拒绝的操作?" (nzOnConfirm)="save(0)">Refuse 拒绝</button>
+    </nz-form-item>
+  </div>
+</div>
+
+
+
+<!--弹窗-->
+<nz-modal [(nzVisible)]="showCP" [nzOkDisabled]="!CkVerifiOff()" nzTitle="授权发放校验结果" nzOkText="授权发放" nzCancelText="取消" nzCentered nzWidth="1600" (nzOnCancel)="handleCancelWinCheck()" (nzOnOk)="handleOkWinCheck()">
+  <div *ngIf="load2" class="load2">
+    <nz-spin nzSimple [nzSize]="'large'"></nz-spin>
+  </div>
+  <ng-container>
+    <nz-table
+      #columnTable
+      nzBordered
+      [nzData]="bidData"
+      [nzScroll]="{ x:'2700px' , y:'500px' }"
+      [nzFrontPagination]="false"
+    >
+    <thead>
+        <tr>
+          <th nzWidth="200px" nzLeft="0px">Opportunity</th>
+          <th nzWidth="250px" nzLeft="200px">Market Bundle</th>
+          <th nzWidth="200px">产品型号</th>
+          <th nzWidth="200px">客户名称（投标)</th>
+          <th nzWidth="200px">客户名称（cp）</th>
+          <th nzWidth="250px">申请人（投标）</th>
+          <th nzWidth="250px">申请人（cp）</th>
+          <th nzWidth="850px">cp审核查询结果</th>
+          <th nzWidth="150px">校验结果</th>
+          <th nzWidth="150px">校验失败原因</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let data of columnTable.data; index as i">
+          <td nzWidth="200px" nzLeft="0px" [attr.rowspan]="data.rowspan" *ngIf="data.isCheak" >{{ data.opportunityId}}</td>
+          <td nzWidth="250px" nzLeft="200px" [attr.rowspan]="data.rowspan" *ngIf="data.isCheak">{{ data.marketBundleName}}</td>
+          <td >{{ data.productModel }}</td>
+          <td  [attr.rowspan]="data.rowspan" *ngIf="data.isCheak">{{ data.orderByCustomerName}}</td>
+          <td  [attr.rowspan]="data.rowspan" *ngIf="data.isCheak">{{ data.orderByCustomerNameCp}}</td>
+          <td  [attr.rowspan]="data.rowspan" *ngIf="data.isCheak">{{ data.appPerson}}</td>
+          <td  [attr.rowspan]="data.rowspan" *ngIf="data.isCheak">{{ data.winPerson}}</td>
+          <td [attr.rowspan]="data.rowspan" *ngIf="data.isCheak">
+            <nz-radio-group
+              [(ngModel)]="data.select"
+              (ngModelChange)="modelChang(i)"
+            >
+            <div class="mkbox">
+              <div *ngFor="let item of data.searchResult; index as j;" style="display:flex;">
+                <div style="flex: 2;display: flex;align-items: center;justify-content: flex-start;">
+                  <label nz-radio [nzValue]="item.id" [nzDisabled]="item.isDisable">
+                    <span  nz-tooltip [nzTitle]=" 'Simulation ID:'+item.dealFormSimulationId +';'+ 'Deal Form ID:' +item.dealFormId +';'+'MarketBundle Id:'+item.marketBundleId+';'+item.marketBundleName" class="win-check-link down">
+                      {{ 'Simulation ID:'+item.dealFormSimulationId +';'+ 'Deal Form ID:' +item.dealFormId +';'+'MarketBundle Id:'+item.marketBundleId+';'+item.marketBundleName}}{{item.useStatus=='0'?'(未使用)':"(已使用)"}}
+                      <i class="check" *ngIf="item.temUser==true">(已选中)</i>
+                    </span>
+                  </label>
+                </div>
+<!--                <div *ngIf="item.id==data.select" style="flex: 1;display: flex;align-items: center;justify-content: center">-->
+<!--                  <button nz-button nzSize="small" nzType="primary" (click)="selectClick(i,j)">选择此项校验</button>-->
+<!--                </div>-->
+                <div *ngIf="(item.id==data.select||item.temUser)" style="flex: 1;display: flex;align-items: center;justify-content: center">
+                  <button *ngIf="item.temUser != true" nz-button nzSize="small" nzType="primary" (click)="selectClick(i,j)">选择此项校验</button>
+                  <button *ngIf="item.temUser == true" nz-button nzSize="small" nzType="primary" (click)="selectUnClick(i,j)">取消此项校验</button>
+                </div>
+              </div>
+            </div>
+            </nz-radio-group>
+          </td>
+          <td [attr.rowspan]="data.rowspan" *ngIf="data.isCheak">
+            <div *ngIf="data.checkResult!==''" [ngClass]="data.checkResult?'green':'red'">
+              {{ data.checkResult?"成功":"失败" }}
+            </div>
+          </td>
+          <td [attr.rowspan]="data.rowspan" *ngIf="data.isCheak">{{ data.checkResultReasons }}</td>
+        </tr>
+      </tbody>
+</nz-table>
+  </ng-container>
+</nz-modal>
+</nz-card>
+<div  class="showDiag" *ngIf="isPdf">
+  <div class="showDiag-box" >
+    <div class="showDiag-box-title">
+      <div>查看PDF</div>
+      <i nz-icon nzType="close" class="close" (click)="isPdfCancel()" nzTheme="outline"></i>
+    </div>
+    <app-pdfpreview [padData]="pdfSRC"></app-pdfpreview>
+    <!-- <ngx-extended-pdf-viewer [src]="pdfSRC" useBrowserLocale="true" height="100vh"></ngx-extended-pdf-viewer> -->
+  </div>
+</div>
+<nz-card class="mtb1rem" nzTitle="Approved History 审批记录">
+  <!--   <app-bid-record></app-bid-record>-->
+  <app-emp-acc></app-emp-acc>
+</nz-card>

@@ -1,0 +1,36 @@
+<nz-table #fixedTable [nzData]="recordData" [nzFrontPagination]="false" [nzShowPagination]="false"
+    [nzScroll]="{x:'1150px',y:'450px' }" style="word-break: break-all !important;">
+    <thead>
+      <tr>
+        <th nzWidth="100px" nzLeft="0px" nzAlign="center">版本</th>
+        <th nzWidth="200px" nzAlign="center">ReferenceID</th>
+        <th nzWidth="200px" nzAlign="center"><span>Reason of Change</span><br>改单原因</th>
+        <th nzWidth="200px" nzAlign="center"><span>Remarks</span><br>补充说明</th>
+        <th nzWidth="250px" nzAlign="center">Supporting Documents<br>支持文件</th>
+        <th nzWidth="100px" nzAlign="center">Status<br>状态</th>
+        <th nzWidth="200px" nzAlign="center">Start Date<br>发起日期</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let data of fixedTable.data;index as j;">
+        <td nzAlign="center">
+          <button class="down" nz-tooltip [nzTitle]="data.version" nz-button nzType="link"
+              (click)="gotoOit(data)">
+              v{{j}}
+            </button>
+        </td>
+        <td nzAlign="center">{{data.refId}}</td>
+        <td nzAlign="center">{{data.orderChange}}</td>
+        <td nzAlign="center">{{data.remark}}</td>
+        <td nzAlign="center">
+          <button class="down" *ngIf="data.file" nz-tooltip [nzTitle]="data.fileNames" nz-button nzType="link"
+              (click)="fileDwon(data.file)">
+              {{data.fileNames}}
+          </button>
+          <span *ngIf="data.file === null">——</span>
+        </td>
+        <td nzAlign="center">{{data.status|StatusProject}}</td>
+        <td nzAlign="center">{{data.createTime|TimeFormatePipeNow:true}}</td>
+      </tr>
+    </tbody>
+  </nz-table>

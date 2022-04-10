@@ -1,0 +1,92 @@
+<nz-card>
+  <form nz-form>
+    <div nzType="flex" nz-row nzAlign="middle" nzJustify="space-between">
+      <div nz-col>
+        <h4>Area Information  区域信息</h4>
+      </div>
+      <div nz-col>
+        <button (click)="editArea()" *ngIf="!mode" [disabled]="regionNode == undefined ? true: regionNode.level != 0 ? false : true" nz-button nzType="primary">
+          Edit 编辑
+        </button>
+        <button (click)="saveArea()" *ngIf="mode" nz-button nzType="primary">
+          Save 保存
+        </button>
+        <button (click)="cancel()" *ngIf="mode" nz-button nzType="primary">
+          Cancel 取消
+        </button>
+        <button nz-popconfirm nzTitle="你确定要删除这个区域吗？" *ngIf="!isDeleteable" nz-button [disabled]="regionNode == undefined ? true: regionNode.level != 0 ? false : true" (nzOnConfirm)="deleteArea()"
+                (nzOnCancel)="cancels()" nzType="danger">Delete 删除</button>
+      </div>
+    </div>
+    <div nz-row>
+      <!-- Group -->
+      <div nz-col nzSpan="12">
+        <nz-form-item>
+          <nz-form-label [nzSpan]="7">Group</nz-form-label>
+          <nz-form-control [nzSpan]="17">
+            <nz-select nzSize="small" [(ngModel)]="parentId" *ngIf="isEditable == 2" name="group">
+              <nz-option
+                *ngFor="let item of areaUpdate"
+                [nzValue]="item.origin.id"
+                [nzLabel]="item.title"
+              ></nz-option>
+            </nz-select>
+            <input nz-input *ngIf="isEditable != 2" [(ngModel)]="group" name="group" style="width: 80%"  [disabled]="isEditable != 1">
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <!-- End Group -->
+      <!-- Big Area -->
+      <div nz-col nzSpan="12">
+        <nz-form-item>
+          <nz-form-label [nzSpan]="7">Big Area</nz-form-label>
+          <nz-form-control [nzSpan]="17">
+            <nz-select  nzSize="small" [(ngModel)]="parentId" *ngIf="isEditable == 3" name="bigArea">
+              <nz-option
+                *ngFor="let item of areaUpdate"
+                [nzValue]="item.origin.id"
+                [nzLabel]="item.title"
+              ></nz-option>
+            </nz-select>
+            <input nz-input *ngIf="isEditable != 3" [(ngModel)]="bigArea" name="bigArea" style="width: 80%"  [disabled]="isEditable != 2">
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <!-- End Big Area -->
+      <!-- Small Area -->
+      <div nz-col nzSpan="12">
+        <nz-form-item>
+          <nz-form-label [nzSpan]="7">Small Area</nz-form-label>
+          <nz-form-control [nzSpan]="17">
+            <nz-select  nzSize="small" [(ngModel)]="parentId" *ngIf="isEditable == 4" name="smallArea">
+              <nz-option
+                *ngFor="let item of areaUpdate"
+                [nzValue]="item.origin.id"
+                [nzLabel]="item.title"
+              ></nz-option>
+            </nz-select>
+            <input nz-input *ngIf="isEditable != 4" [(ngModel)]="smallArea" name="smallArea" style="width: 80%"  [disabled]="isEditable != 3">
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <!-- End Small Area -->
+      <!-- Province -->
+      <div nz-col nzSpan="12">
+        <nz-form-item>
+          <nz-form-label [nzSpan]="7">Province <br>省份</nz-form-label>
+          <nz-form-control [nzSpan]="17">
+<!--            <nz-select  nzSize="small" name="province">-->
+<!--              <nz-option-->
+<!--                *ngFor="let item of provinceOptions"-->
+<!--                [nzValue]="item.value"-->
+<!--                [nzLabel]="item.label"-->
+<!--              ></nz-option>-->
+<!--            </nz-select>-->
+            <input nz-input [(ngModel)]="province" name="province" style="width: 80%"  [disabled]="isEditable != 4">
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <!-- End Province -->
+    </div>
+  </form>
+</nz-card>

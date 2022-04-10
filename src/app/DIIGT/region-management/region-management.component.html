@@ -1,0 +1,41 @@
+<div class="region-management-container">
+  <nz-card class="title_warpper">
+    <div>
+      <h4 class="font-weight-bold">
+        <span>Users 区域管理</span>
+      </h4>
+    </div>
+  </nz-card>
+  <nz-card class="rmc-wrap">
+    <div nz-row [nzGutter]="16" class="rmc-content">
+      <div nz-col nzSpan="6" style="height: 100%">
+        <nz-card class="side-tree">
+          <app-region-management-tree
+            #treeComponent
+            [regionNode]="activeNode"
+            (onChange)="handleTreeChange($event)"
+          ></app-region-management-tree>
+        </nz-card>
+      </div>
+      <div nz-col nzSpan="18">
+        <div nz-row>
+          <div nz-col="24">
+            <app-region-management-filter
+              [treeComponent]="treeComponent"
+              [regionNode]="this.activeNode"
+              [userTableComponent]="userTableComponent"
+            ></app-region-management-filter>
+          </div>
+          <div nz-col="24" class="mtb1rem regionTable">
+            <nz-card>
+              <app-region-user-table #userTableComponent
+                [treeComponent]="treeComponent"
+                [regionNode]="this.activeNode"
+              ></app-region-user-table>
+            </nz-card>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nz-card>
+</div>

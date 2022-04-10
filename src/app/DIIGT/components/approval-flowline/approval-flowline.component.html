@@ -1,0 +1,45 @@
+<nz-card class="global-1rem">
+   <!--改单-->  
+   <div *ngIf="oitChangeProcessFlag" class="step alignleft">
+    <ul>
+      <li *ngFor="let item of oitChangeProcess" [class]="item.running ? 'running' : ''">
+        <a [class]="'width:' + (100 / oitChangeProcess.length)  + '%;'">{{item.name}}</a>
+      </li>
+    </ul>
+  </div>
+  <!--改单end-->
+  <div class="step">
+    <ul>
+      <li *ngFor="let item of listStep" [class]="item.running ? 'running' : ''">
+        <a [class]="'width:' + (100 / listStep.length)  + '%;'">{{item.name}}</a>
+      </li>
+    </ul>
+  </div>
+  <!--取消进单-->
+  <div *ngIf="oitCancelProcessFlag" class="step alignleft mt10">
+    <ul>
+      <li *ngFor="let item of oitCancelProcess" [class]="item.running ? 'running' : ''">
+        <a [class]="'width:' + (100 / oitCancelProcess.length)  + '%;'">{{item.name}}</a>
+      </li>
+    </ul>
+  </div>
+  <!--取消进单 end-->
+  <!--关闭合同概要表-->
+  <div *ngIf="oitCloseProcessFlag" class="step alignleft mt10">
+    <ul>
+      <li *ngFor="let item of oitCloseProcess" [class]="item.running ? 'running' : ''">
+        <a [class]="'width:' + (100 / oitCloseProcess.length)  + '%;'">{{item.name}}</a>
+      </li>
+    </ul>
+  </div>
+   <!--关闭合同概要表 end-->
+   <!--退回合同概要表-->
+   <div *ngIf="oitRejectProcessFlag" class="step alignleft mt10">
+    <ul>
+      <li *ngFor="let item of oitRejectProcess" [class]="item.running ? 'running' : ''">
+        <a [class]="'width:' + (100 / oitRejectProcess.length)  + '%;'">{{item.name}}</a>
+      </li>
+    </ul>
+  </div>
+  <!--退回合同概要表 end-->
+</nz-card>

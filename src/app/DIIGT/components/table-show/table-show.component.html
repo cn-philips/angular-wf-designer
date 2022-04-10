@@ -1,0 +1,17 @@
+<nz-table #basicTabled [nzData]="data.data" [nzFrontPagination]="false" [nzShowPagination]="false">
+<thead>
+  <tr>
+      <th *ngFor="let item of data.tablehead" [nzWidth]="item.width" nzAlign="center">{{item.name}}</th>      
+  </tr>
+</thead>
+<tbody>
+    <tr *ngFor="let data of basicTabled.data let m=index">
+      <td nzAlign="center">
+        {{data.authorizedArea}}
+      </td>
+      <td nzAlign="center">
+        {{data.authorizedProduct}}
+      </td>
+    </tr>
+</tbody>
+</nz-table>

@@ -1,0 +1,7 @@
+node_modules
+/yarn.lock
+/dist/
+/e2e/
+/mock/
+.idea
+package-lock.json

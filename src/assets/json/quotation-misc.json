@@ -1,0 +1,84 @@
+{
+    "salesGroup": [
+        {
+            "name": "区域超声",
+            "code": "1"
+        },
+        {
+            "name": "集团超声",
+            "code": "2"
+        },
+        {
+            "name": "NTA-L0/1超声",
+            "code": "3"
+        },
+        {
+          "name": "Private 超声",
+          "code": "4"
+        }
+    ],
+    "purchaseType": [
+        {
+            "name": "非直投",
+            "code": "0"
+        },
+        {
+            "name": "直投",
+            "code": "1"
+        }
+    ],
+    "solutionType": [
+        {
+            "name": "不含Solution",
+            "code": "0"
+        },
+        {
+            "name": "包含Solution----脱机QLAB",
+            "code": "1"
+        },
+        {
+            "name": "包含Solution----ISCV",
+            "code": "2"
+        },
+        {
+            "name": "包含Solution----超声远程",
+            "code": "3"
+        },
+        {
+            "name": "包含Solution----Lumify",
+            "code": "4"
+        },
+        {
+          "name": "包含Solution----AI breast",
+          "code": "5"
+        },
+        {
+          "name": "包含Solution----Echo Navigator",
+          "code": "6"
+        }, {
+          "name": "包含Solution----专业服务",
+          "code": "7"
+        }
+    ],
+    "tradeTermType" : [
+        {
+            "name": "CIP最终用户",
+            "code": "0"
+        },
+        {
+            "name": "CIP经销商的仓库",
+            "code": "1"
+        },
+        {
+            "name": "CIP End User",
+            "code": "2"
+        },
+        {
+            "name": "CIP Dealer’s Warehouse",
+            "code": "3"
+        }, {
+        "name": "经销商自提",
+        "code": "4"
+      }
+    ]
+}

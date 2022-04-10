@@ -1,0 +1,131 @@
+<nz-card class="title_warpper">
+  <div>
+    <h4 class="font-weight-bold">
+      <span><strong>Contract Signed  合同签署</strong></span>
+    </h4>
+  </div>
+</nz-card>
+<app-apploading [load]="load"></app-apploading>
+<igt-approval-flowline></igt-approval-flowline>
+<div class="tabs-box">
+  <div nz-row nzType="flex" nzJustify="end" nzAlign="middle" class="tabs-box-actions">
+    <div nz-col nzSpan="24">
+      <nz-form-item>
+        <nz-form-control [nzSm]="24" [nzXs]="24" style="text-align: right;">
+          <!-- <button nz-button *ngIf="dataBase.detail.flag== 0" nzType="default" style="margin-right:10px;"
+            nz-popconfirm nzTitle="你确定要执行退回的操作?" (nzOnConfirm)="save(0)">退回</button> -->
+          <button nz-button  *ngIf="dataBase.detail.flag== 1" nzType="default" style="margin-right:10px;"
+                  (click)="toReturn()">Return 返回</button>
+          <button nz-button *ngIf="dataBase.detail.flag== 0" nzType="default" style="margin-right:10px;"
+                  (click)="cancelFn()">Cancel 取消</button>
+          <button nz-button *ngIf="dataBase.detail.flag== 0" nzType="default" style="margin-right:10px;"
+            (click)="save(2)">Save 保存</button>
+          <button nz-button *ngIf="dataBase.detail.flag== 0" nzType="primary" style="margin-right:10px;"
+            (click)="save(1)">Submit 提交</button>
+            <nz-dropdown [nzPlacement]="'bottomRight'" *ngIf="dataBase.detail.flag==0">
+              <button nz-button nz-dropdown><i class="tranf90" nz-icon nzType="more" nzTheme="outline"></i></button>
+              <ul nz-menu>
+                <li  nz-menu-item>
+                  <a href="javascript:" (click)="backContract()">Return to Contract Summary 退回到合同概要表</a>
+                </li>
+                <li *ngIf="!dataBase.hsId" nz-menu-item>
+                  <a href="javascript:" (click)="closeContract()">Close Contract Summary 关闭合同概要表</a>
+                </li>
+              </ul>
+            </nz-dropdown>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+  <ngb-tabset type="tabs" [destroyOnHide]="false" class="nav-tabs-top nav-responsive-xl" [activeId]="activedId">
+    <!--marketBundleName-->
+    <ngb-tab id="tab0">
+      <ng-template ngbTabTitle><span class="tab-title"><strong>Contract Summary<br>合同概要表</strong>&ensp;</span></ng-template>
+      <ng-template ngbTabContent>
+        <div class="card-body">
+          <app-preOrderBaseInfo [disa]="true" [dataBase]="dataBase" [showChek]="true" [conTable]="true">
+          </app-preOrderBaseInfo>
+          <div style="padding: 10px 0;text-align: right">
+            <button nz-button class="nextbtn ml6" nzType="primary" (click)="myskip('tab1')">Next 下一步</button>
+          </div>
+        </div>
+      </ng-template>
+    </ngb-tab>
+    <!--Order Summary-->
+    <ngb-tab id="tab1">
+      <ng-template ngbTabTitle><span class="tab-title"><strong>Order Summary<br>&nbsp;</strong></span></ng-template>
+      <ng-template ngbTabContent>
+        <div class="card-body">
+          <!--            <app-consign-order></app-consign-order>-->
+          <app-inorder-in [dataBase]="osData"></app-inorder-in>
+          <app-inorder-ex [dataBase]="osData" [disa]="true"></app-inorder-ex>
+          <div style="padding: 10px 0;text-align: right">
+            <button nz-button class="nextbtn ml6" nzType="primary" (click)="myskip('tab0')">Back 上一步</button>
+            <button nz-button class="nextbtn ml6" nzType="primary" (click)="myskip('tab2')">Next 下一步</button>
+          </div>
+        </div>
+      </ng-template>
+    </ngb-tab>
+    <!--审批记录-->
+    <ngb-tab id="tab2">
+      <ng-template ngbTabTitle><span class="tab-title"><strong>Approved History<br> 审批记录</strong></span></ng-template>
+      <ng-template ngbTabContent>
+        <div class="card-body">
+          <app-emp-acc></app-emp-acc>
+          <div style="padding: 10px 0;text-align: right">
+            <button nz-button class="nextbtn ml6" nzType="primary" (click)="myskip('tab1')">Back 上一步</button>
+            <button nz-button class="nextbtn ml6" nzType="primary" (click)="myskip('tab3')">Next 下一步</button>
+          </div>
+        </div>
+      </ng-template>
+    </ngb-tab>
+    <!--合同签署-->
+    <ngb-tab id="tab3">
+      <ng-template ngbTabTitle><span class="tab-title"><strong>Contract Signed<br> 合同签署</strong></span></ng-template>
+      <ng-template ngbTabContent>
+        <div class="card-body">
+          <app-consign-consign #childbase [dataBase]="signingData" [mergeData]="mergeData"></app-consign-consign>
+          <div style="padding: 10px 0;text-align: right">
+            <button nz-button class="nextbtn ml6" nzType="primary" (click)="myskip('tab2')">Back 上一步</button>
+            <button *ngIf="dataBase.hsId" nz-button class="nextbtn ml6" nzType="primary" (click)="myskip('change-tab')">Next 下一步</button>
+          </div>
+        </div>
+      </ng-template>
+    </ngb-tab>
+    <ngb-tab id="change-tab" *ngIf="dataBase.hsId">
+      <ng-template ngbTabTitle><span class="tab-title"><strong>Order Change Review<br> 审核改单</strong></span></ng-template>
+      <ng-template ngbTabContent>
+        <div class="card-body">
+           <app-approve-change [disa]="disa" [dataBase]="dataBase"></app-approve-change>
+           <div nz-row nzType="flex" nzJustify="end" nzAlign="middle">
+            <div nz-col nzSpan="4">
+              <nz-form-item>
+                <nz-form-control [nzSm]="24" [nzXs]="24" style="text-align: right;">
+                  <button nz-button [nzType]="'primary'" (click)="myskip('tab3')">Back 上一步</button>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+          </div>
+        </div>
+      </ng-template>
+    </ngb-tab>
+  </ngb-tabset>
+
+</div>
+<nz-modal [(nzVisible)]="isAgres" nzWidth="650px" nzTitle="Remind 提示" [nzFooter]="modalFooter_Remind3" (nzOnCancel)="isAgreCancels()">
+  <app-confirm #child [infor]="showData" ></app-confirm>
+  <ng-template #modalFooter_Remind3>
+    <button nz-button nzType="default" (click)="isAgreCancels()">Cancel 取消</button>
+    <button nz-button nzType="primary" (click)="isAgregentOk()">OK 确定</button>
+  </ng-template>
+</nz-modal>
+<nz-modal [(nzVisible)]="isShowDate" nzWidth="650px" nzTitle="Remind 提醒" (nzOnOk)="isshowDateOk()" (nzOnCancel)="isshowDateCancel()">
+  <div>
+    经销商DDP有效期为{{this.dataBase.contractEndDate}}日，当前已过有效期，确认是否提交
+  </div>
+</nz-modal>
+<nz-modal [(nzVisible)]="isShowDates" nzWidth="650px" nzTitle="提醒" (nzOnOk)="isshowDatesOk()"  (nzOnCancel)="isshowDateCancels()">
+  <div>
+    外贸公司DDP有效期为{{dataBase.poolEndDate}}日，当前已过有效期，确认是否提交
+  </div>
+</nz-modal>

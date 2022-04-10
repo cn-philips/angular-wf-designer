@@ -1,0 +1,458 @@
+@import "../../../media_query.scss";
+$HEADER_HEIGHT: 3.8rem;
+$CONTAINER_GAP: 1.5rem;
+$FOOTER_GAP: 3.3125rem;
+$HEADER_FOOTER_GAP: $HEADER_HEIGHT + $CONTAINER_GAP + $CONTAINER_GAP +
+  $FOOTER_GAP;
+$PADDING_GAP: 1rem;
+.card-header {
+  display: flex;
+  align-items: center;
+  margin: 0 -0.75rem;
+  i {
+    margin-right: 5px;
+  }
+}
+[nz-carousel-content] {
+  height: 100%;
+  width: 100%;
+}
+::ng-deep.ant-carousel .slick-slider {
+  height: 100%;
+  width: 100%;
+  img {
+    width: 100%;
+    user-select: none;
+  }
+  .dashboard_nav {
+    width: 100%;
+    height: calc(50vh - #{$HEADER_FOOTER_GAP/2});
+    position: relative;
+    color: #fff;
+    background: url(assets/image/homepage_btn.jpg) no-repeat;
+    background-origin: border-box;
+    background-size: cover;
+    cursor: pointer;
+    user-select: none;
+    box-shadow: rgba(17, 17, 26, 0.1) 0px 4px 16px,
+      rgba(17, 17, 26, 0.1) 0px 8px 24px, rgba(17, 17, 26, 0.1) 0px 16px 56px;
+    overflow: hidden;
+    border: none;
+    background-position: center center;
+    // min-height: 20rem;
+    .nav_title {
+      display: flex;
+      align-items: center;
+      font-size: 2.5rem;
+      .todo_count {
+        color: #13c8ff;
+        text-shadow: 0 0 10px rgb(102, 102, 102);
+      }
+    }
+    .card-body {
+      justify-content: center;
+      align-items: center;
+      z-index: 1;
+    }
+    .dashboard_nav_shadow {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.4);
+      .dashboard_cycle_decoration {
+        position: absolute;
+        border: 3px solid #fff;
+        border-radius: 1rem;
+        width: 1rem;
+        height: 1rem;
+        right: 0.5rem;
+        top: 0.5rem;
+      }
+    }
+
+    .dashboard_intro,
+    .dashboard_entry {
+      transition: max-height 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+        opacity 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      overflow: hidden;
+    }
+    .ShowDashboard {
+      .dashboard_intro {
+        max-height: 0;
+        opacity: 0;
+      }
+      .dashboard_entry {
+        max-height: 1000px;
+        opacity: 1;
+      }
+    }
+    .HideDashboard {
+      .dashboard_intro {
+        max-height: 1000px;
+        opacity: 1;
+      }
+      .dashboard_entry {
+        max-height: 0;
+        opacity: 0;
+      }
+    }
+  }
+}
+
+.homepage-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  .carousel-wrapper {
+    width: calc(100% - 18.75rem);
+    height: calc(50vh - #{$HEADER_FOOTER_GAP/2});
+    padding-bottom: $PADDING_GAP;
+    .placeImage {
+      // background: url(assets/image/homepage_banner.jpg) no-repeat;
+      // background-size: cover;
+      // background-origin: border-box;
+      background-color: #f5f5f5;
+      height: 100%;
+      width: 100%;
+      border-radius: 0.3125rem;
+      overflow: hidden;
+      // background-position: top center;
+    }
+    padding-right: $PADDING_GAP;
+  }
+  .quick_link {
+    overflow-x: hidden;
+    @media screen and (min-width: $screen-md-max) {
+      width: 18.75rem;
+      height: calc(100vh - #{$HEADER_FOOTER_GAP});
+    }
+    .card-body {
+      // margin: 0 -0.75rem;
+      padding: 0;
+      // height: 22.875rem;
+      overflow-y: auto;
+      ul {
+        li {
+          border-radius: 2px;
+          overflow: hidden;
+          border-bottom: 1px solid #eee;
+          transition: border-bottom 0.3s ease-in-out;
+          margin-bottom: 1px;
+          &:hover {
+            border-bottom: 1px solid #20bdff;
+          }
+          a {
+            display: block;
+            padding: 0.5rem 1.5rem;
+            width: 100%;
+            box-shadow: 4px 0px 0px 0px #ccc inset;
+            transition: box-shadow 0.3s ease-in-out;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            i {
+              margin-right: 5px;
+            }
+            &:link,
+            &:visited,
+            &:hover,
+            &:active {
+              color: #4e5155;
+            }
+            &:hover {
+              box-shadow: 4px 0px 0px 0px #1c86ff inset,
+                8px 0px 0px 0px #20bdff inset;
+              color: #1c86ff !important;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .user-card-group {
+    $Padding: 1rem;
+    $Card-Size: 2rem;
+    // width: 40rem;
+    height: 100%;
+    flex: 1;
+    @media screen and (max-width: $screen-xs-max) {
+      width: 100%;
+    }
+    @media screen and (min-width: $screen-sm-min) and (max-width: $screen-sm-max) {
+      width: 100%;
+    }
+    .card-body-group {
+      max-height: 100%;
+      height: 100%;
+      overflow-y: auto;
+      padding-top: 0.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      .card-body {
+        flex: unset !important;
+        padding: $Padding;
+        width: calc(33.3333% - 2 * #{$Padding});
+
+        @media screen and (max-width: $screen-md-max) {
+          width: calc(100% - 2 * #{$Padding});
+        }
+        @media screen and (min-width: $screen-md-min) and (max-width: $screen-FHD-max) {
+          width: calc(50% - 2 * #{$Padding});
+        }
+        @media screen and (min-width: $screen-1080p-min) {
+          width: calc(33.3333% - 2 * #{$Padding});
+        }
+        // height: 18.75rem;
+        // display: flex;
+        .user-card {
+          border-radius: 1rem;
+          overflow: hidden;
+          height: 100%;
+          width: 100%;
+          box-shadow: rgba(17, 17, 26, 0.1) 0rem 0.5rem 1rem;
+          transition: box-shadow 0.5s ease;
+          &:hover {
+            box-shadow: rgba(17, 17, 26, 0.4) 0rem 0.5rem 2.5rem;
+          }
+          .user-card-body {
+            // position: relative;
+            // padding: 0.5rem 1rem;
+            height: 6.25rem;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            .user-card-name {
+              font-weight: bolder;
+              font-size: 1.2rem;
+              background-color: #337fbf;
+              color: #fff;
+              padding: 0 $Padding;
+              display: flex;
+              flex-direction: column;
+              justify-content: flex-end;
+              flex-basis: 4rem;
+              & > div {
+              }
+            }
+            .user-card-info {
+              flex: 1;
+              padding: $Padding;
+              background-color: #fafafa;
+              // max-height: 3.3125rem;
+              // transition: max-height 2s cubic-bezier(0.165, 0.84, 0.44, 1);
+            }
+          }
+          &:hover {
+            .user-card-body {
+              .user-card-name {
+                flex-basis: 2rem;
+              }
+              .user-card-info {
+                // max-height: 50rem !important;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .user-manual-group {
+    height: 100%;
+    flex: 1;
+    @media screen and (max-width: $screen-xs-max) {
+      max-height: 20rem;
+    }
+    @media screen and (min-width: $screen-sm-min) and (max-width: $screen-sm-max) {
+      max-height: 20rem;
+    }
+    .user-manual-body {
+      $Padding: 1rem;
+      $QuestionSize: 2rem;
+      padding: 0;
+      overflow-y: auto;
+      .user-manual-container {
+        position: relative;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        // justify-content: space-between;
+        .user-manual {
+          transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+          background: #fff;
+
+          &::after,
+          &::before {
+            position: absolute;
+            display: block;
+            content: "";
+          }
+          &::before {
+            left: $Padding;
+            top: $Padding;
+            height: $QuestionSize;
+            width: $QuestionSize;
+            background: url(assets/image/icons/question.svg) no-repeat;
+            background-size: cover;
+            background-position: center;
+          }
+          &::after {
+            right: $Padding;
+            top: $Padding;
+            height: 1rem;
+            width: 1rem;
+            background: url(assets/image/icons/circle.svg) no-repeat;
+            background-size: cover;
+            background-position: center;
+          }
+          width: calc(25% - #{2 * 1.0625rem});
+
+          @media screen and (min-width: $screen-lg-max) and (max-width: $screen-FHD-max) {
+            width: calc(33.33333% - #{2 * 1.0625rem});
+          }
+          @media screen and (max-width: $screen-lg-max) {
+            width: calc(50% - #{2 * 1.0625rem});
+          }
+          height: 9.375rem;
+          margin: 1.0625rem;
+          border-radius: 0.9375rem;
+          overflow: hidden;
+          box-shadow: 0rem 0rem 0.625rem 0rem #33333340;
+          padding: $Padding;
+          position: relative;
+          font-size: 0.875rem;
+          &:hover {
+            background: #337fbf;
+            // font-size: 1rem;
+            font-weight: bold;
+            .user-manual-title {
+              border-left: 0.375rem #fff solid;
+              padding-left: 0.25rem;
+            }
+            &::before {
+              height: $QuestionSize;
+              width: $QuestionSize;
+              background: url(assets/image/icons/question-white.svg) no-repeat;
+              background-size: cover;
+              background-position: center;
+            }
+            &::after {
+              height: 1rem;
+              width: 1rem;
+              background: url(assets/image/icons/circle-white.svg) no-repeat;
+              background-size: cover;
+              background-position: center;
+            }
+            & > a {
+              &:link,
+              &:visited,
+              &:hover,
+              &:active {
+                color: #fff;
+              }
+            }
+          }
+          & > a {
+            &:link,
+            &:visited,
+            &:hover,
+            &:active {
+              color: #333333;
+            }
+            display: inline-block;
+            width: 100%;
+            height: 100%;
+            padding-top: $QuestionSize;
+            display: flex;
+            align-items: flex-end;
+            text-overflow: ellipsis;
+            word-break: break-all;
+            overflow: hidden;
+            .user-manual-title {
+              max-height: 100%;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .QA_and_Support_row {
+    padding-right: $PADDING_GAP;
+    height: calc(50vh - #{$HEADER_FOOTER_GAP/2});
+  }
+  @media screen and (max-width: $screen-xs-max) {
+    .mr-4 {
+      margin-right: 0 !important;
+    }
+    .mb-4 {
+      margin-bottom: 0 !important;
+    }
+    // .first-row > *,
+    // .second-row > * {
+    //   margin-top: 1rem;
+    // }
+  }
+  @media screen and (min-width: $screen-sm-min) and (max-width: $screen-sm-max) {
+    .mr-4 {
+      margin-right: 0 !important;
+    }
+    .mb-4 {
+      margin-bottom: 0 !important;
+    }
+  }
+  @media screen and (max-width: $screen-xs-max) {
+    .carousel-wrapper {
+      .placeImage {
+        img {
+          height: calc(50vh - #{$HEADER_FOOTER_GAP/2});
+          width: unset;
+        }
+      }
+    }
+  }
+  @media screen and (max-width: $screen-md-max) {
+    .carousel-wrapper {
+      width: 100%;
+      padding-right: 0;
+      height: unset;
+      .placeImage {
+        height: unset;
+        // img {
+        //   height: calc(50vh - #{$HEADER_FOOTER_GAP/2});
+        //   width: unset;
+        // }
+      }
+    }
+    .quick_link {
+      float: unset !important;
+      width: 100%;
+      .card-body {
+        margin: 0 -0.75rem;
+      }
+    }
+    .QA_and_Support_row {
+      width: 100%;
+      padding-right: 0;
+      margin: 0 auto;
+      // flex-wrap: nowrap;
+      height: unset;
+      flex-direction: column !important;
+      justify-content: center;
+      margin-top: $CONTAINER_GAP;
+      .user-manual-group {
+        width: 100%;
+      }
+      .user-card-group {
+        margin-top: $CONTAINER_GAP;
+        width: 100%;
+      }
+    }
+  }
+}

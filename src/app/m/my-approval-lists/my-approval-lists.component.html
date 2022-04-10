@@ -1,0 +1,30 @@
+<app-mobile-header-navbar [parentUrl]="parentUrl" [title]="'我的申请'"></app-mobile-header-navbar>
+<!-- <WingBlank style="margin-top:25vh;"> -->
+<WingBlank style="margin-top:0vh;">
+  <WhiteSpace></WhiteSpace>
+  <div Button style="text-align: left;height: 80px;" (click)="jumpToUrl('/m/my-approval-await')">
+    <div style="margin-top: 16px;">
+      <ng-container *ngTemplateOutlet="icon2"></ng-container>我的申请（进行中）
+      <div *ngIf="pendingApprovalCount > 0" [ngClass]="'badge badge-pill badge-danger'">{{pendingApprovalCount}}</div>
+    </div>
+  </div>
+  <WhiteSpace></WhiteSpace>
+  <div Button style="text-align: left;height: 80px;"  (click)="jumpToUrl('/m/my-approval')">
+    <div style="margin-top: 16px;">
+      <ng-container *ngTemplateOutlet="icon1"></ng-container>我的申请（已完成）
+    </div>
+  </div>
+  <WhiteSpace></WhiteSpace>
+</WingBlank>
+
+<ng-template #icon1>
+  <div class="d-inline" style="margin-left:12px;margin-right:12px;">
+    <i class="ion ion-ios-checkmark-circle-outline"></i>
+  </div>
+</ng-template>
+
+<ng-template #icon2>
+  <div class="d-inline" style="margin-left:12px;margin-right:12px;">
+    <i class="ion ion-md-time"></i>
+  </div>
+</ng-template>

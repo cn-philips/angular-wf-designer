@@ -1,0 +1,107 @@
+<nz-card class="title_warpper mb-4">
+  <div>
+    <h4 class="font-weight-bold">
+      <span>模板维护</span>
+    </h4>
+  </div>
+</nz-card>
+<hr class="border-light container-m--x mt-0 mb-4">
+
+<div class="demo-vertical-spacing">
+
+  <ng-template #cardTemplete>
+    <span style="margin-top: 5px;margin-right: 10px">编辑内容</span><nz-switch [(ngModel)]="isContent"></nz-switch>
+  </ng-template>
+  <nz-card [nzTitle]="cardTemplete">
+    <ng-container *ngIf="!isContent">
+      <div class="form-row">
+        <div class="form-group col-md-6">
+          <label class="form-label w-10admin-tools0">上传附件模板文件</label>
+          <input id="tm-upload-input" type="file" (change)="selectFile($event)">
+        </div>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="isContent">
+      <label class="form-label w-100">模板名称</label>
+      <input
+        nz-input
+        [(ngModel)]="selectTemplate.name"
+      />
+      <label class="form-label w-100">模板标题</label>
+      <input
+        nz-input
+        [(ngModel)]="selectTemplate.title"
+      />
+      <label class="form-label w-100">模板内容</label>
+      <textarea
+        nz-input
+        [(ngModel)]="selectTemplate.fileContent"
+        [nzAutosize]="{ minRows: 5, maxRows: 20 }"
+      >
+      </textarea>
+    </ng-container>
+    <label class="form-label w-100"><span>Remarks</span><br>备注</label>
+    <textarea
+      nz-input
+      [(ngModel)]="comment"
+      [nzAutosize]="{ minRows: 2, maxRows: 5 }"
+    ></textarea>
+    <button type="button" style="margin-bottom:10px;margin-top: 20px" class="btn btn-primary" (click)="uploadTMTemplateFile()">Save 保存
+    </button>
+  </nz-card>
+
+
+</div>
+
+<hr class="border-light container-m--x mt-0 mb-4">
+
+<div class="demo-vertical-spacing">
+  <div>
+    <div class="row">
+      <div class="col-sm-6 col-md-5 col-lg-3 mb-3">
+        <input class="form-control" type='text' placeholder='Filter by 模板名称...' (keyup)='updateFilter($event)'>
+      </div>
+      <ng-container *ngIf="hasStatus">
+        <div class="col-sm-6 col-md-5 col-lg-3 mb-3 ml-auto">
+          <button type="button" class="btn btn-round btn-success" (click)="triggerStatus('1')">&ensp;Active&ensp;
+          </button>
+          <button type="button" class="btn btn-round btn-danger" (click)="triggerStatus('0')">Deactive</button>
+        </div>
+      </ng-container>
+    </div>
+
+    <div class="table-responsive">
+      <ngx-datatable #table style="min-width: 500px"
+                     [rows]="rows"
+                     [loadingIndicator]="loadingIndicator"
+                     [columnMode]="'force'"
+                     [headerHeight]="43"
+                     [footerHeight]="'auto'"
+                     [rowHeight]="'auto'"
+                     [reorderable]="true"
+                     [selected]="selected"
+                     [limit]="10"
+                     (select)='onSelect($event)'>
+        <ngx-datatable-column prop="type" name="模板类型" [headerClass]="getHeaderClass"
+                              [cellClass]="getCellClass"></ngx-datatable-column>
+        <ngx-datatable-column prop="name" name="模板名称" [headerClass]="getHeaderClass"
+                              [cellClass]="getCellClass"></ngx-datatable-column>
+        <ngx-datatable-column prop="comment" name="Comment" [headerClass]="getHeaderClass"
+                              [cellClass]="getCellClass"></ngx-datatable-column>
+        <ngx-datatable-column prop="filepath" name="操作" [headerClass]="getHeaderClass" [cellClass]="getCellClass">
+          <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+            <!-- <a href="javascript:void(0)" class="btn btn-primary btn-xs" href="{{baseBackPath}}{{value}}" download={{row.name}} >下载</a> -->
+            <a href="javascript:void(0)" class="btn btn-primary btn-xs" (click)="downloadFile(row)">下载</a>
+            <a *ngIf="row['fileType'] == 'CONTENT'" href="javascript:void(0)" class="btn btn-primary btn-xs" (click)="editTemplateContent(row)">编辑</a>
+            <a href="javascript:void(0)" class="btn btn-danger btn-xs" mwlConfirmationPopover
+               popoverMessage="确认删除？"
+               placement="top"
+               confirmText="确认" [popoverTitle]="''"
+               cancelText="取消"
+               (confirm)="delTemplate(row);">删除</a>
+          </ng-template>
+        </ngx-datatable-column>
+      </ngx-datatable>
+    </div>
+  </div>
+</div>

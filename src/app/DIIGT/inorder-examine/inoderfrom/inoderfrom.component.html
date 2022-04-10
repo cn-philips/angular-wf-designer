@@ -1,0 +1,87 @@
+<app-apploading [load]="load"></app-apploading>
+<form nz-form [formGroup]="validateForm">
+  <div *ngIf="isVisibleDate" nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+    <div nz-col nzSpan="12">
+      <nz-form-item>
+        <nz-form-label [nzSpan]="6" [nzNoColon]="true"  nzFor="email"></nz-form-label>
+        <nz-form-control [nzSpan]="14" nz-tooltip [nzTitle]="remark">
+          <div class="tips">
+              <div>提示:</div>
+              注意：经销商DDP 有效期为{{this.dataBase.contractEndDate}}，当前已过有效期，请考虑是否审批通过
+          </div>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+  <div  *ngIf="isVisibleDateIepool" nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzSpan="12">
+        <nz-form-item>
+          <nz-form-label [nzSpan]="6" [nzNoColon]="true"  nzFor="email"></nz-form-label>
+          <nz-form-control [nzSpan]="14" nz-tooltip [nzTitle]="remark">
+            <div class="tips">
+                <div>提示:</div>
+                注意：外贸公司DDP 有效期为{{this.dataBase.poolEndDate}}，当前已过有效期，请考虑是否审批通过
+            </div>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+  </div>
+  <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+    <div nz-col nzSpan="12">
+      <nz-form-item>
+        <nz-form-label [nzSm]="7" [nzXs]="24"><span>Remarks</span><br>备注</nz-form-label>
+        <nz-form-control [nzSm]="14" [nzXs]="24">
+          <textarea oninput="if(value.length>255)value=value.slice(0,255)" nz-input placeholder="" formControlName="remark" [(ngModel)]="params.remark"
+            [nzAutosize]="{ minRows: 2, maxRows: 6 }"></textarea>
+            <div>还可以输入:{{params.remark.length}}/{{textLen}}</div>
+          <nz-form-explain *ngIf="validateForm.get('remark')?.dirty && validateForm.get('remark')?.errors">
+            请填写拒绝理由
+          </nz-form-explain>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+  <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+    <div nz-col nzSpan="12">
+      <nz-form-item>
+        <nz-form-label [nzSm]="7" [nzXs]="24">Review Supporting Documents<br>审核支持文件</nz-form-label>
+        <nz-form-control [nzSm]="14" [nzXs]="24" style="margin-top: 15px">
+          <div>
+          <nz-upload
+            [(nzFileList)]="fileFileList"
+            [nzBeforeUpload]="fileBeforeUpload"
+            [nzLimit]="1"
+            [nzPreview]="dwonLoad"
+          >
+            <button [disabled]="flag==1" nz-button><i nz-icon nzType="upload"></i><span>Upload 上传附件</span></button>
+          </nz-upload>
+          </div>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+</form>
+<div nz-row nzType="flex" nzJustify="end" nzAlign="middle">
+  <div nz-col nzXs="24" nzSm="24" nzMd="16">
+    <nz-form-item style="text-align: right;">
+<!--      <button nz-button *ngIf="flag==0" [nzType]="'primary'" style="margin-left: 10px;" (click)="sumbit(1)">通过</button>-->
+<!--      <button nz-button *ngIf="flag==0" [nzType]="'primary'" style="margin-left: 10px;" (click)="sumbit(0)">拒绝</button>-->
+      <button *ngIf="flag==0" nz-button [nzType]="'primary'" style="margin-left: 10px;" nz-popconfirm
+              nzTitle="你确定要执行通过的操作?" (nzOnConfirm)="sumbit(1)"
+              >Approve 审核通过</button>
+      <button *ngIf="flag==0" nz-button [nzType]="'primary'" style="margin-left: 10px;" nz-popconfirm
+              nzTitle="你确定要执行拒绝的操作?" (nzOnConfirm)="sumbit(0)"
+              >Refuse 拒绝</button>
+    </nz-form-item>
+  </div>
+</div>
+<nz-modal [(nzVisible)]="isShowDate" nzWidth="650px" nzTitle="提醒" [nzFooter]="null" (nzOnCancel)="isshowDateCancel()">
+  <div>
+    经销商DDP有效期为{{dataBase.contractEndDate}}日，当前已过有效期，请退回
+  </div>
+</nz-modal>
+<nz-modal [(nzVisible)]="isShowDates" nzWidth="650px" nzTitle="提醒" [nzFooter]="null" (nzOnCancel)="isshowDateCancels()">
+  <div>
+    外贸公司DDP有效期为{{dataBase.poolEndDate}}日，当前已过有效期，请退回
+  </div>
+</nz-modal>

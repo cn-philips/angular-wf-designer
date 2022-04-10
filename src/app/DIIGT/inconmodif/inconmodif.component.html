@@ -1,0 +1,203 @@
+<app-apploading [load]="load"></app-apploading>
+<nz-card class="title_warpper">
+  <div>
+    <h4 class="font-weight-bold">
+      <span>
+      <!-- <span>填写/修改合同概要表</span> -->
+      {{dataBase.detail.status=='XJDHTGYBTX'?'Fill in Contract Summary 填写合同概要表':'Edit Contract Summary 修改合同概要表'}}</span>
+    </h4>
+  </div>
+</nz-card>
+<igt-approval-flowline></igt-approval-flowline>
+<div class="tabs-box">
+
+  <div nz-row nzType="flex" nzJustify="end" nzAlign="middle" class="tabs-box-actions">
+    <div nz-col nzSpan="24">
+      <nz-form-item>
+        <nz-form-control [nzSm]="24" [nzXs]="24" style="text-align: right;">
+          <button *ngIf="disa" nz-button nzType="default" (click)="toReturn()" style="margin-right:10px;">Return 返回</button>
+          <button *ngIf="!disa" nz-button nzType="default" (click)="cancel()" style="margin-right:10px;">Cancel 取消</button>
+          <button *ngIf="!disa" nz-button nzType="default" (click)="save(0)" style="margin-right:10px;">Save 保存</button>
+          <button *ngIf="!disa" nz-button nzType="primary" (click)="save(1)">Submit 提交合同概要表</button>
+          <nz-dropdown [nzPlacement]="'bottomRight'" *ngIf="!disa&&withdraw">
+            <button nz-button nz-dropdown><i class="tranf90" nz-icon nzType="more" nzTheme="outline"></i></button>
+            <ul nz-menu>
+              <li nz-menu-item>
+                <a href="javascript:" (click)="backOrder()">Return to Order Preparation Form 退回到进单准备表</a>
+              </li>
+            </ul>
+            </nz-dropdown>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+  <ngb-tabset type="tabs" [destroyOnHide]="false"  [activeId]="activedId" (tabChange)="tabclick($event)" class="nav-tabs-top nav-responsive-xl">
+    <ngb-tab id="pending-tab">
+      <ng-template ngbTabTitle><span class="tab-title"><strong>Contract Summary<br> 合同概要表</strong></span></ng-template>
+      <ng-template ngbTabContent>
+        <div class="card-body">
+          <form #searchForm="ngForm">
+            <app-preOrderBaseInfo
+              [dataBase]="dataBase"
+              #childbase
+              (updateDataBaseInfo)="updateDataBase($event)"
+              [showChek]="true"
+              [conTable]="true"
+              [disa]="disa"
+            >
+            </app-preOrderBaseInfo>
+          </form>
+          <div nz-row nzType="flex" nzJustify="end" nzAlign="middle">
+            <div nz-col nzSpan="4">
+              <nz-form-item>
+                <nz-form-control [nzSm]="24" [nzXs]="24" style="text-align: right;">
+                  <button nz-button [nzType]="'primary'" (click)="myskip('examine-tab')">Next 下一步</button>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+          </div>
+        </div>
+      </ng-template>
+    </ngb-tab>
+    <ngb-tab id="examine-tab">
+      <ng-template ngbTabTitle><span class="tab-title"><strong>Approved History<br> 审批记录</strong></span></ng-template>
+      <ng-template ngbTabContent>
+        <div class="card-body">
+          <nz-card class="mtb1rem" nzTitle="Approved History 审批记录">
+            <app-emp-acc></app-emp-acc>
+          </nz-card>
+          <nz-card class="mtb1rem" [nzTitle]="dataBase.detail.status=='XJDHTGYBTX'?'Fill in Contract Summary 填写合同概要表':'Edit Contract Summary 修改合同概要表'">
+
+            <!--修改备注-->
+            <form nz-form [formGroup]="validateForm">
+
+              <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+                <div nz-col nzSpan="24" *ngIf="isVisibleDate">
+                  <nz-form-item>
+                    <nz-form-label [nzSpan]="3" [nzNoColon]="true"  nzFor="email"></nz-form-label>
+                    <nz-form-control [nzSpan]="14" nz-tooltip [nzTitle]="remark">
+                       <div class="tips">
+                          <div>提示:</div>
+                          注意：经销商DDP 有效期为{{this.dataBase.contractEndDate}}，当前已过有效期，请考虑是否审批通过
+                       </div>
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+                <div nz-col nzSpan="24" *ngIf="isVisibleDateIepool">
+                  <nz-form-item>
+                    <nz-form-label [nzSpan]="3" [nzNoColon]="true"  nzFor="email"></nz-form-label>
+                    <nz-form-control [nzSpan]="14" nz-tooltip [nzTitle]="remark">
+                       <div class="tips">
+                          <div>提示:</div>
+                          注意：经销商DDP 有效期为{{this.dataBase.poolEndDate}}，当前已过有效期，请考虑是否审批通过
+                       </div>
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+                <div nz-col nzSpan="24">
+                  <nz-form-item>
+                    <nz-form-label [nzSm]="3" [nzXs]="24" [nzRequired]="dataBase.detail.status=='XJDHTGYBTX'?false:true"><span>Remarks</span><br>备注</nz-form-label>
+                    <nz-form-control *ngIf="dataBase.detail.status=='DHTGYBTX'" [nzSm]="7" [nzXs]="24">
+                        <textarea
+                           nz-input oninput="if(value.length>255)value=value.slice(0,255)"
+                          placeholder=""
+                          formControlName="remarks"
+                          [(ngModel)]="params.remarks"
+                        ></textarea>
+                        <div>还可以输入:{{params.remarks.length}}/{{textLen}}</div>
+                      <nz-form-explain
+                        *ngIf="validateForm.get('remarks')?.dirty && validateForm.get('remarks')?.errors">
+                        此选项必填字段
+                      </nz-form-explain>
+                    </nz-form-control>
+                    <nz-form-control *ngIf="dataBase.detail.status=='XJDHTGYBTX'" [nzSm]="7" [nzXs]="24">
+                      <textarea
+                        class="textarea"
+                         nz-input oninput="if(value.length>255)value=value.slice(0,255)"
+                        placeholder=""
+                        [disabled]="dataBase.detail.flag=='1'"
+                        [ngModelOptions]="{ standalone: true }"
+                        [(ngModel)]="params.remarks"
+                      ></textarea>
+                      <div>还可以输入:{{params.remarks.length}}/{{textLen}}</div>
+                  </nz-form-control>
+                  </nz-form-item>
+                </div>
+                <div nz-col nzSpan="24">
+                  <nz-form-item>
+                    <nz-form-label [nzSm]="3" [nzXs]="24">Explain Attachment<br>说明附件</nz-form-label>
+                    <nz-form-control [nzSm]="7" [nzXs]="24">
+                      <div class="maxuploadto">
+                      <nz-upload
+                        [(nzFileList)]="fileFileList"
+                        [nzBeforeUpload]="fileBeforeUpload"
+                        [nzLimit]="1"
+                        [nzPreview]="dwonLoad"
+                      >
+                        <button nz-button [disabled]="disa"><i nz-icon nzType="upload"></i><span>Upload  上传附件</span></button>
+                      </nz-upload>
+                      </div>
+                      <!-- <button *ngIf="flag=='1'&&dataBase.fileUpload" class="down" nz-button nzType="link" (click)="fileDwon(dataBase.fileUpload)">下载文件</button> -->
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+              </div>
+            </form>
+          </nz-card>
+          <div nz-row nzType="flex" nzJustify="end" nzAlign="middle">
+            <div nz-col nzSpan="4">
+              <nz-form-item>
+                <nz-form-control [nzSm]="24" [nzXs]="24" style="text-align: right;">
+                  <button nz-button [nzType]="'primary'" (click)="myskip('pending-tab')">Back 上一步</button>
+                  <button
+                   *ngIf="dataBase.hsId"
+                    nz-button
+                    [nzType]="'primary'"
+                    (click)="myskip('change-tab')"
+                  >
+                   Next 下一步
+                  </button>
+
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+          </div>
+        </div>
+      </ng-template>
+    </ngb-tab>
+    <ngb-tab id="change-tab" *ngIf="dataBase.hsId">
+      <ng-template ngbTabTitle><span class="tab-title"><strong>Order Change Review<br> 审核改单</strong></span></ng-template>
+      <ng-template ngbTabContent>
+        <div class="card-body">
+           <app-approve-change [disa]="disa" [dataBase]="dataBase"></app-approve-change>
+           <div nz-row nzType="flex" nzJustify="end" nzAlign="middle">
+            <div nz-col nzSpan="4">
+              <nz-form-item>
+                <nz-form-control [nzSm]="24" [nzXs]="24" style="text-align: right;">
+                  <button nz-button [nzType]="'primary'" (click)="myskip('examine-tab')">Back 上一步</button>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+          </div>
+        </div>
+      </ng-template>
+    </ngb-tab>
+  </ngb-tabset>
+</div>
+<nz-modal [(nzVisible)]="isAgres" nzWidth="650px" nzTitle="Remind 提示" [nzFooter]="modalFooter1" (nzOnCancel)="isAgreCancels()">
+  <app-confirm #child [infor]="showData" ></app-confirm>
+  <ng-template #modalFooter1>
+    <button nz-button nzType="default" (click)="isAgreCancels()">Cancel 取消</button>
+    <button nz-button nzType="primary" (click)="isAgregentOk()">OK 确定</button>
+  </ng-template>
+</nz-modal>
+<nz-modal [(nzVisible)]="isShowDate" nzWidth="650px" nzTitle="提醒" [nzFooter]="null" (nzOnCancel)="isshowDateCancel()">
+  <div>
+    经销商DDP有效期为{{dataBase.contractEndDate}}日，当前已过有效期，请重新选经销商
+  </div>
+</nz-modal>
+<nz-modal [(nzVisible)]="isShowDates" nzWidth="650px" nzTitle="提醒" [nzFooter]="null" (nzOnCancel)="isshowDateCancels()">
+  <div>
+    外贸公司DDP有效期为{{dataBase.poolEndDate}}日，当前已过有效期，请重新外贸公司
+  </div>
+</nz-modal>

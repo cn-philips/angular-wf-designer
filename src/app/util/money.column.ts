@@ -1,0 +1,2 @@
+//表示金额的字段名称，英文小写，在tablecell中靠右对齐
+export const money_column = ['money', 'price', '价格', '金额', 'cny', 'usd', 'rmb', 'cost', 'usd_list_price', 'rmb_list_price', 're_selling_price_usd_markupincluded', 're_selling_price_rmb_markupincluded', 'onsitetraining_usd', 'grouptraining_usd', 'onsitetraining_rmb', 'grouptraining_rmb', 'sumprice','unittotalprice'];

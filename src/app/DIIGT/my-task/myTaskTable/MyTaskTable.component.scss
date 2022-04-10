@@ -1,0 +1,11 @@
+.innerbox{
+    white-space: pre-wrap;    
+  }
+.lines-3{
+  overflow: hidden;
+    text-overflow: ellipsis;    
+    -webkit-box-orient: vertical;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+
+}

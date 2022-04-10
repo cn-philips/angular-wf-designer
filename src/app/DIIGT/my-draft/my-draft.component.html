@@ -1,0 +1,18 @@
+<nz-card class="title_warpper">
+  <div>
+    <h4 class="font-weight-bold">
+      <span>My Drafts 我的草稿</span>
+    </h4>
+  </div>
+</nz-card>
+<nz-tabset
+  [nzSelectedIndex]="tabIndex"
+  [nzTabPosition]="'top'"
+  [nzType]="'card'"
+>
+  <nz-tab nzTitle="My Drafts 我的草稿">
+    <nz-card>
+      <ig-myDraftTask></ig-myDraftTask>
+    </nz-card>
+  </nz-tab>
+</nz-tabset>
