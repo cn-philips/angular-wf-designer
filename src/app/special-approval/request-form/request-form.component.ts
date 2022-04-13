@@ -15,6 +15,8 @@ import {
   APPLY_TYPE_MAP,
   STAND_WARRANTY_MONTH,
   BG_BMC_MAP,
+  NODE_ACTION,
+  PROCESS_STATUS,
 } from '../special-approval.constants'
 
 enum TAB_TYPE {
@@ -230,6 +232,10 @@ export class RequestFormComponent implements OnInit {
     return this.formValues.get('warrantyInfo') as FormGroup
   }
 
+  get ccInfo(): FormGroup {
+    return this.formValues.get('ccInfo') as FormGroup
+  }
+
   setFormValidators(type, item, bg) {
     if (type === APPLY_TYPE.EXT_WARRANTY) {
       this.orderInfo.controls.applyArrivalTime.clearValidators()
@@ -290,7 +296,7 @@ export class RequestFormComponent implements OnInit {
   // 1. 登录用户是申请人
   // 2. 申请状态是草稿、已拒绝(退回)、已撤销
   setEditable(processStatus) {
-    const editable = this.isApplicant && ['DRAFT', 'REJECTED', 'WITHDRAW'].includes(processStatus)
+    const editable = this.isApplicant && [PROCESS_STATUS.DRAFT, PROCESS_STATUS.REJECTED, PROCESS_STATUS.WITHDRAW].includes(processStatus)
     if (!editable) {
       // 设置表单字段disabled
       this.formValues.controls.basicInfo.disable()
@@ -325,6 +331,7 @@ export class RequestFormComponent implements OnInit {
     try {
       const data = this.getFormData()
       const { orderInfo: { businessModel, hospitalNo, dealerCode }, ccType, ccPerson } = data
+      // 医院和经销商必填一项
       if (businessModel === BUSINESS_MODEL.DISTRIBUTOR_DEAL) {
         if (!hospitalNo && !dealerCode) {
           this.message.error('请选择医院或者经销商')
@@ -335,6 +342,7 @@ export class RequestFormComponent implements OnInit {
         return
       }
 
+      // 抄送人和抄送节点必须同时选择或者同时不选择
       if (ccType && !ccPerson) {
         this.message.error('请选择抄送人')
         return
@@ -342,7 +350,7 @@ export class RequestFormComponent implements OnInit {
         this.message.error('请选择抄送节点')
         return
       }
-      const id = this.message.loading(LOADING_MESSAGE.SUBMIT).messageId
+      const id = this.message.loading(LOADING_MESSAGE.SUBMIT, { nzDuration: 0 }).messageId
       this.submitLoading = true
       await this.spService.submitRequest(data)
       this.message.remove(id)
@@ -358,7 +366,7 @@ export class RequestFormComponent implements OnInit {
 
   async onSaveDraft() {
     try {
-      const id = this.message.loading(LOADING_MESSAGE.SAVE_DRAFT).messageId
+      const id = this.message.loading(LOADING_MESSAGE.SAVE_DRAFT, { nzDuration: 0 }).messageId
       this.submitLoading = true
       const data = this.getFormData()
       await this.spService.saveRequest(data)
@@ -378,7 +386,13 @@ export class RequestFormComponent implements OnInit {
       this.pageLoading = true
       const data = await this.spService.getRequestDetail(requestId)
       this.requestInfo = data
-      const { createUser, applicant, applicantName, status, applyCode, applyType, applyItem, applyItemDesc, executed, processStatus, reason, ccType, ccPerson, orderInfo, attachments, taskList, nodeInfoList, nodeCode, nodeAction, warrantyInfo } = data
+      const { 
+        createUser, applicant, applicantName,
+        status, applyCode, applyType, applyItem,
+        applyItemDesc, executed, processStatus,
+        reason, ccType, ccPerson, orderInfo, attachments,
+        taskList, nodeInfoList, nodeCode, nodeAction, warrantyInfo,
+      } = data
       const { label, items } = APPLY_TYPE_MAP[applyType]
       const { productType, bg } = orderInfo
       this.pageTitle = label
@@ -386,7 +400,6 @@ export class RequestFormComponent implements OnInit {
       this.applyItems = items
       this.applyType = applyType
       this.executed = executed
-      // this.setPageTitle({ applyType, applyItem }, false)
       this.formValues.patchValue({ 
         basicInfo: {
           applyCode,
@@ -400,11 +413,11 @@ export class RequestFormComponent implements OnInit {
         },
         orderInfo: {
           ...orderInfo,
-          productType: (bg === 'US' && productType) ? productType.split(',') : productType,
+          productType: (bg === 'US' && productType) ? productType.split(',') : productType, // US产品可多选
         },
         ccInfo: {
           ccType,
-          ccPerson: ccPerson ? ccPerson.split(',') : []
+          ccPerson: ccPerson ? ccPerson.split(',') : [],
         },
       })
 
@@ -437,19 +450,19 @@ export class RequestFormComponent implements OnInit {
 
       this.isApplicant = applicant === localStorage.getItem('ng_philips_code1')
       
-      const isDraft = processStatus === 'DRAFT' && this.isApplicant
+      const isDraft = processStatus === PROCESS_STATUS.DRAFT && this.isApplicant
       if (isDraft) {
         this.showSubmitBtn = true
         this.showSaveBtn = true
         this.showDeleteBtn = true
       }
 
-      if (['REJECTED', 'WITHDRAW'].includes(processStatus) && this.isApplicant && status !== 0) {
+      if ([PROCESS_STATUS.REJECTED, PROCESS_STATUS.WITHDRAW].includes(processStatus) && this.isApplicant && status !== 0) {
         this.showSubmitBtn = true
         this.showCancelBtn = true
       }
 
-      this.showApproveTab = nodeAction !== 'feedback' && !!this.taskId && nodeInfoList.find(({ code, action, approverList }) => {
+      this.showApproveTab = nodeAction !== NODE_ACTION.FEEDBACK && !!this.taskId && nodeInfoList.find(({ code, action, approverList }) => {
         if (code === nodeCode && action === nodeAction) {
           return approverList.find(({ user }) => user === localStorage.getItem('ng_philips_code1'))
         } else {
@@ -457,8 +470,8 @@ export class RequestFormComponent implements OnInit {
         }
       })
 
-      this.showFeedbackTab = nodeAction === 'feedback' && this.isApplicant && !!this.taskId
-      this.showWithdrawBtn = processStatus === 'START' && this.isApplicant && nodeAction !== 'feedback'
+      this.showFeedbackTab = nodeAction === NODE_ACTION.FEEDBACK && this.isApplicant && !!this.taskId
+      this.showWithdrawBtn = processStatus === PROCESS_STATUS.START && this.isApplicant && nodeAction !== NODE_ACTION.FEEDBACK
 
       this.approveNodeList = nodeInfoList
       this.approveHistory = taskList
@@ -475,7 +488,7 @@ export class RequestFormComponent implements OnInit {
   async onDeleteRequest() {
     try {
       this.submitLoading = true
-      const id = this.message.loading(LOADING_MESSAGE.DELETE_DRAFT).messageId
+      const id = this.message.loading(LOADING_MESSAGE.DELETE_DRAFT, { nzDuration: 0 }).messageId
       await this.spService.deleteRequest(this.requestId)
       this.message.remove(id)
       this.message.success(SUCCESS_MESSAGE.DELETE_DRAFT)
@@ -492,7 +505,7 @@ export class RequestFormComponent implements OnInit {
   async onCancelRequest() {
     try {
       this.submitLoading = true
-      const id = this.message.loading(LOADING_MESSAGE.CANCEL_REQUEST).messageId
+      const id = this.message.loading(LOADING_MESSAGE.CANCEL_REQUEST, { nzDuration: 0 }).messageId
       await this.spService.cancelRequest(this.requestId)
       this.message.remove(id)
       this.message.success(SUCCESS_MESSAGE.CANCEL_REQUEST)
@@ -509,7 +522,7 @@ export class RequestFormComponent implements OnInit {
   async onWithdrawRequest() {
     try {
       this.submitLoading = true
-      const id = this.message.loading(LOADING_MESSAGE.WITHDRAW_REQUEST).messageId
+      const id = this.message.loading(LOADING_MESSAGE.WITHDRAW_REQUEST, { nzDuration: 0 }).messageId
       await this.spService.withdrawRequest(this.requestId)
       this.message.remove(id)
       this.message.success(SUCCESS_MESSAGE.WITHDRAW_REQUEST)

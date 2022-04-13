@@ -2,7 +2,8 @@ interface SearchParams {
   pageNo: number;
   pageSize: number;
   applyType?: string;
-  processStatus?
+  processStatus?: string;
+  nodeAction?: string;
   bg?: string;
   keyword?: string;
   submitStartTime?: string;

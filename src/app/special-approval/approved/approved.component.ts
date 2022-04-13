@@ -6,8 +6,7 @@ import * as moment from 'moment'
 
 import { SpecialApprovalService } from '../special-approval.service'
 import { SearchParams, RequestItem } from '../special-approval'
-import { DEFAULT_ERROR_MESSAGE } from '../special-approval.constants'
-import { APPLY_TYPES, BG_LIST } from '../special-approval.constants'
+import { APPLY_TYPES, BG_LIST, DEFAULT_ERROR_MESSAGE, PROCESS_STATUS } from '../special-approval.constants'
 
 @Component({
   selector: 'special-approval-approved',
@@ -31,8 +30,8 @@ export class ApprovedComponent implements OnInit {
   selectOptions = {
     applyTypes: APPLY_TYPES,
     statuses: [
-      { label: '已通过', value: 'APPROVED' },
-      { label: '已拒绝', value: 'REJECTED' },
+      { label: '已通过', value: PROCESS_STATUS.COMPLETED },
+      { label: '已拒绝', value: PROCESS_STATUS.REJECTED },
     ],
     bgList: BG_LIST,
   }

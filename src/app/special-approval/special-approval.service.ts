@@ -1,18 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpService } from '../services/http.service'
 import { Subject } from 'rxjs'
-import { APPLY_TYPE_MAP } from './special-approval.constants'
+import { APPLY_TYPE_MAP, PROCESS_STATUS, NODE_ACTION } from './special-approval.constants'
 
 function getLoginUserCode1() {
   return localStorage.getItem('ng_philips_code1')
-}
-
-const statusMap = {
-  START: '待审批',
-  APPROVED: '已完成',
-  REJECTED: '已退回',
-  WITHDRAW: '已撤回',
-  CANCELLED: '已取消',
 }
 
 function formatResponse(res) {
@@ -63,7 +55,7 @@ export class SpecialApprovalService {
       params: {
         ...params,
         applicant: getLoginUserCode1(),
-        processStatusNotIn: 'DRAFT',
+        processStatusNotIn: PROCESS_STATUS.DRAFT,
         orderByClause: 'createTime desc',
       }
     }).toPromise();
@@ -86,7 +78,7 @@ export class SpecialApprovalService {
       params: {
         ...params,
         applicant: getLoginUserCode1(),
-        processStatus: 'DRAFT',
+        processStatus: PROCESS_STATUS.DRAFT,
         orderByClause: 'createTime desc',
       }
     }).toPromise();
@@ -220,8 +212,8 @@ export class SpecialApprovalService {
 
   formatRequestStatus(processStatus, nodeAction, status) {
     if (status == 0) { return '已取消' }
-    if (nodeAction === 'feedback' && processStatus === 'START') { return '待反馈' }
-    return statusMap[processStatus]
+    if (nodeAction === NODE_ACTION.FEEDBACK && processStatus === PROCESS_STATUS.START) { return '待反馈' }
+    return PROCESS_STATUS[processStatus]
   }
 
   formatApplyType(type) {

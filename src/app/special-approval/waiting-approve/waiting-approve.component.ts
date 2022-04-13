@@ -6,8 +6,7 @@ import { NzMessageService } from 'ng-zorro-antd'
 
 import { SpecialApprovalService } from '../special-approval.service'
 import { SearchParams, RequestItem } from '../special-approval'
-import { DEFAULT_ERROR_MESSAGE } from '../special-approval.constants'
-import { APPLY_TYPES, BG_LIST } from '../special-approval.constants'
+import { DEFAULT_ERROR_MESSAGE, APPLY_TYPES, BG_LIST } from '../special-approval.constants'
 
 @Component({
   selector: 'special-approval-waiting-approve',
