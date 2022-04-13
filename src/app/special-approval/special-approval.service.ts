@@ -55,7 +55,7 @@ export class SpecialApprovalService {
       params: {
         ...params,
         applicant: getLoginUserCode1(),
-        processStatusNotIn: 'DRAFT',
+        processStatusNotIn: PROCESS_STATUS.DRAFT,
         orderByClause: 'createTime desc',
       }
     }).toPromise();
@@ -78,7 +78,7 @@ export class SpecialApprovalService {
       params: {
         ...params,
         applicant: getLoginUserCode1(),
-        processStatus: 'DRAFT',
+        processStatus: PROCESS_STATUS.DRAFT,
         orderByClause: 'createTime desc',
       }
     }).toPromise();

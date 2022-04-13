@@ -5,11 +5,9 @@ import {DatePipe, HashLocationStrategy, LocationStrategy, registerLocaleData} fr
 import {NumeralModule} from 'ngx-numeral';
 import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {FormlyModule} from '@ngx-formly/core';
 import {FormlyBootstrapModule} from '@ngx-formly/bootstrap';
 import {CookieService} from 'ngx-cookie-service';
 import {ServicesModule} from './services';
-import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
 import {AppService} from './app.service';
@@ -261,32 +259,7 @@ import { DistributorListComponent } from './DIIGT/preOrder/distributor-list/dist
 import { MailApprovalComponent } from './DIIGT/mail-approval/mail-approval.component';
 import { AutoApprovalComponent } from './DIIGT/auto-approval/auto-approval.component';
 
-
-import { ApprovedComponent } from './special-approval/approved/approved.component'
-import { DraftComponent } from './special-approval/draft/draft.component'
-import { HomeComponent as SpHomeComponent } from './special-approval/home/home.component'
-import { RequestComponent } from './special-approval/request/request.component'
-import { ViewComponent } from './special-approval/view/view.component'
-import { WaitingApproveComponent } from './special-approval/waiting-approve/waiting-approve.component'
-import { RequestFormComponent } from './special-approval/request-form/request-form.component'
-
-// widgets
-import { BasicInfoComponent } from './special-approval/request-form/widgets/basic-info/basic-info.component'
-import { OrderInfoComponent } from './special-approval/request-form/widgets/order-info/order-info.component'
-import { ApproverInfoComponent } from './special-approval/request-form/widgets/approver-info/approver-info.component'
-import { CcInfoComponent } from './special-approval/request-form/widgets/cc-info/cc-info.component'
-import { WarrantyInfoComponent } from './special-approval/request-form/widgets/warranty-info/warranty-info.component'
-import { FlowInfoComponent } from './special-approval/request-form/widgets/flow-info/flow-info.component'
-import { SelectHospitalComponent } from './special-approval/request-form/widgets/select-hospital/select-hospital.component'
-import { SelectDealerComponent } from './special-approval/request-form/widgets/select-dealer/select-dealer.component'
-import { ApproveFormComponent } from './special-approval/request-form/widgets/approve-form/approve-form.component'
-import { FeedbackComponent } from './special-approval/request-form/widgets/feedback/feedback.component'
-import { ApproveHistoryComponent } from './special-approval/request-form/widgets/approve-history/approve-history.component'
-import { SelectReferenceComponent } from './special-approval/request-form/widgets/select-reference/select-reference.component'
-import { UploadFileListComponent } from './special-approval/request-form/widgets/upload-file-list/upload-file-list.component'
-
-const COMPONENTS = [ ApprovedComponent, DraftComponent, SpHomeComponent, ReportComponent, RequestComponent, ViewComponent, WaitingApproveComponent, RequestFormComponent ]
-const WIDGETS = [ ApproveHistoryComponent, ApproveFormComponent, BasicInfoComponent, OrderInfoComponent, ApproverInfoComponent, CcInfoComponent, FeedbackComponent, WarrantyInfoComponent, FlowInfoComponent, SelectHospitalComponent, SelectDealerComponent, SelectReferenceComponent, UploadFileListComponent ]
+import { SpecialApprovalModule } from './special-approval/special-approval.module'
 
 // registerLocaleData(localeCn, localeCnExtra);
 registerLocaleData(zh);
@@ -303,7 +276,6 @@ registerLocaleData(zh);
 
 @NgModule({
   declarations: [
-    ...COMPONENTS, ...WIDGETS,
     AppComponent,
     HomepageComponent,
     IGTMasterDataMaintenanceComponent,
@@ -501,9 +473,9 @@ registerLocaleData(zh);
 
   imports: [
     SharedModule,
+    SpecialApprovalModule,
     CustomersModule,
     BrowserModule,
-    NgbModule.forRoot(),
     ServicesModule.forRoot(),
     NumeralModule.forRoot(),
     DeviceDetectorModule.forRoot(),

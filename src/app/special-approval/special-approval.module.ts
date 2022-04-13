@@ -1,0 +1,68 @@
+import { NgModule } from "@angular/core";
+import { SharedModule } from "../shared/shared.module";
+
+// component
+import { ApprovedComponent } from "./approved/approved.component";
+import { DraftComponent } from "./draft/draft.component";
+import { HomeComponent } from "./home/home.component";
+import { RequestComponent } from "./request/request.component";
+import { ViewComponent } from "./view/view.component";
+import { WaitingApproveComponent } from "./waiting-approve/waiting-approve.component";
+import { RequestFormComponent } from "./request-form/request-form.component";
+
+// widget
+import { BasicInfoComponent } from "./request-form/widgets/basic-info/basic-info.component";
+import { OrderInfoComponent } from "./request-form/widgets/order-info/order-info.component";
+import { ApproverInfoComponent } from "./request-form/widgets/approver-info/approver-info.component";
+import { CcInfoComponent } from "./request-form/widgets/cc-info/cc-info.component";
+import { WarrantyInfoComponent } from "./request-form/widgets/warranty-info/warranty-info.component";
+import { FlowInfoComponent } from "./request-form/widgets/flow-info/flow-info.component";
+import { SelectHospitalComponent } from "./request-form/widgets/select-hospital/select-hospital.component";
+import { SelectDealerComponent } from "./request-form/widgets/select-dealer/select-dealer.component";
+import { ApproveFormComponent } from "./request-form/widgets/approve-form/approve-form.component";
+import { FeedbackComponent } from "./request-form/widgets/feedback/feedback.component";
+import { ApproveHistoryComponent } from "./request-form/widgets/approve-history/approve-history.component";
+import { SelectReferenceComponent } from "./request-form/widgets/select-reference/select-reference.component";
+import { UploadFileListComponent } from './request-form/widgets/upload-file-list/upload-file-list.component'
+
+const COMPONENTS = [
+  ApprovedComponent,
+  DraftComponent,
+  HomeComponent,
+  RequestComponent,
+  ViewComponent,
+  WaitingApproveComponent,
+  RequestFormComponent,
+];
+const WIDGETS = [
+  ApproveHistoryComponent,
+  ApproveFormComponent,
+  BasicInfoComponent,
+  OrderInfoComponent,
+  ApproverInfoComponent,
+  CcInfoComponent,
+  FeedbackComponent,
+  WarrantyInfoComponent,
+  FlowInfoComponent,
+  SelectHospitalComponent,
+  SelectDealerComponent,
+  SelectReferenceComponent,
+  UploadFileListComponent,
+];
+
+export {
+  ApprovedComponent,
+  DraftComponent,
+  HomeComponent,
+  RequestComponent,
+  ViewComponent,
+  WaitingApproveComponent,
+  RequestFormComponent,
+};
+
+@NgModule({
+  declarations: [...COMPONENTS, ...WIDGETS],
+  imports: [SharedModule],
+  exports: [],
+})
+export class SpecialApprovalModule {}

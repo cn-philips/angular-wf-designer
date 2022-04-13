@@ -86,13 +86,15 @@ import { MailApprovalComponent } from "./DIIGT/mail-approval/mail-approval.compo
 import {AutoApprovalComponent} from "./DIIGT/auto-approval/auto-approval.component";
 
 
-import { ApprovedComponent } from './special-approval/approved/approved.component'
-import { DraftComponent } from './special-approval/draft/draft.component'
-import { HomeComponent as SpHomeComponent } from './special-approval/home/home.component'
-import { RequestComponent } from './special-approval/request/request.component'
-import { ViewComponent } from './special-approval/view/view.component'
-import { WaitingApproveComponent } from './special-approval/waiting-approve/waiting-approve.component'
-import { RequestFormComponent } from './special-approval/request-form/request-form.component'
+import {
+  ApprovedComponent,
+  DraftComponent,
+  HomeComponent as SpHomeComponent,
+  RequestComponent,
+  ViewComponent,
+  WaitingApproveComponent,
+  RequestFormComponent,
+} from './special-approval/special-approval.module'
 // *******************************************************************************
 // Routes
 
