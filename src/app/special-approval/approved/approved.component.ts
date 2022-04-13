@@ -7,7 +7,7 @@ import * as moment from 'moment'
 import { SpecialApprovalService } from '../special-approval.service'
 import { SearchParams, RequestItem } from '../special-approval'
 import { DEFAULT_ERROR_MESSAGE } from '../special-approval.constants'
-import { APPLY_TYPE } from '../request-form/request-form.component'
+import { APPLY_TYPES, BG_LIST } from '../special-approval.constants'
 
 @Component({
   selector: 'special-approval-approved',
@@ -29,22 +29,13 @@ export class ApprovedComponent implements OnInit {
   }
 
   selectOptions = {
-    types: [
-      { label: '特批开始生产', value: APPLY_TYPE.PRODUCTION },
-      { label: '特批发货', value: APPLY_TYPE.DELIVERY },
-      { label: '延长保修', value: APPLY_TYPE.EXT_WARRANTY },
-      { label: '额外安装费用及其他', value: APPLY_TYPE.EXT_INSTALL_COST }
-    ],
+    applyTypes: APPLY_TYPES,
     statuses: [
       { label: '已通过', value: 'APPROVED' },
       { label: '已拒绝', value: 'REJECTED' },
     ],
-    bgs: [
-      { label: 'PD&IGT(excl. US)', value: 'PD&IGT' },
-      { label: 'US', value: 'US' },
-      { label: 'CC', value: 'CC' }
-    ]
-  };
+    bgList: BG_LIST,
+  }
 
   tableData = {
     count: 0,

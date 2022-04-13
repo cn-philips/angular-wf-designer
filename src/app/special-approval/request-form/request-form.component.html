@@ -54,7 +54,7 @@
       </div>
     </ng-template>
   </ngb-tab>
-  <ngb-tab [id]="TAB_TYPES.WARRANTY_INFO" *ngIf="applyType === APPLY_TYPES.EXT_WARRANTY">
+  <ngb-tab [id]="TAB_TYPES.WARRANTY_INFO" *ngIf="applyType === APPLY_TYPE.EXT_WARRANTY">
     <ng-template ngbTabTitle>
       <span class="tab-title"><strong>延保信息</strong></span>
     </ng-template>
@@ -64,7 +64,7 @@
       </div>
     </ng-template>
   </ngb-tab>
-  <ngb-tab [id]="TAB_TYPES.APPROVER_INFO" *ngIf="applyType === APPLY_TYPES.EXT_INSTALL_COST">
+  <ngb-tab [id]="TAB_TYPES.APPROVER_INFO" *ngIf="applyType === APPLY_TYPE.EXT_INSTALL_COST">
     <ng-template ngbTabTitle>
       <span class="tab-title"><strong>审批人选择</strong></span>
     </ng-template>
