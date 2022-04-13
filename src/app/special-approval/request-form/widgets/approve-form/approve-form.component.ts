@@ -164,7 +164,7 @@ export class ApproveFormComponent implements OnInit, OnChanges {
         this.message.error('请选择指定用户')
         return
       }
-      const id = this.message.loading(LOADING_MESSAGE.APPROVE).messageId
+      const id = this.message.loading(LOADING_MESSAGE.APPROVE, { nzDuration: 0 }).messageId
       this.submitLoading = true
       const data = {
         applyId: this.requestId,

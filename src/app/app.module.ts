@@ -58,7 +58,6 @@ import {proceessAuthor} from'./pipes/proceess-author.pipe';
 import {MyDraftComponents} from './DIIGT/my-draft/my-draft.component';
 import {StatusProject} from './pipes/status-project.pipe';
 
-import { SpecialApprovalService } from './special-approval/special-approval.service'
 
 import { SharedModule } from './shared/shared.module'
 // *******************************************************************************
@@ -286,6 +285,8 @@ import { ApproveHistoryComponent } from './special-approval/request-form/widgets
 import { SelectReferenceComponent } from './special-approval/request-form/widgets/select-reference/select-reference.component'
 import { UploadFileListComponent } from './special-approval/request-form/widgets/upload-file-list/upload-file-list.component'
 
+import { SpecialApprovalSettingModule } from './DIIGT/change-scene/special-approval-setting/special-approval-setting.module'
+
 const COMPONENTS = [ ApprovedComponent, DraftComponent, SpHomeComponent, ReportComponent, RequestComponent, ViewComponent, WaitingApproveComponent, RequestFormComponent ]
 const WIDGETS = [ ApproveHistoryComponent, ApproveFormComponent, BasicInfoComponent, OrderInfoComponent, ApproverInfoComponent, CcInfoComponent, FeedbackComponent, WarrantyInfoComponent, FlowInfoComponent, SelectHospitalComponent, SelectDealerComponent, SelectReferenceComponent, UploadFileListComponent ]
 
@@ -504,6 +505,7 @@ registerLocaleData(zh);
     SharedModule,
     CustomersModule,
     BrowserModule,
+    SpecialApprovalSettingModule,
     NgbModule.forRoot(),
     ServicesModule.forRoot(),
     NumeralModule.forRoot(),
@@ -539,7 +541,6 @@ registerLocaleData(zh);
   ],
 
   providers: [
-    SpecialApprovalService,
     DatePipe,
     ServesiceService,
     EmitterService,

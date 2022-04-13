@@ -155,7 +155,7 @@ export class FeedbackComponent implements OnInit {
         result: 'APPROVED',
       }
 
-      const id = this.message.loading(LOADING_MESSAGE.FEEDBACK).messageId
+      const id = this.message.loading(LOADING_MESSAGE.FEEDBACK, { nzDuration: 0 }).messageId
       this.submitLoading = true
       await this.spService.approveRequest(data)
       this.message.remove(id)

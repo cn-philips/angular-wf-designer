@@ -300,6 +300,24 @@ const CC_TYPES = [
   { label: '最终节点通过', value: 'lastapproved' },
 ]
 
+const PROCESS_STATUS = {
+  START: 'START',
+  DRAFT: 'DRAFT',
+  COMPLETED: 'APPROVED',
+  REJECTED: 'REJECTED',
+  WITHDRAW: 'WITHDRAW',
+  CANCELLED: 'CANCELLED',
+}
+
+const NODE_ACTION = {
+  APPROVE: 'approve',
+  FEEDBACK: 'feedback'
+}
+
+// status: 0-已取消, 1-未取消
+// nodeAction: approve, feedback
+// processStatus: START, DRAFT, APPROVED, REJECTED, WITHDRAW
+
 export {
   DEFAULT_SUCCESS_MESSAGE,
   SUCCESS_MESSAGE,
@@ -321,4 +339,6 @@ export {
   BIG_SMALL_AREA_LIST,
   CURRENCIES,
   CC_TYPES,
+  PROCESS_STATUS,
+  NODE_ACTION,
 };

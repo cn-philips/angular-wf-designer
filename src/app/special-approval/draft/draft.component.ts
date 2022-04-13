@@ -6,8 +6,7 @@ import * as moment from 'moment'
 
 import { SpecialApprovalService } from '../special-approval.service'
 import { SearchParams, RequestItem } from '../special-approval'
-import { DEFAULT_ERROR_MESSAGE, SUCCESS_MESSAGE, ERROR_MESSAGE } from '../special-approval.constants'
-import { APPLY_TYPES, BG_LIST } from '../special-approval.constants'
+import { DEFAULT_ERROR_MESSAGE, SUCCESS_MESSAGE, ERROR_MESSAGE, APPLY_TYPES, BG_LIST } from '../special-approval.constants'
 
 @Component({
   selector: 'special-approval-draft',

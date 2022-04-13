@@ -40,7 +40,7 @@
     </ng-template>
     <ng-template ngbTabContent>
       <div class="card-body">
-        <special-approval-basic-info [executed]="executed" [editable]="editable" [applyItems]="applyItems" [formValues]="formValues.get('basicInfo')" [supportFileList]="supportFileList"></special-approval-basic-info>
+        <special-approval-basic-info [executed]="executed" [editable]="editable" [applyItems]="applyItems" [formValues]="basicInfo" [supportFileList]="supportFileList"></special-approval-basic-info>
       </div>
     </ng-template>
   </ngb-tab>
@@ -50,7 +50,7 @@
     </ng-template>
     <ng-template ngbTabContent>
       <div class="card-body">
-        <special-approval-order-info [bmcs]="bmcs" [applyItem]="applyItem" [applyType]="applyType" [editable]="editable" [formValues]="formValues.get('orderInfo')"></special-approval-order-info>
+        <special-approval-order-info [bmcs]="bmcs" [applyItem]="applyItem" [applyType]="applyType" [editable]="editable" [formValues]="orderInfo"></special-approval-order-info>
       </div>
     </ng-template>
   </ngb-tab>
@@ -60,7 +60,7 @@
     </ng-template>
     <ng-template ngbTabContent>
       <div class="card-body">
-        <special-approval-warranty-info [minMon]="minMon" [maxMon]="maxMon" [editable]="editable" [formValues]="formValues.get('warrantyInfo')"></special-approval-warranty-info>
+        <special-approval-warranty-info [minMon]="minMon" [maxMon]="maxMon" [editable]="editable" [formValues]="warrantyInfo"></special-approval-warranty-info>
       </div>
     </ng-template>
   </ngb-tab>
@@ -80,7 +80,7 @@
     </ng-template>
     <ng-template ngbTabContent>
       <div class="card-body">
-        <special-approval-cc-info [editable]="editable" [formValues]="formValues.get('ccInfo')" [userList]="userList"></special-approval-cc-info>
+        <special-approval-cc-info [editable]="editable" [formValues]="ccInfo" [userList]="userList"></special-approval-cc-info>
       </div>
     </ng-template>
   </ngb-tab>

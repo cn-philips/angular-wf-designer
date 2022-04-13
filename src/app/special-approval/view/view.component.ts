@@ -6,8 +6,7 @@ import * as moment from 'moment'
 
 import { SpecialApprovalService } from '../special-approval.service'
 import { SearchParams, RequestItem } from '../special-approval'
-import { DEFAULT_ERROR_MESSAGE } from '../special-approval.constants'
-import { APPLY_TYPES, BG_LIST } from '../special-approval.constants'
+import { DEFAULT_ERROR_MESSAGE, APPLY_TYPES, BG_LIST, PROCESS_STATUS, NODE_ACTION } from '../special-approval.constants'
 
 @Component({
   selector: 'special-approval-view',
@@ -31,12 +30,12 @@ export class ViewComponent implements OnInit {
   selectOptions = {
     applyTypes: APPLY_TYPES,
     statuses: [
-      { label: '待审批', value: 'START' },
-      { label: '待反馈', value: 'feedback' },
-      { label: '已完成', value: 'APPROVED' },
-      { label: '已退回', value: 'REJECTED' },
-      { label: '已撤回', value: 'WITHDRAW' },
-      { label: '已取消', value: 'CANCEL' },
+      { label: '待审批', value: PROCESS_STATUS.START },
+      { label: '待反馈', value: NODE_ACTION.FEEDBACK },
+      { label: '已完成', value: PROCESS_STATUS.COMPLETED },
+      { label: '已退回', value: PROCESS_STATUS.REJECTED },
+      { label: '已撤回', value: PROCESS_STATUS.WITHDRAW },
+      { label: '已取消', value: PROCESS_STATUS.CANCELLED },
     ],
     bgList: BG_LIST,
   };
@@ -73,8 +72,11 @@ export class ViewComponent implements OnInit {
       applyType && (params.applyType = applyType)
       bg && (params.bg = bg)
       if (processStatus) {
-        if (processStatus === 'CANCEL') {
+        if (processStatus === PROCESS_STATUS.CANCELLED) {
           params.status = 0
+        } else if (processStatus === NODE_ACTION.FEEDBACK){
+          params.nodeAction = NODE_ACTION.FEEDBACK
+          params.status = 1
         } else {
           params.processStatus = processStatus
           params.status = 1
