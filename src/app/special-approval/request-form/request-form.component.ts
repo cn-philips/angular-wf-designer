@@ -5,7 +5,17 @@ import * as moment from 'moment'
 import { NzMessageService } from 'ng-zorro-antd'
 
 import { SpecialApprovalService } from '../special-approval.service'
-import { LOADING_MESSAGE, SUCCESS_MESSAGE, ERROR_MESSAGE, DEFAULT_ERROR_MESSAGE, BUSINESS_MODEL } from '../special-approval.constants'
+import { 
+  LOADING_MESSAGE,
+  SUCCESS_MESSAGE,
+  ERROR_MESSAGE,
+  DEFAULT_ERROR_MESSAGE,
+  BUSINESS_MODEL,
+  APPLY_TYPE,
+  APPLY_TYPE_MAP,
+  STAND_WARRANTY_MONTH,
+  BG_BMC_MAP,
+} from '../special-approval.constants'
 
 enum TAB_TYPE {
   BASIC_INFO = 'basic-info',
@@ -17,72 +27,6 @@ enum TAB_TYPE {
   APPROVE = 'approve',
   APPROVE_HISTORY = 'approve-history',
   FEEDBACK = 'feedback',
-}
-
-export enum APPLY_TYPE {
-  PRODUCTION = 'production',
-  DELIVERY = 'delivery',
-  EXT_WARRANTY = 'warranty',
-  EXT_INSTALL_COST = 'installcost',
-}
-
-export const applyTypeMap = {
-  [APPLY_TYPE.PRODUCTION]: {
-    label: '特批开始生产',
-    items: [
-      { label: '未付款', value: 'sp_production_apply_item_1' },
-      { label: '场地未好', value: 'sp_production_apply_item_2' },
-    ]
-  },
-  [APPLY_TYPE.DELIVERY]: {
-    label: '特批发货',
-    items: [
-      { label: '未付款', value: 'sp_delivery_apply_item_1' },
-      { label: '场地未好', value: 'sp_delivery_apply_item_2' },
-    ]
-  },
-  [APPLY_TYPE.EXT_WARRANTY]: {
-    label: '延长保修',
-    items: [
-      { label: '合同设备晚到（或未到全）', value: 'sp_warranty_apply_item_1' },
-      { label: '设备货损', value: 'sp_warranty_apply_item_2' },
-      { label: '配置性能异议或故障', value: 'sp_warranty_apply_item_3' },
-      { label: '设备试运行', value: 'sp_warranty_apply_item_4' },
-      { label: '其他', value: 'sp_warranty_apply_item_5' },
-    ]
-  },
-  [APPLY_TYPE.EXT_INSTALL_COST]: {
-    label: '额外安装费用及其他',
-    items: []
-  },
-}
-
-const STAND_WARRANTY_MONTH = {
-  'PD&IGT': 12,
-  US: 15,
-  CC: 12
-}
-
-const bmcsMap = {
-  'PD&IGT': [
-    { label: 'AMI', value: 'AMI' },
-    { label: 'CT', value: 'CT' },
-    { label: 'DXR', value: 'DXR' },
-    { label: 'EDI-CI', value: 'EDI-CI' },
-    { label: 'EDI-ICAP', value: 'EDI-ICAP' },
-    { label: 'IGT-S', value: 'IGT-S' },
-    { label: 'MR', value: 'MR' },
-    { label: 'PDS-RadOnc', value: 'PDS-RadOnc' },
-    { label: 'Professional Service', value: 'Professional Service' },
-  ],
-  US: [{ label: 'US', value: 'US' },],
-  CC: [
-    { label: 'HPM', value: 'HPM' },
-    { label: 'VAD', value: 'VAD' },
-    { label: 'DFM', value: 'DFM' },
-    { label: 'DECG', value: 'DECG' },
-    { label: 'AED', value: 'AED' },
-  ]
 }
 
 @Component({
@@ -99,9 +43,9 @@ export class RequestFormComponent implements OnInit {
     warrantyInfo: {}
   }
 
-  APPLY_TYPES = APPLY_TYPE
+  APPLY_TYPE = APPLY_TYPE
 
-  applyType: APPLY_TYPE
+  applyType: string
   applyItem: string
 
   submitLoading = false
@@ -214,7 +158,7 @@ export class RequestFormComponent implements OnInit {
       })
       this.showSubmitBtn = true
       this.showSaveBtn = true
-      if (!type || !applyTypeMap[type]) {
+      if (!type || !APPLY_TYPE_MAP[type]) {
         this.navigateToHomePage()
         return
       }
@@ -253,9 +197,9 @@ export class RequestFormComponent implements OnInit {
 
   setPageTitle({ applyType, applyItem, minMon, maxMon }, isNew = true) {
     let pageTitle = isNew ? '新建特批-' : ''
-    const { label: applyTypeName, items } = applyTypeMap[applyType]
+    const { label: applyTypeName, items } = APPLY_TYPE_MAP[applyType]
     if (applyType === APPLY_TYPE.PRODUCTION) {
-      const item = items.find(({ value }) => value == applyItem) || {}
+      const item = items.find(({ value }) => value == applyItem) || { } as { label: string }
       const applyItemName = item.label
       pageTitle += `${applyTypeName}-${applyItemName}`
     } else if (applyType === APPLY_TYPE.EXT_WARRANTY) {
@@ -310,7 +254,7 @@ export class RequestFormComponent implements OnInit {
       this.orderInfo.controls.projectName.disable()
     }
 
-    this.bmcs = bmcsMap[bg]
+    this.bmcs = BG_BMC_MAP[bg]
   }
 
   getFormData() {
@@ -435,7 +379,7 @@ export class RequestFormComponent implements OnInit {
       const data = await this.spService.getRequestDetail(requestId)
       this.requestInfo = data
       const { createUser, applicant, applicantName, status, applyCode, applyType, applyItem, applyItemDesc, executed, processStatus, reason, ccType, ccPerson, orderInfo, attachments, taskList, nodeInfoList, nodeCode, nodeAction, warrantyInfo } = data
-      const { label, items } = applyTypeMap[applyType]
+      const { label, items } = APPLY_TYPE_MAP[applyType]
       const { productType, bg } = orderInfo
       this.pageTitle = label
       this.applyItem = applyItem

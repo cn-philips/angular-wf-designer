@@ -4,6 +4,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { debounceTime, map, switchMap } from 'rxjs/operators';
 
 import { HttpService } from '../../../../services/http.service'
+import { CC_TYPES } from '../../../special-approval.constants'
 
 interface User {
   id: number;
@@ -30,11 +31,7 @@ export class CcInfoComponent implements OnInit {
   constructor(private http: HttpService) { }
 
   selectOptions = {
-    ccTypes: [
-      { label: '每个审批节点', value: 'all' },
-      { label: '最终节点-通过及拒绝', value: 'lastnode' },
-      { label: '最终节点通过', value: 'lastapproved' }
-    ]
+    ccTypes: CC_TYPES
   }
 
   ngOnInit(): void {

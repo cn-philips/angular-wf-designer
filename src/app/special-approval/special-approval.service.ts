@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpService } from '../services/http.service'
 import { Subject } from 'rxjs'
+import { APPLY_TYPE_MAP } from './special-approval.constants'
 
 function getLoginUserCode1() {
   return localStorage.getItem('ng_philips_code1')
@@ -12,13 +13,6 @@ const statusMap = {
   REJECTED: '已退回',
   WITHDRAW: '已撤回',
   CANCELLED: '已取消',
-}
-
-const applyTypeMap = {
-  production: '特批开始生产',
-  delivery: '特批发货',
-  warranty: '延长保修',
-  installcost: '额外安装费用及其他',
 }
 
 function formatResponse(res) {
@@ -231,6 +225,6 @@ export class SpecialApprovalService {
   }
 
   formatApplyType(type) {
-    return applyTypeMap[type]
+    return APPLY_TYPE_MAP[type] ? APPLY_TYPE_MAP[type].label : ''
   }
 }

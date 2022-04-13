@@ -2,7 +2,7 @@ import { Component, Input } from '@angular/core'
 import { FormGroup, Validators } from '@angular/forms'
 import { UploadXHRArgs, UploadFile, NzModalService } from 'ng-zorro-antd'
 
-import { APPLY_TYPE } from '../../request-form.component'
+import { APPLY_TYPE } from '../../../special-approval.constants'
 import { SpecialApprovalService } from '../../../special-approval.service'
 import { getType } from '../../../../../assets/js/tools'
 import { Observable, Observer } from 'rxjs'

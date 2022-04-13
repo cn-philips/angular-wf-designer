@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router'
 
-import { APPLY_TYPE, applyTypeMap } from '../request-form/request-form.component'
+import { APPLY_TYPE, APPLY_TYPE_MAP } from '../special-approval.constants'
 import { SpecialApprovalService } from '../special-approval.service'
 
 interface Template {
@@ -130,7 +130,7 @@ export class HomeComponent implements OnInit {
           name: this.formatTemplateName({ applyType, applyItem, minWarrantyMonths, maxWarrantyMonths }),
           typeIndex: this.formatTypeIndex(applyType),
           type: applyType,
-          typeName: applyTypeMap[applyType].label,
+          typeName: APPLY_TYPE_MAP[applyType].label,
           item: applyType === APPLY_TYPE.PRODUCTION ? applyItem : null,
           desc: remark,
           bg,
@@ -166,7 +166,7 @@ export class HomeComponent implements OnInit {
     if (applyType === APPLY_TYPE.PRODUCTION) {
       return this.formatApplyTypeItem({ applyType, applyItem })
     } else if (applyType === APPLY_TYPE.EXT_WARRANTY) {
-      const prefix = applyTypeMap[applyType].label
+      const prefix = APPLY_TYPE_MAP[applyType].label
       if (minWarrantyMonths > 0 && maxWarrantyMonths > 0) {
           return `${prefix}>${minWarrantyMonths - 1} month&≤${maxWarrantyMonths} month`
       } else if (minWarrantyMonths > 0) {
@@ -258,7 +258,7 @@ export class HomeComponent implements OnInit {
 
   formatApplyTypeItem({ applyType, applyItem }) {
     if (!applyType) { return '' }
-    const { label, items } = applyTypeMap[applyType]
+    const { label, items } = APPLY_TYPE_MAP[applyType]
     const item = items.find(({ value }) => value == applyItem)
     if (item) {
       return `${label}-${item.label}`

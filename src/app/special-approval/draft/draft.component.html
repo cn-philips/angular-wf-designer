@@ -28,7 +28,7 @@
           <nz-form-label [nzSm]="6" [nzXs]="24">申请类型</nz-form-label>
           <nz-form-control [nzSm]="18" [nzXs]="24">
             <nz-select formControlName="type" nzAllowClear nzPlaceHolder="请选择">
-              <nz-option *ngFor="let type of selectOptions.types" [nzValue]="type.value" [nzLabel]="type.label"></nz-option>
+              <nz-option *ngFor="let type of selectOptions.applyTypes" [nzValue]="type.value" [nzLabel]="type.label"></nz-option>
             </nz-select>
           </nz-form-control>
         </nz-form-item>
@@ -38,7 +38,7 @@
           <nz-form-label [nzSm]="6" [nzXs]="24">BG</nz-form-label>
           <nz-form-control [nzSm]="18" [nzXs]="24">
             <nz-select formControlName="bg" nzAllowClear nzPlaceHolder="请选择">
-              <nz-option *ngFor="let bg of selectOptions.bgs" [nzValue]="bg.value" [nzLabel]="bg.label"></nz-option>
+              <nz-option *ngFor="let bg of selectOptions.bgList" [nzValue]="bg.value" [nzLabel]="bg.label"></nz-option>
             </nz-select>
           </nz-form-control>
         </nz-form-item>
