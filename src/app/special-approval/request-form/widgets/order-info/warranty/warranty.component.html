@@ -219,31 +219,6 @@
       </div>
     </div>
 
-    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle" *ngIf="applyType !== APPLY_TYPE.EXT_WARRANTY">
-      <div nz-col nzXs="24" nzSm="24" nzMd="12">
-        <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6" nzRequired>{{ applyItem === 'sp_production_apply_item_1' ? '预计付款日期' : '预计场地就位日期' }}</nz-form-label>
-          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <nz-date-picker formControlName="expectedPaymentDate" style="width: 100%" [nzStyle]="{ width: '100%' }"></nz-date-picker>
-            <nz-form-explain *ngIf="formValues.get('expectedPaymentDate')?.dirty && formValues.get('expectedPaymentDate')?.errors">
-              {{ applyItem === 'sp_production_apply_item_1' ? '请选择预计付款日期' : '请选择预计场地就位日期' }}
-            </nz-form-explain>
-          </nz-form-control>
-        </nz-form-item>
-      </div>
-      <div nz-col nzXs="24" nzSm="24" nzMd="12" *ngIf="applyType !== APPLY_TYPE.EXT_WARRANTY">
-        <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6" nzRequired>申请到货日期</nz-form-label>
-          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <nz-date-picker formControlName="applyArrivalTime" style="width: 100%" [nzStyle]="{ width: '100%' }"></nz-date-picker>
-            <nz-form-explain *ngIf="formValues.get('applyArrivalTime')?.dirty && formValues.get('applyArrivalTime')?.errors">
-              请选择申请到货日期
-            </nz-form-explain>
-          </nz-form-control>
-        </nz-form-item>
-      </div>
-    </div>
-
     <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
       <div nz-col nzXs="24" nzSm="24" nzMd="12">
         <nz-form-item>
@@ -257,31 +232,6 @@
         </nz-form-item>
       </div>
     </div>
-
-    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle" *ngIf="applyType !== APPLY_TYPE.EXT_WARRANTY">
-      <div nz-col nzXs="24" nzSm="24" nzMd="12">
-        <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6">OM</nz-form-label>
-          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <nz-select formControlName="om" [nzPlaceHolder]="editable ? '请选择OM' : ''">
-              <nz-option *ngFor="let item of selectOptions.oms" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
-            </nz-select>
-          </nz-form-control>
-        </nz-form-item>
-      </div>
-    </div>
-
-    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle" *ngIf="applyType === APPLY_TYPE.PRODUCTION">
-      <div nz-col nzSpan="24">
-        <nz-form-item>
-          <nz-form-label nzSpan="3">产品列表</nz-form-label>
-          <nz-form-control nzSpan="19">
-            <special-approval-product-list [isWarranty]="applyType === APPLY_TYPE.EXT_WARRANTY" [orderInfo]="formValues" [editable]="editable"></special-approval-product-list>
-          </nz-form-control>
-        </nz-form-item>
-      </div>
-    </div>
-    
   </form>
 
   <app-select-hospital #selectHospital (select)="onSelectHospital($event)"></app-select-hospital>

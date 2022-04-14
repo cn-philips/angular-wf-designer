@@ -24,6 +24,9 @@ import { FeedbackComponent } from "./request-form/widgets/feedback/feedback.comp
 import { ApproveHistoryComponent } from "./request-form/widgets/approve-history/approve-history.component";
 import { SelectReferenceComponent } from "./request-form/widgets/select-reference/select-reference.component";
 import { UploadFileListComponent } from './request-form/widgets/upload-file-list/upload-file-list.component'
+import { ProductListComponent } from './request-form/widgets/product-list/product-list.component'
+import { ProductionOrderInfoComponent } from './request-form/widgets/order-info/production/production.component'
+import { WarrantyOrderInfoComponent } from './request-form/widgets/order-info/warranty/warranty.component'
 
 const COMPONENTS = [
   ApprovedComponent,
@@ -48,6 +51,9 @@ const WIDGETS = [
   SelectDealerComponent,
   SelectReferenceComponent,
   UploadFileListComponent,
+  ProductListComponent,
+  ProductionOrderInfoComponent,
+  WarrantyOrderInfoComponent,
 ];
 
 export {

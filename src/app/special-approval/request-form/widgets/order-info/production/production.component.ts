@@ -1,10 +1,10 @@
 import { Component, OnInit, Input, ViewChild } from '@angular/core';
 import { FormGroup } from '@angular/forms'
 
-import { Hospital, SelectHospitalComponent, } from '../select-hospital/select-hospital.component'
-import { Dealer, SelectDealerComponent } from '../select-dealer/select-dealer.component'
-import { Reference, SelectReferenceComponent } from '../select-reference/select-reference.component'
-import { SpecialApprovalService } from '../../../special-approval.service'
+import { Hospital, SelectHospitalComponent, } from '../../select-hospital/select-hospital.component'
+import { Dealer, SelectDealerComponent } from '../../select-dealer/select-dealer.component'
+import { Reference, SelectReferenceComponent } from '../../select-reference/select-reference.component'
+import { SpecialApprovalService } from '../../../../special-approval.service'
 import { 
   APPLY_TYPE,
   BUSINESS_MODEL,
@@ -13,15 +13,14 @@ import {
   BUSINESS_MODEL_LIST,
   BIG_SMALL_AREA_LIST,
   CURRENCIES,
-  STAND_WARRANTY_MONTH,
-} from '../../../special-approval.constants'
+} from '../../../../special-approval.constants'
 
 @Component({
-  selector: 'special-approval-order-info',
-  templateUrl: './order-info.component.html',
-  styleUrls: ['./order-info.component.scss']
+  selector: 'special-approval-production-order-info',
+  templateUrl: './production.component.html',
+  styleUrls: ['./production.component.scss']
 })
-export class OrderInfoComponent implements OnInit {
+export class ProductionOrderInfoComponent implements OnInit {
 
   showDealerArea: boolean = false
 
@@ -36,7 +35,6 @@ export class OrderInfoComponent implements OnInit {
 
   @Input() formValues: FormGroup
   @Input() editable = true
-  @Input() applyType: string
   @Input() applyItem: string
 
   APPLY_TYPE = APPLY_TYPE
@@ -59,11 +57,6 @@ export class OrderInfoComponent implements OnInit {
     } else {
       this.showDealerArea = false
     }
-  }
-
-  onProductTypeChange(value) {
-    console.log('产品型号');
-    console.log(value);
   }
 
   onCalcProjectName() {
@@ -176,7 +169,7 @@ export class OrderInfoComponent implements OnInit {
         wbs: "",
         itemNo: "",
         quantity: "",
-        stdWarrantyMonths: STAND_WARRANTY_MONTH[this.formValues.get('bg').value] }],
+      }],
     })
   }
 
