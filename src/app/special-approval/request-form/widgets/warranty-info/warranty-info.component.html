@@ -1,95 +1,13 @@
+<nz-alert
+  nzType="info"
+  [nzMessage]="startDateMessage" 
+  nzShowIcon
+></nz-alert>
+<ng-template #startDateMessage>
+  <div>US：Direct Deal请参考工厂安装日期；Distributor Deal请参考出厂日期；</div>
+  <div>DI&IGT(excl, US) &  CC：请参考安装完成日期；</div>
+  <div>ICF保修日期需与申请日期一致</div>
+</ng-template>
 <nz-card class="mtb1rem" nzTitle="延保信息">
-  <form nz-form [formGroup]="formValues">
-    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
-      <div nz-col nzXs="24" nzSm="24" nzMd="12">
-        <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6" nzRequired nzFor="equipmentDesc">设备SN</nz-form-label>
-          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <input nz-input formControlName="equipmentDesc" id="equipmentDesc" />
-          </nz-form-control>
-        </nz-form-item>
-      </div>
-    </div>
-
-    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
-      <div nz-col nzXs="24" nzSm="24" nzMd="12">
-        <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6" nzRequired>预计标准保修开始日期</nz-form-label>
-          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <nz-date-picker 
-              formControlName="expectedStdWarrantyStartdate" 
-              style="width: 100%" 
-              [nzStyle]="{ width: '100%' }"
-              (ngModelChange)="onDateFieldChange()"
-            ></nz-date-picker>
-          </nz-form-control>
-        </nz-form-item>
-      </div>
-      <div nz-col nzXs="24" nzSm="24" nzMd="12">
-        <nz-form-item>
-          <nz-alert 
-            nzType="warning" 
-            [nzMessage]="startDateMessage"
-            nzShowIcon
-          ></nz-alert>
-          <ng-template #startDateMessage>
-            <div>US：Direct Deal请参考工厂安装日期；Distributor Deal请参考出厂日期；</div>
-            <div>DI&IGT(excl, US) &  CC：请参考安装完成日期；</div>
-            <div>ICF保修日期需与申请日期一致</div>
-          </ng-template>
-        </nz-form-item>
-      </div>
-    </div>
-
-    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
-      <div nz-col nzXs="24" nzSm="24" nzMd="12">
-        <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6" nzRequired nzFor="stdWarrantyMonths">标准保修月数</nz-form-label>
-          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <nz-input-number 
-              id="stdWarrantyMonths"
-              formControlName="stdWarrantyMonths" 
-              [nzMin]="1" 
-              style="width: 180px" 
-              (ngModelChange)="onDateFieldChange()"
-            ></nz-input-number>
-          </nz-form-control>
-        </nz-form-item>
-      </div>
-      <div nz-col nzXs="24" nzSm="24" nzMd="12">
-        <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6">预计标准保修结束日期</nz-form-label>
-          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <input nz-input formControlName="expectedStdWarrantyEnddate" placeholder="自动计算" />
-          </nz-form-control>
-        </nz-form-item>
-      </div>
-    </div>
-
-    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
-      <div nz-col nzXs="24" nzSm="24" nzMd="12">
-        <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6" nzRequired nzFor="applyExtWarrantyMonths">申请延保月数</nz-form-label>
-          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <nz-input-number
-              id="applyExtWarrantyMonths"
-              formControlName="applyExtWarrantyMonths" 
-              [nzMin]="minMon == 0 ? 1 : minMon" 
-              [nzMax]="maxMon" 
-              style="width: 180px"
-              (ngModelChange)="onDateFieldChange()"
-            ></nz-input-number>
-          </nz-form-control>
-        </nz-form-item>
-      </div>
-      <div nz-col nzXs="24" nzSm="24" nzMd="12">
-        <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6">申请标准保修结束日期</nz-form-label>
-          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <input nz-input formControlName="applyStdWarrantyEnddate" placeholder="自动计算" />
-          </nz-form-control>
-        </nz-form-item>
-      </div>
-    </div>
-  </form>
+  <special-approval-product-list [isWarranty]="true" [orderInfo]="orderInfo" [editable]="editable"></special-approval-product-list>
 </nz-card>

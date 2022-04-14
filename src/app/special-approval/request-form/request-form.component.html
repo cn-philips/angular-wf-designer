@@ -40,7 +40,7 @@
     </ng-template>
     <ng-template ngbTabContent>
       <div class="card-body">
-        <special-approval-basic-info [executed]="executed" [editable]="editable" [applyItems]="applyItems" [formValues]="basicInfo" [supportFileList]="supportFileList"></special-approval-basic-info>
+        <special-approval-basic-info [executed]="executed" [editable]="editable" [formValues]="basicInfo" [supportFileList]="supportFileList"></special-approval-basic-info>
       </div>
     </ng-template>
   </ngb-tab>
@@ -50,7 +50,9 @@
     </ng-template>
     <ng-template ngbTabContent>
       <div class="card-body">
-        <special-approval-order-info [bmcs]="bmcs" [applyItem]="applyItem" [applyType]="applyType" [editable]="editable" [formValues]="orderInfo"></special-approval-order-info>
+        <special-approval-production-order-info *ngIf="applyType === APPLY_TYPE.PRODUCTION" [bmcs]="bmcs" [applyItem]="applyItem" [editable]="editable" [formValues]="orderInfo"></special-approval-production-order-info>
+        <special-approval-warranty-order-info *ngIf="applyType === APPLY_TYPE.EXT_WARRANTY" [bmcs]="bmcs" [editable]="editable" [formValues]="orderInfo"></special-approval-warranty-order-info>
+        <!-- <special-approval-order-info [bmcs]="bmcs" [applyItem]="applyItem" [applyType]="applyType" [editable]="editable" [formValues]="orderInfo"></special-approval-order-info> -->
       </div>
     </ng-template>
   </ngb-tab>
@@ -60,7 +62,7 @@
     </ng-template>
     <ng-template ngbTabContent>
       <div class="card-body">
-        <special-approval-warranty-info [minMon]="minMon" [maxMon]="maxMon" [editable]="editable" [formValues]="warrantyInfo"></special-approval-warranty-info>
+        <special-approval-warranty-info [orderInfo]="orderInfo" [minMon]="minMon" [maxMon]="maxMon" [editable]="editable"></special-approval-warranty-info>
       </div>
     </ng-template>
   </ngb-tab>

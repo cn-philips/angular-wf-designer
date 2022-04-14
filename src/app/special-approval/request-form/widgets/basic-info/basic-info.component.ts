@@ -2,16 +2,11 @@ import { Component, Input } from '@angular/core'
 import { FormGroup, Validators } from '@angular/forms'
 import { UploadXHRArgs, UploadFile, NzModalService } from 'ng-zorro-antd'
 
-import { APPLY_TYPE } from '../../../special-approval.constants'
+import { APPLY_TYPE, APPLY_TYPE_MAP } from '../../../special-approval.constants'
 import { SpecialApprovalService } from '../../../special-approval.service'
 import { getType } from '../../../../../assets/js/tools'
 import { Observable, Observer } from 'rxjs'
  
-interface ApplyItem {
-  label: string;
-  value: number
-}
-
 interface CommonResponse {
   code: string;
   data: any;
@@ -24,13 +19,14 @@ interface CommonResponse {
   styleUrls: ['./basic-info.component.scss']
 })
 export class BasicInfoComponent {
-  @Input() applyItems: ApplyItem[] = []
   @Input() formValues: FormGroup
   @Input() supportFileList: UploadFile[] = []
   @Input() editable: boolean
   @Input() executed:number = null
 
   APPLY_TYPE = APPLY_TYPE
+
+  applyTypeMap = APPLY_TYPE_MAP
 
   constructor(private spService: SpecialApprovalService, private modal: NzModalService) {}
 
@@ -40,6 +36,10 @@ export class BasicInfoComponent {
 
   get applyItem() {
     return this.formValues.get('applyItem').value
+  }
+
+  get applyItems() {
+    return APPLY_TYPE_MAP[this.applyType] ? APPLY_TYPE_MAP[this.applyType].items : []
   }
 
   onApplyItemChange(applyItem) {

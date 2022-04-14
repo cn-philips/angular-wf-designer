@@ -38,11 +38,10 @@ enum TAB_TYPE {
 })
 export class RequestFormComponent implements OnInit {
 
-  pageTitle: string = '新建特批'
+  pageTitle: string
   requestId
   requestInfo = {
-    orderInfo: {},
-    warrantyInfo: {}
+    orderInfos: [{}]
   }
 
   APPLY_TYPE = APPLY_TYPE
@@ -76,7 +75,6 @@ export class RequestFormComponent implements OnInit {
 
   processUsers: string[] = [] // 流程中所有的人
   applicantEmail: string
-  referenceId: string
 
   constructor(
     private route: ActivatedRoute,
@@ -90,7 +88,6 @@ export class RequestFormComponent implements OnInit {
 
   TAB_TYPES = TAB_TYPE
 
-  applyItems = []
   bmcs = []
 
   executed = null
@@ -130,14 +127,7 @@ export class RequestFormComponent implements OnInit {
       applyArrivalTime: [null, [Validators.required]], // 申请到货时间
       expectedPaymentDate: [null, [Validators.required]], // 预计付款(或场地就位)日期
       om: [null], // OM
-    }),
-    warrantyInfo: this.fb.group({
-      equipmentDesc: [null, [Validators.required]], // 设备SN
-      expectedStdWarrantyStartdate: [null, [Validators.required]], // 预计标准保修开始日期
-      stdWarrantyMonths: [null, [Validators.required]], // 标准保修月数
-      expectedStdWarrantyEnddate: [{ value: null, disabled: true }, [Validators.required]], // 预计标准保修结束日期
-      applyExtWarrantyMonths: [null, [Validators.required]], // 申请延保月数
-      applyStdWarrantyEnddate: [{ value: null, disabled: true }, [Validators.required]], // 申请标准保修结束日期
+      products: [[]],
     }),
     ccInfo: this.fb.group({
       ccType: [null], // 抄送类型
@@ -173,8 +163,6 @@ export class RequestFormComponent implements OnInit {
       this.basicInfo.patchValue({ applyType: type })
 
       if (minMon || maxMon) {
-        const month = maxMon ? Number(maxMon) : Number(minMon)
-        this.warrantyInfo.patchValue({ applyExtWarrantyMonths: month })
         this.minMon = Number(minMon || 0)
         this.maxMon = Number(maxMon || 999)
       }
@@ -185,39 +173,40 @@ export class RequestFormComponent implements OnInit {
         this.orderInfo.patchValue({
           bg
         })
-
-        if (type === APPLY_TYPE.EXT_WARRANTY) {
-          this.warrantyInfo.patchValue({
-            stdWarrantyMonths: STAND_WARRANTY_MONTH[bg]
-          })
-        }
       }
       this.pageLoading = false
       this.setFormValidators(type, item, bg)
     }
   }
 
-  setPageTitle({ applyType, applyItem, minMon, maxMon }, isNew = true) {
-    let pageTitle = isNew ? '新建特批-' : ''
+  setPageTitle({ applyType = '', applyItem = '', minMon = null, maxMon = null }, isNew = true) {
     const { label: applyTypeName, items } = APPLY_TYPE_MAP[applyType]
-    if (applyType === APPLY_TYPE.PRODUCTION) {
-      const item = items.find(({ value }) => value == applyItem) || { } as { label: string }
-      const applyItemName = item.label
-      pageTitle += `${applyTypeName}-${applyItemName}`
-    } else if (applyType === APPLY_TYPE.EXT_WARRANTY) {
-      let warrantyInfo: string
-      if (minMon > 0 && maxMon > 0) {
-        warrantyInfo = `>${minMon - 1} month&≤${maxMon} month`
-      } else if (minMon > 0) {
-        warrantyInfo = `>${minMon - 1} month`
-      } else {
-        warrantyInfo = `≤${maxMon} month`
-      }
-      pageTitle += `${applyTypeName}${warrantyInfo}`
+    if (!isNew) {
+      this.pageTitle = applyTypeName
+      return
+    }
+    let pageTitle = '新建特批-'
+    switch(applyType) {
+      case APPLY_TYPE.PRODUCTION:
+        const item = items.find(({ value }) => value == applyItem) || { } as { label: string }
+        const applyItemName = item.label
+        pageTitle += `${applyTypeName}-${applyItemName}`
+        break
+      case APPLY_TYPE.EXT_WARRANTY:
+        let warrantyInfo: string
+        if (minMon > 0 && maxMon > 0) {
+          warrantyInfo = `>${minMon - 1} month&≤${maxMon} month`
+        } else if (minMon > 0) {
+          warrantyInfo = `>${minMon - 1} month`
+        } else {
+          warrantyInfo = `≤${maxMon} month`
+        }
+        pageTitle += `${applyTypeName}${warrantyInfo}`
+        break
+      default:
+        pageTitle += applyTypeName
     }
     this.pageTitle = pageTitle
-    
-    this.applyItems = items
   }
 
   get orderInfo(): FormGroup {
@@ -226,10 +215,6 @@ export class RequestFormComponent implements OnInit {
 
   get basicInfo(): FormGroup {
     return this.formValues.get('basicInfo') as FormGroup
-  }
-
-  get warrantyInfo(): FormGroup {
-    return this.formValues.get('warrantyInfo') as FormGroup
   }
 
   get ccInfo(): FormGroup {
@@ -245,12 +230,6 @@ export class RequestFormComponent implements OnInit {
       }
     } else {
       this.basicInfo.controls.applyItem.disable()
-      this.warrantyInfo.controls.equipmentDesc.clearValidators()
-      this.warrantyInfo.controls.expectedStdWarrantyStartdate.clearValidators()
-      this.warrantyInfo.controls.stdWarrantyMonths.clearValidators()
-      this.warrantyInfo.controls.expectedStdWarrantyEnddate.clearValidators()
-      this.warrantyInfo.controls.applyExtWarrantyMonths.clearValidators()
-      this.warrantyInfo.controls.applyStdWarrantyEnddate.clearValidators()
     }
 
     if (bg === 'PD&IGT') {
@@ -264,30 +243,34 @@ export class RequestFormComponent implements OnInit {
   }
 
   getFormData() {
-    const { basicInfo, orderInfo, ccInfo, warrantyInfo } = this.formValues.getRawValue()
-    const { productType, applyArrivalTime, expectedPaymentDate, expectedSaleDate } = orderInfo
-    const { expectedStdWarrantyStartdate, expectedStdWarrantyEnddate, applyStdWarrantyEnddate } = warrantyInfo
+    const { basicInfo, orderInfo, ccInfo } = this.formValues.getRawValue()
+    const { applyArrivalTime, expectedPaymentDate, expectedSaleDate, products } = orderInfo
     const data = {
       ...this.requestInfo,
       ...basicInfo,
-      orderInfo: {
-        ...this.requestInfo.orderInfo,
-        ...orderInfo,
-        productType: Array.isArray(productType) ? productType.join(',') : productType,
-        applyArrivalTime: applyArrivalTime ? moment(applyArrivalTime).format('YYYY-MM-DD') : null,
-        expectedPaymentDate: expectedPaymentDate ? moment(expectedPaymentDate).format('YYYY-MM-DD') : null,
-        expectedSaleDate: expectedSaleDate ? moment(expectedSaleDate).format('YYYY-MM-DD') : null,
-      },
       ...ccInfo,
       ccPerson: ccInfo.ccPerson.join(','),
     }
-
-    if (this.applyType === APPLY_TYPE.EXT_WARRANTY) {
-      data.warrantyInfo = {
-        ...(this.requestInfo.warrantyInfo || {}),
-        ...warrantyInfo,
-        expectedStdWarrantyStartdate: expectedStdWarrantyStartdate ? moment(expectedStdWarrantyStartdate).format('YYYY-MM-DD') : null,
-      }
+    switch(this.applyType) {
+      case APPLY_TYPE.PRODUCTION: // 特批生产
+        data.orderInfos = [
+          { 
+            ...orderInfo,
+            applyArrivalTime: applyArrivalTime ? moment(applyArrivalTime).format('YYYY-MM-DD') : null,
+            expectedPaymentDate: expectedPaymentDate ? moment(expectedPaymentDate).format('YYYY-MM-DD') : null,
+            expectedSaleDate: expectedSaleDate ? moment(expectedSaleDate).format('YYYY-MM-DD') : null,
+            products: products.map(({ productType, wbsNo, itemNo, quantity }) => ({ productType, wbsNo, itemNo, quantity }))
+          }
+        ]
+        break
+      case APPLY_TYPE.EXT_WARRANTY: // 延长保修
+        data.orderInfos = [
+          { 
+            ...orderInfo,
+            expectedSaleDate: expectedSaleDate ? moment(expectedSaleDate).format('YYYY-MM-DD') : null,
+          }
+        ]
+        break
     }
     return data
   }
@@ -301,17 +284,12 @@ export class RequestFormComponent implements OnInit {
       // 设置表单字段disabled
       this.formValues.controls.basicInfo.disable()
       this.formValues.controls.orderInfo.disable()
-      this.formValues.controls.warrantyInfo.disable()
       this.formValues.controls.ccInfo.disable()
     }
     this.editable = editable
   }
 
   async onSubmit() {
-    for (const i in this.warrantyInfo.controls) {
-      this.warrantyInfo.controls[i].markAsDirty();
-      this.warrantyInfo.controls[i].updateValueAndValidity();
-    }
     for (const i in this.basicInfo.controls) {
       this.basicInfo.controls[i].markAsDirty();
       this.basicInfo.controls[i].updateValueAndValidity();
@@ -321,26 +299,25 @@ export class RequestFormComponent implements OnInit {
       this.orderInfo.controls[i].updateValueAndValidity();
     }
     if (
-      this.basicInfo.invalid ||
-      this.orderInfo.invalid ||
-      (this.applyType === APPLY_TYPE.EXT_WARRANTY && this.warrantyInfo.invalid)
+      this.basicInfo.invalid || this.orderInfo.invalid
     ) {
       this.message.error('请按要求填写表单信息')
       return
     }
     try {
       const data = this.getFormData()
-      const { orderInfo: { businessModel, hospitalNo, dealerCode }, ccType, ccPerson } = data
+      // const { orderInfo: { businessModel, hospitalNo, dealerCode }, ccType, ccPerson } = data
+      const { ccType, ccPerson } = data
       // 医院和经销商必填一项
-      if (businessModel === BUSINESS_MODEL.DISTRIBUTOR_DEAL) {
-        if (!hospitalNo && !dealerCode) {
-          this.message.error('请选择医院或者经销商')
-          return
-        }
-      } else if(!hospitalNo){
-        this.message.error('请选择医院')
-        return
-      }
+      // if (businessModel === BUSINESS_MODEL.DISTRIBUTOR_DEAL) {
+      //   if (!hospitalNo && !dealerCode) {
+      //     this.message.error('请选择医院或者经销商')
+      //     return
+      //   }
+      // } else if(!hospitalNo){
+      //   this.message.error('请选择医院')
+      //   return
+      // }
 
       // 抄送人和抄送节点必须同时选择或者同时不选择
       if (ccType && !ccPerson) {
@@ -390,14 +367,11 @@ export class RequestFormComponent implements OnInit {
         createUser, applicant, applicantName,
         status, applyCode, applyType, applyItem,
         applyItemDesc, executed, processStatus,
-        reason, ccType, ccPerson, orderInfo, attachments,
-        taskList, nodeInfoList, nodeCode, nodeAction, warrantyInfo,
+        reason, ccType, ccPerson, orderInfos, attachments,
+        taskList, nodeInfoList, nodeCode, nodeAction,
       } = data
-      const { label, items } = APPLY_TYPE_MAP[applyType]
-      const { productType, bg } = orderInfo
-      this.pageTitle = label
+      this.setPageTitle({ applyType }, false)
       this.applyItem = applyItem
-      this.applyItems = items
       this.applyType = applyType
       this.executed = executed
       this.formValues.patchValue({ 
@@ -411,20 +385,19 @@ export class RequestFormComponent implements OnInit {
           reason,
           applyFileIds: attachments.map(({ fileId }) => fileId)
         },
-        orderInfo: {
-          ...orderInfo,
-          productType: (bg === 'US' && productType) ? productType.split(',') : productType, // US产品可多选
-        },
         ccInfo: {
           ccType,
           ccPerson: ccPerson ? ccPerson.split(',') : [],
         },
       })
-
-      if (warrantyInfo) {
+      if (applyType === APPLY_TYPE.PRODUCTION || applyType === APPLY_TYPE.EXT_WARRANTY) {
         this.formValues.patchValue({
-          warrantyInfo
+          orderInfo: {
+            ...orderInfos[0],
+            products: orderInfos[0].products || []
+          }
         })
+        this.setFormValidators(applyType, applyItem, orderInfos[0].bg)
       }
 
       const userSet = new Set<string>()
@@ -435,7 +408,6 @@ export class RequestFormComponent implements OnInit {
         }
       }))
       this.applicantEmail = createUser
-      this.referenceId = orderInfo.referenceId
       this.supportFileList = attachments.map(({ fileId, name, size, type }) => ({
         uid: fileId,
         fileId,
@@ -476,7 +448,6 @@ export class RequestFormComponent implements OnInit {
       this.approveNodeList = nodeInfoList
       this.approveHistory = taskList
       this.setEditable(processStatus)
-      this.setFormValidators(applyType, applyItem, orderInfo.bg)
     } catch ({ message }) {
       this.message.error(DEFAULT_ERROR_MESSAGE)
       console.error(`初始化失败, ${message}`)
