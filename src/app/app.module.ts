@@ -260,6 +260,7 @@ import { MailApprovalComponent } from './DIIGT/mail-approval/mail-approval.compo
 import { AutoApprovalComponent } from './DIIGT/auto-approval/auto-approval.component';
 
 import { SpecialApprovalModule } from './special-approval/special-approval.module'
+import { SpecialApprovalSettingModule } from './DIIGT/change-scene/special-approval-setting/special-approval-setting.module'
 
 // registerLocaleData(localeCn, localeCnExtra);
 registerLocaleData(zh);
@@ -474,6 +475,7 @@ registerLocaleData(zh);
   imports: [
     SharedModule,
     SpecialApprovalModule,
+    SpecialApprovalSettingModule,
     CustomersModule,
     BrowserModule,
     ServicesModule.forRoot(),
