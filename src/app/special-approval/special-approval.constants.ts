@@ -51,6 +51,7 @@ const APPLY_TYPE = {
   DELIVERY: "delivery",
   EXT_WARRANTY: "warranty",
   EXT_INSTALL_COST: "installcost",
+  TRANSPORTATION: "logisticscost",
 }
 
 const APPLY_TYPE_MAP = {
@@ -82,6 +83,13 @@ const APPLY_TYPE_MAP = {
     label: "额外安装费用及其他",
     items: [],
   },
+  [APPLY_TYPE.TRANSPORTATION]: {
+    label: "物流运输",
+    items: [
+      {label: '特别仓储', value: 'sp_logisticscost_apply_item_1'}
+    ]
+
+  }
 };
 
 const APPLY_TYPES = [
@@ -89,6 +97,7 @@ const APPLY_TYPES = [
   { label: "特批发货", value: APPLY_TYPE.DELIVERY },
   { label: "延长保修", value: APPLY_TYPE.EXT_WARRANTY },
   { label: "额外安装费用及其他", value: APPLY_TYPE.EXT_INSTALL_COST },
+  { label: "物流运输-特别仓储", value: APPLY_TYPE.TRANSPORTATION },
 ];
 
 const STAND_WARRANTY_MONTH = {

@@ -26,7 +26,8 @@ import { SelectReferenceComponent } from "./request-form/widgets/select-referenc
 import { UploadFileListComponent } from './request-form/widgets/upload-file-list/upload-file-list.component'
 import { ProductListComponent } from './request-form/widgets/product-list/product-list.component'
 import { ProductionOrderInfoComponent } from './request-form/widgets/order-info/production/production.component'
-import { WarrantyOrderInfoComponent } from './request-form/widgets/order-info/warranty/warranty.component'
+import { WarrantyOrderInfoComponent } from './request-form/widgets/order-info/warranty/warranty.component';
+import { TransportationComponent } from './request-form/widgets/order-info/transportation/transportation.component'
 
 const COMPONENTS = [
   ApprovedComponent,
@@ -67,7 +68,7 @@ export {
 };
 
 @NgModule({
-  declarations: [...COMPONENTS, ...WIDGETS],
+  declarations: [...COMPONENTS, ...WIDGETS, TransportationComponent],
   imports: [SharedModule],
   exports: [],
 })
