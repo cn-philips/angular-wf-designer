@@ -136,7 +136,7 @@ export class RequestFormComponent implements OnInit {
   })
 
   ngOnInit(): void {
-    const { params: { requestId }, queryParams: { type, item, taskId, minMon, maxMon, bg } } = this.route.snapshot
+    const { params: { requestId }, queryParams: { type, item, taskId, minMon, maxMon, bg, minComp, maxComp } } = this.route.snapshot
     // detail page
     if (requestId) {
       this.taskId = taskId
@@ -162,12 +162,7 @@ export class RequestFormComponent implements OnInit {
 
       this.basicInfo.patchValue({ applyType: type })
 
-      if (minMon || maxMon) {
-        this.minMon = Number(minMon || 0)
-        this.maxMon = Number(maxMon || 999)
-      }
-
-      this.setPageTitle({ applyType: type, applyItem: item, minMon, maxMon })
+      this.setPageTitle({ applyType: type, applyItem: item, minMon, maxMon, minComp, maxComp })
 
       if (bg) {
         this.orderInfo.patchValue({
@@ -179,29 +174,27 @@ export class RequestFormComponent implements OnInit {
     }
   }
 
-  setPageTitle({ applyType = '', applyItem = '', minMon = null, maxMon = null }, isNew = true) {
+  setPageTitle({ applyType = '', applyItem = '', minMon = null, maxMon = null, minComp = null, maxComp = null }, isNew = true) {
     const { label: applyTypeName, items } = APPLY_TYPE_MAP[applyType]
     if (!isNew) {
       this.pageTitle = applyTypeName
       return
     }
-    let pageTitle = '新建特批-'
+    let pageTitle = `新建特批-${applyTypeName}`
     switch(applyType) {
       case APPLY_TYPE.PRODUCTION:
         const item = items.find(({ value }) => value == applyItem) || { } as { label: string }
         const applyItemName = item.label
-        pageTitle += `${applyTypeName}-${applyItemName}`
+        pageTitle += `-${applyItemName}`
         break
       case APPLY_TYPE.EXT_WARRANTY:
-        let warrantyInfo: string
-        if (minMon > 0 && maxMon > 0) {
-          warrantyInfo = `>${minMon - 1} month&≤${maxMon} month`
-        } else if (minMon > 0) {
-          warrantyInfo = `>${minMon - 1} month`
-        } else {
-          warrantyInfo = `≤${maxMon} month`
+        if (minMon && minComp && maxMon && maxComp) {
+          pageTitle += `${minComp}${minMon} month&${maxComp}${maxMon} month`
+        } else if (minMon && minComp) {
+          pageTitle += `${minComp}${minMon} month`
+        } else if (maxMon && maxComp){
+          pageTitle += `${maxComp}${maxMon} month`
         }
-        pageTitle += `${applyTypeName}${warrantyInfo}`
         break
       default:
         pageTitle += applyTypeName
@@ -256,7 +249,8 @@ export class RequestFormComponent implements OnInit {
     switch(this.applyType) {
       case APPLY_TYPE.PRODUCTION: // 特批生产
         data.orderInfos = [
-          {
+          { 
+            ...this.requestInfo.orderInfos[0],
             ...orderInfo,
             applyArrivalTime: applyArrivalTime ? moment(applyArrivalTime).format('YYYY-MM-DD') : null,
             expectedPaymentDate: expectedPaymentDate ? moment(expectedPaymentDate).format('YYYY-MM-DD') : null,
@@ -267,15 +261,26 @@ export class RequestFormComponent implements OnInit {
         break
       case APPLY_TYPE.EXT_WARRANTY: // 延长保修
         data.orderInfos = [
-          {
+          { 
+            ...this.requestInfo.orderInfos[0],
             ...orderInfo,
             expectedSaleDate: expectedSaleDate ? moment(expectedSaleDate).format('YYYY-MM-DD') : null,
+            products: products.map((product) => ({
+              ...product,
+              warranty: {
+                ...product.warranty,
+                applyStdWarrantyEnddate: moment(product.warranty.applyStdWarrantyEnddate).format('YYYY-MM-DD'),
+                expectedStdWarrantyStartdate: moment(product.warranty.expectedStdWarrantyStartdate).format('YYYY-MM-DD'),
+                applyExtWarrantyMonths: Number(product.warranty.applyExtWarrantyMonths),
+              }
+            }))
           }
         ]
         break
       case APPLY_TYPE.LOGISTICSCOST:
         data.orderInfos = [
-          {
+          { 
+            ...this.requestInfo.orderInfos[0],
             ...orderInfo,
             applyArrivalTime: applyArrivalTime ? moment(applyArrivalTime).format('YYYY-MM-DD') : null,
             expectedPaymentDate: expectedPaymentDate ? moment(expectedPaymentDate).format('YYYY-MM-DD') : null,
@@ -317,6 +322,7 @@ export class RequestFormComponent implements OnInit {
       this.message.error('请按要求填写表单信息')
       return
     }
+    const id = this.message.loading(LOADING_MESSAGE.SUBMIT, { nzDuration: 0 }).messageId
     try {
       const data = this.getFormData()
       // const { orderInfo: { businessModel, hospitalNo, dealerCode }, ccType, ccPerson } = data
@@ -340,10 +346,8 @@ export class RequestFormComponent implements OnInit {
         this.message.error('请选择抄送节点')
         return
       }
-      const id = this.message.loading(LOADING_MESSAGE.SUBMIT, { nzDuration: 0 }).messageId
       this.submitLoading = true
       await this.spService.submitRequest(data)
-      this.message.remove(id)
       this.message.success(SUCCESS_MESSAGE.SUBMIT)
       this.navigateToHomePage() // 提交成功跳转到首页
     } catch ({ message }) {
@@ -351,16 +355,16 @@ export class RequestFormComponent implements OnInit {
       console.error(`提交失败, ${message}`)
     } finally {
       this.submitLoading = false
+      this.message.remove(id)
     }
   }
 
   async onSaveDraft() {
+    const id = this.message.loading(LOADING_MESSAGE.SAVE_DRAFT, { nzDuration: 0 }).messageId
     try {
-      const id = this.message.loading(LOADING_MESSAGE.SAVE_DRAFT, { nzDuration: 0 }).messageId
       this.submitLoading = true
       const data = this.getFormData()
       await this.spService.saveRequest(data)
-      this.message.remove(id)
       this.message.success(SUCCESS_MESSAGE.SAVE_DRAFT)
       this.navigateToHomePage()
     } catch({ message }) {
@@ -368,6 +372,7 @@ export class RequestFormComponent implements OnInit {
       console.error(`保存失败, ${message}`)
     } finally {
       this.submitLoading = false
+      this.message.remove(id)
     }
   }
 
@@ -404,6 +409,7 @@ export class RequestFormComponent implements OnInit {
           ccPerson: ccPerson ? ccPerson.split(',') : [],
         },
       })
+      this.requestInfo.orderInfos = orderInfos
       if (applyType === APPLY_TYPE.PRODUCTION || applyType === APPLY_TYPE.EXT_WARRANTY || applyType === APPLY_TYPE.LOGISTICSCOST) {
         this.formValues.patchValue({
           orderInfo: {
@@ -471,11 +477,10 @@ export class RequestFormComponent implements OnInit {
   }
 
   async onDeleteRequest() {
+    const id = this.message.loading(LOADING_MESSAGE.DELETE_DRAFT, { nzDuration: 0 }).messageId
     try {
       this.submitLoading = true
-      const id = this.message.loading(LOADING_MESSAGE.DELETE_DRAFT, { nzDuration: 0 }).messageId
       await this.spService.deleteRequest(this.requestId)
-      this.message.remove(id)
       this.message.success(SUCCESS_MESSAGE.DELETE_DRAFT)
       this.navigateToHomePage()
     } catch({ message }) {
@@ -483,16 +488,16 @@ export class RequestFormComponent implements OnInit {
       console.error(`删除失败, ${message}`)
     } finally {
       this.submitLoading = false
+      this.message.remove(id)
     }
   }
 
   // 取消申请
   async onCancelRequest() {
+    const id = this.message.loading(LOADING_MESSAGE.CANCEL_REQUEST, { nzDuration: 0 }).messageId
     try {
       this.submitLoading = true
-      const id = this.message.loading(LOADING_MESSAGE.CANCEL_REQUEST, { nzDuration: 0 }).messageId
       await this.spService.cancelRequest(this.requestId)
-      this.message.remove(id)
       this.message.success(SUCCESS_MESSAGE.CANCEL_REQUEST)
       this.navigateToHomePage()
     } catch({ message }) {
@@ -500,16 +505,16 @@ export class RequestFormComponent implements OnInit {
       console.error(`取消失败, ${message}`)
     } finally {
       this.submitLoading = false
+      this.message.remove(id)
     }
   }
 
   // 撤回申请
   async onWithdrawRequest() {
+    const id = this.message.loading(LOADING_MESSAGE.WITHDRAW_REQUEST, { nzDuration: 0 }).messageId
     try {
       this.submitLoading = true
-      const id = this.message.loading(LOADING_MESSAGE.WITHDRAW_REQUEST, { nzDuration: 0 }).messageId
       await this.spService.withdrawRequest(this.requestId)
-      this.message.remove(id)
       this.message.success(SUCCESS_MESSAGE.WITHDRAW_REQUEST)
       this.navigateToHomePage()
     } catch({ message }) {
@@ -517,6 +522,7 @@ export class RequestFormComponent implements OnInit {
       console.error(`撤回失败, ${message}`)
     } finally {
       this.submitLoading = false
+      this.message.remove(id)
     }
   }
 

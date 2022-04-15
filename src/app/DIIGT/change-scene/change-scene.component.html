@@ -286,6 +286,15 @@
     </ng-template>
   </ngb-tab>
 
+  <ngb-tab id="sp-setting-tab">
+    <ng-template ngbTabTitle><span class="tab-title"><strong>Special Approval Setting<br> 特批流程设置</strong></span></ng-template>
+    <ng-template ngbTabContent>
+      <div class="card-body">
+        <special-approval-setting></special-approval-setting>
+      </div>
+    </ng-template>
+  </ngb-tab>
+
 
 </ngb-tabset>
 <nz-modal [nzVisible]="modalAttribute.isVisible" [nzTitle]="modalAttribute.title" nzWidth="600"
