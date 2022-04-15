@@ -126,8 +126,8 @@ export class HomeComponent implements OnInit {
           } else {
             return false
           }
-        }).map(({ bg, applyType, applyItem, minWarrantyMonths, maxWarrantyMonths, remark }) => ({
-          name: this.formatTemplateName({ applyType, applyItem, minWarrantyMonths, maxWarrantyMonths }),
+        }).map(({ bg, applyType, applyItem, minWarrantyMonths, maxWarrantyMonths, minWarrantyMonthsComparator, maxWarrantyMonthsComparator remark }) => ({
+          name: this.formatTemplateName({ applyType, applyItem, minWarrantyMonths, maxWarrantyMonths, minWarrantyMonthsComparator, maxWarrantyMonthsComparator  }),
           typeIndex: this.formatTypeIndex(applyType),
           type: applyType,
           typeName: APPLY_TYPE_MAP[applyType].label,
@@ -162,18 +162,19 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  formatTemplateName({ applyType, applyItem, minWarrantyMonths, maxWarrantyMonths }) {
+  formatTemplateName({ applyType, applyItem, minWarrantyMonths, maxWarrantyMonths, minWarrantyMonthsComparator, maxWarrantyMonthsComparator }) {
     if (applyType === APPLY_TYPE.PRODUCTION) {
       return this.formatApplyTypeItem({ applyType, applyItem })
     } else if (applyType === APPLY_TYPE.EXT_WARRANTY) {
       const prefix = APPLY_TYPE_MAP[applyType].label
-      if (minWarrantyMonths > 0 && maxWarrantyMonths > 0) {
-          return `${prefix}>${minWarrantyMonths - 1} month&≤${maxWarrantyMonths} month`
-      } else if (minWarrantyMonths > 0) {
-        return `${prefix}>${minWarrantyMonths - 1} month`
-      } else {
-        return `${prefix}≤${maxWarrantyMonths} month`
-      }
+      return `${prefix}${minWarrantyMonthsComparator}${minWarrantyMonths} month&${maxWarrantyMonthsComparator}${maxWarrantyMonths} month`
+      // if (minWarrantyMonths > 0 && maxWarrantyMonths > 0) {
+      //     return `${prefix}>${minWarrantyMonths - 1} month&≤${maxWarrantyMonths} month`
+      // } else if (minWarrantyMonths > 0) {
+      //   return `${prefix}>${minWarrantyMonths - 1} month`
+      // } else {
+      //   return `${prefix}≤${maxWarrantyMonths} month`
+      // }
     }
   }
 

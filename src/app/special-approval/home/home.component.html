@@ -57,7 +57,7 @@
           <div *ngFor="let request of card.list" class="media bottom" (click)="onNavigateToRequestDetail(request)">
             <div class="media-body">
               <div class="subject-content">
-                <strong class="font-weight-semibold">{{ request.projectName }}</strong>
+                <strong class="font-weight-semibold">{{ request.applyCode }}</strong>
                 &nbsp;
                 <div>{{ formatApplyTypeItem(request) }}</div>
               </div>

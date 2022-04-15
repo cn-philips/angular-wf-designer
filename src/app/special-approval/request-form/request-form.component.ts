@@ -268,6 +268,15 @@ export class RequestFormComponent implements OnInit {
           { 
             ...orderInfo,
             expectedSaleDate: expectedSaleDate ? moment(expectedSaleDate).format('YYYY-MM-DD') : null,
+            products: products.map((product) => ({
+              ...product,
+              warranty: {
+                ...product.warranty,
+                applyStdWarrantyEnddate: moment(product.warranty.applyStdWarrantyEnddate).format('YYYY-MM-DD'),
+                expectedStdWarrantyStartdate: moment(product.warranty.expectedStdWarrantyStartdate).format('YYYY-MM-DD'),
+                applyExtWarrantyMonths: Number(product.warranty.applyExtWarrantyMonths),
+              }
+            }))
           }
         ]
         break
@@ -304,6 +313,7 @@ export class RequestFormComponent implements OnInit {
       this.message.error('请按要求填写表单信息')
       return
     }
+    const id = this.message.loading(LOADING_MESSAGE.SUBMIT, { nzDuration: 0 }).messageId
     try {
       const data = this.getFormData()
       // const { orderInfo: { businessModel, hospitalNo, dealerCode }, ccType, ccPerson } = data
@@ -327,10 +337,8 @@ export class RequestFormComponent implements OnInit {
         this.message.error('请选择抄送节点')
         return
       }
-      const id = this.message.loading(LOADING_MESSAGE.SUBMIT, { nzDuration: 0 }).messageId
       this.submitLoading = true
       await this.spService.submitRequest(data)
-      this.message.remove(id)
       this.message.success(SUCCESS_MESSAGE.SUBMIT)
       this.navigateToHomePage() // 提交成功跳转到首页
     } catch ({ message }) {
@@ -338,16 +346,16 @@ export class RequestFormComponent implements OnInit {
       console.error(`提交失败, ${message}`)
     } finally {
       this.submitLoading = false
+      this.message.remove(id)
     }
   }
 
   async onSaveDraft() {
+    const id = this.message.loading(LOADING_MESSAGE.SAVE_DRAFT, { nzDuration: 0 }).messageId
     try {
-      const id = this.message.loading(LOADING_MESSAGE.SAVE_DRAFT, { nzDuration: 0 }).messageId
       this.submitLoading = true
       const data = this.getFormData()
       await this.spService.saveRequest(data)
-      this.message.remove(id)
       this.message.success(SUCCESS_MESSAGE.SAVE_DRAFT)
       this.navigateToHomePage()
     } catch({ message }) {
@@ -355,6 +363,7 @@ export class RequestFormComponent implements OnInit {
       console.error(`保存失败, ${message}`)
     } finally {
       this.submitLoading = false
+      this.message.remove(id)
     }
   }
 
@@ -457,11 +466,10 @@ export class RequestFormComponent implements OnInit {
   }
 
   async onDeleteRequest() {
+    const id = this.message.loading(LOADING_MESSAGE.DELETE_DRAFT, { nzDuration: 0 }).messageId
     try {
       this.submitLoading = true
-      const id = this.message.loading(LOADING_MESSAGE.DELETE_DRAFT, { nzDuration: 0 }).messageId
       await this.spService.deleteRequest(this.requestId)
-      this.message.remove(id)
       this.message.success(SUCCESS_MESSAGE.DELETE_DRAFT)
       this.navigateToHomePage()
     } catch({ message }) {
@@ -469,16 +477,16 @@ export class RequestFormComponent implements OnInit {
       console.error(`删除失败, ${message}`)
     } finally {
       this.submitLoading = false
+      this.message.remove(id)
     }
   }
 
   // 取消申请
   async onCancelRequest() {
+    const id = this.message.loading(LOADING_MESSAGE.CANCEL_REQUEST, { nzDuration: 0 }).messageId
     try {
       this.submitLoading = true
-      const id = this.message.loading(LOADING_MESSAGE.CANCEL_REQUEST, { nzDuration: 0 }).messageId
       await this.spService.cancelRequest(this.requestId)
-      this.message.remove(id)
       this.message.success(SUCCESS_MESSAGE.CANCEL_REQUEST)
       this.navigateToHomePage()
     } catch({ message }) {
@@ -486,16 +494,16 @@ export class RequestFormComponent implements OnInit {
       console.error(`取消失败, ${message}`)
     } finally {
       this.submitLoading = false
+      this.message.remove(id)
     }
   }
 
   // 撤回申请
   async onWithdrawRequest() {
+    const id = this.message.loading(LOADING_MESSAGE.WITHDRAW_REQUEST, { nzDuration: 0 }).messageId
     try {
       this.submitLoading = true
-      const id = this.message.loading(LOADING_MESSAGE.WITHDRAW_REQUEST, { nzDuration: 0 }).messageId
       await this.spService.withdrawRequest(this.requestId)
-      this.message.remove(id)
       this.message.success(SUCCESS_MESSAGE.WITHDRAW_REQUEST)
       this.navigateToHomePage()
     } catch({ message }) {
@@ -503,6 +511,7 @@ export class RequestFormComponent implements OnInit {
       console.error(`撤回失败, ${message}`)
     } finally {
       this.submitLoading = false
+      this.message.remove(id)
     }
   }
 

@@ -87,15 +87,12 @@
   >
     <thead>
       <tr>
-        <th nzWidth="220px">申请编号</th>
-        <th nzWidth="200px">申请类型</th>
-        <th nzWidth="220px">经销商名称</th>
-        <th nzWidth="220px">医院名称</th>
-        <th nzWidth="180px">SAP订单号</th>
-        <th nzWidth="150px">发起人</th>
-        <th nzWidth="100px">状态</th>
-        <th nzWidth="180px">当前节点</th>
-        <th nzWidth="180px">申请时间</th>
+        <th>申请编号</th>
+        <th>申请类型</th>
+        <th>发起人</th>
+        <th>状态</th>
+        <th>当前节点</th>
+        <th>申请时间</th>
         <th nzWidth="100px" nzRight="0px">操作</th>
       </tr>
     </thead>
@@ -103,9 +100,6 @@
       <tr *ngFor="let data of tableData.list">
         <td>{{ data.applyCode }}</td>
         <td>{{ spService.formatApplyType(data.applyType) }}</td>
-        <td>{{ data.dealerName }}</td>
-        <td>{{ data.hospitalName }}</td>
-        <td>{{ data.sapOrderNo }}</td>
         <td>{{ data.applicant }}</td>
         <td>{{ spService.formatRequestStatus(data.processStatus, data.nodeAction, data.status) }}</td>
         <td>{{ data.nodeName }}</td>
