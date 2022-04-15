@@ -160,6 +160,8 @@ export class HomeComponent implements OnInit {
         return 1
       case APPLY_TYPE.EXT_WARRANTY:
         return 2
+      case APPLY_TYPE.LOGISTICSCOST:
+        return 3
     }
   }
 

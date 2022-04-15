@@ -26,7 +26,7 @@ export class BasicInfoComponent {
 
 
   tempData = [
-    {label: '物流运输-特别仓储,物流费用', value: 'sp_logisticscost_apply_item_1'}
+    {label: '物流运输-特别仓储、物流费用', value: 'sp_logisticscost_apply_item_1'}
   ]
 
   APPLY_TYPE = APPLY_TYPE

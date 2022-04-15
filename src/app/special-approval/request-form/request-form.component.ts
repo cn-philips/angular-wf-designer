@@ -376,6 +376,7 @@ export class RequestFormComponent implements OnInit {
       this.pageLoading = true
       const data = await this.spService.getRequestDetail(requestId)
       this.requestInfo = data
+      console.log(data)
       const {
         createUser, applicant, applicantName,
         status, applyCode, applyType, applyItem,
@@ -403,7 +404,7 @@ export class RequestFormComponent implements OnInit {
           ccPerson: ccPerson ? ccPerson.split(',') : [],
         },
       })
-      if (applyType === APPLY_TYPE.PRODUCTION || applyType === APPLY_TYPE.EXT_WARRANTY) {
+      if (applyType === APPLY_TYPE.PRODUCTION || applyType === APPLY_TYPE.EXT_WARRANTY || applyType === APPLY_TYPE.LOGISTICSCOST) {
         this.formValues.patchValue({
           orderInfo: {
             ...orderInfos[0],
