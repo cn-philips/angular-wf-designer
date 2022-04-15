@@ -27,7 +27,7 @@ import { UploadFileListComponent } from './request-form/widgets/upload-file-list
 import { ProductListComponent } from './request-form/widgets/product-list/product-list.component'
 import { ProductionOrderInfoComponent } from './request-form/widgets/order-info/production/production.component'
 import { WarrantyOrderInfoComponent } from './request-form/widgets/order-info/warranty/warranty.component';
-import { TransportationComponent } from './request-form/widgets/order-info/transportation/transportation.component'
+import { TransportationOrderInfoComponent } from './request-form/widgets/order-info/transportation/transportation.component';
 
 const COMPONENTS = [
   ApprovedComponent,
@@ -55,6 +55,7 @@ const WIDGETS = [
   ProductListComponent,
   ProductionOrderInfoComponent,
   WarrantyOrderInfoComponent,
+  TransportationOrderInfoComponent,
 ];
 
 export {
@@ -68,7 +69,7 @@ export {
 };
 
 @NgModule({
-  declarations: [...COMPONENTS, ...WIDGETS, TransportationComponent],
+  declarations: [...COMPONENTS, ...WIDGETS],
   imports: [SharedModule],
   exports: [],
 })

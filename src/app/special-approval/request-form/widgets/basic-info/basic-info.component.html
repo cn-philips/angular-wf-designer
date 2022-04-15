@@ -10,7 +10,7 @@
         </nz-form-item>
       </div>
     </div>
-    
+
     <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
       <div nz-col nzXs="24" nzSm="24" nzMd="12">
         <nz-form-item>
@@ -27,10 +27,13 @@
         <nz-form-item>
           <nz-form-label nzXl="8" nzXXl="6" nzRequired>申请原因</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <nz-select formControlName="applyItem" nzPlaceHolder="请选择申请原因" (ngModelChange)="onApplyItemChange($event)">
+            <nz-select formControlName="applyItem" nzPlaceHolder="请选择申请原因" (ngModelChange)="onApplyItemChange($event)" *ngIf="APPLY_TYPE !== APPLY_TYPE.LOGISTICSCOST">
               <nz-option *ngFor="let item of applyItems" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
             </nz-select>
-            <nz-form-explain 
+            <nz-select formControlName="applyItem" nzPlaceHolder="请选择申请原因" (ngModelChange)="onApplyItemChange($event)" *ngIf="APPLY_TYPE === APPLY_TYPE.LOGISTICSCOST">
+              <nz-option *ngFor="let item of applyItems" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+            </nz-select>
+            <nz-form-explain
               *ngIf="formValues.get('applyItem')?.dirty && formValues.get('applyItem')?.errors"
             >
               请选择申请原因
@@ -46,7 +49,7 @@
           <nz-form-label nzXl="8" nzXXl="6" nzRequired nzFor="applyItemDesc">其他原因说明</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <input nz-input formControlName="applyItemDesc" id="applyItemDesc" />
-            <nz-form-explain 
+            <nz-form-explain
               *ngIf="formValues.get('applyItemDesc')?.dirty && formValues.get('applyItemDesc')?.errors"
             >
               请填写其他原因说明
@@ -62,7 +65,7 @@
           <nz-form-label nzFor="reason" nzXl="8" nzXXl="6" nzRequired>申请原因详细描述</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <textarea rows="4" nz-input formControlName="reason" id="reason"></textarea>
-            <nz-form-explain 
+            <nz-form-explain
               *ngIf="formValues.get('reason')?.dirty && formValues.get('reason')?.errors"
             >
               请填写申请原因详细描述
@@ -77,11 +80,11 @@
         <nz-form-item>
           <nz-form-label nzFor="reason" nzXl="8" nzXXl="6" class="upload-file-label">申请附件</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <nz-upload 
-              nzType="drag" 
+            <nz-upload
+              nzType="drag"
               nzAction="/act/system/upload"
-              [nzMultiple]="true" 
-              [nzFileList]="supportFileList" 
+              [nzMultiple]="true"
+              [nzFileList]="supportFileList"
               [nzBeforeUpload]="onBeforeUpload"
               [nzCustomRequest]="onUploadFile"
               [nzRemove]="onRemoveFile"

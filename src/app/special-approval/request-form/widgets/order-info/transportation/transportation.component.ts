@@ -13,6 +13,7 @@ import {
   CURRENCIES,
   ORDER_TYPES, STAND_WARRANTY_MONTH
 } from '../../../../special-approval.constants';
+import {WarrantyOrderInfoComponent} from '../warranty/warranty.component';
 
 
 @Component({
@@ -20,7 +21,7 @@ import {
   templateUrl: './transportation.component.html',
   styleUrls: ['./transportation.component.scss']
 })
-export class TransportationComponent implements OnInit {
+export class TransportationOrderInfoComponent implements OnInit {
 
   showDealerArea: boolean = false
 
