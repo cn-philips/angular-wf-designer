@@ -271,16 +271,16 @@
       </div>
     </div>
 
-<!--    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle" *ngIf="applyType === APPLY_TYPE.PRODUCTION">-->
-<!--      <div nz-col nzSpan="24">-->
-<!--        <nz-form-item>-->
-<!--          <nz-form-label nzSpan="3">产品列表</nz-form-label>-->
-<!--          <nz-form-control nzSpan="19">-->
-<!--            <special-approval-product-list [isWarranty]="applyType === APPLY_TYPE.EXT_WARRANTY" [orderInfo]="formValues" [editable]="editable"></special-approval-product-list>-->
-<!--          </nz-form-control>-->
-<!--        </nz-form-item>-->
-<!--      </div>-->
-<!--    </div>-->
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzSpan="24">
+        <nz-form-item>
+          <nz-form-label nzSpan="3">产品列表</nz-form-label>
+          <nz-form-control nzSpan="19">
+            <special-approval-product-list [isWarranty]="false" [orderInfo]="formValues" [editable]="editable"></special-approval-product-list>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
 
   </form>
 

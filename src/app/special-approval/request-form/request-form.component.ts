@@ -5,7 +5,7 @@ import * as moment from 'moment'
 import { NzMessageService } from 'ng-zorro-antd'
 
 import { SpecialApprovalService } from '../special-approval.service'
-import { 
+import {
   LOADING_MESSAGE,
   SUCCESS_MESSAGE,
   ERROR_MESSAGE,
@@ -159,7 +159,7 @@ export class RequestFormComponent implements OnInit {
         this.basicInfo.patchValue({ applyItem: item })
       }
       this.applyType = type
-      
+
       this.basicInfo.patchValue({ applyType: type })
 
       if (minMon || maxMon) {
@@ -229,7 +229,9 @@ export class RequestFormComponent implements OnInit {
         this.basicInfo.controls.applyItemDesc.setValidators([Validators.required])
       }
     } else {
-      this.basicInfo.controls.applyItem.disable()
+      if (type !== APPLY_TYPE.LOGISTICSCOST){
+        this.basicInfo.controls.applyItem.disable()
+      }
     }
 
     if (bg === 'PD&IGT') {
@@ -254,7 +256,7 @@ export class RequestFormComponent implements OnInit {
     switch(this.applyType) {
       case APPLY_TYPE.PRODUCTION: // 特批生产
         data.orderInfos = [
-          { 
+          {
             ...orderInfo,
             applyArrivalTime: applyArrivalTime ? moment(applyArrivalTime).format('YYYY-MM-DD') : null,
             expectedPaymentDate: expectedPaymentDate ? moment(expectedPaymentDate).format('YYYY-MM-DD') : null,
@@ -265,7 +267,7 @@ export class RequestFormComponent implements OnInit {
         break
       case APPLY_TYPE.EXT_WARRANTY: // 延长保修
         data.orderInfos = [
-          { 
+          {
             ...orderInfo,
             expectedSaleDate: expectedSaleDate ? moment(expectedSaleDate).format('YYYY-MM-DD') : null,
           }
@@ -363,7 +365,7 @@ export class RequestFormComponent implements OnInit {
       this.pageLoading = true
       const data = await this.spService.getRequestDetail(requestId)
       this.requestInfo = data
-      const { 
+      const {
         createUser, applicant, applicantName,
         status, applyCode, applyType, applyItem,
         applyItemDesc, executed, processStatus,
@@ -374,7 +376,7 @@ export class RequestFormComponent implements OnInit {
       this.applyItem = applyItem
       this.applyType = applyType
       this.executed = executed
-      this.formValues.patchValue({ 
+      this.formValues.patchValue({
         basicInfo: {
           applyCode,
           applicant,
@@ -401,7 +403,7 @@ export class RequestFormComponent implements OnInit {
       }
 
       const userSet = new Set<string>()
-      nodeInfoList.forEach(({ approverList }) => approverList.forEach(({ user }) => { 
+      nodeInfoList.forEach(({ approverList }) => approverList.forEach(({ user }) => {
         if (!userSet.has(user)) {
           userSet.add(user)
           this.processUsers.push(user)
@@ -421,7 +423,7 @@ export class RequestFormComponent implements OnInit {
       this.userList = ccPerson ? ccPerson.split(',').map(email => ({ email })) : []
 
       this.isApplicant = applicant === localStorage.getItem('ng_philips_code1')
-      
+
       const isDraft = processStatus === PROCESS_STATUS.DRAFT && this.isApplicant
       if (isDraft) {
         this.showSubmitBtn = true
