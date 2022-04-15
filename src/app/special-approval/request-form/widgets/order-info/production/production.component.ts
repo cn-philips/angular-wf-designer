@@ -164,7 +164,6 @@ export class ProductionOrderInfoComponent implements OnInit {
       orderAmount: contractPrice,
       currency: invoiceInformation,
       products: [{ 
-        id: Date.now(),
         productType: productModel,
         wbs: "",
         itemNo: "",

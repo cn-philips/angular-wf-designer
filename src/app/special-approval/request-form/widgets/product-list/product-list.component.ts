@@ -50,7 +50,6 @@ export class ProductListComponent implements OnInit {
     this.products.patchValue([
       ...this.products.value,
       {
-        id: Date.now(),
         productType: null,
         wbs: "",
         itemNo: "",
@@ -60,8 +59,8 @@ export class ProductListComponent implements OnInit {
     ]);
   }
 
-  onDeleteProduct(id) {
-    const products = this.products.value.filter((product) => product.id !== id);
+  onDeleteProduct(product) {
+    const products = this.products.value.filter((curProduct) => curProduct !== product);
     this.products.patchValue(products);
     this.onProductChange();
   }

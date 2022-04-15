@@ -136,7 +136,7 @@ export class RequestFormComponent implements OnInit {
   })
 
   ngOnInit(): void {
-    const { params: { requestId }, queryParams: { type, item, taskId, minMon, maxMon, bg } } = this.route.snapshot
+    const { params: { requestId }, queryParams: { type, item, taskId, minMon, maxMon, bg, minComp, maxComp } } = this.route.snapshot
     // detail page
     if (requestId) {
       this.taskId = taskId
@@ -162,12 +162,7 @@ export class RequestFormComponent implements OnInit {
       
       this.basicInfo.patchValue({ applyType: type })
 
-      if (minMon || maxMon) {
-        this.minMon = Number(minMon || 0)
-        this.maxMon = Number(maxMon || 999)
-      }
-
-      this.setPageTitle({ applyType: type, applyItem: item, minMon, maxMon })
+      this.setPageTitle({ applyType: type, applyItem: item, minMon, maxMon, minComp, maxComp })
 
       if (bg) {
         this.orderInfo.patchValue({
@@ -179,29 +174,27 @@ export class RequestFormComponent implements OnInit {
     }
   }
 
-  setPageTitle({ applyType = '', applyItem = '', minMon = null, maxMon = null }, isNew = true) {
+  setPageTitle({ applyType = '', applyItem = '', minMon = null, maxMon = null, minComp = null, maxComp = null }, isNew = true) {
     const { label: applyTypeName, items } = APPLY_TYPE_MAP[applyType]
     if (!isNew) {
       this.pageTitle = applyTypeName
       return
     }
-    let pageTitle = '新建特批-'
+    let pageTitle = `新建特批-${applyTypeName}`
     switch(applyType) {
       case APPLY_TYPE.PRODUCTION:
         const item = items.find(({ value }) => value == applyItem) || { } as { label: string }
         const applyItemName = item.label
-        pageTitle += `${applyTypeName}-${applyItemName}`
+        pageTitle += `-${applyItemName}`
         break
       case APPLY_TYPE.EXT_WARRANTY:
-        let warrantyInfo: string
-        if (minMon > 0 && maxMon > 0) {
-          warrantyInfo = `>${minMon - 1} month&≤${maxMon} month`
-        } else if (minMon > 0) {
-          warrantyInfo = `>${minMon - 1} month`
-        } else {
-          warrantyInfo = `≤${maxMon} month`
+        if (minMon && minComp && maxMon && maxComp) {
+          pageTitle += `${minComp}${minMon} month&${maxComp}${maxMon} month`
+        } else if (minMon && minComp) {
+          pageTitle += `${minComp}${minMon} month`
+        } else if (maxMon && maxComp){
+          pageTitle += `${maxComp}${maxMon} month`
         }
-        pageTitle += `${applyTypeName}${warrantyInfo}`
         break
       default:
         pageTitle += applyTypeName
@@ -255,6 +248,7 @@ export class RequestFormComponent implements OnInit {
       case APPLY_TYPE.PRODUCTION: // 特批生产
         data.orderInfos = [
           { 
+            ...this.requestInfo.orderInfos[0],
             ...orderInfo,
             applyArrivalTime: applyArrivalTime ? moment(applyArrivalTime).format('YYYY-MM-DD') : null,
             expectedPaymentDate: expectedPaymentDate ? moment(expectedPaymentDate).format('YYYY-MM-DD') : null,
@@ -266,6 +260,7 @@ export class RequestFormComponent implements OnInit {
       case APPLY_TYPE.EXT_WARRANTY: // 延长保修
         data.orderInfos = [
           { 
+            ...this.requestInfo.orderInfos[0],
             ...orderInfo,
             expectedSaleDate: expectedSaleDate ? moment(expectedSaleDate).format('YYYY-MM-DD') : null,
             products: products.map((product) => ({
@@ -399,6 +394,7 @@ export class RequestFormComponent implements OnInit {
           ccPerson: ccPerson ? ccPerson.split(',') : [],
         },
       })
+      this.requestInfo.orderInfos = orderInfos
       if (applyType === APPLY_TYPE.PRODUCTION || applyType === APPLY_TYPE.EXT_WARRANTY) {
         this.formValues.patchValue({
           orderInfo: {

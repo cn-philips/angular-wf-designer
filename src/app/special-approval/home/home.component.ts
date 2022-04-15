@@ -126,7 +126,7 @@ export class HomeComponent implements OnInit {
           } else {
             return false
           }
-        }).map(({ bg, applyType, applyItem, minWarrantyMonths, maxWarrantyMonths, minWarrantyMonthsComparator, maxWarrantyMonthsComparator remark }) => ({
+        }).map(({ bg, applyType, applyItem, minWarrantyMonths, maxWarrantyMonths, minWarrantyMonthsComparator, maxWarrantyMonthsComparator, remark }) => ({
           name: this.formatTemplateName({ applyType, applyItem, minWarrantyMonths, maxWarrantyMonths, minWarrantyMonthsComparator, maxWarrantyMonthsComparator  }),
           typeIndex: this.formatTypeIndex(applyType),
           type: applyType,
@@ -135,7 +135,9 @@ export class HomeComponent implements OnInit {
           desc: remark,
           bg,
           minMon: minWarrantyMonths,
+          minComp: minWarrantyMonthsComparator,
           maxMon: maxWarrantyMonths,
+          maxComp: maxWarrantyMonthsComparator,
         }))
         this.filteredTemplateList = this.allTemplateList
         this.pageLoading = ++this.reqSuccessCount !== this.reqTotalCount
@@ -167,14 +169,15 @@ export class HomeComponent implements OnInit {
       return this.formatApplyTypeItem({ applyType, applyItem })
     } else if (applyType === APPLY_TYPE.EXT_WARRANTY) {
       const prefix = APPLY_TYPE_MAP[applyType].label
+      // 没有最小月份, 实际条件为<maxWarrantyMonths或者<=maxWarrantyMonths
+      if (minWarrantyMonths == null || minWarrantyMonthsComparator == null) {
+        return `${prefix}${maxWarrantyMonthsComparator}${maxWarrantyMonths} month`
+      }
+      // 没有最大月份, 实际条件为>minWarrantyMonths>=minWarrantyMonths
+      if (maxWarrantyMonths == null || maxWarrantyMonthsComparator == null) {
+        return `${prefix}${minWarrantyMonthsComparator}${minWarrantyMonths} month`
+      }
       return `${prefix}${minWarrantyMonthsComparator}${minWarrantyMonths} month&${maxWarrantyMonthsComparator}${maxWarrantyMonths} month`
-      // if (minWarrantyMonths > 0 && maxWarrantyMonths > 0) {
-      //     return `${prefix}>${minWarrantyMonths - 1} month&≤${maxWarrantyMonths} month`
-      // } else if (minWarrantyMonths > 0) {
-      //   return `${prefix}>${minWarrantyMonths - 1} month`
-      // } else {
-      //   return `${prefix}≤${maxWarrantyMonths} month`
-      // }
     }
   }
 
@@ -241,13 +244,15 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  onNavigateToNewRequest({ type, item, minMon, maxMon, bg }) {
+  onNavigateToNewRequest({ type, item, minMon, maxMon, minComp, maxComp, bg }) {
     this.router.navigate(['/special-approval/new-request'], {
       queryParams: {
         type, 
         item,
         minMon,
         maxMon,
+        minComp,
+        maxComp,
         bg,
       }
     })

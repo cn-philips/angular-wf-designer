@@ -168,7 +168,6 @@ export class WarrantyOrderInfoComponent implements OnInit {
       currency: invoiceInformation,
       products: [
         {
-          id: Date.now(),
           productType: productModel,
           wbs: "",
           itemNo: "",
