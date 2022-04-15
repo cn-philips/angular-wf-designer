@@ -86,7 +86,7 @@ const APPLY_TYPE_MAP = {
   [APPLY_TYPE.LOGISTICSCOST]: {
     label: "物流运输",
     items: [
-      {label: '特别仓储', value: 'sp_logisticscost_apply_item_1'}
+      {label: '物流运输-特别仓储,物流费用', value: 'sp_logisticscost_apply_item_1'}
     ]
 
   }
