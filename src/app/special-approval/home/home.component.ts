@@ -29,7 +29,8 @@ const activeTemplate = {
   [APPLY_TYPE.PRODUCTION]: true,
   [APPLY_TYPE.DELIVERY]: false,
   [APPLY_TYPE.EXT_INSTALL_COST]: false,
-  [APPLY_TYPE.EXT_WARRANTY]: true
+  [APPLY_TYPE.EXT_WARRANTY]: true,
+  [APPLY_TYPE.LOGISTICSCOST]: true
 }
 
 interface Card {
@@ -67,7 +68,7 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(): void {
     this.pageLoading = true
-    
+
     this.initTemplateList()
     const menuList = JSON.parse(window.localStorage.getItem("menuList"))
     const spMenu = menuList.find(({ id }) => id === MENU_ID.SPECIAL_APPROVAL)
@@ -161,11 +162,13 @@ export class HomeComponent implements OnInit {
         return 1
       case APPLY_TYPE.EXT_WARRANTY:
         return 2
+      case APPLY_TYPE.LOGISTICSCOST:
+        return 3
     }
   }
 
   formatTemplateName({ applyType, applyItem, minWarrantyMonths, maxWarrantyMonths, minWarrantyMonthsComparator, maxWarrantyMonthsComparator }) {
-    if (applyType === APPLY_TYPE.PRODUCTION) {
+    if (applyType === APPLY_TYPE.PRODUCTION || applyType === APPLY_TYPE.LOGISTICSCOST) {
       return this.formatApplyTypeItem({ applyType, applyItem })
     } else if (applyType === APPLY_TYPE.EXT_WARRANTY) {
       const prefix = APPLY_TYPE_MAP[applyType].label
@@ -232,7 +235,7 @@ export class HomeComponent implements OnInit {
       this.pageLoading = ++this.reqSuccessCount !== this.reqTotalCount
     }
   }
- 
+
   async getDraftList() {
     try {
       const { rows, total } = await this.spService.getDraftList(DEFAULT_SEARCH_PARAMS)
@@ -247,7 +250,7 @@ export class HomeComponent implements OnInit {
   onNavigateToNewRequest({ type, item, minMon, maxMon, minComp, maxComp, bg }) {
     this.router.navigate(['/special-approval/new-request'], {
       queryParams: {
-        type, 
+        type,
         item,
         minMon,
         maxMon,

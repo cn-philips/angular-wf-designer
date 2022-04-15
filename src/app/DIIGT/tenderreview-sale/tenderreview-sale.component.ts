@@ -39,6 +39,7 @@ export class TenderreviewSaleComponent implements OnInit {
   public fileList: any = {
     fileList: []// 审批文件
   };
+  public load: any = 0;
 
   /*可否操作*/
   take: boolean=true;
@@ -61,6 +62,7 @@ export class TenderreviewSaleComponent implements OnInit {
   * */
   getData() {
     const url = '/act/ecom/tender/application/getTenderApplicationDto?mainId=';
+    this.load++;
     this.http.get(url + this.mainid).subscribe(res => {
       this.infor = res.data;
       this.infor.openBiddingDate = formatDatesNow(this.infor.openBiddingDate);
@@ -77,6 +79,9 @@ export class TenderreviewSaleComponent implements OnInit {
        this.infor.performanceBonds = NumberThousandth(this.infor.performanceBonds);
       }
       this.BMCList();
+      this.load--;
+    }, error => {
+      this.load--;
     });
   }
 
@@ -111,14 +116,19 @@ export class TenderreviewSaleComponent implements OnInit {
           if (cluster != null) {
             url = url + '&cluster=' + cluster;
           }
+          this.load++;
           this.http.get(url).subscribe(e => {
             BMCExpert[bmc] = e.data;
+            this.load--;
+          }, error => {
+            this.load--;
           });
 
           let url2 = '/act/preparation/getProductExpert?bmc=' + bmc +  '&mainId=' + this.mainid + '&role=Cluster BP';
           if (cluster != null) {
             url2 = url2 + '&cluster=' + cluster;
           }
+          this.load++;
           this.http.get(url2).subscribe(e => {
             if (e.data) {
               for (let d = 0; d < e.data.length; d++) {
@@ -129,6 +139,9 @@ export class TenderreviewSaleComponent implements OnInit {
                 });
               }
             }
+            this.load--;
+          }, error => {
+            this.load--;
           });
         }
         // if (this.infor.productInformations[0].productInformations[i].productInformations) {

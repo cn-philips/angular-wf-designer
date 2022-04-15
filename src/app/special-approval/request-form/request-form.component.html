@@ -53,6 +53,7 @@
         <special-approval-production-order-info *ngIf="applyType === APPLY_TYPE.PRODUCTION" [bmcs]="bmcs" [applyItem]="applyItem" [editable]="editable" [formValues]="orderInfo"></special-approval-production-order-info>
         <special-approval-warranty-order-info *ngIf="applyType === APPLY_TYPE.EXT_WARRANTY" [bmcs]="bmcs" [editable]="editable" [formValues]="orderInfo"></special-approval-warranty-order-info>
         <!-- <special-approval-order-info [bmcs]="bmcs" [applyItem]="applyItem" [applyType]="applyType" [editable]="editable" [formValues]="orderInfo"></special-approval-order-info> -->
+        <special-approval-transportation-order-info *ngIf="applyType === APPLY_TYPE.LOGISTICSCOST" [bmcs]="bmcs" [editable]="editable" [formValues]="orderInfo"></special-approval-transportation-order-info>
       </div>
     </ng-template>
   </ngb-tab>

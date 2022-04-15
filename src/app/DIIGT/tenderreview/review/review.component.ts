@@ -243,6 +243,11 @@ export class ReviewComponent implements OnInit {
       this.labarrs.approvallist = appexpert;
     }
 
+    // 投标保证金及履约保证金额审批 没有审批人
+    if (!this.take && this.labarr.approvalBidSecurity && (this.labarrs.approvallist === null || this.labarrs.approvallist === undefined || this.labarrs.approvallist.length < 1)) {
+      this.message.create('error', '投标保证金及履约保证金额审批人异常，请稍后重试');
+      return;
+    }
 
     this.labarrs.status = 1;
     this.labarrs.mainId = this.mainId;

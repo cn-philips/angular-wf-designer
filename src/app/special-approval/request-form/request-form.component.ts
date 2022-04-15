@@ -5,7 +5,7 @@ import * as moment from 'moment'
 import { NzMessageService } from 'ng-zorro-antd'
 
 import { SpecialApprovalService } from '../special-approval.service'
-import { 
+import {
   LOADING_MESSAGE,
   SUCCESS_MESSAGE,
   ERROR_MESSAGE,
@@ -159,7 +159,7 @@ export class RequestFormComponent implements OnInit {
         this.basicInfo.patchValue({ applyItem: item })
       }
       this.applyType = type
-      
+
       this.basicInfo.patchValue({ applyType: type })
 
       this.setPageTitle({ applyType: type, applyItem: item, minMon, maxMon, minComp, maxComp })
@@ -222,7 +222,9 @@ export class RequestFormComponent implements OnInit {
         this.basicInfo.controls.applyItemDesc.setValidators([Validators.required])
       }
     } else {
-      this.basicInfo.controls.applyItem.disable()
+      if (type !== APPLY_TYPE.LOGISTICSCOST){
+        this.basicInfo.controls.applyItem.disable()
+      }
     }
 
     if (bg === 'PD&IGT') {
@@ -275,6 +277,18 @@ export class RequestFormComponent implements OnInit {
           }
         ]
         break
+      case APPLY_TYPE.LOGISTICSCOST:
+        data.orderInfos = [
+          { 
+            ...this.requestInfo.orderInfos[0],
+            ...orderInfo,
+            applyArrivalTime: applyArrivalTime ? moment(applyArrivalTime).format('YYYY-MM-DD') : null,
+            expectedPaymentDate: expectedPaymentDate ? moment(expectedPaymentDate).format('YYYY-MM-DD') : null,
+            expectedSaleDate: expectedSaleDate ? moment(expectedSaleDate).format('YYYY-MM-DD') : null,
+            products: products.map(({ productType, wbsNo, itemNo, quantity }) => ({ productType, wbsNo, itemNo, quantity }))
+          }
+        ]
+        break;
     }
     return data
   }
@@ -367,7 +381,8 @@ export class RequestFormComponent implements OnInit {
       this.pageLoading = true
       const data = await this.spService.getRequestDetail(requestId)
       this.requestInfo = data
-      const { 
+      console.log(data)
+      const {
         createUser, applicant, applicantName,
         status, applyCode, applyType, applyItem,
         applyItemDesc, executed, processStatus,
@@ -378,7 +393,7 @@ export class RequestFormComponent implements OnInit {
       this.applyItem = applyItem
       this.applyType = applyType
       this.executed = executed
-      this.formValues.patchValue({ 
+      this.formValues.patchValue({
         basicInfo: {
           applyCode,
           applicant,
@@ -395,7 +410,7 @@ export class RequestFormComponent implements OnInit {
         },
       })
       this.requestInfo.orderInfos = orderInfos
-      if (applyType === APPLY_TYPE.PRODUCTION || applyType === APPLY_TYPE.EXT_WARRANTY) {
+      if (applyType === APPLY_TYPE.PRODUCTION || applyType === APPLY_TYPE.EXT_WARRANTY || applyType === APPLY_TYPE.LOGISTICSCOST) {
         this.formValues.patchValue({
           orderInfo: {
             ...orderInfos[0],
@@ -406,7 +421,7 @@ export class RequestFormComponent implements OnInit {
       }
 
       const userSet = new Set<string>()
-      nodeInfoList.forEach(({ approverList }) => approverList.forEach(({ user }) => { 
+      nodeInfoList.forEach(({ approverList }) => approverList.forEach(({ user }) => {
         if (!userSet.has(user)) {
           userSet.add(user)
           this.processUsers.push(user)
@@ -426,7 +441,7 @@ export class RequestFormComponent implements OnInit {
       this.userList = ccPerson ? ccPerson.split(',').map(email => ({ email })) : []
 
       this.isApplicant = applicant === localStorage.getItem('ng_philips_code1')
-      
+
       const isDraft = processStatus === PROCESS_STATUS.DRAFT && this.isApplicant
       if (isDraft) {
         this.showSubmitBtn = true

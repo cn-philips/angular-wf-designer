@@ -38,6 +38,7 @@ export class TenderreviewComponent implements OnInit {
   public fileList: any = {
     fileList: []// 审批文件
   };
+  public load: any = 0;
 
   constructor(
     private router: Router,
@@ -52,6 +53,7 @@ export class TenderreviewComponent implements OnInit {
   ngOnInit() {
     this.mainId = decodeString(this.activatedRouter.queryParams['_value'].id);
     const url = `/act/ecom/tender/application/getTenderApplicationDto?mainId=${this.mainId}`;
+    this.load++;
     this.http.get(url).subscribe(res => {
       console.log(res);
       if (res.code === '0000') {
@@ -76,6 +78,9 @@ export class TenderreviewComponent implements OnInit {
           }
         }
       }
+      this.load--;
+    }, error => {
+      this.load--;
     });
   }
 
@@ -110,14 +115,19 @@ export class TenderreviewComponent implements OnInit {
           if (cluster != null) {
             url = url + '&cluster=' + cluster;
           }
+          this.load++;
           this.http.get(url).subscribe(e => {
             BMCExpert[bmc] = e.data;
+            this.load--;
+          }, error => {
+            this.load--;
           });
 
           let url2 = '/act/preparation/getProductExpert?bmc=' + bmc + '&mainId=' + this.mainId + '&role=Cluster BP';
           if (cluster != null) {
             url2 = url2 + '&cluster=' + cluster;
           }
+          this.load++;
           this.http.get(url2).subscribe(e => {
             if (e.data) {
               for (let d = 0; d < e.data.length; d++) {
@@ -128,6 +138,9 @@ export class TenderreviewComponent implements OnInit {
                 });
               }
             }
+            this.load--;
+          }, error => {
+            this.load--;
           });
         }
         // if (this.dataBase.productInformations[0].productInformations[i].productInformations) {

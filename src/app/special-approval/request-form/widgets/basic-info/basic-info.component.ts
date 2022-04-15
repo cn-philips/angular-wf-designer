@@ -6,7 +6,7 @@ import { APPLY_TYPE, APPLY_TYPE_MAP } from '../../../special-approval.constants'
 import { SpecialApprovalService } from '../../../special-approval.service'
 import { getType } from '../../../../../assets/js/tools'
 import { Observable, Observer } from 'rxjs'
- 
+
 interface CommonResponse {
   code: string;
   data: any;
@@ -23,6 +23,11 @@ export class BasicInfoComponent {
   @Input() supportFileList: UploadFile[] = []
   @Input() editable: boolean
   @Input() executed:number = null
+
+
+  tempData = [
+    {label: '物流运输-特别仓储、物流费用', value: 'sp_logisticscost_apply_item_1'}
+  ]
 
   APPLY_TYPE = APPLY_TYPE
 
