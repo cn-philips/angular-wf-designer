@@ -31,7 +31,7 @@
               <nz-option *ngFor="let item of applyItems" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
             </nz-select>
             <nz-select formControlName="applyItem" nzPlaceHolder="请选择申请原因" (ngModelChange)="onApplyItemChange($event)" *ngIf="APPLY_TYPE === APPLY_TYPE.LOGISTICSCOST">
-              <nz-option *ngFor="let item of applyItems" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+              <nz-option *ngFor="let item of tempData" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
             </nz-select>
             <nz-form-explain
               *ngIf="formValues.get('applyItem')?.dirty && formValues.get('applyItem')?.errors"

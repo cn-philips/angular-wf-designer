@@ -273,6 +273,17 @@ export class RequestFormComponent implements OnInit {
           }
         ]
         break
+      case APPLY_TYPE.LOGISTICSCOST:
+        data.orderInfos = [
+          {
+            ...orderInfo,
+            applyArrivalTime: applyArrivalTime ? moment(applyArrivalTime).format('YYYY-MM-DD') : null,
+            expectedPaymentDate: expectedPaymentDate ? moment(expectedPaymentDate).format('YYYY-MM-DD') : null,
+            expectedSaleDate: expectedSaleDate ? moment(expectedSaleDate).format('YYYY-MM-DD') : null,
+            products: products.map(({ productType, wbsNo, itemNo, quantity }) => ({ productType, wbsNo, itemNo, quantity }))
+          }
+        ]
+        break;
     }
     return data
   }
