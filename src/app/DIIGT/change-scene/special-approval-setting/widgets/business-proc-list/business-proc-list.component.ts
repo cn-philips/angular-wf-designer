@@ -1,13 +1,19 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { NzMessageService } from 'ng-zorro-antd'
+
 import { BG_LIST, APPLY_TYPES, APPLY_TYPE_MAP } from '../../../../../special-approval/special-approval.constants'
-import { SpecialApprovalSettingService } from '../../special-approval-setting.service'
+import { SpecialApprovalSettingService, BusinessProc } from '../../special-approval-setting.service'
+import { BusinessProcFormComponent, FORM_MODE } from '../business-proc-form/business-proc-form.component'
 
 @Component({
   selector: 'sp-setting-business-proc-list',
   templateUrl: './business-proc-list.component.html',
+  styleUrls: ['business-proc-list.component.scss'],
 })
 export class BusinessProcListComponent implements OnInit {
+
+  @ViewChild('businessProcForm') businessProcForm: BusinessProcFormComponent
 
   formValues: FormGroup = this.fb.group({
     processId: [null], // 审批流名称
@@ -29,18 +35,24 @@ export class BusinessProcListComponent implements OnInit {
     loading: false,
     list: []
   }
+  
+  selectedProc: BusinessProc = null
 
   expandedRowMap: { [key: string]: boolean } = {}
 
   constructor(
     private fb: FormBuilder,
     private spSettingService: SpecialApprovalSettingService,
+    private message: NzMessageService,
   ) { }
 
   ngOnInit(): void {
     this.getAllApproveProcList()
   }
 
+  onSelectRow(item) {
+    this.selectedProc = item
+  }
   async getAllApproveProcList() {
     const data = await this.spSettingService.getAllApproveProcList()
     this.selectOptions.processList = data.map(({ id, name }) => ({ label: name, value: id }))
@@ -93,17 +105,50 @@ export class BusinessProcListComponent implements OnInit {
     this.tableData.loading = false
   }
 
-  onToggleProcStatus(item) {
-    console.log(item);
+  async onToggleProcStatus(item) {
+    try {
+      this.tableData.loading = true
+      const { status, id } = item
+      if (status) {
+        await this.spSettingService.enableBusinessProc(id)
+      } else {
+        await this.spSettingService.disableBusinessProc(id)
+      }
+      this.message.success('操作成功')
+    } catch ({ message }) {
+      this.message.error('操作失败, 请稍候重试')
+      console.log(item);
+      item.status = !item.status
+    } finally {
+      this.tableData.loading = false
+    }
   }
 
   onShowEditForm(item) {
-    console.log(item);
+    this.businessProcForm.showModal(FORM_MODE.EDIT, item)
   }
 
+  onShowAddForm() {
+    this.businessProcForm.showModal(FORM_MODE.NEW)
+  }
 
-  onDeleteProc(item) {
+  onShowCloneForm() {
+    this.businessProcForm.showModal(FORM_MODE.CLONE, this.selectedProc)
+  }
 
+  async onDeleteProc(item) {
+    try {
+      this.tableData.loading = true
+      await this.spSettingService.deleteBusinessProc(item.id)
+      this.message.success('删除成功')
+      this.getTableData(true)
+    } catch ({ message }) {
+      this.message.success('删除失败')
+      console.log(`删除业务流程失败, ${message}`);
+      console.log(item);
+    } finally {
+      this.tableData.loading = false
+    }
   }
 
   // 重置查询表单
