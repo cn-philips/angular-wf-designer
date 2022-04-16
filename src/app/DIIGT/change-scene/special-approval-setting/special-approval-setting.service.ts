@@ -17,6 +17,10 @@ export interface BusinessProc {
   applyItem: string;
   status: string;
   processId: string;
+  minWarrantyMonths?: number;
+  minWarrantyMonthsComparator?: string;
+  maxWarrantyMonths?: number;
+  maxWarrantyMonthsComparator?: string;
 }
 
 export interface ApproveProc {
@@ -33,6 +37,8 @@ export interface ApproveProc {
 export class SpecialApprovalSettingService {
   allBusinessProList: BusinessProc[] = []
   allApproveProList: ApproveProc[] = []
+
+  approveProcNodesMap: { [key: string]: [] } = {}
 
   constructor(private http: HttpService) {}
 
@@ -58,5 +64,51 @@ export class SpecialApprovalSettingService {
     } else {
       return this.allApproveProList
     }
+  }
+
+  async getApproveProcNodeList(procId) {
+    if (this.approveProcNodesMap[procId]) {
+      return this.approveProcNodesMap[procId]
+    }
+    const uri = `/act/specialapprove/process/${procId}/preview`
+    const res = await this.http.post(uri).toPromise();
+    const data = formatResponse(res)
+    this.approveProcNodesMap[procId] = data
+    return data
+  }
+
+  // 添加业务流程
+  async addBusinessProc(proc) {
+    const uri = `/act/specialapprove/condition`
+    const res = await this.http.post(uri, proc).toPromise();
+    return formatResponse(res)
+  }
+
+  // 更新业务流程
+  async updateBusinessProc(proc) {
+    const uri = `/act/specialapprove/condition`
+    const res = await this.http.put(uri, proc).toPromise();
+    return formatResponse(res)
+  }
+
+  // 删除业务流程
+  async deleteBusinessProc(procId) {
+    const uri = `/act/specialapprove/condition/${procId}`
+    const res = await this.http.delete(uri).toPromise();
+    return formatResponse(res)
+  }
+
+  // 禁用业务流程
+  async disableBusinessProc(procId) {
+    const uri = `/act/specialapprove/condition/${procId}/disable`
+    const res = await this.http.post(uri).toPromise();
+    return formatResponse(res)
+  }
+
+  // 启用业务流程
+  async enableBusinessProc(procId) {
+    const uri = `/act/specialapprove/condition/${procId}/enable`
+    const res = await this.http.post(uri).toPromise();
+    return formatResponse(res)
   }
 }
