@@ -1,0 +1,11 @@
+/deep/ {
+  .btn-container {
+    margin-bottom: 16px;
+  }
+  .table-radio {
+    margin-right: 0 !important;
+    .ant-radio + span {
+      display: none;
+    }
+  } 
+}

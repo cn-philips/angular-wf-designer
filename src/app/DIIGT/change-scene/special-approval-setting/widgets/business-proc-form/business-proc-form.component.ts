@@ -2,7 +2,8 @@ import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms'
 import { NzMessageService } from 'ng-zorro-antd'
 
-import { SpecialApprovalSettingService, BusinessProc } from '../../special-approval-setting.service'
+import { SpecialApprovalSettingService } from '../../special-approval-setting.service'
+import { BusinessProc } from '../../special-approval-setting.d'
 import { BG_LIST, APPLY_TYPES, APPLY_TYPE, APPLY_TYPE_MAP } from '../../../../../special-approval/special-approval.constants'
 
 export enum FORM_MODE {
@@ -44,7 +45,7 @@ export class BusinessProcFormComponent implements OnInit {
   }
 
   formValues: FormGroup = this.fb.group({
-    status: [1], // 状态
+    status: [true], // 状态
     bg: [null, [Validators.required]], // BG
     applyType: [null, [Validators.required]], // 审批类型
     applyItem: [null, [Validators.required]], // 申请原因
@@ -67,17 +68,6 @@ export class BusinessProcFormComponent implements OnInit {
   }
 
   onApplyTypeChange(applyType) {
-    if (applyType === APPLY_TYPE.EXT_WARRANTY) {
-      this.formValues.controls.minWarrantyMonths.setValidators([Validators.required])
-      this.formValues.controls.minWarrantyMonthsComparator.setValidators([Validators.required])
-      this.formValues.controls.maxWarrantyMonths.setValidators([Validators.required])
-      this.formValues.controls.maxWarrantyMonthsComparator.setValidators([Validators.required])
-    } else {
-      this.formValues.controls.minWarrantyMonths.clearValidators()
-      this.formValues.controls.minWarrantyMonthsComparator.clearValidators()
-      this.formValues.controls.maxWarrantyMonths.clearValidators()
-      this.formValues.controls.maxWarrantyMonthsComparator.clearValidators()
-    }
     this.selectOptions.applyItems = APPLY_TYPE_MAP[applyType] ? APPLY_TYPE_MAP[applyType].items : []
     this.formValues.patchValue({
       applyItem: null
@@ -116,7 +106,6 @@ export class BusinessProcFormComponent implements OnInit {
   }
 
   async onSubmit() {
-    console.log(this.formValues.getRawValue());
     for(const i in this.formValues.controls) {
       this.formValues.controls[i].markAsDirty()
       this.formValues.controls[i].updateValueAndValidity()
@@ -129,6 +118,7 @@ export class BusinessProcFormComponent implements OnInit {
     try {
       this.submitLoading = true
       const data = this.formValues.getRawValue()
+      data.status = data.status ? 1 : 0
       if (this.formMode === FORM_MODE.EDIT) {
         data.id = this.businessProcId
         await this.spSettingService.updateBusinessProc(data)
@@ -149,10 +139,10 @@ export class BusinessProcFormComponent implements OnInit {
 
   onHideModal() {
     this.visible = false
+    this.businessProcId = null
     // 重置表单
     this.formValues.patchValue({
-      id: null,
-      status: 1,
+      status: true,
       bg: null,
       applyType: null,
       applyItem: null,
@@ -163,9 +153,5 @@ export class BusinessProcFormComponent implements OnInit {
       maxWarrantyMonthsComparator: null,
     })
     this.businessProcNodeList = []
-    this.formValues.controls.minWarrantyMonths.clearValidators()
-    this.formValues.controls.minWarrantyMonthsComparator.clearValidators()
-    this.formValues.controls.maxWarrantyMonths.clearValidators()
-    this.formValues.controls.maxWarrantyMonthsComparator.clearValidators()
   }
 }
