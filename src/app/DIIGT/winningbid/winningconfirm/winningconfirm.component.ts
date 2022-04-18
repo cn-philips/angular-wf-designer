@@ -974,13 +974,19 @@ export class WinningconfirmComponent implements OnInit {
     const url = '/act/ecom/bidding/getDdpDateAndValid?dealerCode=' + leaderNo + '&dealerName=' + leaderName;
     this.http.get(url).subscribe(
       res => {
-        if (res.data.isValid) {
+        if (res.data.isValid != null && res.data.isValid) {
           this.submitForm(1, '确定');
           return;
         } else {
+          let alertMsg = '';
+          if (res.data.isValid != null) {
+            alertMsg = '经销商DDP有效日期为' + res.data.ddpDate + ' ,当前已过有效期，是否确认审批通过？';
+          } else {
+            alertMsg = res.msg + ' 是否确认审批通过？';
+          }
           this.modalService.confirm({
             nzTitle: '<h4>提醒</h4>',
-            nzContent: '经销商DDP有效日期为' + res.data.ddpDate + ' ,当前已过有效期，是否确认审批通过？',
+            nzContent: alertMsg,
             nzOnOk: () => {
               this.submitForm(1, '确定');
             }
