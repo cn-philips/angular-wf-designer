@@ -3,7 +3,8 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { NzMessageService } from 'ng-zorro-antd'
 
 import { BG_LIST, APPLY_TYPES, APPLY_TYPE_MAP } from '../../../../../special-approval/special-approval.constants'
-import { SpecialApprovalSettingService, BusinessProc } from '../../special-approval-setting.service'
+import { SpecialApprovalSettingService } from '../../special-approval-setting.service'
+import { BusinessProc } from '../../special-approval-setting.d'
 import { BusinessProcFormComponent, FORM_MODE } from '../business-proc-form/business-proc-form.component'
 
 @Component({
@@ -143,7 +144,7 @@ export class BusinessProcListComponent implements OnInit {
       this.message.success('删除成功')
       this.getTableData(true)
     } catch ({ message }) {
-      this.message.success('删除失败')
+      this.message.error('删除失败')
       console.log(`删除业务流程失败, ${message}`);
       console.log(item);
     } finally {
