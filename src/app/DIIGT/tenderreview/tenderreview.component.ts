@@ -208,11 +208,13 @@ export class TenderreviewComponent implements OnInit {
     const url = '/act/ecom/bidding/getDdpDateAndValid?dealerCode=' + leaderNo + '&dealerName=' + leaderName;
     this.http.get(url).subscribe(
       res => {
-        if (res.data.isValid) {
+        if (res.data.isValid != null && res.data.isValid) {
           return;
         } else {
           this.isVisibleDate = true;
-          this.contractEndDate = res.data.ddpDate;
+          if (res.data.isValid != null) {
+            this.contractEndDate = res.data.ddpDate;
+          }
         }
       }, error => {
         this.message.error('请求失败!');
