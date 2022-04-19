@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router'
 import { FormBuilder, FormGroup, Validators } from '@angular/forms'
 import * as moment from 'moment'
@@ -18,6 +18,7 @@ import {
   NODE_ACTION,
   PROCESS_STATUS,
 } from '../special-approval.constants'
+import { SelectApproverComponent } from './widgets/select-approver/select-approver.component';
 
 enum TAB_TYPE {
   BASIC_INFO = 'basic-info',
@@ -37,6 +38,8 @@ enum TAB_TYPE {
   styleUrls: ['./request-form.component.scss']
 })
 export class RequestFormComponent implements OnInit {
+
+  @ViewChild('selectApprover') selectApprover: SelectApproverComponent
 
   pageTitle: string
   requestId
@@ -322,41 +325,29 @@ export class RequestFormComponent implements OnInit {
       this.message.error('请按要求填写表单信息')
       return
     }
-    const id = this.message.loading(LOADING_MESSAGE.SUBMIT, { nzDuration: 0 }).messageId
-    try {
-      const data = this.getFormData()
-      // const { orderInfo: { businessModel, hospitalNo, dealerCode }, ccType, ccPerson } = data
-      const { ccType, ccPerson } = data
-      // 医院和经销商必填一项
-      // if (businessModel === BUSINESS_MODEL.DISTRIBUTOR_DEAL) {
-      //   if (!hospitalNo && !dealerCode) {
-      //     this.message.error('请选择医院或者经销商')
-      //     return
-      //   }
-      // } else if(!hospitalNo){
-      //   this.message.error('请选择医院')
-      //   return
-      // }
+    const data = this.getFormData()
+    // const { orderInfo: { businessModel, hospitalNo, dealerCode }, ccType, ccPerson } = data
+    const { ccType, ccPerson } = data
+    // 医院和经销商必填一项
+    // if (businessModel === BUSINESS_MODEL.DISTRIBUTOR_DEAL) {
+    //   if (!hospitalNo && !dealerCode) {
+    //     this.message.error('请选择医院或者经销商')
+    //     return
+    //   }
+    // } else if(!hospitalNo){
+    //   this.message.error('请选择医院')
+    //   return
+    // }
 
-      // 抄送人和抄送节点必须同时选择或者同时不选择
-      if (ccType && !ccPerson) {
-        this.message.error('请选择抄送人')
-        return
-      } else if(!ccType && ccPerson) {
-        this.message.error('请选择抄送节点')
-        return
-      }
-      this.submitLoading = true
-      await this.spService.submitRequest(data)
-      this.message.success(SUCCESS_MESSAGE.SUBMIT)
-      this.navigateToHomePage() // 提交成功跳转到首页
-    } catch ({ message }) {
-      this.message.error(ERROR_MESSAGE.SUBMIT)
-      console.error(`提交失败, ${message}`)
-    } finally {
-      this.submitLoading = false
-      this.message.remove(id)
+    // 抄送人和抄送节点必须同时选择或者同时不选择
+    if (ccType && !ccPerson) {
+      this.message.error('请选择抄送人')
+      return
+    } else if(!ccType && ccPerson) {
+      this.message.error('请选择抄送节点')
+      return
     }
+    this.selectApprover.showModal(data)
   }
 
   async onSaveDraft() {

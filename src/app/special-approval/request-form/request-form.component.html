@@ -67,16 +67,6 @@
       </div>
     </ng-template>
   </ngb-tab>
-  <ngb-tab [id]="TAB_TYPES.APPROVER_INFO" *ngIf="applyType === APPLY_TYPE.EXT_INSTALL_COST">
-    <ng-template ngbTabTitle>
-      <span class="tab-title"><strong>审批人选择</strong></span>
-    </ng-template>
-    <ng-template ngbTabContent>
-      <div class="card-body">
-        <special-approval-approver-info></special-approval-approver-info>
-      </div>
-    </ng-template>
-  </ngb-tab>
   <ngb-tab [id]="TAB_TYPES.CC_INFO">
     <ng-template ngbTabTitle>
       <span class="tab-title"><strong>抄送人选择</strong></span>
@@ -140,3 +130,5 @@
 </ngb-tabset>
 
 <app-apploading [load]="pageLoading"></app-apploading>
+
+<special-approval-select-approver #selectApprover (success)="navigateToHomePage()"></special-approval-select-approver>
