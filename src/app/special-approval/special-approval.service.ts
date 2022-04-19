@@ -134,6 +134,13 @@ export class SpecialApprovalService {
     return this.http.posts(uri, data);
   }
 
+  // 提交之前的校验, 根据表单获取预设审批人列表
+  async submitCheckRequest(data) {
+    const uri = `/act/specialapprove/apply/submit/check`
+    const res = await this.http.post(uri, data).toPromise();
+    return formatResponse(res)
+  }
+
   // 提交申请
   async submitRequest(data) {
     const uri = `/act/specialapprove/apply/submit`

@@ -77,7 +77,7 @@
                 <td nzAlign="center">{{ APPROVE_NODE_ACTION_MAP[node.action] || '未设置' }}</td>
                 <td nzAlign="center">{{ formatNodeMode(node) }}</td>
                 <td nzAlign="center">{{ node.name || '未设置' }}</td>
-                <td nzAlign="center">{{ node.approveRole || node.approver || '未设置' }}</td>
+                <td nzAlign="center">{{ formatNodeApprover(node) }}</td>
                 <td nzAlign="center" nzRight="0px">
                   <a nz-icon type="edit" title="编辑" (click)="onShowNodeEditForm(node)"></a>
                 </td>

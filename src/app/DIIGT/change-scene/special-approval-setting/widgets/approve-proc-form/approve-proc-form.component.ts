@@ -183,7 +183,6 @@ export class ApproveProcFormComponent implements OnInit {
   }
 
   onSubmitNodeForm(approveNode: ApproveNode) {
-    console.log(approveNode);
     const { id } = approveNode;
     this.nodeList.list = this.nodeList.list.map((node) =>
       node.id === id ? { ...node, ...approveNode } : node
@@ -197,6 +196,18 @@ export class ApproveProcFormComponent implements OnInit {
   }
 
   formatNodeApprover(approveNode: ApproveNode) {
-
+    const { approver, approveRole, approverCustom } = approveNode
+    if (approverCustom) {
+      return '用户选择'
+    }
+    if (approver) {
+      const approvers = approver.split(',').map((approver) => `指定用户-${approver}`)
+      return approvers.join(',')
+    } else if (approveRole) {
+      const approveRoles = approveRole.split(',').map((role) => `系统角色-${role}`)
+      return approveRoles.join(',')
+    } else {
+      return '未设置'
+    }
   }
 }

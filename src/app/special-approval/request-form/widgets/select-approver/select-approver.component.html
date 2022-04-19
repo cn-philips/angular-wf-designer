@@ -1,0 +1,41 @@
+<nz-modal [(nzVisible)]="visible" nzWidth="1000px" nzTitle="审批人选择" [nzOkLoading]="submitLoading" (nzOnOk)="onSubmit()"
+  (nzOnCancel)="onHideModal()">
+  <nz-spin [nzSpinning]="modalLoading">
+    <nz-table [nzData]="requestInfo.activeNodeInfoList" [nzShowPagination]="false">
+      <thead>
+        <tr>
+          <th nzWidth="30%">步骤</th>
+          <th nzWidth="70%">操作人</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let node of requestInfo.activeNodeInfoList">
+          <td>{{ node.name }}</td>
+          <td>
+            <div *ngIf="!node.custom">
+              <div *ngFor="let approver of formatApprover(node.approverList)">
+                {{ approver }}
+              </div>
+            </div>
+            <div *ngIf="node.custom" style="display: flex;align-items: center;">
+              <span>用户选择</span>
+              <nz-select style="flex: 1;margin-left: 8px;" [(ngModel)]="node.customApproveList"
+                [nzMode]="node.mode === APPROVE_NODE_MODE.PARALLEL ? 'multiple' : 'default'" nzPlaceHolder="输入邮箱查询"
+                nzShowSearch nzAllowClear [nzServerSearch]="true" (nzOnSearch)="onSearchUser($event)">
+                <ng-container *ngFor="let user of userList">
+                  <nz-option *ngIf="!isSearchLoading" [nzValue]="user.email" [nzLabel]="user.email"
+                    [nzCustomContent]="true">
+                    {{ user.displayName || user.email }}
+                  </nz-option>
+                </ng-container>
+                <nz-option *ngIf="isSearchLoading" nzDisabled nzCustomContent>
+                  <i nz-icon type="loading" class="loading-icon"></i> 查询中...
+                </nz-option>
+              </nz-select>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </nz-table>
+  </nz-spin>
+</nz-modal>
