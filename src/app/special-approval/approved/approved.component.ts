@@ -16,7 +16,7 @@ import { APPLY_TYPES, BG_LIST, DEFAULT_ERROR_MESSAGE, PROCESS_STATUS } from '../
 export class ApprovedComponent implements OnInit {
   formValues: FormGroup = this.fb.group({
     applyType: [null],
-    bg: [null],
+    orderBg: [null],
     keyword: [null],
     processStatus: [null],
     submitDate: [[]],
@@ -44,7 +44,7 @@ export class ApprovedComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private spService: SpecialApprovalService,
+    protected spService: SpecialApprovalService,
     private router: Router,
     private message: NzMessageService
   ) {}
@@ -58,7 +58,7 @@ export class ApprovedComponent implements OnInit {
       this.tableData.loading = true
       if (isResetPageNo) { this.searchParams.pageNo = 1 }
       const params = { ...this.searchParams }
-      const { applyType, bg, keyword, submitDate, processStatus } = this.formValues.getRawValue()
+      const { applyType, orderBg, keyword, submitDate, processStatus } = this.formValues.getRawValue()
       if (submitDate.length > 0) {
         const [ startDate, endDate ] = submitDate
         params.submitStartTime = moment(startDate).format('YYYY-MM-DD')
@@ -66,7 +66,7 @@ export class ApprovedComponent implements OnInit {
       }
       keyword && (params.keyword = keyword)
       applyType && (params.applyType = applyType)
-      bg && (params.bg = bg)
+      orderBg && (params.orderBg = orderBg)
       processStatus && (params.processStatus = processStatus)
       const { rows, total } = await this.spService.getApprovedList(params)
       this.tableData.count = total
