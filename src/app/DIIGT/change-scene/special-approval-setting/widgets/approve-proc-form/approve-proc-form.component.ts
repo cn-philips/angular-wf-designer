@@ -94,7 +94,7 @@ export class ApproveProcFormComponent implements OnInit {
         this.nodeList.loading = false;
         this.nodeList.list = nodeList.map((node) => ({
           ...node,
-          mode: node.mode || APPROVE_NODE_MODE.NONE,
+          mode: node.action === APPROVE_NODE_ACTION.APPLY ? APPROVE_NODE_MODE.NONE : node.mode,
         }));
       });
       this.approveProcId = id;
@@ -112,7 +112,7 @@ export class ApproveProcFormComponent implements OnInit {
         status: i === 0 ? true : false,
         action: i === 0 ? APPROVE_NODE_ACTION.APPLY : null,
         mode: i === 0 ? APPROVE_NODE_MODE.NONE : null,
-        name: i === 0 ? "申请人提交申请" : null,
+        name: i === 0 ? "申请人提交申请" : `step${i}`,
         approver: null,
         approveRole: null,
         cc: 0,
