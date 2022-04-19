@@ -5,6 +5,7 @@ interface SearchParams {
   processStatus?: string;
   nodeAction?: string;
   bg?: string;
+  orderBg?: string;
   keyword?: string;
   submitStartTime?: string;
   submitEndTime?: string;
@@ -21,6 +22,9 @@ interface RequestItem {
   nodeAction: string; // 状态
   nodeName: string; // 当前节点
   createTime: string; // 申请时间
+  processStatus: string; // 流程状态
+  status: number; // 是否取消
+  spProcNodeName; // 当前节点名称
 }
 
 export {

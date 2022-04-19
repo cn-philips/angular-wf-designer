@@ -17,7 +17,7 @@ export class RequestComponent implements OnInit {
   formValues = this.fb.group({
     type: [null],
     processStatus: [null],
-    bg: [null],
+    orderBg: [null],
     keyword: [null],
     submitDate: [[]]
   });
@@ -59,7 +59,7 @@ export class RequestComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder, 
-    private spService: SpecialApprovalService,
+    protected spService: SpecialApprovalService,
     private router: Router,
     private message: NzMessageService,
   ) {}
@@ -74,7 +74,7 @@ export class RequestComponent implements OnInit {
       this.tableData.loading = true
       if (isResetPageNo) { this.searchParams.pageNo = 1 }
       const params = { ...this.searchParams }
-      const { applyType, processStatus, bg, keyword, submitDate } = this.formValues.getRawValue()
+      const { applyType, processStatus, orderBg, keyword, submitDate } = this.formValues.getRawValue()
       if (submitDate.length > 0) {
         const [ startDate, endDate ] = submitDate
         params.submitStartTime = moment(startDate).format('YYYY-MM-DD')
@@ -82,7 +82,7 @@ export class RequestComponent implements OnInit {
       }
       keyword && (params.keyword = keyword)
       applyType && (params.applyType = applyType)
-      bg && (params.bg = bg)
+      orderBg && (params.orderBg = orderBg)
       if (processStatus) {
         if (processStatus === PROCESS_STATUS.CANCELLED) {
           params.status = 0

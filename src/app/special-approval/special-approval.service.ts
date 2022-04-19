@@ -93,6 +93,8 @@ export class SpecialApprovalService {
     const res = await this.http.get(uri, {
       params: {
         ...params,
+        delegatedUser: getLoginUserCode1(),
+        includeDelegated: 1,
         owner: getLoginUserCode1(),
         orderByClause: 'createTime desc',
       },

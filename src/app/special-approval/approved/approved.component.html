@@ -47,7 +47,7 @@
         <nz-form-item>
           <nz-form-label [nzSm]="6" [nzXs]="24">BG</nz-form-label>
           <nz-form-control [nzSm]="18" [nzXs]="24">
-            <nz-select id="bg" formControlName="bg" nzAllowClear nzPlaceHolder="请选择">
+            <nz-select id="bg" formControlName="orderBg" nzAllowClear nzPlaceHolder="请选择">
               <nz-option *ngFor="let bg of selectOptions.bgList" [nzValue]="bg.value" [nzLabel]="bg.label"></nz-option>
             </nz-select>
           </nz-form-control>
