@@ -24,11 +24,6 @@ export class BasicInfoComponent {
   @Input() editable: boolean
   @Input() executed:number = null
 
-
-  tempData = [
-    {label: '物流运输-特别仓储、物流费用', value: 'sp_logisticscost_apply_item_1'}
-  ]
-
   APPLY_TYPE = APPLY_TYPE
 
   applyTypeMap = APPLY_TYPE_MAP
