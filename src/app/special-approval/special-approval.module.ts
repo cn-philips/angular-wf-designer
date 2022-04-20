@@ -12,7 +12,6 @@ import { RequestFormComponent } from "./request-form/request-form.component";
 
 // widget
 import { BasicInfoComponent } from "./request-form/widgets/basic-info/basic-info.component";
-import { OrderInfoComponent } from "./request-form/widgets/order-info/order-info.component";
 import { SelectApproverComponent } from "./request-form/widgets/select-approver/select-approver.component";
 import { CcInfoComponent } from "./request-form/widgets/cc-info/cc-info.component";
 import { WarrantyInfoComponent } from "./request-form/widgets/warranty-info/warranty-info.component";
@@ -43,7 +42,6 @@ const WIDGETS = [
   ApproveHistoryComponent,
   ApproveFormComponent,
   BasicInfoComponent,
-  OrderInfoComponent,
   SelectApproverComponent,
   CcInfoComponent,
   FeedbackComponent,
