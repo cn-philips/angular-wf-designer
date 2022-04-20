@@ -54,6 +54,7 @@
         <special-approval-warranty-order-info *ngIf="applyType === APPLY_TYPE.EXT_WARRANTY" [bmcs]="bmcs" [editable]="editable" [formValues]="orderInfo"></special-approval-warranty-order-info>
         <!-- <special-approval-order-info [bmcs]="bmcs" [applyItem]="applyItem" [applyType]="applyType" [editable]="editable" [formValues]="orderInfo"></special-approval-order-info> -->
         <special-approval-transportation-order-info *ngIf="applyType === APPLY_TYPE.LOGISTICSCOST" [bmcs]="bmcs" [editable]="editable" [formValues]="orderInfo"></special-approval-transportation-order-info>
+        <special-approval-additional-intallation-cost *ngIf="applyType === APPLY_TYPE.EXT_INSTALL_COST" [bmcs]="bmcs" [editable]="editable" [formValues]="orderInfo"></special-approval-additional-intallation-cost>
       </div>
     </ng-template>
   </ngb-tab>
