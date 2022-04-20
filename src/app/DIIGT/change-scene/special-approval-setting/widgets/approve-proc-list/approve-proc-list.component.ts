@@ -1,12 +1,21 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { NzMessageService } from 'ng-zorro-antd'
+
 import { SpecialApprovalSettingService } from '../../special-approval-setting.service'
+import { ApproveProc } from '../../special-approval-setting.d'
+import { ApproveProcFormComponent, FORM_MODE } from '../approve-proc-form/approve-proc-form.component';
 
 @Component({
   selector: 'sp-setting-approve-proc-list',
   templateUrl: './approve-proc-list.component.html',
+  styleUrls: ['./approve-proc-list.component.scss'],
 })
 export class ApproveProcListComponent implements OnInit {
+
+  @ViewChild('approveProcForm') approveProcForm: ApproveProcFormComponent
+
+  cloneBtnLoading = false
 
   formValues: FormGroup = this.fb.group({
     code: [null], // 审批编号
@@ -24,11 +33,14 @@ export class ApproveProcListComponent implements OnInit {
     list: []
   }
 
+  selectedProc: ApproveProc = null
+
   expandedRowMap: { [key: string]: boolean } = {}
 
   constructor(
     private fb: FormBuilder,
     private spSettingService: SpecialApprovalSettingService,
+    private message: NzMessageService,
   ) { }
 
   ngOnInit(): void {
@@ -49,17 +61,71 @@ export class ApproveProcListComponent implements OnInit {
     this.tableData.loading = false
   }
 
-  onToggleProcStatus(item) {
-    console.log(item);
+  async onToggleProcStatus(item) {
+    try {
+      this.tableData.loading = true
+      const { status, id } = item
+      if (status) {
+        await this.spSettingService.enableApproveProc(id)
+      } else {
+        await this.spSettingService.disableApproveProc(id)
+      }
+      this.message.success('操作成功')
+    } catch ({ message }) {
+      this.message.error('操作失败, 请稍候重试')
+      console.log(item);
+      item.status = !item.status
+    } finally {
+      this.tableData.loading = false
+    }
   }
 
   onShowEditForm(item) {
-    console.log(item);
+    this.approveProcForm.showModal(FORM_MODE.EDIT, item)
   }
 
 
-  onDeleteProc(item) {
+  async onDeleteProc(item) {
+    try {
+      this.tableData.loading = true
+      await this.spSettingService.deleteApproveProc(item.id)
+      this.message.success('删除成功')
+      this.getTableData(true)
+      this.selectedProc = null
+    } catch ({ message }) {
+      this.message.success('删除失败')
+      console.log(`删除审批流程失败, ${message}`);
+      console.log(item);
+    } finally {
+      this.tableData.loading = false
+    }
+  }
 
+  onShowAddForm() {
+    this.approveProcForm.showModal(FORM_MODE.NEW)
+  }
+
+  // 克隆审批流程
+  async onCloneProc() {
+    try {
+      this.tableData.loading = true
+      this.cloneBtnLoading = true
+      const { id } = this.selectedProc
+      await this.spSettingService.cloneApproveProc(id)
+      this.message.success('克隆成功')
+      this.getTableData(true)
+    } catch ({ message }) {
+      this.message.error('克隆失败, 请稍候重试')
+      console.log(`克隆失败, ${message}`);
+    } finally {
+      this.tableData.loading = false
+      this.cloneBtnLoading = false
+    }
+    this.selectedProc.id
+  }
+
+  onSelectRow(item) {
+    this.selectedProc = item
   }
 
   // 重置查询表单

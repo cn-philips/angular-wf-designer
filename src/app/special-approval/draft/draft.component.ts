@@ -16,7 +16,7 @@ import { DEFAULT_ERROR_MESSAGE, SUCCESS_MESSAGE, ERROR_MESSAGE, APPLY_TYPES, BG_
 export class DraftComponent implements OnInit {
   formValues = this.fb.group({
     type: [null],
-    bg: [null],
+    orderBg: [null],
     keyword: [null],
     submitDate: [[]]
   });
@@ -39,7 +39,7 @@ export class DraftComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private spService: SpecialApprovalService,
+    protected spService: SpecialApprovalService,
     private router: Router,
     private message: NzMessageService,
   ) {}
@@ -53,7 +53,7 @@ export class DraftComponent implements OnInit {
       this.tableData.loading = true
       if (isResetPageNo) { this.searchParams.pageNo = 1 }
       const params = { ...this.searchParams }
-      const { applyType, bg, keyword, submitDate } = this.formValues.getRawValue()
+      const { applyType, orderBg, keyword, submitDate } = this.formValues.getRawValue()
       if (submitDate.length > 0) {
         const [ startDate, endDate ] = submitDate
         params.submitStartTime = moment(startDate).format('YYYY-MM-DD')
@@ -61,7 +61,7 @@ export class DraftComponent implements OnInit {
       }
       keyword && (params.keyword = keyword)
       applyType && (params.applyType = applyType)
-      bg && (params.bg = bg)
+      orderBg && (params.orderBg = orderBg)
       const { rows, total } = await this.spService.getDraftList(params)
       this.tableData.count = total
       this.tableData.list = rows

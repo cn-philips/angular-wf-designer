@@ -525,10 +525,16 @@ export class ApplyTenderModifComponent implements OnInit {
     return new Promise((resolve, reject) => {
       this.http.get(url).subscribe(
         res => {
-          if (res.data.isValid) {
+          if (res.data.isValid != null && res.data.isValid) {
             resolve(0);
           } else {
-              this.message.create('error', '经销商DDP有效日期为' + res.data.ddpDate + ' ,当前已过有效期，请重新选择经销商！');
+              let alertMsg = '';
+              if (res.data.isValid != null) {
+                alertMsg = '经销商DDP有效日期为' + res.data.ddpDate + ' ,当前已过有效期，请重新选择经销商！';
+              } else {
+                alertMsg = res.msg + ' 请重新选择经销商！';
+              }
+              this.message.create('error', alertMsg);
               resolve(1);
           }
         }, error => {

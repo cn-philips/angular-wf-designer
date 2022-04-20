@@ -1,5 +1,6 @@
 <nz-modal
   nzWidth="1000px"
+  [nzStyle]="{ top: '20px' }"
   [(nzVisible)]="visible"
   [nzTitle]="modalTitle"
   [nzFooter]="modalFooter"
@@ -106,7 +107,7 @@
     <div nz-row *ngIf="APPLY_TYPE.EXT_WARRANTY === applyType.value">
       <div nz-col [nzMd]="16" [nzSm]="16" [nzXs]="24">
         <nz-form-item>
-          <nz-form-label nzRequired [nzSm]="6" [nzXs]="24">区间</nz-form-label>
+          <nz-form-label [nzSm]="6" [nzXs]="24">区间</nz-form-label>
           <nz-form-control [nzSm]="18" [nzXs]="24">
             <nz-row nzGutter="4">
               <div nz-col nzSpan="5">
@@ -148,20 +149,6 @@
                 ></nz-input-number>
               </div>
             </nz-row>
-            <nz-form-explain
-              *ngIf="
-                (formValues.get('minWarrantyMonths')?.dirty &&
-                  formValues.get('minWarrantyMonths')?.errors) ||
-                (formValues.get('minWarrantyMonthsComparator')?.dirty &&
-                  formValues.get('minWarrantyMonthsComparator')?.errors) ||
-                (formValues.get('maxWarrantyMonths')?.dirty &&
-                  formValues.get('maxWarrantyMonths')?.errors) ||
-                (formValues.get('maxWarrantyMonthsComparator')?.dirty &&
-                  formValues.get('maxWarrantyMonthsComparator')?.errors)
-              "
-            >
-              请填写区间信息
-            </nz-form-explain>
           </nz-form-control>
         </nz-form-item>
       </div>

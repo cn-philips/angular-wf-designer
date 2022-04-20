@@ -93,6 +93,8 @@ export class SpecialApprovalService {
     const res = await this.http.get(uri, {
       params: {
         ...params,
+        delegatedUser: getLoginUserCode1(),
+        includeDelegated: 1,
         owner: getLoginUserCode1(),
         orderByClause: 'createTime desc',
       },
@@ -132,6 +134,13 @@ export class SpecialApprovalService {
   uploadFile(data) {
     const uri = '/act/system/upload';
     return this.http.posts(uri, data);
+  }
+
+  // 提交之前的校验, 根据表单获取预设审批人列表
+  async submitCheckRequest(data) {
+    const uri = `/act/specialapprove/apply/submit/check`
+    const res = await this.http.post(uri, data).toPromise();
+    return formatResponse(res)
   }
 
   // 提交申请

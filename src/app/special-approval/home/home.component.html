@@ -56,14 +56,14 @@
           <div class="card-empty-icon" style="text-align: center"></div>
         </ng-container>
         <ng-container *ngIf="card.total > 0">
-          <div *ngFor="let request of card.list" class="media bottom" (click)="onNavigateToRequestDetail(request)">
-            <div class="media-body">
-              <div class="subject-content">
-                <strong class="font-weight-semibold">{{ request.applyCode }}</strong>
-                &nbsp;
-                <div>{{ formatApplyTypeItem(request) }}</div>
-              </div>
-              <small class="data-muted">{{ request.createTime | date: "yyyy-MM-dd" }}</small>
+          <div *ngFor="let request of card.list" class="request-list" (click)="onNavigateToRequestDetail(request)">
+            <div class="request-list__header"></div>
+            <div class="request-list__body">
+              <strong class="font-weight-semibold">{{ request.applyCode }}</strong>
+            </div>
+            <div class="request-list__footer">
+              <span>{{ formatApplyTypeItem(request) }}</span>
+              <small>{{ request.createTime | date: "yyyy-MM-dd" }}</small>
             </div>
           </div>
         </ng-container>
