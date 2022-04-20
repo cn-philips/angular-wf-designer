@@ -54,6 +54,7 @@ export class BusinessProcFormComponent implements OnInit {
     minWarrantyMonthsComparator: [null],
     maxWarrantyMonths: [null],
     maxWarrantyMonthsComparator: [null],
+    remark: [null], // 说明
   })
 
   constructor(
@@ -85,7 +86,7 @@ export class BusinessProcFormComponent implements OnInit {
     this.modalTitle = FORM_MODE_MAP[mode]
     this.formMode = mode
     if (mode === FORM_MODE.EDIT || mode === FORM_MODE.CLONE) {
-      const { id, status, bg, applyType, applyItem, processId, minWarrantyMonths, minWarrantyMonthsComparator, maxWarrantyMonths, maxWarrantyMonthsComparator } = data
+      const { id, status, bg, applyType, applyItem, processId, minWarrantyMonths, minWarrantyMonthsComparator, maxWarrantyMonths, maxWarrantyMonthsComparator, remark } = data
       // this.onApplyTypeChange(applyType)
       this.formValues.patchValue({
         status,
@@ -97,6 +98,7 @@ export class BusinessProcFormComponent implements OnInit {
         minWarrantyMonthsComparator,
         maxWarrantyMonths,
         maxWarrantyMonthsComparator,
+        remark,
       })
       if (mode === FORM_MODE.EDIT) {
         this.businessProcId = id
@@ -151,6 +153,7 @@ export class BusinessProcFormComponent implements OnInit {
       minWarrantyMonthsComparator: null,
       maxWarrantyMonths: null,
       maxWarrantyMonthsComparator: null,
+      remark: null,
     })
     this.businessProcNodeList = []
   }

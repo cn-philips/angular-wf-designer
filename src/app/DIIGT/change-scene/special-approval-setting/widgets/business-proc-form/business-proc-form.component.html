@@ -104,6 +104,17 @@
       </div>
     </div>
 
+    <div nz-row>
+      <div nz-col [nzMd]="16" [nzSm]="16" [nzXs]="24">
+        <nz-form-item>
+          <nz-form-label nzFor="remark" [nzSm]="6" [nzXs]="24">说明</nz-form-label>
+          <nz-form-control [nzSm]="18" [nzXs]="24">
+            <textarea rows="4" nz-input formControlName="remark" id="remark"></textarea>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
     <div nz-row *ngIf="APPLY_TYPE.EXT_WARRANTY === applyType.value">
       <div nz-col [nzMd]="16" [nzSm]="16" [nzXs]="24">
         <nz-form-item>
