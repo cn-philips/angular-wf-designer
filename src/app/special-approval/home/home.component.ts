@@ -164,6 +164,8 @@ export class HomeComponent implements OnInit {
         return 2
       case APPLY_TYPE.LOGISTICSCOST:
         return 3
+      case APPLY_TYPE.EXT_INSTALL_COST:   // add additional typeIndex
+        return 4
     }
   }
 

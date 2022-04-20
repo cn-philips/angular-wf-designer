@@ -82,7 +82,7 @@ const APPLY_TYPE_MAP = {
   [APPLY_TYPE.EXT_INSTALL_COST]: {
     label: "额外安装费用及其他",
     items: [
-      { label: "Additional cost during install", value: "sp_installcost_apply_item_1" }
+      { label: "Additional cost during installation", value: "sp_installcost_apply_item_1" }
     ],
   },
   [APPLY_TYPE.LOGISTICSCOST]: {
