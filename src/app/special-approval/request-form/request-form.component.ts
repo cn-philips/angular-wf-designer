@@ -185,11 +185,6 @@ export class RequestFormComponent implements OnInit {
     }
     let pageTitle = `新建特批-${applyTypeName}`
     switch(applyType) {
-      case APPLY_TYPE.PRODUCTION:
-        const item = items.find(({ value }) => value == applyItem) || { } as { label: string }
-        const applyItemName = item.label
-        pageTitle += `-${applyItemName}`
-        break
       case APPLY_TYPE.EXT_WARRANTY:
         if (minMon && minComp && maxMon && maxComp) {
           pageTitle += `${minComp}${minMon} month&${maxComp}${maxMon} month`
@@ -200,7 +195,12 @@ export class RequestFormComponent implements OnInit {
         }
         break
       default:
-        pageTitle += applyTypeName
+        const item = items.find(({ value }) => value == applyItem) || { } as { label: string }
+        const applyItemName = item.label
+        if (applyItemName) {
+          pageTitle += `-${applyItemName}`
+        }
+        break
     }
     this.pageTitle = pageTitle
   }

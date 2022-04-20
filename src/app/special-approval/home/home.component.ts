@@ -6,7 +6,6 @@ import { SpecialApprovalService } from '../special-approval.service'
 
 interface Template {
   name: string;
-  typeIndex: number;
   type: string;
   typeName: string;
   item?: number;
@@ -41,6 +40,11 @@ interface Card {
   path: string;
 }
 
+interface Tab {
+  title: string;
+  value: string;
+}
+
 const DEFAULT_SEARCH_PARAMS = { pageNo: 1, pageSize: 3, orderByClause: 'createTime desc' }
 
 @Component({
@@ -49,8 +53,6 @@ const DEFAULT_SEARCH_PARAMS = { pageNo: 1, pageSize: 3, orderByClause: 'createTi
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit {
-  acitveTemplateIndex: number = 0;
-
   allTemplateList: Template[] = []
   filteredTemplateList: Template[] = [];
 
@@ -63,6 +65,8 @@ export class HomeComponent implements OnInit {
   reqSuccessCount = 0
 
   showQuickLink = false
+
+  tabList: Tab[] = []
 
   constructor(private router: Router, private spService: SpecialApprovalService) {}
 
@@ -112,6 +116,7 @@ export class HomeComponent implements OnInit {
       }
 
       const monthSet = new Set()
+      const tabSet = new Set()
       this.allTemplateList = templateList.filter(({ applyType, minWarrantyMonths, maxWarrantyMonths }) => {
           if (activeTemplate[applyType]) {
             if (applyType === APPLY_TYPE.EXT_WARRANTY) {
@@ -127,36 +132,33 @@ export class HomeComponent implements OnInit {
           } else {
             return false
           }
-        }).map(({ bg, applyType, applyItem, minWarrantyMonths, maxWarrantyMonths, minWarrantyMonthsComparator, maxWarrantyMonthsComparator, remark }) => ({
-          name: this.formatTemplateName({ applyType, applyItem, minWarrantyMonths, maxWarrantyMonths, minWarrantyMonthsComparator, maxWarrantyMonthsComparator  }),
-          typeIndex: this.formatTypeIndex(applyType),
-          type: applyType,
-          typeName: APPLY_TYPE_MAP[applyType].label,
-          item: applyType === APPLY_TYPE.PRODUCTION ? applyItem : null,
-          desc: remark,
-          bg,
-          minMon: minWarrantyMonths,
-          minComp: minWarrantyMonthsComparator,
-          maxMon: maxWarrantyMonths,
-          maxComp: maxWarrantyMonthsComparator,
-        }))
+        }).map(({ bg, applyType, applyItem, minWarrantyMonths, maxWarrantyMonths, minWarrantyMonthsComparator, maxWarrantyMonthsComparator, remark }) => {
+          if (!tabSet.has(applyType) && APPLY_TYPE_MAP[applyType]) {
+            this.tabList.push({
+              title: APPLY_TYPE_MAP[applyType].label,
+              value: applyType
+            })
+            tabSet.add(applyType)
+          }
+          return {
+            name: this.formatTemplateName({ applyType, applyItem, minWarrantyMonths, maxWarrantyMonths, minWarrantyMonthsComparator, maxWarrantyMonthsComparator  }),
+            type: applyType,
+            typeName: APPLY_TYPE_MAP[applyType].label,
+            item: applyType === APPLY_TYPE.EXT_WARRANTY ? null : applyItem,
+            desc: remark,
+            bg,
+            minMon: minWarrantyMonths,
+            minComp: minWarrantyMonthsComparator,
+            maxMon: maxWarrantyMonths,
+            maxComp: maxWarrantyMonthsComparator,
+          }
+        })
         this.filteredTemplateList = this.allTemplateList
         this.pageLoading = ++this.reqSuccessCount !== this.reqTotalCount
       }).catch(({ message }) => {
         console.error(`获取template列表失败, ${message}`);
         this.pageLoading = ++this.reqSuccessCount !== this.reqTotalCount
       })
-  }
-
-  formatTypeIndex(applyType) {
-    switch(applyType) {
-      case APPLY_TYPE.PRODUCTION:
-        return 1
-      case APPLY_TYPE.EXT_WARRANTY:
-        return 2
-      case APPLY_TYPE.LOGISTICSCOST:
-        return 3
-    }
   }
 
   formatTemplateName({ applyType, applyItem, minWarrantyMonths, maxWarrantyMonths, minWarrantyMonthsComparator, maxWarrantyMonthsComparator }) {
@@ -176,12 +178,8 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  onFilterChange() {
-    if (!this.acitveTemplateIndex) {
-      this.filteredTemplateList = this.allTemplateList;
-    } else {
-      this.filteredTemplateList = this.allTemplateList.filter(({ typeIndex }) => typeIndex === this.acitveTemplateIndex);
-    }
+  onFilterChange(tab: Tab) {
+    this.filteredTemplateList = this.allTemplateList.filter(({ type }) => type === tab.value);
   }
 
   async getRequestList() {
