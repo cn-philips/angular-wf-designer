@@ -63,7 +63,7 @@
 
 <div class="btn-container">
   <button nz-button nzType="primary" (click)="onShowAddForm()"><i nz-icon nzType="plus" nzTheme="outline"></i>新建</button>
-  <!--<button nz-button nzType="primary" [disabled]="selectedProc === null" (click)="onCopyProc()"><i nz-icon nzType="copy" nzTheme="outline"></i>克隆</button>-->
+  <button nz-button nzType="primary" [disabled]="selectedProc === null" (click)="onShowCloneForm()"><i nz-icon nzType="copy" nzTheme="outline"></i>克隆</button>
 </div>
 
 <nz-table [nzData]="tableData.list" [nzLoading]="tableData.loading" [nzShowPagination]="false">
