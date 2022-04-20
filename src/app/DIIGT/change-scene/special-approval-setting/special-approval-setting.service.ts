@@ -156,7 +156,8 @@ export class SpecialApprovalSettingService {
       pageNo: 1,
       pageSize: 999
     }).toPromise()
-    const data = formatResponse(res)
-    return data.rows
+    const data = formatResponse(res).rows
+    this.allSystemRoleList = data
+    return data
   }
 }

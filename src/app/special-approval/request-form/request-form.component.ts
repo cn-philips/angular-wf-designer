@@ -224,10 +224,8 @@ export class RequestFormComponent implements OnInit {
       if (item == 'sp_warranty_apply_item_5') {
         this.basicInfo.controls.applyItemDesc.setValidators([Validators.required])
       }
-    } else {
-      if (type !== APPLY_TYPE.LOGISTICSCOST){
-        this.basicInfo.controls.applyItem.disable()
-      }
+    } else if (type === APPLY_TYPE.PRODUCTION){
+      this.basicInfo.controls.applyItem.disable()
     }
 
     if (bg === 'PD&IGT') {
