@@ -250,7 +250,7 @@ export class RequestFormComponent implements OnInit {
     switch(this.applyType) {
       case APPLY_TYPE.PRODUCTION: // 特批生产
         data.orderInfos = [
-          { 
+          {
             ...this.requestInfo.orderInfos[0],
             ...orderInfo,
             applyArrivalTime: applyArrivalTime ? moment(applyArrivalTime).format('YYYY-MM-DD') : null,
@@ -262,7 +262,7 @@ export class RequestFormComponent implements OnInit {
         break
       case APPLY_TYPE.EXT_WARRANTY: // 延长保修
         data.orderInfos = [
-          { 
+          {
             ...this.requestInfo.orderInfos[0],
             ...orderInfo,
             expectedSaleDate: expectedSaleDate ? moment(expectedSaleDate).format('YYYY-MM-DD') : null,
@@ -280,7 +280,7 @@ export class RequestFormComponent implements OnInit {
         break
       case APPLY_TYPE.LOGISTICSCOST:
         data.orderInfos = [
-          { 
+          {
             ...this.requestInfo.orderInfos[0],
             ...orderInfo,
             applyArrivalTime: applyArrivalTime ? moment(applyArrivalTime).format('YYYY-MM-DD') : null,
@@ -290,6 +290,18 @@ export class RequestFormComponent implements OnInit {
           }
         ]
         break;
+      case APPLY_TYPE.EXT_INSTALL_COST: // Additional cost
+        data.orderInfos = [
+          {
+            ...this.requestInfo.orderInfos[0],
+            ...orderInfo,
+            applyArrivalTime: applyArrivalTime ? moment(applyArrivalTime).format('YYYY-MM-DD') : null,
+            expectedPaymentDate: expectedPaymentDate ? moment(expectedPaymentDate).format('YYYY-MM-DD') : null,
+            expectedSaleDate: expectedSaleDate ? moment(expectedSaleDate).format('YYYY-MM-DD') : null,
+            products: products.map(({ productType, wbsNo, itemNo, quantity }) => ({ productType, wbsNo, itemNo, quantity }))
+          }
+        ]
+        break
     }
     return data
   }

@@ -28,6 +28,7 @@ import { ProductListComponent } from './request-form/widgets/product-list/produc
 import { ProductionOrderInfoComponent } from './request-form/widgets/order-info/production/production.component'
 import { WarrantyOrderInfoComponent } from './request-form/widgets/order-info/warranty/warranty.component';
 import { TransportationOrderInfoComponent } from './request-form/widgets/order-info/transportation/transportation.component';
+import { AdditionalInstallationCostComponent } from "./request-form/widgets/order-info/additional-installation-cost/additional-installation-cost.component";
 
 const COMPONENTS = [
   ApprovedComponent,
@@ -56,6 +57,7 @@ const WIDGETS = [
   ProductionOrderInfoComponent,
   WarrantyOrderInfoComponent,
   TransportationOrderInfoComponent,
+  AdditionalInstallationCostComponent
 ];
 
 export {
