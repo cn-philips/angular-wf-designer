@@ -148,14 +148,6 @@ export class HomeComponent implements OnInit {
       })
   }
 
-  formatMonth(minWarrantyMonths, maxWarrantyMonths) {
-    if (maxWarrantyMonths) {
-      return maxWarrantyMonths
-    } else {
-      return minWarrantyMonths + 1
-    }
-  }
-
   formatTypeIndex(applyType) {
     switch(applyType) {
       case APPLY_TYPE.PRODUCTION:

@@ -1,9 +1,10 @@
 import { Component, Input, ChangeDetectionStrategy, AfterViewInit, OnInit, HostBinding, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute,UrlTree } from '@angular/router';
+import { NzMessageService } from 'ng-zorro-antd'
 import { AppService } from '../../app.service';
 import { LayoutService } from '../layout.service';
 import { HttpService } from '../../services';
-import { Observable, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import {
   ServesiceService,
 } from '../../DIIGT/preOrder/servesice.service';
@@ -31,7 +32,6 @@ export class LayoutSidenavComponent implements OnInit, AfterViewInit, OnDestroy 
   spDraftTotal = 0;
   spDraftSubs: Subscription
   spTaskTotal = 0;
-  private message: any;
   spTaskSubs: Subscription
 
 
@@ -42,6 +42,7 @@ export class LayoutSidenavComponent implements OnInit, AfterViewInit, OnDestroy 
     private ServesiceService: ServesiceService,
     private aRoute: ActivatedRoute,
     private spService: SpecialApprovalService,
+    private message: NzMessageService,
   ) {
     // Set host classes
     this.hostClassVertical = this.orientation !== 'horizontal';
