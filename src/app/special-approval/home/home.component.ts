@@ -28,7 +28,7 @@ const MENU_ID = {
 const activeTemplate = {
   [APPLY_TYPE.PRODUCTION]: true,
   [APPLY_TYPE.DELIVERY]: false,
-  [APPLY_TYPE.EXT_INSTALL_COST]: false,
+  [APPLY_TYPE.EXT_INSTALL_COST]: true,
   [APPLY_TYPE.EXT_WARRANTY]: true,
   [APPLY_TYPE.LOGISTICSCOST]: true
 }

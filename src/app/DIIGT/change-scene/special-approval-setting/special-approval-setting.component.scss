@@ -1,8 +1,20 @@
 :host {
-  .nav-btn {
-    padding-right: 20px;
-    height: 46px;
-    line-height:46px;
+  .nav-container {
+    display: flex;
+    .nav-btn {
+      flex: 1;
+      padding-right: 20px;
+      height: 46px;
+      line-height:46px;
+      text-align: center;
+      &:hover {
+        color: #337fbf;
+      }
+      &.ant-radio-button-wrapper-checked {
+        background-color: #337fbf;
+        color: #fff!important;
+      }
+    }
   }
   .list-container {
     margin-top: 12px;
