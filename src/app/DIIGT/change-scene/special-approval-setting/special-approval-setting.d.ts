@@ -11,6 +11,7 @@ interface BusinessProc {
   minWarrantyMonthsComparator?: string;
   maxWarrantyMonths?: number;
   maxWarrantyMonthsComparator?: string;
+  remark?: string;
 }
 
 export interface ApproveProc {
