@@ -51,11 +51,11 @@ export class BusinessInfoAreaComponent implements OnInit {
       width: "100px",
     },
     {
-      name: "Is Approver 是否申请角色",
+      name: "Is Applicant 是否申请角色",
       width: "100px",
     },
     {
-      name: "Is Applicant 是否审核角色",
+      name: "Is Approver 是否审核角色",
       width: "100px",
     },
     {
