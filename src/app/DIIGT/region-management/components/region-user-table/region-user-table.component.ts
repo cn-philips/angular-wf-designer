@@ -43,11 +43,11 @@ export class RegionUserTableComponent implements OnInit {
       Ename: "Title/Role",
     },
     {
-      Ename: "Is Approver",
+      Ename: "Is Applicant",
       Cname: "是否申请角色",
     },
     {
-      Ename: "Is Applicant",
+      Ename: "Is Approver",
       Cname:"是否审核角色",
     },
   ];
