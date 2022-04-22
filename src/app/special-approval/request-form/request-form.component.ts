@@ -3,7 +3,6 @@ import { ActivatedRoute, Router } from '@angular/router'
 import { FormBuilder, FormGroup, Validators } from '@angular/forms'
 import * as moment from 'moment'
 import { NzMessageService } from 'ng-zorro-antd'
-
 import { SpecialApprovalService } from '../special-approval.service'
 import {
   LOADING_MESSAGE,
@@ -78,7 +77,9 @@ export class RequestFormComponent implements OnInit {
 
   processUsers: string[] = [] // 流程中所有的人
   applicantEmail: string
-
+  private http: any;
+  iepoollist:any=[{}];
+  orderstatuslist = [];
   constructor(
     private route: ActivatedRoute,
     private fb: FormBuilder,
@@ -92,7 +93,6 @@ export class RequestFormComponent implements OnInit {
   TAB_TYPES = TAB_TYPE
 
   bmcs = []
-
   executed = null
 
   minMon
@@ -131,6 +131,7 @@ export class RequestFormComponent implements OnInit {
       expectedPaymentDate: [null, [Validators.required]], // 预计付款(或场地就位)日期
       om: [null], // OM
       products: [[]],
+      orderStatus: [null, [Validators.required]],  //订单状态
     }),
     ccInfo: this.fb.group({
       ccType: [null], // 抄送类型
@@ -173,8 +174,11 @@ export class RequestFormComponent implements OnInit {
         })
       }
       this.pageLoading = false
-      this.setFormValidators(type, item, bg)
+      this.setFormValidators(type, item, bg);
+
     }
+    //调取外贸公司
+     this.getIePoolArray();
   }
 
   setPageTitle({ applyType = '', applyItem = '', minMon = null, maxMon = null, minComp = null, maxComp = null }, isNew = true) {
@@ -223,6 +227,10 @@ export class RequestFormComponent implements OnInit {
       this.orderInfo.controls.expectedPaymentDate.clearValidators()
       if (item == 'sp_warranty_apply_item_5') {
         this.basicInfo.controls.applyItemDesc.setValidators([Validators.required])
+      }
+    }  else if (type=== APPLY_TYPE.LC_AMENDMENT){
+      if (type !== APPLY_TYPE.LC_AMENDMENT){
+        this.basicInfo.controls.applyItem.disable()
       }
     } else if (type === APPLY_TYPE.PRODUCTION){
       this.basicInfo.controls.applyItem.disable()
@@ -278,6 +286,17 @@ export class RequestFormComponent implements OnInit {
           }
         ]
         break
+      case APPLY_TYPE.LC_AMENDMENT:
+        data.orderInfos = [
+          {
+            ...orderInfo,
+            applyArrivalTime: applyArrivalTime ? moment(applyArrivalTime).format('YYYY-MM-DD') : null,
+            expectedPaymentDate: expectedPaymentDate ? moment(expectedPaymentDate).format('YYYY-MM-DD') : null,
+            expectedSaleDate: expectedSaleDate ? moment(expectedSaleDate).format('YYYY-MM-DD') : null,
+            products: products.map(({ productType, wbsNo, itemNo, quantity }) => ({ productType, wbsNo, itemNo, quantity }))
+          }
+        ]
+        break;
       case APPLY_TYPE.LOGISTICSCOST:
         data.orderInfos = [
           {
@@ -411,7 +430,7 @@ export class RequestFormComponent implements OnInit {
         },
       })
       this.requestInfo.orderInfos = orderInfos
-      if (applyType === APPLY_TYPE.PRODUCTION || applyType === APPLY_TYPE.EXT_WARRANTY || applyType === APPLY_TYPE.LOGISTICSCOST) {
+      if (applyType === APPLY_TYPE.PRODUCTION || applyType === APPLY_TYPE.EXT_WARRANTY || applyType === APPLY_TYPE.LOGISTICSCOST|| applyType === APPLY_TYPE.LC_AMENDMENT) {
         this.formValues.patchValue({
           orderInfo: {
             ...orderInfos[0],
@@ -465,7 +484,6 @@ export class RequestFormComponent implements OnInit {
 
       this.showFeedbackTab = nodeAction === NODE_ACTION.FEEDBACK && this.isApplicant && !!this.taskId
       this.showWithdrawBtn = processStatus === PROCESS_STATUS.START && this.isApplicant && nodeAction !== NODE_ACTION.FEEDBACK
-
       this.approveNodeList = nodeInfoList
       this.approveHistory = taskList
       this.setEditable(processStatus)
@@ -525,6 +543,10 @@ export class RequestFormComponent implements OnInit {
       this.submitLoading = false
       this.message.remove(id)
     }
+  }
+  // 获取外贸公司
+  async getIePoolArray(){
+    this.iepoollist = await this.spService.getIePoolList();
   }
 
   navigateToHomePage() {

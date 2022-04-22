@@ -1,0 +1,211 @@
+<nz-card class="mtb1rem" nzTitle="订单信息">
+  <form nz-form [formGroup]="formValues">
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="12">
+        <nz-form-item>
+          <nz-form-label nzXl="8" nzXXl="6">产品型号</nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <input type="text" nz-input />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzXs="24" nzSm="24" nzMd="12">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzXl="8" nzXXl="6"  nzRequired>产品线</nz-form-label>
+          <nz-form-control nzXs="12" nzSm="12" nzMd="14">
+            <nz-form-control nzXs="24" nzSm="24" nzMd="9">
+              <nz-select formControlName="bmc" nzPlaceHolder="请选择产品线">
+                <nz-option *ngFor="let item of bmcs" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+              </nz-select>
+              <nz-form-explain *ngIf="formValues.get('bmc')?.dirty && formValues.get('bmc')?.errors">
+                请选择产品线
+              </nz-form-explain>
+            </nz-form-control>
+
+            <nz-form-label nzXs="24" nzSm="24" nzMd="6" nzRequired>BG</nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="9">
+              <nz-select formControlName="bg" nzPlaceHolder="请先选择BG" #bg>
+                <nz-option *ngFor="let item of selectOptions.bgList" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="12">
+        <nz-form-item>
+          <nz-form-label nzXl="8" nzXXl="6" nzRequired nzFor="sapOrderNo">SAP订单号(SO#)</nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <input id="sapOrderNo" nz-input formControlName="sapOrderNo" />
+            <nz-form-explain *ngIf="formValues.get('sapOrderNo')?.dirty && formValues.get('sapOrderNo')?.errors">
+              请填写SAP订单号(SO#)
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzXs="24" nzSm="24" nzMd="12">
+        <nz-form-item>
+          <nz-form-label nzXl="8" nzXXl="6" nzRequired>订单状态</nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <nz-select nzPlaceHolder="请先选择">
+              <nz-option>
+                <nz-option *ngFor="let item of orderstatuslist" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+              </nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="12">
+        <nz-form-item>
+          <nz-form-label nzXl="8" nzXXl="6" nzRequired>外贸公司</nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <input type="text" nz-input />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzXs="24" nzSm="24" nzMd="12">
+        <nz-form-control nzXs="24" nzSm="24" nzMd="14" style="margin-bottom: 22px;margin-left: -100px">
+          <nz-select  class="select"
+                      nzPlaceHolder="IE Pool 外贸公司列表">
+              <nz-option *ngFor="let item of iepoollist" [nzLabel]="item.corporateName" [nzValue]="item.corporateName">
+            </nz-option>
+          </nz-select>
+        </nz-form-control>
+      </div>
+    </div>
+
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="12">
+        <nz-form-item>
+          <nz-form-label nzXl="8" nzXXl="6" nzRequired>L/C号码</nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <input type="text" nz-input />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzXs="24" nzSm="24" nzMd="12">
+        <nz-form-item>
+          <nz-form-label nzXl="8" nzXXl="6" nzRequired>L/C全额</nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <input type="text" nz-input  />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="24">
+        <nz-form-item>
+          <nz-form-label nzXXl="3" nzXl="3" nzSm="6" nzRequired>Non Standard Terms</nz-form-label>
+          <nz-form-control nzXXl="19" nzXl="19" nzSm="19">
+            <input type="text" nz-input/>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="24">
+        <nz-form-item>
+          <nz-form-label nzXXl="3" nzXl="3" nzSm="6" nzRequired>L/C discrepancy描述</nz-form-label>
+          <nz-form-control nzXXl="19" nzXl="19" nzSm="19">
+            <input type="text" nz-input />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="11">
+        <nz-form-item style="margin-left: -14px">
+          <nz-form-label nzXl="9" nzXXl="7" nzRequired>是否接受L/C discrepancy</nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <nz-form-control nzSpan="7" style="margin-top: 10px">
+              <nz-radio-group >
+                <label nz-radio nzValue="1" (click)="" >Yes</label>
+                <label nz-radio nzValue="0" (click)="">No</label>
+              </nz-radio-group>
+            </nz-form-control>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzXs="24" nzSm="24" nzMd="12">
+        <nz-form-item>
+          <nz-form-label nzXl="9" nzXXl="8" nzRequired>L/C discrepancy费用支付方式</nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <nz-select  nzPlaceHolder="请先选择" >
+              <nz-option *ngFor="let item of paymentlist" [nzLabel]="item.label" [nzValue]="item.value">
+              </nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="12">
+        <nz-form-item>
+          <nz-form-label nzXl="8" nzXXl="6" nzRequired>修改条目</nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <nz-select  class="select"  nzShowSearch nzAllowClear
+                        nzPlaceHolder="选择其他时填写说明" changeOrderModify>
+              <nz-option *ngFor="let item of modfyentrylist" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzXs="24" nzSm="24" nzMd="12">
+        <nz-form-item>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14" style="margin-left: -100px">
+            <input type="text" nz-input />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="12">
+        <nz-form-item>
+          <nz-form-label nzXl="8" nzXXl="6" nzRequired>取消原因</nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <nz-select  class="select"  nzShowSearch nzAllowClear
+                        nzPlaceHolder="选择其他时填写说明" >
+              <nz-option *ngFor="let item of cancelreasonlist" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzXs="24" nzSm="24" nzMd="12">
+        <nz-form-item>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14"style="margin-left: -100px">
+            <input type="text" nz-input />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="12">
+        <nz-form-item>
+          <nz-form-label nzSm="8" nzXl="8"  nzRequired>新的L/C discrepancy是否已经开具</nz-form-label>
+          <nz-form-control nzSpan="7" style="margin-top: 8px">
+            <nz-radio-group>
+              <label nz-radio nzValue="1">Yes</label>
+              <label nz-radio nzValue="0">No</label>
+            </nz-radio-group>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+  </form>
+
+  <app-select-hospital #selectHospital (select)="onSelectHospital($event)"></app-select-hospital>
+  <app-select-dealer #selectDealer (select)="onSelectDealer($event)"></app-select-dealer>
+  <app-select-reference #selectReference (select)="onSelectReference($event)"></app-select-reference>
+</nz-card>
+

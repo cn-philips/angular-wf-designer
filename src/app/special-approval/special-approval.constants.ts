@@ -52,6 +52,8 @@ const APPLY_TYPE = {
   EXT_WARRANTY: "warranty",
   EXT_INSTALL_COST: "installcost",
   LOGISTICSCOST: "logisticscost",
+  LC_AMENDMENT: "lcamendment",
+
 }
 
 const APPLY_TYPE_MAP = {
@@ -90,8 +92,18 @@ const APPLY_TYPE_MAP = {
     items: [
       {label: '特别仓储、物流费用', value: 'sp_logisticscost_apply_item_1'}
     ]
+  },
+    [APPLY_TYPE.LC_AMENDMENT]: {
+  label: "LC Amendments申请",
+    items: [
+    { label: "For non-standard LC terms, such as bank charges", value: "sp_lcamendment_apply_item_1" },
+    { label: "LC applicant accept LC discrepancy instead of LC amendment", value: "sp_lcamendment_apply_item_2" },
+    { label: "LC amendment cost to be paid by Philips", value: "sp_lcamendment_apply_item_3" },
+    { label: "LC cancelation", value: "sp_lcamendment_apply_item_4" },
+    { label: "Others", value: "sp_lcamendment_apply_item_5" },
+  ],
+}
 
-  }
 };
 
 const APPLY_TYPES = [
@@ -100,6 +112,7 @@ const APPLY_TYPES = [
   { label: "延长保修", value: APPLY_TYPE.EXT_WARRANTY },
   { label: "额外安装费用及其他", value: APPLY_TYPE.EXT_INSTALL_COST },
   { label: "物流运输-特别仓储", value: APPLY_TYPE.LOGISTICSCOST },
+  { label: "LC Amendment申请", value: APPLY_TYPE.LC_AMENDMENT },
 ];
 
 const STAND_WARRANTY_MONTH = {

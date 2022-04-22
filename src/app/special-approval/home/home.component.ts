@@ -30,6 +30,7 @@ const activeTemplate = {
   [APPLY_TYPE.EXT_INSTALL_COST]: true,
   [APPLY_TYPE.EXT_WARRANTY]: true,
   [APPLY_TYPE.LOGISTICSCOST]: true,
+  [APPLY_TYPE.LC_AMENDMENT]: true
 }
 
 interface Card {
@@ -164,6 +165,8 @@ export class HomeComponent implements OnInit {
   formatTemplateName({ applyType, applyItem, minWarrantyMonths, maxWarrantyMonths, minWarrantyMonthsComparator, maxWarrantyMonthsComparator }) {
     if (applyType === APPLY_TYPE.PRODUCTION || applyType === APPLY_TYPE.LOGISTICSCOST || applyType === APPLY_TYPE.EXT_INSTALL_COST) {
       return this.formatApplyTypeItem({ applyType, applyItem })
+    }else if (applyType === APPLY_TYPE.LC_AMENDMENT) {
+      return this.formatApplyTypeItem({ applyType, applyItem });
     } else if (applyType === APPLY_TYPE.EXT_WARRANTY) {
       const prefix = APPLY_TYPE_MAP[applyType].label
       // 没有最小月份, 实际条件为<maxWarrantyMonths或者<=maxWarrantyMonths

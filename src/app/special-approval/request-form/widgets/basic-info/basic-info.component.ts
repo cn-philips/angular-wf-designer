@@ -45,7 +45,9 @@ export class BasicInfoComponent {
   onApplyItemChange(applyItem) {
     if (this.applyType === APPLY_TYPE.EXT_WARRANTY && applyItem == 'sp_warranty_apply_item_5') {
       this.formValues.controls.applyItemDesc.setValidators([Validators.required])
-    } else {
+    } else if(this.applyType === APPLY_TYPE.LC_AMENDMENT && applyItem == 'sp_lcamendment_apply_item_5'){
+      this.formValues.controls.applyItemDesc.setValidators([Validators.required])
+    }else {
       this.formValues.controls.applyItemDesc.clearValidators()
     }
   }
