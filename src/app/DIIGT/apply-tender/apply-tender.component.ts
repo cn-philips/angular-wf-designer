@@ -103,6 +103,7 @@ export class ApplyTenderComponent implements OnInit {
     performanceBonds: '', // 履约保证金金额
     bidType: null, // 招标类型
     distributorAgreement: [],
+    distributorAgreementList: [],
     distributorType: '年度协议'
   };
 
@@ -226,6 +227,7 @@ export class ApplyTenderComponent implements OnInit {
     if (this.processInstanceTaskId != null && this.processInstanceTaskId !== '') {
       this.dataBase.processInstanceTaskId = this.processInstanceTaskId;
     }
+    this.initDistributorAgreementList();
     this.http.post(url, this.dataBase).subscribe((res => {
       if (res.code == '0000') {
         this.message.create('success', res.msg);
@@ -397,6 +399,7 @@ export class ApplyTenderComponent implements OnInit {
     if (this.processInstanceTaskId != null && this.processInstanceTaskId !== '') {
       this.dataBase.processInstanceTaskId = this.processInstanceTaskId;
     }
+    this.initDistributorAgreementList();
     this.http.post(url, this.dataBase).subscribe((res => {
       if (res.code == '0000') {
         this.message.create('success', res.msg);
@@ -417,4 +420,19 @@ export class ApplyTenderComponent implements OnInit {
     // }
   }
 
+  public agreetitleList: any = {};
+  // dataBase 提交装载 经销商协议 数据结构
+  // 添加 授权产品 授权区域
+  public initDistributorAgreementList() {
+    this.dataBase.distributorAgreementList = [];
+    if (this.dataBase && this.dataBase.distributorAgreement) {
+      for (let i = 0; i < this.dataBase.distributorAgreement.length; i++) {
+        this.dataBase.distributorAgreementList.push({
+          dealerAgreement: this.dataBase.distributorAgreement[i],
+          authorizedProduct: this.agreetitleList[this.dataBase.distributorAgreement[i]] ? this.agreetitleList[this.dataBase.distributorAgreement[i]].authorizedProduct : '',
+          authorizedArea: this.agreetitleList[this.dataBase.distributorAgreement[i]] ? this.agreetitleList[this.dataBase.distributorAgreement[i]].authorizedArea : ''
+        });
+      }
+    }
+  }
 }

@@ -240,6 +240,7 @@ export class EmpEmpComponent implements OnInit {
     params.BMCExpert = '';
     params.AppExpert = '';
     params.distributorAgreement = '';
+    params.distributorAgreementList = '';
     this.pdfSRC = params;
     this.isPdf = true;
   }
