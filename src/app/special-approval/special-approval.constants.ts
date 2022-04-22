@@ -311,6 +311,11 @@ const CC_TYPES = [
   { label: '最终节点通过', value: 'lastapproved' },
 ]
 
+const NODE_ACTION = {
+  APPROVE: 'approve',
+  FEEDBACK: 'feedback'
+}
+
 const PROCESS_STATUS = {
   START: 'START',
   DRAFT: 'DRAFT',
@@ -320,9 +325,14 @@ const PROCESS_STATUS = {
   CANCELLED: 'CANCELLED',
 }
 
-const NODE_ACTION = {
-  APPROVE: 'approve',
-  FEEDBACK: 'feedback'
+const PROCESS_STATUS_MAP = {
+  [PROCESS_STATUS.START]: '待审批',
+  [NODE_ACTION.FEEDBACK]: '待反馈',
+  [PROCESS_STATUS.DRAFT]: '草稿',
+  [PROCESS_STATUS.COMPLETED]: '已完成',
+  [PROCESS_STATUS.REJECTED]: '已退回',
+  [PROCESS_STATUS.WITHDRAW]: '已撤回',
+  [PROCESS_STATUS.CANCELLED]: '已取消',
 }
 
 // status: 0-已取消, 1-未取消
@@ -352,4 +362,5 @@ export {
   CC_TYPES,
   PROCESS_STATUS,
   NODE_ACTION,
+  PROCESS_STATUS_MAP,
 };

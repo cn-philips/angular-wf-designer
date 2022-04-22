@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpService } from '../services/http.service'
 import { Subject } from 'rxjs'
-import { APPLY_TYPE_MAP, PROCESS_STATUS, NODE_ACTION } from './special-approval.constants'
+import { APPLY_TYPE_MAP, PROCESS_STATUS, NODE_ACTION, PROCESS_STATUS_MAP } from './special-approval.constants'
 
 function getLoginUserCode1() {
   return localStorage.getItem('ng_philips_code1')
@@ -222,7 +222,7 @@ export class SpecialApprovalService {
   formatRequestStatus(processStatus, nodeAction, status) {
     if (status == 0) { return '已取消' }
     if (nodeAction === NODE_ACTION.FEEDBACK && processStatus === PROCESS_STATUS.START) { return '待反馈' }
-    return PROCESS_STATUS[processStatus]
+    return PROCESS_STATUS_MAP[processStatus]
   }
 
   formatApplyType(type) {

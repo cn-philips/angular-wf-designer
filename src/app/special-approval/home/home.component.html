@@ -13,13 +13,9 @@
     <span>快速链接</span>
   </div>
   <div class="filter-wrap">
-    <nz-tabset [(nzSelectedIndex)]="acitveTemplateIndex" nzType="card" [nzTabBarStyle]="{ marginBottom: '0' }" (nzSelectChange)="onFilterChange()">
-      <nz-tab nzTitle="全部"></nz-tab>
-      <nz-tab nzTitle="特批开始生产"></nz-tab>
-      <!-- <nz-tab nzTitle="特批发货"></nz-tab> -->
-      <nz-tab nzTitle="延长保修"></nz-tab>
-      <nz-tab nzTitle="物流运输"></nz-tab>
-      <nz-tab nzTitle="额外安装费用及其他"></nz-tab>
+    <nz-tabset nzType="card" [nzTabBarStyle]="{ marginBottom: '0' }">
+      <nz-tab nzTitle="全部" (nzSelect)="filteredTemplateList = allTemplateList"></nz-tab>
+      <nz-tab *ngFor="let tab of tabList" [nzTitle]="tab.title" (nzSelect)="onFilterChange(tab)"></nz-tab>
     </nz-tabset>
   </div>
 </header>
