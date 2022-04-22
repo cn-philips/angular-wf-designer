@@ -13,6 +13,10 @@
         <th nzWidth="200px">申请保修结束日期</th>
         <th nzWidth="130px">申请延保月数</th>
       </ng-container>
+      <ng-container *ngIf="isExchange">
+        <th nzWidth="200px">设备SN</th>
+        <th nzWidth="200px">物流状态</th>
+      </ng-container>
       <th nzWidth="100px" nzRight="0px" *ngIf="bg !== 'PD&IGT' && editable">Action</th>
     </tr>
   </thead>
@@ -43,7 +47,7 @@
         </td>
         <td>
           <!-- 合同保修开始日期 -->
-          <nz-date-picker 
+          <nz-date-picker
             style="width: 100%"
             [nzStyle]="{ width: '100%' }"
             [(ngModel)]="product.warranty.expectedStdWarrantyStartdate"
@@ -70,13 +74,23 @@
           <input type="text" nz-input placeholder="自动计算" [(ngModel)]="product.warranty.applyExtWarrantyMonths" disabled />
         </td>
       </ng-container>
+      <ng-container *ngIf="isExchange">
+        <td>
+          <input type="text" nz-input [(ngModel)]="product.equipmentSn" [disabled]="!editable" />
+        </td>
+        <td>
+          <nz-select [(ngModel)]="product.logisticsStatus" [disabled]="!editable">
+            <nz-option *ngFor="let item of selectOptions.logicstatus" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+          </nz-select>
+        </td>
+      </ng-container>
       <td nzRight="0px" *ngIf="bg !== 'PD&IGT' && editable">
         <button nz-button nzType="primary" nzSize="small" (click)="onDeleteProduct(product)">删除</button>
       </td>
     </tr>
   </tbody>
   <ng-template #tableFooter>
-    <button nz-button nzType="dashed" nzBlock (click)="onAddProduct()" *ngIf="bg !== 'PD&IGT'">
+    <button nz-button nzType="dashed" nzBlock (click)="onAddProduct()" *ngIf="bg !== 'PD&IGT' && editable">
       <i nz-icon nzType="plus" nzTheme="outline"></i>添加
     </button>
   </ng-template>

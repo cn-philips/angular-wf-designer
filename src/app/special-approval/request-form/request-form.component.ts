@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router'
-import { FormBuilder, FormGroup, Validators } from '@angular/forms'
+import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import * as moment from 'moment'
 import { NzMessageService } from 'ng-zorro-antd'
 
@@ -123,18 +123,76 @@ export class RequestFormComponent implements OnInit {
       hospitalName: [{ value: null, disabled: true }], // 医院名称
       hospitalNo: [{ value: null, disabled: true }], // 医院编号
       projectName: [null, [Validators.required]], // 项目名称
-      sapOrderNo: [null, [Validators.required]], //SAP订单号
+      sapOrderNo: [null, [Validators.required]], // SAP订单号
       orderAmount: [null, [Validators.required]], // 合同金额-数额
       currency: [null, [Validators.required]], // 合同金额-货币
       expectedSaleDate: [null, [Validators.required]], // 预计记认销售日期
       applyArrivalTime: [null, [Validators.required]], // 申请到货时间
       expectedPaymentDate: [null, [Validators.required]], // 预计付款(或场地就位)日期
       om: [null], // OM
+      exchangeRole: [null], // 换货角色
+      exchangeProcessing: [null], // 换货方式
+      saleEmail: [null], // 销售邮箱
+      districtLeader: [null], // District Leader邮箱
+      salesLeader: [null], // sales Leader 邮箱
       products: [[]],
     }),
     ccInfo: this.fb.group({
       ccType: [null], // 抄送类型
       ccPerson: [[]] // 抄送人
+    }),
+    changeOrderInfos: this.fb.group({
+      exchangeMethod: [null], // 换货方式
+      orders: this.fb.array([
+        this.fb.group({
+          orderType: [null, [Validators.required]], // 订单类型
+          referenceId: [null], // Reference Id
+          productType: [null], // 产品型号
+          bmc: [null, [Validators.required]], // 产品线
+          bg: [{ value: null, disabled: true }, [Validators.required]], // BG
+          cycleGroup: [null, [Validators.required]], // 产品区域-大区
+          bigArea: [null, [Validators.required]], // 产品区域-小区
+          businessModel: [null, [Validators.required]], // 业务模式
+          dealerName: [{ value: null, disabled: true }], // 经销商名称
+          dealerCode: [{ value: null, disabled: true }], // 经销商编号
+          hospitalName: [{ value: null, disabled: true }], // 医院名称
+          hospitalNo: [{ value: null, disabled: true }], // 医院编号
+          projectName: [null, [Validators.required]], // 项目名称
+          sapOrderNo: [null, [Validators.required]], // SAP订单号
+          currency: [null, [Validators.required]], // 合同金额-货币
+          om: [null], // OM
+          orderDate: [null], // 进单日期
+          exchangeRole: [null], // 换货角色
+          saleEmail: [null], // 销售邮箱
+          districtLeader: [null], // District Leader邮箱
+          salesLeader: [null], // sales Leader 邮箱
+          products: [[]],
+        }),
+        this.fb.group({
+          orderType: [null, [Validators.required]], // 订单类型
+          referenceId: [null], // Reference Id
+          productType: [null], // 产品型号
+          bmc: [null, [Validators.required]], // 产品线
+          bg: [{ value: null, disabled: true }, [Validators.required]], // BG
+          cycleGroup: [null, [Validators.required]], // 产品区域-大区
+          bigArea: [null, [Validators.required]], // 产品区域-小区
+          businessModel: [null, [Validators.required]], // 业务模式
+          dealerName: [{ value: null, disabled: true }], // 经销商名称
+          dealerCode: [{ value: null, disabled: true }], // 经销商编号
+          hospitalName: [{ value: null, disabled: true }], // 医院名称
+          hospitalNo: [{ value: null, disabled: true }], // 医院编号
+          projectName: [null, [Validators.required]], // 项目名称
+          sapOrderNo: [null, [Validators.required]], // SAP订单号
+          currency: [null, [Validators.required]], // 合同金额-货币
+          om: [null], // OM
+          orderDate: [null], // 进单日期
+          exchangeRole: [null], // 换货角色
+          saleEmail: [null], // 销售邮箱
+          districtLeader: [null], // District Leader邮箱
+          salesLeader: [null], // sales Leader 邮箱
+          products: [[]],
+        })
+      ])
     })
   })
 
@@ -171,6 +229,16 @@ export class RequestFormComponent implements OnInit {
         this.orderInfo.patchValue({
           bg
         })
+        if (this.applyType === APPLY_TYPE.MACHINE_EXCHANGE) {
+          let orders = this.changeOrderInfos.get('orders') as FormArray
+          orders.at(0).patchValue({
+            bg
+          })
+          orders.at(1).patchValue({
+            bg
+          })
+        }
+
       }
       this.pageLoading = false
       this.setFormValidators(type, item, bg)
@@ -217,6 +285,10 @@ export class RequestFormComponent implements OnInit {
     return this.formValues.get('ccInfo') as FormGroup
   }
 
+  get changeOrderInfos(): FormGroup {
+    return this.formValues.get('changeOrderInfos') as FormGroup
+  }
+
   setFormValidators(type, item, bg) {
     if (type === APPLY_TYPE.EXT_WARRANTY) {
       this.orderInfo.controls.applyArrivalTime.clearValidators()
@@ -224,7 +296,8 @@ export class RequestFormComponent implements OnInit {
       if (item == 'sp_warranty_apply_item_5') {
         this.basicInfo.controls.applyItemDesc.setValidators([Validators.required])
       }
-    } else if (type === APPLY_TYPE.PRODUCTION){
+    }
+    if (type === APPLY_TYPE.PRODUCTION){
       this.basicInfo.controls.applyItem.disable()
     }
 
@@ -239,13 +312,18 @@ export class RequestFormComponent implements OnInit {
   }
 
   getFormData() {
-    const { basicInfo, orderInfo, ccInfo } = this.formValues.getRawValue()
+
+    const { basicInfo, orderInfo, ccInfo, changeOrderInfos } = this.formValues.getRawValue()
     const { applyArrivalTime, expectedPaymentDate, expectedSaleDate, products } = orderInfo
+    const extInfo = {
+      exchangeMethod: changeOrderInfos.exchangeMethod
+    }
     const data = {
       ...this.requestInfo,
       ...basicInfo,
       ...ccInfo,
       ccPerson: ccInfo.ccPerson.join(','),
+      ...extInfo
     }
     switch(this.applyType) {
       case APPLY_TYPE.PRODUCTION: // 特批生产
@@ -290,6 +368,27 @@ export class RequestFormComponent implements OnInit {
           }
         ]
         break;
+      case APPLY_TYPE.MACHINE_EXCHANGE:
+        data.orderInfos = [
+          {
+            ...this.requestInfo.orderInfos[0],
+            ...changeOrderInfos.orders.at(0),
+            applyArrivalTime: applyArrivalTime ? moment(applyArrivalTime).format('YYYY-MM-DD') : null,
+            expectedPaymentDate: expectedPaymentDate ? moment(expectedPaymentDate).format('YYYY-MM-DD') : null,
+            expectedSaleDate: expectedSaleDate ? moment(expectedSaleDate).format('YYYY-MM-DD') : null,
+            products: changeOrderInfos.orders.at(0).products.map(({ productType, wbsNo, itemNo, quantity, equipmentSn, logisticsStatus }) => ({ productType, wbsNo, itemNo, quantity, equipmentSn, logisticsStatus }))
+          },
+          {
+            ...this.requestInfo.orderInfos[1],
+            ...changeOrderInfos.orders.at(1),
+            applyArrivalTime: applyArrivalTime ? moment(applyArrivalTime).format('YYYY-MM-DD') : null,
+            expectedPaymentDate: expectedPaymentDate ? moment(expectedPaymentDate).format('YYYY-MM-DD') : null,
+            expectedSaleDate: expectedSaleDate ? moment(expectedSaleDate).format('YYYY-MM-DD') : null,
+            products: changeOrderInfos.orders.at(1).products.map(({ productType, wbsNo, itemNo, quantity, equipmentSn, logisticsStatus }) => ({ productType, wbsNo, itemNo, quantity, equipmentSn, logisticsStatus }))
+          }
+
+        ]
+        break;
       case APPLY_TYPE.EXT_INSTALL_COST: // Additional cost
         data.orderInfos = [
           {
@@ -316,20 +415,30 @@ export class RequestFormComponent implements OnInit {
       this.formValues.controls.basicInfo.disable()
       this.formValues.controls.orderInfo.disable()
       this.formValues.controls.ccInfo.disable()
+      this.formValues.controls.changeOrderInfos.disable()
     }
     this.editable = editable
   }
 
   async onSubmit() {
+    if (this.applyType === this.APPLY_TYPE.MACHINE_EXCHANGE){
+      const orders = this.changeOrderInfos.get('orders') as FormArray;
+     orders.markAsDirty();
+     orders.updateValueAndValidity()
+    }else {
+      for (const i in this.orderInfo.controls) {
+        this.orderInfo.controls[i].markAsDirty();
+        this.orderInfo.controls[i].updateValueAndValidity();
+      }
+    }
     for (const i in this.basicInfo.controls) {
       this.basicInfo.controls[i].markAsDirty();
       this.basicInfo.controls[i].updateValueAndValidity();
     }
-    for (const i in this.orderInfo.controls) {
-      this.orderInfo.controls[i].markAsDirty();
-      this.orderInfo.controls[i].updateValueAndValidity();
-    }
+    console.log(this.basicInfo.invalid)
+    console.log(this.changeOrderInfos.get('orders').invalid)
     if (
+      this.applyType === this.APPLY_TYPE.MACHINE_EXCHANGE? this.basicInfo.invalid || this.changeOrderInfos.invalid:
       this.basicInfo.invalid || this.orderInfo.invalid
     ) {
       this.message.error('请按要求填写表单信息')
@@ -389,6 +498,7 @@ export class RequestFormComponent implements OnInit {
         applyItemDesc, executed, processStatus,
         reason, ccType, ccPerson, orderInfos, attachments,
         taskList, nodeInfoList, nodeCode, nodeAction,
+        extInfo
       } = data
       this.setPageTitle({ applyType }, false)
       this.applyItem = applyItem
@@ -419,6 +529,26 @@ export class RequestFormComponent implements OnInit {
           }
         })
         this.setFormValidators(applyType, applyItem, orderInfos[0].bg)
+      }
+      if (applyType === APPLY_TYPE.MACHINE_EXCHANGE){
+        this.formValues.patchValue({
+          exchangeMethod: extInfo.exchangeMethod,
+          changeOrderInfos: {
+            orders: [
+              {
+                ...orderInfos[0],
+                products: orderInfos[0].products || []
+              },
+              {
+                ...orderInfos[1],
+                products: orderInfos[1].products || []
+              }
+            ]
+          }
+        })
+        console.log(this.formValues.get('changeOrderInfos'))
+        this.setFormValidators(applyType, applyItem, orderInfos[0].bg)
+
       }
 
       const userSet = new Set<string>()
