@@ -14,23 +14,43 @@ import {Hospital, SelectHospitalComponent} from '../../select-hospital/select-ho
 import {Dealer, SelectDealerComponent} from '../../select-dealer/select-dealer.component';
 import {Reference, SelectReferenceComponent} from '../../select-reference/select-reference.component';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+import {BehaviorSubject, Observable} from 'rxjs';
+import {debounceTime, map, switchMap} from 'rxjs/operators';
+import {HttpService} from '../../../../../services';
+
+interface Sales {
+  email: string,
+  name: string
+}
+
 @Component({
   selector: 'special-approval-machineexcange-order-info',
   templateUrl: './machine.component.html',
   styleUrls: ['./machine.component.scss']
 })
+
 export class MachineComponent implements OnInit {
 
 
+  @Input() salesLeaders: string[]
+  @Input() districtLeaders: string[]
+
   selectIndex: number;
+
+  searchChange$ = new BehaviorSubject('');
 
   showDealerArea: boolean = false
 
-  salesList: any = [];
+  salesList: Sales[] = [{
+    name: localStorage.getItem('ng_philips_username'),
+    email: localStorage.getItem('ng_philips_code1')
+  }];
+  isSearchLoading: boolean = false
 
   constructor(
     private spService: SpecialApprovalService,
     private fb: FormBuilder,
+    private http: HttpService,
   ) { }
 
 
@@ -200,8 +220,21 @@ export class MachineComponent implements OnInit {
 
   ngOnInit(): void {
     this.initOMUsers()
-    this.initSales()
+    // this.initSales()
     this.getLeaderEmail()
+    this.formValues.get('exchangeMethod').valueChanges.subscribe(() => {
+      console.log(this.formValues)
+    })
+    if (!this.editable){
+      this.orders.at(0).patchValue({
+          salesLeader: this.salesLeaders[0],
+          districtLeader: this.districtLeaders[0]
+      })
+      this.orders.at(1).patchValue({
+        salesLeader: this.salesLeaders[1],
+        districtLeader: this.districtLeaders[1]
+      })
+    }
     this.orders.at(0).patchValue({
       saleEmail: localStorage.getItem('ng_philips_code1')
     })
@@ -209,28 +242,47 @@ export class MachineComponent implements OnInit {
       saleEmail: localStorage.getItem('ng_philips_code1')
     })
     if (this.editable) {
-      this.orders.at(this.selectIndex).get('hospitalName').valueChanges.subscribe(() => {
+      this.orders.at(0).get('hospitalName').valueChanges.subscribe(() => {
+        this.onCalcProjectName()
+      })
+      this.orders.at(1).get('hospitalName').valueChanges.subscribe(() => {
         this.onCalcProjectName()
       })
 
-      this.orders.at(this.selectIndex).get('productType').valueChanges.subscribe(() => {
+      this.orders.at(0).get('productType').valueChanges.subscribe(() => {
+        this.onCalcProjectName()
+      })
+      this.orders.at(1).get('productType').valueChanges.subscribe(() => {
         this.onCalcProjectName()
       })
     }
     console.log(this.orders);
+
+    const getSaleList = (keyword: string) => {
+      if (!keyword) {
+        this.isSearchLoading = false;
+        return []
+      }
+      let data = this.http.get(`/act/role/getUsersByRoleAndEmail?role=` + 'Sales Rep/Mgr' + '&email=' + keyword)
+        .pipe(map((res: any) => res.data as Sales[]))
+      return data
+    }
+
+    const optionList$: Observable<Sales[]> = this.searchChange$
+      .asObservable()
+      .pipe(debounceTime(500))
+      .pipe(switchMap(getSaleList));
+    optionList$.subscribe(data => {
+      this.salesList = data;
+      this.isSearchLoading = false;
+    });
+
   }
 
   // 初始化OM列表
   async initOMUsers() {
     const users = await this.spService.getOMUsers()
     this.selectOptions.oms = users.map(({ name, email }) => ({ label: name, value: email }))
-  }
-  // 初始化销售列表
-  async initSales() {
-    let list = await this.spService.getSaleEmail();
-    for (let i = 0; i < list.length; i++) {
-      this.salesList[i] = list[i].email
-    }
   }
 
   districtList: any = []
@@ -259,6 +311,11 @@ export class MachineComponent implements OnInit {
     this.districtList = await this.spService.getCustomizeEmail(params);
     this.salesLeaderList = await this.spService.getCustomizeEmail(params1);
 
+  }
+
+  onSearchSales(keyword: string) {
+    this.isSearchLoading = true
+    this.searchChange$.next(keyword)
   }
 
 }

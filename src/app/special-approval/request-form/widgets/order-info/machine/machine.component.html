@@ -5,7 +5,7 @@
         <nz-form-item>
           <nz-form-label nzXl="8" nzXXl="6" nzRequired nzFor="exchangeMethod">换货方式</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <nz-select formControlName="exchangeMethod" nzPlaceHolder="请选择换货方式">
+            <nz-select formControlName="exchangeMethod"nzPlaceHolder="请选择换货方式">
 <!--              <nz-option *ngFor="let item of" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>-->
               <nz-option [nzLabel]="'互换'" [nzValue]="'互换'"></nz-option>
             </nz-select>
@@ -115,9 +115,9 @@
                   </nz-select>
                 </nz-input-group>
                 <nz-input-group style="width: 100%;font-size: 0;" *ngIf="!editable">
-                  <input nz-input formControlName="cycleGroup" style="width: 40%">
+                  <input nz-input formControlName="cycleGroup" style="width: 48%;margin-right:4%">
 
-                 <input nz-input formControlName="bigArea" style="width: 40%">
+                 <input nz-input formControlName="bigArea" style="width: 48%">
                 </nz-input-group>
                 <div style="display: flex;">
                   <nz-form-explain style="width: 48%;margin-right:4%" >
@@ -274,8 +274,17 @@
               <nz-form-label nzRequired nzXl="8" nzXXl="6">销售邮箱</nz-form-label>
               <nz-form-control nzXs="24" nzSm="24" nzMd="14">
                 <nz-select nzShowSearch nzAllowClear formControlName="saleEmail" [nzPlaceHolder]="editable ? '销售邮箱' : ''" (ngModelChange)="salesChange()"
+                (nzOnSearch)="onSearchSales($event)" [nzServerSearch]="true"
                 >
-                  <nz-option *ngFor="let item of salesList" [nzLabel]="item" [nzValue]="item"></nz-option>
+<!--                  <nz-option *ngFor="let item of salesList" [nzLabel]="item" [nzValue]="item"></nz-option>-->
+                  <ng-container *ngFor="let sale of salesList">
+                    <nz-option *ngIf="!isSearchLoading" [nzValue]="sale.email" [nzLabel]="sale.email" [nzCustomContent]="true">
+                      {{sale.email }}
+                    </nz-option>
+                  </ng-container>
+                  <nz-option *ngIf="isSearchLoading" nzDisabled nzCustomContent>
+                    <i nz-icon type="loading" class="loading-icon"></i> 查询中...
+                  </nz-option>
                 </nz-select>
               </nz-form-control>
             </nz-form-item>

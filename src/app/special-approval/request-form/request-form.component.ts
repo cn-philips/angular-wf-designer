@@ -78,6 +78,8 @@ export class RequestFormComponent implements OnInit {
 
   processUsers: string[] = [] // 流程中所有的人
   applicantEmail: string
+  districtLeader: string[] = []
+  salesLeader: string[] = []
 
   constructor(
     private route: ActivatedRoute,
@@ -435,8 +437,6 @@ export class RequestFormComponent implements OnInit {
       this.basicInfo.controls[i].markAsDirty();
       this.basicInfo.controls[i].updateValueAndValidity();
     }
-    console.log(this.basicInfo.invalid)
-    console.log(this.changeOrderInfos.get('orders').invalid)
     if (
       this.applyType === this.APPLY_TYPE.MACHINE_EXCHANGE? this.basicInfo.invalid || this.changeOrderInfos.invalid:
       this.basicInfo.invalid || this.orderInfo.invalid
@@ -531,9 +531,13 @@ export class RequestFormComponent implements OnInit {
         this.setFormValidators(applyType, applyItem, orderInfos[0].bg)
       }
       if (applyType === APPLY_TYPE.MACHINE_EXCHANGE){
+        this.districtLeader[0] = orderInfos[0].districtLeader
+        this.salesLeader[0] = orderInfos[0].salesLeader
+        this.districtLeader[1] = orderInfos[1].districtLeader
+        this.salesLeader[1] = orderInfos[1].salesLeader
         this.formValues.patchValue({
-          exchangeMethod: extInfo.exchangeMethod,
           changeOrderInfos: {
+            exchangeMethod: extInfo ? extInfo.exchangeMethod : null,
             orders: [
               {
                 ...orderInfos[0],
