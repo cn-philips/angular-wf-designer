@@ -11,7 +11,7 @@ function formatResponse(res) {
   if ('0000' === res['code']) {
     return res.data
   } else {
-    throw new Error(res.msg) 
+    throw new Error(res.msg)
   }
 }
 
@@ -61,7 +61,7 @@ export class SpecialApprovalService {
     }).toPromise();
     return formatResponse(res)
   }
- 
+
   // 我的申请-统计
   async getRequestCount() {
     const uri = '/act/specialapprove/apply/statusCount';
@@ -163,7 +163,7 @@ export class SpecialApprovalService {
     const res = await this.http.post(uri, { approveUser: getLoginUserCode1() }).toPromise();
     return formatResponse(res)
   }
-  
+
   // 获取申请详情
   async getRequestDetail(requestId) {
     const uri = `/act/specialapprove/apply/${requestId}`
@@ -217,6 +217,18 @@ export class SpecialApprovalService {
       createUser: getLoginUserCode1()
     }).toPromise();
     return formatResponse(res)
+  }
+
+  async getSaleEmail() {
+    const uri = `/act/role/getUsersByRole?role=Sales Rep/Mgr`;
+    const res = await this.http.get(uri).toPromise();
+    return formatResponse(res);
+  }
+
+  async getCustomizeEmail(params) {
+    const uri = `/act/ecom/homepage/queryApprover`;
+    const res = await this.http.post(uri, params).toPromise();
+    return formatResponse(res);
   }
 
   formatRequestStatus(processStatus, nodeAction, status) {

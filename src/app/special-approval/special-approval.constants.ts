@@ -52,6 +52,7 @@ const APPLY_TYPE = {
   EXT_WARRANTY: "warranty",
   EXT_INSTALL_COST: "installcost",
   LOGISTICSCOST: "logisticscost",
+  MACHINE_EXCHANGE: "machineexchange",
 }
 
 const APPLY_TYPE_MAP = {
@@ -90,8 +91,13 @@ const APPLY_TYPE_MAP = {
     items: [
       {label: '特别仓储、物流费用', value: 'sp_logisticscost_apply_item_1'}
     ]
-
-  }
+  },
+  [APPLY_TYPE.MACHINE_EXCHANGE]: {
+    label: "机器互换",
+    items: [
+      {label: '商务条款不变机器互换', value: 'sp_machineexchange_apply_item_1'}
+    ],
+  },
 };
 
 const APPLY_TYPES = [
@@ -100,6 +106,7 @@ const APPLY_TYPES = [
   { label: "延长保修", value: APPLY_TYPE.EXT_WARRANTY },
   { label: "额外安装费用及其他", value: APPLY_TYPE.EXT_INSTALL_COST },
   { label: "物流运输-特别仓储", value: APPLY_TYPE.LOGISTICSCOST },
+  { label: "机器互换", value: APPLY_TYPE.MACHINE_EXCHANGE },
 ];
 
 const STAND_WARRANTY_MONTH = {
@@ -335,6 +342,17 @@ const PROCESS_STATUS_MAP = {
   [PROCESS_STATUS.CANCELLED]: '已取消',
 }
 
+const LOGISTICS_STATUS = [
+  {
+    label: '已到货',
+    value: 1
+  },
+  {
+    label: '未到货',
+    value: 0
+  }
+]
+
 // status: 0-已取消, 1-未取消
 // nodeAction: approve, feedback
 // processStatus: START, DRAFT, APPROVED, REJECTED, WITHDRAW
@@ -363,4 +381,5 @@ export {
   PROCESS_STATUS,
   NODE_ACTION,
   PROCESS_STATUS_MAP,
+  LOGISTICS_STATUS,
 };

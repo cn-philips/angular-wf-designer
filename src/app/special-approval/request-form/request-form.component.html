@@ -55,6 +55,7 @@
         <!-- <special-approval-order-info [bmcs]="bmcs" [applyItem]="applyItem" [applyType]="applyType" [editable]="editable" [formValues]="orderInfo"></special-approval-order-info> -->
         <special-approval-transportation-order-info *ngIf="applyType === APPLY_TYPE.LOGISTICSCOST" [bmcs]="bmcs" [editable]="editable" [formValues]="orderInfo"></special-approval-transportation-order-info>
         <special-approval-additional-intallation-cost *ngIf="applyType === APPLY_TYPE.EXT_INSTALL_COST" [bmcs]="bmcs" [editable]="editable" [formValues]="orderInfo"></special-approval-additional-intallation-cost>
+        <special-approval-machineexcange-order-info *ngIf="applyType === APPLY_TYPE.MACHINE_EXCHANGE" [bmcs]="bmcs" [editable]="editable" [formValues]="changeOrderInfos" [salesLeaders]="salesLeader" [districtLeaders]="districtLeader"></special-approval-machineexcange-order-info>
       </div>
     </ng-template>
   </ngb-tab>
@@ -74,7 +75,7 @@
     </ng-template>
     <ng-template ngbTabContent>
       <div class="card-body">
-        <special-approval-cc-info [editable]="editable" [formValues]="ccInfo" [userList]="userList"></special-approval-cc-info>
+        <special-approval-cc-info [editable]="editable" [formValues]="ccInfo" [userList]="userList" [applyType]="applyType"></special-approval-cc-info>
       </div>
     </ng-template>
   </ngb-tab>
