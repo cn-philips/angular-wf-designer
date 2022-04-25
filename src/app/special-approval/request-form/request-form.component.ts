@@ -131,12 +131,29 @@ export class RequestFormComponent implements OnInit {
       expectedPaymentDate: [null, [Validators.required]], // 预计付款(或场地就位)日期
       om: [null], // OM
       products: [[]],
-      orderStatus: [null, [Validators.required]],  //订单状态
+      orderStatus: [null],//订单状态
     }),
     ccInfo: this.fb.group({
       ccType: [null], // 抄送类型
       ccPerson: [[]] // 抄送人
-    })
+    }),
+
+    lcInfo: this.fb.group({
+          applyId: [null], // 特批申请单ID
+          foreignCompanyId: [null], // 外贸公司
+          foreignCompanyName: [null], // 外贸公司名称
+          lcNo: [null], // L/C号码
+          lcAmount: [null], // L/C金额
+          nonStandardTerms: [null], // Non Standard Terms
+          lcDiscrepancy: [null], // L/C discrepancy描述
+          acceptLcDiscrepancy: [null], // 是否接受L/C discrepancy
+          lcDiscrepancyPaymentMethod: [null], // L/C discrepancy费用支付方
+          modifyEntry: [null], // 修改条目
+          modifyEntryDesc: [null], // 修改条目说明
+          cancelReason: [null], // 取消原因
+          cancelReasonDesc: [null], // 取消原因说明
+          newLcIssued: [null], // 新的L/C是否已经开具
+      })
   })
 
   ngOnInit(): void {
@@ -220,6 +237,9 @@ export class RequestFormComponent implements OnInit {
   get ccInfo(): FormGroup {
     return this.formValues.get('ccInfo') as FormGroup
   }
+  get lcInfo(): FormGroup {
+    return this.formValues.get('lcInfo') as FormGroup
+  }
 
   setFormValidators(type, item, bg) {
     if (type === APPLY_TYPE.EXT_WARRANTY) {
@@ -247,7 +267,7 @@ export class RequestFormComponent implements OnInit {
   }
 
   getFormData() {
-    const { basicInfo, orderInfo, ccInfo } = this.formValues.getRawValue()
+    const { basicInfo, orderInfo, ccInfo,lcinfo} = this.formValues.getRawValue()
     const { applyArrivalTime, expectedPaymentDate, expectedSaleDate, products } = orderInfo
     const data = {
       ...this.requestInfo,
@@ -286,15 +306,18 @@ export class RequestFormComponent implements OnInit {
           }
         ]
         break
-      case APPLY_TYPE.LC_AMENDMENT:
+      case APPLY_TYPE.LC_AMENDMENT:  //LC_AMENDMENT申请
         data.orderInfos = [
           {
             ...orderInfo,
             applyArrivalTime: applyArrivalTime ? moment(applyArrivalTime).format('YYYY-MM-DD') : null,
             expectedPaymentDate: expectedPaymentDate ? moment(expectedPaymentDate).format('YYYY-MM-DD') : null,
             expectedSaleDate: expectedSaleDate ? moment(expectedSaleDate).format('YYYY-MM-DD') : null,
-            products: products.map(({ productType, wbsNo, itemNo, quantity }) => ({ productType, wbsNo, itemNo, quantity }))
-          }
+            products: products.map(({ productType, wbsNo, itemNo, quantity }) => ({ productType, wbsNo, itemNo, quantity })),
+            lcInfo: {
+              ...lcinfo
+            }
+          },
         ]
         break;
       case APPLY_TYPE.LOGISTICSCOST:
@@ -348,12 +371,18 @@ export class RequestFormComponent implements OnInit {
       this.orderInfo.controls[i].markAsDirty();
       this.orderInfo.controls[i].updateValueAndValidity();
     }
-    if (
-      this.basicInfo.invalid || this.orderInfo.invalid
-    ) {
-      this.message.error('请按要求填写表单信息')
-      return
-    }
+    //数据验证
+    // if(this.applyType === this.APPLY_TYPE.LC_AMENDMENT){
+    //   if(this.lcInfo.invalid ||this.basicInfo.invalid){
+    //     this.message.error('请按要求填写表单信息')
+    //   }
+    // }else if (
+    //   this.basicInfo.invalid || this.orderInfo.invalid
+    // ) {
+    //   this.message.error('请按要求填写表单信息')
+    //   return
+    // }
+
     const data = this.getFormData()
     // const { orderInfo: { businessModel, hospitalNo, dealerCode }, ccType, ccPerson } = data
     const { ccType, ccPerson } = data

@@ -51,7 +51,7 @@ export class LcAmendmentOrderInfoComponent implements OnInit {
   @Input() editable = true;
   @Input() bmcs = [];
   @Input() iepoollist: any=[{}];
-
+  @Input() lcinfo: FormGroup;
   selectOptions = {
     orderTypes: ORDER_TYPES,
     bgList: BG_LIST,

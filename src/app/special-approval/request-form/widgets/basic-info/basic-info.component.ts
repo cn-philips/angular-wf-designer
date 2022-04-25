@@ -23,7 +23,7 @@ export class BasicInfoComponent {
   @Input() supportFileList: UploadFile[] = []
   @Input() editable: boolean
   @Input() executed:number = null
-
+  @Input() formValueslcinfo: FormGroup
   APPLY_TYPE = APPLY_TYPE
 
   applyTypeMap = APPLY_TYPE_MAP
