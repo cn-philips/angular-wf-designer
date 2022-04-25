@@ -16,7 +16,6 @@
     <nz-tabset nzType="card" [nzTabBarStyle]="{ marginBottom: '0' }">
       <nz-tab nzTitle="全部" (nzSelect)="filteredTemplateList = allTemplateList"></nz-tab>
       <nz-tab *ngFor="let tab of tabList" [nzTitle]="tab.title" (nzSelect)="onFilterChange(tab)"></nz-tab>
-      <nz-tab nzTitle="L/C Amendment"></nz-tab>
     </nz-tabset>
   </div>
 </header>
