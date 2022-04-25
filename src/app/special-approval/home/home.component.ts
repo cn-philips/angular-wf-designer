@@ -30,6 +30,7 @@ const activeTemplate = {
   [APPLY_TYPE.EXT_INSTALL_COST]: true,
   [APPLY_TYPE.EXT_WARRANTY]: true,
   [APPLY_TYPE.LOGISTICSCOST]: true,
+  [APPLY_TYPE.RDD_OIT]: true,
 }
 
 interface Card {
@@ -162,9 +163,7 @@ export class HomeComponent implements OnInit {
   }
 
   formatTemplateName({ applyType, applyItem, minWarrantyMonths, maxWarrantyMonths, minWarrantyMonthsComparator, maxWarrantyMonthsComparator }) {
-    if (applyType === APPLY_TYPE.PRODUCTION || applyType === APPLY_TYPE.LOGISTICSCOST || applyType === APPLY_TYPE.EXT_INSTALL_COST) {
-      return this.formatApplyTypeItem({ applyType, applyItem })
-    } else if (applyType === APPLY_TYPE.EXT_WARRANTY) {
+    if (applyType === APPLY_TYPE.EXT_WARRANTY) {
       const prefix = APPLY_TYPE_MAP[applyType].label
       // 没有最小月份, 实际条件为<maxWarrantyMonths或者<=maxWarrantyMonths
       if (minWarrantyMonths == null || minWarrantyMonthsComparator == null) {
@@ -175,6 +174,8 @@ export class HomeComponent implements OnInit {
         return `${prefix}${minWarrantyMonthsComparator}${minWarrantyMonths} month`
       }
       return `${prefix}${minWarrantyMonthsComparator}${minWarrantyMonths} month&${maxWarrantyMonthsComparator}${maxWarrantyMonths} month`
+    } else {
+      return this.formatApplyTypeItem({ applyType, applyItem })
     }
   }
 
@@ -258,6 +259,9 @@ export class HomeComponent implements OnInit {
   formatApplyTypeItem({ applyType, applyItem }) {
     if (!applyType) { return '' }
     const { label, items } = APPLY_TYPE_MAP[applyType]
+    if (applyType === APPLY_TYPE.RDD_OIT || applyType === APPLY_TYPE.EXT_INSTALL_COST) {
+      return label
+    }
     const item = items.find(({ value }) => value == applyItem)
     if (item) {
       return `${label}-${item.label}`
