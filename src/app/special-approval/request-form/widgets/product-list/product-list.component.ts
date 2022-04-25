@@ -5,7 +5,8 @@ import * as moment from "moment";
 import {
   US_PRODUCT_LIST,
   STAND_WARRANTY_MONTH,
-} from "../../../special-approval.constants";
+  LOGISTICS_STATUS,
+} from '../../../special-approval.constants';
 
 interface Product {
   productType: string; // 产品型号
@@ -29,9 +30,11 @@ export class ProductListComponent implements OnInit {
   @Input() orderInfo: FormGroup;
   @Input() editable: boolean;
   @Input() isWarranty: boolean;
+  @Input() isExchange: boolean;
 
   selectOptions = {
     usProductList: US_PRODUCT_LIST,
+    logicStatus: LOGISTICS_STATUS,
   };
 
   constructor() {}
@@ -53,7 +56,7 @@ export class ProductListComponent implements OnInit {
         productType: null,
         wbs: "",
         itemNo: "",
-        quantity: "",
+        quantity: '1',
         warranty: { stdWarrantyMonths: STAND_WARRANTY_MONTH[this.bg] },
       },
     ]);

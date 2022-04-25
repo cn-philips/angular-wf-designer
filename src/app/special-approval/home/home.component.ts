@@ -6,6 +6,7 @@ import { SpecialApprovalService } from '../special-approval.service'
 
 interface Template {
   name: string;
+  typeIndex: number;
   type: string;
   typeName: string;
   item?: number;
@@ -31,6 +32,7 @@ const activeTemplate = {
   [APPLY_TYPE.EXT_WARRANTY]: true,
   [APPLY_TYPE.LOGISTICSCOST]: true,
   [APPLY_TYPE.RDD_OIT]: true,
+  [APPLY_TYPE.MACHINE_EXCHANGE]: true,
 }
 
 interface Card {
