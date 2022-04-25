@@ -244,7 +244,7 @@ export class SpecialApprovalService {
  }
 //获取支付方式
   async getPaymentList() {
-    const uri = '/act/ecom/dictData/queryDrop?dictGroup=sp_apply_lc_pay L/C discrepancy';
+    const uri = '/act/ecom/dictData/queryDrop?dictGroup=sp_apply_lc_pay';
     const res = await this.http.get(uri).toPromise();
     const data = formatResponse(res);
     return data;

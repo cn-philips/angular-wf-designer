@@ -20,8 +20,8 @@ import {
   BUSINESS_MODEL_LIST,
   BIG_SMALL_AREA_LIST,
   CURRENCIES,
-  STAND_WARRANTY_MONTH,
-} from "../../../../special-approval.constants";
+  STAND_WARRANTY_MONTH, US_PRODUCT_LIST,
+} from '../../../../special-approval.constants';
 import {SpecialApprovalService} from '../../../../special-approval.service';
 @Component({
   selector: "special-approval-lcamendment-order-info",
@@ -32,7 +32,7 @@ export class LcAmendmentOrderInfoComponent implements OnInit {
   showDealerArea: boolean = false;
 
   private http: any;
-  private orderstatuslist: any;//订单状态
+  private orderstatuslist=[{label:11,value:22}];//订单状态
   private paymentlist: any;  //支付方式
   private modfyentrylist: any;//修改条目
   private cancelreasonlist: any;  //取消原因
@@ -51,7 +51,7 @@ export class LcAmendmentOrderInfoComponent implements OnInit {
   @Input() editable = true;
   @Input() bmcs = [];
   @Input() iepoollist: any=[{}];
-  @Input() lcinfo: FormGroup;
+  @Input() lcInfo: FormGroup;
   selectOptions = {
     orderTypes: ORDER_TYPES,
     bgList: BG_LIST,
@@ -59,6 +59,7 @@ export class LcAmendmentOrderInfoComponent implements OnInit {
     smallAreas: [],
     businessModels: BUSINESS_MODEL_LIST,
     currencies: CURRENCIES,
+    usProductList: US_PRODUCT_LIST,
   };
 
   onBusinessModelChange(businessModel) {
@@ -127,12 +128,7 @@ export class LcAmendmentOrderInfoComponent implements OnInit {
     });
   }
 
-  onClearDealer() {
-    this.formValues.patchValue({
-      dealerCode: null,
-      dealerName: null,
-    });
-  }
+
 
   onShowReferenceModal() {
     this.selectReference.showModal();
@@ -182,9 +178,6 @@ export class LcAmendmentOrderInfoComponent implements OnInit {
           wbs: "",
           itemNo: "",
           quantity: "",
-          warranty: {
-            stdWarrantyMonths: STAND_WARRANTY_MONTH[this.formValues.get("bg").value],
-          },
         },
       ],
 
@@ -211,18 +204,24 @@ export class LcAmendmentOrderInfoComponent implements OnInit {
   async getOrderStatusList(){
     this.orderstatuslist = await this.spService.getOrderStatusList();
   }
-
   // 获取费用支付方式
   async getPaymentList(){
    this.paymentlist = await this.spService.getPaymentList();
   }
-
   // 获取修改条目
   async getModifyEntryList(){
-    this.modfyentrylist = await this.spService.getPaymentList();
+    this.modfyentrylist = await this.spService. getModifyEntryList();
   }
   // 获取取消原因
   async getcancelReasonList() {
-    this.cancelreasonlist = await this.spService.getPaymentList();
+    this.cancelreasonlist = await this.spService. getcancelReason();
+  }
+  //是否接受L/C discrepancy
+  lcDiscrepancyModel($event) {
+
+  }
+
+  SelectItem() {
+
   }
 }
