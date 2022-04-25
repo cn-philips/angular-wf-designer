@@ -31,6 +31,7 @@ const activeTemplate = {
   [APPLY_TYPE.EXT_INSTALL_COST]: true,
   [APPLY_TYPE.EXT_WARRANTY]: true,
   [APPLY_TYPE.LOGISTICSCOST]: true,
+  [APPLY_TYPE.LC_AMENDMENT]: true,
   [APPLY_TYPE.RDD_OIT]: true,
   [APPLY_TYPE.MACHINE_EXCHANGE]: true,
 }

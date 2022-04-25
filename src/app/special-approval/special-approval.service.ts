@@ -200,9 +200,7 @@ export class SpecialApprovalService {
   }
 
   async getOMUsers() {
-    if (omUsers.length > 0) {
-      return omUsers
-    }
+
     const uri = `/act/role/getUsersByRole?role=OM`
     const res = await this.http.get(uri).toPromise();
     const data = formatResponse(res)
@@ -239,5 +237,45 @@ export class SpecialApprovalService {
 
   formatApplyType(type) {
     return APPLY_TYPE_MAP[type] ? APPLY_TYPE_MAP[type].label : ''
+  }
+
+  //获取订单状态
+  async getOrderStatusList() {
+    const uri = `/act/ecom/dictData/queryDrop?dictGroup=sp_apply_lc_order_status`;
+    const res = await this.http.get(uri).toPromise();
+    const data = formatResponse(res);
+    return data;
+  }
+
+  // 获取外贸公司
+  async getIePoolList() {
+    const uri = '/act/preparation/chooseIePool';
+    const res = await this.http.get(uri).toPromise();
+    const data = formatResponse(res);
+    return data;
+  }
+
+  // 获取支付方式
+  async getPaymentList() {
+    const uri = '/act/ecom/dictData/queryDrop?dictGroup=sp_apply_lc_pay';
+    const res = await this.http.get(uri).toPromise();
+    const data = formatResponse(res);
+    return data;
+  }
+  
+  // 获取支修改条目原因列表
+  async getModifyEntryList() {
+    const uri = '/act/ecom/dictData/queryDrop?dictGroup=sp_apply_lc_modify';
+    const res = await this.http.get(uri).toPromise();
+    const data = formatResponse(res);
+    return data;
+  }
+
+  //获取取消原因列表
+  async getcancelReason() {
+    const uri = '/act/ecom/dictData/queryDrop?dictGroup=sp_apply_lc_cancel';
+    const res = await this.http.get(uri).toPromise();
+    const data = formatResponse(res);
+    return data;
   }
 }

@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+
 import { ActivatedRoute, Router } from '@angular/router'
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms'
 import * as moment from 'moment'
@@ -17,7 +18,7 @@ import {
   BG_BMC_MAP,
   NODE_ACTION,
   PROCESS_STATUS,
-} from '../special-approval.constants'
+} from '../special-approval.constants';
 import { SelectApproverComponent } from './widgets/select-approver/select-approver.component';
 
 enum TAB_TYPE {
@@ -39,48 +40,50 @@ enum TAB_TYPE {
 })
 export class RequestFormComponent implements OnInit {
 
-  @ViewChild('selectApprover') selectApprover: SelectApproverComponent
+  @ViewChild('selectApprover') public selectApprover: SelectApproverComponent;
 
-  pageTitle: string
-  requestId
-  requestInfo = {
+  public pageTitle: string;
+  public requestId;
+  public requestInfo = {
     orderInfos: [{}]
-  }
+  };
 
-  APPLY_TYPE = APPLY_TYPE
+  public APPLY_TYPE = APPLY_TYPE;
 
-  applyType: string
-  applyItem: string
+  public applyType: string;
+  public applyItem: string;
 
-  submitLoading = false
-  editable = true
+  public submitLoading = false;
+  public editable = true;
 
-  showSaveBtn = false // 是否显示保存按钮, 申请状态是草稿, 并且登录用户是申请人或者新的申请单子
-  showDeleteBtn = false // 是否显示删除按钮, 申请状态是草稿, 并且登录用户是申请人
-  showSubmitBtn = false // 是否显示提交按钮, 申请状态是草稿、退回、撤回并且登录用户是申请人或者新的申请单子
-  showApproveTab = false
-  showFeedbackTab = false
-  showWithdrawBtn = false
-  showCancelBtn = false
+  public showSaveBtn = false; // 是否显示保存按钮, 申请状态是草稿, 并且登录用户是申请人或者新的申请单子
+  public showDeleteBtn = false; // 是否显示删除按钮, 申请状态是草稿, 并且登录用户是申请人
+  public showSubmitBtn = false; // 是否显示提交按钮, 申请状态是草稿、退回、撤回并且登录用户是申请人或者新的申请单子
+  public showApproveTab = false;
+  public showFeedbackTab = false;
+  public showWithdrawBtn = false;
+  public showCancelBtn = false;
 
-  supportFileList = []
+  public supportFileList = [];
 
-  userList = []
+  public userList = [];
 
-  taskId: string
+  public taskId: string;
 
-  approveNodeList = []
-  approveHistory = []
+  public approveNodeList = [];
+  public approveHistory = [];
 
-  pageLoading = true
+  public pageLoading = true;
 
   isApplicant = false
 
-  processUsers: string[] = [] // 流程中所有的人
-  applicantEmail: string
   districtLeader: string[] = []
   salesLeader: string[] = []
 
+  public processUsers: string[] = []; // 流程中所有的人
+  public applicantEmail: string;
+  private http: any;
+  public iepoollist: any = [{}];
   constructor(
     private route: ActivatedRoute,
     private fb: FormBuilder,
@@ -89,18 +92,17 @@ export class RequestFormComponent implements OnInit {
     private message: NzMessageService,
   ) {}
 
-  acitveTabId: string = TAB_TYPE.BASIC_INFO
+  public acitveTabId: string = TAB_TYPE.BASIC_INFO;
 
-  TAB_TYPES = TAB_TYPE
+  public TAB_TYPES = TAB_TYPE;
 
-  bmcs = []
+  public bmcs = [];
+  public executed = null;
 
-  executed = null
+  public minMon;
+  public maxMon;
 
-  minMon
-  maxMon
-
-  formValues = this.fb.group({
+  public formValues = this.fb.group({
     basicInfo: this.fb.group({
       applyCode: [null],
       applicant: [null], // 申请人邮箱
@@ -138,11 +140,28 @@ export class RequestFormComponent implements OnInit {
       districtLeader: [null], // District Leader邮箱
       salesLeader: [null], // sales Leader 邮箱
       products: [[]],
+      orderStatus: [null, [Validators.required]], // 订单状态
     }),
     rddOitOrderInfos: [[]],
     ccInfo: this.fb.group({
       ccType: [null], // 抄送类型
       ccPerson: [[]] // 抄送人
+    }),
+    lcInfo: this.fb.group({
+      applyId: [null], // 特批申请单ID
+      foreignCompanyId: [null], // 外贸公司
+      foreignCompanyName: [null, [Validators.required]], // 外贸公司名称
+      lcNo: [null, [Validators.required]], // L/C号码
+      lcAmount: [null, [Validators.required]], // L/C金额
+      nonStandardTerms: [null, [Validators.required]], // Non Standard Terms
+      lcDiscrepancy: [null, [Validators.required]], // L/C discrepancy描述
+      acceptLcDiscrepancy: [null, [Validators.required]], // 是否接受L/C discrepancy
+      lcDiscrepancyPaymentMethod: [null, [Validators.required]], // L/C discrepancy费用支付方
+      modifyEntry: [null, [Validators.required]], // 修改条目
+      modifyEntryDesc: [null, [Validators.required]], // 修改条目说明
+      cancelReason: [null, [Validators.required]], // 取消原因
+      cancelReasonDesc: [null, [Validators.required]], // 取消原因说明
+      newLcIssued: [null, [Validators.required]], // 新的L/C是否已经开具
     }),
     changeOrderInfos: this.fb.group({
       exchangeMethod: [null], // 换货方式
@@ -197,41 +216,39 @@ export class RequestFormComponent implements OnInit {
         })
       ])
     })
-  })
+  });
 
-  ngOnInit(): void {
-    const { params: { requestId }, queryParams: { type, item, taskId, minMon, maxMon, bg, minComp, maxComp } } = this.route.snapshot
+  public ngOnInit(): void {
+    const { params: { requestId }, queryParams: { type, item, taskId, minMon, maxMon, bg, minComp, maxComp } } = this.route.snapshot;
     // detail page
     if (requestId) {
-      this.taskId = taskId
-      this.requestId = requestId
-      this.getRequestDetail(requestId)
+      this.taskId = taskId;
+      this.requestId = requestId;
+      this.getRequestDetail(requestId);
     } else {
       // new page
       this.basicInfo.patchValue({
         applicant: localStorage.getItem('ng_philips_code1'),
         applicantName: localStorage.getItem('ng_philips_username')
-      })
-      this.showSubmitBtn = true
-      this.showSaveBtn = true
+      });
+      this.showSubmitBtn = true;
+      this.showSaveBtn = true;
       if (!type || !APPLY_TYPE_MAP[type]) {
-        this.navigateToHomePage()
-        return
+        this.navigateToHomePage();
+        return;
       }
       if (item) {
-        this.applyItem = item
-        this.basicInfo.patchValue({ applyItem: item })
+        this.applyItem = item;
+        this.basicInfo.patchValue({ applyItem: item });
       }
-      this.applyType = type
+      this.applyType = type;
 
-      this.basicInfo.patchValue({ applyType: type })
+      this.basicInfo.patchValue({ applyType: type });
 
-      this.setPageTitle({ applyType: type, applyItem: item, minMon, maxMon, minComp, maxComp })
+      this.setPageTitle({ applyType: type, applyItem: item, minMon, maxMon, minComp, maxComp });
 
       if (bg) {
-        this.orderInfo.patchValue({
-          bg
-        })
+        this.orderInfo.patchValue({ bg });
         if (this.applyType === APPLY_TYPE.MACHINE_EXCHANGE) {
           let orders = this.changeOrderInfos.get('orders') as FormArray
           orders.at(0).patchValue({
@@ -243,49 +260,55 @@ export class RequestFormComponent implements OnInit {
         }
 
       }
-      this.pageLoading = false
-      this.setFormValidators(type, item, bg)
+      this.pageLoading = false;
+      this.setFormValidators(type, item, bg);
+
     }
+    // 调取外贸公司
+     this.getIePoolArray();
   }
 
-  setPageTitle({ applyType = '', applyItem = '', minMon = null, maxMon = null, minComp = null, maxComp = null }, isNew = true) {
-    const { label: applyTypeName, items } = APPLY_TYPE_MAP[applyType]
+  public setPageTitle({ applyType = '', applyItem = '', minMon = null, maxMon = null, minComp = null, maxComp = null }, isNew = true) {
+    const { label: applyTypeName, items } = APPLY_TYPE_MAP[applyType];
     if (!isNew) {
-      this.pageTitle = applyTypeName
-      return
+      this.pageTitle = applyTypeName;
+      return;
     }
-    let pageTitle = `新建特批-${applyTypeName}`
-    switch(applyType) {
+    let pageTitle = `新建特批-${applyTypeName}`;
+    switch (applyType) {
       case APPLY_TYPE.EXT_WARRANTY:
         if (minMon && minComp && maxMon && maxComp) {
-          pageTitle += `${minComp}${minMon} month&${maxComp}${maxMon} month`
+          pageTitle += `${minComp}${minMon} month&${maxComp}${maxMon} month`;
         } else if (minMon && minComp) {
-          pageTitle += `${minComp}${minMon} month`
-        } else if (maxMon && maxComp){
-          pageTitle += `${maxComp}${maxMon} month`
+          pageTitle += `${minComp}${minMon} month`;
+        } else if (maxMon && maxComp) {
+          pageTitle += `${maxComp}${maxMon} month`;
         }
-        break
+        break;
       default:
-        const item = items.find(({ value }) => value == applyItem) || { } as { label: string }
-        const applyItemName = item.label
+        const item = items.find(({ value }) => value == applyItem) || { } as { label: string };
+        const applyItemName = item.label;
         if (applyItemName) {
-          pageTitle += `-${applyItemName}`
+          pageTitle += `-${applyItemName}`;
         }
-        break
+        break;
     }
-    this.pageTitle = pageTitle
+    this.pageTitle = pageTitle;
   }
 
   get orderInfo(): FormGroup {
-    return this.formValues.get('orderInfo') as FormGroup
+    return this.formValues.get('orderInfo') as FormGroup;
   }
 
   get basicInfo(): FormGroup {
-    return this.formValues.get('basicInfo') as FormGroup
+    return this.formValues.get('basicInfo') as FormGroup;
   }
 
   get ccInfo(): FormGroup {
-    return this.formValues.get('ccInfo') as FormGroup
+    return this.formValues.get('ccInfo') as FormGroup;
+  }
+  get lcInfo(): FormGroup {
+    return this.formValues.get('lcInfo') as FormGroup;
   }
 
   get rddOitOrderInfos(): FormGroup {
@@ -296,30 +319,30 @@ export class RequestFormComponent implements OnInit {
     return this.formValues.get('changeOrderInfos') as FormGroup
   }
 
-  setFormValidators(type, item, bg) {
+  public setFormValidators(type, item, bg) {
     if (type === APPLY_TYPE.EXT_WARRANTY) {
-      this.orderInfo.controls.applyArrivalTime.clearValidators()
-      this.orderInfo.controls.expectedPaymentDate.clearValidators()
-      if (item == 'sp_warranty_apply_item_5') {
-        this.basicInfo.controls.applyItemDesc.setValidators([Validators.required])
+      this.orderInfo.controls.applyArrivalTime.clearValidators();
+      this.orderInfo.controls.expectedPaymentDate.clearValidators();
+      if (item === 'sp_warranty_apply_item_5') {
+        this.basicInfo.controls.applyItemDesc.setValidators([Validators.required]);
       }
-    }
-    if (type === APPLY_TYPE.PRODUCTION){
-      this.basicInfo.controls.applyItem.disable()
+    } else if (type === APPLY_TYPE.PRODUCTION) {
+      this.basicInfo.controls.applyItem.disable();
     }
 
     if (bg === 'PD&IGT') {
-      this.orderInfo.controls.referenceId.disable()
-      this.orderInfo.controls.productType.disable()
+      this.orderInfo.controls.referenceId.disable();
+      if (type !== APPLY_TYPE.LC_AMENDMENT) {
+        this.orderInfo.controls.productType.disable();
+      }
     } else {
-      this.orderInfo.controls.projectName.disable()
+      this.orderInfo.controls.projectName.disable();
     }
-
-    this.bmcs = BG_BMC_MAP[bg]
+    this.bmcs = BG_BMC_MAP[bg];
   }
 
-  getFormData() {
-    const { basicInfo, orderInfo, ccInfo, rddOitOrderInfos, changeOrderInfos } = this.formValues.getRawValue()
+  public getFormData() {
+    const { basicInfo, orderInfo, ccInfo, rddOitOrderInfos, changeOrderInfos, lcInfo } = this.formValues.getRawValue()
     const { applyArrivalTime, expectedPaymentDate, expectedSaleDate, products } = orderInfo
     const extInfo = {
       exchangeMethod: changeOrderInfos.exchangeMethod
@@ -329,8 +352,8 @@ export class RequestFormComponent implements OnInit {
       ...basicInfo,
       ...ccInfo,
       ccPerson: ccInfo.ccPerson.join(','),
-      extInfo: extInfo
-    }
+      extInfo,
+    };
     switch(this.applyType) {
       case APPLY_TYPE.PRODUCTION: // 特批生产
         data.orderInfos = [
@@ -342,8 +365,8 @@ export class RequestFormComponent implements OnInit {
             expectedSaleDate: expectedSaleDate ? moment(expectedSaleDate).format('YYYY-MM-DD') : null,
             products: products.map(({ productType, wbsNo, itemNo, quantity }) => ({ productType, wbsNo, itemNo, quantity }))
           }
-        ]
-        break
+        ];
+        break;
       case APPLY_TYPE.EXT_WARRANTY: // 延长保修
         data.orderInfos = [
           {
@@ -360,8 +383,18 @@ export class RequestFormComponent implements OnInit {
               }
             }))
           }
-        ]
-        break
+        ];
+        break;
+      case APPLY_TYPE.LC_AMENDMENT:  // LC_AMENDMENT申请
+        data.orderInfos = [
+          {
+            ...this.requestInfo.orderInfos[0],
+            ...orderInfo,
+            productType: Array.isArray(orderInfo.productType) ? orderInfo.productType.join(',') : orderInfo.productType,
+            lcInfo,
+          },
+        ];
+        break;
       case APPLY_TYPE.LOGISTICSCOST:
         data.orderInfos = [
           {
@@ -372,7 +405,7 @@ export class RequestFormComponent implements OnInit {
             expectedSaleDate: expectedSaleDate ? moment(expectedSaleDate).format('YYYY-MM-DD') : null,
             products: products.map(({ productType, wbsNo, itemNo, quantity }) => ({ productType, wbsNo, itemNo, quantity }))
           }
-        ]
+        ];
         break;
       case APPLY_TYPE.MACHINE_EXCHANGE:
         data.orderInfos = [
@@ -405,8 +438,8 @@ export class RequestFormComponent implements OnInit {
             expectedSaleDate: expectedSaleDate ? moment(expectedSaleDate).format('YYYY-MM-DD') : null,
             products: products.map(({ productType, wbsNo, itemNo, quantity }) => ({ productType, wbsNo, itemNo, quantity }))
           }
-        ]
-        break
+        ];
+        break;
       case APPLY_TYPE.RDD_OIT:
         // 合并product
         data.orderInfos = []
@@ -445,25 +478,26 @@ export class RequestFormComponent implements OnInit {
         })
         if (order) { data.orderInfos.push(order) }
     }
-    return data
+    return data;
   }
 
   // 设置页面是否可编辑, 满足以下情况可编辑
   // 1. 登录用户是申请人
   // 2. 申请状态是草稿、已拒绝(退回)、已撤销
-  setEditable(processStatus) {
-    const editable = this.isApplicant && [PROCESS_STATUS.DRAFT, PROCESS_STATUS.REJECTED, PROCESS_STATUS.WITHDRAW].includes(processStatus)
+  public setEditable(processStatus) {
+    const editable = this.isApplicant && [PROCESS_STATUS.DRAFT, PROCESS_STATUS.REJECTED, PROCESS_STATUS.WITHDRAW].includes(processStatus);
     if (!editable) {
       // 设置表单字段disabled
-      this.formValues.controls.basicInfo.disable()
-      this.formValues.controls.orderInfo.disable()
-      this.formValues.controls.ccInfo.disable()
+      this.formValues.controls.basicInfo.disable();
+      this.formValues.controls.orderInfo.disable();
+      this.formValues.controls.ccInfo.disable();
+      this.lcInfo.disable()
       this.formValues.controls.changeOrderInfos.disable()
     }
-    this.editable = editable
+    this.editable = editable;
   }
 
-  async onSubmit() {
+  public async onSubmit() {
     for (const i in this.basicInfo.controls) {
       this.basicInfo.controls[i].markAsDirty();
       this.basicInfo.controls[i].updateValueAndValidity();
@@ -506,11 +540,11 @@ export class RequestFormComponent implements OnInit {
     }
     // 抄送人和抄送节点必须同时选择或者同时不选择
     if (ccType && !ccPerson) {
-      this.message.error('请选择抄送人')
-      return
-    } else if(!ccType && ccPerson) {
-      this.message.error('请选择抄送节点')
-      return
+      this.message.error('请选择抄送人');
+      return;
+    } else if (!ccType && ccPerson) {
+      this.message.error('请选择抄送节点');
+      return;
     }
 
     if (hasError) {
@@ -520,24 +554,24 @@ export class RequestFormComponent implements OnInit {
     this.selectApprover.showModal(data)
   }
 
-  async onSaveDraft() {
-    const id = this.message.loading(LOADING_MESSAGE.SAVE_DRAFT, { nzDuration: 0 }).messageId
+  public async onSaveDraft() {
+    const id = this.message.loading(LOADING_MESSAGE.SAVE_DRAFT, { nzDuration: 0 }).messageId;
     try {
-      this.submitLoading = true
-      const data = this.getFormData()
-      await this.spService.saveRequest(data)
-      this.message.success(SUCCESS_MESSAGE.SAVE_DRAFT)
-      this.navigateToHomePage()
-    } catch({ message }) {
-      this.message.error(ERROR_MESSAGE.SAVE_DRAFT)
-      console.error(`保存失败, ${message}`)
+      this.submitLoading = true;
+      const data = this.getFormData();
+      await this.spService.saveRequest(data);
+      this.message.success(SUCCESS_MESSAGE.SAVE_DRAFT);
+      this.navigateToHomePage();
+    } catch ({ message }) {
+      this.message.error(ERROR_MESSAGE.SAVE_DRAFT);
+      console.error(`保存失败, ${message}`);
     } finally {
-      this.submitLoading = false
-      this.message.remove(id)
+      this.submitLoading = false;
+      this.message.remove(id);
     }
   }
 
-  async getRequestDetail(requestId) {
+  public async getRequestDetail(requestId) {
     try {
       this.pageLoading = true
       const data = await this.spService.getRequestDetail(requestId)
@@ -577,7 +611,15 @@ export class RequestFormComponent implements OnInit {
             ...orderInfos[0],
             products: orderInfos[0].products || []
           }
-        })
+        });
+      } else if (applyType === APPLY_TYPE.LC_AMENDMENT) {
+        this.formValues.patchValue({
+          orderInfo: {
+            ...orderInfos[0],
+            productType: (orderInfos[0].bg === 'US' && orderInfos[0].productType) ? orderInfos[0].productType.split(',') : orderInfos[0].productType
+          },
+          lcInfo: orderInfos[0].lcInfo
+        });
         this.setFormValidators(applyType, applyItem, orderInfos[0].bg)
       } else if (applyType === APPLY_TYPE.RDD_OIT) {
         this.formValues.patchValue({
@@ -597,8 +639,7 @@ export class RequestFormComponent implements OnInit {
             return calc
           }, [])
         })
-      }
-      if (applyType === APPLY_TYPE.MACHINE_EXCHANGE){
+      } else if(applyType === APPLY_TYPE.MACHINE_EXCHANGE) {
         this.districtLeader[0] = orderInfos[0].districtLeader
         this.salesLeader[0] = orderInfos[0].salesLeader
         this.districtLeader[1] = orderInfos[1].districtLeader
@@ -618,19 +659,18 @@ export class RequestFormComponent implements OnInit {
             ]
           }
         })
-        console.log(this.formValues.get('changeOrderInfos'))
         this.setFormValidators(applyType, applyItem, orderInfos[0].bg)
-
       }
+      this.setFormValidators(applyType, applyItem, orderInfos[0].bg);
 
-      const userSet = new Set<string>()
+      const userSet = new Set<string>();
       nodeInfoList.forEach(({ approverList }) => approverList.forEach(({ user }) => {
         if (!userSet.has(user)) {
-          userSet.add(user)
-          this.processUsers.push(user)
+          userSet.add(user);
+          this.processUsers.push(user);
         }
-      }))
-      this.applicantEmail = createUser
+      }));
+      this.applicantEmail = createUser;
       this.supportFileList = attachments.map(({ fileId, name, size, type }) => ({
         uid: fileId,
         fileId,
@@ -639,97 +679,100 @@ export class RequestFormComponent implements OnInit {
         type,
         filename: name,
         response: { fileId }
-      }))
+      }));
 
-      this.userList = ccPerson ? ccPerson.split(',').map(email => ({ email })) : []
+      this.userList = ccPerson ? ccPerson.split(',').map(email => ({ email })) : [];
 
-      this.isApplicant = applicant === localStorage.getItem('ng_philips_code1')
+      this.isApplicant = applicant === localStorage.getItem('ng_philips_code1');
 
-      const isDraft = processStatus === PROCESS_STATUS.DRAFT && this.isApplicant
+      const isDraft = processStatus === PROCESS_STATUS.DRAFT && this.isApplicant;
       if (isDraft) {
-        this.showSubmitBtn = true
-        this.showSaveBtn = true
-        this.showDeleteBtn = true
+        this.showSubmitBtn = true;
+        this.showSaveBtn = true;
+        this.showDeleteBtn = true;
       }
 
       if ([PROCESS_STATUS.REJECTED, PROCESS_STATUS.WITHDRAW].includes(processStatus) && this.isApplicant && status !== 0) {
-        this.showSubmitBtn = true
-        this.showCancelBtn = true
+        this.showSubmitBtn = true;
+        this.showCancelBtn = true;
       }
 
       this.showApproveTab = nodeAction !== NODE_ACTION.FEEDBACK && !!this.taskId && nodeInfoList.find(({ code, action, approverList }) => {
         if (code === nodeCode && action === nodeAction) {
-          return approverList.find(({ user }) => user === localStorage.getItem('ng_philips_code1'))
+          return approverList.find(({ user }) => user === localStorage.getItem('ng_philips_code1'));
         } else {
-          return false
+          return false;
         }
-      })
+      });
 
-      this.showFeedbackTab = nodeAction === NODE_ACTION.FEEDBACK && this.isApplicant && !!this.taskId
-      this.showWithdrawBtn = processStatus === PROCESS_STATUS.START && this.isApplicant && nodeAction !== NODE_ACTION.FEEDBACK
-
-      this.approveNodeList = nodeInfoList
-      this.approveHistory = taskList
-      this.setEditable(processStatus)
+      this.showFeedbackTab = nodeAction === NODE_ACTION.FEEDBACK && this.isApplicant && !!this.taskId;
+      this.showWithdrawBtn = processStatus === PROCESS_STATUS.START && this.isApplicant && nodeAction !== NODE_ACTION.FEEDBACK;
+      this.approveNodeList = nodeInfoList;
+      this.approveHistory = taskList;
+      this.setEditable(processStatus);
     } catch ({ message }) {
-      this.message.error(DEFAULT_ERROR_MESSAGE)
-      console.error(`初始化失败, ${message}`)
+      this.message.error(DEFAULT_ERROR_MESSAGE);
+      console.error(`初始化失败, ${message}`);
     } finally {
-      this.pageLoading = false
+      this.pageLoading = false;
     }
   }
 
-  async onDeleteRequest() {
-    const id = this.message.loading(LOADING_MESSAGE.DELETE_DRAFT, { nzDuration: 0 }).messageId
+  public async onDeleteRequest() {
+    const id = this.message.loading(LOADING_MESSAGE.DELETE_DRAFT, { nzDuration: 0 }).messageId;
     try {
-      this.submitLoading = true
-      await this.spService.deleteRequest(this.requestId)
-      this.message.success(SUCCESS_MESSAGE.DELETE_DRAFT)
-      this.navigateToHomePage()
-    } catch({ message }) {
-      this.message.error(ERROR_MESSAGE.DELETE_DRAFT)
-      console.error(`删除失败, ${message}`)
+      this.submitLoading = true;
+      await this.spService.deleteRequest(this.requestId);
+      this.message.success(SUCCESS_MESSAGE.DELETE_DRAFT);
+      this.navigateToHomePage();
+    } catch ({ message }) {
+      this.message.error(ERROR_MESSAGE.DELETE_DRAFT);
+      console.error(`删除失败, ${message}`);
     } finally {
-      this.submitLoading = false
-      this.message.remove(id)
+      this.submitLoading = false;
+      this.message.remove(id);
     }
   }
 
   // 取消申请
-  async onCancelRequest() {
-    const id = this.message.loading(LOADING_MESSAGE.CANCEL_REQUEST, { nzDuration: 0 }).messageId
+  public async onCancelRequest() {
+    const id = this.message.loading(LOADING_MESSAGE.CANCEL_REQUEST, { nzDuration: 0 }).messageId;
     try {
-      this.submitLoading = true
-      await this.spService.cancelRequest(this.requestId)
-      this.message.success(SUCCESS_MESSAGE.CANCEL_REQUEST)
-      this.navigateToHomePage()
-    } catch({ message }) {
-      this.message.error(ERROR_MESSAGE.CANCEL_REQUEST)
-      console.error(`取消失败, ${message}`)
+      this.submitLoading = true;
+      await this.spService.cancelRequest(this.requestId);
+      this.message.success(SUCCESS_MESSAGE.CANCEL_REQUEST);
+      this.navigateToHomePage();
+    } catch ({ message }) {
+      this.message.error(ERROR_MESSAGE.CANCEL_REQUEST);
+      console.error(`取消失败, ${message}`);
     } finally {
-      this.submitLoading = false
-      this.message.remove(id)
+      this.submitLoading = false;
+      this.message.remove(id);
     }
   }
 
   // 撤回申请
-  async onWithdrawRequest() {
-    const id = this.message.loading(LOADING_MESSAGE.WITHDRAW_REQUEST, { nzDuration: 0 }).messageId
+  public async onWithdrawRequest() {
+    const id = this.message.loading(LOADING_MESSAGE.WITHDRAW_REQUEST, { nzDuration: 0 }).messageId;
     try {
-      this.submitLoading = true
-      await this.spService.withdrawRequest(this.requestId)
-      this.message.success(SUCCESS_MESSAGE.WITHDRAW_REQUEST)
-      this.navigateToHomePage()
-    } catch({ message }) {
-      this.message.error(ERROR_MESSAGE.WITHDRAW_REQUEST)
-      console.error(`撤回失败, ${message}`)
+      this.submitLoading = true;
+      await this.spService.withdrawRequest(this.requestId);
+      this.message.success(SUCCESS_MESSAGE.WITHDRAW_REQUEST);
+      this.navigateToHomePage();
+    } catch ({ message }) {
+      this.message.error(ERROR_MESSAGE.WITHDRAW_REQUEST);
+      console.error(`撤回失败, ${message}`);
     } finally {
-      this.submitLoading = false
-      this.message.remove(id)
+      this.submitLoading = false;
+      this.message.remove(id);
     }
   }
+  // 获取外贸公司
+  public async getIePoolArray() {
+    this.iepoollist = await this.spService.getIePoolList();
+  }
 
-  navigateToHomePage() {
-    this.router.navigate(['/special-approval/home'])
+  public navigateToHomePage() {
+    this.router.navigate(['/special-approval/home']);
   }
 }
