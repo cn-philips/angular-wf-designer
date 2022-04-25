@@ -55,6 +55,7 @@
         <!-- <special-approval-order-info [bmcs]="bmcs" [applyItem]="applyItem" [applyType]="applyType" [editable]="editable" [formValues]="orderInfo"></special-approval-order-info> -->
         <special-approval-transportation-order-info *ngIf="applyType === APPLY_TYPE.LOGISTICSCOST" [bmcs]="bmcs" [editable]="editable" [formValues]="orderInfo"></special-approval-transportation-order-info>
         <special-approval-additional-intallation-cost *ngIf="applyType === APPLY_TYPE.EXT_INSTALL_COST" [bmcs]="bmcs" [editable]="editable" [formValues]="orderInfo"></special-approval-additional-intallation-cost>
+        <special-approval-rdd-oit-order-info *ngIf="applyType === APPLY_TYPE.RDD_OIT" [formValues]="rddOitOrderInfos" [editable]="editable"></special-approval-rdd-oit-order-info>
         <special-approval-machineexcange-order-info *ngIf="applyType === APPLY_TYPE.MACHINE_EXCHANGE" [bmcs]="bmcs" [editable]="editable" [formValues]="changeOrderInfos" [salesLeaders]="salesLeader" [districtLeaders]="districtLeader"></special-approval-machineexcange-order-info>
       </div>
     </ng-template>

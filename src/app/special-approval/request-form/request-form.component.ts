@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router'
-import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms'
 import * as moment from 'moment'
 import { NzMessageService } from 'ng-zorro-antd'
 
@@ -139,6 +139,7 @@ export class RequestFormComponent implements OnInit {
       salesLeader: [null], // sales Leader 邮箱
       products: [[]],
     }),
+    rddOitOrderInfos: [[]],
     ccInfo: this.fb.group({
       ccType: [null], // 抄送类型
       ccPerson: [[]] // 抄送人
@@ -287,6 +288,10 @@ export class RequestFormComponent implements OnInit {
     return this.formValues.get('ccInfo') as FormGroup
   }
 
+  get rddOitOrderInfos(): FormGroup {
+    return this.formValues.get('rddOitOrderInfos') as FormGroup
+  }
+
   get changeOrderInfos(): FormGroup {
     return this.formValues.get('changeOrderInfos') as FormGroup
   }
@@ -314,8 +319,7 @@ export class RequestFormComponent implements OnInit {
   }
 
   getFormData() {
-
-    const { basicInfo, orderInfo, ccInfo, changeOrderInfos } = this.formValues.getRawValue()
+    const { basicInfo, orderInfo, ccInfo, rddOitOrderInfos, changeOrderInfos } = this.formValues.getRawValue()
     const { applyArrivalTime, expectedPaymentDate, expectedSaleDate, products } = orderInfo
     const extInfo = {
       exchangeMethod: changeOrderInfos.exchangeMethod
@@ -403,6 +407,43 @@ export class RequestFormComponent implements OnInit {
           }
         ]
         break
+      case APPLY_TYPE.RDD_OIT:
+        // 合并product
+        data.orderInfos = []
+        let order: any = null
+        rddOitOrderInfos.forEach((rddOitOrderInfo) => {
+          const { 
+            // orderInfo
+            applyArrivalTime, expectedPaymentDate, expectedSaleDate, orderDate,
+            // productInfo
+            deliveryDelayReason, exchangeableHospitalName, exchangeableHospitalNo, exchangeableOrder, exchangeableOrderModel,
+            exchangeableOrderSale, exchangeableOrderSaleBigArea, exchangeableOrderSaleCycleGroup, exchangeableOrderSaleDate, exchangeableSoNo,
+            exchangeableWbsNo, newRdd, originalRdd, subProductType, wbsNo,
+            isMain,
+          } = rddOitOrderInfo
+          const product = {
+            deliveryDelayReason, exchangeableHospitalName, exchangeableHospitalNo, exchangeableOrder, exchangeableOrderModel,
+            exchangeableOrderSale, exchangeableOrderSaleBigArea, exchangeableOrderSaleCycleGroup, 
+            exchangeableOrderSaleDate: exchangeableOrderSaleDate ? moment(exchangeableOrderSaleDate).format('YYYY-MM-DD') : null,
+            exchangeableSoNo, exchangeableWbsNo, newRdd, originalRdd, productType: subProductType, wbsNo,
+          }
+          if (isMain) {
+            if (order) {
+              data.orderInfos.push(order)
+            }
+            order = {
+              ...rddOitOrderInfo,
+              applyArrivalTime: applyArrivalTime ? moment(applyArrivalTime).format('YYYY-MM-DD') : null,
+              expectedPaymentDate: expectedPaymentDate ? moment(expectedPaymentDate).format('YYYY-MM-DD') : null,
+              expectedSaleDate: expectedSaleDate ? moment(expectedSaleDate).format('YYYY-MM-DD') : null,
+              orderDate: orderDate ? moment(orderDate).format('YYYY-MM-DD') : null,
+              products: [product]
+            }
+          } else {
+            order.products.push(product)
+          }
+        })
+        if (order) { data.orderInfos.push(order) }
     }
     return data
   }
@@ -423,47 +464,57 @@ export class RequestFormComponent implements OnInit {
   }
 
   async onSubmit() {
-    if (this.applyType === this.APPLY_TYPE.MACHINE_EXCHANGE){
-      const orders = this.changeOrderInfos.get('orders') as FormArray;
-     orders.markAsDirty();
-     orders.updateValueAndValidity()
-    }else {
-      for (const i in this.orderInfo.controls) {
-        this.orderInfo.controls[i].markAsDirty();
-        this.orderInfo.controls[i].updateValueAndValidity();
-      }
-    }
     for (const i in this.basicInfo.controls) {
       this.basicInfo.controls[i].markAsDirty();
       this.basicInfo.controls[i].updateValueAndValidity();
     }
-    if (
-      this.applyType === this.APPLY_TYPE.MACHINE_EXCHANGE? this.basicInfo.invalid || this.changeOrderInfos.invalid:
-      this.basicInfo.invalid || this.orderInfo.invalid
-    ) {
-      this.message.error('请按要求填写表单信息')
-      return
-    }
     const data = this.getFormData()
-    // const { orderInfo: { businessModel, hospitalNo, dealerCode }, ccType, ccPerson } = data
-    const { ccType, ccPerson } = data
-    // 医院和经销商必填一项
-    // if (businessModel === BUSINESS_MODEL.DISTRIBUTOR_DEAL) {
-    //   if (!hospitalNo && !dealerCode) {
-    //     this.message.error('请选择医院或者经销商')
-    //     return
-    //   }
-    // } else if(!hospitalNo){
-    //   this.message.error('请选择医院')
-    //   return
-    // }
-
+    const { orderInfo, ccType, ccPerson, orderInfos } = data
+    let hasError = false
+    switch(this.applyType) {
+      case APPLY_TYPE.RDD_OIT:
+        if (orderInfos.length === 0) {
+          this.message.error('请导入订单信息')
+          return
+        } else {
+          hasError = this.basicInfo.invalid
+        }
+        break
+      case APPLY_TYPE.MACHINE_EXCHANGE:
+        const orders = this.changeOrderInfos.get('orders') as FormArray;
+        orders.markAsDirty();
+        orders.updateValueAndValidity()
+        hasError = this.basicInfo.invalid || this.changeOrderInfos.invalid
+        break
+      default:
+        for (const i in this.orderInfo.controls) {
+          this.orderInfo.controls[i].markAsDirty();
+          this.orderInfo.controls[i].updateValueAndValidity();
+        }
+        // 医院和经销商必填一项
+        const { businessModel, hospitalNo, dealerCode } = orderInfo
+        if (businessModel === BUSINESS_MODEL.DISTRIBUTOR_DEAL) {
+          if (!hospitalNo && !dealerCode) {
+            this.message.error('请选择医院或者经销商')
+            return
+          }
+        } else if(!hospitalNo){
+          this.message.error('请选择医院')
+          return
+        }
+        hasError = this.basicInfo.invalid || this.orderInfo.invalid
+    }
     // 抄送人和抄送节点必须同时选择或者同时不选择
     if (ccType && !ccPerson) {
       this.message.error('请选择抄送人')
       return
     } else if(!ccType && ccPerson) {
       this.message.error('请选择抄送节点')
+      return
+    }
+
+    if (hasError) {
+      this.message.error('请按要求填写表单信息')
       return
     }
     this.selectApprover.showModal(data)
@@ -491,7 +542,6 @@ export class RequestFormComponent implements OnInit {
       this.pageLoading = true
       const data = await this.spService.getRequestDetail(requestId)
       this.requestInfo = data
-      console.log(data)
       const {
         createUser, applicant, applicantName,
         status, applyCode, applyType, applyItem,
@@ -508,7 +558,7 @@ export class RequestFormComponent implements OnInit {
         basicInfo: {
           applyCode,
           applicant,
-          applicantName,
+          applicantName: applicantName || applicant,
           applyType,
           applyItem,
           applyItemDesc,
@@ -529,6 +579,24 @@ export class RequestFormComponent implements OnInit {
           }
         })
         this.setFormValidators(applyType, applyItem, orderInfos[0].bg)
+      } else if (applyType === APPLY_TYPE.RDD_OIT) {
+        this.formValues.patchValue({
+          rddOitOrderInfos: orderInfos.reduce((calc, cur) => {
+            const { products } = cur
+            products.forEach((product, index) => {
+              product = {
+                ...product,
+                ...cur,
+                subProductType: product.productType
+              }
+              if (index === 0) {
+                product.isMain = true
+              }
+              calc.push(product)
+            })
+            return calc
+          }, [])
+        })
       }
       if (applyType === APPLY_TYPE.MACHINE_EXCHANGE){
         this.districtLeader[0] = orderInfos[0].districtLeader
