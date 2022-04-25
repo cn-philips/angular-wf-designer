@@ -4,7 +4,8 @@ import * as moment from "moment";
 
 import {
   US_PRODUCT_LIST,
-  STAND_WARRANTY_MONTH, LOGISTICS_STATUS,
+  STAND_WARRANTY_MONTH,
+  LOGISTICS_STATUS,
 } from '../../../special-approval.constants';
 
 interface Product {
@@ -33,7 +34,7 @@ export class ProductListComponent implements OnInit {
 
   selectOptions = {
     usProductList: US_PRODUCT_LIST,
-    logicstatus: LOGISTICS_STATUS,
+    logicStatus: LOGISTICS_STATUS,
   };
 
   constructor() {}

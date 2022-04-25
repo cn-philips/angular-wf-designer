@@ -325,7 +325,7 @@ export class RequestFormComponent implements OnInit {
       ...basicInfo,
       ...ccInfo,
       ccPerson: ccInfo.ccPerson.join(','),
-      ...extInfo
+      extInfo: extInfo
     }
     switch(this.applyType) {
       case APPLY_TYPE.PRODUCTION: // 特批生产
