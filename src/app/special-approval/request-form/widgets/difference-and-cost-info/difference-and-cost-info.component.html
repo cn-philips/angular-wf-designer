@@ -1,0 +1,77 @@
+<nz-card class="mtb1rem" nzTitle="请详细列明转出、转入订单具体配置差异及差异处理计划和成本金额。">
+  <nz-table [nzData]="products.value" [nzFooter]="tableFooter" [nzShowPagination]="false" nzBordered [nzScroll]="{ x: '1000px' }">
+    <thead>
+    <tr>
+      <th nzWidth="200px">产品型号</th>
+      <th nzWidth="200px">WBS#</th>
+      <th nzWidth="200px">Item#</th>
+      <th nzWidth="100px">数量</th>
+      <th nzWidth="100px" nzRight="0px" *ngIf="bg !== 'PD&IGT' && editable">Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let product of products.value">
+      <td>
+        <input type="text" nz-input [(ngModel)]="product.productType" (ngModelChange)="onProductChange($event)" *ngIf="bg !== 'US'" [disabled]="bg === 'PD&IGT' || !editable" />
+        <nz-select style="width: 100%;" *ngIf="bg === 'US'" [(ngModel)]="product.productType" [nzPlaceHolder]="editable ? '请选择产品型号' : ''" [nzDisabled]="!editable" (ngModelChange)="onProductChange($event)">
+          <nz-option *ngFor="let item of selectOptions.usProductList" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+        </nz-select>
+      </td>
+      <td>
+        <input type="text" nz-input [(ngModel)]="product.wbsNo" [disabled]="!editable" />
+      </td>
+      <td>
+        <input type="text" nz-input [(ngModel)]="product.itemNo" [disabled]="!editable" />
+      </td>
+      <td>
+        <input type="text" nz-input [(ngModel)]="product.quantity" [disabled]="!editable" />
+      </td>
+      <ng-container *ngIf="isWarranty">
+        <td>
+          <input type="text" nz-input [(ngModel)]="product.equipmentSn" [disabled]="!editable" />
+        </td>
+        <td>
+          <!-- 合同标准保修月数 -->
+          <input type="text" nz-input [(ngModel)]="product.warranty.stdWarrantyMonths" disabled />
+        </td>
+        <td>
+          <!-- 合同保修开始日期 -->
+          <nz-date-picker
+            style="width: 100%"
+            [nzStyle]="{ width: '100%' }"
+            [(ngModel)]="product.warranty.expectedStdWarrantyStartdate"
+            [nzDisabled]="!editable"
+            (ngModelChange)="onStdWarrantyStartDateChange(product)"
+          ></nz-date-picker>
+        </td>
+        <td>
+          <!-- 合同保修结束日期 -->
+          <input type="text" nz-input placeholder="自动计算" [(ngModel)]="product.warranty.expectedStdWarrantyEnddate" disabled />
+        </td>
+        <td>
+          <!-- 申请保修结束日期 -->
+          <nz-date-picker
+            style="width: 100%"
+            [nzStyle]="{ width: '100%' }"
+            [(ngModel)]="product.warranty.applyStdWarrantyEnddate"
+            [nzDisabled]="!editable"
+            (ngModelChange)="onCalcWarrantyMonth(product)"
+          ></nz-date-picker>
+        </td>
+        <td>
+          <!-- 申请延保月数 -->
+          <input type="text" nz-input placeholder="自动计算" [(ngModel)]="product.warranty.applyExtWarrantyMonths" disabled />
+        </td>
+      </ng-container>
+      <td nzRight="0px" *ngIf="bg !== 'PD&IGT' && editable">
+        <button nz-button nzType="primary" nzSize="small" (click)="onDeleteProduct(product)">删除</button>
+      </td>
+    </tr>
+    </tbody>
+    <ng-template #tableFooter>
+      <button nz-button nzType="dashed" nzBlock (click)="onAddProduct()" *ngIf="bg !== 'PD&IGT'">
+        <i nz-icon nzType="plus" nzTheme="outline"></i>添加
+      </button>
+    </ng-template>
+  </nz-table>
+</nz-card>

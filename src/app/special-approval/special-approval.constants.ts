@@ -52,6 +52,7 @@ const APPLY_TYPE = {
   EXT_WARRANTY: "warranty",
   EXT_INSTALL_COST: "installcost",
   LOGISTICSCOST: "logisticscost",
+  TRANSFER_LIB: "transferlib",
 }
 
 const APPLY_TYPE_MAP = {
@@ -90,7 +91,14 @@ const APPLY_TYPE_MAP = {
     items: [
       {label: '特别仓储、物流费用', value: 'sp_logisticscost_apply_item_1'}
     ]
-
+  },
+  [APPLY_TYPE.TRANSFER_LIB]: {
+    label: "转库",
+    items: [
+      {label: '转库：within ORU', value: 'sp_transferlib_apply_item_1'},
+      {label: '转库：HK90-CN90', value: 'sp_transferlib_apply_item_2'},
+      {label: '转库：CN90-HK90', value: 'sp_transferlib_apply_item_3'}
+    ]
   }
 };
 
@@ -339,6 +347,19 @@ const PROCESS_STATUS_MAP = {
 // nodeAction: approve, feedback
 // processStatus: START, DRAFT, APPROVED, REJECTED, WITHDRAW
 
+// 换货类型
+const EXCHANGE_TYPE_LIST = [
+  {label: 'within ORU', value: 'within ORU'},
+  {label: 'HK90-CN90', value: 'HK90-CN90'},
+  {label: 'CN90-HK90', value: 'CN90-HK90'}
+]
+
+// 换货方式
+const EXCHANGE_METHODS_LIST = [
+  {label: '单向', value: ''},
+  {label: '互换', value: ''}
+]
+
 export {
   DEFAULT_SUCCESS_MESSAGE,
   SUCCESS_MESSAGE,
@@ -363,4 +384,6 @@ export {
   PROCESS_STATUS,
   NODE_ACTION,
   PROCESS_STATUS_MAP,
+  EXCHANGE_TYPE_LIST,
+  EXCHANGE_METHODS_LIST
 };

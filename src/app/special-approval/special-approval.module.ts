@@ -29,6 +29,9 @@ import { ProductionOrderInfoComponent } from './request-form/widgets/order-info/
 import { WarrantyOrderInfoComponent } from './request-form/widgets/order-info/warranty/warranty.component';
 import { TransportationOrderInfoComponent } from './request-form/widgets/order-info/transportation/transportation.component';
 import { AdditionalInstallationCostComponent } from "./request-form/widgets/order-info/additional-installation-cost/additional-installation-cost.component";
+import { TransferLibComponent } from './request-form/widgets/order-info/transfer-lib/transfer-lib.component'
+import { ExchangeInfoComponent } from './request-form/widgets/exchange-info/exchange-info.component'
+import { DifferenceAndCostInfoComponent } from './request-form/widgets/difference-and-cost-info/difference-and-cost-info.component'
 
 const COMPONENTS = [
   ApprovedComponent,
@@ -57,7 +60,10 @@ const WIDGETS = [
   ProductionOrderInfoComponent,
   WarrantyOrderInfoComponent,
   TransportationOrderInfoComponent,
-  AdditionalInstallationCostComponent
+  AdditionalInstallationCostComponent,
+  TransferLibComponent,
+  ExchangeInfoComponent,
+  DifferenceAndCostInfoComponent
 ];
 
 export {

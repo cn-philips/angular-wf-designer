@@ -44,6 +44,16 @@
       </div>
     </ng-template>
   </ngb-tab>
+  <ngb-tab [id]="TAB_TYPES.EXCHANGE_INFO"  *ngIf="applyType === APPLY_TYPE.TRANSFER_LIB">
+    <ng-template ngbTabTitle>
+      <span class="tab-title"><strong>换货信息</strong></span>
+    </ng-template>
+    <ng-template ngbTabContent>
+      <div class="card-body">
+        <special-approval-exchange-info [executed]="executed" [editable]="editable" [formValues]="basicInfo" [supportFileList]="supportFileList"></special-approval-exchange-info>
+      </div>
+    </ng-template>
+  </ngb-tab>
   <ngb-tab [id]="TAB_TYPES.ORDER_INFO">
     <ng-template ngbTabTitle>
       <span class="tab-title"><strong>订单信息</strong></span>
@@ -55,6 +65,17 @@
         <!-- <special-approval-order-info [bmcs]="bmcs" [applyItem]="applyItem" [applyType]="applyType" [editable]="editable" [formValues]="orderInfo"></special-approval-order-info> -->
         <special-approval-transportation-order-info *ngIf="applyType === APPLY_TYPE.LOGISTICSCOST" [bmcs]="bmcs" [editable]="editable" [formValues]="orderInfo"></special-approval-transportation-order-info>
         <special-approval-additional-intallation-cost *ngIf="applyType === APPLY_TYPE.EXT_INSTALL_COST" [bmcs]="bmcs" [editable]="editable" [formValues]="orderInfo"></special-approval-additional-intallation-cost>
+        <special-approval-transfer-lib-info *ngIf="applyType === APPLY_TYPE.TRANSFER_LIB" [bmcs]="bmcs" [editable]="editable" [formValues]="orderInfo"></special-approval-transfer-lib-info>
+      </div>
+    </ng-template>
+  </ngb-tab>
+  <ngb-tab [id]="TAB_TYPES.DIFFERENCE_AND_COST_INFO"  *ngIf="applyType === APPLY_TYPE.TRANSFER_LIB">
+    <ng-template ngbTabTitle>
+      <span class="tab-title"><strong>配置差异及成本分析</strong></span>
+    </ng-template>
+    <ng-template ngbTabContent>
+      <div class="card-body">
+        <special-approval-difference-and-cost-info [executed]="executed" [editable]="editable" [formValues]="basicInfo" [supportFileList]="supportFileList"></special-approval-difference-and-cost-info>
       </div>
     </ng-template>
   </ngb-tab>

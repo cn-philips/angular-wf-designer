@@ -1,0 +1,47 @@
+<nz-card class="mtb1rem" nzTitle="换货详情">
+  <form nz-form [formGroup]="formValues">
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="12" nzMd="12">
+        <nz-form-item>
+          <nz-form-label nzXl="8" nzXXl="6" nzFor="applicantName">换货类型</nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <nz-select formControlName="exchangeType" nzPlaceHolder="请选择换货原因" (ngModelChange)="onApplyItemChange($event)">
+              <nz-option *ngFor="let item of SELECT_OPTION_LIST.exchangeOptions" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+            </nz-select>
+            <nz-form-explain
+              *ngIf="formValues.get('exchangeType')?.dirty && formValues.get('exchangeType')?.errors"
+            >
+              请选择换货类型
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzXs="24" nzSm="12" nzMd="12">
+        <nz-form-item>
+          <nz-form-label nzXl="8" nzXXl="6" nzFor="applicantName">换货方式</nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <nz-select formControlName="exchangeMethod" nzPlaceHolder="请选择换货方式" (ngModelChange)="onApplyItemChange($event)">
+              <nz-option *ngFor="let item of SELECT_OPTION_LIST.exchangeMethodOptions" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+            </nz-select>
+            <nz-form-explain
+              *ngIf="formValues.get('exchangeMethod')?.dirty && formValues.get('exchangeMethod')?.errors"
+            >
+              请选择换货方式
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="12" nzMd="12">
+        <nz-form-item>
+          <nz-form-label nzXl="8" nzXXl="6" nzFor="applicantName">成本汇总</nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <input nz-input formControlName="cost " [disabled]="true" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+  </form>
+</nz-card>

@@ -30,6 +30,8 @@ enum TAB_TYPE {
   APPROVE = 'approve',
   APPROVE_HISTORY = 'approve-history',
   FEEDBACK = 'feedback',
+  EXCHANGE_INFO = 'exchange-info',
+  DIFFERENCE_AND_COST_INFO = 'difference-and-cost-info'
 }
 
 @Component({
