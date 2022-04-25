@@ -53,7 +53,8 @@ const APPLY_TYPE = {
   EXT_INSTALL_COST: "installcost",
   LOGISTICSCOST: "logisticscost",
   LC_AMENDMENT: "lcamendment",
-
+  RDD_OIT: 'rddoit180reserv',
+  MACHINE_EXCHANGE: "machineexchange",
 }
 
 const APPLY_TYPE_MAP = {
@@ -93,17 +94,28 @@ const APPLY_TYPE_MAP = {
       {label: '特别仓储、物流费用', value: 'sp_logisticscost_apply_item_1'}
     ]
   },
-    [APPLY_TYPE.LC_AMENDMENT]: {
-  label: "LC Amendments申请",
+  [APPLY_TYPE.LC_AMENDMENT]: {
+    label: "LC Amendments申请",
     items: [
-    { label: "For non-standard LC terms, such as bank charges", value: "sp_lcamendment_apply_item_1" },
-    { label: "LC applicant accept LC discrepancy instead of LC amendment", value: "sp_lcamendment_apply_item_2" },
-    { label: "LC amendment cost to be paid by Philips", value: "sp_lcamendment_apply_item_3" },
-    { label: "LC cancelation", value: "sp_lcamendment_apply_item_4" },
-    { label: "Others", value: "sp_lcamendment_apply_item_5" },
-  ],
-}
-
+      { label: "For non-standard LC terms, such as bank charges", value: "sp_lcamendment_apply_item_1" },
+      { label: "LC applicant accept LC discrepancy instead of LC amendment", value: "sp_lcamendment_apply_item_2" },
+      { label: "LC amendment cost to be paid by Philips", value: "sp_lcamendment_apply_item_3" },
+      { label: "LC cancelation", value: "sp_lcamendment_apply_item_4" },
+      { label: "Others", value: "sp_lcamendment_apply_item_5" },
+    ],
+  },
+  [APPLY_TYPE.RDD_OIT]: {
+    label: "RDD-OIT>180天订单保留",
+    items: [
+      {label: 'RDD-OIT>180天订单保留', value: 'sp_rdd_oit_apply_item_1'}
+    ]
+  },
+  [APPLY_TYPE.MACHINE_EXCHANGE]: {
+    label: "机器互换",
+    items: [
+      {label: '商务条款不变机器互换', value: 'sp_machineexchange_apply_item_1'}
+    ],
+  },
 };
 
 const APPLY_TYPES = [
@@ -113,6 +125,8 @@ const APPLY_TYPES = [
   { label: "额外安装费用及其他", value: APPLY_TYPE.EXT_INSTALL_COST },
   { label: "物流运输-特别仓储", value: APPLY_TYPE.LOGISTICSCOST },
   { label: "LC Amendment申请", value: APPLY_TYPE.LC_AMENDMENT },
+  { label: "RDD-OIT>180天订单保留", value: APPLY_TYPE.RDD_OIT },
+  { label: "机器互换", value: APPLY_TYPE.MACHINE_EXCHANGE },
 ];
 
 const STAND_WARRANTY_MONTH = {
@@ -150,6 +164,24 @@ const BG_BMC_MAP = {
   ],
 };
 
+const BMC_LIST = [
+  { label: "AMI", value: "AMI", bg: 'PD&IGT' },
+  { label: "CT", value: "CT", bg: 'PD&IGT' },
+  { label: "DXR", value: "DXR", bg: 'PD&IGT' },
+  { label: "EDI-CI", value: "EDI-CI", bg: 'PD&IGT' },
+  { label: "EDI-ICAP", value: "EDI-ICAP", bg: 'PD&IGT' },
+  { label: "IGT-S", value: "IGT-S", bg: 'PD&IGT' },
+  { label: "MR", value: "MR", bg: 'PD&IGT' },
+  { label: "PDS-RadOnc", value: "PDS-RadOnc", bg: 'PD&IGT' },
+  { label: "Professional Service", value: "Professional Service", bg: 'PD&IGT' },
+  { label: "US", value: "US", bg: 'US' },
+  { label: "HPM", value: "HPM", bg: 'CC' },
+  { label: "VAD", value: "VAD", bg: 'CC' },
+  { label: "DFM", value: "DFM", bg: 'CC' },
+  { label: "DECG", value: "DECG", bg: 'CC' },
+  { label: "AED", value: "AED", bg: 'CC' },
+]
+
 const US_PRODUCT_LIST = [
   { label: "Affiniti30", value: "Affiniti30" },
   { label: "Affiniti50", value: "Affiniti50" },
@@ -181,8 +213,77 @@ const US_PRODUCT_LIST = [
 
 const ORDER_TYPES = [
   { label: "OIT", value: "OIT" },
-  { label: "Pre-Book", value: "	Pre-Book" },
+  { label: "Pre-Book", value: "Pre-Book" },
 ];
+
+const CYCLEGROUP_BIGAREA_MAP = {
+  West: [{ label: "West", value: "West" }],
+  South: [{ label: "South", value: "South" }],
+  East: [{ label: "East", value: "East" }],
+  North2: [{ label: "North2", value: "North2" }],
+  North1: [{ label: "North1", value: "North1" }],
+  Solution: [
+    { label: "East", value: "East" },
+    { label: "North", value: "North" },
+    { label: "South", value: "South" },
+    { label: "West", value: "West" },
+  ],
+  RadOnc: [
+    { label: "East", value: "East" },
+    { label: "North", value: "North" },
+    { label: "South", value: "South" },
+    { label: "West", value: "West" },
+  ],
+  Private: [
+    { label: "East", value: "East" },
+    { label: "North", value: "North" },
+    { label: "South", value: "South" },
+    { label: "West", value: "West" },
+  ],
+  'Primary Business': [
+    { label: "China", value: "China" },
+    { label: "East", value: "East" },
+    { label: "North", value: "North" },
+    { label: "South", value: "South" },
+    { label: "West", value: "West" },
+  ],
+  GBA: [{ label: "GBA", value: "GBA" }],
+  'Fighter Team': [{ label: "China", value: "China" }],
+  DXR: [
+    { label: "China", value: "China" },
+    { label: "East", value: "East" },
+    { label: "North", value: "North" },
+    { label: "South", value: "South" },
+    { label: "West", value: "West" },
+  ],
+  CTVAD: [
+    { label: "China", value: "China" },
+    { label: "East", value: "East" },
+    { label: "North", value: "North" },
+    { label: "South", value: "South" },
+    { label: "West", value: "West" },
+  ],
+  BV: [{ label: "China", value: "China" }],
+  US: [
+    { label: "East", value: "East" },
+    { label: "North", value: "North" },
+    { label: "South", value: "South" },
+    { label: "West", value: "West" },
+    { label: "US-Private", value: "US-Private" },
+    { label: "US-VAD", value: "US-VAD" },
+  ],
+  HPM: [
+    { label: "North", value: "North" },
+    { label: "West", value: "West" },
+    { label: "East2", value: "East2" },
+    { label: "East1", value: "East1" },
+    { label: "South", value: "South" },
+  ],
+  VAD: [{ label: "GCN", value: "GCN" }],
+  DFM: [{ label: "DFM", value: "DFM" }],
+  DECG: [{ label: "DECG", value: "DECG" }],
+  AED: [{ label: "AED", value: "AED" }],
+}
 
 const BIG_SMALL_AREA_LIST = [
   {
@@ -348,6 +449,17 @@ const PROCESS_STATUS_MAP = {
   [PROCESS_STATUS.CANCELLED]: '已取消',
 }
 
+const LOGISTICS_STATUS = [
+  {
+    label: '已到货',
+    value: 1
+  },
+  {
+    label: '未到货',
+    value: 0
+  }
+]
+
 // status: 0-已取消, 1-未取消
 // nodeAction: approve, feedback
 // processStatus: START, DRAFT, APPROVED, REJECTED, WITHDRAW
@@ -376,4 +488,7 @@ export {
   PROCESS_STATUS,
   NODE_ACTION,
   PROCESS_STATUS_MAP,
+  BMC_LIST,
+  CYCLEGROUP_BIGAREA_MAP,
+  LOGISTICS_STATUS,
 };

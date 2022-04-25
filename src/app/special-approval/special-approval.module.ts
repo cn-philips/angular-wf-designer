@@ -12,7 +12,6 @@ import { RequestFormComponent } from "./request-form/request-form.component";
 
 // widget
 import { BasicInfoComponent } from "./request-form/widgets/basic-info/basic-info.component";
-import { OrderInfoComponent } from "./request-form/widgets/order-info/order-info.component";
 import { SelectApproverComponent } from "./request-form/widgets/select-approver/select-approver.component";
 import { CcInfoComponent } from "./request-form/widgets/cc-info/cc-info.component";
 import { WarrantyInfoComponent } from "./request-form/widgets/warranty-info/warranty-info.component";
@@ -28,8 +27,10 @@ import { ProductListComponent } from './request-form/widgets/product-list/produc
 import { ProductionOrderInfoComponent } from './request-form/widgets/order-info/production/production.component'
 import { WarrantyOrderInfoComponent } from './request-form/widgets/order-info/warranty/warranty.component';
 import { TransportationOrderInfoComponent } from './request-form/widgets/order-info/transportation/transportation.component';
+import { MachineComponent } from './request-form/widgets/order-info/machine/machine.component';
 import { AdditionalInstallationCostComponent } from "./request-form/widgets/order-info/additional-installation-cost/additional-installation-cost.component";
 import { LcAmendmentOrderInfoComponent } from './request-form/widgets/order-info/lc-amendment/lc-amendment.component'
+import { RddOitOrderInfoComponent } from "./request-form/widgets/order-info/rdd-oit/rdd-oit.component";
 
 const COMPONENTS = [
   ApprovedComponent,
@@ -44,7 +45,6 @@ const WIDGETS = [
   ApproveHistoryComponent,
   ApproveFormComponent,
   BasicInfoComponent,
-  OrderInfoComponent,
   SelectApproverComponent,
   CcInfoComponent,
   FeedbackComponent,
@@ -60,6 +60,8 @@ const WIDGETS = [
   TransportationOrderInfoComponent,
   AdditionalInstallationCostComponent,
   LcAmendmentOrderInfoComponent,
+  RddOitOrderInfoComponent,
+  MachineComponent,
 ];
 
 export {

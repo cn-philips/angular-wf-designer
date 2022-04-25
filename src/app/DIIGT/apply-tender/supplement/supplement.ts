@@ -289,6 +289,7 @@ public params:any={
     params.BMCExpert = '';
     params.AppExpert = '';
     params.distributorAgreement = '';
+    params.distributorAgreementList = '';
     this.pdfSRC = params;
     this.isPdf = true;
 
@@ -397,6 +398,7 @@ public params:any={
     params.BMCExpert = '';
     params.AppExpert = '';
     params.distributorAgreement = '';
+    params.distributorAgreementList = '';
     this.pdfSRC = params;
     this.isPdf = true;
   }
@@ -471,6 +473,7 @@ public params:any={
     params.BMCExpert = '';
     params.AppExpert = '';
     params.distributorAgreement = '';
+    params.distributorAgreementList = '';
     this.pdfSRC = params;
     this.isPdf = true;
   }
@@ -520,9 +523,9 @@ public params:any={
 
     });
     // this.dataBase.biddingComRegCode = '中国';
-    if (this.isDisable) {
-      this.getAllselAgent();
-    }
+    // if (this.isDisable) {
+    //   this.getAllselAgent();
+    // }
   }
 
   load: any = false;
@@ -1333,6 +1336,7 @@ public params:any={
       this.dataBase.agreementNo = arr[0].agreementNo;
     }
 
+    this.AgreeTitle();
     // this.getSelAgent({
     //   total: 0,
     //   pageNo: 1,
@@ -1736,7 +1740,7 @@ changeLogisticsDescription(){
       return valid ? null : { dataform: true };
     }
   }
-  public agreetitleList: any = {};
+  @Input() agreetitleList: any = {};
   public AgreeTitle() {
 
     for (let i = 0; i < this.dataBase.distributorAgreement.length; i++) {

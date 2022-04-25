@@ -1,4 +1,4 @@
-/deep/ .file-item {
+:host /deep/ .file-item {
   margin-bottom: 4px;
   color: #00CC66;
   cursor: pointer;
@@ -13,6 +13,6 @@
   }
 }
 
-.upload-file-list {
+:host .upload-file-list {
   margin-top: 10px;
 }
