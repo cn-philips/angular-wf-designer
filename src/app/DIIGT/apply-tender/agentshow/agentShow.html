@@ -10,8 +10,8 @@
                                 <nz-form-control [nzSpan]="10">
                                     <input nz-input nz-tooltip [nzTitle]="params.dealerName" name="email" [(ngModel)]="params.dealerName">
                                 </nz-form-control>
-                                <nz-form-control [nzSpan]="5">
-                                    <button nz-button class="ml10" nzType="primary" (click)="agentInit()" [nzSize]="6">Search 搜索 </button>
+                                <nz-form-control [nzSpan]="5" style="padding: 0 10px;width: auto !important;">
+                                    <button nz-button class="ml10" nzType="primary" (click)="agentInit()" [nzSize]="6" [nzLoading]="loading">Search 搜索 </button>
                                 </nz-form-control>
                                 <nz-form-control [nzSpan]="3">
                                    <button nz-button  nzType="default" (click)="clearAll()" [nzSize]="6">Clear 清空 </button>
@@ -23,7 +23,7 @@
             </div>
             <div class="tabbox">
                 <nz-table #basicTabled [nzData]="agentDatas" [nzScroll]="{ x: '1900px' }" [nzFrontPagination]="false" [nzTotal]="params.total" (nzPageIndexChange)="changePageIndex($event)"
-                (nzPageSizeChange)="changePageSize($event)" [nzPageIndex]="params.pageNo" [nzPageSize]="params.pageSize">
+                (nzPageSizeChange)="changePageSize($event)" [nzPageIndex]="params.pageNo" [nzPageSize]="params.pageSize" [nzLoading]="loading">
                     <thead>
                         <tr>
                             <th nzWidth="40px" nzLeft="0px" nzAlign="center">&nbsp;</th>
