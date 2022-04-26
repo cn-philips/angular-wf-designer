@@ -121,7 +121,8 @@ export class HomeComponent implements OnInit {
 
       const monthSet = new Set()
       const tabSet = new Set()
-      this.allTemplateList = templateList.filter(({ applyType, minWarrantyMonths, maxWarrantyMonths }) => {
+      this.allTemplateList = templateList.filter(
+        ({ applyType, minWarrantyMonths, maxWarrantyMonths }) => {
           if (activeTemplate[applyType]) {
             if (applyType === APPLY_TYPE.EXT_WARRANTY) {
               const month = `${minWarrantyMonths}-${maxWarrantyMonths}`
@@ -131,32 +132,34 @@ export class HomeComponent implements OnInit {
                 monthSet.add(month)
                 return true
               }
+            } else if (applyType === APPLY_TYPE.LC_AMENDMENT && tabSet.has(applyType)) {
+              return false
+            }
+            if (!tabSet.has(applyType) && APPLY_TYPE_MAP[applyType]) {
+              this.tabList.push({
+                title: APPLY_TYPE_MAP[applyType].label,
+                value: applyType
+              })
+              tabSet.add(applyType)
             }
             return true
           } else {
             return false
           }
-        }).map(({ bg, applyType, applyItem, minWarrantyMonths, maxWarrantyMonths, minWarrantyMonthsComparator, maxWarrantyMonthsComparator, remark }) => {
-          if (!tabSet.has(applyType) && APPLY_TYPE_MAP[applyType]) {
-            this.tabList.push({
-              title: APPLY_TYPE_MAP[applyType].label,
-              value: applyType
-            })
-            tabSet.add(applyType)
-          }
-          return {
+        }).map(
+          ({ bg, applyType, applyItem, minWarrantyMonths, maxWarrantyMonths, minWarrantyMonthsComparator, maxWarrantyMonthsComparator, remark }) => ({
             name: this.formatTemplateName({ applyType, applyItem, minWarrantyMonths, maxWarrantyMonths, minWarrantyMonthsComparator, maxWarrantyMonthsComparator  }),
             type: applyType,
             typeName: APPLY_TYPE_MAP[applyType].label,
-            item: applyType === APPLY_TYPE.EXT_WARRANTY ? null : applyItem,
+            item: [APPLY_TYPE.EXT_WARRANTY, APPLY_TYPE.LC_AMENDMENT].includes(applyType) ? null : applyItem,
             desc: remark,
             bg,
             minMon: minWarrantyMonths,
             minComp: minWarrantyMonthsComparator,
             maxMon: maxWarrantyMonths,
             maxComp: maxWarrantyMonthsComparator,
-          }
-        })
+          })
+        )
         this.filteredTemplateList = this.allTemplateList
         this.pageLoading = ++this.reqSuccessCount !== this.reqTotalCount
       }).catch(({ message }) => {
@@ -177,6 +180,8 @@ export class HomeComponent implements OnInit {
         return `${prefix}${minWarrantyMonthsComparator}${minWarrantyMonths} month`
       }
       return `${prefix}${minWarrantyMonthsComparator}${minWarrantyMonths} month&${maxWarrantyMonthsComparator}${maxWarrantyMonths} month`
+    } else if (applyType === APPLY_TYPE.LC_AMENDMENT) {
+      return this.formatApplyTypeItem({ applyType })
     } else {
       return this.formatApplyTypeItem({ applyType, applyItem })
     }
@@ -259,7 +264,7 @@ export class HomeComponent implements OnInit {
     this.router.navigate([`/special-approval/${path}`])
   }
 
-  formatApplyTypeItem({ applyType, applyItem }) {
+  formatApplyTypeItem({ applyType, applyItem = '' }) {
     if (!applyType) { return '' }
     const { label, items } = APPLY_TYPE_MAP[applyType]
     if (applyType === APPLY_TYPE.RDD_OIT || applyType === APPLY_TYPE.EXT_INSTALL_COST) {

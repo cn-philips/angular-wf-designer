@@ -40,7 +40,7 @@
     </ng-template>
     <ng-template ngbTabContent>
       <div class="card-body">
-        <special-approval-basic-info [executed]="executed" [editable]="editable" [formValues]="basicInfo" [formValueslcinfo]="orderInfo" [supportFileList]="supportFileList"></special-approval-basic-info>
+        <special-approval-basic-info [executed]="executed" [editable]="editable" [formValues]="basicInfo" [supportFileList]="supportFileList"></special-approval-basic-info>
       </div>
     </ng-template>
   </ngb-tab>
@@ -55,7 +55,7 @@
         <!-- <special-approval-order-info [bmcs]="bmcs" [applyItem]="applyItem" [applyType]="applyType" [editable]="editable" [formValues]="orderInfo"></special-approval-order-info> -->
         <special-approval-transportation-order-info *ngIf="applyType === APPLY_TYPE.LOGISTICSCOST" [bmcs]="bmcs" [editable]="editable" [formValues]="orderInfo"></special-approval-transportation-order-info>
         <special-approval-additional-intallation-cost *ngIf="applyType === APPLY_TYPE.EXT_INSTALL_COST" [bmcs]="bmcs" [editable]="editable" [formValues]="orderInfo"></special-approval-additional-intallation-cost>
-        <special-approval-lcamendment-order-info *ngIf="applyType === APPLY_TYPE.LC_AMENDMENT" [bmcs]="bmcs" [editable]="editable" [formValues]="orderInfo" [lcInfo]="lcInfo" [iepoollist]="iepoollist"></special-approval-lcamendment-order-info>
+        <special-approval-lcamendment-order-info *ngIf="applyType === APPLY_TYPE.LC_AMENDMENT" [editable]="editable" [basicInfo]="basicInfo" [formValues]="lcAmendmentOrderInfo"></special-approval-lcamendment-order-info>
         <special-approval-rdd-oit-order-info *ngIf="applyType === APPLY_TYPE.RDD_OIT" [formValues]="rddOitOrderInfos" [editable]="editable"></special-approval-rdd-oit-order-info>
         <special-approval-machineexcange-order-info *ngIf="applyType === APPLY_TYPE.MACHINE_EXCHANGE" [bmcs]="bmcs" [editable]="editable" [formValues]="changeOrderInfos" [salesLeaders]="salesLeader" [districtLeaders]="districtLeader"></special-approval-machineexcange-order-info>
       </div>
