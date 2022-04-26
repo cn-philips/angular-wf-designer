@@ -6,11 +6,11 @@
         <nz-form-item>
           <nz-form-label nzXl="8" nzXXl="6">抄送人</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <nz-select 
-              style="width: 100%" 
+            <nz-select
+              style="width: 100%"
               nzMode="multiple"
-              [nzPlaceHolder]="editable ? '输入邮箱查询' : ''" 
-              nzShowSearch 
+              [nzPlaceHolder]="editable ? '输入邮箱查询' : ''"
+              nzShowSearch
               nzAllowClear
               formControlName="ccPerson"
               [nzServerSearch]="true"
@@ -31,7 +31,8 @@
 
       <div nz-col nzXs="24" nzSm="24" nzMd="12">
         <nz-form-item>
-          <nz-alert nzType="warning" nzMessage="请务必抄送本订单OM, PM" nzShowIcon></nz-alert>
+          <nz-alert nzType="warning" nzMessage="请务必抄送本订单OM, PM" nzShowIcon *ngIf="applyType !== APPLY_TYPE.LOGISTICSCOST"></nz-alert>
+          <nz-alert nzType="warning" nzMessage="请务必抄送本订单OM" nzShowIcon *ngIf="applyType === APPLY_TYPE.LOGISTICSCOST"></nz-alert>
         </nz-form-item>
       </div>
 

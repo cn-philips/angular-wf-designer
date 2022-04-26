@@ -1,11 +1,11 @@
-/deep/ .ant-upload-disabled {
+:host /deep/ .ant-upload-disabled {
   display: none;
 }
 
-.color-info {
+:host .color-info {
   color: #337fbf;
 }
 
-/deep/ .upload-file-label label {
+:host /deep/ .upload-file-label label {
   margin-bottom: 0;
 }

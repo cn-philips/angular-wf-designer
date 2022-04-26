@@ -4,7 +4,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { debounceTime, map, switchMap } from 'rxjs/operators';
 
 import { HttpService } from '../../../../services/http.service'
-import { CC_TYPES } from '../../../special-approval.constants'
+import { CC_TYPES, APPLY_TYPE } from '../../../special-approval.constants'
 
 interface User {
   id: number;
@@ -23,6 +23,9 @@ export class CcInfoComponent implements OnInit {
   @Input() formValues: FormGroup
   @Input() userList: User[] = []
   @Input() editable: boolean
+  @Input() applyType: string
+
+  APPLY_TYPE = APPLY_TYPE
 
   fetchUserUrl = '/act/role/getUsersByEmail'
   searchChange$ = new BehaviorSubject('');
@@ -36,11 +39,11 @@ export class CcInfoComponent implements OnInit {
 
   ngOnInit(): void {
     const getUserList = (keyword: string) => {
-      if (!keyword) { 
+      if (!keyword) {
         this.isSearchLoading = false;
         return []
       }
-      return this.http.get(`${this.fetchUserUrl}`, { 
+      return this.http.get(`${this.fetchUserUrl}`, {
         params: { email: keyword }
       })
         .pipe(map((res: any) => res.data as User[]))
@@ -48,7 +51,7 @@ export class CcInfoComponent implements OnInit {
           map((users) => users.map((user) => ({ ...user, displayName: `${user.name}(${user.email})` })))
         );
     }
-      
+
     const optionList$: Observable<User[]> = this.searchChange$
       .asObservable()
       .pipe(debounceTime(500))
