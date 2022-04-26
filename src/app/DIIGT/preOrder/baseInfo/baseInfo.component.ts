@@ -1305,7 +1305,7 @@ export class PreOrderBaseInfoComponent implements OnInit {
   }
   //外贸公司联动
   foreignup() {
-    
+
     const foreignTradeCompany = this.dataBase.foreignTradeCompany ? this.dataBase.foreignTradeCompany.replace(/\s+/g, "") : "";
     const distributors = this.dataBase.distributor ? this.dataBase.distributor.replace(/\s+/g, "") : "";
     const contractBuyer2 = this.poolList.find(val => val.corporateName.replace(/\s+/g, "") == foreignTradeCompany);
@@ -1324,7 +1324,7 @@ export class PreOrderBaseInfoComponent implements OnInit {
       }
       this.isForeign(data);
     }
-    ASYNS()    
+    ASYNS()
     if (!contractBuyer2) {
       this.dataBase.contractBuyer2 = null;
       //如果外贸易公司与经销商相等
@@ -1349,7 +1349,7 @@ export class PreOrderBaseInfoComponent implements OnInit {
     else {
      // this.dataBase.contractBuyer2 = contractBuyer2.corporateName;
       this.dataBase.poolEndDate = standardTime(contractBuyer2.ddpValidUntil);
-      
+
       this.dataBase.contractDdpStatus = this.isadopt(this.dataBase.poolEndDate, 2);
       // this.validateForm.controls.contractDdpStatus.disable();
       this.validateForm.controls.poolEndDate.disable();
@@ -1486,8 +1486,8 @@ export class PreOrderBaseInfoComponent implements OnInit {
   // }
   //选择iepool
   public changeAgentCnName(event) {
-    //this.dataBase.contractBuyer2=event;  
-    this.getPoolList(); 
+    //this.dataBase.contractBuyer2=event;
+    this.getPoolList();
     if (this.poolList && this.poolList.length > 0) {
       let select = this.poolList.find((val) => this.dataBase.contractBuyer2 == val.corporateName);
       if (select&&event!=this.dataBase.foreignTradeCompany) {
@@ -1497,7 +1497,7 @@ export class PreOrderBaseInfoComponent implements OnInit {
         this.dataBase.foreignTradeCompanyEmail = "";
         this.dataBase.poolEndDate = "";
       }
-      this.dataBase.foreignTradeCompany = this.dataBase.contractBuyer2 ? this.dataBase.contractBuyer2 : this.dataBase.foreignTradeCompany; 
+      this.dataBase.foreignTradeCompany = this.dataBase.contractBuyer2 ? this.dataBase.contractBuyer2 : this.dataBase.foreignTradeCompany;
       !this.dataBase.foreignTradeCompanyAddress&&(this.dataBase.foreignTradeCompanyAddress = select && select.corporateAddress ? select.corporateAddress : "");
       !this.dataBase.poolEndDate&&(this.dataBase.poolEndDate = select && select.ddpValidUntil ? standardTime(select.ddpValidUntil) : "");
       !this.dataBase.contractDdpStatus&&(this.dataBase.contractDdpStatus = this.isadopt(this.dataBase.poolEndDate, 2));
@@ -1587,7 +1587,7 @@ export class PreOrderBaseInfoComponent implements OnInit {
             }
             else {
               this.redFlagListPool = "";
-            }            
+            }
             this.foreignup();
           }
         } else {
@@ -2894,7 +2894,7 @@ export class PreOrderBaseInfoComponent implements OnInit {
 
   // 外贸公司是否与经销商相同
   ChangForeign() {
-    
+
     if (this.dataBase.sameFlag === '1') {
       // 将经销商信息赋值给外贸公司
       const ASYNS = async () => {
@@ -3045,18 +3045,29 @@ export class PreOrderBaseInfoComponent implements OnInit {
       this.supportFileMissingList = [];
     }
   }
-  //查看最终用户编号
-  showDiag() {
+  // 查看最终用户编号
+  public showDiag () {
     this.dealshow.data = [];
-    let dealerAgreementNo = this.dataBase.agreementNo;
+    const dealerAgreementNo = this.dataBase.agreementNo;
     this.isAgres = true;
-    let select = this.dealList.find(val => dealerAgreementNo == val.agreementNo);
-    if (select) {
-      let obj = {
-        authorizedArea: select.authorizedArea,
-        authorizedProduct: select.authorizedProduct
+    // 经销商协议号 可以操作查询实时ie pool数据
+    if (!this.disa) {
+      const select = this.dealList.find(val => dealerAgreementNo === val.agreementNo);
+      if (select) {
+        const obj = {
+          authorizedArea: select.authorizedArea,
+          authorizedProduct: select.authorizedProduct
+        };
+        this.dealshow.data.push(obj);
+        this.ServesiceService.dealTable.emit(this.dealshow);
       }
-      this.dealshow.data.push(obj)
+    } else if (this.dataBase && this.dataBase.preparationProductCompany) {
+      // 经销商协议号 禁用查询数据库保存值
+      const obj = {
+        authorizedArea: this.dataBase.preparationProductCompany.authorizedArea,
+        authorizedProduct: this.dataBase.preparationProductCompany.authorizedProduct
+      };
+      this.dealshow.data.push(obj);
       this.ServesiceService.dealTable.emit(this.dealshow);
     }
 

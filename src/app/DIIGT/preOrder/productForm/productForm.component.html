@@ -217,9 +217,17 @@
         <nz-form-label nzXXl="5" nzXl="5"  nzSm="5" nzRequired><span>Distributor Agreement No.</span><br>经销商协议号</nz-form-label>
         <nz-form-control [nzSm]="10" [nzXs]="24">
             <nz-select class="prodSelect" nzShowSearch nzShowSearch  nzPlaceHolder="Select 请选择"
-              [(ngModel)]="dataBase.agreementNo" formControlName="agreementNo" [disabled]="!flag2">
-              <nz-option *ngFor="let item of dealList" [nzLabel]="item.agreementNo" [nzValue]="item.agreementNo">
-              </nz-option>
+              [(ngModel)]="dataBase.agreementNo" formControlName="agreementNo" [disabled]="!flag2" (ngModelChange)="agreementNoChange()">
+              <!--可操作-->
+              <ng-container *ngIf="!this.disa">
+                <nz-option *ngFor="let item of dealList" [nzLabel]="item.agreementNo" [nzValue]="item.agreementNo">
+                </nz-option>
+              </ng-container>
+              <!--禁用-->
+              <ng-container *ngIf="this.disa">
+                <nz-option [nzLabel]="dataBase.agreementNo" [nzValue]="dataBase.agreementNo">
+                </nz-option>
+              </ng-container>
             </nz-select>
             <nz-form-explain *ngIf="
                 validateForm.get('agreementNo')?.dirty &&
