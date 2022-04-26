@@ -1,0 +1,87 @@
+<nz-card class="title_warpper mb-4">
+  <div>
+    <h4 class="font-weight-bold">
+      <span>我的报表</span>
+    </h4>
+  </div>
+</nz-card>
+
+<nz-card [nzBodyStyle]="{ padding: '12px' }">
+  <form nz-form [formGroup]="formValues">
+    <div nz-row >
+      <div nz-col [nzMd]="6" [nzSm]="12" [nzXs]="24">
+        <nz-form-item>
+          <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="status">申请状态</nz-form-label>
+          <nz-form-control [nzSm]="18" [nzXs]="24">
+            <nz-select id="status" formControlName="status" nzAllowClear nzPlaceHolder="请选择" nzMode="multiple">
+              <nz-option *ngFor="let status of selectOptions.statuses" [nzValue]="status.value" [nzLabel]="status.label"></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col [nzMd]="6" [nzSm]="12" [nzXs]="24">
+        <nz-form-item>
+          <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="bg">BG</nz-form-label>
+          <nz-form-control [nzSm]="18" [nzXs]="24">
+            <nz-select id="bg" formControlName="bg" nzAllowClear nzPlaceHolder="请选择" nzMode="multiple">
+              <nz-option *ngFor="let bg of selectOptions.bgs" [nzValue]="bg.value" [nzLabel]="bg.label"></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col [nzMd]="6" [nzSm]="12" [nzXs]="24">
+        <nz-form-item>
+          <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="submitDate">提交时间</nz-form-label>
+          <nz-form-control [nzSm]="18" [nzXs]="24">
+            <nz-range-picker nzFormat="yyyy年MM月dd日" style="width: 100%" id="submitDate" formControlName="submitDate"></nz-range-picker>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <div class="mb-2" style="font-weight: 600">导出</div>
+
+    <div nz-row [nzGutter]="16">
+      <div nz-col nzSpan="6">
+        <nz-card nz-row nzFlex [nzBodyStyle]="{ padding: 0 }" style="border: none; background-color: rgb(223, 223, 223); margin-bottom: 0">
+          <div class="export-content bg-gray">
+            <div class="export-img-wrap" nz-col>
+              <img src="../../../../assets/image/excel.svg" alt="" />
+            </div>
+            <span>特批生产报表</span>
+          </div>
+        </nz-card>
+      </div>
+      <div nz-col nzSpan="6">
+        <nz-card nz-row nzFlex [nzBodyStyle]="{ padding: 0 }" style="border: none; background-color: rgb(223, 223, 223); margin-bottom: 0">
+          <div class="export-content bg-gray">
+            <div class="export-img-wrap" nz-col>
+              <img src="../../../../assets/image/excel.svg" alt="" />
+            </div>
+            <span>特批发货报表</span>
+          </div>
+        </nz-card>
+      </div>
+      <div nz-col nzSpan="6">
+        <nz-card nz-row nzFlex [nzBodyStyle]="{ padding: 0 }" style="border: none; background-color: rgb(223, 223, 223); margin-bottom: 0">
+          <div class="export-content bg-gray">
+            <div class="export-img-wrap" nz-col>
+              <img src="../../../../assets/image/excel.svg" alt="" />
+            </div>
+            <span>特批延保报表</span>
+          </div>
+        </nz-card>
+      </div>
+      <div nz-col nzSpan="6">
+        <nz-card nz-row nzFlex [nzBodyStyle]="{ padding: 0 }" style="border: none; background-color: rgb(223, 223, 223); margin-bottom: 0">
+          <div class="export-content bg-gray">
+            <div class="export-img-wrap" nz-col>
+              <img src="../../../../assets/image/excel.svg" alt="" />
+            </div>
+            <span>特批额外费用报表</span>
+          </div>
+        </nz-card>
+      </div>
+    </div>
+  </form>
+</nz-card>

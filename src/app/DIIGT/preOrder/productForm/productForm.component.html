@@ -122,7 +122,7 @@
       <nz-form-item>
         <nz-form-label nzXXl="10" nzXl="10" nzSm="10"><span>Apply for Pre-Book</span><br> 申请Pre-Book</nz-form-label>
         <nz-form-control [nzSm]="10" [nzXs]="24" style="margin-top: 15px">
-          <nz-radio-group formControlName="isPrebookApply"   [(ngModel)]="dataBase.isPrebookApply">
+          <nz-radio-group formControlName="isPrebookApply" [(ngModel)]="dataBase.isPrebookApply">
             <label nz-radio disabled nzValue="1" (click)="prebookModel($event)">Y 是</label>
             <label nz-radio disabled nzValue="0" (click)="prebookModel($event)">N 否</label>
           </nz-radio-group>

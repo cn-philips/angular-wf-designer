@@ -1305,6 +1305,7 @@ export class PreOrderBaseInfoComponent implements OnInit {
   }
   //外贸公司联动
   foreignup() {
+    
     const foreignTradeCompany = this.dataBase.foreignTradeCompany ? this.dataBase.foreignTradeCompany.replace(/\s+/g, "") : "";
     const distributors = this.dataBase.distributor ? this.dataBase.distributor.replace(/\s+/g, "") : "";
     const contractBuyer2 = this.poolList.find(val => val.corporateName.replace(/\s+/g, "") == foreignTradeCompany);
@@ -1323,8 +1324,7 @@ export class PreOrderBaseInfoComponent implements OnInit {
       }
       this.isForeign(data);
     }
-    ASYNS()
-    this.foreignTradeOff = foreignTradeCompany != distributors ? (select ? false : true) : false;
+    ASYNS()    
     if (!contractBuyer2) {
       this.dataBase.contractBuyer2 = null;
       //如果外贸易公司与经销商相等
@@ -1349,10 +1349,12 @@ export class PreOrderBaseInfoComponent implements OnInit {
     else {
      // this.dataBase.contractBuyer2 = contractBuyer2.corporateName;
       this.dataBase.poolEndDate = standardTime(contractBuyer2.ddpValidUntil);
+      
       this.dataBase.contractDdpStatus = this.isadopt(this.dataBase.poolEndDate, 2);
       // this.validateForm.controls.contractDdpStatus.disable();
       this.validateForm.controls.poolEndDate.disable();
     }
+    this.foreignTradeOff = foreignTradeCompany != distributors ? (select ? false : true) : false;
   }
 
   //经销商协议号列表
@@ -1436,8 +1438,8 @@ export class PreOrderBaseInfoComponent implements OnInit {
   }
   //限制今天之前的日期不能选中
   disabledDate = (current: Date): boolean => differenceInCalendarDays(current, this.today) < 0;
-  changeDate(val) {
-    this.dataBase.contractDdpStatus = this.isadopt(val, 2);
+  changeDate() {
+    this.dataBase.contractDdpStatus = this.isadopt(this.dataBase.poolEndDate, 2);
   }
 
   //判断ddpstatus是否通过
@@ -1484,23 +1486,21 @@ export class PreOrderBaseInfoComponent implements OnInit {
   // }
   //选择iepool
   public changeAgentCnName(event) {
-
-    //this.dataBase.contractBuyer2=event;
-
-    this.getPoolList();
-    this.dataBase.foreignTradeCompany = this.dataBase.contractBuyer2 ? this.dataBase.contractBuyer2 : this.dataBase.foreignTradeCompany;
+    //this.dataBase.contractBuyer2=event;  
+    this.getPoolList(); 
     if (this.poolList && this.poolList.length > 0) {
       let select = this.poolList.find((val) => this.dataBase.contractBuyer2 == val.corporateName);
-      if (select) {
-        this.dataBase.contractDdpStatus = this.isadopt(this.dataBase.poolEndDate, 2);
+      if (select&&event!=this.dataBase.foreignTradeCompany) {
         this.dataBase.foreignTradeCompanyAddress = "";
         this.dataBase.foreignTradeCompanyContacts = "";
         this.dataBase.foreignTradeCompanyPhone = "";
         this.dataBase.foreignTradeCompanyEmail = "";
         this.dataBase.poolEndDate = "";
       }
-      this.dataBase.foreignTradeCompanyAddress = select && select.corporateAddress ? select.corporateAddress : "";
-      this.dataBase.poolEndDate = select && select.ddpValidUntil ? standardTime(select.ddpValidUntil) : "";
+      this.dataBase.foreignTradeCompany = this.dataBase.contractBuyer2 ? this.dataBase.contractBuyer2 : this.dataBase.foreignTradeCompany; 
+      !this.dataBase.foreignTradeCompanyAddress&&(this.dataBase.foreignTradeCompanyAddress = select && select.corporateAddress ? select.corporateAddress : "");
+      !this.dataBase.poolEndDate&&(this.dataBase.poolEndDate = select && select.ddpValidUntil ? standardTime(select.ddpValidUntil) : "");
+      !this.dataBase.contractDdpStatus&&(this.dataBase.contractDdpStatus = this.isadopt(this.dataBase.poolEndDate, 2));
       //外贸公司与prebook申请的外贸公司是否相等
       let data: any;
       const ASYNS = async () => {
@@ -1587,9 +1587,7 @@ export class PreOrderBaseInfoComponent implements OnInit {
             }
             else {
               this.redFlagListPool = "";
-            }
-            const contractBuyer2 = this.poolList.find(val => val.corporateName == this.dataBase.foreignTradeCompany);
-           // contractBuyer2 && (this.dataBase.contractBuyer2 = contractBuyer2.corporateName);
+            }            
             this.foreignup();
           }
         } else {
@@ -1787,7 +1785,9 @@ export class PreOrderBaseInfoComponent implements OnInit {
           this.prebookOff = false;
         }
         const ASYNS = async () => {
-          let getPool = await this.getPoolList();
+          let getPool:any = await this.getPoolList();
+          const contractBuyer2 = getPool.find(val => val.corporateName == this.dataBase.foreignTradeCompany);
+            contractBuyer2 && (this.dataBase.contractBuyer2 = contractBuyer2.corporateName);
           if (this.dataBase.distributor) {
             let distributor = this.dataBase.distributor ? this.dataBase.distributor.replace(/\s+/g, "") : "";
             let getDistributor = await this.distributorLoad(distributor);
@@ -2261,7 +2261,7 @@ export class PreOrderBaseInfoComponent implements OnInit {
       distributorEmail: new FormControl({ value: 'Nancy', disabled: this.disa }, [Validators.required, this.cheakMail]),
       orderSignName: new FormControl({ value: 'Nancy', disabled: this.disa }, Validators.required),
       orderSignPost: new FormControl({ value: 'Nancy', disabled: this.disa }, Validators.required),
-      contractDdpStatus: new FormControl({ value: 'Nancy', disabled: true }, Validators.required),
+      contractDdpStatus: new FormControl({ value: 'Nancy', disabled:true }, Validators.required),
       contractBuyerAddress: new FormControl({ value: 'Nancy', disabled: this.disa }, Validators.required),
       contractBuyerContacts: new FormControl({ value: 'Nancy', disabled: this.disa }, null),
       contractBuyerPhone: new FormControl({ value: 'Nancy', disabled: this.disa }, null),
@@ -2894,7 +2894,7 @@ export class PreOrderBaseInfoComponent implements OnInit {
 
   // 外贸公司是否与经销商相同
   ChangForeign() {
-
+    
     if (this.dataBase.sameFlag === '1') {
       // 将经销商信息赋值给外贸公司
       const ASYNS = async () => {

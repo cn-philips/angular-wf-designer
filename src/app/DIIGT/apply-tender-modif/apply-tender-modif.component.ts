@@ -82,7 +82,8 @@ export class ApplyTenderModifComponent implements OnInit {
     performanceBonds: '', // 履约保证金金额
     productInformations: [
     ], // 产品信息
-    distributorAgreement: []
+    distributorAgreement: [],
+    distributorAgreementList: []
   };
 
   public arr: any = {
@@ -153,6 +154,9 @@ export class ApplyTenderModifComponent implements OnInit {
     this.http.get(url).subscribe((res => {
       if (res.code == '0000') {
         this.load = false;
+        if (res.data && res.data.distributorAgreementList) {
+          this.initAgreetitleList(res.data.distributorAgreementList);
+        }
         this.dataBase = res.data;
         if (this.flag == '0') {
           // 不显示备注和文件
@@ -309,6 +313,7 @@ export class ApplyTenderModifComponent implements OnInit {
     if (processInstanceTaskId != null && processInstanceTaskId !== undefined && processInstanceTaskId !== '') {
       this.dataBase.processInstanceTaskId = processInstanceTaskId;
     }
+    this.initDistributorAgreementList();
     this.http.post(url, this.dataBase).subscribe((res => {
       if (res.code == '0000') {
         this.message.create('success', res.msg);
@@ -482,6 +487,7 @@ export class ApplyTenderModifComponent implements OnInit {
           }
         }
       }
+      this.initDistributorAgreementList();
       this.load = true;
       this.http.post(url, this.dataBase).subscribe((res => {
         if (res.code == '0000') {
@@ -542,4 +548,33 @@ export class ApplyTenderModifComponent implements OnInit {
         })
     })
   }
+
+  public agreetitleList: any = {};
+  // dataBase 提交装载 经销商协议 数据结构
+  // 添加 授权产品 授权区域
+  public initDistributorAgreementList() {
+    this.dataBase.distributorAgreementList = [];
+    if (this.dataBase && this.dataBase.distributorAgreement) {
+      for (let i = 0; i < this.dataBase.distributorAgreement.length; i++) {
+        this.dataBase.distributorAgreementList.push({
+          dealerAgreement: this.dataBase.distributorAgreement[i],
+          authorizedProduct: this.agreetitleList[this.dataBase.distributorAgreement[i]] ? this.agreetitleList[this.dataBase.distributorAgreement[i]].authorizedProduct : '',
+          authorizedArea: this.agreetitleList[this.dataBase.distributorAgreement[i]] ? this.agreetitleList[this.dataBase.distributorAgreement[i]].authorizedArea : ''
+        });
+      }
+    }
+  }
+
+  // 读取装载 将读取的 distributorAgreement 便利到 agreetitleList
+  public initAgreetitleList(distributorAgreementList) {
+    if (distributorAgreementList) {
+      for (let i = 0; i < distributorAgreementList.length; i++) {
+        this.agreetitleList[distributorAgreementList[i].dealerAgreement]  = {
+          authorizedProduct: distributorAgreementList[i].authorizedProduct,
+          authorizedArea: distributorAgreementList[i].authorizedArea
+        };
+      }
+    }
+  }
+
 }

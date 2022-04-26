@@ -759,16 +759,11 @@
                              nzFor="email">Distributor Agreement<br>经销商协议
               </nz-form-label>
               <nz-form-control nzXs="24" nzSm="24" nzMd="12">
+                <!--不可操作-->
                 <ng-template [ngIf]="isDisable">
-                  <div nz-tooltip [nzTitle]="titleTemplate" (mouseenter)="AgreeTitle()" nzOverlayClassName="tooltip-pree" nzPlacement="bottom" nzMouseLeaveDelay="0.2">
+                  <div nz-tooltip [nzTitle]="titleTemplateDis" nzOverlayClassName="tooltip-pree" nzPlacement="bottom" nzMouseLeaveDelay="0.2">
                   <nz-select [disabled]="isDisable" style="min-width:180px;width:100%"
                              [ngModelOptions]="{standalone: true}" [(ngModel)]="dataBase.distributorAgreement" nzMode="multiple">
-                    <!--                    <nz-option *ngFor="let item of distributorAgreementList let i=index" [nzValue]="item.value" [nzLabel]="item.name">-->
-                    <!--                    </nz-option>-->
-<!--                    <ng-container *ngFor="let item of selAgent_all let i=index">-->
-<!--                      <nz-option *ngIf="item.dealerCode == this.dataBase.dealerNo" [nzValue]="item.agreementNo" [nzLabel]="item.agreementNo">-->
-<!--                      </nz-option>-->
-<!--                    </ng-container>-->
                     <ng-container *ngFor="let item of dataBase.distributorAgreement let i=index">
                       <nz-option [nzValue]="item" [nzLabel]="item">
                       </nz-option>
@@ -777,10 +772,17 @@
                   </div>
                   <!--                  <a *ngIf="mess_ddp" style="color: #f5222d">无经销商DDP信息，请重新选择或输入经销商/投标公司信息。</a>-->
                 </ng-template>
+                <ng-template #titleTemplateDis>
+                    <pre *ngFor="let item of dataBase.distributorAgreementList"><ng-container>{{item.dealerAgreement}}
+{{'授权产品：' + item.authorizedProduct}}
+{{'授权区域：' + item.authorizedArea}}</ng-container>
+                    </pre>
+                </ng-template>
+                <!--可操作-->
                 <ng-template [ngIf]="!isDisable">
-                  <div nz-tooltip [nzTitle]="titleTemplate" (mouseenter)="AgreeTitle()" nzOverlayClassName="tooltip-pree" nzPlacement="bottom" nzMouseLeaveDelay="0.2">
+                  <div nz-tooltip [nzTitle]="titleTemplate" nzOverlayClassName="tooltip-pree" nzPlacement="bottom" nzMouseLeaveDelay="0.2">
                   <nz-select [disabled]="isDisable" style="min-width:180px;width:100%" formControlName="distributorAgreement"
-                             [(ngModel)]="dataBase.distributorAgreement" nzMode="multiple" [nzLoading]="selAgent_all_loading">
+                             [(ngModel)]="dataBase.distributorAgreement" nzMode="multiple" [nzLoading]="selAgent_all_loading" (ngModelChange)="AgreeTitle()">
                     <!--                    <nz-option *ngFor="let item of distributorAgreementList let i=index" [nzValue]="item.value" [nzLabel]="item.name">-->
                     <!--                    </nz-option>-->
                     <ng-container *ngFor="let item of selAgent_all let i=index">
