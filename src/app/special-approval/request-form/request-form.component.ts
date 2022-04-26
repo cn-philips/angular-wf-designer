@@ -137,7 +137,15 @@ export class RequestFormComponent implements OnInit {
     ccInfo: this.fb.group({
       ccType: [null], // 抄送类型
       ccPerson: [[]] // 抄送人
-    })
+    }),
+    exchangeInfo: this.fb.group({
+      exchangeType: [null], // 换货类型
+      exchangeMethod: [null], // 换货方式
+      cost: [null]
+    }),
+    orderDifferencesInfo:this.fb.group({
+      orderDifferences: [[]]
+    }),
   })
 
   ngOnInit(): void {
@@ -217,6 +225,14 @@ export class RequestFormComponent implements OnInit {
 
   get ccInfo(): FormGroup {
     return this.formValues.get('ccInfo') as FormGroup
+  }
+
+  get exchangeInfo(): FormGroup {
+    return this.formValues.get('exchangeInfo') as FormGroup
+  }
+
+  get orderDifferencesInfo(): FormGroup {
+    return this.formValues.get('orderDifferencesInfo') as FormGroup
   }
 
   setFormValidators(type, item, bg) {
