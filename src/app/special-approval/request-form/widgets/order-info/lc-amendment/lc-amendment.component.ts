@@ -31,11 +31,10 @@ import {SpecialApprovalService} from '../../../../special-approval.service';
 export class LcAmendmentOrderInfoComponent implements OnInit {
   showDealerArea: boolean = false;
 
-  private http: any;
-  private orderstatuslist=[{label:11,value:22}];//订单状态
-  private paymentlist: any;  //支付方式
-  private modfyentrylist: any;//修改条目
-  private cancelreasonlist: any;  //取消原因
+  orderStatusList= [{ label:11, value:22 }];//订单状态
+  paymentList: any;  //支付方式
+  modfyentryList: any;//修改条目
+  cancelReasonList: any;  //取消原因
   constructor(
     private spService: SpecialApprovalService,
   ) {
@@ -202,19 +201,19 @@ export class LcAmendmentOrderInfoComponent implements OnInit {
 
 // 获取订单状态列表
   async getOrderStatusList(){
-    this.orderstatuslist = await this.spService.getOrderStatusList();
+    this.orderStatusList = await this.spService.getOrderStatusList();
   }
   // 获取费用支付方式
   async getPaymentList(){
-   this.paymentlist = await this.spService.getPaymentList();
+   this.paymentList = await this.spService.getPaymentList();
   }
   // 获取修改条目
   async getModifyEntryList(){
-    this.modfyentrylist = await this.spService. getModifyEntryList();
+    this.modfyentryList = await this.spService.getModifyEntryList();
   }
   // 获取取消原因
   async getcancelReasonList() {
-    this.cancelreasonlist = await this.spService. getcancelReason();
+    this.cancelReasonList = await this.spService.getcancelReason();
   }
   //是否接受L/C discrepancy
   lcDiscrepancyModel($event) {

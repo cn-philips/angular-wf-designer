@@ -54,7 +54,7 @@
           <nz-form-label nzXl="8" nzXXl="6" nzRequired>订单状态</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <nz-select nzPlaceHolder="请先选择"  formControlName="orderStatus">
-                <nz-option *ngFor="let item of orderstatuslist" [nzLabel]="item.label" [nzValue]="item.label"></nz-option>
+                <nz-option *ngFor="let item of orderStatusList" [nzLabel]="item.label" [nzValue]="item.label"></nz-option>
             </nz-select>
             <nz-form-explain *ngIf="formValues.get('orderStatus')?.dirty && formValues.get('orderStatus')?.errors">
               请填写订单状态
@@ -148,7 +148,7 @@
           <nz-form-label nzXl="9" nzXXl="7" nzRequired>是否接受L/C discrepancy</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <nz-form-control nzSpan="7" style="margin-top: 10px">
-              <nz-radio-group formControlName="acceptLcDiscrepancy" [(ngModel)] = "lcInfo.acceptLcDiscrepancy" >
+              <nz-radio-group formControlName="acceptLcDiscrepancy" >
                 <label nz-radio nzValue="1" (click)="lcDiscrepancyModel($event)">Yes</label>
                 <label nz-radio nzValue="0" (click)="lcDiscrepancyModel($event)">No</label>
               </nz-radio-group>
@@ -161,7 +161,7 @@
           <nz-form-label nzXl="9" nzXXl="8" nzRequired="true">L/C discrepancy费用支付方式</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <nz-select  nzPlaceHolder="请先选择" formControlName="lcDiscrepancyPaymentMethod" >
-              <nz-option *ngFor="let item of paymentlist" [nzLabel]="item.label" [nzValue]="item.label">
+              <nz-option *ngFor="let item of paymentList" [nzLabel]="item.label" [nzValue]="item.label">
               </nz-option>
             </nz-select>
             <nz-form-explain *ngIf="formValues.get('lcDiscrepancyPaymentMethod')?.dirty && formValues.get('lcDiscrepancyPaymentMethod')?.errors">
@@ -179,7 +179,7 @@
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <nz-select  class="select"  nzShowSearch nzAllowClear
                         nzPlaceHolder="选择其他时填写说明" changeOrderModify  formControlName="modifyEntry">
-              <nz-option *ngFor="let item of modfyentrylist" [nzLabel]="item.label" [nzValue]="item.label"></nz-option>
+              <nz-option *ngFor="let item of modfyentryList" [nzLabel]="item.label" [nzValue]="item.label"></nz-option>
             </nz-select>
           </nz-form-control>
           <nz-form-explain *ngIf="formValues.get('modifyEntry')?.dirty && formValues.get('modifyEntry')?.errors">
@@ -203,7 +203,7 @@
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <nz-select  class="select"  nzShowSearch nzAllowClear
                         nzPlaceHolder="选择其他时填写说明" formControlName="cancelReason">
-              <nz-option *ngFor="let item of cancelreasonlist" [nzLabel]="item.label" [nzValue]="item.label"></nz-option>
+              <nz-option *ngFor="let item of cancelReasonList" [nzLabel]="item.label" [nzValue]="item.label"></nz-option>
             </nz-select>
             <nz-form-explain *ngIf="formValues.get('cancelReason')?.dirty && formValues.get('cancelReason')?.errors">
               请填写取消原因

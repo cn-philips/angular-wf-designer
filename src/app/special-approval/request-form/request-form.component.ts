@@ -330,6 +330,10 @@ export class RequestFormComponent implements OnInit {
       this.basicInfo.controls.applyItem.disable();
     }
 
+    if (type !== APPLY_TYPE.LC_AMENDMENT) {
+      this.orderInfo.controls.orderStatus.clearValidators()
+    }
+
     if (bg === 'PD&IGT') {
       this.orderInfo.controls.referenceId.disable();
       if (type !== APPLY_TYPE.LC_AMENDMENT) {
@@ -503,7 +507,7 @@ export class RequestFormComponent implements OnInit {
       this.basicInfo.controls[i].updateValueAndValidity();
     }
     const data = this.getFormData()
-    const { orderInfo, ccType, ccPerson, orderInfos } = data
+    const { ccType, ccPerson, orderInfos } = data
     let hasError = false
     switch(this.applyType) {
       case APPLY_TYPE.RDD_OIT:
@@ -526,7 +530,7 @@ export class RequestFormComponent implements OnInit {
           this.orderInfo.controls[i].updateValueAndValidity();
         }
         // 医院和经销商必填一项
-        const { businessModel, hospitalNo, dealerCode } = orderInfo
+        const { businessModel, hospitalNo, dealerCode } = orderInfos[0]
         if (businessModel === BUSINESS_MODEL.DISTRIBUTOR_DEAL) {
           if (!hospitalNo && !dealerCode) {
             this.message.error('请选择医院或者经销商')
@@ -612,6 +616,7 @@ export class RequestFormComponent implements OnInit {
             products: orderInfos[0].products || []
           }
         });
+        this.setFormValidators(applyType, applyItem, orderInfos[0].bg)
       } else if (applyType === APPLY_TYPE.LC_AMENDMENT) {
         this.formValues.patchValue({
           orderInfo: {
@@ -661,7 +666,6 @@ export class RequestFormComponent implements OnInit {
         })
         this.setFormValidators(applyType, applyItem, orderInfos[0].bg)
       }
-      this.setFormValidators(applyType, applyItem, orderInfos[0].bg);
 
       const userSet = new Set<string>();
       nodeInfoList.forEach(({ approverList }) => approverList.forEach(({ user }) => {
