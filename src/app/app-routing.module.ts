@@ -94,6 +94,7 @@ import {
   ViewComponent,
   WaitingApproveComponent,
   RequestFormComponent,
+  ReportComponent as SpReportComponent,
 } from './special-approval/special-approval.module'
 // *******************************************************************************
 // Routes
@@ -416,9 +417,9 @@ const routes: Routes = [
       { path: 'request', component: RequestComponent },
       { path: 'draft', component: DraftComponent },
       { path: 'view', component: ViewComponent },
-      { path: 'report', component: ReportComponent },
       { path: 'new-request', component: RequestFormComponent },
       { path: 'request/:requestId', component: RequestFormComponent },
+      { path: 'report', component: SpReportComponent },
     ]
   },
   // New Admin settings

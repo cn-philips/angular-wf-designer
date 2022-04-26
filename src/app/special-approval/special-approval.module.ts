@@ -9,6 +9,7 @@ import { RequestComponent } from "./request/request.component";
 import { ViewComponent } from "./view/view.component";
 import { WaitingApproveComponent } from "./waiting-approve/waiting-approve.component";
 import { RequestFormComponent } from "./request-form/request-form.component";
+import { ReportComponent } from "./report/report.component";
 
 // widget
 import { BasicInfoComponent } from "./request-form/widgets/basic-info/basic-info.component";
@@ -22,14 +23,14 @@ import { ApproveFormComponent } from "./request-form/widgets/approve-form/approv
 import { FeedbackComponent } from "./request-form/widgets/feedback/feedback.component";
 import { ApproveHistoryComponent } from "./request-form/widgets/approve-history/approve-history.component";
 import { SelectReferenceComponent } from "./request-form/widgets/select-reference/select-reference.component";
-import { UploadFileListComponent } from './request-form/widgets/upload-file-list/upload-file-list.component'
-import { ProductListComponent } from './request-form/widgets/product-list/product-list.component'
-import { ProductionOrderInfoComponent } from './request-form/widgets/order-info/production/production.component'
-import { WarrantyOrderInfoComponent } from './request-form/widgets/order-info/warranty/warranty.component';
-import { TransportationOrderInfoComponent } from './request-form/widgets/order-info/transportation/transportation.component';
-import { MachineComponent } from './request-form/widgets/order-info/machine/machine.component';
+import { UploadFileListComponent } from "./request-form/widgets/upload-file-list/upload-file-list.component";
+import { ProductListComponent } from "./request-form/widgets/product-list/product-list.component";
+import { ProductionOrderInfoComponent } from "./request-form/widgets/order-info/production/production.component";
+import { WarrantyOrderInfoComponent } from "./request-form/widgets/order-info/warranty/warranty.component";
+import { TransportationOrderInfoComponent } from "./request-form/widgets/order-info/transportation/transportation.component";
+import { MachineComponent } from "./request-form/widgets/order-info/machine/machine.component";
 import { AdditionalInstallationCostComponent } from "./request-form/widgets/order-info/additional-installation-cost/additional-installation-cost.component";
-import { LcAmendmentOrderInfoComponent } from './request-form/widgets/order-info/lc-amendment/lc-amendment.component'
+import { LcAmendmentOrderInfoComponent } from "./request-form/widgets/order-info/lc-amendment/lc-amendment.component";
 import { RddOitOrderInfoComponent } from "./request-form/widgets/order-info/rdd-oit/rdd-oit.component";
 
 const COMPONENTS = [
@@ -40,6 +41,7 @@ const COMPONENTS = [
   ViewComponent,
   WaitingApproveComponent,
   RequestFormComponent,
+  ReportComponent,
 ];
 const WIDGETS = [
   ApproveHistoryComponent,
@@ -72,6 +74,7 @@ export {
   ViewComponent,
   WaitingApproveComponent,
   RequestFormComponent,
+  ReportComponent,
 };
 
 @NgModule({
