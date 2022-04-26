@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from "@angular/core";
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { NzMessageService } from "ng-zorro-antd";
 import { BehaviorSubject, Observable } from "rxjs";
 import { debounceTime, map, switchMap } from "rxjs/operators";
@@ -10,7 +10,7 @@ import {
   APPROVE_NODE_ACTION,
   APPROVE_NODE_MODE,
 } from "../../../../DIIGT/change-scene/special-approval-setting/special-approval-setting.constants";
-import { ERROR_MESSAGE, LOADING_MESSAGE, SUCCESS_MESSAGE } from "../../../special-approval.constants";
+import { ERROR_MESSAGE, LOADING_MESSAGE, SUCCESS_MESSAGE, APPLY_TYPE } from "../../../special-approval.constants";
 
 interface Approver {
   role: string;
@@ -46,6 +46,9 @@ interface User {
 })
 export class SelectApproverComponent implements OnInit {
   @Output() success = new EventEmitter()
+  @Input() applyType: string
+
+  APPLY_TYPE = APPLY_TYPE
 
   visible = false;
   modalLoading = false;
@@ -105,6 +108,11 @@ export class SelectApproverComponent implements OnInit {
       this.modalLoading = true;
       const data = await this.spService.submitCheckRequest(request);
       this.requestInfo = data;
+      if (this.applyType === APPLY_TYPE.MACHINE_EXCHANGE){
+        this.requestInfo.activeNodeInfoList.filter((node, index) => index === 3 || index === 4).forEach(node => {
+          node.custom = true;
+        })
+      }
     } catch ({ message }) {
       this.message.error(`获取审批人失败, 请稍候重试`);
       this.onHideModal();
