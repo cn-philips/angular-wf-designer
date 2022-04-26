@@ -20,7 +20,7 @@
             <div *ngIf="node.custom" style="display: flex;align-items: center;">
               <span>用户选择</span>
               <nz-select style="flex: 1;margin-left: 8px;" [(ngModel)]="node.customApproveList"
-                [nzMode]="node.mode === APPROVE_NODE_MODE.PARALLEL ? 'multiple' : 'default'" nzPlaceHolder="输入邮箱查询"
+                [nzMode]="node.mode === APPROVE_NODE_MODE.PARALLEL || applyType === APPLY_TYPE.MACHINE_EXCHANGE ? 'multiple' : 'default'" nzPlaceHolder="输入邮箱查询"
                 nzShowSearch nzAllowClear [nzServerSearch]="true" (nzOnSearch)="onSearchUser($event)">
                 <ng-container *ngFor="let user of userList">
                   <nz-option *ngIf="!isSearchLoading" [nzValue]="user.email" [nzLabel]="user.email"
