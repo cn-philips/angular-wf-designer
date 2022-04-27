@@ -21,11 +21,11 @@ import {
 } from "../../special-approval-setting.constants";
 
 interface User {
-  id: number;
-  code: string;
+  id?: number;
+  code?: string;
   email: string;
-  name: string;
-  displayName: string;
+  name?: string;
+  displayName?: string;
 }
 
 export enum FORM_MODE {
@@ -191,11 +191,14 @@ export class ApproveNodeFormComponent implements OnInit {
       }
 
       if (mode === APPROVE_NODE_MODE.PARALLEL) {
+        const approvers = approver ? approver.split(",") : []
+        this.userList = approvers.map((email) => ({ email }))
         this.formValues.patchValue({
-          approver: approver ? approver.split(",") : approver,
+          approver: approvers,
           approveRole: approveRole ? approveRole.split(",") : approveRole,
         });
       } else {
+        this.userList = [{ email: approver }]
         this.formValues.patchValue({
           approver,
           approveRole,
