@@ -756,21 +756,6 @@ public params:any={
      this.dataBase.biddingDdpDate = this.dataBase.agreementDealerDdpDate;
      this.biddingDdpDateChange();
 
-     // if (this.ddp_history[this.dataBase.agreementAgenName] != null) {
-     //   this.dataBase.biddingDdpState = this.ddp_history[this.dataBase.agreementAgenName];
-     //   this.mess_ddp = this.mess_ddp_history[this.dataBase.agreementAgenName] == true ? true : false;
-     // } else if (this.dataBase.agreementAgenName == null || this.dataBase.agreementAgenName === '') {
-     //   this.dataBase.biddingDdpState = null;
-     // } else {
-     //   // 查询投标公司ddp状态是否通过
-     //   const d = {
-     //     total: 0,
-     //     pageNo: 1,
-     //     pageSize: 5,
-     //     dealerName: this.dataBase.agreementAgenName
-     //   };
-     //   this.getSelAgent(d);
-     // }
    } else if (agentBidding === 'agency' && this.dataBase.biddingNames !== '' && this.dataBase.biddingNames != null) {
     this.validateForm.controls.biddingNames.enable();
     this.validateForm.controls.agreementAgenName.disable();
@@ -1253,9 +1238,15 @@ public params:any={
    }
    // this.IsApproved();
   }
-  //弹出协议商选择弹出框
-  showAgre() {
+
+  public firstAgentInitAgre = true;
+  // 弹出协议商选择弹出框
+  public showAgre() {
     this.isAgre = true;
+    if (this.firstAgentInitAgre) {
+      this.child2.agentInit();
+      this.firstAgentInitAgre = false;
+    }
   }
   //取消弹窗
   isAgreCancel() {
@@ -1337,19 +1328,18 @@ public params:any={
     }
 
     this.AgreeTitle();
-    // this.getSelAgent({
-    //   total: 0,
-    //   pageNo: 1,
-    //   pageSize: 5,
-    //   dealerName: this.dataBase.agreementAgenName
-    // });
   }
 
 
 
-  //弹出投标选择代理商
-  showAgent() {
+  public firstAgentInitBid = true;
+  // 弹出投标选择代理商
+  public showAgent() {
     this.isBid = true;
+    if (this.firstAgentInitBid) {
+      this.child1.agentInit();
+      this.firstAgentInitBid = false;
+    }
     this.params=Object(this.params);
   }
   //取消弹窗
@@ -1591,53 +1581,6 @@ changeLogisticsDescription(){
     } else {
       this.dataBase.agreementDealerDdpState = '未通过';
     }
-  }
-
-// 获取模板参数
-  getSelAgent (data) {
-    const url = `/act/ecom/bidding/selAgent`;
-    this.http.post(url, data).subscribe((res => {
-          if (res.data && res.data.rows && res.data.rows.length > 0) {
-            // this.dataBase.biddingComRegAddress = res.data.rows[0].registeredAddress; //投标公司地址
-            // this.dataBase.biddingComRegCode = res.data.rows[0].registeredAddress; //投标公司所在地
-            if (res.data.rows[0].authorizedProduct == null) {
-              this.dataBase.productModels = '';
-            } else {
-              this.dataBase.productModels = res.data.rows[0].authorizedProduct;
-            }
-            if (res.data.rows[0].authorizedArea == null) {
-              this.dataBase.region = '';
-            } else {
-              this.dataBase.region = res.data.rows[0].authorizedArea;
-            }
-
-            // if (res.data.rows[0].ddpStatus === '通过' && this.dataBase && this.dataBase.agentBidding === 'nonagency') {
-            //   this.dataBase.biddingDdpState = res.data.rows[0].ddpStatus;
-            //   // 记录ddp历史状态
-            //   this.ddp_history[res.data.rows[0].dealerName] = '通过';
-            // } else if (res.data.rows[0].ddpStatus !== '通过' && this.dataBase && this.dataBase.agentBidding === 'nonagency'){
-            //   // 记录ddp历史状态
-            //   this.dataBase.biddingDdpState = '未通过';
-            //   this.ddp_history[res.data.rows[0].dealerName] = '未通过';
-            // }
-            if (res.data.rows[0].ddpStatus == null || res.data.rows[0].ddpStatus === '') {
-              this.mess_ddp = true;
-              this.mess_ddp_history[res.data.rows[0].dealerName] = true;
-            } else {
-              this.mess_ddp = false;
-            }
-          } else {
-            // 没有查到数据
-            this.mess_ddp = true;
-            // this.dataBase.biddingDdpState = '未通过';
-            // 记录ddp历史状态
-            // this.ddp_history[data.dealerName] = '未通过';
-            this.mess_ddp_history[data.dealerName] = true;
-          }
-      }),
-      ((error) => {
-        // this.message.create("error", "请求异常!")
-      }));
   }
 
   /*监听input设置数字*/

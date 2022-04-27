@@ -43,10 +43,10 @@ export class InorderInComponent implements OnInit {
  {
   const existsChange=!this.disa;
    let url=`/act/preparation/getContractCancel?existsChange=${existsChange}`;
-   this.http.get(url).subscribe(rest => {     
+   this.http.get(url).subscribe(rest => {
       this.contractCancelList=rest.data;
     })
- } 
+ }
  //跳转到合同概要表
 public gotoWinIncon(item)
 {
@@ -75,13 +75,13 @@ public gotoWinIncon(item)
     this.getfinancialList();
     this.paymentMethod();
     this.getContractCancel();
-   
+
     this.disa=state=='DTXHT'?false:true
-   // this.getWinUrl();   
+   // this.getWinUrl();
   }
   //跳转到prebook链接
-  public gotoWin(item) {       
-    console.log(location.origin + environment.base_href + '/#/' + 'prebookso?id=' + codeString(item) + '&flag=1');    
+  public gotoWin(item) {
+    console.log(location.origin + environment.base_href + '/#/' + 'prebookso?id=' + codeString(item) + '&flag=1');
     window.open(location.origin + environment.base_href + '/#/' + 'prebookso?id=' + codeString(item) + '&flag=1&status=prebook_end');
   }
   //经销用户列表
@@ -93,13 +93,13 @@ public gotoWinIncon(item)
      }
     return new Promise((resolve, reject) => {
       this.http.post(`/act/preparation/getDealersOnlyWithRegFlag`,params).subscribe((rest => {
-        if (rest.code === '0000') {          
+        if (rest.code === '0000') {
           let select=rest.data.rows;
           this.distributorOff=select.length>0?false:true;
           if(select.length>0)
           {
             this.redFlagList=select[0].reminderMessage!=null?select[0].reminderMessage:"";
-          }          
+          }
           resolve(rest.data)
         }
       }), (error => {
@@ -111,7 +111,7 @@ public gotoWinIncon(item)
     // 进单准备表-选择经销商
     this.http.get(`/act/preparation/chooseDistributor`).subscribe((rest => {
       if (rest.code === '0000') {
-        
+
         let distributorList = rest.data;
          let select=distributorList.find(vals=>vals.dealerName==this.dataBase.agent);
          if(select&&select.reminderMessage)
@@ -120,7 +120,7 @@ public gotoWinIncon(item)
          }
          else{
           this.redFlagList="";
-         }        
+         }
       } else {
         // this.message.create('error', `${rest.msg}`);
       }
@@ -131,10 +131,10 @@ public gotoWinIncon(item)
   public getPoolList() {
     // 进单准备表-IE Pool选择
     this.http.get(`/act/preparation/chooseIePool`).subscribe((rest => {
-      if (rest.code === '0000') {        
+      if (rest.code === '0000') {
         let poolList = rest.data;
         if (this.dataBase.invoiceInformation == 'USD') {
-          const foreignTradeCompany = this.dataBase.foreignTradeCompany ? this.dataBase.foreignTradeCompany.replace(/\s+/g, "") : "";          
+          const foreignTradeCompany = this.dataBase.foreignTradeCompany ? this.dataBase.foreignTradeCompany.replace(/\s+/g, "") : "";
           const distributors = this.dataBase.distributor ? this.dataBase.distributor.replace(/\s+/g, "") : "";
           let select= poolList.find(vals=>vals.corporateName.replace(/\s+/g, "")==foreignTradeCompany);
           if (this.dataBase.foreignTradeCompany) {
@@ -146,10 +146,10 @@ public gotoWinIncon(item)
           if(select&&select.reminderMessage)
           {
             this.redFlagListPool=select.reminderMessage;
-          } 
+          }
           else{
             this.redFlagListPool="";
-          }          
+          }
         }
       } else {
         //this.message.create('error', `${rest.msg}`);
@@ -160,7 +160,7 @@ public gotoWinIncon(item)
   }
 
    //付款条款列表的组合模式
-   public paymentMethod() {               
+   public paymentMethod() {
     const params = {
       dictGroup: '',
     };
@@ -227,26 +227,26 @@ public gotoWinIncon(item)
         params.dictGroup = 'SDisU';
         // this.dataBase.paymentDescription="";
       }
-    }   
-     
-    if (params.dictGroup != '') {      
+    }
+
+    if (params.dictGroup != '') {
       this.http.post(`/act/ecom/dictData/queryGroupDictData`, params).subscribe((rest => {
-        if (rest.code === '0000') {          
-            this.dataBase.paymentList = rest.data;  
+        if (rest.code === '0000') {
+            this.dataBase.paymentList = rest.data;
             if(this.dataBase.paymentProvision=='0'||this.dataBase.paymentProvision=='1')
             {
-              let selectId=this.dataBase.paymentList.find(val=>val.remark==this.dataBase.paymentProvision); 
+              let selectId=this.dataBase.paymentList.find(val=>val.remark==this.dataBase.paymentProvision);
               this.dataBase.paymentProvision=selectId.dictId
-            }           
-            let paymentmethod= this.dataBase.paymentList.find(val=>val.dictLabel==this.dataBase.paymentProvision);            
+            }
+            let paymentmethod= this.dataBase.paymentList.find(val=>val.dictLabel==this.dataBase.paymentProvision);
             if(paymentmethod)
             {
-              this.dataBase.paymentmethods=paymentmethod.dictId; 
+              this.dataBase.paymentmethods=paymentmethod.dictId;
             }
             else{
             let select=this.dataBase.paymentList.find(val=>val.dictLabel=='其他');
             this.dataBase.paymentmethods=select.dictId;
-            } 
+            }
         }
       }),(error=>{
         this.message.create("error","请求异常");
@@ -254,7 +254,7 @@ public gotoWinIncon(item)
     }
     else{
       this.dataBase.paymentList=null;
-     
+
     }
   }
 
@@ -263,7 +263,7 @@ public gotoWinIncon(item)
     this.mainId = decodeString(this.activatedRouter.queryParams['_value'].id);
     if(this.dataBase)
     {
-      
+
       this.dataBase.lateDayOff=false;
       this.dataBase.lateDateOff=false;
       this.dataBase.ddpStatus = this.isadopt(this.dataBase.contractEndDate,1);
@@ -277,14 +277,14 @@ public gotoWinIncon(item)
      {
       this.getBasePrebook(this.dataBase.prebookMainId);
      }
-    
- 
+
+
       if(this.dataBase.entryMode&&this.dataBase.entryMode == 'BIDDING')
       {
         this.getWinUrl();
       }
       this.dealerCodeList();
-    }    
+    }
   }
  //判断外贸易公司是否在prebook
   getBasePrebook(mainId) {
@@ -292,7 +292,7 @@ public gotoWinIncon(item)
     // 获取基础信息数据
     return new Promise((resolve, reject) => {
       this.http.get(url).subscribe(res => {
-        
+
         if (res.code === '0000') {
           if (res.data) {
 
@@ -310,28 +310,28 @@ public gotoWinIncon(item)
     })
   }
  //判断ddpstatus是否通过
- isadopt(param,number) {    
-  if (param) {      
+ isadopt(param,number) {
+  if (param) {
     let endDates = new Date(param);
     let year = endDates.getFullYear();
     let month = endDates.getMonth()+1;
     let day = endDates.getDate();
     let overdue=`${year}-${month}-${day}`;
     let overDate=new Date(overdue).setHours(0, 0, 0, 0);
-    let endDate = new Date(overDate).getTime();     
+    let endDate = new Date(overDate).getTime();
     let nowDate = new Date(new Date().setHours(0, 0, 0, 0)).getTime()
-    let iRemain:any= (endDate - nowDate) / 1000;     
+    let iRemain:any= (endDate - nowDate) / 1000;
     iRemain = iRemain / 86400;
     iRemain= parseInt(iRemain) + 1;
     number==1&&(this.dataBase.lateDayOff = iRemain <= 7 ? true : false);
-    number==2&&(this.dataBase.lateDateOff = iRemain <= 7 ? true : false);          
+    number==2&&(this.dataBase.lateDateOff = iRemain <= 7 ? true : false);
     number==1&&(this.dataBase.laterDay=iRemain);
     number==2&&(this.dataBase.lateDays=iRemain);
-    if (iRemain >=1) 
+    if (iRemain >=1)
     {
       return "通过";
     }
-    else 
+    else
     {
       return "不通过";
     }
@@ -343,18 +343,18 @@ public gotoWinIncon(item)
 
 //经销商协议号列表
 public dealerCodeList()
-{ 
+{
   let dealerCode=this.dataBase.dealerCode;
   if(dealerCode&&this.dataBase.businessModel=='DISTRIBUTOR')
   {
     let url=`/act/preparation/chooseDealer?dealerCode=${dealerCode}`;
-    this.http.get(url).subscribe(rest => {          
+    this.http.get(url).subscribe(rest => {
         this.dealList=rest.data;
-        let dealerAgreementNo=this.dataBase.agreementNo;  
+        let dealerAgreementNo=this.dataBase.agreementNo;
         let select=this.dealList.find(val=>dealerAgreementNo==val.agreementNo);
         !select&&(this.dataBase.agreementNo=null);
     })
-  }  
+  }
 }
 
   //没有文件的显示
@@ -485,28 +485,34 @@ public getEntryModeList() {
     }
   }
 
-     //查看最终用户编号
-     showDiag()
-     {
-      this.dealshow.data=[];
-      let dealerAgreementNo=this.dataBase.agreementNo;  
-      this.isAgres=true;
-      let select=this.dealList.find(val=>dealerAgreementNo==val.agreementNo);
-      if(select)
-      {
-        let obj={
-          authorizedArea:select.authorizedArea,
-          authorizedProduct:select.authorizedProduct
-        } 
-        this.dealshow.data.push(obj) 
-        this.ServesiceService.dealTable.emit(this.dealshow);
-      }   
-  
-     }
-       //取消弹出窗口
-    public isAgreCancels()
-    {
-      this.isAgres=false;
+  // 查看最终用户编号
+  public showDiag() {
+    this.dealshow.data = [];
+    const dealerAgreementNo = this.dataBase.agreementNo;
+    this.isAgres = true;
+    // const select = this.dealList.find(val => dealerAgreementNo === val.agreementNo);
+    // if (select) {
+    //   const obj = {
+    //     authorizedArea: select.authorizedArea,
+    //     authorizedProduct: select.authorizedProduct
+    //   };
+    //   this.dealshow.data.push(obj);
+    //   this.ServesiceService.dealTable.emit(this.dealshow);
+    // }
+    if (this.dataBase && this.dataBase.preparationProductCompany) {
+      // 经销商协议号 禁用查询数据库保存值
+      const obj = {
+        authorizedArea: this.dataBase.preparationProductCompany.authorizedArea,
+        authorizedProduct: this.dataBase.preparationProductCompany.authorizedProduct
+      };
+      this.dealshow.data.push(obj);
+      this.ServesiceService.dealTable.emit(this.dealshow);
     }
+
+  }
+  // 取消弹出窗口
+  public isAgreCancels() {
+    this.isAgres = false;
+  }
 
 }
