@@ -135,7 +135,7 @@
             <nz-form-item>
               <nz-form-label nzXl="8" nzXXl="6" nzRequired>业务模式</nz-form-label>
               <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-                <nz-select formControlName="businessModel" nzPlaceHolder="请选择业务模式" (ngModelChange)="onBusinessModelChange($event)">
+                <nz-select formControlName="businessModel" nzPlaceHolder="请选择业务模式">
                   <nz-option *ngFor="let item of selectOptions.businessModels" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
                 </nz-select>
                 <nz-form-explain *ngIf="ord.get('businessModel')?.dirty && ord.get('businessModel')?.errors">
@@ -146,7 +146,7 @@
           </div>
         </div>
 
-        <div nz-row nzType="flex" nzJustify="start" nzAlign="middle" *ngIf="showDealerArea">
+        <div nz-row nzType="flex" nzJustify="start" nzAlign="middle" *ngIf="i === 0 ? showOrder1DealerArea : showOrder2DealerArea">
           <div nz-col nzXs="24" nzSm="24" nzMd="12">
             <nz-form-item>
               <nz-form-label nzXl="8" nzXXl="6">经销商名称</nz-form-label>

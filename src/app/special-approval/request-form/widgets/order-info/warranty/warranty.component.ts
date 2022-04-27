@@ -30,8 +30,6 @@ import {
   styleUrls: ["./warranty.component.scss"],
 })
 export class WarrantyOrderInfoComponent implements OnInit {
-  showDealerArea: boolean = false;
-
   constructor() {}
 
   @ViewChild("selectHospital") selectHospital: SelectHospitalComponent;
@@ -62,11 +60,12 @@ export class WarrantyOrderInfoComponent implements OnInit {
     }
   }
 
-  onBusinessModelChange(businessModel) {
-    if (businessModel === BUSINESS_MODEL.DISTRIBUTOR_DEAL) {
-      this.showDealerArea = true;
+  get showDealerArea(): boolean {
+    const businessModel = this.formValues.get('businessModel') as FormControl
+    if (businessModel && businessModel.value === BUSINESS_MODEL.DISTRIBUTOR_DEAL) {
+      return true
     } else {
-      this.showDealerArea = false;
+      return false
     }
   }
 

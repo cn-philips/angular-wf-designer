@@ -21,9 +21,6 @@ import {
   styleUrls: ['./transportation.component.scss']
 })
 export class TransportationOrderInfoComponent implements OnInit {
-
-  showDealerArea: boolean = false
-
   constructor(private spService: SpecialApprovalService) { }
 
 
@@ -61,11 +58,12 @@ export class TransportationOrderInfoComponent implements OnInit {
     }
   }
 
-  onBusinessModelChange(businessModel) {
-    if (businessModel === BUSINESS_MODEL.DISTRIBUTOR_DEAL) {
-      this.showDealerArea = true
+  get showDealerArea(): boolean {
+    const businessModel = this.formValues.get('businessModel') as FormControl
+    if (businessModel && businessModel.value === BUSINESS_MODEL.DISTRIBUTOR_DEAL) {
+      return true
     } else {
-      this.showDealerArea = false
+      return false
     }
   }
 
