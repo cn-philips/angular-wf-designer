@@ -116,8 +116,8 @@ export class MachineComponent implements OnInit {
       res.push(this.orders.at(this.selectIndex).get("hospitalName").value);
     }
 
-    if (productType) {
-      res.push(productType);
+    if (this.orders.at(this.selectIndex).get('productType').value) {
+      res.push(this.orders.at(this.selectIndex).get('productType').value)
     }
 
     this.orders.at(this.selectIndex).patchValue({
@@ -228,28 +228,12 @@ export class MachineComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.initOMUsers();
-    // this.initSales()
-    this.getLeaderEmail();
-    this.formValues.get("exchangeMethod").valueChanges.subscribe(() => {
-      console.log(this.formValues);
-    });
-    if (!this.editable) {
-      this.orders.at(0).patchValue({
-        salesLeader: this.salesLeaders[0],
-        districtLeader: this.districtLeaders[0],
-      });
-      this.orders.at(1).patchValue({
-        salesLeader: this.salesLeaders[1],
-        districtLeader: this.districtLeaders[1],
-      });
-    }
+    this.initOMUsers()
+    this.getLeaderEmail(localStorage.getItem('ng_philips_code1'), 0);
+
     this.orders.at(0).patchValue({
-      saleEmail: localStorage.getItem("ng_philips_code1"),
-    });
-    this.orders.at(1).patchValue({
-      saleEmail: localStorage.getItem("ng_philips_code1"),
-    });
+      saleEmail: localStorage.getItem('ng_philips_code1')
+    })
     if (this.editable) {
       this.orders
         .at(0)
@@ -317,16 +301,16 @@ export class MachineComponent implements OnInit {
   districtList: any = [];
   salesLeaderList: any = [];
 
-  async salesChange() {
-    this.getLeaderEmail();
+  async salesChange(email, index) {
+  this.getLeaderEmail(email, index)
   }
-  async getLeaderEmail() {
-    this.orders.controls.forEach((value) => {
-      value.patchValue({
-        districtLeader: null,
-        salesLeader: null,
-      });
-    });
+  async getLeaderEmail(email: string, index: number){
+    // this.orders.controls.forEach(value => {
+    //   value.patchValue({
+    //     districtLeader: null,
+    //     salesLeader: null
+    //   })
+    // })
     const params = {
       initiatorEmail: localStorage.ng_philips_code1,
       initiatorRole: localStorage.roleCode,
@@ -335,14 +319,20 @@ export class MachineComponent implements OnInit {
     const params1 = {
       initiatorEmail: localStorage.ng_philips_code1,
       initiatorRole: localStorage.roleCode,
-      approverRole: "Sales Leader",
-    };
-    this.districtList = await this.spService.getCustomizeEmail(params);
-    this.salesLeaderList = await this.spService.getCustomizeEmail(params1);
+      approverRole: 'Sales Leader'
+    }
+
+    const districtLeader = await this.spService.getCustomizeEmail(params);
+    const salesLeader = await this.spService.getCustomizeEmail(params1);
+    this.orders.at(index).patchValue({
+      districtLeader: districtLeader[0].approverEmail,
+      salesLeader: salesLeader[0].approverEmail
+    })
   }
 
   onSearchSales(keyword: string) {
-    this.isSearchLoading = true;
-    this.searchChange$.next(keyword);
+    this.salesList = []
+    this.isSearchLoading = true
+    this.searchChange$.next(keyword)
   }
 }

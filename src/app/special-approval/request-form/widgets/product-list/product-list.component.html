@@ -18,7 +18,7 @@
         <th nzWidth="200px">设备SN</th>
         <th nzWidth="200px">物流状态</th>
       </ng-container>
-      <th nzWidth="100px" nzRight="0px" *ngIf="bg !== 'PD&IGT' && editable">Action</th>
+      <th nzWidth="100px" nzRight="0px" *ngIf="bg !== 'PD&IGT' && editable && !isExchange">Action</th>
     </tr>
   </thead>
   <tbody>
@@ -96,13 +96,13 @@
           </nz-select>
         </td>
       </ng-container>
-      <td nzRight="0px" *ngIf="bg !== 'PD&IGT' && editable">
+      <td nzRight="0px" *ngIf="bg !== 'PD&IGT' && editable && !isExchange">
         <button nz-button nzType="primary" nzSize="small" (click)="onDeleteProduct(product)">删除</button>
       </td>
     </tr>
   </tbody>
   <ng-template #tableFooter>
-    <button nz-button nzType="dashed" nzBlock (click)="onAddProduct()" *ngIf="bg !== 'PD&IGT' && editable">
+    <button nz-button nzType="dashed" nzBlock (click)="onAddProduct()" *ngIf="bg !== 'PD&IGT' && editable && !isExchange">
       <i nz-icon nzType="plus" nzTheme="outline"></i>添加
     </button>
   </ng-template>
