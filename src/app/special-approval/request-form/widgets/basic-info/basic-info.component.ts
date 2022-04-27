@@ -23,7 +23,6 @@ export class BasicInfoComponent {
   @Input() supportFileList: UploadFile[] = []
   @Input() editable: boolean
   @Input() executed:number = null
-  @Input() formValueslcinfo: FormGroup
   APPLY_TYPE = APPLY_TYPE
 
   applyTypeMap = APPLY_TYPE_MAP
@@ -42,14 +41,9 @@ export class BasicInfoComponent {
     return APPLY_TYPE_MAP[this.applyType] ? APPLY_TYPE_MAP[this.applyType].items : []
   }
 
-  onApplyItemChange(applyItem) {
-    if (this.applyType === APPLY_TYPE.EXT_WARRANTY && applyItem == 'sp_warranty_apply_item_5') {
-      this.formValues.controls.applyItemDesc.setValidators([Validators.required])
-    } else if(this.applyType === APPLY_TYPE.LC_AMENDMENT && applyItem == 'sp_lcamendment_apply_item_5'){
-      this.formValues.controls.applyItemDesc.setValidators([Validators.required])
-    }else {
-      this.formValues.controls.applyItemDesc.clearValidators()
-    }
+  get showApplyItemDesc(): boolean {
+    return (this.applyType === APPLY_TYPE.EXT_WARRANTY && this.applyItem == 'sp_warranty_apply_item_5') ||
+      (this.applyType === APPLY_TYPE.LC_AMENDMENT && this.applyItem == 'sp_lcamendment_apply_item_5')
   }
 
   onUploadFile = (item: UploadXHRArgs) => {

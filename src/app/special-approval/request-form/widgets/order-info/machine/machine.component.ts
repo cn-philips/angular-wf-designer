@@ -1,105 +1,119 @@
-import {Component, Input, OnInit, ViewChild} from '@angular/core';
+import { Component, Input, OnInit, ViewChild } from "@angular/core";
 import {
   APPLY_TYPE,
   BUSINESS_MODEL,
   BG_LIST,
   ORDER_TYPES,
   BUSINESS_MODEL_LIST,
-  BIG_SMALL_AREA_LIST,
+  CYCLEGROUP_BIGAREA_LIST,
+  CYCLEGROUP_BIGAREA_MAP,
   CURRENCIES,
   STAND_WARRANTY_MONTH,
-} from '../../../../special-approval.constants';
-import {SpecialApprovalService} from '../../../../special-approval.service';
-import {Hospital, SelectHospitalComponent} from '../../select-hospital/select-hospital.component';
-import {Dealer, SelectDealerComponent} from '../../select-dealer/select-dealer.component';
-import {Reference, SelectReferenceComponent} from '../../select-reference/select-reference.component';
-import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
-import {BehaviorSubject, Observable} from 'rxjs';
-import {debounceTime, map, switchMap} from 'rxjs/operators';
-import {HttpService} from '../../../../../services';
+} from "../../../../special-approval.constants";
+import { SpecialApprovalService } from "../../../../special-approval.service";
+import {
+  Hospital,
+  SelectHospitalComponent,
+} from "../../select-hospital/select-hospital.component";
+import {
+  Dealer,
+  SelectDealerComponent,
+} from "../../select-dealer/select-dealer.component";
+import {
+  Reference,
+  SelectReferenceComponent,
+} from "../../select-reference/select-reference.component";
+import { FormArray, FormBuilder, FormGroup } from "@angular/forms";
+import { BehaviorSubject, Observable } from "rxjs";
+import { debounceTime, map, switchMap } from "rxjs/operators";
+import { HttpService } from "../../../../../services";
 
 interface Sales {
-  email: string,
-  name: string
+  email: string;
+  name: string;
 }
 
 @Component({
-  selector: 'special-approval-machineexcange-order-info',
-  templateUrl: './machine.component.html',
-  styleUrls: ['./machine.component.scss']
+  selector: "special-approval-machineexcange-order-info",
+  templateUrl: "./machine.component.html",
+  styleUrls: ["./machine.component.scss"],
 })
-
 export class MachineComponent implements OnInit {
-
-
-  @Input() salesLeaders: string[]
-  @Input() districtLeaders: string[]
+  @Input() salesLeaders: string[];
+  @Input() districtLeaders: string[];
 
   selectIndex: number;
 
-  searchChange$ = new BehaviorSubject('');
+  searchChange$ = new BehaviorSubject("");
 
-  showDealerArea: boolean = false
-
-  salesList: Sales[] = [{
-    name: localStorage.getItem('ng_philips_username'),
-    email: localStorage.getItem('ng_philips_code1')
-  }];
-  isSearchLoading: boolean = false
+  salesList: Sales[] = [
+    {
+      name: localStorage.getItem("ng_philips_username"),
+      email: localStorage.getItem("ng_philips_code1"),
+    },
+  ];
+  isSearchLoading: boolean = false;
 
   constructor(
     private spService: SpecialApprovalService,
     private fb: FormBuilder,
-    private http: HttpService,
-  ) { }
+    private http: HttpService
+  ) {}
 
+  @ViewChild("selectHospital") selectHospital: SelectHospitalComponent;
 
-  @ViewChild('selectHospital') selectHospital: SelectHospitalComponent
+  @ViewChild("selectDealer") selectDealer: SelectDealerComponent;
 
-  @ViewChild('selectDealer') selectDealer: SelectDealerComponent
+  @ViewChild("selectReference") selectReference: SelectReferenceComponent;
 
-  @ViewChild('selectReference') selectReference: SelectReferenceComponent
+  @Input() formValues: FormGroup;
+  @Input() editable = true;
+  @Input() applyType: string;
+  @Input() applyItem: string;
 
-  @Input() formValues: FormGroup
-  @Input() editable = true
-  @Input() applyType: string
-  @Input() applyItem: string
+  APPLY_TYPE = APPLY_TYPE;
 
-  APPLY_TYPE = APPLY_TYPE
+  @Input() bmcs = [];
 
-  @Input() bmcs = []
-
-    selectOptions = {
+  selectOptions = {
     orderTypes: ORDER_TYPES,
     bgList: BG_LIST,
-    bigAreas: BIG_SMALL_AREA_LIST,
-    smallAreas: [],
+    cycleGroups: CYCLEGROUP_BIGAREA_LIST,
+    cycleGroupBigAreaMap: CYCLEGROUP_BIGAREA_MAP,
+    bigAreas: [],
     businessModels: BUSINESS_MODEL_LIST,
     currencies: CURRENCIES,
-    oms: []
-  }
+    oms: [],
+  };
 
-  onBusinessModelChange(businessModel) {
-    if (businessModel === BUSINESS_MODEL.DISTRIBUTOR_DEAL) {
-      this.showDealerArea = true
+  get showOrder1DealerArea(): boolean {
+    const businessModel = this.orders.at(0).get('businessModel')
+    if (businessModel && businessModel.value === BUSINESS_MODEL.DISTRIBUTOR_DEAL) {
+      return true
     } else {
-      this.showDealerArea = false
+      return false
     }
   }
 
-  onProductTypeChange(value) {
-    console.log('产品型号');
-    console.log(value);
+  get showOrder2DealerArea(): boolean {
+    const businessModel = this.orders.at(1).get('businessModel')
+    if (businessModel && businessModel.value === BUSINESS_MODEL.DISTRIBUTOR_DEAL) {
+      return true
+    } else {
+      return false
+    }
   }
 
   onCalcProjectName() {
-    const { hospitalName, productType, bg } = this.orders.at(this.selectIndex).value;
-    if (bg === 'PD&IGT') {
-      return
+    const { hospitalName, productType, bg } = this.orders.at(
+      this.selectIndex
+    ).value;
+    if (bg === "PD&IGT") {
+      return;
     }
-    const res = []
-    if (this.orders.at(this.selectIndex).get('hospitalName').value) {
-      res.push(this.orders.at(this.selectIndex).get('hospitalName').value)
+    const res = [];
+    if (this.orders.at(this.selectIndex).get("hospitalName").value) {
+      res.push(this.orders.at(this.selectIndex).get("hospitalName").value);
     }
 
     if (this.orders.at(this.selectIndex).get('productType').value) {
@@ -107,51 +121,47 @@ export class MachineComponent implements OnInit {
     }
 
     this.orders.at(this.selectIndex).patchValue({
-      projectName: res.join('-')
-    })
+      projectName: res.join("-"),
+    });
   }
 
-  onBigAreaChange(bigArea, index) {
-    this.selectIndex = index
-    const area = this.selectOptions.bigAreas.find(({ value }) => value === bigArea)
-    this.selectOptions.smallAreas = area ? area.children : []
-    this.orders.at(this.selectIndex).patchValue({ bigArea: null })
+  onCycleGroupChange(index) {
+    this.selectIndex = index;
+    this.orders.at(this.selectIndex).patchValue({ bigArea: null });
   }
 
   onShowSelectHospitalModal(index) {
     this.selectIndex = index;
-    this.selectHospital.showModal()
+    this.selectHospital.showModal();
   }
 
   onSelectHospital(hospital: Hospital) {
-    const { no, customerName } = hospital
+    const { no, customerName } = hospital;
     this.orders.at(this.selectIndex).patchValue({
       hospitalNo: no,
       hospitalName: customerName,
-    })
-    this.onCalcProjectName()
+    });
+    this.onCalcProjectName();
   }
 
   onClearHospital() {
     this.orders.at(this.selectIndex).patchValue({
       hospitalNo: null,
       hospitalName: null,
-    })
+    });
   }
 
   onShowSelectDealerModal(index) {
-    this.selectIndex = index
-    this.selectDealer.showModal()
+    this.selectIndex = index;
+    this.selectDealer.showModal();
   }
 
   onSelectDealer(dealer: Dealer) {
-
-    const { dealerCode, dealerName } = dealer
+    const { dealerCode, dealerName } = dealer;
     this.orders.at(this.selectIndex).patchValue({
       dealerCode: dealerCode,
       dealerName: dealerName,
-    })
-
+    });
   }
 
   onClearDealer() {
@@ -164,7 +174,7 @@ export class MachineComponent implements OnInit {
   }
 
   onShowReferenceModal() {
-    this.selectReference.showModal()
+    this.selectReference.showModal();
   }
 
   onSelectReference(reference: Reference) {
@@ -184,18 +194,15 @@ export class MachineComponent implements OnInit {
       endUserId,
       contractPrice,
       invoiceInformation,
-    } = reference
-    if (distributor) {
-      this.showDealerArea = true
-    }
+    } = reference;
     this.orders.at(this.selectIndex).patchValue({
       orderType,
       referenceId,
       projectName,
       productType: productModel,
       sapOrderNo: sap,
-      bigArea: team,
-      smallArea: region,
+      cycleGroup: team,
+      bigArea: region,
       bmc,
       businessModel: businessModel ? businessModel.toLowerCase() : null,
       dealerName: distributor,
@@ -204,18 +211,20 @@ export class MachineComponent implements OnInit {
       hospitalNo: endUserId,
       orderAmount: contractPrice,
       currency: invoiceInformation,
-      products: [{
-        id: Date.now(),
-        productType: productModel,
-        wbs: "",
-        itemNo: "",
-        quantity: "",
-        stdWarrantyMonths: STAND_WARRANTY_MONTH[this.orders.at(this.selectIndex).get('bg').value] }],
-    })
+      products: [
+        {
+          id: Date.now(),
+          productType: productModel,
+          wbs: "",
+          itemNo: "",
+          quantity: "",
+        },
+      ],
+    });
   }
 
   get orders() {
-    return this.formValues.get('orders') as FormArray
+    return this.formValues.get("orders") as FormArray;
   }
 
   ngOnInit(): void {
@@ -226,51 +235,71 @@ export class MachineComponent implements OnInit {
       saleEmail: localStorage.getItem('ng_philips_code1')
     })
     if (this.editable) {
-      this.orders.at(0).get('hospitalName').valueChanges.subscribe(() => {
-        this.onCalcProjectName()
-      })
-      this.orders.at(1).get('hospitalName').valueChanges.subscribe(() => {
-        this.onCalcProjectName()
-      })
+      this.orders
+        .at(0)
+        .get("hospitalName")
+        .valueChanges.subscribe(() => {
+          this.onCalcProjectName();
+        });
+      this.orders
+        .at(1)
+        .get("hospitalName")
+        .valueChanges.subscribe(() => {
+          this.onCalcProjectName();
+        });
 
-      this.orders.at(0).get('productType').valueChanges.subscribe(() => {
-        this.onCalcProjectName()
-      })
-      this.orders.at(1).get('productType').valueChanges.subscribe(() => {
-        this.onCalcProjectName()
-      })
+      this.orders
+        .at(0)
+        .get("productType")
+        .valueChanges.subscribe(() => {
+          this.onCalcProjectName();
+        });
+      this.orders
+        .at(1)
+        .get("productType")
+        .valueChanges.subscribe(() => {
+          this.onCalcProjectName();
+        });
     }
     console.log(this.orders);
 
     const getSaleList = (keyword: string) => {
       if (!keyword) {
         this.isSearchLoading = false;
-        return []
+        return [];
       }
-      let data = this.http.get(`/act/role/getUsersByRoleAndEmail?role=` + 'Sales Rep/Mgr' + '&email=' + keyword)
-        .pipe(map((res: any) => res.data as Sales[]))
-      return data
-    }
+      let data = this.http
+        .get(
+          `/act/role/getUsersByRoleAndEmail?role=` +
+            "Sales Rep/Mgr" +
+            "&email=" +
+            keyword
+        )
+        .pipe(map((res: any) => res.data as Sales[]));
+      return data;
+    };
 
     const optionList$: Observable<Sales[]> = this.searchChange$
       .asObservable()
       .pipe(debounceTime(500))
       .pipe(switchMap(getSaleList));
-    optionList$.subscribe(data => {
+    optionList$.subscribe((data) => {
       this.salesList = data;
       this.isSearchLoading = false;
     });
-
   }
 
   // 初始化OM列表
   async initOMUsers() {
-    const users = await this.spService.getOMUsers()
-    this.selectOptions.oms = users.map(({ name, email }) => ({ label: name, value: email }))
+    const users = await this.spService.getOMUsers();
+    this.selectOptions.oms = users.map(({ name, email }) => ({
+      label: name,
+      value: email,
+    }));
   }
 
-  districtList: any = []
-  salesLeaderList: any = []
+  districtList: any = [];
+  salesLeaderList: any = [];
 
   async salesChange(email, index) {
   this.getLeaderEmail(email, index)
@@ -285,8 +314,8 @@ export class MachineComponent implements OnInit {
     const params = {
       initiatorEmail: localStorage.ng_philips_code1,
       initiatorRole: localStorage.roleCode,
-      approverRole: 'District Leader'
-    }
+      approverRole: "District Leader",
+    };
     const params1 = {
       initiatorEmail: localStorage.ng_philips_code1,
       initiatorRole: localStorage.roleCode,
@@ -306,5 +335,4 @@ export class MachineComponent implements OnInit {
     this.isSearchLoading = true
     this.searchChange$.next(keyword)
   }
-
 }

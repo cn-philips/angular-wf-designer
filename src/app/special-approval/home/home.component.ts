@@ -11,8 +11,6 @@ interface Template {
   typeName: string;
   item?: number;
   desc: string;
-  minMon?: number;
-  maxMon?: number;
   bg: string;
 }
 
@@ -23,17 +21,6 @@ const MENU_ID = {
   WAITING_APPROVE: 'aaee93a2-ed0a-4db9-9537-f72bb500c2fc',
   APPROVED: '2ed165ff-7ebf-4733-80e5-9d49836388e1',
   VIEW: '4c9bc88e-59a0-48ac-8b23-994f75cbff8d',
-}
-
-const activeTemplate = {
-  [APPLY_TYPE.PRODUCTION]: true,
-  [APPLY_TYPE.DELIVERY]: false,
-  [APPLY_TYPE.EXT_INSTALL_COST]: true,
-  [APPLY_TYPE.EXT_WARRANTY]: true,
-  [APPLY_TYPE.LOGISTICSCOST]: true,
-  [APPLY_TYPE.LC_AMENDMENT]: true,
-  [APPLY_TYPE.RDD_OIT]: true,
-  [APPLY_TYPE.MACHINE_EXCHANGE]: true,
 }
 
 interface Card {
@@ -119,67 +106,52 @@ export class HomeComponent implements OnInit {
         this.showQuickLink = true
       }
 
-      const monthSet = new Set()
       const tabSet = new Set()
-      this.allTemplateList = templateList.filter(({ applyType, minWarrantyMonths, maxWarrantyMonths }) => {
-          if (activeTemplate[applyType]) {
-            if (applyType === APPLY_TYPE.EXT_WARRANTY) {
-              const month = `${minWarrantyMonths}-${maxWarrantyMonths}`
-              if (monthSet.has(month)) {
-                return false
-              } else {
-                monthSet.add(month)
-                return true
-              }
-            }
-            return true
-          } else {
+      const applyTypeItemMap = new Map<string, Set<string>>()
+      this.allTemplateList = templateList
+        .filter(({ applyType, applyItem }) => {
+          if(!applyType || !APPLY_TYPE_MAP[applyType]) {
             return false
           }
-        }).map(({ bg, applyType, applyItem, minWarrantyMonths, maxWarrantyMonths, minWarrantyMonthsComparator, maxWarrantyMonthsComparator, remark }) => {
-          if (!tabSet.has(applyType) && APPLY_TYPE_MAP[applyType]) {
-            this.tabList.push({
-              title: APPLY_TYPE_MAP[applyType].label,
-              value: applyType
-            })
-            tabSet.add(applyType)
-          }
-          return {
-            name: this.formatTemplateName({ applyType, applyItem, minWarrantyMonths, maxWarrantyMonths, minWarrantyMonthsComparator, maxWarrantyMonthsComparator  }),
-            type: applyType,
-            typeName: APPLY_TYPE_MAP[applyType].label,
-            item: applyType === APPLY_TYPE.EXT_WARRANTY ? null : applyItem,
-            desc: remark,
-            bg,
-            minMon: minWarrantyMonths,
-            minComp: minWarrantyMonthsComparator,
-            maxMon: maxWarrantyMonths,
-            maxComp: maxWarrantyMonthsComparator,
+          // 筛去相同applyType和applyItem的数据
+          const applyItemSet = applyTypeItemMap.get(applyType)
+          if(applyItemSet) {
+            if (applyItemSet.has(applyItem)) {
+              return false
+            } else {
+              applyItemSet.add(applyItem)
+              return true
+            }
+          } else {
+            applyTypeItemMap.set(applyType, new Set<string>().add(applyItem)) 
+            return true
           }
         })
+        .map(
+            ({ bg, applyType, applyItem, remark }) => {
+              if (!tabSet.has(applyType)) {
+                this.tabList.push({
+                  title: APPLY_TYPE_MAP[applyType].label,
+                  value: applyType
+                })
+                tabSet.add(applyType)
+              }
+              return {
+                name: this.formatApplyTypeItem({ applyType, applyItem }),
+                type: applyType,
+                typeName: APPLY_TYPE_MAP[applyType].label,
+                item: applyItem,
+                desc: remark,
+                bg,
+              }
+            }
+          )
         this.filteredTemplateList = this.allTemplateList
         this.pageLoading = ++this.reqSuccessCount !== this.reqTotalCount
       }).catch(({ message }) => {
         console.error(`获取template列表失败, ${message}`);
         this.pageLoading = ++this.reqSuccessCount !== this.reqTotalCount
       })
-  }
-
-  formatTemplateName({ applyType, applyItem, minWarrantyMonths, maxWarrantyMonths, minWarrantyMonthsComparator, maxWarrantyMonthsComparator }) {
-    if (applyType === APPLY_TYPE.EXT_WARRANTY) {
-      const prefix = APPLY_TYPE_MAP[applyType].label
-      // 没有最小月份, 实际条件为<maxWarrantyMonths或者<=maxWarrantyMonths
-      if (minWarrantyMonths == null || minWarrantyMonthsComparator == null) {
-        return `${prefix}${maxWarrantyMonthsComparator}${maxWarrantyMonths} month`
-      }
-      // 没有最大月份, 实际条件为>minWarrantyMonths>=minWarrantyMonths
-      if (maxWarrantyMonths == null || maxWarrantyMonthsComparator == null) {
-        return `${prefix}${minWarrantyMonthsComparator}${minWarrantyMonths} month`
-      }
-      return `${prefix}${minWarrantyMonthsComparator}${minWarrantyMonths} month&${maxWarrantyMonthsComparator}${maxWarrantyMonths} month`
-    } else {
-      return this.formatApplyTypeItem({ applyType, applyItem })
-    }
   }
 
   onFilterChange(tab: Tab) {
@@ -241,17 +213,9 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  onNavigateToNewRequest({ type, item, minMon, maxMon, minComp, maxComp, bg }) {
+  onNavigateToNewRequest({ type, item, bg }) {
     this.router.navigate(['/special-approval/new-request'], {
-      queryParams: {
-        type,
-        item,
-        minMon,
-        maxMon,
-        minComp,
-        maxComp,
-        bg,
-      }
+      queryParams: { type, item, bg }
     })
   }
 
@@ -259,8 +223,7 @@ export class HomeComponent implements OnInit {
     this.router.navigate([`/special-approval/${path}`])
   }
 
-  formatApplyTypeItem({ applyType, applyItem }) {
-    if (!applyType) { return '' }
+  formatApplyTypeItem({ applyType, applyItem = '' }) {
     const { label, items } = APPLY_TYPE_MAP[applyType]
     if (applyType === APPLY_TYPE.RDD_OIT || applyType === APPLY_TYPE.EXT_INSTALL_COST) {
       return label

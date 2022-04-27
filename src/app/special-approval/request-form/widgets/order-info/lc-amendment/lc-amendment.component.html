@@ -5,20 +5,49 @@
         <nz-form-item>
           <nz-form-label nzXl="8" nzXXl="6">产品型号</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <input type="text" nz-input formControlName="productType" *ngIf="formValues.get('bg').value !== 'US'" [disabled]="!editable" />
-            <nz-select nzMode="multiple" style="width: 100%;" *ngIf="formValues.get('bg').value === 'US'" formControlName="productType" [nzPlaceHolder]="editable ? '请选择产品型号' : ''" [nzDisabled]="!editable">
-              <nz-option *ngFor="let item of selectOptions.usProductList" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+            <input
+              type="text"
+              nz-input
+              formControlName="productType"
+              *ngIf="bg?.value !== 'US'"
+              [disabled]="!editable"
+            />
+            <nz-select
+              nzMode="multiple"
+              style="width: 100%"
+              *ngIf="bg?.value === 'US'"
+              formControlName="productType"
+              [nzPlaceHolder]="editable ? '请选择产品型号' : ''"
+              [nzDisabled]="!editable"
+            >
+              <nz-option
+                *ngFor="let item of selectOptions.usProductList"
+                [nzLabel]="item.label"
+                [nzValue]="item.value"
+              ></nz-option>
             </nz-select>
           </nz-form-control>
         </nz-form-item>
       </div>
       <div nz-col nzXs="24" nzSm="24" nzMd="12">
         <nz-form-item>
-          <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzXl="8" nzXXl="6"  nzRequired>产品线</nz-form-label>
+          <nz-form-label
+            nzXs="24"
+            nzSm="24"
+            nzMd="8"
+            nzXl="8"
+            nzXXl="6"
+            nzRequired
+            >产品线</nz-form-label
+          >
           <nz-form-control nzXs="12" nzSm="12" nzMd="14">
             <nz-form-control nzXs="24" nzSm="24" nzMd="9">
               <nz-select formControlName="bmc" nzPlaceHolder="请选择产品线">
-                <nz-option *ngFor="let item of bmcs" [nzLabel]="item.label" [nzValue]="item.label"></nz-option>
+                <nz-option
+                  *ngFor="let item of bgBmcMap[bg.value] || []"
+                  [nzLabel]="item.label"
+                  [nzValue]="item.value"
+                ></nz-option>
               </nz-select>
               <nz-form-explain *ngIf="formValues.get('bmc')?.dirty && formValues.get('bmc')?.errors">
                 请选择产品线
@@ -28,7 +57,11 @@
             <nz-form-label nzXs="24" nzSm="24" nzMd="6" nzRequired>BG</nz-form-label>
             <nz-form-control nzXs="24" nzSm="24" nzMd="9">
               <nz-select formControlName="bg" nzPlaceHolder="请先选择BG">
-                <nz-option *ngFor="let item of selectOptions.bgList" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+                <nz-option
+                  *ngFor="let item of selectOptions.bgList"
+                  [nzLabel]="item.label"
+                  [nzValue]="item.value"
+                ></nz-option>
               </nz-select>
             </nz-form-control>
           </nz-form-control>
@@ -39,10 +72,12 @@
     <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
       <div nz-col nzXs="24" nzSm="24" nzMd="12">
         <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6" nzRequired nzFor="sapOrderNo">SAP订单号(SO#)</nz-form-label>
+          <nz-form-label nzXl="8" nzXXl="6" nzRequired nzFor="sapOrderNo"
+            >SAP订单号(SO#)</nz-form-label
+          >
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <input id="sapOrderNo" nz-input formControlName="sapOrderNo" />
-            <nz-form-explain *ngIf="formValues.get('sapOrderNo')?.dirty && formValues.get('sapOrderNo')?.errors">
+            <nz-form-explain *ngIf="formValues.get('sapOrderNo')?.dirty &&formValues.get('sapOrderNo')?.errors">
               请填写SAP订单号(SO#)
             </nz-form-explain>
           </nz-form-control>
@@ -53,8 +88,12 @@
         <nz-form-item>
           <nz-form-label nzXl="8" nzXXl="6" nzRequired>订单状态</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <nz-select nzPlaceHolder="请先选择"  formControlName="orderStatus">
-                <nz-option *ngFor="let item of orderStatusList" [nzLabel]="item.label" [nzValue]="item.label"></nz-option>
+            <nz-select nzPlaceHolder="请先选择" formControlName="orderStatus">
+              <nz-option
+                *ngFor="let item of selectOptions.orderStatusList"
+                [nzLabel]="item.label"
+                [nzValue]="item.code"
+              ></nz-option>
             </nz-select>
             <nz-form-explain *ngIf="formValues.get('orderStatus')?.dirty && formValues.get('orderStatus')?.errors">
               请填写订单状态
@@ -63,181 +102,287 @@
         </nz-form-item>
       </div>
     </div>
-  </form>
 
     <form nz-form [formGroup]="lcInfo">
-    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
-      <div nz-col nzXs="24" nzSm="24" nzMd="12">
-        <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6" nzRequired>外贸公司</nz-form-label>
-          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <input type="text" nz-input formControlName="foreignCompanyName"/>
-            <nz-form-explain *ngIf="lcInfo.get('foreignCompanyName')?.dirty && lcInfo.get('foreignCompanyName')?.errors">
-              请填写外贸公司
-            </nz-form-explain>
-          </nz-form-control>
-        </nz-form-item>
-      </div>
-      <div nz-col nzXs="24" nzSm="24" nzMd="12">
-        <nz-form-control nzXs="24" nzSm="24" nzMd="14" style="margin-bottom: 22px;margin-left: -100px">
-          <nz-select class="select" nzPlaceHolder="IE Pool 外贸公司列表" nzShowSearch nzAllowClear formControlName="foreignCompanyId">
-              <nz-option *ngFor="let item of iepoollist" [nzLabel]="item.corporateName" [nzValue]="item.corporateName">
-            </nz-option>
-          </nz-select>
-        </nz-form-control>
-      </div>
-    </div>
-
-    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
-      <div nz-col nzXs="24" nzSm="24" nzMd="12">
-        <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6"nzRequired>L/C号码</nz-form-label>
-          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <input type="text" nz-input formControlName="lcNo" />
-            <nz-form-explain *ngIf="lcInfo.get('lcNo')?.dirty && lcInfo.get('lcNo')?.errors">
-              请填写L/C号码
-            </nz-form-explain>
-          </nz-form-control>
-
-        </nz-form-item>
-      </div>
-      <div nz-col nzXs="24" nzSm="24" nzMd="12">
-        <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6" nzRequired>L/C金额</nz-form-label>
-          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <input type="text" nz-input formControlName="lcAmount"/>
-          </nz-form-control>
-          <nz-form-explain *ngIf="formValues.get('lcAmount')?.dirty && formValues.get('lcAmount')?.errors">
-            请填写L/C金额
-          </nz-form-explain>
-        </nz-form-item>
-      </div>
-    </div>
-
-    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
-      <div nz-col nzXs="24" nzSm="24" nzMd="24">
-        <nz-form-item>
-          <nz-form-label nzXXl="3" nzXl="3" nzSm="6" nzRequired>Non Standard Terms</nz-form-label>
-          <nz-form-control nzXXl="19" nzXl="19" nzSm="19">
-            <input type="text" nz-input formControlName="nonStandardTerms" />
-            <nz-form-explain *ngIf="formValues.get('nonStandardTerms')?.dirty && formValues.get('nonStandardTerms')?.errors">
-              请填写Non Standard Terms
-            </nz-form-explain>
-          </nz-form-control>
-        </nz-form-item>
-      </div>
-    </div>
-
-    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
-      <div nz-col nzXs="24" nzSm="24" nzMd="24">
-        <nz-form-item>
-          <nz-form-label nzXXl="3" nzXl="3" nzSm="6" nzRequired>L/C discrepancy描述</nz-form-label>
-          <nz-form-control nzXXl="19" nzXl="19" nzSm="19">
-            <input type="text" nz-input formControlName="lcDiscrepancy" />
-            <nz-form-explain *ngIf="formValues.get('lcDiscrepancy')?.dirty && formValues.get('lcDiscrepancy')?.errors">
-              请填写L/C discrepancy描述
-            </nz-form-explain>
-          </nz-form-control>
-        </nz-form-item>
-      </div>
-    </div>
-
-    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
-      <div nz-col nzXs="24" nzSm="24" nzMd="11">
-        <nz-form-item style="margin-left: -14px">
-          <nz-form-label nzXl="9" nzXXl="7" nzRequired>是否接受L/C discrepancy</nz-form-label>
-          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <nz-form-control nzSpan="7" style="margin-top: 10px">
-              <nz-radio-group formControlName="acceptLcDiscrepancy" >
-                <label nz-radio nzValue="1" (click)="lcDiscrepancyModel($event)">Yes</label>
-                <label nz-radio nzValue="0" (click)="lcDiscrepancyModel($event)">No</label>
-              </nz-radio-group>
+      <div nz-row>
+        <div nz-col nzXs="24" nzSm="24" nzMd="12">
+          <nz-form-item>
+            <nz-form-label nzXl="8" nzXXl="6" nzRequired
+              >外贸公司</nz-form-label
+            >
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <input
+                type="text"
+                nz-input
+                formControlName="foreignCompanyName"
+              />
+              <nz-form-explain
+                *ngIf="
+                  lcInfo.get('foreignCompanyName')?.dirty &&
+                  lcInfo.get('foreignCompanyName')?.errors
+                "
+              >
+                请填写外贸公司
+              </nz-form-explain>
             </nz-form-control>
-          </nz-form-control>
-        </nz-form-item>
+          </nz-form-item>
+        </div>
+        <div nz-col nzXs="24" nzSm="24" nzMd="12">
+          <nz-form-item>
+            <nz-form-control
+              nzXs="24"
+              nzSm="24"
+              nzMd="14"
+              style="margin-left: -100px"
+            >
+              <nz-select
+                nzPlaceHolder="IE Pool 外贸公司列表"
+                nzShowSearch
+                nzAllowClear
+                formControlName="foreignCompanyId"
+                (ngModelChange)="onIePoolChange($event)"
+              >
+                <nz-option
+                  *ngFor="let item of selectOptions.iePoolList"
+                  [nzLabel]="item.corporateName"
+                  [nzValue]="item.id"
+                >
+                </nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
       </div>
-      <div nz-col nzXs="24" nzSm="24" nzMd="12">
-        <nz-form-item>
-          <nz-form-label nzXl="9" nzXXl="8" nzRequired="true">L/C discrepancy费用支付方式</nz-form-label>
-          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <nz-select  nzPlaceHolder="请先选择" formControlName="lcDiscrepancyPaymentMethod" >
-              <nz-option *ngFor="let item of paymentList" [nzLabel]="item.label" [nzValue]="item.label">
-              </nz-option>
-            </nz-select>
-            <nz-form-explain *ngIf="formValues.get('lcDiscrepancyPaymentMethod')?.dirty && formValues.get('lcDiscrepancyPaymentMethod')?.errors">
-              请填写L/C discrepancy费用支付方式
-            </nz-form-explain>
-          </nz-form-control>
-        </nz-form-item>
-      </div>
-    </div>
 
-    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
-      <div nz-col nzXs="24" nzSm="24" nzMd="12">
-        <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6" nzRequired>修改条目</nz-form-label>
-          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <nz-select  class="select"  nzShowSearch nzAllowClear
-                        nzPlaceHolder="选择其他时填写说明" changeOrderModify  formControlName="modifyEntry">
-              <nz-option *ngFor="let item of modfyentryList" [nzLabel]="item.label" [nzValue]="item.label"></nz-option>
-            </nz-select>
-          </nz-form-control>
-          <nz-form-explain *ngIf="formValues.get('modifyEntry')?.dirty && formValues.get('modifyEntry')?.errors">
-            请填写修改条目
-          </nz-form-explain>
-        </nz-form-item>
+      <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+        <div nz-col nzXs="24" nzSm="24" nzMd="12">
+          <nz-form-item>
+            <nz-form-label nzXl="8" nzXXl="6" nzRequired>L/C号码</nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <input type="text" nz-input formControlName="lcNo" />
+              <nz-form-explain
+                *ngIf="lcInfo.get('lcNo')?.dirty && lcInfo.get('lcNo')?.errors"
+              >
+                请填写L/C号码
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div nz-col nzXs="24" nzSm="24" nzMd="12">
+          <nz-form-item>
+            <nz-form-label nzXl="8" nzXXl="6" nzRequired>L/C金额</nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <input type="text" nz-input formControlName="lcAmount" />
+              <nz-form-explain *ngIf="lcInfo.get('lcAmount')?.dirty && lcInfo.get('lcAmount')?.errors">
+                请填写L/C金额
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
       </div>
-      <div nz-col nzXs="24" nzSm="24" nzMd="12">
-        <nz-form-item>
-          <nz-form-control nzXs="24" nzSm="24" nzMd="14" style="margin-left: -100px">
-            <input type="text" nz-input formControlName="modifyEntryDesc"/>
-          </nz-form-control>
-        </nz-form-item>
-      </div>
-    </div>
 
-    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
-      <div nz-col nzXs="24" nzSm="24" nzMd="12">
-        <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6" nzRequired>取消原因</nz-form-label>
-          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <nz-select  class="select"  nzShowSearch nzAllowClear
-                        nzPlaceHolder="选择其他时填写说明" formControlName="cancelReason">
-              <nz-option *ngFor="let item of cancelReasonList" [nzLabel]="item.label" [nzValue]="item.label"></nz-option>
-            </nz-select>
-            <nz-form-explain *ngIf="formValues.get('cancelReason')?.dirty && formValues.get('cancelReason')?.errors">
-              请填写取消原因
-            </nz-form-explain>
-          </nz-form-control>
-        </nz-form-item>
+      <div
+        nz-row
+        nzType="flex"
+        nzJustify="start"
+        nzAlign="middle"
+        *ngIf="applyItem?.value === 'sp_lcamendment_apply_item_1'"
+      >
+        <div nz-col nzXs="24" nzSm="24" nzMd="24">
+          <nz-form-item>
+            <nz-form-label nzXXl="3" nzXl="3" nzSm="6" nzRequired nzFor="nonStandardTerms">
+              Non Standard Terms
+            </nz-form-label>
+            <nz-form-control nzXXl="19" nzXl="19" nzSm="19">
+              <textarea rows="4" nz-input formControlName="nonStandardTerms" id="nonStandardTerms"></textarea>
+              <nz-form-explain *ngIf="lcInfo.get('nonStandardTerms')?.dirty && lcInfo.get('nonStandardTerms')?.errors">
+                请填写Non Standard Terms
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
       </div>
-      <div nz-col nzXs="24" nzSm="24" nzMd="12">
-        <nz-form-item>
-          <nz-form-control nzXs="24" nzSm="24" nzMd="14"style="margin-left: -100px">
-            <input type="text" nz-input formControlName="cancelReasonDesc" />
-          </nz-form-control>
-        </nz-form-item>
-      </div>
-    </div>
 
-    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
-      <div nz-col nzXs="24" nzSm="24" nzMd="12">
-        <nz-form-item>
-          <nz-form-label nzSm="8" nzXl="8" nzRequired>新的L/C discrepancy是否已经开具</nz-form-label>
-          <nz-form-control nzSpan="7" style="margin-top: 8px">
-            <nz-radio-group formControlName="newLcIssued">
-              <label nz-radio nzValue="1">Yes</label>
-              <label nz-radio nzValue="0">No</label>
-            </nz-radio-group>
-          </nz-form-control>
-        </nz-form-item>
+      <div
+        nz-row
+        nzType="flex"
+        nzJustify="start"
+        nzAlign="middle"
+        *ngIf="applyItem?.value === 'sp_lcamendment_apply_item_2'"
+      >
+        <div nz-col nzXs="24" nzSm="24" nzMd="24">
+          <nz-form-item>
+            <nz-form-label nzXXl="3" nzXl="3" nzSm="6" nzRequired nzFor="lcDiscrepancy">
+              L/C discrepancy描述
+            </nz-form-label>
+            <nz-form-control nzXXl="19" nzXl="19" nzSm="19">
+              <textarea rows="4" nz-input formControlName="lcDiscrepancy" id="lcDiscrepancy"></textarea>
+              <nz-form-explain *ngIf="lcInfo.get('lcDiscrepancy')?.dirty && lcInfo.get('lcDiscrepancy')?.errors">
+                请填写L/C discrepancy描述
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
       </div>
-    </div>
 
+      <div
+        nz-row
+        nzType="flex"
+        nzJustify="start"
+        nzAlign="middle"
+        *ngIf="applyItem?.value === 'sp_lcamendment_apply_item_2'"
+      >
+        <div nz-col nzXs="24" nzSm="24" nzMd="11">
+          <nz-form-item style="margin-left: -14px">
+            <nz-form-label nzXl="9" nzXXl="7" nzRequired
+              >是否接受L/C discrepancy</nz-form-label
+            >
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <nz-radio-group
+                formControlName="acceptLcDiscrepancy"
+                #acceptLcDiscrepancy
+              >
+                <label nz-radio [nzValue]="1">Yes</label>
+                <label nz-radio [nzValue]="0">No</label>
+              </nz-radio-group>
+              <nz-form-explain *ngIf="lcInfo.get('acceptLcDiscrepancy')?.dirty && lcInfo.get('acceptLcDiscrepancy')?.errors">
+                请选择是否接受L/C discrepancy
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" *ngIf="acceptLcDiscrepancy.value">
+          <nz-form-item>
+            <nz-form-label nzXl="9" nzXXl="8" nzRequired="true"
+              >L/C discrepancy费用支付方</nz-form-label
+            >
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <nz-select
+                nzPlaceHolder="请先选择"
+                formControlName="lcDiscrepancyPaymentMethod"
+              >
+                <nz-option
+                  *ngFor="let item of selectOptions.paymentList"
+                  [nzLabel]="item.label"
+                  [nzValue]="item.code"
+                >
+                </nz-option>
+              </nz-select>
+              <nz-form-explain *ngIf="lcInfo.get('lcDiscrepancyPaymentMethod')?.dirty && lcInfo.get('lcDiscrepancyPaymentMethod')?.errors">
+                请选择L/C discrepancy费用支付方
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+
+      <div nz-row *ngIf="applyItem?.value === 'sp_lcamendment_apply_item_3'">
+        <div nz-col nzXs="24" nzSm="24" nzMd="12">
+          <nz-form-item>
+            <nz-form-label nzXl="8" nzXXl="6" nzRequired
+              >修改条目</nz-form-label
+            >
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <nz-select
+                nzShowSearch
+                nzAllowClear
+                nzPlaceHolder="请选择"
+                formControlName="modifyEntry"
+                #modifyEntry
+              >
+                <nz-option
+                  *ngFor="let item of selectOptions.modifyEntryList"
+                  [nzLabel]="item.label"
+                  [nzValue]="item.code"
+                ></nz-option>
+              </nz-select>
+              <nz-form-explain *ngIf="lcInfo.get('modifyEntry')?.dirty && lcInfo.get('modifyEntry')?.errors">
+                请选择修改条目
+              </nz-form-explain>
+            </nz-form-control>
+            
+          </nz-form-item>
+        </div>
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" *ngIf="modifyEntry.value === 'sp_lc_other'">
+          <nz-form-item>
+            <nz-form-control
+              nzXs="24"
+              nzSm="24"
+              nzMd="14"
+              style="margin-left: -100px"
+            >
+              <input type="text" nz-input formControlName="modifyEntryDesc" placeholder="选择其他时填写说明" />
+              <nz-form-explain *ngIf="lcInfo.get('modifyEntryDesc')?.dirty && lcInfo.get('modifyEntryDesc')?.errors">
+                请填写其他修改条目
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+
+      <div nz-row *ngIf="applyItem?.value === 'sp_lcamendment_apply_item_4'">
+        <div nz-col nzXs="24" nzSm="24" nzMd="12">
+          <nz-form-item>
+            <nz-form-label nzXl="8" nzXXl="6" nzRequired
+              >取消原因</nz-form-label
+            >
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <nz-select
+                nzShowSearch
+                nzAllowClear
+                nzPlaceHolder="请选择"
+                formControlName="cancelReason"
+                #cancelReason
+              >
+                <nz-option
+                  *ngFor="let item of selectOptions.cancelReasonList"
+                  [nzLabel]="item.label"
+                  [nzValue]="item.code"
+                ></nz-option>
+              </nz-select>
+              <nz-form-explain
+                *ngIf="lcInfo.get('cancelReason')?.dirty && lcInfo.get('cancelReason')?.errors"
+              >
+                请选择取消原因
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" *ngIf="cancelReason.value === 'sp_lc_other'">
+          <nz-form-item>
+            <nz-form-control
+              nzXs="24"
+              nzSm="24"
+              nzMd="14"
+              style="margin-left: -100px"
+            >
+              <input type="text" nz-input formControlName="cancelReasonDesc" placeholder="选择其他时填写说明" />
+              <nz-form-explain *ngIf="lcInfo.get('cancelReasonDesc')?.dirty && lcInfo.get('cancelReasonDesc')?.errors">
+                请填写其他取消原因
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+
+      <div nz-row nzType="flex" nzJustify="start" nzAlign="middle" *ngIf="applyItem?.value === 'sp_lcamendment_apply_item_4'">
+        <div nz-col nzXs="24" nzSm="24" nzMd="12">
+          <nz-form-item>
+            <nz-form-label nzSm="8" nzXl="8" nzRequired
+              >新的L/C是否已经开具</nz-form-label
+            >
+            <nz-form-control nzSpan="7">
+              <nz-radio-group formControlName="newLcIssued">
+                <label nz-radio [nzValue]="1">Yes</label>
+                <label nz-radio [nzValue]="0">No</label>
+              </nz-radio-group>
+              <nz-form-explain *ngIf="lcInfo.get('newLcIssued')?.dirty && lcInfo.get('newLcIssued')?.errors">
+                请选择新的L/C是否已经开具
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+    </form>
   </form>
-
-  <app-select-hospital #selectHospital (select)="onSelectHospital($event)"></app-select-hospital>
-  <app-select-dealer #selectDealer (select)="onSelectDealer($event)"></app-select-dealer>
-  <app-select-reference #selectReference (select)="onSelectReference($event)"></app-select-reference>
 </nz-card>
-

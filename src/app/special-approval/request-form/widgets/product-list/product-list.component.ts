@@ -117,18 +117,28 @@ export class ProductListComponent implements OnInit {
       product.warranty.applyExtWarrantyMonths = Number(
         integerPart + parseFloat(decimalPart)
       ).toFixed(2);
+    } else {
+      product.warranty.applyExtWarrantyMonths = null
     }
   }
 
-  onStdWarrantyStartDateChange(product) {
+  onCalcStdWarrantyEndDate(product) {
     // 计算合同保修结束日期
     const {
-      warranty: { expectedStdWarrantyStartdate, stdWarrantyMonths },
+      warranty: { expectedStdWarrantyStartdate, stdWarrantyMonths, posWarrantyMonths },
     } = product;
-    product.warranty.expectedStdWarrantyEnddate = moment(expectedStdWarrantyStartdate)
+    if (typeof posWarrantyMonths === 'number') {
+      product.warranty.posWarrantyMonths = Math.round(posWarrantyMonths)
+    }
+    if (expectedStdWarrantyStartdate && stdWarrantyMonths && typeof posWarrantyMonths === 'number') {
+      product.warranty.expectedStdWarrantyEnddate = moment(expectedStdWarrantyStartdate)
       .subtract(1, "days")
       .add(stdWarrantyMonths, "months")
+      .add(posWarrantyMonths, 'months')
       .format("YYYY-MM-DD");
-    this.onCalcWarrantyMonth(product);
+    } else {
+      product.warranty.expectedStdWarrantyEnddate = null
+    }
+    this.onCalcWarrantyMonth(product)
   }
 }

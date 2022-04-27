@@ -14,7 +14,6 @@ import {
   BUSINESS_MODEL,
   APPLY_TYPE,
   APPLY_TYPE_MAP,
-  STAND_WARRANTY_MONTH,
   BG_BMC_MAP,
   NODE_ACTION,
   PROCESS_STATUS,
@@ -82,8 +81,6 @@ export class RequestFormComponent implements OnInit {
 
   public processUsers: string[] = []; // 流程中所有的人
   public applicantEmail: string;
-  private http: any;
-  public iepoollist: any = [{}];
   constructor(
     private route: ActivatedRoute,
     private fb: FormBuilder,
@@ -99,16 +96,13 @@ export class RequestFormComponent implements OnInit {
   public bmcs = [];
   public executed = null;
 
-  public minMon;
-  public maxMon;
-
   public formValues = this.fb.group({
     basicInfo: this.fb.group({
       applyCode: [null],
       applicant: [null], // 申请人邮箱
       applicantName: [{ value: null, disabled: true }, [Validators.required]], // 申请人
       applyType: [null, [Validators.required]], // 申请类型
-      applyItem: [null, [Validators.required]], // 申请原因
+      applyItem: [{ value: null, disabled: true }, [Validators.required]], // 申请原因
       applyItemDesc: [null], // 其他原因说明
       reason: [null, [Validators.required]], // 申请原因
       applyFileIds: [[]], // 申请附件
@@ -119,8 +113,8 @@ export class RequestFormComponent implements OnInit {
       productType: [null], // 产品型号
       bmc: [null, [Validators.required]], // 产品线
       bg: [{ value: null, disabled: true }, [Validators.required]], // BG
+      cycleGroup: [null, [Validators.required]], // 产品区域-team
       bigArea: [null, [Validators.required]], // 产品区域-大区
-      smallArea: [null, [Validators.required]], // 产品区域-小区
       businessModel: [null, [Validators.required]], // 业务模式
       dealerName: [{ value: null, disabled: true }], // 经销商名称
       dealerCode: [{ value: null, disabled: true }], // 经销商编号
@@ -140,28 +134,33 @@ export class RequestFormComponent implements OnInit {
       districtLeader: [null], // District Leader邮箱
       salesLeader: [null], // sales Leader 邮箱
       products: [[]],
-      orderStatus: [null, [Validators.required]], // 订单状态
     }),
     rddOitOrderInfos: [[]],
     ccInfo: this.fb.group({
       ccType: [null], // 抄送类型
       ccPerson: [[]] // 抄送人
     }),
-    lcInfo: this.fb.group({
-      applyId: [null], // 特批申请单ID
-      foreignCompanyId: [null], // 外贸公司
-      foreignCompanyName: [null, [Validators.required]], // 外贸公司名称
-      lcNo: [null, [Validators.required]], // L/C号码
-      lcAmount: [null, [Validators.required]], // L/C金额
-      nonStandardTerms: [null, [Validators.required]], // Non Standard Terms
-      lcDiscrepancy: [null, [Validators.required]], // L/C discrepancy描述
-      acceptLcDiscrepancy: [null, [Validators.required]], // 是否接受L/C discrepancy
-      lcDiscrepancyPaymentMethod: [null, [Validators.required]], // L/C discrepancy费用支付方
-      modifyEntry: [null, [Validators.required]], // 修改条目
-      modifyEntryDesc: [null, [Validators.required]], // 修改条目说明
-      cancelReason: [null, [Validators.required]], // 取消原因
-      cancelReasonDesc: [null, [Validators.required]], // 取消原因说明
-      newLcIssued: [null, [Validators.required]], // 新的L/C是否已经开具
+    lcAmendmentOrderInfo: this.fb.group({
+      productType: [null], // 产品型号
+      bmc: [null, [Validators.required]], // 产品线
+      bg: [{ value: null, disabled: true }, [Validators.required]], // BG
+      sapOrderNo: [null, [Validators.required]], // SAP订单号
+      orderStatus: [null, [Validators.required]], // 订单状态
+      lcInfo: this.fb.group({
+        foreignCompanyId: [null], // 外贸公司
+        foreignCompanyName: [null, [Validators.required]], // 外贸公司名称
+        lcNo: [null, [Validators.required]], // L/C号码
+        lcAmount: [null, [Validators.required]], // L/C金额
+        nonStandardTerms: [null], // Non Standard Terms
+        lcDiscrepancy: [null], // L/C discrepancy描述
+        acceptLcDiscrepancy: [null], // 是否接受L/C discrepancy
+        lcDiscrepancyPaymentMethod: [null], // L/C discrepancy费用支付方
+        modifyEntry: [null], // 修改条目
+        modifyEntryDesc: [null], // 修改条目说明
+        cancelReason: [null], // 取消原因
+        cancelReasonDesc: [null], // 取消原因说明
+        newLcIssued: [null], // 新的L/C是否已经开具
+      }),
     }),
     changeOrderInfos: this.fb.group({
       exchangeMethod: [null], // 换货方式
@@ -219,7 +218,7 @@ export class RequestFormComponent implements OnInit {
   });
 
   public ngOnInit(): void {
-    const { params: { requestId }, queryParams: { type, item, taskId, minMon, maxMon, bg, minComp, maxComp } } = this.route.snapshot;
+    const { params: { requestId }, queryParams: { type, item, taskId,  bg } } = this.route.snapshot;
     // detail page
     if (requestId) {
       this.taskId = taskId;
@@ -245,55 +244,39 @@ export class RequestFormComponent implements OnInit {
 
       this.basicInfo.patchValue({ applyType: type });
 
-      this.setPageTitle({ applyType: type, applyItem: item, minMon, maxMon, minComp, maxComp });
+      this.setPageTitle({ applyType: type, applyItem: item });
 
       if (bg) {
-        this.orderInfo.patchValue({ bg });
-        if (this.applyType === APPLY_TYPE.MACHINE_EXCHANGE) {
-          let orders = this.changeOrderInfos.get('orders') as FormArray
-          orders.at(0).patchValue({
-            bg
-          })
-          orders.at(1).patchValue({
-            bg
-          })
+        switch(type) {
+          case APPLY_TYPE.MACHINE_EXCHANGE:
+            let orders = this.changeOrderInfos.get('orders') as FormArray
+            orders.at(0).patchValue({ bg })
+            orders.at(1).patchValue({ bg })
+            break
+          case APPLY_TYPE.LC_AMENDMENT:
+            this.lcAmendmentOrderInfo.patchValue({ bg });
+            break
+          default:
+            this.orderInfo.patchValue({ bg });
         }
-
       }
       this.pageLoading = false;
       this.setFormValidators(type, item, bg);
-
     }
-    // 调取外贸公司
-     this.getIePoolArray();
   }
 
-  public setPageTitle({ applyType = '', applyItem = '', minMon = null, maxMon = null, minComp = null, maxComp = null }, isNew = true) {
-    const { label: applyTypeName, items } = APPLY_TYPE_MAP[applyType];
-    if (!isNew) {
-      this.pageTitle = applyTypeName;
-      return;
+  public setPageTitle({ applyType = '', applyItem = '' }, isNew = true) {
+    let title = ''
+    if (applyType && APPLY_TYPE_MAP[applyType]) {
+      const { label: applyTypeName, items } = APPLY_TYPE_MAP[applyType]
+      title += applyTypeName
+      const item = items.find(({ value }) => value == applyItem);
+      if (item && item.label) {
+        title += `-${item.label}`
+      }
     }
-    let pageTitle = `新建特批-${applyTypeName}`;
-    switch (applyType) {
-      case APPLY_TYPE.EXT_WARRANTY:
-        if (minMon && minComp && maxMon && maxComp) {
-          pageTitle += `${minComp}${minMon} month&${maxComp}${maxMon} month`;
-        } else if (minMon && minComp) {
-          pageTitle += `${minComp}${minMon} month`;
-        } else if (maxMon && maxComp) {
-          pageTitle += `${maxComp}${maxMon} month`;
-        }
-        break;
-      default:
-        const item = items.find(({ value }) => value == applyItem) || { } as { label: string };
-        const applyItemName = item.label;
-        if (applyItemName) {
-          pageTitle += `-${applyItemName}`;
-        }
-        break;
-    }
-    this.pageTitle = pageTitle;
+
+    this.pageTitle =  isNew ? `新建特批-${title}` : title
   }
 
   get orderInfo(): FormGroup {
@@ -307,10 +290,7 @@ export class RequestFormComponent implements OnInit {
   get ccInfo(): FormGroup {
     return this.formValues.get('ccInfo') as FormGroup;
   }
-  get lcInfo(): FormGroup {
-    return this.formValues.get('lcInfo') as FormGroup;
-  }
-
+  
   get rddOitOrderInfos(): FormGroup {
     return this.formValues.get('rddOitOrderInfos') as FormGroup
   }
@@ -318,6 +298,10 @@ export class RequestFormComponent implements OnInit {
   get changeOrderInfos(): FormGroup {
     return this.formValues.get('changeOrderInfos') as FormGroup
   }
+
+  get lcAmendmentOrderInfo(): FormGroup {
+    return this.formValues.get('lcAmendmentOrderInfo') as FormGroup
+  } 
 
   public setFormValidators(type, item, bg) {
     if (type === APPLY_TYPE.EXT_WARRANTY) {
@@ -328,10 +312,10 @@ export class RequestFormComponent implements OnInit {
       }
     } else if (type === APPLY_TYPE.PRODUCTION) {
       this.basicInfo.controls.applyItem.disable();
-    }
-
-    if (type !== APPLY_TYPE.LC_AMENDMENT) {
-      this.orderInfo.controls.orderStatus.clearValidators()
+    } else if (type === APPLY_TYPE.LC_AMENDMENT) {
+      if (item === 'sp_lcamendment_apply_item_5') {
+        this.basicInfo.controls.applyItemDesc.setValidators([Validators.required]);
+      }
     }
 
     if (bg === 'PD&IGT') {
@@ -346,7 +330,7 @@ export class RequestFormComponent implements OnInit {
   }
 
   public getFormData() {
-    const { basicInfo, orderInfo, ccInfo, rddOitOrderInfos, changeOrderInfos, lcInfo } = this.formValues.getRawValue()
+    const { basicInfo, orderInfo, ccInfo, rddOitOrderInfos, changeOrderInfos, lcAmendmentOrderInfo } = this.formValues.getRawValue()
     const { applyArrivalTime, expectedPaymentDate, expectedSaleDate, products } = orderInfo
     const extInfo = {
       exchangeMethod: changeOrderInfos.exchangeMethod
@@ -390,12 +374,13 @@ export class RequestFormComponent implements OnInit {
         ];
         break;
       case APPLY_TYPE.LC_AMENDMENT:  // LC_AMENDMENT申请
+        let originOrderInfo = this.requestInfo.orderInfos[0] as any
         data.orderInfos = [
           {
-            ...this.requestInfo.orderInfos[0],
-            ...orderInfo,
-            productType: Array.isArray(orderInfo.productType) ? orderInfo.productType.join(',') : orderInfo.productType,
-            lcInfo,
+            ...originOrderInfo,
+            ...lcAmendmentOrderInfo,
+            productType: Array.isArray(lcAmendmentOrderInfo.productType) ? lcAmendmentOrderInfo.productType.join(',') : lcAmendmentOrderInfo.productType,
+            lcInfo: { ...originOrderInfo.lcInfo, ...lcAmendmentOrderInfo.lcInfo },
           },
         ];
         break;
@@ -488,17 +473,58 @@ export class RequestFormComponent implements OnInit {
   // 设置页面是否可编辑, 满足以下情况可编辑
   // 1. 登录用户是申请人
   // 2. 申请状态是草稿、已拒绝(退回)、已撤销
-  public setEditable(processStatus) {
-    const editable = this.isApplicant && [PROCESS_STATUS.DRAFT, PROCESS_STATUS.REJECTED, PROCESS_STATUS.WITHDRAW].includes(processStatus);
+  public setEditable(status, processStatus) {
+    const editable = this.isApplicant && [PROCESS_STATUS.DRAFT, PROCESS_STATUS.REJECTED, PROCESS_STATUS.WITHDRAW].includes(processStatus) && status === 1;
     if (!editable) {
       // 设置表单字段disabled
       this.formValues.controls.basicInfo.disable();
       this.formValues.controls.orderInfo.disable();
       this.formValues.controls.ccInfo.disable();
-      this.lcInfo.disable()
+      this.formValues.controls.lcAmendmentOrderInfo.disable();
       this.formValues.controls.changeOrderInfos.disable()
     }
     this.editable = editable;
+  }
+  
+  setLcAmendmentOrderInfoFormValidators(orderInfo) {
+    const lcInfo = this.lcAmendmentOrderInfo.get('lcInfo') as FormGroup
+    const lcInfoControls = lcInfo.controls
+    lcInfoControls.nonStandardTerms.clearValidators()
+    lcInfoControls.lcDiscrepancy.clearValidators()
+    lcInfoControls.acceptLcDiscrepancy.clearValidators()
+    lcInfoControls.lcDiscrepancyPaymentMethod.clearValidators()
+    lcInfoControls.modifyEntry.clearValidators()
+    lcInfoControls.modifyEntryDesc.clearValidators()
+    lcInfoControls.cancelReason.clearValidators()
+    lcInfoControls.cancelReasonDesc.clearValidators()
+    lcInfoControls.newLcIssued.clearValidators()
+    const { applyItem } = this.basicInfo.getRawValue()
+    const { lcInfo: { acceptLcDiscrepancy, modifyEntry, cancelReason } } = orderInfo
+    switch(applyItem) {
+      case 'sp_lcamendment_apply_item_1':
+        lcInfoControls.nonStandardTerms.setValidators([Validators.required])
+        break
+      case 'sp_lcamendment_apply_item_2':
+        lcInfoControls.lcDiscrepancy.setValidators([Validators.required])
+        lcInfoControls.acceptLcDiscrepancy.setValidators([Validators.required])
+        if (acceptLcDiscrepancy === 1) {
+          lcInfoControls.lcDiscrepancyPaymentMethod.setValidators([Validators.required])
+        }
+        break
+      case 'sp_lcamendment_apply_item_3':
+        lcInfoControls.modifyEntry.setValidators([Validators.required])
+        if (modifyEntry === 'sp_lc_other') {
+          lcInfoControls.modifyEntryDesc.setValidators([Validators.required])
+        }
+        break
+      case 'sp_lcamendment_apply_item_4':
+        lcInfoControls.cancelReason.setValidators([Validators.required])
+        lcInfoControls.newLcIssued.setValidators([Validators.required])
+        if (cancelReason === 'sp_lc_other') {
+          lcInfoControls.cancelReasonDesc.setValidators([Validators.required])
+        }
+        break
+    }
   }
 
   public async onSubmit() {
@@ -521,6 +547,19 @@ export class RequestFormComponent implements OnInit {
       case APPLY_TYPE.MACHINE_EXCHANGE:
         this.checkMachineExchange()
         hasError = this.basicInfo.invalid || this.changeOrderInfos.invalid
+        break
+      case APPLY_TYPE.LC_AMENDMENT:
+        this.setLcAmendmentOrderInfoFormValidators(orderInfos[0])
+        const lcInfo = this.lcAmendmentOrderInfo.get('lcInfo') as FormGroup
+        for (const i in this.lcAmendmentOrderInfo.controls) {
+          this.lcAmendmentOrderInfo.controls[i].markAsDirty();
+          this.lcAmendmentOrderInfo.controls[i].updateValueAndValidity();
+        }
+        for (const i in lcInfo.controls) {
+          lcInfo.controls[i].markAsDirty();
+          lcInfo.controls[i].updateValueAndValidity();
+        }
+        hasError = this.basicInfo.invalid || this.lcAmendmentOrderInfo.invalid
         break
       default:
         for (const i in this.orderInfo.controls) {
@@ -586,7 +625,7 @@ export class RequestFormComponent implements OnInit {
         taskList, nodeInfoList, nodeCode, nodeAction,
         extInfo
       } = data
-      this.setPageTitle({ applyType }, false)
+      this.setPageTitle({ applyType, applyItem }, false)
       this.applyItem = applyItem
       this.applyType = applyType
       this.executed = executed
@@ -617,11 +656,10 @@ export class RequestFormComponent implements OnInit {
         this.setFormValidators(applyType, applyItem, orderInfos[0].bg)
       } else if (applyType === APPLY_TYPE.LC_AMENDMENT) {
         this.formValues.patchValue({
-          orderInfo: {
+          lcAmendmentOrderInfo: {
             ...orderInfos[0],
             productType: (orderInfos[0].bg === 'US' && orderInfos[0].productType) ? orderInfos[0].productType.split(',') : orderInfos[0].productType
-          },
-          lcInfo: orderInfos[0].lcInfo
+          }
         });
         this.setFormValidators(applyType, applyItem, orderInfos[0].bg)
       } else if (applyType === APPLY_TYPE.RDD_OIT) {
@@ -711,7 +749,7 @@ export class RequestFormComponent implements OnInit {
       this.showWithdrawBtn = processStatus === PROCESS_STATUS.START && this.isApplicant && nodeAction !== NODE_ACTION.FEEDBACK;
       this.approveNodeList = nodeInfoList;
       this.approveHistory = taskList;
-      this.setEditable(processStatus);
+      this.setEditable(status, processStatus);
     } catch ({ message }) {
       this.message.error(DEFAULT_ERROR_MESSAGE);
       console.error(`初始化失败, ${message}`);
@@ -768,10 +806,6 @@ export class RequestFormComponent implements OnInit {
       this.submitLoading = false;
       this.message.remove(id);
     }
-  }
-  // 获取外贸公司
-  public async getIePoolArray() {
-    this.iepoollist = await this.spService.getIePoolList();
   }
 
   public navigateToHomePage() {

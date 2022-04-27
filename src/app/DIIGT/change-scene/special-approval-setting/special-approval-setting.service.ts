@@ -51,8 +51,8 @@ export class SpecialApprovalSettingService {
   }
 
   // 获取审批流程节点列表
-  async getApproveProcNodeList(procId) {
-    if (this.approveProcNodesMap[procId]) {
+  async getApproveProcNodeList(procId, renew = false) {
+    if (this.approveProcNodesMap[procId] && !renew) {
       return this.approveProcNodesMap[procId]
     }
     const uri = `/act/specialapprove/process/${procId}/preview`
@@ -101,6 +101,7 @@ export class SpecialApprovalSettingService {
   async addApproveProc(proc: ApproveProc) {
     const uri = `/act/specialapprove/process`
     const res = await this.http.post(uri, proc).toPromise();
+    this.getAllApproveProcList(true)
     return formatResponse(res)
   }
 
@@ -108,6 +109,8 @@ export class SpecialApprovalSettingService {
   async updateApproveProc(proc: ApproveProc) {
     const uri = `/act/specialapprove/process`
     const res = await this.http.put(uri, proc).toPromise();
+    this.getAllApproveProcList(true)
+    this.getApproveProcNodeList(proc.id, true)
     return formatResponse(res)
   }
 
@@ -122,6 +125,7 @@ export class SpecialApprovalSettingService {
   async enableApproveProc(procId) {
     const uri = `/act/specialapprove/process/${procId}/enable`
     const res = await this.http.post(uri).toPromise();
+    this.getAllApproveProcList(true)
     return formatResponse(res)
   }
 
@@ -129,6 +133,7 @@ export class SpecialApprovalSettingService {
   async disableApproveProc(procId) {
     const uri = `/act/specialapprove/process/${procId}/disable`
     const res = await this.http.post(uri).toPromise();
+    this.getAllApproveProcList(true)
     return formatResponse(res)
   }
 
@@ -136,6 +141,7 @@ export class SpecialApprovalSettingService {
   async deleteApproveProc(procId) {
     const uri = `/act/specialapprove/process/${procId}`
     const res = await this.http.delete(uri).toPromise();
+    this.getAllApproveProcList(true)
     return formatResponse(res)
   }
 
@@ -143,6 +149,7 @@ export class SpecialApprovalSettingService {
   async cloneApproveProc(procId) {
     const uri = `/act/specialapprove/process/${procId}/copy`
     const res = await this.http.post(uri).toPromise();
+    this.getAllApproveProcList(true)
     return formatResponse(res)
   }
 
