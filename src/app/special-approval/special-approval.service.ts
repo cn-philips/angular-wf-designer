@@ -123,7 +123,6 @@ export class SpecialApprovalService {
     const res = await this.http.get(uri, {
       params: {
         ...params,
-        ccPerson: getLoginUserCode1(),
         orderByClause: 'createTime desc',
       }
     }).toPromise();
