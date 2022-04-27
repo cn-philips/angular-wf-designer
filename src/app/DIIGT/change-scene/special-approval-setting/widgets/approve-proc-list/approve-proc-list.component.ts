@@ -93,7 +93,7 @@ export class ApproveProcListComponent implements OnInit {
       this.getTableData(true)
       this.selectedProc = null
     } catch ({ message }) {
-      this.message.success('删除失败')
+      this.message.error('该流程使用中，请先进入业务流程配置移除后再删除')
       console.log(`删除审批流程失败, ${message}`);
       console.log(item);
     } finally {

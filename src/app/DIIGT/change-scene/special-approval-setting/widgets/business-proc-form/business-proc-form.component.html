@@ -180,9 +180,10 @@
               #processId
             >
               <nz-option
-                *ngFor="let item of selectOptions.businessProcList"
+                *ngFor="let item of selectOptions.approveProcList"
                 [nzLabel]="item.label"
                 [nzValue]="item.value"
+                [nzDisabled]="item.disabled"
               ></nz-option>
             </nz-select>
             <nz-form-explain
@@ -204,7 +205,7 @@
           <header>审批流预览</header>
           <div class="approve-diagram">
             <div
-              *ngFor="let subList of businessProcNodeList"
+              *ngFor="let subList of approveProcNodeList"
               class="approve-row"
             >
               <div class="approve-col">
@@ -244,7 +245,7 @@
             </div>
             <nz-empty
               nzNotFoundContent="请先选择审批流"
-              *ngIf="businessProcNodeList.length === 0"
+              *ngIf="approveProcNodeList.length === 0"
             ></nz-empty>
           </div>
         </div>
