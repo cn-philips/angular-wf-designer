@@ -73,20 +73,20 @@
           <nz-form-label nzXl="8" nzXXl="6" nzRequired>销售区域</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <nz-input-group style="width: 100%;font-size: 0;">
-              <nz-select formControlName="bigArea" style="width: 48%;margin-right:4%" nzPlaceHolder="Team/Cycle Group" (ngModelChange)="onBigAreaChange($event)">
-                <nz-option *ngFor="let item of selectOptions.bigAreas" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+              <nz-select formControlName="cycleGroup" style="width: 48%;margin-right:4%" nzPlaceHolder="Team/Cycle Group" (ngModelChange)="onCycleGroupChange($event)">
+                <nz-option *ngFor="let item of selectOptions.cycleGroups" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
               </nz-select>
 
-              <nz-select formControlName="smallArea" style="width: 48%" nzPlaceHolder="Region">
-                <nz-option *ngFor="let item of selectOptions.smallAreas" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
-                <nz-option *ngIf="selectOptions.smallAreas.length === 0" nzLabel="请先选择Team/Cycle Group" [nzDisabled]="true"></nz-option>
+              <nz-select formControlName="bigArea" style="width: 48%" nzPlaceHolder="Region">
+                <nz-option *ngFor="let item of selectOptions.bigAreas" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+                <nz-option *ngIf="selectOptions.bigAreas.length === 0" nzLabel="请先选择Team/Cycle Group" [nzDisabled]="true"></nz-option>
               </nz-select>
             </nz-input-group>
             <div style="display: flex;">
               <nz-form-explain style="width: 48%;margin-right:4%" >
-                <span style="color:#f5222d" *ngIf="formValues.get('bigArea')?.dirty && formValues.get('bigArea')?.errors">请选择销售区域</span>
+                <span style="color:#f5222d" *ngIf="formValues.get('cycleGroup')?.dirty && formValues.get('cycleGroup')?.errors">请选择销售区域</span>
               </nz-form-explain>
-              <nz-form-explain style="width: 48%" *ngIf="formValues.get('smallArea')?.dirty && formValues.get('smallArea')?.errors">
+              <nz-form-explain style="width: 48%" *ngIf="formValues.get('bigArea')?.dirty && formValues.get('bigArea')?.errors">
                 <span style="color:#f5222d">请选择销售区域</span>
               </nz-form-explain>
             </div>

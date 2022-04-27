@@ -285,7 +285,7 @@ const CYCLEGROUP_BIGAREA_MAP = {
   AED: [{ label: "AED", value: "AED" }],
 }
 
-const BIG_SMALL_AREA_LIST = [
+const CYCLEGROUP_BIGAREA_LIST = [
   {
     label: "West",
     value: "West",
@@ -482,7 +482,7 @@ export {
   US_PRODUCT_LIST,
   ORDER_TYPES,
   BUSINESS_MODEL_LIST,
-  BIG_SMALL_AREA_LIST,
+  CYCLEGROUP_BIGAREA_LIST,
   CURRENCIES,
   CC_TYPES,
   PROCESS_STATUS,

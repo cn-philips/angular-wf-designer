@@ -14,7 +14,6 @@ import {
   BUSINESS_MODEL,
   APPLY_TYPE,
   APPLY_TYPE_MAP,
-  STAND_WARRANTY_MONTH,
   BG_BMC_MAP,
   NODE_ACTION,
   PROCESS_STATUS,
@@ -117,8 +116,8 @@ export class RequestFormComponent implements OnInit {
       productType: [null], // 产品型号
       bmc: [null, [Validators.required]], // 产品线
       bg: [{ value: null, disabled: true }, [Validators.required]], // BG
+      cycleGroup: [null, [Validators.required]], // 产品区域-team
       bigArea: [null, [Validators.required]], // 产品区域-大区
-      smallArea: [null, [Validators.required]], // 产品区域-小区
       businessModel: [null, [Validators.required]], // 业务模式
       dealerName: [{ value: null, disabled: true }], // 经销商名称
       dealerCode: [{ value: null, disabled: true }], // 经销商编号

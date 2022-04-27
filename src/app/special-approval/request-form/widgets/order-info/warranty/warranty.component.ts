@@ -18,7 +18,7 @@ import {
   BG_LIST,
   ORDER_TYPES,
   BUSINESS_MODEL_LIST,
-  BIG_SMALL_AREA_LIST,
+  CYCLEGROUP_BIGAREA_LIST,
   CURRENCIES,
   STAND_WARRANTY_MONTH,
 } from "../../../../special-approval.constants";
@@ -46,8 +46,8 @@ export class WarrantyOrderInfoComponent implements OnInit {
   selectOptions = {
     orderTypes: ORDER_TYPES,
     bgList: BG_LIST,
-    bigAreas: BIG_SMALL_AREA_LIST,
-    smallAreas: [],
+    cycleGroups: CYCLEGROUP_BIGAREA_LIST,
+    bigAreas: [],
     businessModels: BUSINESS_MODEL_LIST,
     currencies: CURRENCIES,
   };
@@ -78,12 +78,12 @@ export class WarrantyOrderInfoComponent implements OnInit {
     });
   }
 
-  onBigAreaChange(bigArea) {
-    const area = this.selectOptions.bigAreas.find(
-      ({ value }) => value === bigArea
+  onCycleGroupChange(cycleGroup) {
+    const group = this.selectOptions.cycleGroups.find(
+      ({ value }) => value === cycleGroup
     );
-    this.selectOptions.smallAreas = area ? area.children : [];
-    this.formValues.patchValue({ smallArea: null });
+    this.selectOptions.bigAreas = group ? group.children : [];
+    this.formValues.patchValue({ bigArea: null });
   }
 
   onShowSelectHospitalModal() {
@@ -156,8 +156,8 @@ export class WarrantyOrderInfoComponent implements OnInit {
       projectName,
       productType: productModel,
       sapOrderNo: sap,
-      bigArea: team,
-      smallArea: region,
+      cycleGroup: team,
+      bigArea: region,
       bmc,
       businessModel: businessModel ? businessModel.toLowerCase() : null,
       dealerName: distributor,
@@ -173,7 +173,8 @@ export class WarrantyOrderInfoComponent implements OnInit {
           itemNo: "",
           quantity: "",
           warranty: {
-            stdWarrantyMonths: STAND_WARRANTY_MONTH[this.formValues.get("bg").value],
+            stdWarrantyMonths:
+              STAND_WARRANTY_MONTH[this.formValues.get("bg").value],
           },
         },
       ],

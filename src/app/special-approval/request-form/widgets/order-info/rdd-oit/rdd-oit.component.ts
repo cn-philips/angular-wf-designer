@@ -8,7 +8,7 @@ import { SpecialApprovalService } from '../../../../special-approval.service'
 import {
   ORDER_TYPES,
   BMC_LIST,
-  BIG_SMALL_AREA_LIST,
+  CYCLEGROUP_BIGAREA_LIST,
   BUSINESS_MODEL_LIST,
   CURRENCIES,
   US_PRODUCT_LIST,
@@ -64,7 +64,7 @@ export class RddOitOrderInfoComponent implements OnInit {
   selectOptions = {
     orderTypes: ORDER_TYPES,
     bmcList: BMC_LIST,
-    cycleGroups: BIG_SMALL_AREA_LIST,
+    cycleGroups: CYCLEGROUP_BIGAREA_LIST,
     cycleGroupBigAreaMap: CYCLEGROUP_BIGAREA_MAP,
     businessModels: BUSINESS_MODEL_LIST,
     currencies: CURRENCIES,

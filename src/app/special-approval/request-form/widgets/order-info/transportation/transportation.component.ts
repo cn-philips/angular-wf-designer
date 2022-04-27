@@ -7,7 +7,7 @@ import {Reference, SelectReferenceComponent} from '../../select-reference/select
 import {
   APPLY_TYPE,
   BG_LIST,
-  BIG_SMALL_AREA_LIST,
+  CYCLEGROUP_BIGAREA_LIST,
   BUSINESS_MODEL,
   BUSINESS_MODEL_LIST,
   CURRENCIES,
@@ -46,8 +46,8 @@ export class TransportationOrderInfoComponent implements OnInit {
   selectOptions = {
     orderTypes: ORDER_TYPES,
     bgList: BG_LIST,
-    bigAreas: BIG_SMALL_AREA_LIST,
-    smallAreas: [],
+    cycleGroups: CYCLEGROUP_BIGAREA_LIST,
+    bigAreas: [],
     businessModels: BUSINESS_MODEL_LIST,
     currencies: CURRENCIES,
     oms: []
@@ -84,10 +84,10 @@ export class TransportationOrderInfoComponent implements OnInit {
     })
   }
 
-  onBigAreaChange(bigArea) {
-    const area = this.selectOptions.bigAreas.find(({ value }) => value === bigArea)
-    this.selectOptions.smallAreas = area ? area.children : []
-    this.formValues.patchValue({ smallArea: null })
+  onCycleGroupChange(cycleGroup) {
+    const group = this.selectOptions.cycleGroups.find(({ value }) => value === cycleGroup)
+    this.selectOptions.bigAreas = group ? group.children : []
+    this.formValues.patchValue({ bigArea: null })
   }
 
   onShowSelectHospitalModal() {
@@ -160,8 +160,8 @@ export class TransportationOrderInfoComponent implements OnInit {
       projectName,
       productType: productModel,
       sapOrderNo: sap,
-      bigArea: team,
-      smallArea: region,
+      cycleGroup: team,
+      bigArea: region,
       bmc,
       businessModel: businessModel ? businessModel.toLowerCase() : null,
       dealerName: distributor,

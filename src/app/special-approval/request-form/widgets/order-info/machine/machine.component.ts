@@ -5,7 +5,7 @@ import {
   BG_LIST,
   ORDER_TYPES,
   BUSINESS_MODEL_LIST,
-  BIG_SMALL_AREA_LIST,
+  CYCLEGROUP_BIGAREA_LIST,
   CURRENCIES,
   STAND_WARRANTY_MONTH,
 } from '../../../../special-approval.constants';
@@ -72,8 +72,8 @@ export class MachineComponent implements OnInit {
     selectOptions = {
     orderTypes: ORDER_TYPES,
     bgList: BG_LIST,
-    bigAreas: BIG_SMALL_AREA_LIST,
-    smallAreas: [],
+    cycleGroups: CYCLEGROUP_BIGAREA_LIST,
+    bigAreas: [],
     businessModels: BUSINESS_MODEL_LIST,
     currencies: CURRENCIES,
     oms: []
@@ -111,10 +111,10 @@ export class MachineComponent implements OnInit {
     })
   }
 
-  onBigAreaChange(bigArea, index) {
+  onCycleGroupChange(cycleGroup, index) {
     this.selectIndex = index
-    const area = this.selectOptions.bigAreas.find(({ value }) => value === bigArea)
-    this.selectOptions.smallAreas = area ? area.children : []
+    const group = this.selectOptions.cycleGroups.find(({ value }) => value === cycleGroup)
+    this.selectOptions.bigAreas = group ? group.children : []
     this.orders.at(this.selectIndex).patchValue({ bigArea: null })
   }
 
@@ -194,8 +194,8 @@ export class MachineComponent implements OnInit {
       projectName,
       productType: productModel,
       sapOrderNo: sap,
-      bigArea: team,
-      smallArea: region,
+      cycleGroup: team,
+      bigArea: region,
       bmc,
       businessModel: businessModel ? businessModel.toLowerCase() : null,
       dealerName: distributor,
