@@ -229,7 +229,15 @@ export class ApproveNodeFormComponent implements OnInit {
 
     for(let i = 0; i < this.ccPersonList.length; i++) {
       const { personType, person, triggerType } = this.ccPersonList[i]
-      if (!(personType && person && triggerType)) {
+      let hasError = false
+      if (!personType) {
+        hasError = true
+      } else if (personType === CC_PERSON_TYPE.SP_APPLICANT) {
+        hasError = !triggerType
+      } else {
+        hasError = !(person && triggerType)
+      }
+      if (hasError) {
         this.message.error("请补充抄送人信息");
         return false
       }
