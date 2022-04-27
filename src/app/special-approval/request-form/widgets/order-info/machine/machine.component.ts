@@ -46,8 +46,6 @@ export class MachineComponent implements OnInit {
 
   searchChange$ = new BehaviorSubject("");
 
-  showDealerArea: boolean = false;
-
   salesList: Sales[] = [
     {
       name: localStorage.getItem("ng_philips_username"),
@@ -197,9 +195,6 @@ export class MachineComponent implements OnInit {
       contractPrice,
       invoiceInformation,
     } = reference;
-    if (distributor) {
-      this.showDealerArea = true;
-    }
     this.orders.at(this.selectIndex).patchValue({
       orderType,
       referenceId,

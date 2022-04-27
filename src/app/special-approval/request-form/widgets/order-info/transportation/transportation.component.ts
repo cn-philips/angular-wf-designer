@@ -155,9 +155,6 @@ export class TransportationOrderInfoComponent implements OnInit {
       contractPrice,
       invoiceInformation,
     } = reference
-    if (distributor) {
-      this.showDealerArea = true
-    }
     this.formValues.patchValue({
       orderType,
       referenceId,

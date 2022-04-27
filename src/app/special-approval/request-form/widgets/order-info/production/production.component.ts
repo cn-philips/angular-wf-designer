@@ -149,9 +149,6 @@ export class ProductionOrderInfoComponent implements OnInit {
       contractPrice,
       invoiceInformation,
     } = reference
-    if (distributor) {
-      this.showDealerArea = true
-    }
     this.formValues.patchValue({
       orderType,
       referenceId,

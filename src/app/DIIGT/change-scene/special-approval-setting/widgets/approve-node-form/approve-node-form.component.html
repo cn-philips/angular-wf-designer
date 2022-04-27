@@ -7,7 +7,7 @@
         <nz-form-item>
           <nz-form-label [nzSm]="6" [nzXs]="24">启用/禁用</nz-form-label>
           <nz-form-control [nzSm]="18" [nzXs]="24">
-            <nz-switch formControlName="status"></nz-switch>
+            <nz-switch formControlName="status" [nzDisabled]="isApplyNode"></nz-switch>
           </nz-form-control>
         </nz-form-item>
       </div>
@@ -30,9 +30,9 @@
     <div nz-row>
       <div nz-col [nzMd]="16" [nzSm]="16" [nzXs]="24">
         <nz-form-item>
-          <nz-form-label nzRequired [nzSm]="6" [nzXs]="24">动作</nz-form-label>
+          <nz-form-label [nzRequired]="!isApplyNode" [nzSm]="6" [nzXs]="24">动作</nz-form-label>
           <nz-form-control [nzSm]="18" [nzXs]="24">
-            <nz-select formControlName="action" nzPlaceHolder="请选择" #nodeAction [nzDisabled]="nodeAction.value === APPROVE_NODE_ACTION.APPLY">
+            <nz-select formControlName="action" nzPlaceHolder="请选择" #nodeAction [nzDisabled]="isApplyNode">
               <nz-option
                 *ngFor="let item of selectOptions.actionList"
                 [nzLabel]="item.label"
@@ -51,9 +51,9 @@
     <div nz-row>
       <div nz-col [nzMd]="16" [nzSm]="16" [nzXs]="24">
         <nz-form-item>
-          <nz-form-label nzRequired [nzSm]="6" [nzXs]="24">模式</nz-form-label>
+          <nz-form-label [nzRequired]="!isApplyNode" [nzSm]="6" [nzXs]="24">模式</nz-form-label>
           <nz-form-control [nzSm]="18" [nzXs]="24">
-            <nz-select formControlName="mode" nzPlaceHolder="请选择" #nodeMode [nzDisabled]="nodeAction.value === APPROVE_NODE_ACTION.APPLY">
+            <nz-select formControlName="mode" nzPlaceHolder="请选择" #nodeMode [nzDisabled]="isApplyNode">
               <nz-option
                 *ngFor="let item of selectOptions.modeList"
                 [nzLabel]="item.label"
@@ -70,7 +70,7 @@
     </div>
 
     <div>
-      <div>请选择审批人：</div>
+      <div>请选择审批人/申请人：</div>
       <div nz-row>
         <div nz-col [nzMd]="16" [nzSm]="16" [nzXs]="24">
           <nz-form-item>

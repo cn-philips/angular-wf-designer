@@ -154,7 +154,7 @@ export class SpecialApprovalSettingService {
   }
 
   // 获取所有系统角色
-  async getAllSystemRoleList(renew) {
+  async getAllSystemRoleList() {
     if (this.allSystemRoleList.length > 0) {
       return this.allSystemRoleList
     }

@@ -1,5 +1,5 @@
 import { Component, EventEmitter, OnInit, Output } from "@angular/core";
-import { FormBuilder, Validators } from "@angular/forms";
+import { FormBuilder, FormControl, Validators } from "@angular/forms";
 import { NzMessageService } from "ng-zorro-antd";
 import { BehaviorSubject, Observable } from "rxjs";
 import { debounceTime, map, switchMap } from "rxjs/operators";
@@ -92,6 +92,11 @@ export class ApproveNodeFormComponent implements OnInit {
     private spSettingService: SpecialApprovalSettingService,
     private http: HttpService
   ) {}
+
+  get isApplyNode(): boolean {
+    const action =  this.formValues.get('action') as FormControl
+    return action ? action.value === APPROVE_NODE_ACTION.APPLY : false
+  }
 
   async ngOnInit() {
     this.spSettingService
@@ -204,6 +209,11 @@ export class ApproveNodeFormComponent implements OnInit {
           approveRole,
         });
       }
+    }
+    if (this.isApplyNode) {
+      this.selectOptions.approveUserTypes = APPROVE_USER_TYPES.filter(({ value }) => value !== APPROVE_USER_TYPE.USER_SELECT)
+    } else {
+      this.selectOptions.approveUserTypes = APPROVE_USER_TYPES
     }
     this.visible = true;
   }
