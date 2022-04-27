@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, ViewChild } from '@angular/core';
-import { FormGroup } from '@angular/forms'
+import { FormControl, FormGroup } from '@angular/forms'
 
 import { Hospital, SelectHospitalComponent, } from '../../select-hospital/select-hospital.component'
 import { Dealer, SelectDealerComponent } from '../../select-dealer/select-dealer.component'
@@ -12,6 +12,7 @@ import {
   ORDER_TYPES,
   BUSINESS_MODEL_LIST,
   CYCLEGROUP_BIGAREA_LIST,
+  CYCLEGROUP_BIGAREA_MAP,
   CURRENCIES,
 } from '../../../../special-approval.constants'
 
@@ -45,10 +46,18 @@ export class ProductionOrderInfoComponent implements OnInit {
     orderTypes: ORDER_TYPES,
     bgList: BG_LIST,
     cycleGroups: CYCLEGROUP_BIGAREA_LIST,
-    bigAreas: [],
     businessModels: BUSINESS_MODEL_LIST,
     currencies: CURRENCIES,
     oms: []
+  }
+
+  get bigAreas() {
+    const cycleGroup = this.formValues.get('cycleGroup') as FormControl
+    if (cycleGroup && CYCLEGROUP_BIGAREA_MAP[cycleGroup.value]) {
+      return CYCLEGROUP_BIGAREA_MAP[cycleGroup.value]
+    } else {
+      return []
+    }
   }
 
   onBusinessModelChange(businessModel) {
@@ -77,9 +86,7 @@ export class ProductionOrderInfoComponent implements OnInit {
     })
   }
 
-  onCycleGroupChange(cycleGroup) {
-    const group = this.selectOptions.cycleGroups.find(({ value }) => value === cycleGroup) 
-    this.selectOptions.bigAreas = group ? group.children : []
+  onCycleGroupChange() {
     this.formValues.patchValue({ bigArea: null })
   }
 

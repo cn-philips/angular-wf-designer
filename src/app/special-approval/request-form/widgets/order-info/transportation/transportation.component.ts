@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, ViewChild } from '@angular/core';
-import { FormGroup } from '@angular/forms'
+import { FormControl, FormGroup } from '@angular/forms'
 import {SpecialApprovalService} from '../../../../special-approval.service';
 import {Hospital, SelectHospitalComponent} from '../../select-hospital/select-hospital.component';
 import {Dealer, SelectDealerComponent} from '../../select-dealer/select-dealer.component';
@@ -11,10 +11,9 @@ import {
   BUSINESS_MODEL,
   BUSINESS_MODEL_LIST,
   CURRENCIES,
-  ORDER_TYPES, STAND_WARRANTY_MONTH
+  ORDER_TYPES,
+  CYCLEGROUP_BIGAREA_MAP,
 } from '../../../../special-approval.constants';
-import {WarrantyOrderInfoComponent} from '../warranty/warranty.component';
-
 
 @Component({
   selector: 'special-approval-transportation-order-info',
@@ -53,6 +52,15 @@ export class TransportationOrderInfoComponent implements OnInit {
     oms: []
   }
 
+  get bigAreas() {
+    const cycleGroup = this.formValues.get('cycleGroup') as FormControl
+    if (cycleGroup && CYCLEGROUP_BIGAREA_MAP[cycleGroup.value]) {
+      return CYCLEGROUP_BIGAREA_MAP[cycleGroup.value]
+    } else {
+      return []
+    }
+  }
+
   onBusinessModelChange(businessModel) {
     if (businessModel === BUSINESS_MODEL.DISTRIBUTOR_DEAL) {
       this.showDealerArea = true
@@ -84,9 +92,7 @@ export class TransportationOrderInfoComponent implements OnInit {
     })
   }
 
-  onCycleGroupChange(cycleGroup) {
-    const group = this.selectOptions.cycleGroups.find(({ value }) => value === cycleGroup)
-    this.selectOptions.bigAreas = group ? group.children : []
+  onCycleGroupChange() {
     this.formValues.patchValue({ bigArea: null })
   }
 
@@ -176,7 +182,7 @@ export class TransportationOrderInfoComponent implements OnInit {
         wbs: "",
         itemNo: "",
         quantity: "",
-        stdWarrantyMonths: STAND_WARRANTY_MONTH[this.formValues.get('bg').value] }],
+      }],
     })
   }
 

@@ -6,6 +6,7 @@ import {
   ORDER_TYPES,
   BUSINESS_MODEL_LIST,
   CYCLEGROUP_BIGAREA_LIST,
+  CYCLEGROUP_BIGAREA_MAP,
   CURRENCIES,
   STAND_WARRANTY_MONTH,
 } from '../../../../special-approval.constants';
@@ -73,6 +74,7 @@ export class MachineComponent implements OnInit {
     orderTypes: ORDER_TYPES,
     bgList: BG_LIST,
     cycleGroups: CYCLEGROUP_BIGAREA_LIST,
+    cycleGroupBigAreaMap: CYCLEGROUP_BIGAREA_MAP,
     bigAreas: [],
     businessModels: BUSINESS_MODEL_LIST,
     currencies: CURRENCIES,
@@ -85,11 +87,6 @@ export class MachineComponent implements OnInit {
     } else {
       this.showDealerArea = false
     }
-  }
-
-  onProductTypeChange(value) {
-    console.log('产品型号');
-    console.log(value);
   }
 
   onCalcProjectName() {
@@ -111,10 +108,8 @@ export class MachineComponent implements OnInit {
     })
   }
 
-  onCycleGroupChange(cycleGroup, index) {
+  onCycleGroupChange(index) {
     this.selectIndex = index
-    const group = this.selectOptions.cycleGroups.find(({ value }) => value === cycleGroup)
-    this.selectOptions.bigAreas = group ? group.children : []
     this.orders.at(this.selectIndex).patchValue({ bigArea: null })
   }
 
