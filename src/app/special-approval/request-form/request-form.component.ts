@@ -96,16 +96,13 @@ export class RequestFormComponent implements OnInit {
   public bmcs = [];
   public executed = null;
 
-  public minMon;
-  public maxMon;
-
   public formValues = this.fb.group({
     basicInfo: this.fb.group({
       applyCode: [null],
       applicant: [null], // 申请人邮箱
       applicantName: [{ value: null, disabled: true }, [Validators.required]], // 申请人
       applyType: [null, [Validators.required]], // 申请类型
-      applyItem: [null, [Validators.required]], // 申请原因
+      applyItem: [{ value: null, disabled: true }, [Validators.required]], // 申请原因
       applyItemDesc: [null], // 其他原因说明
       reason: [null, [Validators.required]], // 申请原因
       applyFileIds: [[]], // 申请附件
@@ -221,7 +218,7 @@ export class RequestFormComponent implements OnInit {
   });
 
   public ngOnInit(): void {
-    const { params: { requestId }, queryParams: { type, item, taskId, minMon, maxMon, bg, minComp, maxComp } } = this.route.snapshot;
+    const { params: { requestId }, queryParams: { type, item, taskId,  bg } } = this.route.snapshot;
     // detail page
     if (requestId) {
       this.taskId = taskId;
@@ -247,7 +244,7 @@ export class RequestFormComponent implements OnInit {
 
       this.basicInfo.patchValue({ applyType: type });
 
-      this.setPageTitle({ applyType: type, applyItem: item, minMon, maxMon, minComp, maxComp });
+      this.setPageTitle({ applyType: type, applyItem: item });
 
       if (bg) {
         switch(type) {
@@ -268,32 +265,18 @@ export class RequestFormComponent implements OnInit {
     }
   }
 
-  public setPageTitle({ applyType = '', applyItem = '', minMon = null, maxMon = null, minComp = null, maxComp = null }, isNew = true) {
-    const { label: applyTypeName, items } = APPLY_TYPE_MAP[applyType];
-    if (!isNew) {
-      this.pageTitle = applyTypeName;
-      return;
+  public setPageTitle({ applyType = '', applyItem = '' }, isNew = true) {
+    let title = ''
+    if (applyType && APPLY_TYPE_MAP[applyType]) {
+      const { label: applyTypeName, items } = APPLY_TYPE_MAP[applyType]
+      title += applyTypeName
+      const item = items.find(({ value }) => value == applyItem);
+      if (item && item.label) {
+        title += `-${item.label}`
+      }
     }
-    let pageTitle = `新建特批-${applyTypeName}`;
-    switch (applyType) {
-      case APPLY_TYPE.EXT_WARRANTY:
-        if (minMon && minComp && maxMon && maxComp) {
-          pageTitle += `${minComp}${minMon} month&${maxComp}${maxMon} month`;
-        } else if (minMon && minComp) {
-          pageTitle += `${minComp}${minMon} month`;
-        } else if (maxMon && maxComp) {
-          pageTitle += `${maxComp}${maxMon} month`;
-        }
-        break;
-      default:
-        const item = items.find(({ value }) => value == applyItem) || { } as { label: string };
-        const applyItemName = item.label;
-        if (applyItemName) {
-          pageTitle += `-${applyItemName}`;
-        }
-        break;
-    }
-    this.pageTitle = pageTitle;
+
+    this.pageTitle =  isNew ? `新建特批-${title}` : title
   }
 
   get orderInfo(): FormGroup {
@@ -644,7 +627,7 @@ export class RequestFormComponent implements OnInit {
         taskList, nodeInfoList, nodeCode, nodeAction,
         extInfo
       } = data
-      this.setPageTitle({ applyType }, false)
+      this.setPageTitle({ applyType, applyItem }, false)
       this.applyItem = applyItem
       this.applyType = applyType
       this.executed = executed

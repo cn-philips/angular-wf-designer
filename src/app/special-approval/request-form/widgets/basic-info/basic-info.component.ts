@@ -46,17 +46,6 @@ export class BasicInfoComponent {
       (this.applyType === APPLY_TYPE.LC_AMENDMENT && this.applyItem == 'sp_lcamendment_apply_item_5')
   }
 
-  onApplyItemChange(applyItem) {
-    if (
-      this.applyType === APPLY_TYPE.EXT_WARRANTY && applyItem == 'sp_warranty_apply_item_5' ||
-      this.applyType === APPLY_TYPE.LC_AMENDMENT && applyItem == 'sp_lcamendment_apply_item_5'
-    ) {
-      this.formValues.controls.applyItemDesc.setValidators([Validators.required])
-    } else {
-      this.formValues.controls.applyItemDesc.clearValidators()
-    }
-  }
-
   onUploadFile = (item: UploadXHRArgs) => {
     const formData = new FormData()
     const file = item.file as any
