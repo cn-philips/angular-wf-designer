@@ -490,8 +490,8 @@ export class RequestFormComponent implements OnInit {
   // 设置页面是否可编辑, 满足以下情况可编辑
   // 1. 登录用户是申请人
   // 2. 申请状态是草稿、已拒绝(退回)、已撤销
-  public setEditable(processStatus) {
-    const editable = this.isApplicant && [PROCESS_STATUS.DRAFT, PROCESS_STATUS.REJECTED, PROCESS_STATUS.WITHDRAW].includes(processStatus);
+  public setEditable(status, processStatus) {
+    const editable = this.isApplicant && [PROCESS_STATUS.DRAFT, PROCESS_STATUS.REJECTED, PROCESS_STATUS.WITHDRAW].includes(processStatus) && status === 1;
     if (!editable) {
       // 设置表单字段disabled
       this.formValues.controls.basicInfo.disable();
@@ -768,7 +768,7 @@ export class RequestFormComponent implements OnInit {
       this.showWithdrawBtn = processStatus === PROCESS_STATUS.START && this.isApplicant && nodeAction !== NODE_ACTION.FEEDBACK;
       this.approveNodeList = nodeInfoList;
       this.approveHistory = taskList;
-      this.setEditable(processStatus);
+      this.setEditable(status, processStatus);
     } catch ({ message }) {
       this.message.error(DEFAULT_ERROR_MESSAGE);
       console.error(`初始化失败, ${message}`);
