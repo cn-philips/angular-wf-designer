@@ -183,12 +183,12 @@ export class RequestFormComponent implements OnInit {
           sapOrderNo: [null, [Validators.required]], // SAP订单号
           currency: [null, [Validators.required]], // 合同金额-货币
           om: [null], // OM
-          orderDate: [null], // 进单日期
-          exchangeRole: [null], // 换货角色
-          saleEmail: [null], // 销售邮箱
-          districtLeader: [null], // District Leader邮箱
-          salesLeader: [null], // sales Leader 邮箱
-          products: [[]],
+          orderDate: [null, [Validators.required]], // 进单日期
+          exchangeRole: [null, [Validators.required]], // 换货角色
+          saleEmail: [{ value: null, disabled: true }], // 销售邮箱
+          districtLeader: [{ value: null, disabled: true }], // District Leader邮箱
+          salesLeader: [{ value: null, disabled: true }], // sales Leader 邮箱
+          products: [[], [Validators.required]],
         }),
         this.fb.group({
           orderType: [null, [Validators.required]], // 订单类型
@@ -207,12 +207,12 @@ export class RequestFormComponent implements OnInit {
           sapOrderNo: [null, [Validators.required]], // SAP订单号
           currency: [null, [Validators.required]], // 合同金额-货币
           om: [null], // OM
-          orderDate: [null], // 进单日期
-          exchangeRole: [null], // 换货角色
+          orderDate: [null, [Validators.required]], // 进单日期
+          exchangeRole: [null, [Validators.required]], // 换货角色
           saleEmail: [null], // 销售邮箱
-          districtLeader: [null], // District Leader邮箱
-          salesLeader: [null], // sales Leader 邮箱
-          products: [[]],
+          districtLeader: [{ value: null, disabled: true }], // District Leader邮箱
+          salesLeader: [{ value: null, disabled: true }], // sales Leader 邮箱
+          products: [[], [Validators.required]],
         })
       ])
     })
@@ -449,7 +449,7 @@ export class RequestFormComponent implements OnInit {
         data.orderInfos = []
         let order: any = null
         rddOitOrderInfos.forEach((rddOitOrderInfo) => {
-          const { 
+          const {
             // orderInfo
             applyArrivalTime, expectedPaymentDate, expectedSaleDate, orderDate,
             // productInfo
@@ -460,7 +460,7 @@ export class RequestFormComponent implements OnInit {
           } = rddOitOrderInfo
           const product = {
             deliveryDelayReason, exchangeableHospitalName, exchangeableHospitalNo, exchangeableOrder, exchangeableOrderModel,
-            exchangeableOrderSale, exchangeableOrderSaleBigArea, exchangeableOrderSaleCycleGroup, 
+            exchangeableOrderSale, exchangeableOrderSaleBigArea, exchangeableOrderSaleCycleGroup,
             exchangeableOrderSaleDate: exchangeableOrderSaleDate ? moment(exchangeableOrderSaleDate).format('YYYY-MM-DD') : null,
             exchangeableSoNo, exchangeableWbsNo, newRdd, originalRdd, productType: subProductType, wbsNo,
           }
@@ -519,9 +519,7 @@ export class RequestFormComponent implements OnInit {
         }
         break
       case APPLY_TYPE.MACHINE_EXCHANGE:
-        const orders = this.changeOrderInfos.get('orders') as FormArray;
-        orders.markAsDirty();
-        orders.updateValueAndValidity()
+        this.checkMachineExchange()
         hasError = this.basicInfo.invalid || this.changeOrderInfos.invalid
         break
       default:
@@ -779,4 +777,19 @@ export class RequestFormComponent implements OnInit {
   public navigateToHomePage() {
     this.router.navigate(['/special-approval/home']);
   }
+
+  checkMachineExchange(){
+    const orders = this.changeOrderInfos.get('orders') as FormArray
+    const order1 = orders.at(0) as FormGroup
+    const order2 = orders.at(1) as FormGroup
+    for (const i in order1.controls) {
+      order1.controls[i].markAsDirty();
+      order1.controls[i].updateValueAndValidity();
+    }
+    for (const i in order2.controls) {
+      order2.controls[i].markAsDirty();
+      order2.controls[i].updateValueAndValidity();
+    }
+  }
+
 }

@@ -47,7 +47,11 @@ export class ProductListComponent implements OnInit {
     return this.orderInfo.get("bg").value as string;
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    if (this.isExchange && this.products.value.length === 0){
+      this.onAddProduct()
+    }
+  }
 
   onAddProduct() {
     this.products.patchValue([
