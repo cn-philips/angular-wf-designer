@@ -74,6 +74,9 @@ export class SupplementComponent implements OnInit {
 
   redstar:any = false;
   mess_ddp: any = false;
+  public taskid: any = '';
+  // 是否非标
+  @Input() isNonStandard: boolean = false;
   public agreementAgenNameAddr: any = ''; // 协议经销商名称地址
 
   public agentDatas: any = []; // 代理商数据
@@ -480,6 +483,7 @@ public params:any={
 
   ngOnInit() {
 
+    this.taskid = this.activatedRouter.queryParams['_value'].taskid;
     let flag = this.activatedRouter.queryParams['_value'].flag;
     if (flag != undefined && flag != null && flag != '') {
       this.flag = flag;
