@@ -218,10 +218,6 @@ export class MachineComponent implements OnInit {
           wbs: "",
           itemNo: "",
           quantity: "",
-          stdWarrantyMonths:
-            STAND_WARRANTY_MONTH[
-              this.orders.at(this.selectIndex).get("bg").value
-            ],
         },
       ],
     });

@@ -178,7 +178,7 @@ export class AdditionalInstallationCostComponent implements OnInit {
         wbs: "",
         itemNo: "",
         quantity: "",
-        stdWarrantyMonths: STAND_WARRANTY_MONTH[this.formValues.get('bg').value] }],
+      }],
     })
   }
 

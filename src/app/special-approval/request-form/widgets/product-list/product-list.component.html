@@ -8,7 +8,8 @@
       <ng-container *ngIf="isWarranty">
         <th nzWidth="200px">设备SN</th>
         <th nzWidth="160px">合同标准保修月数</th>
-        <th nzWidth="200px">合同保修开始日期</th>
+        <th nzWidth="160px">POS延保月数</th>
+        <th nzWidth="200px">预计保修开始日期</th>
         <th nzWidth="150px">合同保修结束日期</th>
         <th nzWidth="200px">申请保修结束日期</th>
         <th nzWidth="130px">申请延保月数</th>
@@ -46,13 +47,24 @@
           <input type="text" nz-input [(ngModel)]="product.warranty.stdWarrantyMonths" disabled />
         </td>
         <td>
-          <!-- 合同保修开始日期 -->
+          <!-- POS延保月数 -->
+          <nz-input-number
+            class="pos-warranty-month"
+            [(ngModel)]="product.warranty.posWarrantyMonths" 
+            (ngModelChange)="onCalcStdWarrantyEndDate(product)" 
+            [nzMin]="0"
+            [disabled]="!editable"
+          >
+          </nz-input-number>
+        </td>
+        <td>
+          <!-- 预计保修开始日期 -->
           <nz-date-picker
             style="width: 100%"
             [nzStyle]="{ width: '100%' }"
             [(ngModel)]="product.warranty.expectedStdWarrantyStartdate"
             [nzDisabled]="!editable"
-            (ngModelChange)="onStdWarrantyStartDateChange(product)"
+            (ngModelChange)="onCalcStdWarrantyEndDate(product)"
           ></nz-date-picker>
         </td>
         <td>
