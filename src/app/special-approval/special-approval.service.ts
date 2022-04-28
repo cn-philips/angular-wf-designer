@@ -123,7 +123,6 @@ export class SpecialApprovalService {
     const res = await this.http.get(uri, {
       params: {
         ...params,
-        ccPerson: getLoginUserCode1(),
         orderByClause: 'createTime desc',
       }
     }).toPromise();
@@ -272,7 +271,7 @@ export class SpecialApprovalService {
   }
 
   //获取取消原因列表
-  async getcancelReason() {
+  async getCancelReason() {
     const uri = '/act/ecom/dictData/queryDrop?dictGroup=sp_apply_lc_cancel';
     const res = await this.http.get(uri).toPromise();
     const data = formatResponse(res);

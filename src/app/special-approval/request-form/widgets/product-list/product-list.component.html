@@ -8,7 +8,8 @@
       <ng-container *ngIf="isWarranty">
         <th nzWidth="200px">设备SN</th>
         <th nzWidth="160px">合同标准保修月数</th>
-        <th nzWidth="200px">合同保修开始日期</th>
+        <th nzWidth="160px">POS延保月数</th>
+        <th nzWidth="200px">预计保修开始日期</th>
         <th nzWidth="150px">合同保修结束日期</th>
         <th nzWidth="200px">申请保修结束日期</th>
         <th nzWidth="130px">申请延保月数</th>
@@ -17,7 +18,7 @@
         <th nzWidth="200px">设备SN</th>
         <th nzWidth="200px">物流状态</th>
       </ng-container>
-      <th nzWidth="100px" nzRight="0px" *ngIf="bg !== 'PD&IGT' && editable">Action</th>
+      <th nzWidth="100px" nzRight="0px" *ngIf="bg !== 'PD&IGT' && editable && !isExchange">Action</th>
     </tr>
   </thead>
   <tbody>
@@ -46,13 +47,24 @@
           <input type="text" nz-input [(ngModel)]="product.warranty.stdWarrantyMonths" disabled />
         </td>
         <td>
-          <!-- 合同保修开始日期 -->
+          <!-- POS延保月数 -->
+          <nz-input-number
+            class="pos-warranty-month"
+            [(ngModel)]="product.warranty.posWarrantyMonths" 
+            (ngModelChange)="onCalcStdWarrantyEndDate(product)" 
+            [nzMin]="0"
+            [disabled]="!editable"
+          >
+          </nz-input-number>
+        </td>
+        <td>
+          <!-- 预计保修开始日期 -->
           <nz-date-picker
             style="width: 100%"
             [nzStyle]="{ width: '100%' }"
             [(ngModel)]="product.warranty.expectedStdWarrantyStartdate"
             [nzDisabled]="!editable"
-            (ngModelChange)="onStdWarrantyStartDateChange(product)"
+            (ngModelChange)="onCalcStdWarrantyEndDate(product)"
           ></nz-date-picker>
         </td>
         <td>
@@ -84,13 +96,13 @@
           </nz-select>
         </td>
       </ng-container>
-      <td nzRight="0px" *ngIf="bg !== 'PD&IGT' && editable">
+      <td nzRight="0px" *ngIf="bg !== 'PD&IGT' && editable && !isExchange">
         <button nz-button nzType="primary" nzSize="small" (click)="onDeleteProduct(product)">删除</button>
       </td>
     </tr>
   </tbody>
   <ng-template #tableFooter>
-    <button nz-button nzType="dashed" nzBlock (click)="onAddProduct()" *ngIf="bg !== 'PD&IGT' && editable">
+    <button nz-button nzType="dashed" nzBlock (click)="onAddProduct()" *ngIf="bg !== 'PD&IGT' && editable && !isExchange">
       <i nz-icon nzType="plus" nzTheme="outline"></i>添加
     </button>
   </ng-template>

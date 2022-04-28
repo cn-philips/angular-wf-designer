@@ -1,5 +1,5 @@
 import { Component, EventEmitter, OnInit, Output } from "@angular/core";
-import { FormBuilder, Validators } from "@angular/forms";
+import { FormBuilder, FormControl, Validators } from "@angular/forms";
 import { NzMessageService } from "ng-zorro-antd";
 import { BehaviorSubject, Observable } from "rxjs";
 import { debounceTime, map, switchMap } from "rxjs/operators";
@@ -21,11 +21,11 @@ import {
 } from "../../special-approval-setting.constants";
 
 interface User {
-  id: number;
-  code: string;
+  id?: number;
+  code?: string;
   email: string;
-  name: string;
-  displayName: string;
+  name?: string;
+  displayName?: string;
 }
 
 export enum FORM_MODE {
@@ -92,6 +92,11 @@ export class ApproveNodeFormComponent implements OnInit {
     private spSettingService: SpecialApprovalSettingService,
     private http: HttpService
   ) {}
+
+  get isApplyNode(): boolean {
+    const action =  this.formValues.get('action') as FormControl
+    return action ? action.value === APPROVE_NODE_ACTION.APPLY : false
+  }
 
   async ngOnInit() {
     this.spSettingService
@@ -191,16 +196,24 @@ export class ApproveNodeFormComponent implements OnInit {
       }
 
       if (mode === APPROVE_NODE_MODE.PARALLEL) {
+        const approvers = approver ? approver.split(",") : []
+        this.userList = approvers.map((email) => ({ email }))
         this.formValues.patchValue({
-          approver: approver ? approver.split(",") : approver,
+          approver: approvers,
           approveRole: approveRole ? approveRole.split(",") : approveRole,
         });
       } else {
+        this.userList = [{ email: approver }]
         this.formValues.patchValue({
           approver,
           approveRole,
         });
       }
+    }
+    if (this.isApplyNode) {
+      this.selectOptions.approveUserTypes = APPROVE_USER_TYPES.filter(({ value }) => value !== APPROVE_USER_TYPE.USER_SELECT)
+    } else {
+      this.selectOptions.approveUserTypes = APPROVE_USER_TYPES
     }
     this.visible = true;
   }
@@ -229,7 +242,15 @@ export class ApproveNodeFormComponent implements OnInit {
 
     for(let i = 0; i < this.ccPersonList.length; i++) {
       const { personType, person, triggerType } = this.ccPersonList[i]
-      if (!(personType && person && triggerType)) {
+      let hasError = false
+      if (!personType) {
+        hasError = true
+      } else if (personType === CC_PERSON_TYPE.SP_APPLICANT) {
+        hasError = !triggerType
+      } else {
+        hasError = !(person && triggerType)
+      }
+      if (hasError) {
         this.message.error("请补充抄送人信息");
         return false
       }

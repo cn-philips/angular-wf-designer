@@ -23,10 +23,10 @@
 <div class="template-list" *ngIf="showQuickLink" style="margin-bottom:24px">
   <div class="template-item" *ngFor="let template of filteredTemplateList" (click)="onNavigateToNewRequest(template)">
     <nz-card class="template-item__content" [nzBodyStyle]="{ padding: 0 }" style="width: 240px; margin-bottom: 0; height: 100%">
-      <div class="template-name">{{ template.name }}</div>
+      <div class="template-name" [title]="template.name">{{ template.name }}</div>
       <div class="template-desc">
         <span>流程简介:</span>
-        <div>{{ template.desc }}</div>
+        <div class="template-desc__content" [title]="template.desc">{{ template.desc }}</div>
       </div>
       <div class="template-apply">适用: {{ template.bg }}</div>
       <div class="template-type">{{ template.typeName }}</div>

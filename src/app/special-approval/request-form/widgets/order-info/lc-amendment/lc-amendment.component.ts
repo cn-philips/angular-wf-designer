@@ -1,226 +1,71 @@
-import { Component, OnInit, Input, ViewChild } from "@angular/core";
-import { FormGroup } from "@angular/forms";
+import { Component, OnInit, Input } from "@angular/core";
+import { FormControl, FormGroup } from "@angular/forms";
 
 import {
-  Hospital,
-  SelectHospitalComponent,
-} from "../../select-hospital/select-hospital.component";
-import {
-  Dealer,
-  SelectDealerComponent,
-} from "../../select-dealer/select-dealer.component";
-import {
-  Reference,
-  SelectReferenceComponent,
-} from "../../select-reference/select-reference.component";
-import {
-  BUSINESS_MODEL,
   BG_LIST,
-  ORDER_TYPES,
-  BUSINESS_MODEL_LIST,
-  BIG_SMALL_AREA_LIST,
-  CURRENCIES,
-  STAND_WARRANTY_MONTH, US_PRODUCT_LIST,
-} from '../../../../special-approval.constants';
-import {SpecialApprovalService} from '../../../../special-approval.service';
+  US_PRODUCT_LIST,
+  BG_BMC_MAP,
+} from "../../../../special-approval.constants";
+import { SpecialApprovalService } from "../../../../special-approval.service";
 @Component({
   selector: "special-approval-lcamendment-order-info",
   templateUrl: "./lc-amendment.component.html",
   styleUrls: ["./lc-amendment.component.scss"],
 })
 export class LcAmendmentOrderInfoComponent implements OnInit {
-  showDealerArea: boolean = false;
+  constructor(private spService: SpecialApprovalService) {}
 
-  orderStatusList= [{ label:11, value:22 }];//订单状态
-  paymentList: any;  //支付方式
-  modfyentryList: any;//修改条目
-  cancelReasonList: any;  //取消原因
-  constructor(
-    private spService: SpecialApprovalService,
-  ) {
-  }
-
-  @ViewChild("selectHospital") selectHospital: SelectHospitalComponent;
-
-  @ViewChild("selectDealer") selectDealer: SelectDealerComponent;
-
-  @ViewChild("selectReference") selectReference: SelectReferenceComponent;
-
+  @Input() basicInfo: FormGroup;
   @Input() formValues: FormGroup;
   @Input() editable = true;
-  @Input() bmcs = [];
-  @Input() iepoollist: any=[{}];
-  @Input() lcInfo: FormGroup;
+
+  bgBmcMap = BG_BMC_MAP
+
   selectOptions = {
-    orderTypes: ORDER_TYPES,
     bgList: BG_LIST,
-    bigAreas: BIG_SMALL_AREA_LIST,
-    smallAreas: [],
-    businessModels: BUSINESS_MODEL_LIST,
-    currencies: CURRENCIES,
     usProductList: US_PRODUCT_LIST,
+    orderStatusList: [],
+    paymentList: [],
+    modifyEntryList: [],
+    cancelReasonList: [],
+    iePoolList: [],
   };
 
-  onBusinessModelChange(businessModel) {
-    if (businessModel === BUSINESS_MODEL.DISTRIBUTOR_DEAL) {
-      this.showDealerArea = true;
-    } else {
-      this.showDealerArea = false;
-    }
-  }
-
-  onCalcProjectName() {
-    const { hospitalName, productType, bg } = this.formValues.getRawValue();
-    if (bg === "PD&IGT") {
-      return;
-    }
-    const res = [];
-    if (hospitalName) {
-      res.push(hospitalName);
-    }
-
-    if (productType) {
-      res.push(productType);
-    }
-    this.formValues.patchValue({
-      projectName: res.join("-"),
-    });
-  }
-
-  onBigAreaChange(bigArea) {
-    const area = this.selectOptions.bigAreas.find(
-      ({ value }) => value === bigArea
-    );
-    this.selectOptions.smallAreas = area ? area.children : [];
-    this.formValues.patchValue({ smallArea: null });
-  }
-
-  onShowSelectHospitalModal() {
-    this.selectHospital.showModal();
-  }
-
-  onSelectHospital(hospital: Hospital) {
-    const { no, customerName } = hospital;
-    this.formValues.patchValue({
-      hospitalNo: no,
-      hospitalName: customerName,
-    });
-    this.onCalcProjectName();
-  }
-
-  onClearHospital() {
-    this.formValues.patchValue({
-      hospitalNo: null,
-      hospitalName: null,
-    });
-  }
-
-  onShowSelectDealerModal() {
-    this.selectDealer.showModal();
-  }
-
-  onSelectDealer(dealer: Dealer) {
-    const { dealerCode, dealerName } = dealer;
-    this.formValues.patchValue({
-      dealerCode: dealerCode,
-      dealerName: dealerName,
-    });
-  }
-
-
-
-  onShowReferenceModal() {
-    this.selectReference.showModal();
-  }
-
-  onSelectReference(reference: Reference) {
-    const {
-      referenceId,
-      orderType,
-      projectName,
-      productModel,
-      sap,
-      team,
-      region,
-      bmc,
-      businessModel,
-      distributor,
-      dealerCode,
-      endUser,
-      endUserId,
-      contractPrice,
-      invoiceInformation,
-    } = reference;
-    if (distributor) {
-      this.showDealerArea = true;
-    }
-    this.formValues.patchValue({
-      orderType,
-      referenceId,
-      projectName,
-      productType: productModel,
-      sapOrderNo: sap,
-      bigArea: team,
-      smallArea: region,
-      bmc,
-      businessModel: businessModel ? businessModel.toLowerCase() : null,
-      dealerName: distributor,
-      dealerCode,
-      hospitalName: endUser,
-      hospitalNo: endUserId,
-      orderAmount: contractPrice,
-      currency: invoiceInformation,
-      products: [
-        {
-          id: Date.now(),
-          productType: productModel,
-          wbs: "",
-          itemNo: "",
-          quantity: "",
-        },
-      ],
-
-    });
-  }
-
   ngOnInit(): void {
-    if (this.editable) {
-      this.formValues.get("hospitalName").valueChanges.subscribe(() => {
-        this.onCalcProjectName();
-      });
-
-      this.formValues.get("productType").valueChanges.subscribe(() => {
-        this.onCalcProjectName();
-      });
-    }
-     this.getOrderStatusList();//订单状态列表
-     this.getPaymentList();//调用支付方式列表
-     this.getModifyEntryList();//修改条目
-     this.getcancelReasonList();//取消原因
+    this.initSelectOptions()
   }
 
-// 获取订单状态列表
-  async getOrderStatusList(){
-    this.orderStatusList = await this.spService.getOrderStatusList();
+  get lcInfo(): FormGroup { return this.formValues.get('lcInfo') as FormGroup }
+  get bg(): FormControl { return this.formValues.get('bg') as FormControl }
+  get applyItem(): FormControl { return this.basicInfo.get('applyItem') as FormControl }
+
+  initSelectOptions() {
+    const promises = [
+      this.spService.getOrderStatusList(),
+      this.spService.getPaymentList(),
+      this.spService.getModifyEntryList(),
+      this.spService.getCancelReason(),
+      this.spService.getIePoolList(),
+    ]
+    Promise.all(promises).then(
+      ([orderStatusList, paymentList, modifyEntryList, cancelReasonList, iePoolList]) => {
+        this.selectOptions.orderStatusList = orderStatusList
+        this.selectOptions.paymentList = paymentList
+        this.selectOptions.modifyEntryList = modifyEntryList
+        this.selectOptions.cancelReasonList = cancelReasonList
+        this.selectOptions.iePoolList = iePoolList
+      }
+    )
   }
-  // 获取费用支付方式
-  async getPaymentList(){
-   this.paymentList = await this.spService.getPaymentList();
+
+  onIePoolChange(companyId) {
+    if (!companyId) { return }
+    const company = this.selectOptions.iePoolList.find(({ id }) => id === companyId)
+    this.lcInfo.patchValue({ foreignCompanyName: company.corporateName })
   }
-  // 获取修改条目
-  async getModifyEntryList(){
-    this.modfyentryList = await this.spService.getModifyEntryList();
-  }
-  // 获取取消原因
-  async getcancelReasonList() {
-    this.cancelReasonList = await this.spService.getcancelReason();
-  }
+
   //是否接受L/C discrepancy
-  lcDiscrepancyModel($event) {
+  lcDiscrepancyModel($event) {}
 
-  }
-
-  SelectItem() {
-
-  }
+  SelectItem() {}
 }
