@@ -23,7 +23,7 @@ import {
   Reference,
   SelectReferenceComponent,
 } from "../../select-reference/select-reference.component";
-import {FormArray, FormBuilder, FormControl, FormGroup} from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { BehaviorSubject, Observable } from "rxjs";
 import { debounceTime, map, switchMap } from "rxjs/operators";
 import { HttpService } from "../../../../../services";

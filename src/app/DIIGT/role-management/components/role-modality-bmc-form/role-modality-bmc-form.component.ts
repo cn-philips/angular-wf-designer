@@ -19,6 +19,7 @@ export class RoleModalityBMCFormComponent implements OnInit {
   modalityOptions: any[] = [];
   bmcOptions: any[] = [];
 
+  // 对应关系映射
   bmcMapping = [
     {
       bmc: 'AMI',
@@ -110,9 +111,7 @@ export class RoleModalityBMCFormComponent implements OnInit {
       cluster: 'CC',
       modality: 'CC'
     },
-
   ]
-  isAll: boolean = false;
 
   constructor(
     private fb: FormBuilder,
