@@ -18,16 +18,112 @@ export class RoleModalityBMCFormComponent implements OnInit {
   teamOptions: any[] = [];
   modalityOptions: any[] = [];
   bmcOptions: any[] = [];
+
+  bmcMapping = [
+    {
+      bmc: 'AMI',
+      cluster: 'PD',
+      modality: 'PD&IGT'
+    },
+    {
+      bmc: 'CT',
+      cluster: 'PD',
+      modality: 'PD&IGT'
+    },
+    {
+      bmc: 'DXR',
+      cluster: 'PD',
+      modality: 'PD&IGT'
+    },
+    {
+      bmc: 'EDI-CI',
+      cluster: 'PD',
+      modality: 'PD&IGT'
+    },
+    {
+      bmc: 'EDI-ICAP',
+      cluster: 'PD',
+      modality: 'PD&IGT'
+    },
+    {
+      bmc: 'IGT-S',
+      cluster: 'IGT',
+      modality: 'PD&IGT'
+    },
+    {
+      bmc: 'MR',
+      cluster: 'PD',
+      modality: 'PD&IGT'
+    },
+    {
+      bmc: 'PDS-RadOnc',
+      cluster: 'PD',
+      modality: 'PD&IGT'
+    },
+    {
+      bmc: 'Professional Service',
+      cluster: 'S&SD',
+      modality: 'S&SD'
+    },
+    {
+      bmc: 'PDS-DCP',
+      cluster: 'PD',
+      modality: 'PD&IGT'
+    },
+    {
+      bmc: 'US',
+      cluster: 'PD',
+      modality: 'US'
+    },
+    {
+      bmc: 'HPM',
+      cluster: 'CC',
+      modality: 'CC'
+    },
+    {
+      bmc: 'VAD',
+      cluster: 'CC',
+      modality: 'CC'
+    },
+    {
+      bmc: 'DFM',
+      cluster: 'CC',
+      modality: 'CC'
+    },
+    {
+      bmc: 'DECG',
+      cluster: 'CC',
+      modality: 'CC'
+    },
+    {
+      bmc: 'AED',
+      cluster: 'CC',
+      modality: 'CC'
+    },
+    {
+      bmc: 'All',
+      cluster: 'PD&IGT',
+      modality: 'PD&IGT'
+    },
+    {
+      bmc: 'All',
+      cluster: 'CC',
+      modality: 'CC'
+    },
+
+  ]
+  isAll: boolean = false;
+
   constructor(
     private fb: FormBuilder,
     private http: HttpService,
   ) {
     this.validateForm = this.fb.group({
       role: [{value: null, disabled: true}],
-      team: [null],
-      modality: [null],
-      bmc: [null],
-      cluster: [null],
+      team: [null, [Validators.required]],
+      bmc: [null, [Validators.required]],
+      modality: [null, [Validators.required]],
+      cluster: [{value: null, disabled: true}],
     });
   }
   initRoleOptions() {
@@ -46,7 +142,6 @@ export class RoleModalityBMCFormComponent implements OnInit {
         for (let i = 0; i < response.data.length; i++) {
           this.teamOptions.push({ label: response.data[i].label, value: response.data[i].label });
         }
-        console.log(this.teamOptions);
       });
 
       res(true);
@@ -83,17 +178,9 @@ export class RoleModalityBMCFormComponent implements OnInit {
     } else {
       this.clearUserDetail();
     }
-    this.validateForm.statusChanges.subscribe(res =>{
-      if (res == 'VALID'){
-        this.validateForm.value
-      }
-    })
   }
 
   async setUserDetail(user) {
-    console.log('12312312');
-    console.log(user);
-    console.log(this.userRole);
     this.validateForm.setValue({
       role: this.userRole,
       team: user.team,
@@ -101,8 +188,6 @@ export class RoleModalityBMCFormComponent implements OnInit {
       bmc: user.bmc,
       cluster: user.cluster == undefined ? null : user.cluster,
 })
-
-  console.log(this.validateForm.value);
   }
   clearUserDetail() {
     this.validateForm.reset({
@@ -115,4 +200,30 @@ export class RoleModalityBMCFormComponent implements OnInit {
   async ngOnChanges() {
       this.setUserDetail(this.user);
   }
+
+  // 根据bmc和modality对应cluster
+  async BMCChanges(value: string){
+    const modality = this.validateForm.get('modality').value;
+    this.mappingCluster(value, modality)
+  }
+  // 根据bmc和modality对应cluster
+  async ModalityChanges(value: string) {
+    const bmc = this.validateForm.get('bmc').value;
+    this.mappingCluster(bmc, value);
+  }
+
+  mappingCluster(bmc: string, modality: string){
+  if (bmc != null && modality != null) {
+      this.validateForm.patchValue({ // 先清除现有cluster再按规则进行对应
+        cluster: null
+      })
+      const map = this.bmcMapping.find(val => val.bmc === bmc && val.modality === modality);
+      if (map !== undefined){
+        this.validateForm.patchValue({
+          cluster: map.cluster
+        })
+      }
+    }
+  }
+
 }

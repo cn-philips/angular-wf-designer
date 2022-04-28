@@ -4,17 +4,6 @@
       <nz-form-item>
         <nz-form-label [nzSpan]="7">Role</nz-form-label>
         <nz-form-control [nzSpan]="17">
-<!--          <nz-select-->
-<!--            disabled-->
-<!--            nzSize="small"-->
-<!--            formControlName="role"-->
-<!--          >-->
-<!--            <nz-option-->
-<!--              *ngFor="let item of roleOptions"-->
-<!--              [nzValue]="item.value"-->
-<!--              [nzLabel]="item.label"-->
-<!--            ></nz-option>-->
-<!--          </nz-select>-->
           <input nz-input nzSize="small" formControlName="role" >
         </nz-form-control>
       </nz-form-item>
@@ -34,6 +23,9 @@
             ></nz-option>
           </nz-select>
 <!--          <input nz-input formControlName="team" nzSize="small">-->
+          <nz-form-explain *ngIf="validateForm.get('team')?.dirty && validateForm.get('team')?.errors">
+            请选择team
+          </nz-form-explain>
         </nz-form-control>
       </nz-form-item>
     </div>
@@ -46,6 +38,7 @@
           <nz-select
             nzSize="small"
             formControlName="modality"
+            (ngModelChange)="ModalityChanges($event)"
           >
             <nz-option
               *ngFor="let item of modalityOptions"
@@ -53,16 +46,20 @@
               [nzLabel]="item.label"
             ></nz-option>
           </nz-select>
+          <nz-form-explain *ngIf="validateForm.get('modality')?.dirty && validateForm.get('modality')?.errors">
+            请选择modality
+          </nz-form-explain>
         </nz-form-control>
       </nz-form-item>
     </div>
     <div nz-col nzSpan="12">
       <nz-form-item>
-        <nz-form-label [nzSpan]="7" [nzRequired]="!islook" >BMC</nz-form-label>
+        <nz-form-label [nzSpan]="7" [nzRequired]="!islook">BMC</nz-form-label>
         <nz-form-control [nzSpan]="17">
           <nz-select
             nzSize="small"
             formControlName="bmc"
+            (ngModelChange)="BMCChanges($event)"
           >
             <nz-option
               *ngFor="let item of bmcOptions"
@@ -70,21 +67,19 @@
               [nzLabel]="item.label"
             ></nz-option>
           </nz-select>
+          <nz-form-explain *ngIf="validateForm.get('bmc')?.dirty && validateForm.get('bmc')?.errors">
+            请选择bmc
+          </nz-form-explain>
         </nz-form-control>
       </nz-form-item>
     </div>
+
+
     <div nz-col nzSpan="12">
       <nz-form-item>
-        <nz-form-label [nzSpan]="7" [nzRequired]="!islook" >Cluster</nz-form-label>
+        <nz-form-label [nzSpan]="7">Cluster</nz-form-label>
         <nz-form-control [nzSpan]="17">
-          <nz-select
-            nzSize="small"
-            formControlName="cluster"
-          >
-            <nz-option nzValue="PD" nzLabel="PD"></nz-option>
-            <nz-option nzValue="IGT" nzLabel="IGT"></nz-option>
-            <nz-option nzValue="PD&IGT" nzLabel="PD&IGT"></nz-option>
-          </nz-select>
+          <input nz-input formControlName="cluster">
         </nz-form-control>
       </nz-form-item>
     </div>
