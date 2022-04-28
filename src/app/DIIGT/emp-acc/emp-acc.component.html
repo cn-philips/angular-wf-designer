@@ -20,7 +20,7 @@
   <tbody>
   <tr *ngFor="let data of fixedTable.data;">
     <ng-container>
-      <td nzWidth="200px" style="word-break:break-word;"  nzLeft="0px" [nzAlign]="nzAlign">{{ data.name !== null ? (data.name | ProcessStatusPipe) : '' }}</td>
+      <td nzWidth="200px" style="word-break:break-word;"  nzLeft="0px" [nzAlign]="nzAlign">{{ data.name !== null ? (data.name | ProcessStatusPipe) : '' }}<div *ngIf="isNonStandardTitle(data.name) != null">{{isNonStandardTitle(data.name)}}</div></td>
       <td nzWidth="200px"  [nzAlign]="nzAlign">{{ data.name == 'ZLCSH' ? '——' : data.assignee }}</td>
       <td nzWidth="200px" [nzAlign]="nzAlign">{{ changCancel(data.operationHis !== null ? (data.operationHis | ProcessStatusPipe) : (data.name == 'ZLCSH' ? '进行中' : '待操作')) }}</td>
       <td nzWidth="200px" style="word-break: break-all;"  [nzAlign]="nzAlign" nowrap>
