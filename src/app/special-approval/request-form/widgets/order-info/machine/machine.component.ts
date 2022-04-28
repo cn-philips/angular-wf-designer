@@ -23,7 +23,7 @@ import {
   Reference,
   SelectReferenceComponent,
 } from "../../select-reference/select-reference.component";
-import { FormArray, FormBuilder, FormGroup } from "@angular/forms";
+import {FormArray, FormBuilder, FormControl, FormGroup} from '@angular/forms';
 import { BehaviorSubject, Observable } from "rxjs";
 import { debounceTime, map, switchMap } from "rxjs/operators";
 import { HttpService } from "../../../../../services";
@@ -42,7 +42,7 @@ export class MachineComponent implements OnInit {
   @Input() salesLeaders: string[];
   @Input() districtLeaders: string[];
 
-  selectIndex: number;
+  selectIndex: number = 0;
 
   searchChange$ = new BehaviorSubject("");
 
@@ -227,6 +227,10 @@ export class MachineComponent implements OnInit {
     return this.formValues.get("orders") as FormArray;
   }
 
+  get exchangeMethod() {
+    return this.formValues.get('exchangeMethod')
+  }
+
   ngOnInit(): void {
     this.initOMUsers()
     this.getLeaderEmail(localStorage.getItem('ng_philips_code1'), 0);
@@ -261,7 +265,6 @@ export class MachineComponent implements OnInit {
           this.onCalcProjectName();
         });
     }
-    console.log(this.orders);
 
     const getSaleList = (keyword: string) => {
       if (!keyword) {
