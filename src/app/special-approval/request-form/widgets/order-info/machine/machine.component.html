@@ -242,7 +242,7 @@
             <nz-form-item>
               <nz-form-label nzXl="8" nzXXl="6" nzRequired>币制</nz-form-label>
               <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-                <nz-select formControlName="currency" [nzPlaceHolder]="editable ? 'currency' : ''">
+                <nz-select formControlName="currency" [nzPlaceHolder]="editable ? 'Select 请选择币制' : ''">
                   <nz-option *ngFor="let item of selectOptions.currencies" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
                 </nz-select>
                 <nz-form-explain *ngIf="ord.get('currency')?.dirty && ord.get('currency')?.errors">
