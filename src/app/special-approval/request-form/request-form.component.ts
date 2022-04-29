@@ -14,7 +14,6 @@ import {
   BUSINESS_MODEL,
   APPLY_TYPE,
   APPLY_TYPE_MAP,
-  BG_BMC_MAP,
   NODE_ACTION,
   PROCESS_STATUS,
 } from '../special-approval.constants';
@@ -93,7 +92,6 @@ export class RequestFormComponent implements OnInit {
 
   public TAB_TYPES = TAB_TYPE;
 
-  public bmcs = [];
   public executed = null;
 
   public formValues = this.fb.group({
@@ -268,9 +266,10 @@ export class RequestFormComponent implements OnInit {
   public setPageTitle({ applyType = '', applyItem = '' }, isNew = true) {
     let title = ''
     if (applyType && APPLY_TYPE_MAP[applyType]) {
-      const { label: applyTypeName, items } = APPLY_TYPE_MAP[applyType]
+      const { label: applyTypeName } = APPLY_TYPE_MAP[applyType]
+      const applyItems = this.spService.getApplyItems(applyType)
       title += applyTypeName
-      const item = items.find(({ value }) => value == applyItem);
+      const item = applyItems.find(({ value }) => value == applyItem);
       if (item && item.label) {
         title += `-${item.label}`
       }
@@ -326,7 +325,6 @@ export class RequestFormComponent implements OnInit {
     } else {
       this.orderInfo.controls.projectName.disable();
     }
-    this.bmcs = BG_BMC_MAP[bg];
   }
 
   public getFormData() {

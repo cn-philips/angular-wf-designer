@@ -7,12 +7,8 @@ import { SpecialApprovalService } from '../../../../special-approval.service'
 
 import {
   ORDER_TYPES,
-  BMC_LIST,
-  CYCLEGROUP_BIGAREA_LIST,
   BUSINESS_MODEL_LIST,
   CURRENCIES,
-  US_PRODUCT_LIST,
-  CYCLEGROUP_BIGAREA_MAP,
 } from "../../../../special-approval.constants";
 
 const excelKeyMap = {
@@ -63,17 +59,13 @@ export class RddOitOrderInfoComponent implements OnInit {
 
   selectOptions = {
     orderTypes: ORDER_TYPES,
-    bmcList: BMC_LIST,
-    cycleGroups: CYCLEGROUP_BIGAREA_LIST,
-    cycleGroupBigAreaMap: CYCLEGROUP_BIGAREA_MAP,
     businessModels: BUSINESS_MODEL_LIST,
     currencies: CURRENCIES,
     oms: [],
-    usProductList: US_PRODUCT_LIST,
   };
 
   constructor(
-    private spService: SpecialApprovalService,
+    protected spService: SpecialApprovalService,
     private message: NzMessageService,
   ) {}
 
@@ -114,8 +106,6 @@ export class RddOitOrderInfoComponent implements OnInit {
         ) {
           orderInfo.isMain = true
         }
-        if (cycleGroup) { this.onCycleGroupChange(orderInfo) }
-        if (exchangeableOrderSaleCycleGroup) { this.onSaleCycleGroupChange(orderInfo) }
         if (exchangeableOrder === '是') {
           orderInfo.exchangeableOrder = 1
         } else if(exchangeableOrder === '否') {
@@ -131,17 +121,15 @@ export class RddOitOrderInfoComponent implements OnInit {
   }
 
   onCycleGroupChange(order) {
-    const bigAreas = CYCLEGROUP_BIGAREA_MAP[order.cycleGroup]
-    order.bigArea = bigAreas ? bigAreas[0].value : null
+    order.bigArea = null
   }
 
   onSaleCycleGroupChange(order) {
-    const bigAreas = CYCLEGROUP_BIGAREA_MAP[order.exchangeableOrderSaleCycleGroup]
-    order.exchangeableOrderSaleBigArea = bigAreas ? bigAreas[0].value : null
+    order.exchangeableOrderSaleBigArea = null
   }
 
   onBmcChange(order) {
-    const bmc = BMC_LIST.find(({ value }) => value === order.bmc);
+    const bmc = this.spService.bmcList.find(({ value }) => value === order.bmc);
     if (bmc) {
       order.bg = bmc.bg;
     }

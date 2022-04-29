@@ -7,12 +7,10 @@ import {Reference, SelectReferenceComponent} from '../../select-reference/select
 import {
   APPLY_TYPE,
   BG_LIST,
-  CYCLEGROUP_BIGAREA_LIST,
   BUSINESS_MODEL,
   BUSINESS_MODEL_LIST,
   CURRENCIES,
   ORDER_TYPES,
-  CYCLEGROUP_BIGAREA_MAP,
 } from '../../../../special-approval.constants';
 
 @Component({
@@ -21,7 +19,7 @@ import {
   styleUrls: ['./transportation.component.scss']
 })
 export class TransportationOrderInfoComponent implements OnInit {
-  constructor(private spService: SpecialApprovalService) { }
+  constructor(protected spService: SpecialApprovalService) { }
 
 
   @ViewChild('selectHospital') selectHospital: SelectHospitalComponent
@@ -37,12 +35,9 @@ export class TransportationOrderInfoComponent implements OnInit {
 
   APPLY_TYPE = APPLY_TYPE
 
-  @Input() bmcs = []
-
   selectOptions = {
     orderTypes: ORDER_TYPES,
     bgList: BG_LIST,
-    cycleGroups: CYCLEGROUP_BIGAREA_LIST,
     bigAreas: [],
     businessModels: BUSINESS_MODEL_LIST,
     currencies: CURRENCIES,
@@ -51,11 +46,17 @@ export class TransportationOrderInfoComponent implements OnInit {
 
   get bigAreas() {
     const cycleGroup = this.formValues.get('cycleGroup') as FormControl
-    if (cycleGroup && CYCLEGROUP_BIGAREA_MAP[cycleGroup.value]) {
-      return CYCLEGROUP_BIGAREA_MAP[cycleGroup.value]
+    const cycleGroupBigAreaMap = this.spService.cycleGroupBigAreaMap
+    if (cycleGroup && cycleGroupBigAreaMap[cycleGroup.value]) {
+      return cycleGroupBigAreaMap[cycleGroup.value]
     } else {
       return []
     }
+  }
+
+  get bmcList() {
+    const bg = this.formValues.get('bg') as FormControl
+    return this.spService.bmcList.filter((bmc) => bmc.bg === bg.value)
   }
 
   get showDealerArea(): boolean {

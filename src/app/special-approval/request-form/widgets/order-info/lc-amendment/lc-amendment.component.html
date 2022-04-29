@@ -21,7 +21,7 @@
               [nzDisabled]="!editable"
             >
               <nz-option
-                *ngFor="let item of selectOptions.usProductList"
+                *ngFor="let item of spService.usProductList"
                 [nzLabel]="item.label"
                 [nzValue]="item.value"
               ></nz-option>
@@ -44,7 +44,7 @@
             <nz-form-control nzXs="24" nzSm="24" nzMd="9">
               <nz-select formControlName="bmc" nzPlaceHolder="请选择产品线">
                 <nz-option
-                  *ngFor="let item of bgBmcMap[bg.value] || []"
+                  *ngFor="let item of bmcList"
                   [nzLabel]="item.label"
                   [nzValue]="item.value"
                 ></nz-option>

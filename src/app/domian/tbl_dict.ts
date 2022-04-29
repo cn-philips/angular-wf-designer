@@ -1,9 +1,19 @@
-export interface TblDict {
-    id?: string;
-    pid?: string;
-    name: string;
-    value: string;
-    col1?: string;
-    col2?: string;
-    col3?: string;
-  }
+export interface Dict {
+  group?: string;
+  sort?: number;
+  code?: string;
+  label?: string;
+  tag?: string;
+  value?: string;
+  class?: string;
+}
+
+export interface ApiDict {
+  dictGroup?: string;
+  dictSort?: number;
+  dictId?: string;
+  dictLabel?: string;
+  dictValue?: string;
+  dictKey?: string;
+  listClass?: string;
+}

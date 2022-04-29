@@ -1,8 +1,8 @@
 import { Component, Input } from '@angular/core'
-import { FormGroup, Validators } from '@angular/forms'
+import { FormGroup } from '@angular/forms'
 import { UploadXHRArgs, UploadFile, NzModalService } from 'ng-zorro-antd'
 
-import { APPLY_TYPE, APPLY_TYPE_MAP } from '../../../special-approval.constants'
+import { APPLY_TYPE } from '../../../special-approval.constants'
 import { SpecialApprovalService } from '../../../special-approval.service'
 import { getType } from '../../../../../assets/js/tools'
 import { Observable, Observer } from 'rxjs'
@@ -23,9 +23,6 @@ export class BasicInfoComponent {
   @Input() supportFileList: UploadFile[] = []
   @Input() editable: boolean
   @Input() executed:number = null
-  APPLY_TYPE = APPLY_TYPE
-
-  applyTypeMap = APPLY_TYPE_MAP
 
   constructor(private spService: SpecialApprovalService, private modal: NzModalService) {}
 
@@ -38,7 +35,7 @@ export class BasicInfoComponent {
   }
 
   get applyItems() {
-    return APPLY_TYPE_MAP[this.applyType] ? APPLY_TYPE_MAP[this.applyType].items : []
+    return this.spService.getApplyItems(this.applyType)
   }
 
   get showApplyItemDesc(): boolean {

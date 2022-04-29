@@ -72,7 +72,7 @@
           </td>
           <td>
             <nz-select style="width: 100%;" [(ngModel)]="data.bmc" (ngModelChange)="onBmcChange(data)" *ngIf="data.isMain" [disabled]="!editable">
-              <nz-option *ngFor="let item of selectOptions.bmcList" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+              <nz-option *ngFor="let item of spService.bmcList" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
             </nz-select>
           </td>
           <td>
@@ -80,10 +80,10 @@
           </td>
           <td>
             <nz-select style="width: 48%;" [(ngModel)]="data.cycleGroup" (ngModelChange)="onCycleGroupChange(data)" *ngIf="data.isMain" [disabled]="!editable">
-              <nz-option *ngFor="let item of selectOptions.cycleGroups" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+              <nz-option *ngFor="let item of spService.cycleGroups" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
             </nz-select>
             <nz-select style="width: 48%;" [(ngModel)]="data.bigArea" *ngIf="data.isMain" [disabled]="!editable">
-              <nz-option *ngFor="let item of selectOptions.cycleGroupBigAreaMap[data.cycleGroup]" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+              <nz-option *ngFor="let item of spService.cycleGroupBigAreaMap[data.cycleGroup]" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
             </nz-select>
           </td>
           <td>
@@ -134,7 +134,7 @@
           <td>
             <input type="text" nz-input [(ngModel)]="data.subProductType" (ngModelChange)="onProductChange(data)" *ngIf="bg !== 'US'" [disabled]="!editable" />
             <nz-select style="width: 100%;" *ngIf="bg === 'US'" [(ngModel)]="data.subProductType" (ngModelChange)="onProductChange(data)" [disabled]="!editable">
-              <nz-option *ngFor="let item of selectOptions.usProductList" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+              <nz-option *ngFor="let item of spService.usProductList" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
             </nz-select>
           </td>
           <td>
@@ -163,10 +163,10 @@
           </td>
           <td>
             <nz-select style="width: 48%;" [(ngModel)]="data.exchangeableOrderSaleCycleGroup" (ngModelChange)="onSaleCycleGroupChange(data)" [disabled]="!editable">
-              <nz-option *ngFor="let item of selectOptions.cycleGroups" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+              <nz-option *ngFor="let item of spService.cycleGroups" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
             </nz-select>
             <nz-select style="width: 48%;" [(ngModel)]="data.exchangeableOrderSaleBigArea" [disabled]="!editable">
-              <nz-option *ngFor="let item of selectOptions.cycleGroupBigAreaMap[data.exchangeableOrderSaleCycleGroup]" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+              <nz-option *ngFor="let item of spService.cycleGroupBigAreaMap[data.exchangeableOrderSaleCycleGroup]" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
             </nz-select>
           </td>
           <td>
