@@ -1,11 +1,7 @@
 import { Component, OnInit, Input } from "@angular/core";
 import { FormControl, FormGroup } from "@angular/forms";
 
-import {
-  BG_LIST,
-  US_PRODUCT_LIST,
-  BG_BMC_MAP,
-} from "../../../../special-approval.constants";
+import { BG_LIST } from "../../../../special-approval.constants";
 import { SpecialApprovalService } from "../../../../special-approval.service";
 @Component({
   selector: "special-approval-lcamendment-order-info",
@@ -13,17 +9,14 @@ import { SpecialApprovalService } from "../../../../special-approval.service";
   styleUrls: ["./lc-amendment.component.scss"],
 })
 export class LcAmendmentOrderInfoComponent implements OnInit {
-  constructor(private spService: SpecialApprovalService) {}
+  constructor(protected spService: SpecialApprovalService) {}
 
   @Input() basicInfo: FormGroup;
   @Input() formValues: FormGroup;
   @Input() editable = true;
 
-  bgBmcMap = BG_BMC_MAP
-
   selectOptions = {
     bgList: BG_LIST,
-    usProductList: US_PRODUCT_LIST,
     orderStatusList: [],
     paymentList: [],
     modifyEntryList: [],
@@ -38,6 +31,12 @@ export class LcAmendmentOrderInfoComponent implements OnInit {
   get lcInfo(): FormGroup { return this.formValues.get('lcInfo') as FormGroup }
   get bg(): FormControl { return this.formValues.get('bg') as FormControl }
   get applyItem(): FormControl { return this.basicInfo.get('applyItem') as FormControl }
+
+  get bmcList() {
+    const bg = this.formValues.get('bg') as FormControl
+    return this.spService.bmcList.filter((bmc) => bmc.bg === bg.value)
+  }
+
 
   initSelectOptions() {
     const promises = [

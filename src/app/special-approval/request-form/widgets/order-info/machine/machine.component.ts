@@ -5,10 +5,7 @@ import {
   BG_LIST,
   ORDER_TYPES,
   BUSINESS_MODEL_LIST,
-  CYCLEGROUP_BIGAREA_LIST,
-  CYCLEGROUP_BIGAREA_MAP,
   CURRENCIES,
-  STAND_WARRANTY_MONTH,
 } from "../../../../special-approval.constants";
 import { SpecialApprovalService } from "../../../../special-approval.service";
 import {
@@ -23,7 +20,7 @@ import {
   Reference,
   SelectReferenceComponent,
 } from "../../select-reference/select-reference.component";
-import { FormArray, FormBuilder, FormGroup } from "@angular/forms";
+import { FormArray, FormBuilder, FormControl, FormGroup } from "@angular/forms";
 import { BehaviorSubject, Observable } from "rxjs";
 import { debounceTime, map, switchMap } from "rxjs/operators";
 import { HttpService } from "../../../../../services";
@@ -55,7 +52,7 @@ export class MachineComponent implements OnInit {
   isSearchLoading: boolean = false;
 
   constructor(
-    private spService: SpecialApprovalService,
+    protected spService: SpecialApprovalService,
     private fb: FormBuilder,
     private http: HttpService
   ) {}
@@ -73,18 +70,19 @@ export class MachineComponent implements OnInit {
 
   APPLY_TYPE = APPLY_TYPE;
 
-  @Input() bmcs = [];
-
   selectOptions = {
     orderTypes: ORDER_TYPES,
     bgList: BG_LIST,
-    cycleGroups: CYCLEGROUP_BIGAREA_LIST,
-    cycleGroupBigAreaMap: CYCLEGROUP_BIGAREA_MAP,
     bigAreas: [],
     businessModels: BUSINESS_MODEL_LIST,
     currencies: CURRENCIES,
     oms: [],
   };
+
+  get bmcList() {
+    const bg = this.orders.at(0).get('bg') as FormControl
+    return this.spService.bmcList.filter((bmc) => bmc.bg === bg.value)
+  }
 
   get showOrder1DealerArea(): boolean {
     const businessModel = this.orders.at(0).get('businessModel')
