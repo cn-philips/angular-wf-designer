@@ -25,7 +25,25 @@
     <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
       <div nz-col nzXs="24" nzSm="24" nzMd="12">
         <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6" nzRequired>申请原因</nz-form-label>
+          <nz-form-label nzXl="8" nzXXl="6" nzRequired>系统区域</nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <nz-select style="width:100%" *ngIf="editable" formControlName="systemRegion" nzPlaceHolder="请选择系统区域" (ngModelChange)="onSelectSystemRegion($event)">
+              <nz-option *ngFor="let item of systemRegions" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+            </nz-select>
+            <input type="text" nz-input style="width:100%" *ngIf="!editable" formControlName="systemRegion" disabled />
+            <nz-form-explain *ngIf="formValues.get('systemRegion')?.dirty && formValues.get('systemRegion')?.errors">
+              请选择系统区域
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="12">
+        <nz-form-item>
+          <nz-form-label nzXl="8" nzXXl="6">申请原因</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <nz-select formControlName="applyItem" nzPlaceHolder="请选择申请原因">
               <nz-option *ngFor="let item of applyItems" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>

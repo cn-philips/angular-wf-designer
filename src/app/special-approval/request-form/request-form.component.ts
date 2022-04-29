@@ -104,6 +104,11 @@ export class RequestFormComponent implements OnInit {
       applyItemDesc: [null], // 其他原因说明
       reason: [null, [Validators.required]], // 申请原因
       applyFileIds: [[]], // 申请附件
+      systemRegion: [null, [Validators.required]],
+      bg: [null],
+      cycleGroup: [null],
+      bigArea: [null],
+      smallArea: [null],
     }),
     orderInfo: this.fb.group({
       orderType: [null, [Validators.required]], // 订单类型
@@ -624,7 +629,8 @@ export class RequestFormComponent implements OnInit {
         applyItemDesc, executed, processStatus,
         reason, ccType, ccPerson, orderInfos, attachments,
         taskList, nodeInfoList, nodeCode, nodeAction,
-        extInfo
+        extInfo,
+        bg, cycleGroup, bigArea, smallArea,
       } = data
       this.setPageTitle({ applyType, applyItem }, false)
       this.applyItem = applyItem
@@ -638,6 +644,8 @@ export class RequestFormComponent implements OnInit {
           applyType,
           applyItem,
           applyItemDesc,
+          systemRegion: [bg, cycleGroup, bigArea, smallArea].join('-'),
+          bg, cycleGroup, bigArea, smallArea,
           reason,
           applyFileIds: attachments.map(({ fileId }) => fileId)
         },
