@@ -3,3 +3,26 @@
   padding-right: 0;
   background-color: #fff;
 }
+/deep/ .transfer-lib {
+  .ant-card-extra{
+    padding: 0;
+  }
+}
+.transfer-lib{
+  .order-list-normal{
+    &-label{
+      height: 70px;
+      padding: 5px 0;
+      margin-bottom: 0 !important;
+      overflow: hidden;
+      border-bottom: 1px solid #d9d9d9;
+    }
+    &-item{
+      height: 70px;
+      padding: 5px 20px;
+      margin-bottom: 0 !important;
+      overflow: hidden;
+      border-bottom: 1px solid #d9d9d9;
+    }
+  }
+}

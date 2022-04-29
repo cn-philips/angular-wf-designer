@@ -25,6 +25,7 @@ interface ConfigurationVariance  {
 })
 export class DifferenceAndCostInfoComponent {
   @Input() formValues: FormGroup
+  @Input() exchangeInfoValues: FormGroup
   @Input() supportFileList: UploadFile[] = []
   @Input() editable: boolean
   @Input() executed:number = null
@@ -36,7 +37,7 @@ export class DifferenceAndCostInfoComponent {
   /*
   * description: 获取表格数据
   * */
-  get orderAnalyses() {
+  get orders() {
     return this.formValues.get("orderDifferences") as FormGroup;
   }
 
@@ -44,8 +45,8 @@ export class DifferenceAndCostInfoComponent {
   * @description: 添加差异及成本分析
   * */
   onAddAnalysis() {
-    this.orderAnalyses.patchValue([
-      ...this.orderAnalyses.value,
+    this.orders.patchValue([
+      ...this.orders.value,
       {
         configDetail: null,
         transferOut: null,
@@ -61,8 +62,8 @@ export class DifferenceAndCostInfoComponent {
   * @params orderAnalysis { object }
   * */
   onDeleteProduct(orderAnalysis) {
-    const orderAnalyses = this.orderAnalyses.value.filter((curOrderAnalysis) => curOrderAnalysis !== orderAnalysis);
-    this.orderAnalyses.patchValue(orderAnalyses);
+    const orderAnalyses = this.orders.value.filter((curOrderAnalysis) => curOrderAnalysis !== orderAnalysis);
+    this.orders.patchValue(orderAnalyses);
   }
 
 }

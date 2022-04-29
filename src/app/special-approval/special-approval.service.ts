@@ -222,7 +222,13 @@ export class SpecialApprovalService {
     const res = await this.http.get(uri).toPromise();
     return formatResponse(res);
   }
-
+  /*
+  * @description: 获取Product Sales Manager 邮箱
+  * @params {String} initiatorEmail
+  * @params {String} initiatorRole
+  * @params {String} approverRole
+  * @params {String} productBmc
+  * */
   async getCustomizeEmail(params) {
     const uri = `/act/ecom/homepage/queryApprover`;
     const res = await this.http.post(uri, params).toPromise();
@@ -262,7 +268,7 @@ export class SpecialApprovalService {
     const data = formatResponse(res);
     return data;
   }
-  
+
   // 获取支修改条目原因列表
   async getModifyEntryList() {
     const uri = '/act/ecom/dictData/queryDrop?dictGroup=sp_apply_lc_modify';

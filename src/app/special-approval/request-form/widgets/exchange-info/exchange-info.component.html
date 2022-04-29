@@ -3,10 +3,10 @@
     <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
       <div nz-col nzXs="24" nzSm="12" nzMd="12">
         <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6" nzFor="applicantName">换货类型</nz-form-label>
+          <nz-form-label nzXl="8" nzXXl="6" nzFor="exchangeType">换货类型</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <nz-select formControlName="exchangeType" nzPlaceHolder="请选择换货原因" (ngModelChange)="onApplyItemChange($event)">
-              <nz-option *ngFor="let item of SELECT_OPTION_LIST.exchangeOptions" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+            <nz-select id="exchangeType" formControlName="exchangeType" nzPlaceHolder="请选择换货类型" (ngModelChange)="onExchangeTypeChanged($event)">
+              <nz-option *ngFor="let item of SELECT_OPTION_LIST.exchangeOptions" [nzLabel]="item.label" [nzValue]="item.value" ></nz-option>
             </nz-select>
             <nz-form-explain
               *ngIf="formValues.get('exchangeType')?.dirty && formValues.get('exchangeType')?.errors"
@@ -18,10 +18,10 @@
       </div>
       <div nz-col nzXs="24" nzSm="12" nzMd="12">
         <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6" nzFor="applicantName">换货方式</nz-form-label>
+          <nz-form-label nzXl="8" nzXXl="6" nzFor="exchangeMethod">换货方式</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <nz-select formControlName="exchangeMethod" nzPlaceHolder="请选择换货方式" (ngModelChange)="onApplyItemChange($event)">
-              <nz-option *ngFor="let item of SELECT_OPTION_LIST.exchangeMethodOptions" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+            <nz-select formControlName="exchangeMethod" nzPlaceHolder="请选择换货方式" (ngModelChange)="onExchangeMethodChanged($event)">
+              <nz-option *ngFor="let item of SELECT_OPTION_LIST.exchangeMethodOptions" [nzLabel]="item.label" [nzValue]="item.value" [nzDisabled]="item.disabled"></nz-option>
             </nz-select>
             <nz-form-explain
               *ngIf="formValues.get('exchangeMethod')?.dirty && formValues.get('exchangeMethod')?.errors"
@@ -37,8 +37,11 @@
       <div nz-col nzXs="24" nzSm="12" nzMd="12">
         <nz-form-item>
           <nz-form-label nzXl="8" nzXXl="6" nzFor="applicantName">成本汇总</nz-form-label>
-          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <input nz-input formControlName="cost" [disabled]="true" />
+          <nz-form-control nzXs="18" nzSm="18" nzMd="8">
+            <input nz-input formControlName="cost" style="width: 100%"/>
+          </nz-form-control>
+          <nz-form-control nzXs="4" nzSm="4" nzMd="3" >
+            <input nz-input formControlName="currency"/>
           </nz-form-control>
         </nz-form-item>
       </div>

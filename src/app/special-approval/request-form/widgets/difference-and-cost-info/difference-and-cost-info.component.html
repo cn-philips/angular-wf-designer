@@ -1,5 +1,5 @@
 <nz-card class="mtb1rem" nzTitle="请详细列明转出、转入订单具体配置差异及差异处理计划和成本金额。">
-  <nz-table [nzData]="orderAnalyses.value" [nzFooter]="tableFooter" [nzShowPagination]="false" nzBordered [nzScroll]="{ x: '1000px' }">
+  <nz-table [nzData]="orders.value" [nzFooter]="tableFooter" [nzShowPagination]="false" nzBordered [nzScroll]="{ x: '1000px' }">
     <thead>
     <tr>
       <th nzWidth="200px">配置详情</th>
@@ -11,7 +11,7 @@
     </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let analysis of orderAnalyses.value">
+      <tr *ngFor="let analysis of orders.value">
         <td>
           <input type="text" nz-input [(ngModel)]="analysis.configDetail" [disabled]="!editable" />
         </td>

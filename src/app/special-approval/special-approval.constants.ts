@@ -474,18 +474,35 @@ const LOGISTICS_STATUS = [
 // processStatus: START, DRAFT, APPROVED, REJECTED, WITHDRAW
 
 // 换货类型
-const EXCHANGE_TYPE_LIST = [
-  {label: 'within ORU', value: 'within ORU'},
-  {label: 'HK90-CN90', value: 'HK90-CN90'},
-  {label: 'CN90-HK90', value: 'CN90-HK90'}
-]
+const EXCHANGE_TYPE_LIST = () => {
+  return [
+    {label: 'within ORU', value: 'within ORU'},
+    {label: 'HK90-CN90', value: 'HK90-CN90'},
+    {label: 'CN90-HK90', value: 'CN90-HK90'}
+  ]
+}
 
 // 换货方式
-const EXCHANGE_METHODS_LIST = [
-  {label: '单向', value: ''},
-  {label: '互换', value: ''}
-]
-
+const EXCHANGE_METHODS_LIST = () => {
+  return [
+    {label: '单向', value: '单向'},
+    {label: '互换', value: '互换'}
+  ]
+}
+// 换货角色 转入
+const EXCHANGE_IMPORT_ROLES = () => {
+  return [
+    {label: '转入', value: '转入'},
+    {label: '转出/转入', value: '转出/转入'}
+  ]
+}
+// 换货角色 转出
+const EXCHANGE_EXPORT_ROLES = () => {
+  return [
+    {label: '转出', value: '转出'},
+    {label: '转出/转入', value: '转出/转入'}
+  ]
+}
 export {
   DEFAULT_SUCCESS_MESSAGE,
   SUCCESS_MESSAGE,
@@ -515,4 +532,6 @@ export {
   BMC_LIST,
   CYCLEGROUP_BIGAREA_MAP,
   LOGISTICS_STATUS,
+  EXCHANGE_IMPORT_ROLES,
+  EXCHANGE_EXPORT_ROLES,
 };
