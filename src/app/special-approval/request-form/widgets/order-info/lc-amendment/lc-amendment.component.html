@@ -21,7 +21,7 @@
               [nzDisabled]="!editable"
             >
               <nz-option
-                *ngFor="let item of selectOptions.usProductList"
+                *ngFor="let item of spService.usProductList"
                 [nzLabel]="item.label"
                 [nzValue]="item.value"
               ></nz-option>
@@ -44,7 +44,7 @@
             <nz-form-control nzXs="24" nzSm="24" nzMd="9">
               <nz-select formControlName="bmc" nzPlaceHolder="请选择产品线">
                 <nz-option
-                  *ngFor="let item of bgBmcMap[bg.value] || []"
+                  *ngFor="let item of bmcList"
                   [nzLabel]="item.label"
                   [nzValue]="item.value"
                 ></nz-option>
@@ -172,7 +172,7 @@
           <nz-form-item>
             <nz-form-label nzXl="8" nzXXl="6" nzRequired>L/C金额</nz-form-label>
             <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-              <input type="text" nz-input formControlName="lcAmount" />
+              <nz-input-number style="width: 100%;" formControlName="lcAmount" [nzMin]="0"></nz-input-number>
               <nz-form-explain *ngIf="lcInfo.get('lcAmount')?.dirty && lcInfo.get('lcAmount')?.errors">
                 请填写L/C金额
               </nz-form-explain>
@@ -286,6 +286,7 @@
               <nz-select
                 nzShowSearch
                 nzAllowClear
+                nzMode="multiple"
                 nzPlaceHolder="请选择"
                 formControlName="modifyEntry"
                 #modifyEntry
@@ -303,7 +304,7 @@
             
           </nz-form-item>
         </div>
-        <div nz-col nzXs="24" nzSm="24" nzMd="12" *ngIf="modifyEntry.value === 'sp_lc_other'">
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" *ngIf="modifyEntry.value.includes('sp_lc_other')">
           <nz-form-item>
             <nz-form-control
               nzXs="24"
@@ -330,6 +331,7 @@
               <nz-select
                 nzShowSearch
                 nzAllowClear
+                nzMode="multiple"
                 nzPlaceHolder="请选择"
                 formControlName="cancelReason"
                 #cancelReason
@@ -348,7 +350,7 @@
             </nz-form-control>
           </nz-form-item>
         </div>
-        <div nz-col nzXs="24" nzSm="24" nzMd="12" *ngIf="cancelReason.value === 'sp_lc_other'">
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" *ngIf="cancelReason.value.includes('sp_lc_other')">
           <nz-form-item>
             <nz-form-control
               nzXs="24"

@@ -14,7 +14,6 @@ import {
   BUSINESS_MODEL,
   APPLY_TYPE,
   APPLY_TYPE_MAP,
-  BG_BMC_MAP,
   NODE_ACTION,
   PROCESS_STATUS,
 } from '../special-approval.constants';
@@ -93,7 +92,6 @@ export class RequestFormComponent implements OnInit {
 
   public TAB_TYPES = TAB_TYPE;
 
-  public bmcs = [];
   public executed = null;
 
   public formValues = this.fb.group({
@@ -106,6 +104,11 @@ export class RequestFormComponent implements OnInit {
       applyItemDesc: [null], // 其他原因说明
       reason: [null, [Validators.required]], // 申请原因
       applyFileIds: [[]], // 申请附件
+      systemRegion: [null, [Validators.required]],
+      bg: [null],
+      cycleGroup: [null],
+      bigArea: [null],
+      smallArea: [null],
     }),
     orderInfo: this.fb.group({
       orderType: [null, [Validators.required]], // 订单类型
@@ -155,15 +158,15 @@ export class RequestFormComponent implements OnInit {
         lcDiscrepancy: [null], // L/C discrepancy描述
         acceptLcDiscrepancy: [null], // 是否接受L/C discrepancy
         lcDiscrepancyPaymentMethod: [null], // L/C discrepancy费用支付方
-        modifyEntry: [null], // 修改条目
+        modifyEntry: [[]], // 修改条目
         modifyEntryDesc: [null], // 修改条目说明
-        cancelReason: [null], // 取消原因
+        cancelReason: [[]], // 取消原因
         cancelReasonDesc: [null], // 取消原因说明
         newLcIssued: [null], // 新的L/C是否已经开具
       }),
     }),
     changeOrderInfos: this.fb.group({
-      exchangeMethod: [null], // 换货方式
+      exchangeMethod: [null, [Validators.required]], // 换货方式
       orders: this.fb.array([
         this.fb.group({
           orderType: [null, [Validators.required]], // 订单类型
@@ -268,9 +271,10 @@ export class RequestFormComponent implements OnInit {
   public setPageTitle({ applyType = '', applyItem = '' }, isNew = true) {
     let title = ''
     if (applyType && APPLY_TYPE_MAP[applyType]) {
-      const { label: applyTypeName, items } = APPLY_TYPE_MAP[applyType]
+      const { label: applyTypeName } = APPLY_TYPE_MAP[applyType]
+      const applyItems = this.spService.getApplyItems(applyType)
       title += applyTypeName
-      const item = items.find(({ value }) => value == applyItem);
+      const item = applyItems.find(({ value }) => value == applyItem);
       if (item && item.label) {
         title += `-${item.label}`
       }
@@ -290,7 +294,7 @@ export class RequestFormComponent implements OnInit {
   get ccInfo(): FormGroup {
     return this.formValues.get('ccInfo') as FormGroup;
   }
-  
+
   get rddOitOrderInfos(): FormGroup {
     return this.formValues.get('rddOitOrderInfos') as FormGroup
   }
@@ -301,7 +305,7 @@ export class RequestFormComponent implements OnInit {
 
   get lcAmendmentOrderInfo(): FormGroup {
     return this.formValues.get('lcAmendmentOrderInfo') as FormGroup
-  } 
+  }
 
   public setFormValidators(type, item, bg) {
     if (type === APPLY_TYPE.EXT_WARRANTY) {
@@ -326,7 +330,6 @@ export class RequestFormComponent implements OnInit {
     } else {
       this.orderInfo.controls.projectName.disable();
     }
-    this.bmcs = BG_BMC_MAP[bg];
   }
 
   public getFormData() {
@@ -375,12 +378,17 @@ export class RequestFormComponent implements OnInit {
         break;
       case APPLY_TYPE.LC_AMENDMENT:  // LC_AMENDMENT申请
         let originOrderInfo = this.requestInfo.orderInfos[0] as any
+        const { lcInfo: { modifyEntry, cancelReason } } = lcAmendmentOrderInfo
         data.orderInfos = [
           {
             ...originOrderInfo,
             ...lcAmendmentOrderInfo,
             productType: Array.isArray(lcAmendmentOrderInfo.productType) ? lcAmendmentOrderInfo.productType.join(',') : lcAmendmentOrderInfo.productType,
-            lcInfo: { ...originOrderInfo.lcInfo, ...lcAmendmentOrderInfo.lcInfo },
+            lcInfo: { 
+              ...originOrderInfo.lcInfo, ...lcAmendmentOrderInfo.lcInfo,
+              modifyEntry: modifyEntry ? modifyEntry.join(',') : null,
+              cancelReason: cancelReason ? cancelReason.join(',') : null,
+            },
           },
         ];
         break;
@@ -485,7 +493,7 @@ export class RequestFormComponent implements OnInit {
     }
     this.editable = editable;
   }
-  
+
   setLcAmendmentOrderInfoFormValidators(orderInfo) {
     const lcInfo = this.lcAmendmentOrderInfo.get('lcInfo') as FormGroup
     const lcInfoControls = lcInfo.controls
@@ -545,7 +553,10 @@ export class RequestFormComponent implements OnInit {
         }
         break
       case APPLY_TYPE.MACHINE_EXCHANGE:
-        this.checkMachineExchange()
+        const check = this.checkMachineExchange();
+        if (!check){
+          return
+        }
         hasError = this.basicInfo.invalid || this.changeOrderInfos.invalid
         break
       case APPLY_TYPE.LC_AMENDMENT:
@@ -623,7 +634,8 @@ export class RequestFormComponent implements OnInit {
         applyItemDesc, executed, processStatus,
         reason, ccType, ccPerson, orderInfos, attachments,
         taskList, nodeInfoList, nodeCode, nodeAction,
-        extInfo
+        extInfo,
+        bg, cycleGroup, bigArea, smallArea,
       } = data
       this.setPageTitle({ applyType, applyItem }, false)
       this.applyItem = applyItem
@@ -637,6 +649,8 @@ export class RequestFormComponent implements OnInit {
           applyType,
           applyItem,
           applyItemDesc,
+          systemRegion: (bg && cycleGroup) ? [bg, cycleGroup, bigArea, smallArea].join('-') : null,
+          bg, cycleGroup, bigArea, smallArea,
           reason,
           applyFileIds: attachments.map(({ fileId }) => fileId)
         },
@@ -655,10 +669,17 @@ export class RequestFormComponent implements OnInit {
         });
         this.setFormValidators(applyType, applyItem, orderInfos[0].bg)
       } else if (applyType === APPLY_TYPE.LC_AMENDMENT) {
+        const orderInfo = orderInfos[0]
+        const { lcInfo: { cancelReason, modifyEntry } } = orderInfo
         this.formValues.patchValue({
           lcAmendmentOrderInfo: {
-            ...orderInfos[0],
-            productType: (orderInfos[0].bg === 'US' && orderInfos[0].productType) ? orderInfos[0].productType.split(',') : orderInfos[0].productType
+            ...orderInfo,
+            lcInfo: {
+              ...orderInfo.lcInfo,
+              cancelReason: cancelReason ? cancelReason.split(',') : null,
+              modifyEntry: modifyEntry ? modifyEntry.split(',') : null,
+            },
+            productType: (orderInfo.bg === 'US' && orderInfo.productType) ? orderInfo.productType.split(',') : orderInfo.productType
           }
         });
         this.setFormValidators(applyType, applyItem, orderInfos[0].bg)
@@ -813,6 +834,8 @@ export class RequestFormComponent implements OnInit {
   }
 
   checkMachineExchange(){
+    this.changeOrderInfos.get('exchangeMethod').markAsDirty()
+    this.changeOrderInfos.get('exchangeMethod').updateValueAndValidity()
     const orders = this.changeOrderInfos.get('orders') as FormArray
     const order1 = orders.at(0) as FormGroup
     const order2 = orders.at(1) as FormGroup
@@ -824,6 +847,42 @@ export class RequestFormComponent implements OnInit {
       order2.controls[i].markAsDirty();
       order2.controls[i].updateValueAndValidity();
     }
+    const product1 = order1.get('products').value[0]
+    const product2 = order2.get('products').value[0]
+    if (
+      product1.itemNo == null || product1.itemNo == '' ||
+      product1.logisticsStatus == null ||
+      product1.productType == null ||
+      product1.quantity == null || product1.quantity == '' ||
+      product1.wbsNo == null || product1.wbsNo == ''
+    ){
+        this.message.error('订单1: 产品信息未填写完整')
+      return false;
+    }else if (product1.logisticsStatus == 1) {
+      if (product1.equipmentSn == '' || product1.equipmentSn == null){
+        this.message.error('订单1: 产品状态为到货时需要填写设备SN！')
+        return false
+      }
+    }
+
+    if (
+      product2.itemNo == null || product2.itemNo == '' ||
+      product2.logisticsStatus == null ||
+      product2.productType == null ||
+      product2.quantity == null || product2.quantity == '' ||
+      product2.wbsNo == null || product2.wbsNo == ''
+    ){
+      this.message.error('订单2: 产品信息未填写完整')
+      return false;
+    }else if (product2.logisticsStatus == 1) {
+      if (product2.equipmentSn == '' || product2.equipmentSn == null){
+        this.message.error('订单2: 产品状态为到货时需要填写设备SN！')
+        return false
+      }
+    }
+
+
+    return true
   }
 
 }

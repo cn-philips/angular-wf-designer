@@ -23,6 +23,9 @@
         <nz-form-label [nzRequired]="!islook"  [nzSpan]="7">Name</nz-form-label>
         <nz-form-control [nzSpan]="17">
           <input nzSize="small" formControlName="name" nz-input />
+          <nz-form-explain *ngIf="validateForm.get('name')?.dirty && validateForm.get('name')?.errors">
+            请输入Name
+          </nz-form-explain>
         </nz-form-control>
       </nz-form-item>
     </div>

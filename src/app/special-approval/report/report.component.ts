@@ -38,39 +38,40 @@ export class ReportComponent implements OnInit {
     {
       label: '特批生产发货',
       items: [
-        {value: '特批生产报表', type: 'production'},
-        {value: '特批发货报表', type: ''},
+        {value: '特批开始生产报表', type: 'production'},
+        // {value: '特批发货报表', type: ''},
         {value: '物流运输-特别仓储费用', type: 'logisticscost'},
-        {value: 'Last Buy特批生产发货', type: ''},
+        // {value: 'Last Buy特批生产发货', type: ''},
       ]
     },
     {
       label: '安装及验收',
       items: [
         {value: '特批延长保修', type: 'warranty'},
-        {value: '额外安装费用及其它售后费用', type: ''},
-        {value: '转库', type: ''},
-        {value: '机器互换', type: ''},
-        {value: '非直销订单按直销方式确认收入', type: ''},
-        {value: 'COO US', type: ''},
-        {value: 'COO CC', type: ''},
-        {value: 'COO PD&IGT', type: ''},
-        {value: '经销商签署安装报告的特批', type: ''},
+        // {value: '额外安装费用及其它售后费用', type: ''},
+        // {value: '转库', type: ''},
+        // {value: '机器互换', type: ''},
+        // {value: '非直销订单按直销方式确认收入', type: ''},
+        // {value: 'COO US', type: ''},
+        // {value: 'COO CC', type: ''},
+        // {value: 'COO PD&IGT', type: ''},
+        // {value: '经销商签署安装报告的特批', type: ''},
       ],
     },
-    {
-      label: '订单质量管理',
-      items: [
-        {value: 'RDD-OIT>180天订单保留', type: ''},
-        {value: 'Cancel Order', type: ''},
-        {value: 'De-book', type: ''},
-        {value: 'Order Replace/Aging', type: ''},
-        {value: 'COO US', type: ''},
-        {value: 'COO CC', type: ''},
-        {value: 'COO PD&IGT', type: ''},
-        {value: '经销商签署安装报告的特批', type: ''},
-      ]
-    },
+
+    // {
+    //   label: '订单质量管理',
+    //   items: [
+    //     {value: 'RDD-OIT>180天订单保留', type: ''},
+    //     {value: 'Cancel Order', type: ''},
+    //     {value: 'De-book', type: ''},
+    //     {value: 'Order Replace/Aging', type: ''},
+    //     {value: 'COO US', type: ''},
+    //     {value: 'COO CC', type: ''},
+    //     {value: 'COO PD&IGT', type: ''},
+    //     {value: '经销商签署安装报告的特批', type: ''},
+    //   ]
+    // },
     {
       label: '信用证管理',
       items: [

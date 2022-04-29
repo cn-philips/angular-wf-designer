@@ -46,7 +46,7 @@
           <nz-form-label nzXl="8" nzXXl="6" nzRequired>产品线</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <nz-select formControlName="bmc" nzPlaceHolder="请选择产品线">
-              <nz-option *ngFor="let item of bmcs" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+              <nz-option *ngFor="let item of bmcList" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
             </nz-select>
             <nz-form-explain *ngIf="formValues.get('bmc')?.dirty && formValues.get('bmc')?.errors">
               请选择产品线
@@ -74,7 +74,7 @@
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <nz-input-group style="width: 100%;font-size: 0;">
               <nz-select formControlName="cycleGroup" style="width: 48%;margin-right:4%" nzPlaceHolder="Team/Cycle Group" (ngModelChange)="onCycleGroupChange()">
-                <nz-option *ngFor="let item of selectOptions.cycleGroups" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+                <nz-option *ngFor="let item of spService.cycleGroups" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
               </nz-select>
 
               <nz-select formControlName="bigArea" style="width: 48%" nzPlaceHolder="Region">

@@ -1,8 +1,8 @@
-import { Component, Input } from '@angular/core'
-import { FormGroup, Validators } from '@angular/forms'
+import { Component, Input, OnInit } from '@angular/core'
+import { FormGroup } from '@angular/forms'
 import { UploadXHRArgs, UploadFile, NzModalService } from 'ng-zorro-antd'
 
-import { APPLY_TYPE, APPLY_TYPE_MAP } from '../../../special-approval.constants'
+import { APPLY_TYPE } from '../../../special-approval.constants'
 import { SpecialApprovalService } from '../../../special-approval.service'
 import { getType } from '../../../../../assets/js/tools'
 import { Observable, Observer } from 'rxjs'
@@ -18,16 +18,41 @@ interface CommonResponse {
   templateUrl: './basic-info.component.html',
   styleUrls: ['./basic-info.component.scss']
 })
-export class BasicInfoComponent {
+export class BasicInfoComponent implements OnInit {
   @Input() formValues: FormGroup
   @Input() supportFileList: UploadFile[] = []
   @Input() editable: boolean
   @Input() executed:number = null
+
+  systemRegions = []
+
   APPLY_TYPE = APPLY_TYPE
 
-  applyTypeMap = APPLY_TYPE_MAP
-
   constructor(private spService: SpecialApprovalService, private modal: NzModalService) {}
+
+  ngOnInit(): void {
+    const regions = 
+      (JSON.parse(window.localStorage.getItem('profiles')) || []).map((region) => ({
+        ...region,
+        label: [region.modality, region.cycleGroup, region.bigArea, region.smallArea].join('-'),
+        value: [region.modality, region.cycleGroup, region.bigArea, region.smallArea].join('-'),
+      }))
+    this.systemRegions = regions
+  }
+
+  onSelectSystemRegion(region) {
+    if (!region) { return }
+    const systemRegion = this.systemRegions.find(systemRegion => systemRegion.value === region)
+    if (systemRegion) {
+      const { modality, cycleGroup, bigArea, smallArea } = systemRegion
+      this.formValues.patchValue({
+        bg: modality,
+        cycleGroup,
+        bigArea,
+        smallArea
+      })
+    }
+  }
 
   get applyType() {
     return this.formValues.get('applyType').value as string
@@ -38,7 +63,7 @@ export class BasicInfoComponent {
   }
 
   get applyItems() {
-    return APPLY_TYPE_MAP[this.applyType] ? APPLY_TYPE_MAP[this.applyType].items : []
+    return this.spService.getApplyItems(this.applyType)
   }
 
   get showApplyItemDesc(): boolean {

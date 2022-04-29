@@ -224,7 +224,8 @@ export class HomeComponent implements OnInit {
   }
 
   formatApplyTypeItem({ applyType, applyItem = '' }) {
-    const { label, items } = APPLY_TYPE_MAP[applyType]
+    const { label } = APPLY_TYPE_MAP[applyType]
+    const items = this.spService.getApplyItems(applyType)
     if (applyType === APPLY_TYPE.RDD_OIT || applyType === APPLY_TYPE.EXT_INSTALL_COST) {
       return label
     }

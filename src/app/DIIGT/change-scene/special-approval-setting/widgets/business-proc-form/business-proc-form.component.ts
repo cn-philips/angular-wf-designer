@@ -4,7 +4,8 @@ import { NzMessageService } from 'ng-zorro-antd'
 
 import { SpecialApprovalSettingService } from '../../special-approval-setting.service'
 import { BusinessProc } from '../../special-approval-setting.d'
-import { BG_LIST, APPLY_TYPES, APPLY_TYPE, APPLY_TYPE_MAP } from '../../../../../special-approval/special-approval.constants'
+import { BG_LIST, APPLY_TYPES, APPLY_TYPE } from '../../../../../special-approval/special-approval.constants'
+import { SpecialApprovalService } from '../../../../../special-approval/special-approval.service';
 
 export enum FORM_MODE {
   NEW = 'new',
@@ -61,6 +62,7 @@ export class BusinessProcFormComponent implements OnInit {
     private fb: FormBuilder,
     private spSettingService: SpecialApprovalSettingService,
     private message: NzMessageService,
+    private spService: SpecialApprovalService,
   ) {}
 
   async ngOnInit() {
@@ -69,7 +71,7 @@ export class BusinessProcFormComponent implements OnInit {
   }
 
   onApplyTypeChange(applyType) {
-    this.selectOptions.applyItems = APPLY_TYPE_MAP[applyType] ? APPLY_TYPE_MAP[applyType].items : []
+    this.selectOptions.applyItems = this.spService.getApplyItems(applyType)
     this.formValues.patchValue({
       applyItem: null
     })

@@ -6,6 +6,7 @@ import { BG_LIST, APPLY_TYPES, APPLY_TYPE_MAP } from '../../../../../special-app
 import { SpecialApprovalSettingService } from '../../special-approval-setting.service'
 import { BusinessProc } from '../../special-approval-setting.d'
 import { BusinessProcFormComponent, FORM_MODE } from '../business-proc-form/business-proc-form.component'
+import { SpecialApprovalService } from '../../../../../special-approval/special-approval.service';
 
 @Component({
   selector: 'sp-setting-business-proc-list',
@@ -45,6 +46,7 @@ export class BusinessProcListComponent implements OnInit {
     private fb: FormBuilder,
     private spSettingService: SpecialApprovalSettingService,
     private message: NzMessageService,
+    private spService: SpecialApprovalService,
   ) { }
 
   ngOnInit(): void {
@@ -60,11 +62,17 @@ export class BusinessProcListComponent implements OnInit {
     this.getTableData()
   }
 
+  onApplyTypeChange(applyType) {
+    this.selectOptions.applyItems = this.spService.getApplyItems(applyType)
+    this.formValues.patchValue({
+      applyItem: null
+    })
+  }
+
   formatApplyItem({ applyType, applyItem }) {
-    const type = APPLY_TYPE_MAP[applyType]
-    if (!type) { return applyItem }
-    const item = type.items.find(({ value }) => value === applyItem)
-    return item ? item.label : item
+    const applyItems = this.spService.getApplyItems(applyType)
+    const item = applyItems.find(({ value }) => value === applyItem)
+    return item ? item.label : applyItem
   }
 
   formatApproveProcName(approveProcId) {

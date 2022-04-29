@@ -1,32 +1,53 @@
-import {Inject, Injectable} from '@angular/core';
-import { of } from 'rxjs';
-import { Observable } from 'rxjs/Observable';
-import {TblDict} from '../domian';
-import {HttpService} from './http.service';
+import { Injectable } from "@angular/core";
+import { Dict, ApiDict } from "../domian/tbl_dict";
+import { HttpService } from "./http.service";
 
-@Injectable()
+@Injectable({
+  providedIn: "root",
+})
 export class DictService {
-  constructor(@Inject('BASE_CONFIG') private config,
-  private http: HttpService) {
-    
+  constructor(private http: HttpService) {}
+
+  dictList: Dict[] = [];
+
+  dictMap: { [key: string] : Dict[] } = {}
+
+  public initDictList() {
+    const uri = `/act/ecom/dictData/queryGroupDictData`;
+    this.http.post(uri).subscribe((res) => {
+      if ("0000" == res.code) {
+        const data = res.data as ApiDict[];
+        this.dictList = data.map(
+          ({
+            dictGroup,
+            dictSort,
+            dictId,
+            dictLabel,
+            dictValue,
+            dictKey,
+            listClass,
+          }) => ({
+            group: dictGroup,
+            sort: dictSort,
+            code: dictKey,
+            label: dictValue,
+            tag: dictLabel,
+            value: dictId,
+            class: listClass,
+          })
+        );
+      }
+    });
   }
 
-  dictList: TblDict[] = [];
-
-  // getDictListByPid(pid:string, opt:string): Observable<TblDict[]> {
-    // const uri = `/act/dict/query?pid=`+pid;
-    // if('0'==opt){
-      // this.dictList.unshift({name:'--请选择--', value:''} as TblDict);
-    // }
-    // this.http.get(uri).subscribe(res =>{
-    //   if('0000' == res.code) {
-    //      res.data.map(res => res.json() as TblDict[]);
-    //   }
-    //   return this.dictList;
-    // });
-    // this.http.get(uri);
-
-    // console.log(this.dictList);
-    // return this.dictList;
-  // }
+  getDictListByGroupName(groupName) {
+    let dictList = this.dictMap[groupName]
+    if (dictList && dictList.length > 0) {
+      return dictList
+    } else {
+      dictList = this.dictList.filter(({ group }) => group === groupName).sort((left, right) => left.sort - right.sort)
+      this.dictMap[groupName] = dictList
+      return dictList
+    }
+  }
 }

@@ -2,11 +2,8 @@ import { Component, OnInit, Input } from "@angular/core";
 import { FormGroup } from "@angular/forms";
 import * as moment from "moment";
 
-import {
-  US_PRODUCT_LIST,
-  STAND_WARRANTY_MONTH,
-  LOGISTICS_STATUS,
-} from '../../../special-approval.constants';
+import { STAND_WARRANTY_MONTH, LOGISTICS_STATUS } from '../../../special-approval.constants';
+import { SpecialApprovalService } from "../../../special-approval.service";
 
 interface Product {
   productType: string; // 产品型号
@@ -33,11 +30,10 @@ export class ProductListComponent implements OnInit {
   @Input() isExchange: boolean;
 
   selectOptions = {
-    usProductList: US_PRODUCT_LIST,
     logicStatus: LOGISTICS_STATUS,
   };
 
-  constructor() {}
+  constructor(protected spService: SpecialApprovalService) {}
 
   get products(): FormGroup {
     return this.orderInfo.get("products") as FormGroup;
