@@ -286,6 +286,7 @@
               <nz-select
                 nzShowSearch
                 nzAllowClear
+                nzMode="multiple"
                 nzPlaceHolder="请选择"
                 formControlName="modifyEntry"
                 #modifyEntry
@@ -303,7 +304,7 @@
             
           </nz-form-item>
         </div>
-        <div nz-col nzXs="24" nzSm="24" nzMd="12" *ngIf="modifyEntry.value === 'sp_lc_other'">
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" *ngIf="modifyEntry.value.includes('sp_lc_other')">
           <nz-form-item>
             <nz-form-control
               nzXs="24"
@@ -330,6 +331,7 @@
               <nz-select
                 nzShowSearch
                 nzAllowClear
+                nzMode="multiple"
                 nzPlaceHolder="请选择"
                 formControlName="cancelReason"
                 #cancelReason
@@ -348,7 +350,7 @@
             </nz-form-control>
           </nz-form-item>
         </div>
-        <div nz-col nzXs="24" nzSm="24" nzMd="12" *ngIf="cancelReason.value === 'sp_lc_other'">
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" *ngIf="cancelReason.value.includes('sp_lc_other')">
           <nz-form-item>
             <nz-form-control
               nzXs="24"

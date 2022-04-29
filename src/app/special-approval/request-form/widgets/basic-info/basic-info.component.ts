@@ -41,13 +41,17 @@ export class BasicInfoComponent implements OnInit {
   }
 
   onSelectSystemRegion(region) {
-    const { modality, cycleGroup, bigArea, smallArea } = this.systemRegions.find(systemRegion => systemRegion.value === region)
-    this.formValues.patchValue({
-      bg: modality,
-      cycleGroup,
-      bigArea,
-      smallArea
-    })
+    if (!region) { return }
+    const systemRegion = this.systemRegions.find(systemRegion => systemRegion.value === region)
+    if (systemRegion) {
+      const { modality, cycleGroup, bigArea, smallArea } = systemRegion
+      this.formValues.patchValue({
+        bg: modality,
+        cycleGroup,
+        bigArea,
+        smallArea
+      })
+    }
   }
 
   get applyType() {

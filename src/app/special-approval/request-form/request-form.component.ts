@@ -158,9 +158,9 @@ export class RequestFormComponent implements OnInit {
         lcDiscrepancy: [null], // L/C discrepancy描述
         acceptLcDiscrepancy: [null], // 是否接受L/C discrepancy
         lcDiscrepancyPaymentMethod: [null], // L/C discrepancy费用支付方
-        modifyEntry: [null], // 修改条目
+        modifyEntry: [[]], // 修改条目
         modifyEntryDesc: [null], // 修改条目说明
-        cancelReason: [null], // 取消原因
+        cancelReason: [[]], // 取消原因
         cancelReasonDesc: [null], // 取消原因说明
         newLcIssued: [null], // 新的L/C是否已经开具
       }),
@@ -378,12 +378,17 @@ export class RequestFormComponent implements OnInit {
         break;
       case APPLY_TYPE.LC_AMENDMENT:  // LC_AMENDMENT申请
         let originOrderInfo = this.requestInfo.orderInfos[0] as any
+        const { lcInfo: { modifyEntry, cancelReason } } = lcAmendmentOrderInfo
         data.orderInfos = [
           {
             ...originOrderInfo,
             ...lcAmendmentOrderInfo,
             productType: Array.isArray(lcAmendmentOrderInfo.productType) ? lcAmendmentOrderInfo.productType.join(',') : lcAmendmentOrderInfo.productType,
-            lcInfo: { ...originOrderInfo.lcInfo, ...lcAmendmentOrderInfo.lcInfo },
+            lcInfo: { 
+              ...originOrderInfo.lcInfo, ...lcAmendmentOrderInfo.lcInfo,
+              modifyEntry: modifyEntry ? modifyEntry.join(',') : null,
+              cancelReason: cancelReason ? cancelReason.join(',') : null,
+            },
           },
         ];
         break;
@@ -644,7 +649,7 @@ export class RequestFormComponent implements OnInit {
           applyType,
           applyItem,
           applyItemDesc,
-          systemRegion: [bg, cycleGroup, bigArea, smallArea].join('-'),
+          systemRegion: (bg && cycleGroup) ? [bg, cycleGroup, bigArea, smallArea].join('-') : null,
           bg, cycleGroup, bigArea, smallArea,
           reason,
           applyFileIds: attachments.map(({ fileId }) => fileId)
@@ -664,10 +669,17 @@ export class RequestFormComponent implements OnInit {
         });
         this.setFormValidators(applyType, applyItem, orderInfos[0].bg)
       } else if (applyType === APPLY_TYPE.LC_AMENDMENT) {
+        const orderInfo = orderInfos[0]
+        const { lcInfo: { cancelReason, modifyEntry } } = orderInfo
         this.formValues.patchValue({
           lcAmendmentOrderInfo: {
-            ...orderInfos[0],
-            productType: (orderInfos[0].bg === 'US' && orderInfos[0].productType) ? orderInfos[0].productType.split(',') : orderInfos[0].productType
+            ...orderInfo,
+            lcInfo: {
+              ...orderInfo.lcInfo,
+              cancelReason: cancelReason ? cancelReason.split(',') : null,
+              modifyEntry: modifyEntry ? modifyEntry.split(',') : null,
+            },
+            productType: (orderInfo.bg === 'US' && orderInfo.productType) ? orderInfo.productType.split(',') : orderInfo.productType
           }
         });
         this.setFormValidators(applyType, applyItem, orderInfos[0].bg)
