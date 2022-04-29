@@ -60,10 +60,10 @@
                 [nzValue]="item.value"
                 [nzDisabled]="item.disabled"
               ></nz-option>
-              <nz-form-explain *ngIf="formValues.get('mode')?.dirty && formValues.get('mode')?.errors">
-                请选择模式
-              </nz-form-explain>
             </nz-select>
+            <nz-form-explain *ngIf="formValues.get('mode')?.dirty && formValues.get('mode')?.errors">
+              请选择模式
+            </nz-form-explain>
           </nz-form-control>
         </nz-form-item>
       </div>
