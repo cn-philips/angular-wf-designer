@@ -110,7 +110,9 @@ export class ApplyTenderComponent implements OnInit {
   //产品信息
   public productData: any = [];
 
-  // 所有经销商
+  // 经销商协议下拉选项
+  public agreementSelect: any = [];
+  // 所有经销商  *** 作废
   public selAgent_all: any = [];
   public selAgent_all_loading: any = false;
 
@@ -146,7 +148,7 @@ export class ApplyTenderComponent implements OnInit {
     this.validateForm = this.fb.group({
       test: [null, [Validators.required]],
     });
-    this.getAllselAgent();
+    // this.getAllselAgent();
   }
 
   public getAllselAgent() {

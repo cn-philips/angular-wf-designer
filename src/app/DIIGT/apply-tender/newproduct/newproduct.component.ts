@@ -64,6 +64,7 @@ export class NewproductComponent implements OnInit {
     private activeRoute: ActivatedRoute
   ) {}
 
+  @Input() agreementSelect: any = [];
   @Input() selAgent_all: any = [];
   // 产品信息
   @Input() productData: any = [];
@@ -285,6 +286,7 @@ export class NewproductComponent implements OnInit {
   ishowBundlecrm: boolean = false; //crm添加弹出窗口
   ishowBundlecp: boolean = false; //cp弹出窗口
   showoff: boolean = false; //添加o
+  public showoff_loading: any = false;
   refreshStatus(): void {
     this.isAllDisplayDataChecked = this.agentData.every(
       (item) => this.mapOfCheckedId[item.id]
@@ -614,8 +616,9 @@ export class NewproductComponent implements OnInit {
 
   // 添加Opp
   // 确定按钮
-  handleOk() {
+  public async handleOk() {
     this.changes_t = false;
+    this.showoff_loading = true;
     // this.showoff = false;
     // 判断
     /*
@@ -650,13 +653,13 @@ export class NewproductComponent implements OnInit {
         }
 
         if (this.dataBase.biddingNames != '' && this.dataBase.biddingNames != undefined && this.dataBase.biddingNames != null) {
-          this.agentInit_Bidding();
+          await this.agentInit_Bidding();
           // this.ServesiceService.bookEventer.emit(true);
         } else {
           // this.ServesiceService.bookEventer.emit(false);
         }
         if (this.dataBase.agreementAgenName != '' && this.dataBase.agreementAgenName != undefined && this.dataBase.agreementAgenName != null) {
-          this.agentInit_Agregent();
+          await this.agentInit_Agregent();
           // this.ServesiceService.bookEventer.emit(true);
         } else {
           // this.ServesiceService.bookEventer.emit(false);
@@ -664,7 +667,7 @@ export class NewproductComponent implements OnInit {
 
         this.showoff = false;
         this.Ckdata = {};
-        this.showoff = false;
+        this.showoff_loading = false;
         this.ngOnInit();
         this.disableValidateForm.emit();
       }
@@ -674,7 +677,7 @@ export class NewproductComponent implements OnInit {
         pageSize: 0x7fffffff,
         opportunityId: this.Ckdata.opportunityId
       };
-      this.http.post(urlCP, dataCP).subscribe(res => {
+      this.http.post(urlCP, dataCP).subscribe(async res => {
         console.log(res.data);
         // dealFormDtoSimulations     dealFormDtos
         if (res.data) {
@@ -694,13 +697,13 @@ export class NewproductComponent implements OnInit {
           }
 
           if (this.dataBase.biddingNames != '' && this.dataBase.biddingNames != undefined && this.dataBase.biddingNames != null) {
-            this.agentInit_Bidding();
+            await this.agentInit_Bidding();
             // this.ServesiceService.bookEventer.emit(true);
           } else {
             // this.ServesiceService.bookEventer.emit(false);
           }
           if (this.dataBase.agreementAgenName != '' && this.dataBase.agreementAgenName != undefined && this.dataBase.agreementAgenName != null) {
-            this.agentInit_Agregent();
+            await this.agentInit_Agregent();
             // this.ServesiceService.bookEventer.emit(true);
           } else {
             // this.ServesiceService.bookEventer.emit(false);
@@ -708,7 +711,7 @@ export class NewproductComponent implements OnInit {
 
           this.showoff = false;
           this.Ckdata = {};
-          this.showoff = false;
+          this.showoff_loading = false;
           this.ngOnInit();
           this.disableValidateForm.emit();
         }
@@ -721,90 +724,29 @@ export class NewproductComponent implements OnInit {
   }
 
   // 加载投标公司数据
-  public agentInit_Bidding() {
-    let b = true;
-    if (this.selAgent_all) {
-      for (let i = 0; i < this.selAgent_all.length; i++) {
-        if (this.dataBase.biddingNames == this.selAgent_all[i].dealerName) {
-          this.dataBase.biddingComRegAddress = this.selAgent_all[i].registeredAddress; // 投标公司地址
-          if (this.selAgent_all[i].registeredAddress === '中国' || this.selAgent_all[i].registeredAddress === '中国香港') {
-            this.dataBase.biddingComRegCode = this.selAgent_all[i].registeredAddress; // 投标公司所在地
-          }
-          // this.dataBase.productModels = this.selAgent_all[i].authorizedProduct;
-          // this.dataBase.dealerNo = this.selAgent_all[i].dealerCode;
-          this.dataBase.biddingDdpDate = this.selAgent_all[i].ddpValidUntil;
-          b = false;
+  public async agentInit_Bidding() {
+    if (this.dataBase.biddingNames != null && this.dataBase.biddingNames !== undefined && this.dataBase.biddingNames !== '') {
+      const dealer = await this.selAgent(this.dataBase.biddingNames);
+      if (dealer && dealer.length > 0) {
+        this.dataBase.biddingComRegAddress = dealer[0].registeredAddress; // 投标公司地址
+        if (dealer[0].registeredAddress === '中国' || dealer[0].registeredAddress === '中国香港') {
+          this.dataBase.biddingComRegCode = dealer[0].registeredAddress; // 投标公司所在地
         }
+        this.dataBase.biddingDdpDate = dealer[0].ddpValidUntil;
       }
-    }
-    if (b) {
-      const data = {
-        total: 0,
-        pageNo: 1,
-        pageSize: 5,
-        dealerName: this.dataBase.biddingNames
-      };
-      const url = `/act/ecom/bidding/selAgent`;
-      this.http.post(url, data).subscribe((res => {
-          if (res.code == '0000') {
-            if (res.data.rows.length > 0) {
-              this.dataBase.biddingComRegAddress = res.data.rows[0].registeredAddress; // 投标公司地址
-              if (res.data.rows[0].registeredAddress === '中国' || res.data.rows[0].registeredAddress === '中国香港') {
-                this.dataBase.biddingComRegCode = res.data.rows[0].registeredAddress; // 投标公司所在地
-              }
-              // this.dataBase.productModels = res.data.rows[0].authorizedProduct;
-              // this.dataBase.dealerNo = res.data.rows[0].dealerCode;
-              this.dataBase.biddingDdpDate = res.data.rows[0].ddpValidUntil;
-            }
-          }
-          else{
-            this.message.create('error', `${res.msg}`);
-          }
-        }),
-        ((error) => {
-          this.message.create('error', '请求异常!');
-        }));
     }
   }
 
   // 加载代理商数据
-  public agentInit_Agregent() {
-    let b = true;
-    if (this.selAgent_all) {
-      for (let i = 0; i < this.selAgent_all.length; i++) {
-        if (this.dataBase.agreementAgenName == this.selAgent_all[i].dealerName) {
-          // this.dataBase.biddingComRegAddress = this.selAgent_all[i].registeredAddress; // 投标公司地址
-          this.dataBase.productModels = this.selAgent_all[i].authorizedProduct;
-          this.dataBase.dealerNo = this.selAgent_all[i].dealerCode;
-          this.dataBase.agreementDealerDdpDate = this.selAgent_all[i].ddpValidUntil;
-          b = false;
-        }
+  public async agentInit_Agregent() {
+    if (this.dataBase.agreementAgenName != null && this.dataBase.agreementAgenName !== undefined && this.dataBase.agreementAgenName !== '') {
+      const dealer = await this.selAgent(this.dataBase.agreementAgenName);
+      if (dealer && dealer.length > 0) {
+        this.dataBase.productModels = dealer[0].authorizedProduct;
+        this.dataBase.dealerNo = dealer[0].dealerCode;
+        this.dataBase.agreementDealerDdpDate = dealer[0].ddpValidUntil;
       }
-    }
-    if (b) {
-      const data = {
-        total: 0,
-        pageNo: 1,
-        pageSize: 5,
-        dealerName: this.dataBase.agreementAgenName
-      };
-      const url = `/act/ecom/bidding/selAgent`;
-      this.http.post(url, data).subscribe((res => {
-          if (res.code == '0000') {
-            if (res.data.rows.length > 0) {
-              // this.dataBase.biddingComRegAddress = res.data.rows[0].registeredAddress; // 投标公司地址
-              this.dataBase.productModels = res.data.rows[0].authorizedProduct;
-              this.dataBase.dealerNo = res.data.rows[0].dealerCode;
-              this.dataBase.agreementDealerDdpDate = res.data.rows[0].ddpValidUntil;
-            }
-          }
-          else{
-            this.message.create('error', `${res.msg}`);
-          }
-        }),
-        ((error) => {
-          this.message.create('error', '请求异常!');
-        }));
+      this.InitSelAgentAll(dealer);
     }
   }
 
@@ -1641,4 +1583,36 @@ export class NewproductComponent implements OnInit {
     }
     return mk;
   }
+
+  // 获取经销商信息
+  public async selAgent(dealerName) {
+    const url = `/act/ecom/bidding/selAgentList`;
+    const params = {
+      dealerName: dealerName
+    };
+    const res = await this.http.post(url, params).toPromise();
+    if (res) {
+      return res.data;
+    } else {
+      return null;
+    }
+  }
+
+  // 构建经销商下拉框数据
+  public InitSelAgentAll(dealList) {
+    this.agreementSelect.length = 0;
+    if (dealList) {
+      for (let i = 0; i < dealList.length; i++) {
+        if (dealList[i]) {
+          const obj = {
+            agreementNo: dealList[i].agreementNo,
+            authorizedProduct: dealList[i].authorizedProduct,
+            authorizedArea: dealList[i].authorizedArea
+          };
+          this.agreementSelect.push(obj);
+        }
+      }
+    }
+  }
+
 }
