@@ -27,8 +27,8 @@ export class UserBasicInfoFormComponent implements OnInit {
     const email = Validators.pattern(philips);
     this.validateForm = this.fb.group({
       id: [null],
-      name: [null],
-      email: [null, [email]],
+      name: [null, [Validators.required]],
+      email: [null, [email, Validators.required]],
       lineManager: [null, [email]],
     });
   }
@@ -58,7 +58,6 @@ export class UserBasicInfoFormComponent implements OnInit {
       const url = '/act/ecom/homepage/checkUserInfo?email=' + email;
       this.http.get(url).subscribe(res=>{
           if (res.msg == '此用户存在'){
-            console.log(res.data);
             this.validateForm.setValue({
               id: res.data.userNumber,
               name:  res.data.name,

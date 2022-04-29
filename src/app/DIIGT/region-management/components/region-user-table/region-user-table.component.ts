@@ -60,8 +60,6 @@ export class RegionUserTableComponent implements OnInit {
     }
 
       const level = this.getlevel();
-      console.log('===========');
-      console.log(level);
       const url = '/act/ecom/homepage/addUserInfo';
       const arr = {
         level: level,
@@ -141,7 +139,7 @@ export class RegionUserTableComponent implements OnInit {
   ngOnInit() {}
   ngOnChanges() {
     this.userTable = [];
-if (this.regionNode.level >0){
+if (this.regionNode === undefined ? false : this.regionNode.level >0){
   this.getArea();
   this.getlevel();
 }
@@ -155,7 +153,6 @@ if (this.regionNode.level >0){
     const arr = {
       id:  this.regionNode == undefined || this.regionNode == null? null: this.regionNode.origin.id,
     }
-    console.log(Object.assign(this.paramsOnwer, arr));
       this.http.post(url, Object.assign(this.paramsOnwer, arr)).subscribe(res =>{
         this.userTable = res.data.rows;
         this.paramsOnwer.total = res.data.total;

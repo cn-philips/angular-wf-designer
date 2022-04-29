@@ -163,7 +163,7 @@ export class RequestFormComponent implements OnInit {
       }),
     }),
     changeOrderInfos: this.fb.group({
-      exchangeMethod: [null], // 换货方式
+      exchangeMethod: [null, [Validators.required]], // 换货方式
       orders: this.fb.array([
         this.fb.group({
           orderType: [null, [Validators.required]], // 订单类型
@@ -290,7 +290,7 @@ export class RequestFormComponent implements OnInit {
   get ccInfo(): FormGroup {
     return this.formValues.get('ccInfo') as FormGroup;
   }
-  
+
   get rddOitOrderInfos(): FormGroup {
     return this.formValues.get('rddOitOrderInfos') as FormGroup
   }
@@ -301,7 +301,7 @@ export class RequestFormComponent implements OnInit {
 
   get lcAmendmentOrderInfo(): FormGroup {
     return this.formValues.get('lcAmendmentOrderInfo') as FormGroup
-  } 
+  }
 
   public setFormValidators(type, item, bg) {
     if (type === APPLY_TYPE.EXT_WARRANTY) {
@@ -485,7 +485,7 @@ export class RequestFormComponent implements OnInit {
     }
     this.editable = editable;
   }
-  
+
   setLcAmendmentOrderInfoFormValidators(orderInfo) {
     const lcInfo = this.lcAmendmentOrderInfo.get('lcInfo') as FormGroup
     const lcInfoControls = lcInfo.controls
@@ -545,7 +545,10 @@ export class RequestFormComponent implements OnInit {
         }
         break
       case APPLY_TYPE.MACHINE_EXCHANGE:
-        this.checkMachineExchange()
+        const check = this.checkMachineExchange();
+        if (!check){
+          return
+        }
         hasError = this.basicInfo.invalid || this.changeOrderInfos.invalid
         break
       case APPLY_TYPE.LC_AMENDMENT:
@@ -813,6 +816,8 @@ export class RequestFormComponent implements OnInit {
   }
 
   checkMachineExchange(){
+    this.changeOrderInfos.get('exchangeMethod').markAsDirty()
+    this.changeOrderInfos.get('exchangeMethod').updateValueAndValidity()
     const orders = this.changeOrderInfos.get('orders') as FormArray
     const order1 = orders.at(0) as FormGroup
     const order2 = orders.at(1) as FormGroup
@@ -824,6 +829,42 @@ export class RequestFormComponent implements OnInit {
       order2.controls[i].markAsDirty();
       order2.controls[i].updateValueAndValidity();
     }
+    const product1 = order1.get('products').value[0]
+    const product2 = order2.get('products').value[0]
+    if (
+      product1.itemNo == null || product1.itemNo == '' ||
+      product1.logisticsStatus == null ||
+      product1.productType == null ||
+      product1.quantity == null || product1.quantity == '' ||
+      product1.wbsNo == null || product1.wbsNo == ''
+    ){
+        this.message.error('订单1: 产品信息未填写完整')
+      return false;
+    }else if (product1.logisticsStatus == 1) {
+      if (product1.equipmentSn == '' || product1.equipmentSn == null){
+        this.message.error('订单1: 产品状态为到货时需要填写设备SN！')
+        return false
+      }
+    }
+
+    if (
+      product2.itemNo == null || product2.itemNo == '' ||
+      product2.logisticsStatus == null ||
+      product2.productType == null ||
+      product2.quantity == null || product2.quantity == '' ||
+      product2.wbsNo == null || product2.wbsNo == ''
+    ){
+      this.message.error('订单2: 产品信息未填写完整')
+      return false;
+    }else if (product2.logisticsStatus == 1) {
+      if (product2.equipmentSn == '' || product2.equipmentSn == null){
+        this.message.error('订单2: 产品状态为到货时需要填写设备SN！')
+        return false
+      }
+    }
+
+
+    return true
   }
 
 }

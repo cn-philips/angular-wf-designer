@@ -71,9 +71,11 @@ export class RegionUserFormComponent implements OnInit {
 
   fetchRegionDetail() {
     this.resetRoleForm();
+    if (this.usertable[this.id] != undefined){
       this.role = this.usertable[this.id].role;
       this.isRequestor = this.usertable[this.id].ifApply;
       this.isApprover = this.usertable[this.id].ifReview;
+    }
   }
   fetchUserTable() {
     this.isloading = true;
@@ -194,7 +196,7 @@ export class RegionUserFormComponent implements OnInit {
     };
   }
   handleCreate() {
-    console.log(this.isloading);
+
     this.setUserFormType(FORM_ACTION_TYPE.CREATE);
     this.setTitle();
     this.readonly = false;
@@ -219,7 +221,7 @@ export class RegionUserFormComponent implements OnInit {
   handleDelete(id,email) {
     const checkUrl = '/act/ecom/homepage/deleteRoleCheck?email=' + email;
     this.http.get(checkUrl).subscribe( res =>{
-      console.log(res.data);
+
       if (res.data){
         const url = '/act/ecom/homepage/deleteUserInfo?id=' + id;
         this.http.get(url).subscribe(res1 =>{
@@ -250,52 +252,38 @@ export class RegionUserFormComponent implements OnInit {
   handleSubmit() {
 
     this.userformBase.validateForm.get('email').enable();
+    let error = false;
+    const baseInfo = this.userformBase.validateForm
+    const modality = this.userformModality.validateForm
+    for (const i in baseInfo.controls) {
+      baseInfo.controls[i].markAsDirty()
+      baseInfo.controls[i].updateValueAndValidity()
+    }
+    for (const i in modality.controls) {
+      modality.controls[i].markAsDirty()
+      modality.controls[i].updateValueAndValidity()
+    }
 
-    const arr = Object.assign(this.userformModality.validateForm.value, this.userformBase.validateForm.value);
-    const id = this.userInform.id;
-    this.userInform = arr;
-    this.userInform.dataSource = 'COS';
+    error = baseInfo.invalid || modality.invalid
+    if (error) {
+      this.message.error('请按要求填写')
+      return;
+    }
     if (this.checkEmailNumber(this.userformBase.validateForm.get('email').value) > 1){
       this.message.error('Email不合法');
       return;
     }
-    if (this.userformBase.validateForm.get('lineManager').value == null || this.userformBase.validateForm.get('lineManager').value == '' ? false : this.checkEmailNumber(this.userformBase.validateForm.get('lineManager').value) > 1){
+    if (this.userformBase.validateForm.get('lineManager').value != null && this.userformBase.validateForm.get('lineManager').value != '' && this.checkEmailNumber(this.userformBase.validateForm.get('lineManager').value) > 1){
       this.message.error('LineManager不合法');
-      return;
-    }
-    if (this.userformBase.validateForm.get('email').errors){
-      this.message.error('Email不合法');
-      return;
-    }
-    if (this.userformBase.validateForm.get('lineManager').errors){
-      this.message.error('LineManager不合法');
-      return;
-    }
-    if (arr.email == null || arr.email == undefined || arr.email == ''){
-      this.message.error('Email未填写');
-      return;
-    }
-    if (arr.name == null || arr.name == undefined || arr.name == ''){
-      this.message.error('Name未填写');
-      return;
-    }
-    if (arr.team == null || arr.team == undefined || arr.team == ''){
-      this.message.error('Team未填写');
-      return;
-    }
-    if (arr.modality == null || arr.modality == undefined || arr.modality == ''){
-      this.message.error('Modality未填写');
-      return;
-    }
-    if (arr.bmc == null || arr.bmc == undefined || arr.bmc == ''){
-      this.message.error('BMC未填写');
       return;
     }
 
-    if (arr.cluster == null || arr.cluster == undefined || arr.cluster == ''){
-      this.message.error('Cluster未填写');
-      return;
-    }
+    this.userformModality.validateForm.get('cluster').enable();
+    const arr = Object.assign(this.userformModality.validateForm.value, this.userformBase.validateForm.value);
+    const id = this.userInform.id;
+    this.userInform = arr;
+    this.userInform.dataSource = 'COS';
+    this.userformModality.validateForm.get('cluster').disable();
 
     if (this.userFormType === FORM_ACTION_TYPE.CREATE) {
       if (this.roleUsersData.find(x => x.bmc == arr.bmc) != undefined && this.isApprover == 1){
@@ -319,7 +307,7 @@ export class RegionUserFormComponent implements OnInit {
         cluster: this.userInform.cluster,
         id: id
       }
-      console.log(arr1)
+
       this.http.post(url, arr1).subscribe( res=>{
         if (res.code == '0000'){
           this.message.success('添加成功');
@@ -332,8 +320,6 @@ export class RegionUserFormComponent implements OnInit {
         setTimeout(() => {
           this.id = this.usertable.findIndex((x) => x.role == arr1.role);
           this.role = arr1.role;
-          console.log(this.role);
-          console.log(this.id);
           this.fetchUserTable();
           this.edit.emit(this.id);
         },500)
@@ -357,7 +343,7 @@ export class RegionUserFormComponent implements OnInit {
         cluster: this.userInform.cluster,
         id: id
       }
-      console.log(arr1)
+
       const url = '/act/ecom/homepage/updateUserInfo';
       this.http.post(url, arr1).subscribe(res =>{
         this.message.success('更新成功');
@@ -452,7 +438,6 @@ export class RegionUserFormComponent implements OnInit {
     this.userformModality.validateForm.disable();
     this.userformBase.validateForm.disable();
     this.getuserInfo(email);
-    console.log(this.businessinfo);
     this.showDialog();
   }
 
@@ -462,7 +447,7 @@ export class RegionUserFormComponent implements OnInit {
       email: email,
     }
     this.http.post(url, Object.assign(this.userInfoPage, arr)).subscribe( res => {
-      console.log(res.data);
+
       for (let i = 0; i < res.data.rows.length; i++) {
         this.businessinfo = res.data.rows;
       }
