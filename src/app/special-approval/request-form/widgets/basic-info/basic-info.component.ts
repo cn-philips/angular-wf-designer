@@ -26,6 +26,8 @@ export class BasicInfoComponent implements OnInit {
 
   systemRegions = []
 
+  APPLY_TYPE = APPLY_TYPE
+
   constructor(private spService: SpecialApprovalService, private modal: NzModalService) {}
 
   ngOnInit(): void {
