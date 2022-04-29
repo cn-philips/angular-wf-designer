@@ -39,7 +39,7 @@ export class MachineComponent implements OnInit {
   @Input() salesLeaders: string[];
   @Input() districtLeaders: string[];
 
-  selectIndex: number;
+  selectIndex: number = 0;
 
   searchChange$ = new BehaviorSubject("");
 
@@ -225,6 +225,10 @@ export class MachineComponent implements OnInit {
     return this.formValues.get("orders") as FormArray;
   }
 
+  get exchangeMethod() {
+    return this.formValues.get('exchangeMethod')
+  }
+
   ngOnInit(): void {
     this.initOMUsers()
     this.getLeaderEmail(localStorage.getItem('ng_philips_code1'), 0);
@@ -259,7 +263,6 @@ export class MachineComponent implements OnInit {
           this.onCalcProjectName();
         });
     }
-    console.log(this.orders);
 
     const getSaleList = (keyword: string) => {
       if (!keyword) {
