@@ -2,7 +2,7 @@ import { Component, Input } from '@angular/core'
 import { FormGroup, Validators } from '@angular/forms'
 import { UploadFile, NzModalService } from 'ng-zorro-antd'
 
-import {APPLY_TYPE, APPLY_TYPE_MAP, EXCHANGE_TYPE_LIST, EXCHANGE_METHODS_LIST} from '../../../special-approval.constants'
+import {APPLY_TYPE, EXCHANGE_TYPE_LIST, EXCHANGE_METHODS_LIST} from '../../../special-approval.constants'
 import { SpecialApprovalService } from '../../../special-approval.service'
 
 
@@ -33,7 +33,7 @@ export class ExchangeInfoComponent {
   * @description: 换货方式变化
   * */
   onExchangeMethodChanged(exchangeMethod) {
-
+    this.checkExchangeRole()
   }
 
   /*
@@ -61,6 +61,17 @@ export class ExchangeInfoComponent {
       }
     })
     console.log(this.SELECT_OPTION_LIST.exchangeMethodOptions)
+  }
+
+  /*
+  * @description: 换货角色根据换货类型和换货方式判断
+  * */
+  checkExchangeRole() {
+    if (this.formValues.value.exchangeType === this.SELECT_OPTION_LIST.exchangeOptions.find(uroItem => uroItem.label === 'within ORU').value) {
+      if (this.formValues.value.exchangeMethod === this.SELECT_OPTION_LIST.exchangeMethodOptions.find(exchangeItem => exchangeItem.label === '单向')) {
+
+      }
+    }
   }
 
 }

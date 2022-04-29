@@ -288,7 +288,7 @@
             <div nz-col nzSpan="24">
               <nz-form-item class="order-list-normal-item">
                 <nz-form-control nzXs="24" nzSm="24" nzMd="9">
-                  <nz-select formControlName="currency" nzPlaceHolder="Select 请选择币制">
+                  <nz-select formControlName="currency" nzPlaceHolder="Select 请选择币制" (ngModelChange)="onCurrencyChanged($event, index)">
                     <nz-option *ngFor="let item of selectOptions.currencies" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
                   </nz-select>
                   <nz-form-explain *ngIf="ord.get('currency')?.dirty && ord.get('currency')?.errors">
@@ -396,6 +396,5 @@
     <button nz-button nzType="primary" class="ml-md export-btn" (click)="onShowReferenceModal(1)">导入数据</button>
   </ng-template>
   <app-select-hospital #selectHospital (select)="onSelectHospital($event)"></app-select-hospital>
-  <app-select-dealer #selectDealer (select)="onSelectDealer($event)"></app-select-dealer>
   <app-select-reference #selectReference (select)="onSelectReference($event)"></app-select-reference>
 </nz-card>

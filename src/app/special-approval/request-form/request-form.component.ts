@@ -524,9 +524,7 @@ export class RequestFormComponent implements OnInit {
         data.extInfo = {
           ...exChangeInfo
         }
-        data.orderDifferences = {
-          ...orderDifferences.orderDifferences
-        }
+        data.orderDifferences = orderDifferences.orderDifferences
         break;
       case APPLY_TYPE.RDD_OIT:
         // 合并product

@@ -41,6 +41,7 @@ export class TransferLibComponent implements OnInit {
   @ViewChild('selectReference') selectReference: SelectReferenceComponent
 
   @Input() formValues: FormGroup
+  @Input() exchangeInfo: FormGroup
   @Input() editable = true
   @Input() applyType: string
   @Input() applyItem: string
@@ -168,7 +169,6 @@ export class TransferLibComponent implements OnInit {
         itemNo: "",
         quantity: ""}],
     })
-    console.log('success')
   }
 
   ngOnInit(): void {
@@ -233,6 +233,18 @@ export class TransferLibComponent implements OnInit {
     this.districtList[index] = await this.spService.getCustomizeEmail(this.getDistrictList('District Leader'));
     this.salesLeaderList[index] = await this.spService.getCustomizeEmail(this.getDistrictList('Sales Leader'));
     this.productSalesList[index] = await this.spService.getCustomizeEmail(this.getDistrictList('Sales Rep/Mgr', this.orders.at(index).value.bmc))
+  }
+
+  /*
+  * @description: 币制的变化，如果转入项目币制变化，则修改成本汇总币制
+  * */
+  onCurrencyChanged(val,index) {
+    if (index === 1) {
+      this.exchangeInfo.patchValue({
+        ...this.exchangeInfo.value,
+        currency: val
+      })
+    }
   }
 
   /*

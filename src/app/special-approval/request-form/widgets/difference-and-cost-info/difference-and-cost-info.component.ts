@@ -25,7 +25,7 @@ interface ConfigurationVariance  {
 })
 export class DifferenceAndCostInfoComponent {
   @Input() formValues: FormGroup
-  @Input() exchangeInfoValues: FormGroup
+  @Input() exchangeInfo: FormGroup
   @Input() supportFileList: UploadFile[] = []
   @Input() editable: boolean
   @Input() executed:number = null
@@ -34,6 +34,8 @@ export class DifferenceAndCostInfoComponent {
 
   constructor(private spService: SpecialApprovalService, private modal: NzModalService) {}
 
+  ngOnInit(): void {
+  }
   /*
   * description: 获取表格数据
   * */
@@ -41,6 +43,20 @@ export class DifferenceAndCostInfoComponent {
     return this.formValues.get("orderDifferences") as FormGroup;
   }
 
+
+  /*
+  * @description: cost发生变化
+  * */
+  onCostChanged() {
+    let cost = 0
+    this.orders.value.forEach(item => {
+      cost += item.cost
+    })
+    this.exchangeInfo.patchValue({
+      ...this.exchangeInfo,
+      cost
+    })
+  }
   /*
   * @description: 添加差异及成本分析
   * */

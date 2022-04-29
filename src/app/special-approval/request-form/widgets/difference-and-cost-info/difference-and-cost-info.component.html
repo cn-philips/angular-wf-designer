@@ -25,7 +25,7 @@
           <input type="text" nz-input [(ngModel)]="analysis.handlePlan" [disabled]="!editable" />
         </td>
         <td>
-          <input type="number" nz-input [(ngModel)]="analysis.cost" min="0" [disabled]="!editable" />
+          <input type="number" nz-input [(ngModel)]="analysis.cost" min="0" [disabled]="!editable" (ngModelChange)="onCostChanged()" />
         </td>
         <td nzRight="0px" *ngIf="editable">
           <button nz-button nzType="primary" nzSize="small" (click)="onDeleteProduct(analysis)">删除</button>

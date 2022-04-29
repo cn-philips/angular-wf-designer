@@ -68,7 +68,7 @@
         <special-approval-lcamendment-order-info *ngIf="applyType === APPLY_TYPE.LC_AMENDMENT" [bmcs]="bmcs" [editable]="editable" [formValues]="orderInfo" [lcInfo]="lcInfo" [iepoollist]="iepoollist"></special-approval-lcamendment-order-info>
         <special-approval-rdd-oit-order-info *ngIf="applyType === APPLY_TYPE.RDD_OIT" [formValues]="rddOitOrderInfos" [editable]="editable"></special-approval-rdd-oit-order-info>
         <special-approval-machineexcange-order-info *ngIf="applyType === APPLY_TYPE.MACHINE_EXCHANGE" [bmcs]="bmcs" [editable]="editable" [formValues]="changeOrderInfos" [salesLeaders]="salesLeader" [districtLeaders]="districtLeader"></special-approval-machineexcange-order-info>
-        <special-approval-transfer-lib-info *ngIf="applyType === APPLY_TYPE.TRANSFER_LIB" [bmcs]="bmcs" [editable]="editable" [formValues]="transferLibInfos"></special-approval-transfer-lib-info>
+        <special-approval-transfer-lib-info *ngIf="applyType === APPLY_TYPE.TRANSFER_LIB" [bmcs]="bmcs" [editable]="editable" [exchangeInfo]="exchangeInfo" [formValues]="transferLibInfos"></special-approval-transfer-lib-info>
       </div>
     </ng-template>
   </ngb-tab>
@@ -78,7 +78,7 @@
     </ng-template>
     <ng-template ngbTabContent>
       <div class="card-body">
-        <special-approval-difference-and-cost-info [executed]="executed" [editable]="editable" [formValues]="orderDifferencesInfo" [exchangeInfoValues]="exchangeInfo" [supportFileList]="supportFileList"></special-approval-difference-and-cost-info>
+        <special-approval-difference-and-cost-info [executed]="executed" [editable]="editable" [exchangeInfo]="exchangeInfo" [formValues]="orderDifferencesInfo" [supportFileList]="supportFileList"></special-approval-difference-and-cost-info>
       </div>
     </ng-template>
   </ngb-tab>
