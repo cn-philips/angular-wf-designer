@@ -172,7 +172,7 @@
           <nz-form-item>
             <nz-form-label nzXl="8" nzXXl="6" nzRequired>L/C金额</nz-form-label>
             <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-              <input type="text" nz-input formControlName="lcAmount" />
+              <nz-input-number style="width: 100%;" formControlName="lcAmount" [nzMin]="0"></nz-input-number>
               <nz-form-explain *ngIf="lcInfo.get('lcAmount')?.dirty && lcInfo.get('lcAmount')?.errors">
                 请填写L/C金额
               </nz-form-explain>
