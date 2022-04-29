@@ -436,6 +436,7 @@
   [nzFooter]="modalFooter"
 >
   <ng-container>
+    <app-loading *ngIf="showoff_loading"></app-loading>
     <div>
       <div class="seachbox">
         <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
