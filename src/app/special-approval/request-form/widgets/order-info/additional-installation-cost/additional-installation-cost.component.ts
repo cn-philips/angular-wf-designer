@@ -20,7 +20,7 @@ import {
   styleUrls: ['./additional-installation-cost.component.scss']
 })
 export class AdditionalInstallationCostComponent implements OnInit {
-  constructor(protected spService: SpecialApprovalService) { }
+  constructor(public spService: SpecialApprovalService) { }
 
 
   @ViewChild('selectHospital') selectHospital: SelectHospitalComponent
