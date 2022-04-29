@@ -29,7 +29,7 @@
       </nz-form-control>
     </nz-form-item>
     <nz-form-item>
-      <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="dictLabel"><span>Dic Flag</span><br>字典标签</nz-form-label>
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="dictLabel"><span>Dic Label</span><br>字典标签</nz-form-label>
       <nz-form-control [nzSm]="14" [nzXs]="24">
         <input nz-input formControlName="dictLabel" id="dictLabel" [(ngModel)]="isCreate ? undefined: formData.dictLabel" />
         <nz-form-explain *ngIf="validateForm.get('dictLabel')?.dirty && validateForm.get('dictLabel')?.errors">
@@ -40,7 +40,7 @@
     <nz-form-item>
       <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="dictSort"><span>Sort</span><br>排序</nz-form-label>
       <nz-form-control [nzSm]="14" [nzXs]="24">
-        <nz-select
+        <!-- <nz-select
           formControlName="dictSort"
           id="dictSort"
           [(ngModel)]="isCreate ? undefined: formData.dictSort"
@@ -54,7 +54,8 @@
             [nzValue]="item.value"
             [nzLabel]="item.label"
           ></nz-option>
-        </nz-select>
+        </nz-select> -->
+        <input nz-input placeholder="请输入数字排序" type="text" formControlName="dictSort" [(ngModel)]="isCreate ? undefined: formData.dictSort"/>
         <nz-form-explain *ngIf="validateForm.get('dictSort')?.dirty && validateForm.get('dictSort')?.errors">
           请选择选项！
         </nz-form-explain>
@@ -69,7 +70,7 @@
         </nz-form-explain>
       </nz-form-control>
     </nz-form-item>
-    <nz-form-item>
+    <!-- <nz-form-item>
       <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="isDefault"><span>Default</span><br>是否默认</nz-form-label>
       <nz-form-control [nzSm]="14" [nzXs]="24">
         <nz-select
@@ -91,7 +92,7 @@
           请选择选项！
         </nz-form-explain>
       </nz-form-control>
-    </nz-form-item>
+    </nz-form-item> -->
 <!--    <nz-form-item>-->
 <!--      <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="isDeleted">是否删除</nz-form-label>-->
 <!--      <nz-form-control [nzSm]="14" [nzXs]="24">-->

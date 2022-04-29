@@ -178,7 +178,7 @@ export class DictionaryModelComponent implements OnInit {
       dictLabel: [null, [Validators.required]],
       dictSort: [null, [Validators.required]],
       dictValue: [null, [Validators.required]],
-      isDefault: [null, [Validators.required]],
+      isDefault: [null, ],
       // isDeleted: [null, [Validators.required]],
       remark: [null],
       status: [null, [Validators.required]],

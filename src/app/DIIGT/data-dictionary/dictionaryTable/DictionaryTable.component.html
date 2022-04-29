@@ -19,20 +19,20 @@
   <thead>
   <tr>
     <th nzWidth="250px" nzLeft="0px"><span>Dic Key</span><br>字典key</th>
-    <th nzWidth="200px"><span>Dic Flag</span><br>字典标签</th>
+    <th nzWidth="200px"><span>Dic Group</span><br>字典分组</th>
+    <th nzWidth="200px"><span>Dic Label</span><br>字典标签</th>
     <th nzWidth="200px"><span>Status</span><br>状态</th>
 <!--    <th nzWidth="200px">排序</th>-->
     <th nzWidth="200px"><span>Dic Value</span><br>字典键值</th>
 <!--    <th nzWidth="200px">字典类型</th>-->
-    <th nzWidth="200px"><span>Dic Group</span><br>字典分组</th>
 <!--    <th nzWidth="200px">样式属性（其他样式扩展）</th>-->
 <!--    <th nzWidth="200px">表格回显样式</th>-->
-    <th nzWidth="200px"><span>Default</span><br>是否默认</th>
+    <!-- <th nzWidth="200px"><span>Default</span><br>是否默认</th> -->
     <th nzWidth="200px"><span>Remarks</span><br>备注</th>
-    <th nzWidth="200px"><span>Create By</span><br>创建者</th>
+    <!-- <th nzWidth="200px"><span>Create By</span><br>创建者</th>
     <th nzWidth="200px"><span>Create Date</span><br>创建时间</th>
     <th nzWidth="200px"><span>Update By</span><br>更新者</th>
-    <th nzWidth="200px"><span>Update Date</span><br>更新时间</th>
+    <th nzWidth="200px"><span>Update Date</span><br>更新时间</th> -->
 <!--    <th nzWidth="200px">是否删除</th>-->
     <th nzWidth="150px" nzRight="0px">Action<br>操作</th>
   </tr>
@@ -41,6 +41,9 @@
   <tr *ngFor="let item of fixedTable.data">
     <td nzLeft="0px">
       {{ item.dictKey }}
+    </td>
+    <td>
+      {{ item.dictGroup }}
     </td>
     <td>
       {{ item.dictLabel }}
@@ -57,35 +60,33 @@
 <!--    <td>-->
 <!--      {{ item.dictType }}-->
 <!--    </td>-->
-    <td>
-      {{ item.dictGroup }}
-    </td>
+    
 <!--    <td>-->
 <!--      {{ item.cssClass }}-->
 <!--    </td>-->
 <!--    <td>-->
 <!--      {{ item.listClass }}-->
 <!--    </td>-->
-    <td>
+    <!-- <td>
       {{ isDefault[item.isDefault] }}
-    </td>
+    </td> -->
     <td>
       {{ item.remark }}
     </td>
-    <td>
+    <!-- <td>
       {{ item.createBy }}
     </td>
     <td>
-      <!--正常时间-->
+      !--正常时间--
       {{ UpTime(item.createTime,false) }}
     </td>
     <td>
       {{ item.updateBy }}
     </td>
     <td>
-      <!--时间快8小时-->
+      !--时间快8小时--
       {{ UpTime(item.updateTime,true) }}
-    </td>
+    </td> -->
 <!--    <td>-->
 <!--      {{ isDeleted[item.isDeleted] }}-->
 <!--    </td>-->
