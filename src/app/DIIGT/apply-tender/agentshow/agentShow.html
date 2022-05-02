@@ -31,19 +31,19 @@
                             <th nzWidth="250px" nzAlign="center">Chinese Name<br>中文名称</th>
                             <th nzWidth="250px" nzAlign="center">Distributor Address <br>地址</th>
                           <th nzWidth="200px" nzAlign="center">Distributor ID<br>经销商编号</th>
-                          <th nzWidth="350px" nzAlign="center">Distributor Agreement No.<br> 经销商协议号</th>
-                            <th nzWidth="250px" nzAlign="center">
-                              Authorization Site<br> 授权地址
-                            </th>
-                            <th nzWidth="350px" nzAlign="center">
-                              Authorization Licensed Product<br>  授权产品
-                            </th>
-                            <th nzWidth="250px" nzAlign="center">
-                              Authorization Start Time<br> 授权开始时间
-                            </th>
-                            <th nzWidth="250px" nzAlign="center">
-                              Authorization End Time<br> 授权结束时间
-                            </th>
+<!--                          <th nzWidth="350px" nzAlign="center">Distributor Agreement No.<br> 经销商协议号</th>-->
+<!--                            <th nzWidth="250px" nzAlign="center">-->
+<!--                              Authorization Site<br> 授权地址-->
+<!--                            </th>-->
+<!--                            <th nzWidth="350px" nzAlign="center">-->
+<!--                              Authorization Licensed Product<br>  授权产品-->
+<!--                            </th>-->
+<!--                            <th nzWidth="250px" nzAlign="center">-->
+<!--                              Authorization Start Time<br> 授权开始时间-->
+<!--                            </th>-->
+<!--                            <th nzWidth="250px" nzAlign="center">-->
+<!--                              Authorization End Time<br> 授权结束时间-->
+<!--                            </th>-->
                         </tr>
                     </thead>
                     <tbody>
@@ -56,12 +56,12 @@
                             <td nzAlign="center">{{data.registeredAddress}}</td>
 
                           <td nzAlign="center">{{data.dealerCode}}</td>
-                          <td nzAlign="center">{{data.agreementNo}}</td>
+<!--                          <td nzAlign="center">{{data.agreementNo}}</td>-->
 
-                            <td nzAlign="center"><div class="cc" nz-tooltip [nzTitle]="data.authorizedArea">{{data.authorizedArea}}</div></td>
-                            <td nzAlign="center"><div class="cc" nz-tooltip [nzTitle]="data.authorizedProduct">{{data.authorizedProduct}}</div></td>
-                            <td nzAlign="center">{{data.authorizedStartTime | TimeFormatePipeNow}}</td>
-                            <td nzAlign="center">{{data.authorizedEndTime | TimeFormatePipeNow}}</td>
+<!--                            <td nzAlign="center"><div class="cc" nz-tooltip [nzTitle]="data.authorizedArea">{{data.authorizedArea}}</div></td>-->
+<!--                            <td nzAlign="center"><div class="cc" nz-tooltip [nzTitle]="data.authorizedProduct">{{data.authorizedProduct}}</div></td>-->
+<!--                            <td nzAlign="center">{{data.authorizedStartTime | TimeFormatePipeNow}}</td>-->
+<!--                            <td nzAlign="center">{{data.authorizedEndTime | TimeFormatePipeNow}}</td>-->
                         </tr>
                     </tbody>
                 </nz-table>

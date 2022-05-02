@@ -52,7 +52,7 @@ changePageSize(index)
  //加载代理商数据
 agentInit()
 {
-  const url=`/act/ecom/bidding/selAgent`;
+  const url=`/act/ecom/bidding/selAgentOnly`;
   this.loading = true;
   this.http.post(url,this.params).subscribe((res=>{
     if(res.code=='0000')

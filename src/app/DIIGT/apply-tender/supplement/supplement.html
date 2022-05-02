@@ -800,15 +800,8 @@
                              [(ngModel)]="dataBase.distributorAgreement" nzMode="multiple" [nzLoading]="selAgent_all_loading" (ngModelChange)="AgreeTitle()">
                     <!--                    <nz-option *ngFor="let item of distributorAgreementList let i=index" [nzValue]="item.value" [nzLabel]="item.name">-->
                     <!--                    </nz-option>-->
-                    <ng-container *ngFor="let item of selAgent_all let i=index">
-                      <nz-option *ngIf="item.dealerCode == this.dataBase.dealerNo" [nzValue]="item.agreementNo" [nzLabel]="item.agreementNo">
-                      </nz-option>
-                      <nz-option *ngIf="selAgent_all_loading && dataBase.distributorAgreement" [nzValue]="dataBase.distributorAgreement" [nzLabel]="dataBase.distributorAgreement">
-                      </nz-option>
-                    </ng-container>
-                    <!--未加载出来显示原始值-->
-                    <ng-container *ngFor="let item of dataBase.distributorAgreement let i=index">
-                      <nz-option *ngIf="selAgent_all_loading" [nzValue]="item" [nzLabel]="item">
+                    <ng-container *ngFor="let item of agreementSelect let i=index">
+                      <nz-option [nzValue]="item.agreementNo" [nzLabel]="item.agreementNo">
                       </nz-option>
                     </ng-container>
                   </nz-select>
@@ -983,14 +976,16 @@
     </div>
   </div>
 
-  <nz-modal [(nzVisible)]="isBid" nzWidth="1000px" nzTitle="Select Distributor 选择经销商"[nzFooter]="modalFooterisBid" (nzOnCancel)="isBidCancel()">
+  <nz-modal [(nzVisible)]="isBid" [nzOkLoading]="loadingBid" nzWidth="1000px" nzTitle="Select Distributor 选择经销商" [nzFooter]="modalFooterisBid" (nzOnCancel)="isBidCancel()">
+    <app-loading *ngIf="loadingBid"></app-loading>
     <app-agentshow #child1 [params]="params"></app-agentshow>
     <ng-template #modalFooterisBid>
       <button nz-button nzType="default" (click)="isBidCancel()">Cancel 取消</button>
       <button nz-button nzType="primary" (click)="isBidagentOk()">OK 确定</button>
     </ng-template>
   </nz-modal>
-  <nz-modal [(nzVisible)]="isAgre" nzWidth="1000px" nzTitle="Select Distributor 选择经销商"[nzFooter]="modalFooterisAgre" (nzOnCancel)="isAgreCancel()">
+  <nz-modal [(nzVisible)]="isAgre" [nzOkLoading]="loadingAgre" nzWidth="1000px" nzTitle="Select Distributor 选择经销商"[nzFooter]="modalFooterisAgre" (nzOnCancel)="isAgreCancel()">
+    <app-loading *ngIf="loadingAgre"></app-loading>
     <app-agentshow #child2 [params]="params"></app-agentshow>
     <ng-template #modalFooterisAgre>
       <button nz-button nzType="default" (click)="isAgreCancel()">Cancel 取消</button>

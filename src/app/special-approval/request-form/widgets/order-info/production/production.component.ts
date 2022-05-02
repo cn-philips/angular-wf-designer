@@ -5,7 +5,7 @@ import { Hospital, SelectHospitalComponent, } from '../../select-hospital/select
 import { Dealer, SelectDealerComponent } from '../../select-dealer/select-dealer.component'
 import { Reference, SelectReferenceComponent } from '../../select-reference/select-reference.component'
 import { SpecialApprovalService } from '../../../../special-approval.service'
-import { 
+import {
   APPLY_TYPE,
   BUSINESS_MODEL,
   BG_LIST,
@@ -133,7 +133,7 @@ export class ProductionOrderInfoComponent implements OnInit {
   }
 
   onSelectReference(reference: Reference) {
-    const { 
+    const {
       referenceId,
       orderType,
       projectName,
@@ -166,7 +166,7 @@ export class ProductionOrderInfoComponent implements OnInit {
       hospitalNo: endUserId,
       orderAmount: contractPrice,
       currency: invoiceInformation,
-      products: [{ 
+      products: [{
         productType: productModel,
         wbs: "",
         itemNo: "",
