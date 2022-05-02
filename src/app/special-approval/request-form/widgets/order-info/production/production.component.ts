@@ -20,7 +20,7 @@ import {
   styleUrls: ['./production.component.scss']
 })
 export class ProductionOrderInfoComponent implements OnInit {
-  constructor(protected spService: SpecialApprovalService) { }
+  constructor(public spService: SpecialApprovalService) { }
 
 
   @ViewChild('selectHospital') selectHospital: SelectHospitalComponent

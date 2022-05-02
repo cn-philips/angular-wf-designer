@@ -29,7 +29,7 @@ import { SpecialApprovalService } from "../../../../special-approval.service";
   styleUrls: ["./warranty.component.scss"],
 })
 export class WarrantyOrderInfoComponent implements OnInit {
-  constructor(protected spService: SpecialApprovalService) { }
+  constructor(public spService: SpecialApprovalService) { }
 
   @ViewChild("selectHospital") selectHospital: SelectHospitalComponent;
 

@@ -52,7 +52,7 @@ export class MachineComponent implements OnInit {
   isSearchLoading: boolean = false;
 
   constructor(
-    protected spService: SpecialApprovalService,
+    public spService: SpecialApprovalService,
     private fb: FormBuilder,
     private http: HttpService
   ) {}

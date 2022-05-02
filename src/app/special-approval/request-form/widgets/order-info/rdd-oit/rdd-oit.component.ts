@@ -65,7 +65,7 @@ export class RddOitOrderInfoComponent implements OnInit {
   };
 
   constructor(
-    protected spService: SpecialApprovalService,
+    public spService: SpecialApprovalService,
     private message: NzMessageService,
   ) {}
 
