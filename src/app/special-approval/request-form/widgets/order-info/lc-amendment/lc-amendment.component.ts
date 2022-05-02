@@ -9,7 +9,7 @@ import { SpecialApprovalService } from "../../../../special-approval.service";
   styleUrls: ["./lc-amendment.component.scss"],
 })
 export class LcAmendmentOrderInfoComponent implements OnInit {
-  constructor(protected spService: SpecialApprovalService) {}
+  constructor(public spService: SpecialApprovalService) {}
 
   @Input() basicInfo: FormGroup;
   @Input() formValues: FormGroup;
