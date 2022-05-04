@@ -101,4 +101,39 @@ export class EmpAccComponent implements OnInit {
     return e;
   }
 
+  // 非标提示
+  public isNonStandardTitle(e) {
+    switch (e) {
+      case 'paymentProvision':
+      case 'paymentProvision2':
+        return '付款条款审核';
+      case 'installationWarranty':
+      case 'installationWarranty2':
+        return '安装，验收及保修审核';
+      case 'shipmentDelivery':
+        return '装运及交货审核';
+      case 'amountDifference':
+        return '直投订单合同金额和中标金额有价差审核';
+      case 'sitePreparation':
+        return '场地准备审核';
+      case 'performanceBond':
+        return '履约保函审核';
+      case 'TPWJJDSH':
+      case 'TPWJJDCS':
+      case 'TPWJJDZS':
+        return '特批进单审核';
+      case 'CWBM':
+        return '付款方式审核';
+      case 'ZLFGB':
+        return '投标保证金及履约保证金额审核';
+      case 'GYLYYB':
+        return '物流条款审核';
+      case 'FAFWB':
+        return '售后维修条款审核';
+      case 'SCB':
+        return '技术条款审核';
+    }
+    return null;
+  }
+
 }

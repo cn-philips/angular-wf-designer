@@ -25,9 +25,27 @@
     <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
       <div nz-col nzXs="24" nzSm="24" nzMd="12">
         <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6" nzRequired>申请原因</nz-form-label>
+          <nz-form-label nzXl="8" nzXXl="6" nzRequired>系统区域</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <nz-select formControlName="applyItem" nzPlaceHolder="请选择申请原因" (ngModelChange)="onApplyItemChange($event)">
+            <nz-select style="width:100%" *ngIf="editable" formControlName="systemRegion" nzPlaceHolder="请选择系统区域" (ngModelChange)="onSelectSystemRegion($event)">
+              <nz-option *ngFor="let item of systemRegions" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+            </nz-select>
+            <input type="text" nz-input style="width:100%" *ngIf="!editable" formControlName="systemRegion" disabled />
+            <nz-form-explain *ngIf="formValues.get('systemRegion')?.dirty && formValues.get('systemRegion')?.errors">
+              请选择系统区域
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="12">
+        <nz-form-item>
+          <nz-form-label nzXl="8" nzXXl="6">申请原因</nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <nz-select formControlName="applyItem" nzPlaceHolder="请选择申请原因">
               <nz-option *ngFor="let item of applyItems" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
             </nz-select>
             <nz-form-explain
@@ -40,7 +58,7 @@
       </div>
     </div>
 
-    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle" *ngIf="applyType === APPLY_TYPE.EXT_WARRANTY && applyItem == 'sp_warranty_apply_item_5'">
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle" *ngIf="showApplyItemDesc">
       <div nz-col nzXs="24" nzSm="24" nzMd="12">
         <nz-form-item>
           <nz-form-label nzXl="8" nzXXl="6" nzRequired nzFor="applyItemDesc">其他原因说明</nz-form-label>
@@ -62,6 +80,7 @@
           <nz-form-label nzFor="reason" nzXl="8" nzXXl="6" nzRequired>申请原因详细描述</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <textarea rows="4" nz-input formControlName="reason" id="reason"></textarea>
+            <nz-alert *ngIf="applyType === APPLY_TYPE.LC_AMENDMENT" nzType="warning" nzMessage="注意: 由于客户原因造成的修改需费用由客户承担" nzShowIcon></nz-alert>
             <nz-form-explain
               *ngIf="formValues.get('reason')?.dirty && formValues.get('reason')?.errors"
             >

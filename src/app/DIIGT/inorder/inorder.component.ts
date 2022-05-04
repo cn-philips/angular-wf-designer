@@ -204,6 +204,7 @@ export class InorderComponent implements OnInit {
           this.infor.isPrebookApply=this.dataBase.isPrebookApply;
           this.dataBase.contractCancelReferenceId= res.data.contractCancelReferenceId;
           this.dataBase.contractCancelMainId= res.data.contractCancelMainId;
+          this.dataBase.preparationProductCompany = res.data.preparationProductCompany;
           this.infor.detail = {
             id: '',
             flag: '',

@@ -17,11 +17,12 @@ export class AgentshowComponent implements OnInit {
   {
    this.params=Object.assign({},this.params);
    this.agentDatas=Object.assign({},this.agentDatas);
-   this.agentInit()
+   // this.agentInit()
   }
-  ngOnInit() {    
+  ngOnInit() {
   }
   public agentDatas:any=[];
+  public loading = false;
   @Input()params:any={
     total:0,
     pageNo:1,
@@ -51,7 +52,8 @@ changePageSize(index)
  //加载代理商数据
 agentInit()
 {
-  const url=`/act/ecom/bidding/selAgent`;
+  const url=`/act/ecom/bidding/selAgentOnly`;
+  this.loading = true;
   this.http.post(url,this.params).subscribe((res=>{
     if(res.code=='0000')
     {
@@ -64,13 +66,15 @@ agentInit()
     else{
       this.message.create('error', res.msg);
     }
+    this.loading = false;
   }),
   ((error)=>{
-    this.message.create("error","请求异常!")
+    this.message.create("error","请求异常!");
+    this.loading = false;
   }))
 }
  //代理商单选事件
- agentChange(index){ 
+ agentChange(index){
   this.agentDatas.map((res,i)=>{
        res.radio=index==i?true:false;
   })
@@ -82,6 +86,6 @@ agentInit()
      let arr=this.agentDatas.filter(item=>item.radio==true)
      return arr;
  }
- 
-  
+
+
 }

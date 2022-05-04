@@ -2,11 +2,8 @@ import { Component, OnInit, Input } from "@angular/core";
 import { FormGroup } from "@angular/forms";
 import * as moment from "moment";
 
-import {
-  US_PRODUCT_LIST,
-  STAND_WARRANTY_MONTH,
-  LOGISTICS_STATUS,
-} from '../../../special-approval.constants';
+import { STAND_WARRANTY_MONTH, LOGISTICS_STATUS } from '../../../special-approval.constants';
+import { SpecialApprovalService } from "../../../special-approval.service";
 
 interface Product {
   productType: string; // 产品型号
@@ -33,11 +30,10 @@ export class ProductListComponent implements OnInit {
   @Input() isExchange: boolean;
 
   selectOptions = {
-    usProductList: US_PRODUCT_LIST,
     logicStatus: LOGISTICS_STATUS,
   };
 
-  constructor() {}
+  constructor(protected spService: SpecialApprovalService) {}
 
   get products(): FormGroup {
     return this.orderInfo.get("products") as FormGroup;
@@ -47,7 +43,11 @@ export class ProductListComponent implements OnInit {
     return this.orderInfo.get("bg").value as string;
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    if (this.isExchange && this.products.value.length === 0){
+      this.onAddProduct()
+    }
+  }
 
   onAddProduct() {
     this.products.patchValue([
@@ -113,18 +113,28 @@ export class ProductListComponent implements OnInit {
       product.warranty.applyExtWarrantyMonths = Number(
         integerPart + parseFloat(decimalPart)
       ).toFixed(2);
+    } else {
+      product.warranty.applyExtWarrantyMonths = null
     }
   }
 
-  onStdWarrantyStartDateChange(product) {
+  onCalcStdWarrantyEndDate(product) {
     // 计算合同保修结束日期
     const {
-      warranty: { expectedStdWarrantyStartdate, stdWarrantyMonths },
+      warranty: { expectedStdWarrantyStartdate, stdWarrantyMonths, posWarrantyMonths },
     } = product;
-    product.warranty.expectedStdWarrantyEnddate = moment(expectedStdWarrantyStartdate)
+    if (typeof posWarrantyMonths === 'number') {
+      product.warranty.posWarrantyMonths = Math.round(posWarrantyMonths)
+    }
+    if (expectedStdWarrantyStartdate && stdWarrantyMonths && typeof posWarrantyMonths === 'number') {
+      product.warranty.expectedStdWarrantyEnddate = moment(expectedStdWarrantyStartdate)
       .subtract(1, "days")
       .add(stdWarrantyMonths, "months")
+      .add(posWarrantyMonths, 'months')
       .format("YYYY-MM-DD");
-    this.onCalcWarrantyMonth(product);
+    } else {
+      product.warranty.expectedStdWarrantyEnddate = null
+    }
+    this.onCalcWarrantyMonth(product)
   }
 }

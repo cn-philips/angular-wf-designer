@@ -111,7 +111,9 @@ export class ApplyTenderModifComponent implements OnInit {
     fileAgentList: [], // 协议代理商出具投标委托函
   };
 
-  // 所有经销商
+  // 经销商协议下拉选项
+  public agreementSelect: any = [];
+  // 所有经销商  *** 作废
   public selAgent_all: any = [];
   public selAgent_all_loading: any = false;
 
@@ -151,11 +153,14 @@ export class ApplyTenderModifComponent implements OnInit {
     this.isDisable = this.flag == '1' ? true : false;
     const url = `/act/ecom/tender/application/getTenderApplicationDto?mainId=${mainId}`;
     this.load=true;
-    this.http.get(url).subscribe((res => {
+    this.http.get(url).subscribe((async res => {
       if (res.code == '0000') {
-        this.load = false;
         if (res.data && res.data.distributorAgreementList) {
           this.initAgreetitleList(res.data.distributorAgreementList);
+        }
+        if (res.data.agreementAgenName != null && res.data.agreementAgenName !== '') {
+          const dealer = await this.selAgent(res.data.agreementAgenName);
+          this.InitSelAgentAll(dealer);
         }
         this.dataBase = res.data;
         if (this.flag == '0') {
@@ -164,20 +169,20 @@ export class ApplyTenderModifComponent implements OnInit {
           // this.dataBase.file = '';
         }
         //判断预计投标价是否是保留两位
-        if(this.dataBase.tenderPriceCurrency != null && this.dataBase.tenderPriceCurrency != ''){
+        if (this.dataBase.tenderPriceCurrency != null && this.dataBase.tenderPriceCurrency != '') {
           this.dataBase.tenderPriceCurrency = chNumber(this.dataBase.tenderPriceCurrency);
         }
-        if (this.dataBase && this.dataBase.totalPrice!=''&&this.dataBase.totalPrice!=null) {
+        if (this.dataBase && this.dataBase.totalPrice != '' && this.dataBase.totalPrice != null) {
           this.dataBase.totalPrice = chNumber(this.dataBase.totalPrice);
         }
-        if (this.dataBase && this.dataBase.performanceBonds!=''&&this.dataBase.performanceBonds!=null) {
-         this.dataBase.performanceBonds = chNumber(this.dataBase.performanceBonds);
+        if (this.dataBase && this.dataBase.performanceBonds != '' && this.dataBase.performanceBonds != null) {
+          this.dataBase.performanceBonds = chNumber(this.dataBase.performanceBonds);
         }
-      }
-      else{
+      } else {
         this.message.create('error', `${res.msg}`);
       }
       this.childbase.DisableValidateForm();
+      this.load = false;
     }), (error => {
       this.load=false;
       this.message.create('error', '服务器异常!');
@@ -200,7 +205,7 @@ export class ApplyTenderModifComponent implements OnInit {
     });
 
     this.getApproved(mainId);
-    this.getAllselAgent();
+    // this.getAllselAgent();
   }
   public getAllselAgent() {
     const url = `/act/ecom/bidding/selAgentList`;
@@ -573,6 +578,37 @@ export class ApplyTenderModifComponent implements OnInit {
           authorizedProduct: distributorAgreementList[i].authorizedProduct,
           authorizedArea: distributorAgreementList[i].authorizedArea
         };
+      }
+    }
+  }
+
+  // 获取经销商信息
+  public async selAgent(dealerName) {
+    const url = `/act/ecom/bidding/selAgentList`;
+    const params = {
+      dealerName: dealerName
+    };
+    const res = await this.http.post(url, params).toPromise();
+    if (res) {
+      return res.data;
+    } else {
+      return null;
+    }
+  }
+
+  // 构建经销商下拉框数据
+  public InitSelAgentAll(dealList) {
+    this.agreementSelect.length = 0;
+    if (dealList) {
+      for (let i = 0; i < dealList.length; i++) {
+        if (dealList[i]) {
+          const obj = {
+            agreementNo: dealList[i].agreementNo,
+            authorizedProduct: dealList[i].authorizedProduct,
+            authorizedArea: dealList[i].authorizedArea
+          };
+          this.agreementSelect.push(obj);
+        }
       }
     }
   }

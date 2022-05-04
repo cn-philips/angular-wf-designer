@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpService } from '../services/http.service'
 import { Subject } from 'rxjs'
 import { APPLY_TYPE_MAP, PROCESS_STATUS, NODE_ACTION, PROCESS_STATUS_MAP } from './special-approval.constants'
+import { DictService } from '../services/dict.service';
 
 function getLoginUserCode1() {
   return localStorage.getItem('ng_philips_code1')
@@ -31,7 +32,48 @@ export class SpecialApprovalService {
   spTaskCountChange$ = this.spTaskCount.asObservable()
   spDraftCountChange$ = this.spDraftCount.asObservable()
 
-  constructor(private http: HttpService) {}
+  bmcClusterBgs = []
+
+  cycleGroupBigAreaMap = {}
+
+  constructor(
+    private http: HttpService,
+    private dictService: DictService,
+  ) {
+    this.initCycleGroupBigArea()
+    this.initBmcClusterBg()
+  }
+
+  initCycleGroupBigArea() {
+    const uri = `/act/specialapprove/salesregion?pageSize=999`;
+    this.http.get(uri).subscribe((res) => {
+      if ("0000" == res.code) {
+        const cycleGroupBigAreas = res.data.rows
+        this.cycleGroupBigAreaMap = cycleGroupBigAreas.reduce((calc, { team, region }) => {
+          const bigAreas = calc[team] || []
+          calc[team] = [...bigAreas, { label: region, value: region }]
+          return calc
+        }, {})
+      }
+    })
+  }
+
+  get cycleGroups() {
+    return Object.keys(this.cycleGroupBigAreaMap).map((cycleGroup) => ({ label: cycleGroup, value: cycleGroup }))
+  }
+
+  get bmcList() {
+    return this.bmcClusterBgs.map(({ bmc, cluster, bg }) => ({ label: bmc, value: bmc, cluster, bg }))
+  }
+
+  initBmcClusterBg() {
+    const uri = `/act/specialapprove/bmcclusterbg?pageSize=999`;
+    this.http.get(uri).subscribe((res) => {
+      if ("0000" == res.code) {
+        this.bmcClusterBgs = res.data.rows
+      }
+    })
+  }
 
   changeSpTaskCount(taskCount) {
     this.spTaskCount.next(taskCount)
@@ -39,6 +81,17 @@ export class SpecialApprovalService {
 
   changeSpDraftCount(draftCount) {
     this.spDraftCount.next(draftCount)
+  }
+
+  getApplyItems(applyType) {
+    if (!APPLY_TYPE_MAP[applyType]) { return [] }
+    const { dictGroup } = APPLY_TYPE_MAP[applyType]
+    const applyItems = this.dictService.getDictListByGroupName(dictGroup).map(({ code, label }) => ({ label, value: code }))
+    return applyItems
+  }
+
+  get usProductList() {
+    return this.dictService.getDictListByGroupName('us_product_list').map(({ tag, label }) => ({ label: tag, value: label }))
   }
 
   // 获取用户可以使用的申请模板
@@ -123,7 +176,6 @@ export class SpecialApprovalService {
     const res = await this.http.get(uri, {
       params: {
         ...params,
-        ccPerson: getLoginUserCode1(),
         orderByClause: 'createTime desc',
       }
     }).toPromise();
@@ -279,7 +331,7 @@ export class SpecialApprovalService {
   }
 
   //获取取消原因列表
-  async getcancelReason() {
+  async getCancelReason() {
     const uri = '/act/ecom/dictData/queryDrop?dictGroup=sp_apply_lc_cancel';
     const res = await this.http.get(uri).toPromise();
     const data = formatResponse(res);

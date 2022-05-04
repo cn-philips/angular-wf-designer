@@ -1,5 +1,5 @@
 <nz-card class="mtb1rem" nzTitle="审批记录">
-  <nz-table [nzData]="approveHistory" nzBordered [nzShowPagination]="false">
+  <nz-table [nzData]="approveHistory" [nzShowPagination]="false" [nzScroll]="{ y: '450px' }">
     <thead>
       <tr>
         <th>步骤</th>
@@ -14,7 +14,7 @@
       <tr *ngFor="let history of approveHistory; let i=index">
         <td>{{ history.spProcNodeName }}</td>
         <td>{{ history.approveUser }}</td>
-        <td>{{ i === 0 ? '已提交' : formatTaskStatus(history) }}</td>
+        <td>{{ history.taskName === 'node0' ? '已提交' : formatTaskStatus(history) }}</td>
         <td>
           <div style="max-width: 360px;word-break: break-word;">
             {{ history.remark }}

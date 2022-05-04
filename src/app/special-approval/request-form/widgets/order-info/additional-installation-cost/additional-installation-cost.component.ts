@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, ViewChild } from '@angular/core';
-import { FormGroup } from '@angular/forms'
+import { FormControl, FormGroup } from '@angular/forms'
 
 import { Hospital, SelectHospitalComponent, } from '../../select-hospital/select-hospital.component'
 import { Dealer, SelectDealerComponent } from '../../select-dealer/select-dealer.component'
@@ -11,9 +11,7 @@ import {
   BG_LIST,
   ORDER_TYPES,
   BUSINESS_MODEL_LIST,
-  BIG_SMALL_AREA_LIST,
   CURRENCIES,
-  STAND_WARRANTY_MONTH,
 } from '../../../../special-approval.constants'
 
 @Component({
@@ -22,10 +20,7 @@ import {
   styleUrls: ['./additional-installation-cost.component.scss']
 })
 export class AdditionalInstallationCostComponent implements OnInit {
-
-  showDealerArea: boolean = false
-
-  constructor(private spService: SpecialApprovalService) { }
+  constructor(public spService: SpecialApprovalService) { }
 
 
   @ViewChild('selectHospital') selectHospital: SelectHospitalComponent
@@ -41,23 +36,35 @@ export class AdditionalInstallationCostComponent implements OnInit {
 
   APPLY_TYPE = APPLY_TYPE
 
-  @Input() bmcs = []
-
   selectOptions = {
     orderTypes: ORDER_TYPES,
     bgList: BG_LIST,
-    bigAreas: BIG_SMALL_AREA_LIST,
-    smallAreas: [],
     businessModels: BUSINESS_MODEL_LIST,
     currencies: CURRENCIES,
     oms: []
   }
 
-  onBusinessModelChange(businessModel) {
-    if (businessModel === BUSINESS_MODEL.DISTRIBUTOR_DEAL) {
-      this.showDealerArea = true
+  get bigAreas() {
+    const cycleGroup = this.formValues.get('cycleGroup') as FormControl
+    const cycleGroupBigAreaMap = this.spService.cycleGroupBigAreaMap
+    if (cycleGroup && cycleGroupBigAreaMap[cycleGroup.value]) {
+      return cycleGroupBigAreaMap[cycleGroup.value]
     } else {
-      this.showDealerArea = false
+      return []
+    }
+  }
+
+  get bmcList() {
+    const bg = this.formValues.get('bg') as FormControl
+    return this.spService.bmcList.filter((bmc) => bmc.bg === bg.value)
+  }
+
+  get showDealerArea(): boolean {
+    const businessModel = this.formValues.get('businessModel') as FormControl
+    if (businessModel && businessModel.value === BUSINESS_MODEL.DISTRIBUTOR_DEAL) {
+      return true
+    } else {
+      return false
     }
   }
 
@@ -84,10 +91,8 @@ export class AdditionalInstallationCostComponent implements OnInit {
     })
   }
 
-  onBigAreaChange(bigArea) {
-    const area = this.selectOptions.bigAreas.find(({ value }) => value === bigArea)
-    this.selectOptions.smallAreas = area ? area.children : []
-    this.formValues.patchValue({ smallArea: null })
+  onCycleGroupChange() {
+    this.formValues.patchValue({ bigArea: null })
   }
 
   onShowSelectHospitalModal() {
@@ -151,17 +156,14 @@ export class AdditionalInstallationCostComponent implements OnInit {
       contractPrice,
       invoiceInformation,
     } = reference
-    if (distributor) {
-      this.showDealerArea = true
-    }
     this.formValues.patchValue({
       orderType,
       referenceId,
       projectName,
       productType: productModel,
       sapOrderNo: sap,
-      bigArea: team,
-      smallArea: region,
+      cycleGroup: team,
+      bigArea: region,
       bmc,
       businessModel: businessModel ? businessModel.toLowerCase() : null,
       dealerName: distributor,
@@ -176,7 +178,7 @@ export class AdditionalInstallationCostComponent implements OnInit {
         wbs: "",
         itemNo: "",
         quantity: "",
-        stdWarrantyMonths: STAND_WARRANTY_MONTH[this.formValues.get('bg').value] }],
+      }],
     })
   }
 

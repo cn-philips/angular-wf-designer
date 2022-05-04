@@ -38,7 +38,7 @@ export class PreOrderProductFormComponent implements OnInit {
     distributor:"",
     marketBundleName:"",
     prebookProductId:"",
-    foreignTradeCompany:"",  
+    foreignTradeCompany:"",
   }
   public isPrebook:any=false;
   public state:any;
@@ -510,7 +510,7 @@ supportChange(event)
     //带入sonfon编号
 
     this.ServesiceService.sofonNosend.subscribe(val=>{
-        
+
         this.dataBase.sofonNo=val;
     })
     //经销商code
@@ -528,10 +528,10 @@ supportChange(event)
     if(this.dataBases.businessModel=='DISTRIBUTOR'&&this.dataBases.dealerCode)
     {
       this.dealerCodeList();
-    }    
+    }
     //触发付款条款
     this.ServesiceService.payment.subscribe((res,params)=>{
-      
+
       this.dataBases.paymentList=res;
       !this.dataBases.paymentList&&(this.dataBase.paymentProvision=null);
       if(this.dataBases.detail.status=='')
@@ -603,7 +603,7 @@ supportChange(event)
     }
 
     this.getBase();
-    this.ServesiceService.bookEventer.subscribe(res => { 
+    this.ServesiceService.bookEventer.subscribe(res => {
       if (!this.dataBase.checked) {
         this.cheakbox();
       }
@@ -638,23 +638,51 @@ supportChange(event)
   {
     this.isAgre=false;
   }
-  //弹出详情
-  public showDiag()
-  {
-    this.dealshow.data=[];
-    let dealerAgreementNo=this.dataBase.agreementNo;
-    this.isAgre=true;
-    let select=this.dealList.find(val=>dealerAgreementNo==val.agreementNo);
-    if(select)
-    {
-      let obj={
-        authorizedArea:select.authorizedArea,
-        authorizedProduct:select.authorizedProduct
+  // 弹出详情
+  public showDiag() {
+    this.dealshow.data = [];
+    const dealerAgreementNo = this.dataBase.agreementNo;
+    this.isAgre = true;
+    // 经销商协议号 可以操作查询实时ie pool数据
+    if (!this.disa) {
+      const select = this.dealList.find(val => dealerAgreementNo === val.agreementNo);
+      if (select) {
+        const obj = {
+          authorizedArea: select.authorizedArea,
+          authorizedProduct: select.authorizedProduct
+        };
+        this.dealshow.data.push(obj);
+        this.ServesiceService.dealTable.emit(this.dealshow);
       }
-      this.dealshow.data.push(obj)
+    } else {
+      // 经销商协议号 禁用查询数据库保存值
+      const obj = {
+        authorizedArea: this.dataBase.authorizedArea,
+        authorizedProduct: this.dataBase.authorizedProduct
+      };
+      this.dealshow.data.push(obj);
       this.ServesiceService.dealTable.emit(this.dealshow);
     }
   }
+
+  // agreementNo 经销商协议号 改变保存区域和地址
+  // authorizedArea   authorizedProduct
+  public agreementNoChange() {
+    if (!this.disa) {
+      // 经销商协议号 可编辑 存入区域和地址
+      if (this.dataBase.agreementNo != null && this.dataBase.agreementNo !== '') {
+        const select = this.dealList.find(val => this.dataBase.agreementNo === val.agreementNo);
+        if (select) {
+          this.dataBase.authorizedArea = select.authorizedArea;
+          this.dataBase.authorizedProduct = select.authorizedProduct;
+        }
+      } else {
+        this.dataBase.authorizedArea = null;
+        this.dataBase.authorizedProduct = null;
+      }
+    }
+  }
+
  //合同概要表选择
  public changeContract(event)
  {
@@ -668,7 +696,7 @@ supportChange(event)
       this.contractCancelList.map(vals=>{
         (this.dataBase.contractCancelReferenceId==vals.contractCancelReferenceId)&&(vals.disa=true)
       })
-       
+
     }
   }
   else{
@@ -679,12 +707,12 @@ supportChange(event)
       })
     }
   }
- 
+
  }
   //合同概要表ID列表
  public getContractCancel()
  {
-   
+
    const existsChange=!this.disa;
    let url=`/act/preparation/getContractCancel?existsChange=${existsChange}`;
    this.http.get(url).subscribe(rest => {

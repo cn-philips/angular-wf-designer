@@ -281,8 +281,16 @@
               <nz-form-control [nzSm]="7" [nzXs]="24">
                 <nz-select nzLabel="true" class="prodSelect"  nzShowSearch nzShowSearch  nzPlaceHolder="Select 请选择"
                            [(ngModel)]="dataBase.agreementNo" formControlName="agreementNo">
-                  <nz-option *ngFor="let item of dealList" [nzLabel]="item.agreementNo" [nzValue]="item.agreementNo">
-                  </nz-option>
+                  <!--可操作-->
+                  <ng-container *ngIf="!this.disa">
+                    <nz-option *ngFor="let item of dealList" [nzLabel]="item.agreementNo" [nzValue]="item.agreementNo">
+                    </nz-option>
+                  </ng-container>
+                  <!--禁用-->
+                  <ng-container *ngIf="this.disa">
+                    <nz-option [nzLabel]="dataBase.agreementNo" [nzValue]="dataBase.agreementNo">
+                    </nz-option>
+                  </ng-container>
                 </nz-select>
                 <nz-form-explain *ngIf="
                         validateForm.get('agreementNo')?.dirty &&
@@ -1927,7 +1935,7 @@
           <td></td>
         </tr>
         <tr>
-          <td [nzAlign]="alignType" width="30%">TBD<br>IGT第三方显示器吊塔确认文件</td>
+          <td [nzAlign]="alignType" width="30%">IGT第三方显示器吊塔确认文件</td>
           <td [nzAlign]="alignType">
             <div class="maxupload">
               <nz-upload *ngIf="!disa" [(nzFileList)]="confirmationFileFileList"
@@ -1977,7 +1985,7 @@
       <ng-container *ngIf="dataBase.confirmationFileFlags&&dataBase.detail.status!=''">
         <tr>
           <td [nzAlign]="alignType">Technical Documents Check<br> 项目技术文件审核</td>
-          <td [nzAlign]="alignType" width="30%">TBD<br>IGT第三方显示器吊塔确认文件</td>
+          <td [nzAlign]="alignType" width="30%">IGT第三方显示器吊塔确认文件</td>
           <td [nzAlign]="alignType">
             <div class="maxupload">
               <nz-upload *ngIf="!disa" [(nzFileList)]="confirmationFileFileList"

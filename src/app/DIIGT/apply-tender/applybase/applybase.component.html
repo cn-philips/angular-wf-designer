@@ -245,9 +245,9 @@
       </div>
 
       <nz-modal [(nzVisible)]="isAgre" nzWidth="1000px" nzTitle="Select Hospitals 选择医院" (nzOnCancel)="isAgreCancel()"
-                [nzFooter]="modalFooter">
+                [nzFooter]="modalFooterHospitals">
         <app-end-user-list #child [pageParam]="pageParam"></app-end-user-list>
-        <ng-template #modalFooter>
+        <ng-template #modalFooterHospitals>
           <button nz-button nzType="default" (click)="isAgreCancel()">Cancel 取消</button>
           <button nz-button nzType="primary" (click)="isAgregentOk()">OK 确定</button>
         </ng-template>
@@ -436,6 +436,7 @@
   [nzFooter]="modalFooter"
 >
   <ng-container>
+    <app-loading *ngIf="showoff_loading"></app-loading>
     <div>
       <div class="seachbox">
         <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">

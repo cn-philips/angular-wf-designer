@@ -169,7 +169,9 @@
         <nz-form-label nzXXl="4" nzXl="4" nzSm="4" nzRequired><span>Distributor Agreement No.</span><br>经销商协议号</nz-form-label>
         <nz-form-control [nzSm]="7" [nzXs]="24">
           <nz-select style="width:100%" nzPlaceHolder="Select 请选择" [(ngModel)]="dataBase.agreementNo" disabled="true">
-            <nz-option *ngFor="let item of dealList" [nzLabel]="item.agreementNo" [nzValue]="item.agreementNo">
+<!--            <nz-option *ngFor="let item of dealList" [nzLabel]="item.agreementNo" [nzValue]="item.agreementNo">-->
+<!--            </nz-option>-->
+            <nz-option [nzLabel]="dataBase.agreementNo" [nzValue]="dataBase.agreementNo">
             </nz-option>
           </nz-select>
         </nz-form-control>

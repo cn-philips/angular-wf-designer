@@ -169,7 +169,10 @@
         <div nz-row class="p20 mt10">
           <nz-form-item>
             <nz-form-control class="ywms item">
-              <div class="explain"><span *ngIf="redstar" style="color: #f5222d">*&ensp;</span>Logistic Terms Description 物流条款说明</div>
+              <div class="explain"><span *ngIf="redstar" style="color: #f5222d">*&ensp;</span>
+                <a [ngClass]="{'highlight' : isNonStandard && taskid == 'GYLYYB'}">Logistic Terms Description 物流条款说明</a>
+                <a *ngIf="isNonStandard && taskid == 'GYLYYB'" class="highlight">（点击“审批通过”按钮，表示已认可“红色标记审批条款”审批通过）</a>
+              </div>
             </nz-form-control>
             <nz-form-control style="width: 200px" class="ywms item">
               <nz-select nzAllowClear formControlName="logisticsTermsExplain" [(ngModel)]="dataBase.logisticsTermsExplain" (ngModelChange)="changLogisticsTermsExplain()">
@@ -199,7 +202,10 @@
         <div nz-row class="p20 mt10">
           <nz-form-item>
             <nz-form-control class="ywms item">
-              <div class="explain"><span *ngIf="redstar" style="color: #f5222d">*&ensp;</span> Services and Warranty 售后维修条款说明</div>
+              <div class="explain"><span *ngIf="redstar" style="color: #f5222d">*&ensp;</span>
+                <a [ngClass]="{'highlight' : isNonStandard && taskid == 'FAFWB'}">Services and Warranty 售后维修条款说明</a>
+                <a *ngIf="isNonStandard && taskid == 'FAFWB'" class="highlight">（点击“审批通过”按钮，表示已认可“红色标记审批条款”审批通过）</a>
+              </div>
             </nz-form-control>
             <nz-form-control>
           <textarea [disabled]="isDisable || approved.proResult" formControlName="afterSalesInstructions" rows="4" [ngClass]="{'textarea':!isDisable,'textarea1':isDisable}"
@@ -215,7 +221,10 @@
           </nz-form-item>
         </div>
         <div nz-row class="p20 mt10">
-          <div class="explain"><span>Bidding Bond and Perfomance Bond Description</span>  投标保证金及履约保证金额说明</div>
+          <div class="explain">
+            <a [ngClass]="{'highlight' : isNonStandard && taskid == 'ZLFGB'}">Bidding Bond and Perfomance Bond Description 投标保证金及履约保证金额说明</a>
+            <a *ngIf="isNonStandard && taskid == 'ZLFGB'" class="highlight">（点击“审批通过”按钮，表示已认可“红色标记审批条款”审批通过）</a>
+          </div>
         </div>
         <div nz-row class="p20 mt10">
           <div nz-col nzXXl="24" nzXl="24" nzSm="24" style="width: 100% !important;">
@@ -346,7 +355,10 @@
         <div nz-row class="p20 mt10">
           <div nz-col class="explain flex">
             <nz-form-item style="width:100%">
-              <nz-form-control><span *ngIf="redstar" style="color: #f5222d">*&ensp;</span>Payment Term Description 付款方式说明</nz-form-control>
+              <nz-form-control><span *ngIf="redstar" style="color: #f5222d">*&ensp;</span>
+                <a [ngClass]="{'highlight' : isNonStandard && taskid == 'CWBM'}">Payment Term Description 付款方式说明</a>
+                <a *ngIf="isNonStandard && taskid == 'CWBM'" class="highlight">（点击“审批通过”按钮，表示已认可“红色标记审批条款”审批通过）</a>
+              </nz-form-control>
               <nz-form-control style="width: 450px">
                 <nz-select [disabled]="isDisable || approved.finResult" (nzOpenChange)="changePayment()"
                            formControlName="paymentDescription" nzSpan="24"
@@ -398,7 +410,10 @@
         <div nz-row class="p20 mt10">
           <nz-form-item>
             <nz-form-control>
-              <div class="explain"><span *ngIf="redstar" style="color: #f5222d">*&ensp;</span>Specifications Description 技术条款说明</div>
+              <div class="explain"><span *ngIf="redstar" style="color: #f5222d">*&ensp;</span>
+                <a [ngClass]="{'highlight' : isNonStandard && taskid == 'SCB'}">Specifications Description 技术条款说明</a>
+                <a *ngIf="isNonStandard && taskid == 'SCB'" class="highlight">（点击“审批通过”按钮，表示已认可“红色标记审批条款”审批通过）</a>
+              </div>
             </nz-form-control>
             <nz-form-control>
             <textarea [disabled]="isDisable || approved.marResult" formControlName="technicalTerms" rows="4"
@@ -785,15 +800,8 @@
                              [(ngModel)]="dataBase.distributorAgreement" nzMode="multiple" [nzLoading]="selAgent_all_loading" (ngModelChange)="AgreeTitle()">
                     <!--                    <nz-option *ngFor="let item of distributorAgreementList let i=index" [nzValue]="item.value" [nzLabel]="item.name">-->
                     <!--                    </nz-option>-->
-                    <ng-container *ngFor="let item of selAgent_all let i=index">
-                      <nz-option *ngIf="item.dealerCode == this.dataBase.dealerNo" [nzValue]="item.agreementNo" [nzLabel]="item.agreementNo">
-                      </nz-option>
-                      <nz-option *ngIf="selAgent_all_loading && dataBase.distributorAgreement" [nzValue]="dataBase.distributorAgreement" [nzLabel]="dataBase.distributorAgreement">
-                      </nz-option>
-                    </ng-container>
-                    <!--未加载出来显示原始值-->
-                    <ng-container *ngFor="let item of dataBase.distributorAgreement let i=index">
-                      <nz-option *ngIf="selAgent_all_loading" [nzValue]="item" [nzLabel]="item">
+                    <ng-container *ngFor="let item of agreementSelect let i=index">
+                      <nz-option [nzValue]="item.agreementNo" [nzLabel]="item.agreementNo">
                       </nz-option>
                     </ng-container>
                   </nz-select>
@@ -968,14 +976,16 @@
     </div>
   </div>
 
-  <nz-modal [(nzVisible)]="isBid" nzWidth="1000px" nzTitle="Select Distributor 选择经销商"[nzFooter]="modalFooterisBid" (nzOnCancel)="isBidCancel()">
+  <nz-modal [(nzVisible)]="isBid" [nzOkLoading]="loadingBid" nzWidth="1000px" nzTitle="Select Distributor 选择经销商" [nzFooter]="modalFooterisBid" (nzOnCancel)="isBidCancel()">
+    <app-loading *ngIf="loadingBid"></app-loading>
     <app-agentshow #child1 [params]="params"></app-agentshow>
     <ng-template #modalFooterisBid>
       <button nz-button nzType="default" (click)="isBidCancel()">Cancel 取消</button>
       <button nz-button nzType="primary" (click)="isBidagentOk()">OK 确定</button>
     </ng-template>
   </nz-modal>
-  <nz-modal [(nzVisible)]="isAgre" nzWidth="1000px" nzTitle="Select Distributor 选择经销商"[nzFooter]="modalFooterisAgre" (nzOnCancel)="isAgreCancel()">
+  <nz-modal [(nzVisible)]="isAgre" [nzOkLoading]="loadingAgre" nzWidth="1000px" nzTitle="Select Distributor 选择经销商"[nzFooter]="modalFooterisAgre" (nzOnCancel)="isAgreCancel()">
+    <app-loading *ngIf="loadingAgre"></app-loading>
     <app-agentshow #child2 [params]="params"></app-agentshow>
     <ng-template #modalFooterisAgre>
       <button nz-button nzType="default" (click)="isAgreCancel()">Cancel 取消</button>

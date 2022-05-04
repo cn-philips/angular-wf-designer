@@ -48,6 +48,8 @@ export class SupplementComponent implements OnInit {
   };
   public biddingDDPDate7: any = false;
   public agreementDDPDate7: any = false;
+  // 经销商协议下拉选项
+  @Input() agreementSelect: any = [];
   // 经销商所有数据
   @Input() selAgent_all: any = [];
   @Input() selAgent_all_loading: any = false;
@@ -74,6 +76,9 @@ export class SupplementComponent implements OnInit {
 
   redstar:any = false;
   mess_ddp: any = false;
+  public taskid: any = '';
+  // 是否非标
+  @Input() isNonStandard: boolean = false;
   public agreementAgenNameAddr: any = ''; // 协议经销商名称地址
 
   public agentDatas: any = []; // 代理商数据
@@ -480,6 +485,7 @@ public params:any={
 
   ngOnInit() {
 
+    this.taskid = this.activatedRouter.queryParams['_value'].taskid;
     let flag = this.activatedRouter.queryParams['_value'].flag;
     if (flag != undefined && flag != null && flag != '') {
       this.flag = flag;
@@ -542,6 +548,8 @@ public params:any={
   public selectedValue: any = 1;
   public isBid: boolean = false; //投标弹出选择代理商;
   public isAgre: boolean = false; //协议商弹出框;
+  public loadingBid: boolean = false;
+  public loadingAgre: boolean = false;
   public isFilloff: boolean = false;  //支持信息
   public isFilloffs: boolean = false; //中标信息
   public stockCode: any = 1; // 业务模型选中值;
@@ -756,21 +764,6 @@ public params:any={
      this.dataBase.biddingDdpDate = this.dataBase.agreementDealerDdpDate;
      this.biddingDdpDateChange();
 
-     // if (this.ddp_history[this.dataBase.agreementAgenName] != null) {
-     //   this.dataBase.biddingDdpState = this.ddp_history[this.dataBase.agreementAgenName];
-     //   this.mess_ddp = this.mess_ddp_history[this.dataBase.agreementAgenName] == true ? true : false;
-     // } else if (this.dataBase.agreementAgenName == null || this.dataBase.agreementAgenName === '') {
-     //   this.dataBase.biddingDdpState = null;
-     // } else {
-     //   // 查询投标公司ddp状态是否通过
-     //   const d = {
-     //     total: 0,
-     //     pageNo: 1,
-     //     pageSize: 5,
-     //     dealerName: this.dataBase.agreementAgenName
-     //   };
-     //   this.getSelAgent(d);
-     // }
    } else if (agentBidding === 'agency' && this.dataBase.biddingNames !== '' && this.dataBase.biddingNames != null) {
     this.validateForm.controls.biddingNames.enable();
     this.validateForm.controls.agreementAgenName.disable();
@@ -1253,17 +1246,24 @@ public params:any={
    }
    // this.IsApproved();
   }
-  //弹出协议商选择弹出框
-  showAgre() {
+
+  public firstAgentInitAgre = true;
+  // 弹出协议商选择弹出框
+  public showAgre() {
     this.isAgre = true;
+    if (this.firstAgentInitAgre) {
+      this.child2.agentInit();
+      this.firstAgentInitAgre = false;
+    }
   }
   //取消弹窗
   isAgreCancel() {
     this.isAgre = false;
   }
-  //选择代理商确定
-  isAgregentOk() {
+  // 选择代理商确定
+  public async isAgregentOk() {
 
+    this.loadingAgre = true;
     console.log(1);
     let arr = this.child2.selectFind();
     //this.agreement.nameEn = arr[0].nameEn;
@@ -1272,39 +1272,40 @@ public params:any={
     if (arr && arr[0].dealerCode) {
       this.dataBase.dealerNo = arr[0].dealerCode;
     }
-    if (arr && arr[0].agreementNo) {
-      this.dataBase.distributorAgreement = [arr[0].agreementNo];
+    const dealer = await this.selAgent(arr[0].dealerCode);
+    if (dealer && dealer[0]) {
+      this.dataBase.distributorAgreement = [dealer[0].agreementNo];
+      this.dataBase.agreementDealerDdpDate = dealer[0].ddpValidUntil;
+      this.dataBase.agreementAgenName = dealer[0].dealerName;
     }
-    this.dataBase.agreementDealerDdpDate = arr[0].ddpValidUntil;
-    this.dataBase.agreementAgenName = arr[0].dealerName;
     this.ddpCodeAndName1.ddpCode = this.dataBase.dealerNo;
     this.ddpCodeAndName1.ddpName = this.dataBase.agreementAgenName;
     this.ddpCodeAndName.emit(this.ddpCodeAndName1);
     if (this.dataBase.agentBidding === 'nonagency') {
-      this.dataBase.biddingNames = arr[0].dealerName;
-      this.dataBase.biddingDdpDate = arr[0].ddpValidUntil;
+      this.dataBase.biddingNames = dealer[0].dealerName;
+      this.dataBase.biddingDdpDate = dealer[0].ddpValidUntil;
     }
     // if (arr[0].ddpStatus === '通过' && this.dataBase && this.dataBase.agentBidding === 'nonagency') {
     //   this.dataBase.biddingDdpState = arr[0].ddpStatus;
     // } else if ( arr[0].ddpStatus !== '通过' && this.dataBase && this.dataBase.agentBidding === 'nonagency') {
     //   this.dataBase.biddingDdpState = '未通过';
     // }
-    if (arr[0].ddpStatus == null || arr[0].ddpStatus === '') {
+    if (dealer[0].ddpStatus == null || dealer[0].ddpStatus === '') {
       this.mess_ddp = true;
-      this.mess_ddp_history[arr[0].dealerName] = true;
+      this.mess_ddp_history[dealer[0].dealerName] = true;
     } else {
       this.mess_ddp = false;
-      this.mess_ddp_history[arr[0].dealerName] = false;
+      this.mess_ddp_history[dealer[0].dealerName] = false;
     }
     if (this.dataBase.agentBidding !== 'agency') {
-      this.dataBase.biddingComRegAddress = arr[0].registeredAddress;
+      this.dataBase.biddingComRegAddress = dealer[0].registeredAddress;
       if (this.dataBase.biddingComRegAddress == null || this.dataBase.biddingComRegAddress === '') {
         this.validateForm.controls.biddingComRegAddress.enable();
       } else {
         // this.validateForm.controls.biddingComRegAddress.disable();
       }
     } else {
-      this.agreementAgenNameAddr = arr[0].registeredAddress;
+      this.agreementAgenNameAddr = dealer[0].registeredAddress;
       if (this.dataBase.biddingComRegAddress == null || this.dataBase.biddingComRegAddress === '') {
         this.validateForm.controls.biddingComRegAddress.enable();
       } else {
@@ -1320,51 +1321,55 @@ public params:any={
     this.isBid = false;
     this.isAgre = false;
 
-    if (arr[0].authorizedProduct == null) {
+    if (dealer[0].authorizedProduct == null) {
       this.dataBase.productModels = '';
     } else {
-      this.dataBase.productModels = arr[0].authorizedProduct;
+      this.dataBase.productModels = dealer[0].authorizedProduct;
     }
-    if (arr[0].authorizedArea == null) {
+    if (dealer[0].authorizedArea == null) {
       this.dataBase.region = '';
     } else {
-      this.dataBase.region = arr[0].authorizedArea;
+      this.dataBase.region = dealer[0].authorizedArea;
     }
-    if (arr[0].agreementNo == null) {
+    if (dealer[0].agreementNo == null) {
       this.dataBase.agreementNo = '';
     } else {
-      this.dataBase.agreementNo = arr[0].agreementNo;
+      this.dataBase.agreementNo = dealer[0].agreementNo;
     }
 
+    this.InitSelAgentAll(dealer);
     this.AgreeTitle();
-    // this.getSelAgent({
-    //   total: 0,
-    //   pageNo: 1,
-    //   pageSize: 5,
-    //   dealerName: this.dataBase.agreementAgenName
-    // });
+    this.loadingAgre = false;
   }
 
 
 
-  //弹出投标选择代理商
-  showAgent() {
+  public firstAgentInitBid = true;
+  // 弹出投标选择代理商
+  public showAgent() {
     this.isBid = true;
+    if (this.firstAgentInitBid) {
+      this.child1.agentInit();
+      this.firstAgentInitBid = false;
+    }
     this.params=Object(this.params);
   }
   //取消弹窗
   isBidCancel() {
     this.isBid = false;
   }
-  //选择代理商确定
-  isBidagentOk() {
+  // 选择代理商确定
+  public async isBidagentOk() {
+    this.loadingBid = true;
     let arr = this.child1.selectFind();
-
-    this.dataBase.biddingNames = arr[0].dealerName;
-    this.dataBase.biddingDdpDate = arr[0].ddpValidUntil;
-    const agentBidding=this.dataBase.agentBidding;
-    agentBidding==='nonagency'&&(this.dataBase.agreementAgenName=this.dataBase.biddingNames);
-    this.dataBase.biddingComRegAddress = arr[0].registeredAddress;
+    const dealer = await this.selAgent(arr[0].dealerCode);
+    if (dealer && dealer[0]) {
+      this.dataBase.biddingNames = dealer[0].dealerName;
+      this.dataBase.biddingDdpDate = dealer[0].ddpValidUntil;
+      this.dataBase.biddingComRegAddress = dealer[0].registeredAddress;
+    }
+    const agentBidding = this.dataBase.agentBidding;
+    agentBidding === 'nonagency' && (this.dataBase.agreementAgenName = this.dataBase.biddingNames);
     if (this.dataBase.biddingComRegAddress == null || this.dataBase.biddingComRegAddress === '') {
       this.validateForm.controls.biddingComRegAddress.enable();
     } else {
@@ -1376,6 +1381,7 @@ public params:any={
     // this.ddp_history[arr[0].dealerName] = arr[0].ddpStatus === '通过' ? '通过' : '未通过';
 
     this.isBid = false;
+    this.loadingBid = false;
   }
   //填写中标信息
   showFills() {
@@ -1593,53 +1599,6 @@ changeLogisticsDescription(){
     }
   }
 
-// 获取模板参数
-  getSelAgent (data) {
-    const url = `/act/ecom/bidding/selAgent`;
-    this.http.post(url, data).subscribe((res => {
-          if (res.data && res.data.rows && res.data.rows.length > 0) {
-            // this.dataBase.biddingComRegAddress = res.data.rows[0].registeredAddress; //投标公司地址
-            // this.dataBase.biddingComRegCode = res.data.rows[0].registeredAddress; //投标公司所在地
-            if (res.data.rows[0].authorizedProduct == null) {
-              this.dataBase.productModels = '';
-            } else {
-              this.dataBase.productModels = res.data.rows[0].authorizedProduct;
-            }
-            if (res.data.rows[0].authorizedArea == null) {
-              this.dataBase.region = '';
-            } else {
-              this.dataBase.region = res.data.rows[0].authorizedArea;
-            }
-
-            // if (res.data.rows[0].ddpStatus === '通过' && this.dataBase && this.dataBase.agentBidding === 'nonagency') {
-            //   this.dataBase.biddingDdpState = res.data.rows[0].ddpStatus;
-            //   // 记录ddp历史状态
-            //   this.ddp_history[res.data.rows[0].dealerName] = '通过';
-            // } else if (res.data.rows[0].ddpStatus !== '通过' && this.dataBase && this.dataBase.agentBidding === 'nonagency'){
-            //   // 记录ddp历史状态
-            //   this.dataBase.biddingDdpState = '未通过';
-            //   this.ddp_history[res.data.rows[0].dealerName] = '未通过';
-            // }
-            if (res.data.rows[0].ddpStatus == null || res.data.rows[0].ddpStatus === '') {
-              this.mess_ddp = true;
-              this.mess_ddp_history[res.data.rows[0].dealerName] = true;
-            } else {
-              this.mess_ddp = false;
-            }
-          } else {
-            // 没有查到数据
-            this.mess_ddp = true;
-            // this.dataBase.biddingDdpState = '未通过';
-            // 记录ddp历史状态
-            // this.ddp_history[data.dealerName] = '未通过';
-            this.mess_ddp_history[data.dealerName] = true;
-          }
-      }),
-      ((error) => {
-        // this.message.create("error", "请求异常!")
-      }));
-  }
-
   /*监听input设置数字*/
   toNumber(e) {
     const reg = /^(0|[1-9][0-9]{0,12})(\.[0-9]{0,2})?$/;
@@ -1740,17 +1699,35 @@ changeLogisticsDescription(){
       return valid ? null : { dataform: true };
     }
   }
+
+  // 构建经销商下拉框数据
+  public InitSelAgentAll(dealList) {
+    this.agreementSelect.length = 0;
+    if (dealList) {
+      for (let i = 0; i < dealList.length; i++) {
+        if (dealList[i]) {
+          const obj = {
+            agreementNo: dealList[i].agreementNo,
+            authorizedProduct: dealList[i].authorizedProduct,
+            authorizedArea: dealList[i].authorizedArea
+          };
+          this.agreementSelect.push(obj);
+        }
+      }
+    }
+  }
+
   @Input() agreetitleList: any = {};
   public AgreeTitle() {
 
     for (let i = 0; i < this.dataBase.distributorAgreement.length; i++) {
       if (!this.agreetitleList[this.dataBase.distributorAgreement[i]]) {
-        if (this.selAgent_all) {
-          cc : for (let j = 0; j < this.selAgent_all.length; j++) {
-            if (this.selAgent_all[j].agreementNo === this.dataBase.distributorAgreement[i]) {
+        if (this.agreementSelect) {
+          cc : for (let j = 0; j < this.agreementSelect.length; j++) {
+            if (this.agreementSelect[j].agreementNo === this.dataBase.distributorAgreement[i]) {
               this.agreetitleList[this.dataBase.distributorAgreement[i]] = {
-                authorizedProduct: this.selAgent_all[j].authorizedProduct,
-                authorizedArea: this.selAgent_all[j].authorizedArea
+                authorizedProduct: this.agreementSelect[j].authorizedProduct,
+                authorizedArea: this.agreementSelect[j].authorizedArea
               };
               break cc;
             }
@@ -1816,6 +1793,20 @@ changeLogisticsDescription(){
       return text;
     }
     return '';
+  }
+
+  // 获取经销商信息
+  public async selAgent(dealerCode) {
+    const url = `/act/ecom/bidding/selAgentList`;
+    const params = {
+      dealerCode: dealerCode
+    };
+    const res = await this.http.post(url, params).toPromise();
+    if (res) {
+      return res.data;
+    } else {
+      return null;
+    }
   }
 
 }

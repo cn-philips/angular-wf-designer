@@ -5,10 +5,13 @@
         <nz-form-item>
           <nz-form-label nzXl="8" nzXXl="6" nzRequired nzFor="exchangeMethod">换货方式</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <nz-select formControlName="exchangeMethod"nzPlaceHolder="请选择换货方式">
+            <nz-select formControlName="exchangeMethod" nzPlaceHolder="请选择换货方式">
 <!--              <nz-option *ngFor="let item of" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>-->
               <nz-option [nzLabel]="'互换'" [nzValue]="'互换'"></nz-option>
             </nz-select>
+            <nz-form-explain *ngIf="exchangeMethod?.dirty && exchangeMethod?.errors">
+              请选择换货方式
+            </nz-form-explain>
           </nz-form-control>
         </nz-form-item>
       </div>
@@ -26,6 +29,9 @@
                   <!--              <nz-option *ngFor="let item of" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>-->
                   <nz-option [nzLabel]="'互换'" [nzValue]="'互换'"></nz-option>
                 </nz-select>
+                <nz-form-explain *ngIf="ord.get('exchangeRole')?.dirty && ord.get('exchangeRole')?.errors">
+                  请选择换货角色
+                </nz-form-explain>
               </nz-form-control>
             </nz-form-item>
           </div>
@@ -78,7 +84,7 @@
               <nz-form-label nzXl="8" nzXXl="6" nzRequired>产品线</nz-form-label>
               <nz-form-control nzXs="24" nzSm="24" nzMd="14">
                 <nz-select formControlName="bmc" nzPlaceHolder="请选择产品线">
-                  <nz-option *ngFor="let item of bmcs" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+                  <nz-option *ngFor="let item of bmcList" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
                 </nz-select>
                 <nz-form-explain *ngIf="ord.get('bmc')?.dirty && ord.get('bmc')?.errors">
                   请选择产品线
@@ -105,13 +111,13 @@
               <nz-form-label nzXl="8" nzXXl="6" nzRequired>销售区域</nz-form-label>
               <nz-form-control nzXs="24" nzSm="24" nzMd="14">
                 <nz-input-group style="width: 100%;font-size: 0;" *ngIf="editable">
-                  <nz-select formControlName="cycleGroup" style="width: 48%;margin-right:4%" nzPlaceHolder="Team/Cycle Group" (ngModelChange)="onBigAreaChange($event,i)">
-                    <nz-option *ngFor="let item of selectOptions.bigAreas" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+                  <nz-select formControlName="cycleGroup" style="width: 48%;margin-right:4%" nzPlaceHolder="Team/Cycle Group" (ngModelChange)="onCycleGroupChange(i)" #cycleGroup>
+                    <nz-option *ngFor="let item of spService.cycleGroups" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
                   </nz-select>
 
                   <nz-select formControlName="bigArea" style="width: 48%" nzPlaceHolder="Region">
-                    <nz-option *ngFor="let item of selectOptions.smallAreas" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
-                    <nz-option *ngIf="selectOptions.smallAreas.length === 0" nzLabel="请先选择Team/Cycle Group" [nzDisabled]="true"></nz-option>
+                    <nz-option *ngFor="let item of (cycleGroup.value ? spService.cycleGroupBigAreaMap[cycleGroup.value] : [])" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+                    <nz-option *ngIf="(cycleGroup.value ? spService.cycleGroupBigAreaMap[cycleGroup.value] : []).length === 0" nzLabel="请先选择Team/Cycle Group" [nzDisabled]="true"></nz-option>
                   </nz-select>
                 </nz-input-group>
                 <nz-input-group style="width: 100%;font-size: 0;" *ngIf="!editable">
@@ -135,7 +141,7 @@
             <nz-form-item>
               <nz-form-label nzXl="8" nzXXl="6" nzRequired>业务模式</nz-form-label>
               <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-                <nz-select formControlName="businessModel" nzPlaceHolder="请选择业务模式" (ngModelChange)="onBusinessModelChange($event)">
+                <nz-select formControlName="businessModel" nzPlaceHolder="请选择业务模式">
                   <nz-option *ngFor="let item of selectOptions.businessModels" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
                 </nz-select>
                 <nz-form-explain *ngIf="ord.get('businessModel')?.dirty && ord.get('businessModel')?.errors">
@@ -146,7 +152,7 @@
           </div>
         </div>
 
-        <div nz-row nzType="flex" nzJustify="start" nzAlign="middle" *ngIf="showDealerArea">
+        <div nz-row nzType="flex" nzJustify="start" nzAlign="middle" *ngIf="i === 0 ? showOrder1DealerArea : showOrder2DealerArea">
           <div nz-col nzXs="24" nzSm="24" nzMd="12">
             <nz-form-item>
               <nz-form-label nzXl="8" nzXXl="6">经销商名称</nz-form-label>
@@ -208,8 +214,8 @@
         <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
           <div nz-col nzXs="48" nzSm="24" nzMd="12">
             <nz-form-item>
-              <nz-form-label nzXl="8" nzXXl="6" [nzRequired]="bg.value === 'PD&IGT'" nzFor="projectName">项目名称</nz-form-label>
-              <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <nz-form-label nzXl="8" nzXXl="6" nzRequired nzFor="projectName">项目名称</nz-form-label>
+              <nz-form-control nzXs="48" nzSm="24" nzMd="14">
                 <input id="projectName" nz-input formControlName="projectName" [placeholder]="bg.value === 'PD&IGT' ? '' : '自动生成: 医院名称-产品型号'" />
                 <nz-form-explain *ngIf="ord.get('projectName')?.dirty && ord.get('projectName')?.errors && bg.value === 'PD&IGT'">
                   请填写项目名称
@@ -234,11 +240,14 @@
 
           <div nz-col nzXs="24" nzSm="24" nzMd="12">
             <nz-form-item>
-              <nz-form-label nzXl="8" nzXXl="6">币制</nz-form-label>
+              <nz-form-label nzXl="8" nzXXl="6" nzRequired>币制</nz-form-label>
               <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-                <nz-select formControlName="currency" [nzPlaceHolder]="editable ? 'currency' : ''">
+                <nz-select formControlName="currency" [nzPlaceHolder]="editable ? 'Select 请选择币制' : ''">
                   <nz-option *ngFor="let item of selectOptions.currencies" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
                 </nz-select>
+                <nz-form-explain *ngIf="ord.get('currency')?.dirty && ord.get('currency')?.errors">
+                  请填写币制
+                </nz-form-explain>
               </nz-form-control>
             </nz-form-item>
           </div>
@@ -263,6 +272,9 @@
               <nz-form-label nzRequired nzXl="8" nzXXl="6">进单日期</nz-form-label>
               <nz-form-control nzXs="24" nzSm="24" nzMd="14">
                   <nz-date-picker formControlName="orderDate"></nz-date-picker>
+                <nz-form-explain *ngIf="ord.get('orderDate')?.dirty && ord.get('orderDate')?.errors">
+                  请选择进单日期
+                </nz-form-explain>
               </nz-form-control>
             </nz-form-item>
           </div>
@@ -271,9 +283,9 @@
         <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
           <div nz-col nzXs="24" nzSm="24" nzMd="12">
             <nz-form-item>
-              <nz-form-label nzRequired nzXl="8" nzXXl="6">销售邮箱</nz-form-label>
+              <nz-form-label [nzRequired]="i == 1" nzXl="8" nzXXl="6">销售邮箱</nz-form-label>
               <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-                <nz-select nzShowSearch nzAllowClear formControlName="saleEmail" [nzPlaceHolder]="editable ? '销售邮箱' : ''" (ngModelChange)="salesChange()"
+                <nz-select nzShowSearch nzAllowClear formControlName="saleEmail" [nzPlaceHolder]="editable ? '输入查询销售邮箱' : ''" (ngModelChange)="salesChange($event, i)"
                 (nzOnSearch)="onSearchSales($event)" [nzServerSearch]="true"
                 >
 <!--                  <nz-option *ngFor="let item of salesList" [nzLabel]="item" [nzValue]="item"></nz-option>-->
@@ -286,6 +298,9 @@
                     <i nz-icon type="loading" class="loading-icon"></i> 查询中...
                   </nz-option>
                 </nz-select>
+                <nz-form-explain *ngIf="ord.get('saleEmail')?.dirty && ord.get('saleEmail')?.errors">
+                  请选择销售邮箱
+                </nz-form-explain>
               </nz-form-control>
             </nz-form-item>
           </div>
@@ -297,10 +312,10 @@
             <nz-form-item>
               <nz-form-label nzXl="8" nzXXl="6">District Leader邮箱</nz-form-label>
               <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-                <nz-select *ngIf="editable" formControlName="districtLeader" [nzPlaceHolder]="editable ? 'District Leader邮箱' : ''">
-                  <nz-option *ngFor="let item of districtList" [nzLabel]="item.approverEmail" [nzValue]="item.approverEmail"></nz-option>
-                </nz-select>
-                <input nz-input formControlName="districtLeader" *ngIf="!editable">
+<!--                <nz-select *ngIf="editable" formControlName="districtLeader" [nzPlaceHolder]="editable ? 'District Leader邮箱' : ''">-->
+<!--                  <nz-option *ngFor="let item of districtList" [nzLabel]="item.approverEmail" [nzValue]="item.approverEmail"></nz-option>-->
+<!--                </nz-select>-->
+                <input nz-input formControlName="districtLeader">
               </nz-form-control>
             </nz-form-item>
           </div>
@@ -308,10 +323,10 @@
             <nz-form-item>
               <nz-form-label nzXl="8" nzXXl="6">Sales Leader邮箱</nz-form-label>
               <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-                <nz-select *ngIf="editable" formControlName="salesLeader" [nzPlaceHolder]="editable ? 'Sales Leader邮箱' : ''">
-                  <nz-option *ngFor="let item of salesLeaderList" [nzLabel]="item.approverEmail" [nzValue]="item.approverEmail"></nz-option>
-                </nz-select>
-                <input nz-input formControlName="salesLeader" *ngIf="!editable">
+<!--                <nz-select *ngIf="editable" formControlName="salesLeader" [nzPlaceHolder]="editable ? 'Sales Leader邮箱' : ''">-->
+<!--                  <nz-option *ngFor="let item of salesLeaderList" [nzLabel]="item.approverEmail" [nzValue]="item.approverEmail"></nz-option>-->
+<!--                </nz-select>-->
+                <input nz-input formControlName="salesLeader">
               </nz-form-control>
             </nz-form-item>
           </div>
@@ -320,7 +335,7 @@
         <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
           <div nz-col nzSpan="24">
             <nz-form-item>
-              <nz-form-label nzSpan="3">产品列表</nz-form-label>
+              <nz-form-label nzSpan="3" nzRequired>产品列表</nz-form-label>
               <nz-form-control nzSpan="19">
                 <special-approval-product-list [isWarranty]="false" [isExchange]="true" [orderInfo]="ord" [editable]="editable"></special-approval-product-list>
               </nz-form-control>

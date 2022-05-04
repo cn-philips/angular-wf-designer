@@ -4,7 +4,8 @@ import { NzMessageService } from 'ng-zorro-antd'
 
 import { SpecialApprovalSettingService } from '../../special-approval-setting.service'
 import { BusinessProc } from '../../special-approval-setting.d'
-import { BG_LIST, APPLY_TYPES, APPLY_TYPE, APPLY_TYPE_MAP } from '../../../../../special-approval/special-approval.constants'
+import { BG_LIST, APPLY_TYPES, APPLY_TYPE } from '../../../../../special-approval/special-approval.constants'
+import { SpecialApprovalService } from '../../../../../special-approval/special-approval.service';
 
 export enum FORM_MODE {
   NEW = 'new',
@@ -35,13 +36,13 @@ export class BusinessProcFormComponent implements OnInit {
   businessProcId: string
 
   APPLY_TYPE = APPLY_TYPE
-  businessProcNodeList = []
+  approveProcNodeList = []
 
   selectOptions = {
     bgList: BG_LIST,
     applyTypes: APPLY_TYPES,
     applyItems: [],
-    businessProcList: [],
+    approveProcList: [],
   }
 
   formValues: FormGroup = this.fb.group({
@@ -61,15 +62,16 @@ export class BusinessProcFormComponent implements OnInit {
     private fb: FormBuilder,
     private spSettingService: SpecialApprovalSettingService,
     private message: NzMessageService,
+    private spService: SpecialApprovalService,
   ) {}
 
   async ngOnInit() {
     const data = await this.spSettingService.getAllApproveProcList()
-    this.selectOptions.businessProcList = data.map(({ id, code, name }) => ({ label: `${code} ${name}`, value: id }))
+    this.selectOptions.approveProcList = data.map(({ id, code, name, status }) => ({ label: `${code} ${name}`, value: id, disabled: !status }))
   }
 
   onApplyTypeChange(applyType) {
-    this.selectOptions.applyItems = APPLY_TYPE_MAP[applyType] ? APPLY_TYPE_MAP[applyType].items : []
+    this.selectOptions.applyItems = this.spService.getApplyItems(applyType)
     this.formValues.patchValue({
       applyItem: null
     })
@@ -78,7 +80,7 @@ export class BusinessProcFormComponent implements OnInit {
   async onProcessChange(processId) {
     this.previewLoading = true
     const nodeList = await this.spSettingService.getApproveProcNodeList(processId)
-    this.businessProcNodeList = nodeList.sort((left, right) => left.code < right.code ? -1 : 1 )
+    this.approveProcNodeList = nodeList.sort((left, right) => left.code < right.code ? -1 : 1 )
     this.previewLoading = false
   }
 
@@ -155,6 +157,6 @@ export class BusinessProcFormComponent implements OnInit {
       maxWarrantyMonthsComparator: null,
       remark: null,
     })
-    this.businessProcNodeList = []
+    this.approveProcNodeList = []
   }
 }

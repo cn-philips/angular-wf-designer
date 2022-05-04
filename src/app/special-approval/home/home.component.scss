@@ -27,9 +27,31 @@
   
       .template-item__content {
         transition: all .3s;
+        /deep/ .ant-card-body {
+          display: flex;
+          flex-direction: column;
+          height: 100%;
+        }
         &:hover {
           border-color: transparent;
           box-shadow: 0 1px 2px -2px #00000029, 0 3px 6px #0000001f, 0 5px 12px 4px #00000017;
+        }
+        .template-name {
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
+        }
+        .template-desc {
+          flex: 1;
+          &__content {
+            display: -webkit-box;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            -webkit-line-clamp: 3;
+            word-wrap: break-word;
+            word-break: break-all;
+            -webkit-box-orient: vertical;
+          }
         }
       }
   
