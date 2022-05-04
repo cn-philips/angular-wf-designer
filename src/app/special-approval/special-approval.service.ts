@@ -208,11 +208,12 @@ export class SpecialApprovalService {
     return data
   }
 
-  async getReferenceList(params) {
+  async getReferenceList(params, needCreateUser = true) {
+    console.log(needCreateUser)
     const uri = `/act/specialapprove/oit/oitInformation`
     const res = await this.http.post(uri, {
       ...params,
-      createUser: getLoginUserCode1()
+      createUser: needCreateUser ? getLoginUserCode1() : undefined
     }).toPromise();
     return formatResponse(res)
   }

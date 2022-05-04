@@ -2,21 +2,9 @@ import { Component, Input } from '@angular/core'
 import { FormGroup, Validators } from '@angular/forms'
 import { UploadFile, NzModalService } from 'ng-zorro-antd'
 
-import {APPLY_TYPE, STAND_WARRANTY_MONTH} from '../../../special-approval.constants'
+import {APPLY_TYPE} from '../../../special-approval.constants'
 import { SpecialApprovalService } from '../../../special-approval.service'
 
-interface ConfigurationVariance  {
-  productType: string; // 产品型号
-  wbsNo: string; // WBS
-  itemNo: string; // Item
-  quantity: string; // 数量
-  equipmentSn: string; // 设备SN
-  expectedStdWarrantyStartdate: string; // 预计标准保修开始日期
-  stdWarrantyMonths: string; // 标准保修月数
-  expectedStdWarrantyEnddate: string; // 预计标准保修结束日期
-  applyExtWarrantyMonths: string; // 申请延保月数
-  applyStdWarrantyEnddate: string; // 申请标准保修结束日期
-}
 
 @Component({
   selector: 'special-approval-difference-and-cost-info',

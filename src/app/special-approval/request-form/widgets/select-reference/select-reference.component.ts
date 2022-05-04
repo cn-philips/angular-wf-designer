@@ -20,6 +20,7 @@ export interface Reference {
   endUserId: string;
   contractPrice: string;
   invoiceInformation: string;
+  createUser: string; //添加crateuser用于转库判断是否展示金额
 }
 
 const DEFAULT_SEARCH_PARAMS = {
@@ -62,16 +63,16 @@ export class SelectReferenceComponent implements OnInit {
   ngOnInit(): void { }
 
 
-  public showModal() {
+  public showModal(needCreateUser = true) {
     this.visible = true
-    this.getReferenceList()
+    this.getReferenceList(false, needCreateUser)
   }
 
-  async getReferenceList(resetPageNo = false) {
+  async getReferenceList(resetPageNo = false, needCreateUser = true) {
     if (resetPageNo) { this.searchParams.pageNo = 1 }
     this.tableLoading = true
     try {
-      const { rows, total } = await this.spService.getReferenceList(this.searchParams)
+      const { rows, total } = await this.spService.getReferenceList(this.searchParams, needCreateUser)
       this.tableData.totalCount = total
       this.tableData.list = rows || []
     } catch ({ message }) {
@@ -80,7 +81,7 @@ export class SelectReferenceComponent implements OnInit {
     } finally {
       this.tableLoading = false
     }
-  } 
+  }
 
   onHideModal() {
     this.visible = false

@@ -29,6 +29,14 @@ export class ExchangeInfoComponent {
   constructor(private spService: SpecialApprovalService, private modal: NzModalService) {
   }
 
+  ngOnInit(): void {
+    if (this.editable) {
+      this.formValues.patchValue({
+        exchangeMethod: '单向'
+      })
+    }
+  }
+
   /*
   * @description: 换货方式变化
   * */
@@ -60,7 +68,6 @@ export class ExchangeInfoComponent {
         this.SELECT_OPTION_LIST.exchangeMethodOptions[index] = Object.assign({}, {...item, disabled: false})
       }
     })
-    console.log(this.SELECT_OPTION_LIST.exchangeMethodOptions)
   }
 
   /*

@@ -16,12 +16,12 @@
             </div>
             <div nz-col nzSpan="24">
               <nz-form-item class="order-list-normal-label">
-                <nz-form-label>Reference ID</nz-form-label>
+                <nz-form-label nzRequired>Reference ID</nz-form-label>
               </nz-form-item>
             </div>
             <div nz-col nzSpan="24">
               <nz-form-item class="order-list-normal-label">
-                <nz-form-label>产品型号</nz-form-label>
+                <nz-form-label nzRequired>产品型号</nz-form-label>
               </nz-form-item>
             </div>
             <div nz-col nzSpan="24">
@@ -51,17 +51,17 @@
             </div>
             <div nz-col nzSpan="24">
               <nz-form-item class="order-list-normal-label">
-                <nz-form-label >医院名称</nz-form-label>
+                <nz-form-label nzRequired>医院名称</nz-form-label>
               </nz-form-item>
             </div>
             <div nz-col nzSpan="24">
               <nz-form-item class="order-list-normal-label">
-                <nz-form-label>医院编号</nz-form-label>
+                <nz-form-label nzRequired>医院编号</nz-form-label>
               </nz-form-item>
             </div>
             <div nz-col nzSpan="24">
               <nz-form-item class="order-list-normal-label">
-                <nz-form-label nzRequire>项目名称</nz-form-label>
+                <nz-form-label nzRequired>项目名称</nz-form-label>
               </nz-form-item>
             </div>
             <div nz-col nzSpan="24">
@@ -91,12 +91,12 @@
             </div>
             <div nz-col nzSpan="24">
               <nz-form-item class="order-list-normal-label">
-                <nz-form-label nzRequired>预计记认销售日期</nz-form-label>
+                <nz-form-label>预计记认销售日期</nz-form-label>
               </nz-form-item>
             </div>
             <div nz-col nzSpan="24">
               <nz-form-item class="order-list-normal-label">
-                <nz-form-label>OM</nz-form-label>
+                <nz-form-label nzRequired>OM</nz-form-label>
               </nz-form-item>
             </div>
             <div nz-col nzSpan="24">
@@ -106,32 +106,32 @@
             </div>
             <div nz-col nzSpan="24">
               <nz-form-item class="order-list-normal-label">
-                <nz-form-label nzRequired>Product Sales Manager 邮箱</nz-form-label>
+                <nz-form-label>Product Sales Manager 邮箱</nz-form-label>
               </nz-form-item>
             </div>
             <div nz-col nzSpan="24">
               <nz-form-item class="order-list-normal-label">
-                <nz-form-label>District Leader邮箱</nz-form-label>
+                <nz-form-label nzRequired>District Leader邮箱</nz-form-label>
               </nz-form-item>
             </div>
             <div nz-col nzSpan="24">
               <nz-form-item class="order-list-normal-label">
-                <nz-form-label>Sales Leader邮箱</nz-form-label>
+                <nz-form-label nzRequired>Sales Leader邮箱</nz-form-label>
               </nz-form-item>
             </div>
           </div>
         </nz-card>
       </div>
       <div nz-col nzSpan="10" *ngFor="let ord of orders.controls;let index = index" [formGroupName]="index">
-        <nz-card nzTitle="转出项目"  [nzExtra]=" index === 0 ? exportTemplate0: exportTemplate1 " [nzBodyStyle]="{padding: '0'}">
+        <nz-card [nzTitle]="index === 0 ? '转出项目': '转入项目'"  [nzExtra]=" index === 0 ? exportTemplate0: exportTemplate1 " [nzBodyStyle]="{padding: '0'}">
           <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
             <div nz-col nzSpan="24">
               <nz-form-item class="order-list-normal-item">
                 <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-                  <nz-select formControlName="orderType" nzPlaceHolder="请选择换货角色">
+                  <nz-select formControlName="exchangeRole" nzPlaceHolder="请选择换货角色">
                     <nz-option *ngFor="let item of selectOptions.exchangeExportRoles" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
                   </nz-select>
-                  <nz-form-explain *ngIf="ord.get('orderType')?.dirty && ord.get('orderType')?.errors">
+                  <nz-form-explain *ngIf="ord.get('exchangeRole')?.dirty && ord.get('exchangeRole')?.errors">
                     请选择订换货角色
                   </nz-form-explain>
                 </nz-form-control>
@@ -278,7 +278,7 @@
             <div nz-col nzSpan="24">
               <nz-form-item class="order-list-normal-item">
                 <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-                  <input id="orderAmount" type="text" nz-input formControlName="orderAmount" />
+                  <input *ngIf="isCreateUser || index === 1" id="orderAmount" type="text" nz-input formControlName="orderAmount" />
                   <nz-form-explain *ngIf="ord.get('orderAmount')?.dirty && ord.get('orderAmount')?.errors">
                     请填写合同金额
                   </nz-form-explain>
@@ -390,10 +390,10 @@
     </div>
   </form>
   <ng-template #exportTemplate0>
-    <button nz-button nzType="primary" class="ml-md export-btn" (click)="onShowReferenceModal(0)">导入数据</button>
+    <button *ngIf="editable" nz-button nzType="primary" class="ml-md export-btn" (click)="onShowReferenceModal(0, false)">导入数据</button>
   </ng-template>
   <ng-template #exportTemplate1>
-    <button nz-button nzType="primary" class="ml-md export-btn" (click)="onShowReferenceModal(1)">导入数据</button>
+    <button *ngIf="editable" nz-button nzType="primary" class="ml-md export-btn" (click)="onShowReferenceModal(1)">导入数据</button>
   </ng-template>
   <app-select-hospital #selectHospital (select)="onSelectHospital($event)"></app-select-hospital>
   <app-select-reference #selectReference (select)="onSelectReference($event)"></app-select-reference>

@@ -106,15 +106,13 @@ export class RequestFormComponent implements OnInit {
   // 转库 form表单字段，单独提取出来
   private transferLibOrderInit = {
     orderType: [null, [Validators.required]], // 订单类型
-    referenceId: [null], // Reference Id
-    productType: [null], // 产品型号
+    referenceId: [null, [Validators.required]], // Reference Id
+    productType: [null, [Validators.required]], // 产品型号
     bmc: [null, [Validators.required]], // 产品线
     bg: [{ value: null, disabled: true }, [Validators.required]], // BG
     bigArea: [null, [Validators.required]], // 产品区域-大区
     smallArea: [null, [Validators.required]], // 产品区域-小区
     businessModel: [null, [Validators.required]], // 业务模式
-    dealerName: [{ value: null, disabled: true }], // 经销商名称
-    dealerCode: [{ value: null, disabled: true }], // 经销商编号
     hospitalName: [{ value: null, disabled: true }], // 医院名称
     hospitalNo: [{ value: null, disabled: true }], // 医院编号
     projectName: [null, [Validators.required]], // 项目名称
@@ -125,7 +123,7 @@ export class RequestFormComponent implements OnInit {
     applyArrivalTime: [null, [Validators.required]], // 申请到货时间
     expectedPaymentDate: [null, [Validators.required]], // 预计付款(或场地就位)日期
     om: [null], // OM
-    exchangeRole: [null], // 换货角色
+    exchangeRole: [null, [Validators.required]], // 换货角色
     exchangeProcessing: [null], // 换货方式
     saleEmail: [null], // 销售邮箱
     districtLeader: [null], // District Leader邮箱
@@ -251,8 +249,8 @@ export class RequestFormComponent implements OnInit {
         })
       ])
     }),
-    exChangeInfo: this.fb.group({
-      exchangeType: [null], // 换货类型
+    exchangeInfo: this.fb.group({
+      exchangeType: [{value: null, disabled: true}], // 换货类型
       exchangeMethod: [null], // 换货方式
       cost: [{value: null, disabled: true}],
       currency: [{value: null, disabled: true}]
@@ -306,6 +304,13 @@ export class RequestFormComponent implements OnInit {
           })
           orders.at(1).patchValue({
             bg
+          })
+        } else if (this.applyType === APPLY_TYPE.TRANSFER_LIB) { // 给转库添加默认BG
+          let orders = this.transferLibInfos.get('orders') as FormArray
+          orders.controls.forEach((item, index) => {
+            item.patchValue({
+              bg
+            })
           })
         }
 
@@ -370,7 +375,7 @@ export class RequestFormComponent implements OnInit {
   }
 
   get exchangeInfo(): FormGroup {
-    return this.formValues.get('exChangeInfo') as FormGroup
+    return this.formValues.get('exchangeInfo') as FormGroup
   }
 
   get orderDifferencesInfo(): FormGroup {
@@ -414,7 +419,7 @@ export class RequestFormComponent implements OnInit {
   }
 
   public getFormData() {
-    const { basicInfo, orderInfo, ccInfo, rddOitOrderInfos, changeOrderInfos, lcInfo, transferLibOrders, exChangeInfo, orderDifferences } = this.formValues.getRawValue()
+    const { basicInfo, orderInfo, ccInfo, rddOitOrderInfos, changeOrderInfos, lcInfo, transferLibOrders, exchangeInfo, orderDifferences } = this.formValues.getRawValue()
     const { applyArrivalTime, expectedPaymentDate, expectedSaleDate, products } = orderInfo
     const extInfo = {
       exchangeMethod: changeOrderInfos.exchangeMethod
@@ -522,7 +527,7 @@ export class RequestFormComponent implements OnInit {
           }
         ]
         data.extInfo = {
-          ...exChangeInfo
+          ...exchangeInfo
         }
         data.orderDifferences = orderDifferences.orderDifferences
         break;
@@ -579,6 +584,10 @@ export class RequestFormComponent implements OnInit {
       this.formValues.controls.ccInfo.disable();
       this.lcInfo.disable()
       this.formValues.controls.changeOrderInfos.disable()
+      //添加转库disabled
+      this.formValues.controls.exchangeInfo.disable()
+      this.formValues.controls.orderDifferences.disable()
+      this.formValues.controls.transferLibOrders.disable()
     }
     this.editable = editable;
   }
@@ -607,7 +616,10 @@ export class RequestFormComponent implements OnInit {
         hasError = this.basicInfo.invalid || this.changeOrderInfos.invalid
         break
       case APPLY_TYPE.TRANSFER_LIB:
-        const transferLibOrder = this.transferLibInfos.get('orders') as FormArray;
+        const transferLibOrder = this.transferLibInfos.get('orders') as FormArray
+        transferLibOrder.controls.forEach((itemGroup, index) => {
+        })
+        hasError = this.transferLibInfos.invalid
         break
       default:
         for (const i in this.orderInfo.controls) {
@@ -672,7 +684,7 @@ export class RequestFormComponent implements OnInit {
         applyItemDesc, executed, processStatus,
         reason, ccType, ccPerson, orderInfos, attachments,
         taskList, nodeInfoList, nodeCode, nodeAction,
-        extInfo
+        extInfo, orderDifferences
       } = data
       this.setPageTitle({ applyType }, false)
       this.applyItem = applyItem
@@ -751,8 +763,28 @@ export class RequestFormComponent implements OnInit {
           }
         })
         this.setFormValidators(applyType, applyItem, orderInfos[0].bg)
-      } else if(applyType === APPLY_TYPE.TRANSFER_LIB) {
-        // 等待完成
+      } else if(applyType === APPLY_TYPE.TRANSFER_LIB) { // 设置查看详情时代入数据
+        this.formValues.patchValue({
+          transferLibOrders: {
+            orders: [
+              {
+                ...orderInfos[0],
+                products: orderInfos[0].products || []
+              },
+              {
+                ...orderInfos[1],
+                products: orderInfos[1].products || []
+              }
+            ]
+          },
+          exchangeInfo: {
+            ...extInfo
+          },
+          orderDifferences: {
+            orderDifferences: orderDifferences
+          }
+        })
+        this.setFormValidators(applyType, applyItem, orderInfos[0].bg)
       }
 
       const userSet = new Set<string>();

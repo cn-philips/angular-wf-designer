@@ -19,6 +19,13 @@ import {debounceTime, map, switchMap} from "rxjs/operators";
 import {BehaviorSubject, Observable} from "rxjs";
 import {HttpService} from '../../../../../services';
 
+/*
+* @description: 获取当前账户邮箱
+* */
+function getLoginUserCode1() {
+  return localStorage.getItem('ng_philips_code1')
+}
+
 interface Sales {
   email: string,
   name: string
@@ -51,6 +58,7 @@ export class TransferLibComponent implements OnInit {
   searchChange$ = new BehaviorSubject('');
   showDealerArea: Array<boolean> = [false, false] //是否展示经销商名称字段
   currentImportIndex: 0 //当前导入数据的tab(转出项目/转入项目)
+  isCreateUser: boolean = true //转出reference createUser 是否和当前账户一致
 
   selectOptions = {
     orderTypes: ORDER_TYPES,
@@ -120,9 +128,9 @@ export class TransferLibComponent implements OnInit {
     })
   }
 
-  onShowReferenceModal(index) {
+  onShowReferenceModal(index, needCreateUser = true) {
     this.currentImportIndex = index
-    this.selectReference.showModal()
+    this.selectReference.showModal(needCreateUser)
   }
 
   onSelectReference(reference: Reference) {
@@ -142,9 +150,13 @@ export class TransferLibComponent implements OnInit {
       endUserId,
       contractPrice,
       invoiceInformation,
+      createUser
     } = reference
     if (distributor) {
       this.showDealerArea[this.currentImportIndex] = true
+    }
+    if (this.currentImportIndex === 0) {
+      this.isCreateUser = createUser === getLoginUserCode1();
     }
     this.orders.at(this.currentImportIndex).patchValue({
       orderType,
@@ -236,13 +248,38 @@ export class TransferLibComponent implements OnInit {
   }
 
   /*
-  * @description: 币制的变化，如果转入项目币制变化，则修改成本汇总币制
+  * @description: 1. 币制的变化，如果转入项目币制变化，则修改成本汇总币制。 2. 币制变化，根据转入转出币制判断换货类型
   * */
-  onCurrencyChanged(val,index) {
-    if (index === 1) {
+  onCurrencyChanged(val, index) {
+    if (index === 1) { // 转入项目
       this.exchangeInfo.patchValue({
         ...this.exchangeInfo.value,
         currency: val
+      })
+    } else {
+      // this.orders.at(index).value
+    }
+    this.onCheckExchangeType()
+  }
+
+  /*
+  * @description: 判断换货类型
+  * */
+  onCheckExchangeType() {
+    let exchangeType = ''
+    let outputCurrency = this.orders.at(0).value.currency
+    let inputCurrency = this.orders.at(1).value.currency
+    if (inputCurrency === outputCurrency) {
+      exchangeType = 'within ORU'
+    } else if (inputCurrency === 'CNY' && outputCurrency === 'USD') {
+      exchangeType = 'HK90-CN90'
+    } else if (inputCurrency === 'USD' && outputCurrency === 'CNY') {
+      exchangeType = 'CN90-HK90'
+    }
+    if (exchangeType) {
+      this.exchangeInfo.patchValue({
+        ...this.exchangeInfo.value,
+        exchangeType
       })
     }
   }
