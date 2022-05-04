@@ -1,7 +1,7 @@
 <nz-card class="mtb1rem transfer-lib" nzTitle="订单信息">
   <form nz-form [formGroup]="formValues">
     <div nz-row nzType="flex" nzJustify="start" nzAlign="top" formArrayName="orders">
-      <div nz-col nzSpan="4">
+      <div nz-col nzSpan="6">
         <nz-card nzTitle="订单属性" [nzBodyStyle]="{padding: '0'}">
           <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
             <div nz-col nzSpan="24">
@@ -76,7 +76,7 @@
             </div>
             <div nz-col nzSpan="24">
               <nz-form-item class="order-list-normal-label">
-                <nz-form-label nzXs="24" nzSm="24" nzMd="6" nzRequired>币制</nz-form-label>
+                <nz-form-label nzRequired>币制</nz-form-label>
               </nz-form-item>
             </div>
             <div nz-col nzSpan="24">
@@ -122,7 +122,7 @@
           </div>
         </nz-card>
       </div>
-      <div nz-col nzSpan="10" *ngFor="let ord of orders.controls;let index = index" [formGroupName]="index">
+      <div nz-col nzSpan="9" *ngFor="let ord of orders.controls;let index = index" [formGroupName]="index">
         <nz-card [nzTitle]="index === 0 ? '转出项目': '转入项目'"  [nzExtra]=" index === 0 ? exportTemplate0: exportTemplate1 " [nzBodyStyle]="{padding: '0'}">
           <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
             <div nz-col nzSpan="24">
@@ -154,6 +154,9 @@
                 <nz-form-control nzXs="24" nzSm="24" nzMd="14">
                   <nz-input-group nzFlex style="width: 100%">
                     <input id="referenceId" type="text" nz-input formControlName="referenceId" class="flex-grow-1" />
+                    <nz-form-explain *ngIf="ord.get('referenceId')?.dirty && ord.get('referenceId')?.errors">
+                      请输入referenceId
+                    </nz-form-explain>
                   </nz-input-group>
                 </nz-form-control>
               </nz-form-item>
@@ -333,13 +336,16 @@
                   <nz-select formControlName="om" [nzPlaceHolder]="editable ? '请选择OM' : ''">
                     <nz-option *ngFor="let item of selectOptions.oms" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
                   </nz-select>
+                  <nz-form-explain *ngIf="ord.get('om')?.dirty && ord.get('om')?.errors">
+                    请选择OM
+                  </nz-form-explain>
                 </nz-form-control>
               </nz-form-item>
             </div>
             <div nz-col nzSpan="24">
               <nz-form-item class="order-list-normal-item">
                 <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-                  <nz-select nzShowSearch nzAllowClear formControlName="saleEmail" [nzPlaceHolder]="editable ? '销售邮箱' : ''" (ngModelChange)="salesChange(index)"
+                  <nz-select *ngIf="editable" nzShowSearch nzAllowClear formControlName="saleEmail" [nzPlaceHolder]="editable ? '销售邮箱' : ''" (ngModelChange)="salesChange(index)"
                              (nzOnSearch)="onSearchSales($event)" [nzServerSearch]="true"
                   >
                     <ng-container *ngFor="let sale of salesList">
@@ -351,6 +357,10 @@
                       <i nz-icon type="loading" class="loading-icon"></i> 查询中...
                     </nz-option>
                   </nz-select>
+                  <input *ngIf="!editable" nz-input formControlName="saleEmail">
+                  <nz-form-explain *ngIf="ord.get('saleEmail')?.dirty && ord.get('saleEmail')?.errors">
+                    请选择销售邮箱
+                  </nz-form-explain>
                 </nz-form-control>
               </nz-form-item>
             </div>
@@ -371,6 +381,9 @@
                     <nz-option *ngFor="let item of districtList[index]" [nzLabel]="item.approverEmail" [nzValue]="item.approverEmail"></nz-option>
                   </nz-select>
                   <input nz-input formControlName="districtLeader" *ngIf="!editable">
+                  <nz-form-explain *ngIf="ord.get('districtLeader')?.dirty && ord.get('districtLeader')?.errors">
+                    请选择District Leader邮箱
+                  </nz-form-explain>
                 </nz-form-control>
               </nz-form-item>
             </div>
@@ -381,6 +394,9 @@
                     <nz-option *ngFor="let item of salesLeaderList[index]" [nzLabel]="item.approverEmail" [nzValue]="item.approverEmail"></nz-option>
                   </nz-select>
                   <input nz-input formControlName="salesLeader" *ngIf="!editable">
+                  <nz-form-explain *ngIf="ord.get('salesLeader')?.dirty && ord.get('salesLeader')?.errors">
+                    请选择Sales Leader邮箱
+                  </nz-form-explain>
                 </nz-form-control>
               </nz-form-item>
             </div>

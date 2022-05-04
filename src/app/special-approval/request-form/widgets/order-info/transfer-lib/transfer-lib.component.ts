@@ -236,11 +236,13 @@ export class TransferLibComponent implements OnInit {
     await this.getLeaderEmail(index)
   }
   async getLeaderEmail(index){
-    this.orders.controls.forEach(value => {
-      value.patchValue({
-        districtLeader: null,
-        salesLeader: null
-      })
+    this.orders.controls.forEach((value , groupIndex) => {
+      if (index === groupIndex) {
+        value.patchValue({
+          districtLeader: null,
+          salesLeader: null
+        })
+      }
     })
     this.districtList[index] = await this.spService.getCustomizeEmail(this.getDistrictList('District Leader'));
     this.salesLeaderList[index] = await this.spService.getCustomizeEmail(this.getDistrictList('Sales Leader'));

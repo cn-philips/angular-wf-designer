@@ -107,9 +107,9 @@ export class RequestFormComponent implements OnInit {
   private transferLibOrderInit = {
     orderType: [null, [Validators.required]], // 订单类型
     referenceId: [null, [Validators.required]], // Reference Id
-    productType: [null, [Validators.required]], // 产品型号
+    productType: [null], // 产品型号
     bmc: [null, [Validators.required]], // 产品线
-    bg: [{ value: null, disabled: true }, [Validators.required]], // BG
+    bg: [{ value: null, disabled: true }], // BG
     bigArea: [null, [Validators.required]], // 产品区域-大区
     smallArea: [null, [Validators.required]], // 产品区域-小区
     businessModel: [null, [Validators.required]], // 业务模式
@@ -120,18 +120,16 @@ export class RequestFormComponent implements OnInit {
     orderAmount: [null, [Validators.required]], // 合同金额-数额
     currency: [null, [Validators.required]], // 合同金额-货币
     expectedSaleDate: [null, [Validators.required]], // 预计记认销售日期
-    applyArrivalTime: [null, [Validators.required]], // 申请到货时间
     expectedPaymentDate: [null, [Validators.required]], // 预计付款(或场地就位)日期
-    om: [null], // OM
+    om: [null, [Validators.required]], // OM
     exchangeRole: [null, [Validators.required]], // 换货角色
     exchangeProcessing: [null], // 换货方式
-    saleEmail: [null], // 销售邮箱
-    districtLeader: [null], // District Leader邮箱
-    salesLeader: [null], // sales Leader 邮箱
+    saleEmail: [null, [Validators.required]], // 销售邮箱
+    districtLeader: [null, [Validators.required]], // District Leader邮箱
+    salesLeader: [null, [Validators.required]], // sales Leader 邮箱
     productSalesMgr: [null], // product sales manager邮箱
     products: [[]],
-    orderStatus: [null, [Validators.required]], // 订单状态
-    arrivalDate: [null], // 到货日期
+    arrivalDate: [null, [Validators.required]], // 到货日期
   }
   public formValues = this.fb.group({
     basicInfo: this.fb.group({
@@ -321,6 +319,17 @@ export class RequestFormComponent implements OnInit {
     }
     // 调取外贸公司
      this.getIePoolArray();
+  }
+
+  /*
+  * @description: 公共判断表单方法
+  * @params {FormGroup} formGroupItem: 表单对象
+  * */
+  checkForm(formGroupItem : FormGroup) {
+    for (const i in formGroupItem.controls) {
+      formGroupItem.controls[i].markAsDirty();
+      formGroupItem.controls[i].updateValueAndValidity();
+    }
   }
 
   public setPageTitle({ applyType = '', applyItem = '', minMon = null, maxMon = null, minComp = null, maxComp = null }, isNew = true) {
@@ -617,9 +626,15 @@ export class RequestFormComponent implements OnInit {
         break
       case APPLY_TYPE.TRANSFER_LIB:
         const transferLibOrder = this.transferLibInfos.get('orders') as FormArray
-        transferLibOrder.controls.forEach((itemGroup, index) => {
+        let formValidError = false
+        transferLibOrder.controls.forEach((item, index) => {
+          let formGroupItem = item as FormGroup
+          this.checkForm(formGroupItem)
+          if (formGroupItem.invalid) {
+            formValidError = true
+          }
         })
-        hasError = this.transferLibInfos.invalid
+        hasError = this.basicInfo.invalid || formValidError
         break
       default:
         for (const i in this.orderInfo.controls) {
@@ -649,7 +664,6 @@ export class RequestFormComponent implements OnInit {
     }
 
     if (hasError) {
-      console.log(hasError)
       this.message.error('请按要求填写表单信息')
       return
     }
