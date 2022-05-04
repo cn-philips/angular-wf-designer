@@ -172,7 +172,7 @@
               <nz-form-item class="order-list-normal-item">
                 <nz-form-control nzXs="24" nzSm="24" nzMd="14">
                   <nz-select formControlName="bmc" nzPlaceHolder="请选择产品线">
-                    <nz-option *ngFor="let item of bmcs" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+                    <nz-option *ngFor="let item of bmcList" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
                   </nz-select>
                   <nz-form-explain *ngIf="ord.get('bmc')?.dirty && ord.get('bmc')?.errors">
                     请选择产品线
@@ -194,7 +194,8 @@
                 <nz-form-control nzXs="24" nzSm="24" nzMd="14">
                   <nz-input-group style="width: 100%;font-size: 0;">
                     <nz-select formControlName="bigArea" style="width: 100%;margin-right:4%" nzPlaceHolder="Team/Cycle Group" (ngModelChange)="onBigAreaChange($event, index)">
-                      <nz-option *ngFor="let item of selectOptions.bigAreas" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+                      <nz-option *ngFor="let item of bigAreas" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+                      <nz-option *ngIf="bigAreas.length === 0" nzLabel="请先选择Team/Cycle Group" [nzDisabled]="true"></nz-option>
                     </nz-select>
                   </nz-input-group>
                   <div style="display: flex;">

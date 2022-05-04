@@ -65,6 +65,7 @@ const APPLY_TYPE_MAP = {
   [APPLY_TYPE.LC_AMENDMENT]: { label: "LC Amendments申请", dictGroup: '' },
   [APPLY_TYPE.RDD_OIT]: { label: "RDD-OIT>180天订单保留", dictGroup: 'sp_rddoit180reserv_apply_item' },
   [APPLY_TYPE.MACHINE_EXCHANGE]: { label: "机器互换", dictGroup: 'sp_machineexchange_apply_item' },
+  [APPLY_TYPE.TRANSFER_LIB]: { label: "转库", dictGroup: 'sp_transferlib_apply_item' },
 };
 
 const APPLY_TYPES = [
@@ -75,6 +76,7 @@ const APPLY_TYPES = [
   { label: "LC Amendment申请", value: APPLY_TYPE.LC_AMENDMENT },
   { label: "RDD-OIT>180天订单保留", value: APPLY_TYPE.RDD_OIT },
   { label: "机器互换", value: APPLY_TYPE.MACHINE_EXCHANGE },
+  { label: "转库", value: APPLY_TYPE.TRANSFER_LIB },
 ];
 
 const STAND_WARRANTY_MONTH = {

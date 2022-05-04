@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, ViewChild } from '@angular/core';
-import {FormArray, FormGroup} from '@angular/forms'
+import {FormArray, FormControl, FormGroup} from '@angular/forms'
 
 import { Hospital, SelectHospitalComponent, } from '../../select-hospital/select-hospital.component'
 import { Reference, SelectReferenceComponent } from '../../select-reference/select-reference.component'
@@ -10,7 +10,6 @@ import {
   BG_LIST,
   ORDER_TYPES,
   BUSINESS_MODEL_LIST,
-  BIG_SMALL_AREA_LIST,
   CURRENCIES,
   EXCHANGE_IMPORT_ROLES,
   EXCHANGE_EXPORT_ROLES,
@@ -25,6 +24,7 @@ import {HttpService} from '../../../../../services';
 function getLoginUserCode1() {
   return localStorage.getItem('ng_philips_code1')
 }
+
 
 interface Sales {
   email: string,
@@ -63,7 +63,6 @@ export class TransferLibComponent implements OnInit {
   selectOptions = {
     orderTypes: ORDER_TYPES,
     bgList: BG_LIST,
-    bigAreas: BIG_SMALL_AREA_LIST,
     smallAreas: [],
     businessModels: BUSINESS_MODEL_LIST,
     currencies: CURRENCIES,
@@ -77,6 +76,22 @@ export class TransferLibComponent implements OnInit {
     email: localStorage.getItem('ng_philips_code1')
   }];
   isSearchLoading: boolean = false
+  get bigAreas() {
+    const cycleGroup = this.formValues.get('cycleGroup') as FormControl
+    const cycleGroupBigAreaMap = this.spService.cycleGroupBigAreaMap
+    if (cycleGroup && cycleGroupBigAreaMap[cycleGroup.value]) {
+      return cycleGroupBigAreaMap[cycleGroup.value]
+    } else {
+      return []
+    }
+  }
+  /*
+  * 获取产品线列表
+  * */
+  get bmcList() {
+    const bg = this.orders.at(0).get('bg') as FormControl
+    return this.spService.bmcList.filter((bmc) => bmc.bg === bg.value)
+  }
   /*
   * @description 选择业务模式触发
   * */
@@ -103,7 +118,7 @@ export class TransferLibComponent implements OnInit {
   }
 
   onBigAreaChange(bigArea, index) {
-    const area = this.selectOptions.bigAreas.find(({ value }) => value === bigArea)
+    const area = this.bigAreas.find(({ value }) => value === bigArea)
     this.selectOptions.smallAreas = area ? area.children : []
     this.orders.at(index).patchValue({ smallArea: null })
   }
