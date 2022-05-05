@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {HttpService} from '../../services';
 import {NzMessageService, UploadFile} from 'ng-zorro-antd';
@@ -291,7 +291,7 @@ export class SupportFileUpComponent implements OnInit {
         this.odata.speciallyExaminedTime=this.infor.speciallyExaminedTime; //特批完成时间
         this.odata.biddingNotificationSignTime=this.infor.biddingNotificationSignTime; //后补中标通知书的签订时间
         this.odata.remarks = this.infor.remarks;
-        this.odata.bidAnnouncementPrice = NumberThousandth(this.infor.bidAnnouncementPrice);
+        this.odata.bidAnnouncementPrice = this.flag == 1 ? NumberThousandth(this.infor.bidAnnouncementPrice) : this.infor.bidAnnouncementPrice;
         this.odata.bidAnnouncementCurrency = this.infor.bidAnnouncementCurrency;
         if (this.odata.other) {
           this.othercheck = true;
@@ -347,7 +347,15 @@ export class SupportFileUpComponent implements OnInit {
       isSupp: this.isSupp,
       check: e,
       mainId: this.mainId,
-      processInstanceTaskId: null
+      processInstanceTaskId: null,
+
+      bidAnnouncement: this.odata.bidAnnouncement,
+      bidAnnouncementPrice: this.odata.bidAnnouncementPrice,
+      bidAnnouncementCurrency: this.odata.bidAnnouncementCurrency,
+      announcementTime: this.odata.announcementTime,
+      publicityEndTime: this.odata.publicityEndTime,
+      speciallyExaminedTime: this.odata.speciallyExaminedTime,
+      biddingNotificationSignTime: this.odata.biddingNotificationSignTime
     };
     if (e == 1) {
       /*非空验证*/
@@ -647,6 +655,11 @@ export class SupportFileUpComponent implements OnInit {
     this.odata.supplementaryFiless = '';
     return true;
   }
+  // 中标公告文件删除回调
+  public beforeBidAnnouncement = (file: UploadFile): boolean => {
+    this.odata.bidAnnouncement = '';
+    return true;
+  }
 
   /**
    * filist 在线显示的文件 file上传的文件 fileId绑定的上传文件的id
@@ -852,6 +865,19 @@ export class SupportFileUpComponent implements OnInit {
       }
     }
     return false;
+  }
+
+  public price_value: any = '';
+  @ViewChild('price') price: ElementRef;
+  public toNumber(e) {
+    const reg = /^(0|[1-9][0-9]{0,12})(\.[0-9]{0,2})?$/;
+    if ((!isNaN(+e) && reg.test(e)) || e === '') {
+      this.price_value = e;
+    }
+    if (this.price && this.price.nativeElement) {
+      this.price.nativeElement.value = this.price_value;
+      this.odata.bidAnnouncementPrice = this.price_value;
+    }
   }
 
 }
