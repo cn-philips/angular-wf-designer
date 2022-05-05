@@ -527,6 +527,7 @@ export class RequestFormComponent implements OnInit {
         ];
         break;
       case APPLY_TYPE.TRANSFER_LIB: // Additional cost
+        console.log(this.transferLibInfos)
         data.orderInfos = [
           {
             ...transferLibOrders.orders.at(0),

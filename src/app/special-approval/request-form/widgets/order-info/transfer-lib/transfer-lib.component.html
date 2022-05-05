@@ -2,14 +2,14 @@
   <form nz-form [formGroup]="formValues">
     <div nz-row nzType="flex" nzJustify="start" nzAlign="top" formArrayName="orders">
       <div nz-col nzSpan="6">
-        <nz-card nzTitle="订单属性" [nzBodyStyle]="{padding: '0'}">
+        <nz-card nzTitle="订单属性" [nzBodyStyle]="{padding: '0'}" [nzExtra]="expandTemplate">
           <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
-            <div nz-col nzSpan="24">
+            <div nz-col nzSpan="24" [@openClose]="isExpand ? 'close' : 'open'">
               <nz-form-item class="order-list-normal-label">
                 <nz-form-label nzRequired>换货角色</nz-form-label>
               </nz-form-item>
             </div>
-            <div nz-col nzSpan="24">
+            <div nz-col nzSpan="24" [@openClose]="isExpand ? 'close' : 'open'">
               <nz-form-item class="order-list-normal-label">
                 <nz-form-label nzRequired>订单类型</nz-form-label>
               </nz-form-item>
@@ -19,7 +19,7 @@
                 <nz-form-label nzRequired>Reference ID</nz-form-label>
               </nz-form-item>
             </div>
-            <div nz-col nzSpan="24">
+            <div nz-col nzSpan="24" [@openClose]="isExpand ? 'close' : 'open'">
               <nz-form-item class="order-list-normal-label">
                 <nz-form-label nzRequired>产品型号</nz-form-label>
               </nz-form-item>
@@ -49,7 +49,7 @@
                 <nz-form-label nzRequired>业务模式</nz-form-label>
               </nz-form-item>
             </div>
-            <div nz-col nzSpan="24">
+            <div nz-col nzSpan="24" [@openClose]="isExpand ? 'close' : 'open'">
               <nz-form-item class="order-list-normal-label">
                 <nz-form-label nzRequired>医院名称</nz-form-label>
               </nz-form-item>
@@ -64,7 +64,7 @@
                 <nz-form-label nzRequired>项目名称</nz-form-label>
               </nz-form-item>
             </div>
-            <div nz-col nzSpan="24">
+            <div nz-col nzSpan="24" [@openClose]="isExpand ? 'close' : 'open'">
               <nz-form-item class="order-list-normal-label">
                 <nz-form-label nzRequired >SAP订单号(SO#)</nz-form-label>
               </nz-form-item>
@@ -74,7 +74,7 @@
                 <nz-form-label nzRequired >合同金额</nz-form-label>
               </nz-form-item>
             </div>
-            <div nz-col nzSpan="24">
+            <div nz-col nzSpan="24" [@openClose]="isExpand ? 'close' : 'open'">
               <nz-form-item class="order-list-normal-label">
                 <nz-form-label nzRequired>币制</nz-form-label>
               </nz-form-item>
@@ -99,7 +99,7 @@
                 <nz-form-label nzRequired>OM</nz-form-label>
               </nz-form-item>
             </div>
-            <div nz-col nzSpan="24">
+            <div nz-col nzSpan="24" [@openClose]="isExpand ? 'close' : 'open'">
               <nz-form-item class="order-list-normal-label">
                 <nz-form-label nzRequired>销售邮箱</nz-form-label>
               </nz-form-item>
@@ -125,7 +125,7 @@
       <div nz-col nzSpan="9" *ngFor="let ord of orders.controls;let index = index" [formGroupName]="index">
         <nz-card [nzTitle]="index === 0 ? '转出项目': '转入项目'"  [nzExtra]=" index === 0 ? exportTemplate0: exportTemplate1 " [nzBodyStyle]="{padding: '0'}">
           <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
-            <div nz-col nzSpan="24">
+            <div nz-col nzSpan="24"  [@openClose]="isExpand ? 'close' : 'open'">
               <nz-form-item class="order-list-normal-item">
                 <nz-form-control nzXs="24" nzSm="24" nzMd="14">
                   <nz-select formControlName="exchangeRole" nzPlaceHolder="请选择换货角色">
@@ -137,7 +137,7 @@
                 </nz-form-control>
               </nz-form-item>
             </div>
-            <div nz-col nzSpan="24">
+            <div nz-col nzSpan="24" [@openClose]="isExpand ? 'close' : 'open'">
               <nz-form-item class="order-list-normal-item">
                 <nz-form-control nzXs="24" nzSm="24" nzMd="14">
                   <nz-select formControlName="orderType" nzPlaceHolder="请选择订单类型">
@@ -161,7 +161,7 @@
                 </nz-form-control>
               </nz-form-item>
             </div>
-            <div nz-col nzSpan="24">
+            <div nz-col nzSpan="24"  [@openClose]="isExpand ? 'close' : 'open'">
               <nz-form-item class="order-list-normal-item">
                 <nz-form-control nzXs="24" nzSm="24" nzMd="14">
                   <input type="text" nz-input formControlName="productType" disabled />
@@ -235,7 +235,7 @@
                 </nz-form-control>
               </nz-form-item>
             </div>
-            <div nz-col nzSpan="24">
+            <div nz-col nzSpan="24"  [@openClose]="isExpand ? 'close' : 'open'">
               <nz-form-item class="order-list-normal-item">
                 <nz-form-control nzXs="24" nzSm="24" nzMd="14">
                   <nz-input-group style="width: 100%" [nzSuffix]="clearHospitalBtn" [nzAddOnAfter]="selectHospitalBtn">
@@ -269,7 +269,7 @@
                 </nz-form-control>
               </nz-form-item>
             </div>
-            <div nz-col nzSpan="24">
+            <div nz-col nzSpan="24"  [@openClose]="isExpand ? 'close' : 'open'">
               <nz-form-item class="order-list-normal-item">
                 <nz-form-control nzXs="24" nzSm="24" nzMd="14">
                   <input id="sapOrderNo" nz-input formControlName="sapOrderNo" />
@@ -289,7 +289,7 @@
                 </nz-form-control>
               </nz-form-item>
             </div>
-            <div nz-col nzSpan="24">
+            <div nz-col nzSpan="24" *ngIf="isExpand">
               <nz-form-item class="order-list-normal-item">
                 <nz-form-control nzXs="24" nzSm="24" nzMd="9">
                   <nz-select formControlName="currency" nzPlaceHolder="Select 请选择币制" (ngModelChange)="onCurrencyChanged($event, index)">
@@ -343,7 +343,7 @@
                 </nz-form-control>
               </nz-form-item>
             </div>
-            <div nz-col nzSpan="24">
+            <div nz-col nzSpan="24" [@openClose]="isExpand ? 'close' : 'open'">
               <nz-form-item class="order-list-normal-item">
                 <nz-form-control nzXs="24" nzSm="24" nzMd="14">
                   <nz-select *ngIf="editable" nzShowSearch nzAllowClear formControlName="saleEmail" [nzPlaceHolder]="editable ? '销售邮箱' : ''" (ngModelChange)="salesChange(index)"
@@ -411,6 +411,9 @@
   </ng-template>
   <ng-template #exportTemplate1>
     <button *ngIf="editable" nz-button nzType="primary" class="ml-md export-btn" (click)="onShowReferenceModal(1)">导入数据</button>
+  </ng-template>
+  <ng-template #expandTemplate>
+    <button *ngIf="editable" nz-button nzType="primary" class="ml-md export-btn" (click)="expand()">{{isExpand? '展开': '收起'}}</button>
   </ng-template>
   <app-select-hospital #selectHospital (select)="onSelectHospital($event)"></app-select-hospital>
   <app-select-reference #selectReference (select)="onSelectReference($event)"></app-select-reference>
