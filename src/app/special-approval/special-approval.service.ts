@@ -260,11 +260,12 @@ export class SpecialApprovalService {
     return data
   }
 
-  async getReferenceList(params) {
+  async getReferenceList(params, needCreateUser = true) {
+    console.log(needCreateUser)
     const uri = `/act/specialapprove/oit/oitInformation`
     const res = await this.http.post(uri, {
       ...params,
-      createUser: getLoginUserCode1()
+      createUser: needCreateUser ? getLoginUserCode1() : undefined
     }).toPromise();
     return formatResponse(res)
   }
@@ -274,7 +275,13 @@ export class SpecialApprovalService {
     const res = await this.http.get(uri).toPromise();
     return formatResponse(res);
   }
-
+  /*
+  * @description: 获取Product Sales Manager 邮箱
+  * @params {String} initiatorEmail
+  * @params {String} initiatorRole
+  * @params {String} approverRole
+  * @params {String} productBmc
+  * */
   async getCustomizeEmail(params) {
     const uri = `/act/ecom/homepage/queryApprover`;
     const res = await this.http.post(uri, params).toPromise();
@@ -314,7 +321,7 @@ export class SpecialApprovalService {
     const data = formatResponse(res);
     return data;
   }
-  
+
   // 获取支修改条目原因列表
   async getModifyEntryList() {
     const uri = '/act/ecom/dictData/queryDrop?dictGroup=sp_apply_lc_modify';

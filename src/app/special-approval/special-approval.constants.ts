@@ -54,6 +54,7 @@ const APPLY_TYPE = {
   LC_AMENDMENT: "lcamendment",
   RDD_OIT: 'rddoit180reserv',
   MACHINE_EXCHANGE: "machineexchange",
+  TRANSFER_LIB: "transferlib",
 }
 
 const APPLY_TYPE_MAP = {
@@ -64,6 +65,7 @@ const APPLY_TYPE_MAP = {
   [APPLY_TYPE.LC_AMENDMENT]: { label: "LC Amendments申请", dictGroup: '' },
   [APPLY_TYPE.RDD_OIT]: { label: "RDD-OIT>180天订单保留", dictGroup: 'sp_rddoit180reserv_apply_item' },
   [APPLY_TYPE.MACHINE_EXCHANGE]: { label: "机器互换", dictGroup: 'sp_machineexchange_apply_item' },
+  [APPLY_TYPE.TRANSFER_LIB]: { label: "转库", dictGroup: 'sp_transferlib_apply_item' },
 };
 
 const APPLY_TYPES = [
@@ -74,6 +76,7 @@ const APPLY_TYPES = [
   { label: "LC Amendment申请", value: APPLY_TYPE.LC_AMENDMENT },
   { label: "RDD-OIT>180天订单保留", value: APPLY_TYPE.RDD_OIT },
   { label: "机器互换", value: APPLY_TYPE.MACHINE_EXCHANGE },
+  { label: "转库", value: APPLY_TYPE.TRANSFER_LIB },
 ];
 
 const STAND_WARRANTY_MONTH = {
@@ -143,6 +146,36 @@ const LOGISTICS_STATUS = [
 // nodeAction: approve, feedback
 // processStatus: START, DRAFT, APPROVED, REJECTED, WITHDRAW
 
+// 换货类型
+const EXCHANGE_TYPE_LIST = () => {
+  return [
+    {label: 'within ORU', value: 'within ORU'},
+    {label: 'HK90-CN90', value: 'HK90-CN90'},
+    {label: 'CN90-HK90', value: 'CN90-HK90'}
+  ]
+}
+
+// 换货方式
+const EXCHANGE_METHODS_LIST = () => {
+  return [
+    {label: '单向', value: '单向'},
+    {label: '互换', value: '互换'}
+  ]
+}
+// 换货角色 转入
+const EXCHANGE_IMPORT_ROLES = () => {
+  return [
+    {label: '转入', value: '转入'},
+    {label: '转出/转入', value: '转出/转入'}
+  ]
+}
+// 换货角色 转出
+const EXCHANGE_EXPORT_ROLES = () => {
+  return [
+    {label: '转出', value: '转出'},
+    {label: '转出/转入', value: '转出/转入'}
+  ]
+}
 export {
   DEFAULT_SUCCESS_MESSAGE,
   SUCCESS_MESSAGE,
@@ -164,5 +197,9 @@ export {
   PROCESS_STATUS,
   NODE_ACTION,
   PROCESS_STATUS_MAP,
+  EXCHANGE_TYPE_LIST,
+  EXCHANGE_METHODS_LIST,
   LOGISTICS_STATUS,
+  EXCHANGE_IMPORT_ROLES,
+  EXCHANGE_EXPORT_ROLES,
 };
