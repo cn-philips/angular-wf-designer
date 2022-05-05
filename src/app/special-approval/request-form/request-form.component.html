@@ -44,6 +44,16 @@
       </div>
     </ng-template>
   </ngb-tab>
+  <ngb-tab [id]="TAB_TYPES.EXCHANGE_INFO"  *ngIf="applyType === APPLY_TYPE.TRANSFER_LIB">
+    <ng-template ngbTabTitle>
+      <span class="tab-title"><strong>换货信息</strong></span>
+    </ng-template>
+    <ng-template ngbTabContent>
+      <div class="card-body">
+        <special-approval-exchange-info [executed]="executed" [editable]="editable" [formValues]="exchangeInfo" [supportFileList]="supportFileList"></special-approval-exchange-info>
+      </div>
+    </ng-template>
+  </ngb-tab>
   <ngb-tab [id]="TAB_TYPES.ORDER_INFO">
     <ng-template ngbTabTitle>
       <span class="tab-title"><strong>订单信息</strong></span>
@@ -57,6 +67,18 @@
         <special-approval-additional-intallation-cost *ngIf="applyType === APPLY_TYPE.EXT_INSTALL_COST" [editable]="editable" [formValues]="orderInfo"></special-approval-additional-intallation-cost>
         <special-approval-lcamendment-order-info *ngIf="applyType === APPLY_TYPE.LC_AMENDMENT" [editable]="editable" [basicInfo]="basicInfo" [formValues]="lcAmendmentOrderInfo"></special-approval-lcamendment-order-info>
         <special-approval-rdd-oit-order-info *ngIf="applyType === APPLY_TYPE.RDD_OIT" [formValues]="rddOitOrderInfos" [editable]="editable"></special-approval-rdd-oit-order-info>
+        <special-approval-machineexcange-order-info *ngIf="applyType === APPLY_TYPE.MACHINE_EXCHANGE"  [editable]="editable" [formValues]="changeOrderInfos" [salesLeaders]="salesLeader" [districtLeaders]="districtLeader"></special-approval-machineexcange-order-info>
+        <special-approval-transfer-lib-info *ngIf="applyType === APPLY_TYPE.TRANSFER_LIB" [editable]="editable" [exchangeInfo]="exchangeInfo" [formValues]="transferLibInfos"></special-approval-transfer-lib-info>
+      </div>
+    </ng-template>
+  </ngb-tab>
+  <ngb-tab [id]="TAB_TYPES.DIFFERENCE_AND_COST_INFO"  *ngIf="applyType === APPLY_TYPE.TRANSFER_LIB">
+    <ng-template ngbTabTitle>
+      <span class="tab-title"><strong>配置差异及成本分析</strong></span>
+    </ng-template>
+    <ng-template ngbTabContent>
+      <div class="card-body">
+        <special-approval-difference-and-cost-info [executed]="executed" [editable]="editable" [exchangeInfo]="exchangeInfo" [formValues]="orderDifferencesInfo" [supportFileList]="supportFileList"></special-approval-difference-and-cost-info>
         <special-approval-machineexcange-order-info *ngIf="applyType === APPLY_TYPE.MACHINE_EXCHANGE" [editable]="editable" [formValues]="changeOrderInfos" [salesLeaders]="salesLeader" [districtLeaders]="districtLeader"></special-approval-machineexcange-order-info>
       </div>
     </ng-template>

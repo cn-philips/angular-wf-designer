@@ -123,7 +123,7 @@ export class HomeComponent implements OnInit {
               return true
             }
           } else {
-            applyTypeItemMap.set(applyType, new Set<string>().add(applyItem)) 
+            applyTypeItemMap.set(applyType, new Set<string>().add(applyItem))
             return true
           }
         })
