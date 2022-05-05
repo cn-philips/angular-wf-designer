@@ -225,15 +225,4 @@ export class RoleModalityBMCFormComponent implements OnInit {
     }
   }
 
-  // async clusterBgBMC() {
-  //   console.log('asdasdas')
-  //   this.http.get('/act/specialapprove/bmcclusterbg/', {
-  //     param: {
-  //       pageNo: 1,
-  //       pageSize: 100000
-  //     }
-  //   }).subscribe(res => {
-  //   })
-  // }
-
 }
