@@ -289,7 +289,7 @@
                 </nz-form-control>
               </nz-form-item>
             </div>
-            <div nz-col nzSpan="24" *ngIf="isExpand">
+            <div nz-col nzSpan="24"  [@openClose]="isExpand ? 'close' : 'open'">
               <nz-form-item class="order-list-normal-item">
                 <nz-form-control nzXs="24" nzSm="24" nzMd="9">
                   <nz-select formControlName="currency" nzPlaceHolder="Select 请选择币制" (ngModelChange)="onCurrencyChanged($event, index)">
