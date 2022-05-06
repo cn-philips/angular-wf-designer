@@ -10,7 +10,7 @@ export class DictService {
 
   dictList: Dict[] = [];
 
-  dictMap: { [key: string] : Dict[] } = {}
+  dictMap: { [key: string]: Dict[] } = {};
 
   public initDictList() {
     const uri = `/act/ecom/dictData/queryGroupDictData`;
@@ -26,6 +26,7 @@ export class DictService {
             dictValue,
             dictKey,
             listClass,
+            dictType,
           }) => ({
             group: dictGroup,
             sort: dictSort,
@@ -34,6 +35,7 @@ export class DictService {
             tag: dictLabel,
             value: dictId,
             class: listClass,
+            type: dictType,
           })
         );
       }
@@ -41,13 +43,15 @@ export class DictService {
   }
 
   getDictListByGroupName(groupName) {
-    let dictList = this.dictMap[groupName]
+    let dictList = this.dictMap[groupName];
     if (dictList && dictList.length > 0) {
-      return dictList
+      return dictList;
     } else {
-      dictList = this.dictList.filter(({ group }) => group === groupName).sort((left, right) => left.sort - right.sort)
-      this.dictMap[groupName] = dictList
-      return dictList
+      dictList = this.dictList
+        .filter(({ group }) => group === groupName)
+        .sort((left, right) => left.sort - right.sort);
+      this.dictMap[groupName] = dictList;
+      return dictList;
     }
   }
 }

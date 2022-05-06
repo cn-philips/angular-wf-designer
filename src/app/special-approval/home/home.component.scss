@@ -1,5 +1,29 @@
 @import "../../../theme/common/dashboard.scss";
 
+::ng-deep .title_warpper {
+  margin-bottom: 1rem;
+  border-radius: 5px;
+  overflow: hidden;
+  .ant-card-body {
+    min-height: 4.5rem;
+    position: relative;
+    padding: 1rem;
+    & > div:first-child {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      h4 {
+        span {
+          display: block;
+        }
+      }
+      float: left;
+    }
+    & > div:last-child {
+      float: right;
+    }
+  }
+}
 :host {
   header {
     display: flex;
