@@ -21,6 +21,8 @@ export class ReportComponent implements OnInit {
     submitDate: [null],
   });
 
+  userPermission = []
+
   searchBtnLoading: boolean = false;
 
   selectOptions = {
@@ -50,7 +52,7 @@ export class ReportComponent implements OnInit {
       items: [
         {value: '特批延长保修', type: 'warranty'},
         {value: '额外安装费用及其它售后费用', type: 'installcost'},
-        // {value: '转库', type: ''},
+        {value: '转库', type: 'transferlib'},
         {value: '机器互换', type: 'machineexchange'},
         // {value: '非直销订单按直销方式确认收入', type: ''},
         // {value: 'COO US', type: ''},
@@ -60,9 +62,9 @@ export class ReportComponent implements OnInit {
       ],
     },
 
-    // {
-    //   label: '订单质量管理',
-    //   items: [
+    {
+      label: '订单质量管理',
+      items: [
         {value: 'RDD-OIT>180天订单保留', type: 'rddoit180reserv'},
     //     {value: 'Cancel Order', type: ''},
     //     {value: 'De-book', type: ''},
@@ -71,8 +73,8 @@ export class ReportComponent implements OnInit {
     //     {value: 'COO CC', type: ''},
     //     {value: 'COO PD&IGT', type: ''},
     //     {value: '经销商签署安装报告的特批', type: ''},
-    //   ]
-    // },
+      ]
+    },
     {
       label: '信用证管理',
       items: [
@@ -94,7 +96,27 @@ export class ReportComponent implements OnInit {
     private spService: SpecialApprovalService,
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.initPermission()
+    const profile = localStorage.getItem('profiles') as string
+    let currentUser = JSON.parse(profile)
+    let bgs = []
+    for (let i = 0; i < currentUser.length; i++) {
+      bgs[i] = currentUser[i].modality
+    }
+    this.selectOptions.bgs = Array.from(new Set(bgs));
+    this.formValues.patchValue({
+      applyStatusIn: [
+        'start' ,
+        'feedback',
+        'approved',
+        'rejected',
+        'withdraw',
+        'canceled'
+      ],
+      bgIn: Array.from(new Set(bgs)),
+    })
+  }
 
   onExport(type: string, name: string): void {
     this.formValues.markAsDirty();
@@ -118,5 +140,9 @@ export class ReportComponent implements OnInit {
     } else {
         this.message.error('当前项暂无报表')
     }
+  }
+
+  async initPermission(){
+   this.userPermission = await this.spService.getReportPermission()
   }
 }

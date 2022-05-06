@@ -91,15 +91,16 @@ export class TransferLibComponent implements OnInit {
     exchangeExportRoles: EXCHANGE_EXPORT_ROLES()
   }
 
-  salesList: Sales[] = [{
+  salesList1: Sales[] = [{
     name: localStorage.getItem('ng_philips_username'),
     email: localStorage.getItem('ng_philips_code1')
   }];
+  salesList0: Sales[] = [];
   isSearchLoading: boolean = false
 
   isExpand: boolean = true; // 控制元素展开收起
   get bigAreas() {
-    const cycleGroup = this.formValues.get('cycleGroup') as FormControl
+    const cycleGroup = this.formValues.get('bigAreas') as FormControl
     const cycleGroupBigAreaMap = this.spService.cycleGroupBigAreaMap
     if (cycleGroup && cycleGroupBigAreaMap[cycleGroup.value]) {
       return cycleGroupBigAreaMap[cycleGroup.value]
@@ -187,14 +188,22 @@ export class TransferLibComponent implements OnInit {
       endUserId,
       contractPrice,
       invoiceInformation,
-      createUser
+      createUser,
+      logistician,
     } = reference
+    this.salesList0 = [];
+    this.salesList0.push({
+      name: createUser,
+      email: createUser
+    })
     if (distributor) {
       this.showDealerArea[this.currentImportIndex] = true
     }
     if (this.currentImportIndex === 0) {
       this.isCreateUser = createUser === getLoginUserCode1();
     }
+    console.log(logistician)
+    console.log(createUser)
     this.orders.at(this.currentImportIndex).patchValue({
       orderType,
       referenceId,
@@ -217,6 +226,8 @@ export class TransferLibComponent implements OnInit {
         wbs: "",
         itemNo: "",
         quantity: ""}],
+      om: logistician,
+      saleEmail: createUser
     })
   }
 
@@ -233,6 +244,10 @@ export class TransferLibComponent implements OnInit {
       })
     }
 
+    const code = localStorage.getItem('roleCode')
+    if (code == 'Sales Rep/Mgr' || code == 'District Leader' || code == 'Sales Support') {
+      //金额隐藏验证 还未改完
+    }
     /*
     * @description 请求销售邮箱api？ copy过来，等待配置到api service中去
     * */
@@ -251,7 +266,7 @@ export class TransferLibComponent implements OnInit {
       .pipe(debounceTime(500))
       .pipe(switchMap(getSaleList));
     optionList$.subscribe(data => {
-      this.salesList = data;
+      this.salesList1 = data;
       this.isSearchLoading = false;
     });
   }
@@ -283,7 +298,7 @@ export class TransferLibComponent implements OnInit {
     })
     this.districtList[index] = await this.spService.getCustomizeEmail(this.getDistrictList('District Leader'));
     this.salesLeaderList[index] = await this.spService.getCustomizeEmail(this.getDistrictList('Sales Leader'));
-    this.productSalesList[index] = await this.spService.getCustomizeEmail(this.getDistrictList('Sales Rep/Mgr', this.orders.at(index).value.bmc))
+    this.productSalesList[index] = await this.spService.getCustomizeEmail(this.getDistrictList('Product Sales Manager', this.orders.at(index).value.bmc))
   }
 
   /*

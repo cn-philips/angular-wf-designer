@@ -36,12 +36,12 @@
             </div>
             <div nz-col nzSpan="24">
               <nz-form-item class="order-list-normal-label">
-                <nz-form-label nzRequired>销售区域-大区</nz-form-label>
+                <nz-form-label nzRequired>销售区域-Team</nz-form-label>
               </nz-form-item>
             </div>
             <div nz-col nzSpan="24">
               <nz-form-item class="order-list-normal-label">
-                <nz-form-label nzRequired>销售区域-Team</nz-form-label>
+                <nz-form-label nzRequired>销售区域-大区</nz-form-label>
               </nz-form-item>
             </div>
             <div nz-col nzSpan="24">
@@ -81,21 +81,6 @@
             </div>
             <div nz-col nzSpan="24">
               <nz-form-item class="order-list-normal-label">
-                <nz-form-label nzRequired>预计付款日期</nz-form-label>
-              </nz-form-item>
-            </div>
-            <div nz-col nzSpan="24">
-              <nz-form-item class="order-list-normal-label">
-                <nz-form-label nzRequired>到货日期</nz-form-label>
-              </nz-form-item>
-            </div>
-            <div nz-col nzSpan="24">
-              <nz-form-item class="order-list-normal-label">
-                <nz-form-label>预计记认销售日期</nz-form-label>
-              </nz-form-item>
-            </div>
-            <div nz-col nzSpan="24">
-              <nz-form-item class="order-list-normal-label">
                 <nz-form-label nzRequired>OM</nz-form-label>
               </nz-form-item>
             </div>
@@ -117,6 +102,21 @@
             <div nz-col nzSpan="24">
               <nz-form-item class="order-list-normal-label">
                 <nz-form-label nzRequired>Sales Leader邮箱</nz-form-label>
+              </nz-form-item>
+            </div>
+            <div nz-col nzSpan="24">
+              <nz-form-item class="order-list-normal-label">
+                <nz-form-label nzRequired>预计付款日期</nz-form-label>
+              </nz-form-item>
+            </div>
+            <div nz-col nzSpan="24">
+              <nz-form-item class="order-list-normal-label">
+                <nz-form-label nzRequired>到货日期</nz-form-label>
+              </nz-form-item>
+            </div>
+            <div nz-col nzSpan="24">
+              <nz-form-item class="order-list-normal-label">
+                <nz-form-label>预计记认销售日期</nz-form-label>
               </nz-form-item>
             </div>
           </div>
@@ -198,6 +198,7 @@
                       <nz-option *ngIf="bigAreas.length === 0" nzLabel="请先选择Team/Cycle Group" [nzDisabled]="true"></nz-option>
                     </nz-select>
                   </nz-input-group>
+<!--                  <input nz-input formControlName="bigArea" style="width: 100%" placeholder="Team/Cycle Group">-->
                   <div style="display: flex;">
                     <nz-form-explain style="width: 100%;" >
                       <span style="color:#f5222d" *ngIf="ord.get('bigArea')?.dirty && ord.get('bigArea')?.errors">请选择销售区域</span>
@@ -215,6 +216,7 @@
                       <nz-option *ngIf="selectOptions.smallAreas.length === 0" nzLabel="请先选择Team/Cycle Group" [nzDisabled]="true"></nz-option>
                     </nz-select>
                   </nz-input-group>
+<!--                  <input nz-input formControlName="smallArea" style="width: 100%" placeholder="Region">-->
                   <div style="display: flex;">
                     <nz-form-explain style="width: 100%" *ngIf="ord.get('smallArea')?.dirty && ord.get('smallArea')?.errors">
                       <span style="color:#f5222d">请先选择Team/Cycle Group</span>
@@ -304,36 +306,6 @@
             <div nz-col nzSpan="24">
               <nz-form-item class="order-list-normal-item">
                 <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-                  <nz-date-picker formControlName="expectedPaymentDate" style="width: 100%" [nzStyle]="{ width: '100%' }"></nz-date-picker>
-                  <nz-form-explain *ngIf="ord.get('expectedPaymentDate')?.dirty && ord.get('expectedPaymentDate')?.errors">
-                    请选择预计付款日期
-                  </nz-form-explain>
-                </nz-form-control>
-              </nz-form-item>
-            </div>
-            <div nz-col nzSpan="24">
-              <nz-form-item class="order-list-normal-item">
-                <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-                  <nz-date-picker formControlName="arrivalDate" style="width: 100%" [nzStyle]="{ width: '100%' }"></nz-date-picker>
-                  <nz-form-explain *ngIf="ord.get('arrivalDate')?.dirty && ord.get('arrivalDate')?.errors">
-                    请选择到货日期
-                  </nz-form-explain>
-                </nz-form-control>
-              </nz-form-item>
-            </div>
-            <div nz-col nzSpan="24">
-              <nz-form-item class="order-list-normal-item">
-                <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-                  <nz-date-picker formControlName="expectedSaleDate" style="width: 100%" [nzStyle]="{ width: '100%' }"></nz-date-picker>
-                  <nz-form-explain *ngIf="ord.get('expectedSaleDate')?.dirty && ord.get('expectedSaleDate')?.errors">
-                    请选择预计记认销售日期
-                  </nz-form-explain>
-                </nz-form-control>
-              </nz-form-item>
-            </div>
-            <div nz-col nzSpan="24">
-              <nz-form-item class="order-list-normal-item">
-                <nz-form-control nzXs="24" nzSm="24" nzMd="14">
                   <nz-select formControlName="om" [nzPlaceHolder]="editable ? '请选择OM' : ''">
                     <nz-option *ngFor="let item of selectOptions.oms" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
                   </nz-select>
@@ -349,7 +321,7 @@
                   <nz-select *ngIf="editable" nzShowSearch nzAllowClear formControlName="saleEmail" [nzPlaceHolder]="editable ? '销售邮箱' : ''" (ngModelChange)="salesChange(index)"
                              (nzOnSearch)="onSearchSales($event)" [nzServerSearch]="true"
                   >
-                    <ng-container *ngFor="let sale of salesList">
+                    <ng-container *ngFor="let sale of index == 0? salesList0 : salesList1">
                       <nz-option *ngIf="!isSearchLoading" [nzValue]="sale.email" [nzLabel]="sale.email" [nzCustomContent]="true">
                         {{sale.email }}
                       </nz-option>
@@ -397,6 +369,36 @@
                   <input nz-input formControlName="salesLeader" *ngIf="!editable">
                   <nz-form-explain *ngIf="ord.get('salesLeader')?.dirty && ord.get('salesLeader')?.errors">
                     请选择Sales Leader邮箱
+                  </nz-form-explain>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+            <div nz-col nzSpan="24">
+              <nz-form-item class="order-list-normal-item">
+                <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                  <nz-date-picker formControlName="expectedPaymentDate" style="width: 100%" [nzStyle]="{ width: '100%' }"></nz-date-picker>
+                  <nz-form-explain *ngIf="ord.get('expectedPaymentDate')?.dirty && ord.get('expectedPaymentDate')?.errors">
+                    请选择预计付款日期
+                  </nz-form-explain>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+            <div nz-col nzSpan="24">
+              <nz-form-item class="order-list-normal-item">
+                <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                  <nz-date-picker formControlName="arrivalDate" style="width: 100%" [nzStyle]="{ width: '100%' }"></nz-date-picker>
+                  <nz-form-explain *ngIf="ord.get('arrivalDate')?.dirty && ord.get('arrivalDate')?.errors">
+                    请选择到货日期
+                  </nz-form-explain>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+            <div nz-col nzSpan="24">
+              <nz-form-item class="order-list-normal-item">
+                <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                  <nz-date-picker formControlName="expectedSaleDate" style="width: 100%" [nzStyle]="{ width: '100%' }"></nz-date-picker>
+                  <nz-form-explain *ngIf="ord.get('expectedSaleDate')?.dirty && ord.get('expectedSaleDate')?.errors">
+                    请选择预计记认销售日期
                   </nz-form-explain>
                 </nz-form-control>
               </nz-form-item>
