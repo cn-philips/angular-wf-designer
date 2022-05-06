@@ -5,6 +5,13 @@ import { Hospital, SelectHospitalComponent, } from '../../select-hospital/select
 import { Reference, SelectReferenceComponent } from '../../select-reference/select-reference.component'
 import { SpecialApprovalService } from '../../../../special-approval.service'
 import {
+  trigger,
+  state,
+  style,
+  animate,
+  transition
+} from '@angular/animations';
+import {
   APPLY_TYPE,
   BUSINESS_MODEL,
   BG_LIST,
@@ -34,7 +41,20 @@ interface Sales {
 @Component({
   selector: 'special-approval-transfer-lib-info',
   templateUrl: './transfer-lib.component.html',
-  styleUrls: ['./transfer-lib.component.scss']
+  styleUrls: ['./transfer-lib.component.scss'],
+  animations: [
+    trigger('openClose', [
+      state('close', style({
+        display: 'none',
+        opacity: 0
+      })),
+      state('open', style({
+        opacity: 1
+      })),
+      transition('close => open', animate('200ms ease-in')),
+      transition('open => close', animate('200ms ease-out'))
+    ])
+  ]
 })
 export class TransferLibComponent implements OnInit {
 
@@ -76,6 +96,8 @@ export class TransferLibComponent implements OnInit {
     email: localStorage.getItem('ng_philips_code1')
   }];
   isSearchLoading: boolean = false
+
+  isExpand: boolean = true; // 控制元素展开收起
   get bigAreas() {
     const cycleGroup = this.formValues.get('cycleGroup') as FormControl
     const cycleGroupBigAreaMap = this.spService.cycleGroupBigAreaMap
@@ -324,5 +346,9 @@ export class TransferLibComponent implements OnInit {
   onSearchSales(keyword: string) {
     this.isSearchLoading = true
     this.searchChange$.next(keyword)
+  }
+
+  expand() {
+    this.isExpand = !this.isExpand
   }
 }

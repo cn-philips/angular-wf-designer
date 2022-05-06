@@ -337,4 +337,12 @@ export class SpecialApprovalService {
     const data = formatResponse(res);
     return data;
   }
+
+  //获取角色所属bg列表
+  async getRoleBg() {
+    const uri = '/act/role/getUsersByEmail?email=' + localStorage.ng_philips_code1;
+    const res = await this.http.get(uri).toPromise();
+    const data = formatResponse(res);
+    return data;
+  }
 }
