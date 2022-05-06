@@ -7,6 +7,7 @@ import {
 } from "../special-approval.constants";
 import {FileService, HttpService, ReportExportService} from '../../services';
 import {NzMessageService} from 'ng-zorro-antd';
+import {SpecialApprovalService} from '../special-approval.service';
 
 @Component({
   selector: "special-approval-report",
@@ -31,7 +32,7 @@ export class ReportComponent implements OnInit {
       { label: "已撤回", value: 'withdraw' },
       { label: "已取消", value: 'canceled' },
     ],
-    bgs: BG_LIST,
+    bgs: [],
   };
 
   reportList = [
@@ -48,9 +49,9 @@ export class ReportComponent implements OnInit {
       label: '安装及验收',
       items: [
         {value: '特批延长保修', type: 'warranty'},
-        // {value: '额外安装费用及其它售后费用', type: ''},
+        {value: '额外安装费用及其它售后费用', type: 'installcost'},
         // {value: '转库', type: ''},
-        // {value: '机器互换', type: ''},
+        {value: '机器互换', type: 'machineexchange'},
         // {value: '非直销订单按直销方式确认收入', type: ''},
         // {value: 'COO US', type: ''},
         // {value: 'COO CC', type: ''},
@@ -62,7 +63,7 @@ export class ReportComponent implements OnInit {
     // {
     //   label: '订单质量管理',
     //   items: [
-    //     {value: 'RDD-OIT>180天订单保留', type: ''},
+        {value: 'RDD-OIT>180天订单保留', type: 'rddoit180reserv'},
     //     {value: 'Cancel Order', type: ''},
     //     {value: 'De-book', type: ''},
     //     {value: 'Order Replace/Aging', type: ''},
@@ -89,7 +90,8 @@ export class ReportComponent implements OnInit {
     private http: HttpService,
     private reportExportService: ReportExportService,
     private fileService: FileService,
-    private message: NzMessageService
+    private message: NzMessageService,
+    private spService: SpecialApprovalService,
   ) {}
 
   ngOnInit(): void {}

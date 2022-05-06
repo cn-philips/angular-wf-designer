@@ -73,7 +73,7 @@ export class ProductListComponent implements OnInit {
       .filter(({ productType }) => productType && productType.trim())
       .map(({ productType }) => productType);
     this.orderInfo.patchValue({
-      productType: productTypes.join(","),
+      productType: productTypes.join(";"),
     });
   }
 
