@@ -21,6 +21,7 @@ export interface Reference {
   contractPrice: string;
   invoiceInformation: string;
   createUser: string; //添加crateuser用于转库判断是否展示金额
+  logistician: string; // 对应OM
 }
 
 const DEFAULT_SEARCH_PARAMS = {

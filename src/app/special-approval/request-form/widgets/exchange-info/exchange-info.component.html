@@ -5,7 +5,7 @@
         <nz-form-item>
           <nz-form-label nzXl="8" nzXXl="6" nzFor="exchangeType">换货类型</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <nz-select id="exchangeType" formControlName="exchangeType" nzPlaceHolder="请选择换货类型" (ngModelChange)="onExchangeTypeChanged($event)">
+            <nz-select id="exchangeType" formControlName="exchangeType" (ngModelChange)="onExchangeTypeChanged($event)">
               <nz-option *ngFor="let item of SELECT_OPTION_LIST.exchangeOptions" [nzLabel]="item.label" [nzValue]="item.value" ></nz-option>
             </nz-select>
             <nz-form-explain

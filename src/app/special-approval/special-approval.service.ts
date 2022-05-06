@@ -345,4 +345,12 @@ export class SpecialApprovalService {
     const data = formatResponse(res);
     return data;
   }
+
+  //获取报表查看权限
+  async getReportPermission() {
+    const uri = '/act/specialapprove/report/applyTypes';
+    const res = await this.http.get(uri).toPromise();
+    const data = formatResponse(res);
+    return data;
+  }
 }

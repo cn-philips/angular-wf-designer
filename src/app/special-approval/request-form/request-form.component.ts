@@ -727,9 +727,16 @@ export class RequestFormComponent implements OnInit {
 
   public async onSaveDraft() {
     const id = this.message.loading(LOADING_MESSAGE.SAVE_DRAFT, { nzDuration: 0 }).messageId;
+
     try {
       this.submitLoading = true;
       const data = this.getFormData();
+      if (this.applyType === APPLY_TYPE.MACHINE_EXCHANGE) {
+        if (data.extInfo.exchangeMethod == null || data.extInfo.exchangeMethod == ''){
+          this.message.error('请填写换货方式后再保存')
+          return
+        }
+      }
       await this.spService.saveRequest(data);
       this.message.success(SUCCESS_MESSAGE.SAVE_DRAFT);
       this.navigateToHomePage();

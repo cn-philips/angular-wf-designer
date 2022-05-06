@@ -9,14 +9,6 @@ import {FileService, HttpService, ReportExportService} from '../../services';
 import {NzMessageService} from 'ng-zorro-antd';
 import {SpecialApprovalService} from '../special-approval.service';
 
-
-interface bgObj {
-  value: string;
-  label: string;
-}
-
-let bgList: bgObj[] = []
-
 @Component({
   selector: "special-approval-report",
   templateUrl: "./report.component.html",
@@ -29,6 +21,8 @@ export class ReportComponent implements OnInit {
     submitDate: [null],
   });
 
+  userPermission = []
+
   searchBtnLoading: boolean = false;
 
   selectOptions = {
@@ -40,7 +34,7 @@ export class ReportComponent implements OnInit {
       { label: "已撤回", value: 'withdraw' },
       { label: "已取消", value: 'canceled' },
     ],
-    bgs: BG_LIST,
+    bgs: [],
   };
 
   reportList = [
@@ -103,12 +97,14 @@ export class ReportComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.initPermission()
     const profile = localStorage.getItem('profiles') as string
     let currentUser = JSON.parse(profile)
     let bgs = []
     for (let i = 0; i < currentUser.length; i++) {
       bgs[i] = currentUser[i].modality
     }
+    this.selectOptions.bgs = Array.from(new Set(bgs));
     this.formValues.patchValue({
       applyStatusIn: [
         'start' ,
@@ -118,7 +114,7 @@ export class ReportComponent implements OnInit {
         'withdraw',
         'canceled'
       ],
-      bgIn: Array.from(new Set(bgs))
+      bgIn: Array.from(new Set(bgs)),
     })
   }
 
@@ -144,5 +140,9 @@ export class ReportComponent implements OnInit {
     } else {
         this.message.error('当前项暂无报表')
     }
+  }
+
+  async initPermission(){
+   this.userPermission = await this.spService.getReportPermission()
   }
 }
