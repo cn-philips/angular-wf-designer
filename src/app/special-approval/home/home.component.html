@@ -6,6 +6,22 @@
       <span>特批主页</span>
     </h4>
   </div>
+  <div>
+    <ng-container *ngFor="let item of sharePointLinkList; let m = index">
+      <button
+        *ngIf = "item.isShow"
+        nzSize="large"
+        nz-button
+        nzType="primary"
+        [ngClass]="m === 0 ? 'ml0' : 'ml10'"
+        (click)="linkToSharepoint(item.value)"
+        nz-tooltip 
+        [nzTitle]="item.hint"
+      >
+        <i nz-icon type="file-add"></i>{{ item.label }}
+      </button>
+    </ng-container>
+  </div>
 </nz-card>
 <header *ngIf="showQuickLink">
   <div class="left-wrap">

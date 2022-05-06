@@ -6,6 +6,7 @@ export interface Dict {
   tag?: string;
   value?: string;
   class?: string;
+  type?: string;
 }
 
 export interface ApiDict {
@@ -16,4 +17,5 @@ export interface ApiDict {
   dictValue?: string;
   dictKey?: string;
   listClass?: string;
+  dictType?: string;
 }
