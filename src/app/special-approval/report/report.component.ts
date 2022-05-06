@@ -9,6 +9,14 @@ import {FileService, HttpService, ReportExportService} from '../../services';
 import {NzMessageService} from 'ng-zorro-antd';
 import {SpecialApprovalService} from '../special-approval.service';
 
+
+interface bgObj {
+  value: string;
+  label: string;
+}
+
+let bgList: bgObj[] = []
+
 @Component({
   selector: "special-approval-report",
   templateUrl: "./report.component.html",
@@ -32,7 +40,7 @@ export class ReportComponent implements OnInit {
       { label: "已撤回", value: 'withdraw' },
       { label: "已取消", value: 'canceled' },
     ],
-    bgs: [],
+    bgs: BG_LIST,
   };
 
   reportList = [
@@ -50,7 +58,7 @@ export class ReportComponent implements OnInit {
       items: [
         {value: '特批延长保修', type: 'warranty'},
         {value: '额外安装费用及其它售后费用', type: 'installcost'},
-        // {value: '转库', type: ''},
+        {value: '转库', type: 'transferlib'},
         {value: '机器互换', type: 'machineexchange'},
         // {value: '非直销订单按直销方式确认收入', type: ''},
         // {value: 'COO US', type: ''},
@@ -60,9 +68,9 @@ export class ReportComponent implements OnInit {
       ],
     },
 
-    // {
-    //   label: '订单质量管理',
-    //   items: [
+    {
+      label: '订单质量管理',
+      items: [
         {value: 'RDD-OIT>180天订单保留', type: 'rddoit180reserv'},
     //     {value: 'Cancel Order', type: ''},
     //     {value: 'De-book', type: ''},
@@ -71,8 +79,8 @@ export class ReportComponent implements OnInit {
     //     {value: 'COO CC', type: ''},
     //     {value: 'COO PD&IGT', type: ''},
     //     {value: '经销商签署安装报告的特批', type: ''},
-    //   ]
-    // },
+      ]
+    },
     {
       label: '信用证管理',
       items: [
@@ -94,7 +102,25 @@ export class ReportComponent implements OnInit {
     private spService: SpecialApprovalService,
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    const profile = localStorage.getItem('profiles') as string
+    let currentUser = JSON.parse(profile)
+    let bgs = []
+    for (let i = 0; i < currentUser.length; i++) {
+      bgs[i] = currentUser[i].modality
+    }
+    this.formValues.patchValue({
+      applyStatusIn: [
+        'start' ,
+        'feedback',
+        'approved',
+        'rejected',
+        'withdraw',
+        'canceled'
+      ],
+      bgIn: Array.from(new Set(bgs))
+    })
+  }
 
   onExport(type: string, name: string): void {
     this.formValues.markAsDirty();
