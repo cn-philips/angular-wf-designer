@@ -534,12 +534,12 @@
                   <nz-form-item>
                     <nz-form-label [nzSm]="8" [nzXs]="24">Bidding Award Announcement<br> 中标公告</nz-form-label>
                     <nz-form-control [nzSm]="14" [nzXs]="24" nzHasFeedback>
-<!--                      <nz-upload *ngIf="flag==0" [(nzFileList)]="bidAnnouncementList"-->
-<!--                                 [nzBeforeUpload]="bidAnnouncementUpload" [nzLimit]="1" [nzPreview]="dwonLoad" [nzRemove]="beforeSupplementRemo">-->
-<!--                        <button nz-button><i nz-icon nzType="upload"></i><span>上传附件</span></button>-->
+                      <nz-upload *ngIf="flag==0" [(nzFileList)]="bidAnnouncementList"
+                                 [nzBeforeUpload]="bidAnnouncementUpload" [nzLimit]="1" [nzPreview]="dwonLoad" [nzRemove]="beforeBidAnnouncement">
+                        <button nz-button><i nz-icon nzType="upload"></i><span>上传附件</span></button>
 <!--                        <button *ngIf="flag==1" disabled="true" nz-button><i nz-icon nzType="upload"></i><span>上传附件</span></button>-->
-<!--                      </nz-upload>-->
-                      <button nz-tooltip [nzTitle]="odata.bidAnnouncementName" *ngIf="odata.bidAnnouncement" class="down link-tesk" nz-button nzType="link"
+                      </nz-upload>
+                      <button nz-tooltip [nzTitle]="odata.bidAnnouncementName" *ngIf="odata.bidAnnouncement && flag == 1" class="down link-tesk" nz-button nzType="link"
                               (click)="fileDwon(odata.bidAnnouncement)">{{odata.bidAnnouncementName}}</button>
                     </nz-form-control>
                   </nz-form-item>
@@ -551,11 +551,11 @@
                   <nz-form-item>
                     <nz-form-label [nzSm]="8" [nzXs]="24">Bidding Announcement Price<br> 中标公告价格</nz-form-label>
                     <nz-form-control [nzSm]="10" [nzXs]="24">
-                      <input nz-input #price [(ngModel)]="odata.bidAnnouncementPrice" [ngModelOptions]="{standalone:true}" disabled />
+                      <input nz-input #price [(ngModel)]="odata.bidAnnouncementPrice" [ngModelOptions]="{standalone:true}" [disabled]="flag==1" (ngModelChange)="toNumber($event)" />
 
                     </nz-form-control>
                     <nz-form-control [nzSm]="4" [nzXs]="24" style="padding-left:4px;">
-                      <nz-select [ngModelOptions]="{standalone:true}" style="width: 100%;" [(ngModel)]="odata.bidAnnouncementCurrency"  nzAllowClear nzPlaceHolder="请选择币制" disabled>
+                      <nz-select [ngModelOptions]="{standalone:true}" style="width: 100%;" [(ngModel)]="odata.bidAnnouncementCurrency"  nzAllowClear nzPlaceHolder="请选择币制" [disabled]="flag==1">
                         <nz-option nzValue="USD" nzLabel="USD"></nz-option>
                         <nz-option nzValue="RMB" nzLabel="RMB"></nz-option>
                       </nz-select>
@@ -569,7 +569,7 @@
                   <nz-form-item>
                     <nz-form-label [nzSm]="8" [nzXs]="24">Announcement Time of Bidding<br>中标公告发布时间</nz-form-label>
                     <nz-form-control [nzSm]="14" [nzXs]="24" nzHasFeedback>
-                      <nz-date-picker  [ngModelOptions]="{standalone: true}"  disabled="true" style="width: 100%" [nzStyle]="style"
+                      <nz-date-picker  [ngModelOptions]="{standalone: true}"  [disabled]="flag==1" style="width: 100%" [nzStyle]="style"
                                           [(ngModel)]="odata.announcementTime" nzPlaceHolder=""></nz-date-picker>
                     </nz-form-control>
                   </nz-form-item>
@@ -580,7 +580,7 @@
                   <nz-form-item>
                     <nz-form-label [nzSm]="8" [nzXs]="24">End Time of Bidding<br> 公示期结束时间</nz-form-label>
                     <nz-form-control [nzSm]="14" [nzXs]="24" nzHasFeedback>
-                      <nz-date-picker  [ngModelOptions]="{standalone: true}"  disabled="true" style="width: 100%" [nzStyle]="style"
+                      <nz-date-picker  [ngModelOptions]="{standalone: true}"  [disabled]="flag==1" style="width: 100%" [nzStyle]="style"
                                           [(ngModel)]="odata.publicityEndTime" nzPlaceHolder=""></nz-date-picker>
                     </nz-form-control>
                   </nz-form-item>
@@ -591,7 +591,7 @@
                   <nz-form-item>
                     <nz-form-label [nzSm]="8" [nzXs]="24">Specially Examined Time<br>特批完成时间</nz-form-label>
                     <nz-form-control [nzSm]="14" [nzXs]="24" nzHasFeedback>
-                      <nz-date-picker  [ngModelOptions]="{standalone: true}"  disabled="true" style="width: 100%" [nzStyle]="style"
+                      <nz-date-picker  [ngModelOptions]="{standalone: true}"  [disabled]="flag==1" style="width: 100%" [nzStyle]="style"
                                           [(ngModel)]="odata.speciallyExaminedTime" nzPlaceHolder=""></nz-date-picker>
                     </nz-form-control>
                   </nz-form-item>
@@ -602,7 +602,7 @@
                   <nz-form-item>
                     <nz-form-label [nzSm]="8" [nzXs]="24">Bidding Notification Sign Time<br>后补中标通知书的签订时间</nz-form-label>
                     <nz-form-control [nzSm]="14" [nzXs]="24" nzHasFeedback>
-                      <nz-date-picker  [ngModelOptions]="{standalone: true}" disabled="true" style="width: 100%" [nzStyle]="style"
+                      <nz-date-picker  [ngModelOptions]="{standalone: true}" [disabled]="flag==1" style="width: 100%" [nzStyle]="style"
                                           [(ngModel)]="odata.biddingNotificationSignTime" nzPlaceHolder=""></nz-date-picker>
                     </nz-form-control>
                   </nz-form-item>
