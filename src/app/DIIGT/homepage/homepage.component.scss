@@ -6,6 +6,7 @@ $HEADER_FOOTER_GAP: $HEADER_HEIGHT + $CONTAINER_GAP + $CONTAINER_GAP +
   $FOOTER_GAP;
 $PADDING_GAP: 1rem;
 .card-header {
+  position: relative;
   display: flex;
   align-items: center;
   margin: 0 -0.75rem;
@@ -98,6 +99,55 @@ $PADDING_GAP: 1rem;
         opacity: 0;
       }
     }
+  }
+}
+.dashboard_sp{
+  display: flex;
+  width: 100%;
+  height: calc(50vh - #{$HEADER_FOOTER_GAP/2});
+  position: relative;
+  color: #fff;
+  background: url(assets/image/homepage_btn_sp.jpg) no-repeat;
+  background-origin: border-box;
+  background-size: cover;
+  cursor: pointer;
+  overflow: hidden;
+  border: none;
+  background-position: center center;
+  align-items: center;
+  justify-content: center;
+  .dashboard_shadow_sp {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+  }
+  .dashboard_link{
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+  }
+  .nav_title {
+    display: flex;
+    align-items: center;
+    font-size: 2.5rem;
+  }
+  .dashboard_sp_message{
+    position: absolute;
+    right: 20px;
+    bottom: 38px;
+    border-radius: 2px;
+    background-color: yellow;
+    color: black;
+    width: 250px;
+    height: auto;
+    padding: 10px;
+    font-weight: bold;
+    font-size: 16px;
   }
 }
 
