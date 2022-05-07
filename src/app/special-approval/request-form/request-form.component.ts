@@ -80,6 +80,8 @@ export class RequestFormComponent implements OnInit {
   districtLeader: string[] = []
   salesLeader: string[] = []
 
+  saleRegions = []
+
   public processUsers: string[] = []; // 流程中所有的人
   public applicantEmail: string;
   constructor(
@@ -268,6 +270,26 @@ export class RequestFormComponent implements OnInit {
     })
   });
 
+  initSaleRegions(isNewRequest = false) {
+    const regions = 
+      (JSON.parse(window.localStorage.getItem('profiles')) || []).map((region) => ({
+        ...region,
+        label: [region.modality, region.cycleGroup, region.bigArea, region.smallArea].join('-'),
+        value: [region.modality, region.cycleGroup, region.bigArea, region.smallArea].join('-'),
+      }))
+    this.saleRegions = regions
+    if (isNewRequest && regions.length === 1) {
+      const { modality, cycleGroup, bigArea, smallArea } = regions[0]
+      this.basicInfo.patchValue({
+        systemRegion: [modality, cycleGroup, bigArea, smallArea].join('-'),
+        bg: modality,
+        cycleGroup,
+        bigArea,
+        smallArea
+      })
+    }
+  }
+
   public ngOnInit(): void {
     const { params: { requestId }, queryParams: { type, item, taskId,  bg } } = this.route.snapshot;
     // detail page
@@ -275,6 +297,7 @@ export class RequestFormComponent implements OnInit {
       this.taskId = taskId;
       this.requestId = requestId;
       this.getRequestDetail(requestId);
+      this.initSaleRegions()
     } else {
       // new page
       this.basicInfo.patchValue({
@@ -321,6 +344,7 @@ export class RequestFormComponent implements OnInit {
       }
       this.pageLoading = false;
       this.setFormValidators(type, item, bg);
+      this.initSaleRegions(true)
     }
   }
 

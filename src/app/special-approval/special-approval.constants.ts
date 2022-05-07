@@ -62,7 +62,7 @@ const APPLY_TYPE_MAP = {
   [APPLY_TYPE.EXT_WARRANTY]: { label: '延长保修', dictGroup: 'sp_warranty_apply_item' },
   [APPLY_TYPE.EXT_INSTALL_COST]: { label: "额外安装费用及其他", dictGroup: 'sp_installcost_apply_item' },
   [APPLY_TYPE.LOGISTICSCOST]: { label: "物流运输", dictGroup: 'sp_logisticscost_apply_item' },
-  [APPLY_TYPE.LC_AMENDMENT]: { label: "LC Amendments申请", dictGroup: '' },
+  [APPLY_TYPE.LC_AMENDMENT]: { label: "LC Amendments申请", dictGroup: 'sp_apply_lc_reason' },
   [APPLY_TYPE.RDD_OIT]: { label: "RDD-OIT>180天订单保留", dictGroup: 'sp_rddoit180reserv_apply_item' },
   [APPLY_TYPE.MACHINE_EXCHANGE]: { label: "机器互换", dictGroup: 'sp_machineexchange_apply_item' },
   [APPLY_TYPE.TRANSFER_LIB]: { label: "转库", dictGroup: 'sp_transferlib_apply_item' },

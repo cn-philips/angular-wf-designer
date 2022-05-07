@@ -154,7 +154,6 @@ export class SpecialApprovalService {
         ...params,
         delegatedUser: getLoginUserCode1(),
         includeDelegated: 1,
-        owner: getLoginUserCode1(),
         orderByClause: 'createTime desc',
       },
     }).toPromise();
