@@ -23,26 +23,17 @@ export class BasicInfoComponent implements OnInit {
   @Input() supportFileList: UploadFile[] = []
   @Input() editable: boolean
   @Input() executed:number = null
-
-  systemRegions = []
+  @Input() saleRegions = []
 
   APPLY_TYPE = APPLY_TYPE
 
   constructor(private spService: SpecialApprovalService, private modal: NzModalService) {}
 
-  ngOnInit(): void {
-    const regions = 
-      (JSON.parse(window.localStorage.getItem('profiles')) || []).map((region) => ({
-        ...region,
-        label: [region.modality, region.cycleGroup, region.bigArea, region.smallArea].join('-'),
-        value: [region.modality, region.cycleGroup, region.bigArea, region.smallArea].join('-'),
-      }))
-    this.systemRegions = regions
-  }
+  ngOnInit(): void {}
 
   onSelectSystemRegion(region) {
     if (!region) { return }
-    const systemRegion = this.systemRegions.find(systemRegion => systemRegion.value === region)
+    const systemRegion = this.saleRegions.find(systemRegion => systemRegion.value === region)
     if (systemRegion) {
       const { modality, cycleGroup, bigArea, smallArea } = systemRegion
       this.formValues.patchValue({
