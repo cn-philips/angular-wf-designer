@@ -103,8 +103,8 @@ export class RequestFormComponent implements OnInit {
     productType: [null], // 产品型号
     bmc: [null, [Validators.required]], // 产品线
     bg: [{ value: null, disabled: true }], // BG
+    cycleGroup: [null, [Validators.required]], // 产品区域-小区
     bigArea: [null, [Validators.required]], // 产品区域-大区
-    smallArea: [null, [Validators.required]], // 产品区域-小区
     businessModel: [null, [Validators.required]], // 业务模式
     hospitalName: [{ value: null, disabled: true }], // 医院名称
     hospitalNo: [{ value: null, disabled: true }], // 医院编号

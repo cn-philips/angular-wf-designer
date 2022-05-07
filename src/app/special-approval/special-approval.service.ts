@@ -35,7 +35,6 @@ export class SpecialApprovalService {
   bmcClusterBgs = []
 
   cycleGroupBigAreaMap = {}
-  bigAreas: any = []
 
   constructor(
     private http: HttpService,
@@ -55,7 +54,6 @@ export class SpecialApprovalService {
     }).subscribe((res) => {
       if ("0000" == res.code) {
         const cycleGroupBigAreas = res.data.rows
-        this.bigAreas = Array.from(new Set(cycleGroupBigAreas))
         this.cycleGroupBigAreaMap = cycleGroupBigAreas.reduce((calc, { team, region }) => {
           const bigAreas = calc[team] || []
           calc[team] = [...bigAreas, { label: region, value: region }]
@@ -63,6 +61,10 @@ export class SpecialApprovalService {
         }, {})
       }
     })
+  }
+
+  get cycleGroups() {
+    return Object.keys(this.cycleGroupBigAreaMap).map((cycleGroup) => ({ label: cycleGroup, value: cycleGroup }))
   }
 
 

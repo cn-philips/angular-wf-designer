@@ -83,8 +83,8 @@ export class TransferLibComponent implements OnInit {
   selectOptions = {
     orderTypes: ORDER_TYPES,
     bgList: BG_LIST,
-    smallAreas0: [],
-    smallAreas1: [],
+    bigArea0: [],
+    bigArea1: [],
     businessModels: BUSINESS_MODEL_LIST,
     currencies: CURRENCIES,
     oms: [],
@@ -102,18 +102,16 @@ export class TransferLibComponent implements OnInit {
   isExpand: boolean = true; // 控制元素展开收起
 
 
-  get bigAreas() {
-    let arr = this.spService.bigAreas
-    let bigArea = []
-    for (let i = 0; i < arr.length; i++) {
-      bigArea[i] = arr[i].team
+  getbigAreas(index) {
+    const cycleGroup = this.orders.at(index).get('cycleGroup') as FormControl
+    const cycleGroupBigAreaMap = this.spService.cycleGroupBigAreaMap
+    if (cycleGroup && cycleGroupBigAreaMap[cycleGroup.value]) {
+      return cycleGroupBigAreaMap[cycleGroup.value]
+    } else {
+      return []
     }
-    return Array.from(new Set(bigArea));
   }
 
-  get AreaMapping() {
-    return this.spService.cycleGroupBigAreaMap
-  }
   /*
   * 获取产品线列表
   * */
@@ -147,15 +145,13 @@ export class TransferLibComponent implements OnInit {
   }
 
   onBigAreaChange(bigArea, index) {
-    const area = this.AreaMapping[bigArea]
-    switch (index) {
-      case 0:
-        this.selectOptions.smallAreas0 = area ? area : []
-        break;
-      case 1:
-        this.selectOptions.smallAreas1 = area ? area : []
+    this.currentImportIndex = index
+    if (index === 0) {
+     this.selectOptions.bigArea0 = this.getbigAreas(0)
     }
-    this.orders.at(index).patchValue({ smallArea: null })
+    if (index === 1) {
+      this.selectOptions.bigArea1 = this.getbigAreas(1)
+    }
   }
 
   onShowSelectHospitalModal() {
@@ -224,8 +220,8 @@ export class TransferLibComponent implements OnInit {
       projectName,
       productType: productModel,
       sapOrderNo: sap,
-      bigArea: team,
-      smallArea: region,
+      cycleGroup: team,
+      bigArea: region,
       bmc,
       businessModel: businessModel ? businessModel.toLowerCase() : null,
       dealerName: distributor,
