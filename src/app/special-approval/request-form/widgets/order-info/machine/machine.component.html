@@ -286,10 +286,10 @@
               <nz-form-label [nzRequired]="i == 1" nzXl="8" nzXXl="6">销售邮箱</nz-form-label>
               <nz-form-control nzXs="24" nzSm="24" nzMd="14">
                 <nz-select nzShowSearch nzAllowClear formControlName="saleEmail" [nzPlaceHolder]="editable ? '输入查询销售邮箱' : ''" (ngModelChange)="salesChange($event, i)"
-                (nzOnSearch)="onSearchSales($event)" [nzServerSearch]="true"
+                (nzOnSearch)="onSearchSales($event, i)" [nzServerSearch]="true"
                 >
 <!--                  <nz-option *ngFor="let item of salesList" [nzLabel]="item" [nzValue]="item"></nz-option>-->
-                  <ng-container *ngFor="let sale of salesList">
+                  <ng-container *ngFor="let sale of i == 0? salesList : salesList1">
                     <nz-option *ngIf="!isSearchLoading" [nzValue]="sale.email" [nzLabel]="sale.email" [nzCustomContent]="true">
                       {{sale.email }}
                     </nz-option>

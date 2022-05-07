@@ -114,7 +114,7 @@
                 <nz-form-label nzRequired>到货日期</nz-form-label>
               </nz-form-item>
             </div>
-            <div nz-col nzSpan="24">
+            <div nz-col nzSpan="24" nzRequired>
               <nz-form-item class="order-list-normal-label">
                 <nz-form-label>预计记认销售日期</nz-form-label>
               </nz-form-item>
@@ -128,9 +128,10 @@
             <div nz-col nzSpan="24"  [@openClose]="isExpand ? 'close' : 'open'">
               <nz-form-item class="order-list-normal-item">
                 <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-                  <nz-select formControlName="exchangeRole" nzPlaceHolder="请选择换货角色">
-                    <nz-option *ngFor="let item of selectOptions.exchangeExportRoles" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
-                  </nz-select>
+<!--                  <nz-select formControlName="exchangeRole" nzPlaceHolder="请选择换货角色">-->
+<!--                    <nz-option *ngFor="let item of selectOptions.exchangeExportRoles" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>-->
+<!--                  </nz-select>-->
+                  <input nz-input formControlName="exchangeRole">
                   <nz-form-explain *ngIf="ord.get('exchangeRole')?.dirty && ord.get('exchangeRole')?.errors">
                     请选择订换货角色
                   </nz-form-explain>
@@ -193,15 +194,15 @@
               <nz-form-item class="order-list-normal-item">
                 <nz-form-control nzXs="24" nzSm="24" nzMd="14">
                   <nz-input-group style="width: 100%;font-size: 0;">
-                    <nz-select formControlName="bigArea" style="width: 100%;margin-right:4%" nzPlaceHolder="Team/Cycle Group" (ngModelChange)="onBigAreaChange($event, index)">
-                      <nz-option *ngFor="let item of bigAreas" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
-                      <nz-option *ngIf="bigAreas.length === 0" nzLabel="请先选择Team/Cycle Group" [nzDisabled]="true"></nz-option>
+                    <nz-select formControlName="cycleGroup" style="width: 100%;margin-right:4%" nzPlaceHolder="Team/Cycle Group" (ngModelChange)="onBigAreaChange($event, index)">
+                      <nz-option *ngFor="let item of spService.cycleGroups" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+                      <nz-option *ngIf="spService.cycleGroups.length === 0" nzLabel="请先选择Team/Cycle Group" [nzDisabled]="true"></nz-option>
                     </nz-select>
                   </nz-input-group>
 <!--                  <input nz-input formControlName="bigArea" style="width: 100%" placeholder="Team/Cycle Group">-->
                   <div style="display: flex;">
                     <nz-form-explain style="width: 100%;" >
-                      <span style="color:#f5222d" *ngIf="ord.get('bigArea')?.dirty && ord.get('bigArea')?.errors">请选择销售区域</span>
+                      <span style="color:#f5222d" *ngIf="ord.get('cycleGroup')?.dirty && ord.get('cycleGroup')?.errors">请选择销售区域</span>
                     </nz-form-explain>
                   </div>
                 </nz-form-control>
@@ -211,14 +212,14 @@
               <nz-form-item class="order-list-normal-item">
                 <nz-form-control nzXs="24" nzSm="24" nzMd="14">
                   <nz-input-group style="width: 100%;font-size: 0;">
-                    <nz-select formControlName="smallArea" style="width: 100%" nzPlaceHolder="Region">
-                      <nz-option *ngFor="let item of selectOptions.smallAreas" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
-                      <nz-option *ngIf="selectOptions.smallAreas.length === 0" nzLabel="请先选择Team/Cycle Group" [nzDisabled]="true"></nz-option>
+                    <nz-select formControlName="bigArea" style="width: 100%" nzPlaceHolder="Region">
+                      <nz-option *ngFor="let item of index == 0? selectOptions.bigArea0 : selectOptions.bigArea1 " [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+                      <nz-option *ngIf="index == 0? selectOptions.bigArea0.length === 0 : selectOptions.bigArea1.length === 0" nzLabel="请先选择Team/Cycle Group" [nzDisabled]="true"></nz-option>
                     </nz-select>
                   </nz-input-group>
 <!--                  <input nz-input formControlName="smallArea" style="width: 100%" placeholder="Region">-->
                   <div style="display: flex;">
-                    <nz-form-explain style="width: 100%" *ngIf="ord.get('smallArea')?.dirty && ord.get('smallArea')?.errors">
+                    <nz-form-explain style="width: 100%" *ngIf="ord.get('bigArea')?.dirty && ord.get('bigArea')?.errors">
                       <span style="color:#f5222d">请先选择Team/Cycle Group</span>
                     </nz-form-explain>
                   </div>
@@ -415,8 +416,8 @@
     <button *ngIf="editable" nz-button nzType="primary" class="ml-md export-btn" (click)="onShowReferenceModal(1)">导入数据</button>
   </ng-template>
   <ng-template #expandTemplate>
-    <button *ngIf="editable" nz-button nzType="primary" class="ml-md export-btn" (click)="expand()">{{isExpand? '展开': '收起'}}</button>
+    <button nz-button nzType="primary" class="ml-md export-btn" (click)="expand()">{{isExpand? '展开': '收起'}}</button>
   </ng-template>
   <app-select-hospital #selectHospital (select)="onSelectHospital($event)"></app-select-hospital>
-  <app-select-reference #selectReference (select)="onSelectReference($event)"></app-select-reference>
+  <app-select-reference #selectReference (select)="onSelectReference($event)" (cancelModal)="onHideReferenceModal()"></app-select-reference>
 </nz-card>
