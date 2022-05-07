@@ -49,6 +49,7 @@ export class MachineComponent implements OnInit {
       email: localStorage.getItem("ng_philips_code1"),
     },
   ];
+  salesList1: Sales[] = [];
   isSearchLoading: boolean = false;
 
   constructor(
@@ -285,7 +286,7 @@ export class MachineComponent implements OnInit {
       .pipe(debounceTime(500))
       .pipe(switchMap(getSaleList));
     optionList$.subscribe((data) => {
-      this.salesList = data;
+      this.salesList1 = data;
       this.isSearchLoading = false;
     });
   }
@@ -312,27 +313,43 @@ export class MachineComponent implements OnInit {
     //     salesLeader: null
     //   })
     // })
-    const params = {
-      initiatorEmail: localStorage.ng_philips_code1,
-      initiatorRole: localStorage.roleCode,
+    const district = {
+      initiatorRole: 'Sales Rep/Mgr',
       approverRole: "District Leader",
     };
-    const params1 = {
-      initiatorEmail: localStorage.ng_philips_code1,
-      initiatorRole: localStorage.roleCode,
+    const sales = {
+      initiatorRole: 'Sales Rep/Mgr',
       approverRole: 'Sales Leader'
     }
+    const user = {
+      initiatorEmail: localStorage.ng_philips_code1,
+    }
+    const user1 = {
+      initiatorEmail: email,
+    }
+    switch (index) {
+      case 0:
+        const districtLeader = await this.spService.getCustomizeEmail(Object.assign(user, district));
+        const salesLeader = await this.spService.getCustomizeEmail(Object.assign(user, sales));
+        this.orders.at(0).patchValue({
+          districtLeader: districtLeader[0].approverEmail,
+          salesLeader: salesLeader[0].approverEmail
+        })
+        break;
+      case 1:
+        const districtLeader1 = await this.spService.getCustomizeEmail(Object.assign(user1, district));
+        const salesLeader1 = await this.spService.getCustomizeEmail(Object.assign(user1, sales));
+        this.orders.at(1).patchValue({
+          districtLeader: districtLeader1[0].approverEmail,
+          salesLeader: salesLeader1[0].approverEmail
+        })
+        break;
+    }
 
-    const districtLeader = await this.spService.getCustomizeEmail(params);
-    const salesLeader = await this.spService.getCustomizeEmail(params1);
-    this.orders.at(index).patchValue({
-      districtLeader: districtLeader[0].approverEmail,
-      salesLeader: salesLeader[0].approverEmail
-    })
+
   }
 
-  onSearchSales(keyword: string) {
-    this.salesList = []
+  onSearchSales(keyword: string, index: number) {
     this.isSearchLoading = true
     this.searchChange$.next(keyword)
   }

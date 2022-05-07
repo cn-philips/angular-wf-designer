@@ -83,7 +83,8 @@ export class TransferLibComponent implements OnInit {
   selectOptions = {
     orderTypes: ORDER_TYPES,
     bgList: BG_LIST,
-    smallAreas: [],
+    bigArea0: [],
+    bigArea1: [],
     businessModels: BUSINESS_MODEL_LIST,
     currencies: CURRENCIES,
     oms: [],
@@ -99,8 +100,10 @@ export class TransferLibComponent implements OnInit {
   isSearchLoading: boolean = false
 
   isExpand: boolean = true; // 控制元素展开收起
-  get bigAreas() {
-    const cycleGroup = this.formValues.get('bigAreas') as FormControl
+
+
+  getbigAreas(index) {
+    const cycleGroup = this.orders.at(index).get('cycleGroup') as FormControl
     const cycleGroupBigAreaMap = this.spService.cycleGroupBigAreaMap
     if (cycleGroup && cycleGroupBigAreaMap[cycleGroup.value]) {
       return cycleGroupBigAreaMap[cycleGroup.value]
@@ -108,6 +111,7 @@ export class TransferLibComponent implements OnInit {
       return []
     }
   }
+
   /*
   * 获取产品线列表
   * */
@@ -141,9 +145,13 @@ export class TransferLibComponent implements OnInit {
   }
 
   onBigAreaChange(bigArea, index) {
-    const area = this.bigAreas.find(({ value }) => value === bigArea)
-    this.selectOptions.smallAreas = area ? area.children : []
-    this.orders.at(index).patchValue({ smallArea: null })
+    this.currentImportIndex = index
+    if (index === 0) {
+     this.selectOptions.bigArea0 = this.getbigAreas(0)
+    }
+    if (index === 1) {
+      this.selectOptions.bigArea1 = this.getbigAreas(1)
+    }
   }
 
   onShowSelectHospitalModal() {
@@ -170,6 +178,10 @@ export class TransferLibComponent implements OnInit {
     this.currentImportIndex = index
     this.selectReference.showModal(needCreateUser)
   }
+  onHideReferenceModal() {
+    this.selectReference.onHideModal()
+  }
+
 
   onSelectReference(reference: Reference) {
     const {
@@ -202,16 +214,14 @@ export class TransferLibComponent implements OnInit {
     if (this.currentImportIndex === 0) {
       this.isCreateUser = createUser === getLoginUserCode1();
     }
-    console.log(logistician)
-    console.log(createUser)
     this.orders.at(this.currentImportIndex).patchValue({
       orderType,
       referenceId,
       projectName,
       productType: productModel,
       sapOrderNo: sap,
-      bigArea: team,
-      smallArea: region,
+      cycleGroup: team,
+      bigArea: region,
       bmc,
       businessModel: businessModel ? businessModel.toLowerCase() : null,
       dealerName: distributor,
@@ -232,6 +242,10 @@ export class TransferLibComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.exchangeMapping(this.exchangeInfo.value.exchangeMethod);
+    this.exchangeInfo.get('exchangeMethod').valueChanges.subscribe(next => {
+      this.exchangeMapping(next);
+    })
     this.initOMUsers()
     if (this.editable) {
       let valueChangedSubscribeList = ['hospitalName', 'productType']
@@ -286,6 +300,11 @@ export class TransferLibComponent implements OnInit {
   * */
   async salesChange(index) {
     await this.getLeaderEmail(index)
+    await this.orders.at(index).patchValue({
+      districtLeader: this.districtList[index][0].approverEmail,
+      salesLeader: this.salesLeaderList[index][0].approverEmail,
+      productSalesMgr: this.productSalesList[index][0].approverEmail,
+    })
   }
   async getLeaderEmail(index){
     this.orders.controls.forEach((value , groupIndex) => {
@@ -296,9 +315,10 @@ export class TransferLibComponent implements OnInit {
         })
       }
     })
-    this.districtList[index] = await this.spService.getCustomizeEmail(this.getDistrictList('District Leader'));
-    this.salesLeaderList[index] = await this.spService.getCustomizeEmail(this.getDistrictList('Sales Leader'));
-    this.productSalesList[index] = await this.spService.getCustomizeEmail(this.getDistrictList('Product Sales Manager', this.orders.at(index).value.bmc))
+    this.districtList[index] = await this.spService.getCustomizeEmail(this.getDistrictList('District Leader', undefined, index));
+    this.salesLeaderList[index] = await this.spService.getCustomizeEmail(this.getDistrictList('Sales Leader', undefined, index));
+    this.productSalesList[index] = await this.spService.getCustomizeEmail(this.getDistrictList('Product Sales Manager', this.orders.at(index).value.bmc, index))
+
   }
 
   /*
@@ -343,12 +363,24 @@ export class TransferLibComponent implements OnInit {
   * @params {String} approverRole
   * @params {String} productBmc : 只有 Product Sales Manager 邮箱 需要该参数
   * */
-  getDistrictList(approverRole, productBmc = undefined) {
-    return {
-      initiatorEmail: localStorage.ng_philips_code1,
-      initiatorRole: localStorage.roleCode,
-      approverRole,
-      productBmc
+  getDistrictList(approverRole, productBmc = undefined, index) {
+    switch (index) {
+      case 0:
+        return {
+          initiatorEmail: this.orders.at(0).get('saleEmail').value,
+          initiatorRole: 'Sales Rep/Mgr',
+          approverRole,
+          productBmc
+        }
+      case 1:
+        return  {
+          initiatorEmail: localStorage.ng_philips_code1,
+          initiatorRole: localStorage.roleCode,
+          approverRole,
+          productBmc
+        };
+      default:
+        return null;
     }
   }
   get orders() {
@@ -366,4 +398,26 @@ export class TransferLibComponent implements OnInit {
   expand() {
     this.isExpand = !this.isExpand
   }
+
+  exchangeMapping(value){
+    switch (value) {
+      case '互换':
+        this.orders.at(0).patchValue({
+          exchangeRole: '转出/转入'
+        });
+        this.orders.at(1).patchValue({
+          exchangeRole: '转出/转入'
+        });
+        break;
+      case '单向':
+        this.orders.at(0).patchValue({
+          exchangeRole: '转出'
+        });
+        this.orders.at(1).patchValue({
+          exchangeRole: '转入'
+        });
+        break;
+    }
+  }
+
 }

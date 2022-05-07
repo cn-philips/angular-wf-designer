@@ -58,22 +58,24 @@ export class SelectReferenceComponent implements OnInit {
   ]
 
   @Output() select: EventEmitter<Reference> = new EventEmitter()
+  @Output() cancelModal: EventEmitter<any> = new EventEmitter()
 
   constructor(private spService: SpecialApprovalService, private message: NzMessageService) { }
-
+  needCreateUser: boolean
   ngOnInit(): void { }
 
 
   public showModal(needCreateUser = true) {
     this.visible = true
-    this.getReferenceList(false, needCreateUser)
+     this.needCreateUser = needCreateUser
+    this.getReferenceList(false)
   }
 
-  async getReferenceList(resetPageNo = false, needCreateUser = true) {
+  async getReferenceList(resetPageNo = false) {
     if (resetPageNo) { this.searchParams.pageNo = 1 }
     this.tableLoading = true
     try {
-      const { rows, total } = await this.spService.getReferenceList(this.searchParams, needCreateUser)
+      const { rows, total } = await this.spService.getReferenceList(this.searchParams, this.needCreateUser)
       this.tableData.totalCount = total
       this.tableData.list = rows || []
     } catch ({ message }) {
@@ -85,9 +87,20 @@ export class SelectReferenceComponent implements OnInit {
   }
 
   onHideModal() {
+    this.searchParams =  {
+      pageNo: 1,
+      pageSize: 5,
+      orderType: null,
+      sap: null,
+      referenceId: null,
+      endUser: null,
+      distributor: null,
+    }
+    this.tableData = {
+      totalCount: 0,
+      list: []
+    }
     this.visible = false
-    this.searchParams = DEFAULT_SEARCH_PARAMS
-    this.tableData = DEFAULT_TABLE_DATA
   }
 
   onSelectReference(reference: Reference) {

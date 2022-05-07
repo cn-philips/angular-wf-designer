@@ -45,8 +45,13 @@ export class SpecialApprovalService {
   }
 
   initCycleGroupBigArea() {
-    const uri = `/act/specialapprove/salesregion?pageSize=999`;
-    this.http.get(uri).subscribe((res) => {
+    const uri = `/act/specialapprove/salesregion`;
+    this.http.get(uri, {
+      params: {
+        pageNo: 1,
+        pageSize: 999
+      }
+    }).subscribe((res) => {
       if ("0000" == res.code) {
         const cycleGroupBigAreas = res.data.rows
         this.cycleGroupBigAreaMap = cycleGroupBigAreas.reduce((calc, { team, region }) => {
@@ -61,6 +66,7 @@ export class SpecialApprovalService {
   get cycleGroups() {
     return Object.keys(this.cycleGroupBigAreaMap).map((cycleGroup) => ({ label: cycleGroup, value: cycleGroup }))
   }
+
 
   get bmcList() {
     return this.bmcClusterBgs.map(({ bmc, cluster, bg }) => ({ label: bmc, value: bmc, cluster, bg }))

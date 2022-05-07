@@ -103,8 +103,8 @@ export class RequestFormComponent implements OnInit {
     productType: [null], // 产品型号
     bmc: [null, [Validators.required]], // 产品线
     bg: [{ value: null, disabled: true }], // BG
+    cycleGroup: [null, [Validators.required]], // 产品区域-小区
     bigArea: [null, [Validators.required]], // 产品区域-大区
-    smallArea: [null, [Validators.required]], // 产品区域-小区
     businessModel: [null, [Validators.required]], // 业务模式
     hospitalName: [{ value: null, disabled: true }], // 医院名称
     hospitalNo: [{ value: null, disabled: true }], // 医院编号
@@ -115,7 +115,7 @@ export class RequestFormComponent implements OnInit {
     expectedSaleDate: [null, [Validators.required]], // 预计记认销售日期
     expectedPaymentDate: [null, [Validators.required]], // 预计付款(或场地就位)日期
     om: [null, [Validators.required]], // OM
-    exchangeRole: [null, [Validators.required]], // 换货角色
+    exchangeRole: [{ value: null, disabled: true }, [Validators.required]], // 换货角色
     exchangeProcessing: [null], // 换货方式
     saleEmail: [null, [Validators.required]], // 销售邮箱
     districtLeader: [null, [Validators.required]], // District Leader邮箱
