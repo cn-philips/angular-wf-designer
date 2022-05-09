@@ -67,7 +67,7 @@
           <div class="card-empty-icon" style="text-align: center"></div>
         </ng-container>
         <ng-container *ngIf="card.total > 0">
-          <div *ngFor="let request of card.list" class="request-list" (click)="onNavigateToRequestDetail(request)">
+          <div *ngFor="let request of card.list" class="request-list" (click)="onNavigateToRequestDetail(request, card)">
             <div class="request-list__header"></div>
             <div class="request-list__body">
               <strong class="font-weight-semibold">{{ request.applyCode }}</strong>

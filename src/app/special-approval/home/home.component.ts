@@ -332,9 +332,9 @@ export class HomeComponent implements OnInit {
   }
 
   // 跳转到申请详情
-  onNavigateToRequestDetail({ applyId, id, taskInstId }) {
+  onNavigateToRequestDetail({ applyId, id, taskInstId }, { title }) {
     this.router.navigate(["/special-approval/request", applyId || id], {
-      queryParams: { taskId: taskInstId },
+      queryParams: { taskId: title === '我的待办' ? taskInstId : null },
     });
   }
 
