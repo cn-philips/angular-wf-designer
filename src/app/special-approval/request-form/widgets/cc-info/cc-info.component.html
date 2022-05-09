@@ -29,13 +29,13 @@
         </nz-form-item>
       </div>
 
-      <div nz-col nzXs="24" nzSm="24" nzMd="12">
+      <div nz-col nzXs="24" nzSm="24" nzMd="12" *ngIf="ccWarningMessage.show">
         <nz-form-item>
-          <nz-alert nzType="warning" nzMessage="请务必抄送本订单OM, PM" nzShowIcon *ngIf="applyType !== APPLY_TYPE.LOGISTICSCOST"></nz-alert>
-          <nz-alert nzType="warning" nzMessage="请务必抄送本订单OM" nzShowIcon *ngIf="applyType === APPLY_TYPE.LOGISTICSCOST"></nz-alert>
+          <nz-alert nzType="warning" [nzMessage]="ccWarningMessage.message"></nz-alert>
         </nz-form-item>
       </div>
-
+    </div>
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
       <div nz-col nzXs="24" nzSm="24" nzMd="12">
         <nz-form-item>
           <nz-form-label nzXl="8" nzXXl="6">抄送节点</nz-form-label>

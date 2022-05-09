@@ -930,14 +930,15 @@ export class RequestFormComponent implements OnInit {
         this.showCancelBtn = true;
       }
 
-      this.showApproveTab = nodeAction !== NODE_ACTION.FEEDBACK && !!this.taskId && nodeInfoList.find(({ code, action, approverList }) => {
-        if (code === nodeCode && action === nodeAction) {
-          return approverList.find(({ user }) => user === localStorage.getItem('ng_philips_code1'));
-        } else {
-          return false;
-        }
-      });
+      // this.showApproveTab = nodeAction !== NODE_ACTION.FEEDBACK && !!this.taskId && nodeInfoList.find(({ code, action, approverList }) => {
+      //   if (code === nodeCode && action === nodeAction) {
+      //     return approverList.find(({ user }) => user === localStorage.getItem('ng_philips_code1'));
+      //   } else {
+      //     return false;
+      //   }
+      // });
 
+      this.showApproveTab = nodeAction !== NODE_ACTION.FEEDBACK && !!this.taskId
       this.showFeedbackTab = nodeAction === NODE_ACTION.FEEDBACK && this.isApplicant && !!this.taskId;
       this.showWithdrawBtn = processStatus === PROCESS_STATUS.START && this.isApplicant && nodeAction !== NODE_ACTION.FEEDBACK;
       this.approveNodeList = nodeInfoList;

@@ -37,6 +37,24 @@ export class CcInfoComponent implements OnInit {
     ccTypes: CC_TYPES
   }
 
+  get ccWarningMessage(): { show: boolean, message?: string } {
+    const data = {
+      show: false,
+      message: ''
+    }
+    if (
+      this.applyType === APPLY_TYPE.PRODUCTION ||
+      this.applyType === APPLY_TYPE.TRANSFER_LIB
+    ) {
+      data.show = true
+      data.message = '请务必抄送本订单OM，PM'
+    } else if (this.applyType === APPLY_TYPE.LOGISTICSCOST) {
+      data.show = true
+      data.message = '请务必抄送本订单OM'
+    }
+    return data
+  }
+
   ngOnInit(): void {
     const getUserList = (keyword: string) => {
       if (!keyword) {
