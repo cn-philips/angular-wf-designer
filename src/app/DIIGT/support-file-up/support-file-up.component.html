@@ -485,7 +485,7 @@
                           <a class="is" *ngIf="IsOtherInput()"></a>
                           <!-- <input  [disabled]="true" [(ngModel)]="odata.other" [ngModelOptions]="{standalone: true}" nz-input
                                   placeholder="" nzSize="default" style="width: 190px;margin-left:0px;" /> -->
-                                <div class="text" [(ngModel)]="odata.other" nz-tooltip [nzTitle]="odata.other" [ngModelOptions]="{standalone: true}" >
+                                <div class="text" nz-tooltip [nzTitle]="odata.other">
                                   {{ odata.other }}
                                 </div>
                           </div>
@@ -555,7 +555,7 @@
 
                     </nz-form-control>
                     <nz-form-control [nzSm]="4" [nzXs]="24" style="padding-left:4px;">
-                      <nz-select [ngModelOptions]="{standalone:true}" style="width: 100%;" [(ngModel)]="odata.bidAnnouncementCurrency"  nzAllowClear nzPlaceHolder="请选择币制" [disabled]="flag==1">
+                      <nz-select [ngModelOptions]="{standalone:true}" style="width: 100%;" [(ngModel)]="odata.bidAnnouncementCurrency"  nzAllowClear [nzPlaceHolder]="flag==1?'':'请选择币制'" [disabled]="flag==1">
                         <nz-option nzValue="USD" nzLabel="USD"></nz-option>
                         <nz-option nzValue="RMB" nzLabel="RMB"></nz-option>
                       </nz-select>
@@ -570,7 +570,7 @@
                     <nz-form-label [nzSm]="8" [nzXs]="24">Announcement Time of Bidding<br>中标公告发布时间</nz-form-label>
                     <nz-form-control [nzSm]="14" [nzXs]="24" nzHasFeedback>
                       <nz-date-picker  [ngModelOptions]="{standalone: true}"  [disabled]="flag==1" style="width: 100%" [nzStyle]="style"
-                                          [(ngModel)]="odata.announcementTime" nzPlaceHolder=""></nz-date-picker>
+                                          [(ngModel)]="odata.announcementTime" [nzPlaceHolder]="flag==1?'':'请选择日期'"></nz-date-picker>
                     </nz-form-control>
                   </nz-form-item>
                 </div>
@@ -581,7 +581,7 @@
                     <nz-form-label [nzSm]="8" [nzXs]="24">End Time of Bidding<br> 公示期结束时间</nz-form-label>
                     <nz-form-control [nzSm]="14" [nzXs]="24" nzHasFeedback>
                       <nz-date-picker  [ngModelOptions]="{standalone: true}"  [disabled]="flag==1" style="width: 100%" [nzStyle]="style"
-                                          [(ngModel)]="odata.publicityEndTime" nzPlaceHolder=""></nz-date-picker>
+                                          [(ngModel)]="odata.publicityEndTime" [nzPlaceHolder]="flag==1?'':'请选择日期'"></nz-date-picker>
                     </nz-form-control>
                   </nz-form-item>
                 </div>
@@ -592,7 +592,7 @@
                     <nz-form-label [nzSm]="8" [nzXs]="24">Specially Examined Time<br>特批完成时间</nz-form-label>
                     <nz-form-control [nzSm]="14" [nzXs]="24" nzHasFeedback>
                       <nz-date-picker  [ngModelOptions]="{standalone: true}"  [disabled]="flag==1" style="width: 100%" [nzStyle]="style"
-                                          [(ngModel)]="odata.speciallyExaminedTime" nzPlaceHolder=""></nz-date-picker>
+                                          [(ngModel)]="odata.speciallyExaminedTime" [nzPlaceHolder]="flag==1?'':'请选择日期'"></nz-date-picker>
                     </nz-form-control>
                   </nz-form-item>
                 </div>
@@ -603,7 +603,7 @@
                     <nz-form-label [nzSm]="8" [nzXs]="24">Bidding Notification Sign Time<br>后补中标通知书的签订时间</nz-form-label>
                     <nz-form-control [nzSm]="14" [nzXs]="24" nzHasFeedback>
                       <nz-date-picker  [ngModelOptions]="{standalone: true}" [disabled]="flag==1" style="width: 100%" [nzStyle]="style"
-                                          [(ngModel)]="odata.biddingNotificationSignTime" nzPlaceHolder=""></nz-date-picker>
+                                          [(ngModel)]="odata.biddingNotificationSignTime" [nzPlaceHolder]="flag==1?'':'请选择日期'"></nz-date-picker>
                     </nz-form-control>
                   </nz-form-item>
                 </div>
