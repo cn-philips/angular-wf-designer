@@ -506,3 +506,15 @@ $PADDING_GAP: 1rem;
     }
   }
 }
+.button-checked {
+  background: #337FBF !important;
+  border-color: #337FBF !important;
+}
+.button-notchecked:hover {
+  color: #337FBF !important;
+}
+.qa-label{
+  width: 140px;
+  border-radius: 0 !important;
+  text-align: center;
+}
