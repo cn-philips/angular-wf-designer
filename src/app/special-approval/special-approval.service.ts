@@ -275,8 +275,8 @@ export class SpecialApprovalService {
     return formatResponse(res)
   }
 
-  async getSaleEmail() {
-    const uri = `/act/role/getUsersByRole?role=Sales Rep/Mgr`;
+  async getUserByRole(role) {
+    const uri = `/act/role/getUsersByRole?role=` + role;
     const res = await this.http.get(uri).toPromise();
     return formatResponse(res);
   }
