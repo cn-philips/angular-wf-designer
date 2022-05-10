@@ -94,8 +94,8 @@
           <div class="mr-4 card user-manual-group">
             <div class="card-header"><i nz-icon type="read"></i>Q&A
               <nz-radio-group [(ngModel)]="qsType" [nzButtonStyle]="'solid'" style="position: absolute; right: 20px">
-                <label nz-radio-button nzValue="cos">cos</label>
-                <label nz-radio-button nzValue="sp">special approval</label>
+                <label nz-radio-button nzValue="cos" class="qa-label" [ngClass]="{'button-checked' : qsType == 'cos' , 'button-notchecked' : qsType != 'cos'}">COS</label>
+                <label nz-radio-button nzValue="sp" class="qa-label" [ngClass]="{'button-checked' : qsType == 'sp', 'button-notchecked' : qsType != 'sp'}">Special Approval</label>
               </nz-radio-group>
             </div>
             <div class="card-body d-flex user-manual-body">

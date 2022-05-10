@@ -78,7 +78,10 @@ export class TransferLibComponent implements OnInit {
   searchChange$ = new BehaviorSubject('');
   showDealerArea: Array<boolean> = [false, false] //是否展示经销商名称字段
   currentImportIndex: 0 //当前导入数据的tab(转出项目/转入项目)
-  isCreateUser: boolean = true //转出reference createUser 是否和当前账户一致
+  isCreateUser = {
+    0: true,
+    1: true,
+  }
 
   selectOptions = {
     orderTypes: ORDER_TYPES,
@@ -212,8 +215,9 @@ export class TransferLibComponent implements OnInit {
       this.showDealerArea[this.currentImportIndex] = true
     }
     if (this.currentImportIndex === 0) {
-      this.isCreateUser = createUser === getLoginUserCode1();
+      this.isCreateUser[1] = createUser === getLoginUserCode1();
     }
+    this.disableField(this.currentImportIndex)
     this.orders.at(this.currentImportIndex).patchValue({
       orderType,
       referenceId,
@@ -242,6 +246,24 @@ export class TransferLibComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    if (this.editable){
+      this.setLeaderEmailList(0)
+      this.setLeaderEmailList(1)
+    }
+    if (this.editable && this.orders.at(0).value.saleEmail) {
+      this.salesList0.push({
+        name: this.orders.at(0).value.saleEmail,
+        email: this.orders.at(0).value.saleEmail
+      })
+    }
+    if (this.editable && this.orders.at(0).value.bigArea) {
+      this.onBigAreaChange(this.orders.at(0).value.bigArea,0)
+    }
+    if (this.editable && this.orders.at(1).value.bigArea) {
+      this.onBigAreaChange(this.orders.at(0).value.bigArea,1)
+    }
+    this.checkMoney(0)
+    this.checkMoney(1)
     this.exchangeMapping(this.exchangeInfo.value.exchangeMethod);
     this.exchangeInfo.get('exchangeMethod').valueChanges.subscribe(next => {
       this.exchangeMapping(next);
@@ -258,10 +280,6 @@ export class TransferLibComponent implements OnInit {
       })
     }
 
-    const code = localStorage.getItem('roleCode')
-    if (code == 'Sales Rep/Mgr' || code == 'District Leader' || code == 'Sales Support') {
-      //金额隐藏验证 还未改完
-    }
     /*
     * @description 请求销售邮箱api？ copy过来，等待配置到api service中去
     * */
@@ -300,11 +318,7 @@ export class TransferLibComponent implements OnInit {
   * */
   async salesChange(index) {
     await this.getLeaderEmail(index)
-    await this.orders.at(index).patchValue({
-      districtLeader: this.districtList[index][0].approverEmail,
-      salesLeader: this.salesLeaderList[index][0].approverEmail,
-      productSalesMgr: this.productSalesList[index][0].approverEmail,
-    })
+    await this.checkMoney(index)
   }
   async getLeaderEmail(index){
     this.orders.controls.forEach((value , groupIndex) => {
@@ -315,10 +329,16 @@ export class TransferLibComponent implements OnInit {
         })
       }
     })
-    this.districtList[index] = await this.spService.getCustomizeEmail(this.getDistrictList('District Leader', undefined, index));
-    this.salesLeaderList[index] = await this.spService.getCustomizeEmail(this.getDistrictList('Sales Leader', undefined, index));
-    this.productSalesList[index] = await this.spService.getCustomizeEmail(this.getDistrictList('Product Sales Manager', this.orders.at(index).value.bmc, index))
 
+    const districtLeaders = await this.spService.getCustomizeEmail(this.getDistrictList('District Leader', undefined, index));
+    const salesLeaderLists = await this.spService.getCustomizeEmail(this.getDistrictList('Sales Leader', undefined, index));
+    const productSalesLists = await this.spService.getCustomizeEmail(this.getDistrictList('Product Sales Manager', this.orders.at(index).value.bmc, index))
+
+    await this.orders.at(index).patchValue({
+      districtLeader: districtLeaders[0].approverEmail,
+      salesLeader: salesLeaderLists[0].approverEmail,
+      productSalesMgr: productSalesLists[0].approverEmail,
+    })
   }
 
   /*
@@ -380,7 +400,7 @@ export class TransferLibComponent implements OnInit {
           productBmc
         };
       default:
-        return null;
+        return [];
     }
   }
   get orders() {
@@ -418,6 +438,48 @@ export class TransferLibComponent implements OnInit {
         });
         break;
     }
+  }
+
+   async setLeaderEmailList(index){
+    this.districtList[index] = await this.spService.getUserByRole('District Leader')
+    this.salesLeaderList[index] = await this.spService.getUserByRole('Sales Leader')
+    this.productSalesList[index] = await this.spService.getUserByRole('Product Sales Manager')
+  }
+
+  async checkMoney(index) {
+    const code = localStorage.getItem('roleCode')
+    const currEmail = getLoginUserCode1()
+    const transSale = this.orders.at(index).value.saleEmail;
+    const transDistrict = this.orders.at(index).value.districtLeader;
+    const transSalesLeader = this.orders.at(index).value.salesLeader;
+    if (
+      (code === 'Sales Rep/Mgr' || code === 'District Leader' || code === 'Sales Support' || code === 'Sales Leader') &&
+      (currEmail !== transSale && currEmail !== transSalesLeader && currEmail !== transDistrict)
+    ) {
+      this.isCreateUser[index] = false
+    }
+  }
+
+  disableField(index) {
+    let disabledFieldsList = [
+      'referenceId',
+      'productType',
+      'bmc',
+      'bg',
+      'cycleGroup',
+      'bigArea',
+      'businessModel',
+      'hospitalName',
+      'hospitalNo',
+      'projectName',
+      'sapOrderNo',
+      'orderAmount',
+      'currency',
+      'saleEmail',
+      'om']
+    disabledFieldsList.forEach(item => {
+      this.orders.at(index).get(item).disable()
+    })
   }
 
 }
