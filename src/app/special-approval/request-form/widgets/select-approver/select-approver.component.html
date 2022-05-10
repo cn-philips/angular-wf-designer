@@ -21,14 +21,14 @@
               <span>用户选择</span>
               <nz-select style="flex: 1;margin-left: 8px;" [(ngModel)]="node.customApproveList"
                 [nzMode]="node.mode === APPROVE_NODE_MODE.PARALLEL? 'multiple' : 'default'" nzPlaceHolder="输入邮箱查询"
-                nzShowSearch nzAllowClear [nzServerSearch]="true" (nzOnSearch)="onSearchUser($event)">
-                <ng-container *ngFor="let user of userList">
-                  <nz-option *ngIf="!isSearchLoading" [nzValue]="user.email" [nzLabel]="user.email"
+                nzShowSearch nzAllowClear [nzServerSearch]="true" (nzOnSearch)="onSearchUser($event, node.code)">
+                <ng-container *ngFor="let user of customUser[node.code]?.userList">
+                  <nz-option *ngIf="!customUser[node.code]?.loading" [nzValue]="user.email" [nzLabel]="user.email"
                     [nzCustomContent]="true">
                     {{ user.displayName || user.email }}
                   </nz-option>
                 </ng-container>
-                <nz-option *ngIf="isSearchLoading" nzDisabled nzCustomContent>
+                <nz-option *ngIf="customUser[node.code]?.loading" nzDisabled nzCustomContent>
                   <i nz-icon type="loading" class="loading-icon"></i> 查询中...
                 </nz-option>
               </nz-select>
