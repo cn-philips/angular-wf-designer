@@ -352,7 +352,7 @@ public dealerCodeList()
         this.dealList=rest.data;
         let dealerAgreementNo=this.dataBase.agreementNo;
         let select=this.dealList.find(val=>dealerAgreementNo==val.agreementNo);
-        !select&&(this.dataBase.agreementNo=null);
+        // !select&&(this.dataBase.agreementNo=null);
     })
   }
 }
