@@ -149,6 +149,8 @@ export class ProductionOrderInfoComponent implements OnInit {
       endUserId,
       contractPrice,
       invoiceInformation,
+      logistician,
+      marketBundleQuantity
     } = reference
     this.formValues.patchValue({
       orderType,
@@ -166,11 +168,12 @@ export class ProductionOrderInfoComponent implements OnInit {
       hospitalNo: endUserId,
       orderAmount: contractPrice,
       currency: invoiceInformation,
+      om: logistician,
       products: [{
         productType: productModel,
         wbs: "",
         itemNo: "",
-        quantity: "",
+        quantity: marketBundleQuantity,
       }],
     })
   }

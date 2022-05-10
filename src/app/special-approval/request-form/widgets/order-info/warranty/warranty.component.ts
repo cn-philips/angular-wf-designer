@@ -154,6 +154,8 @@ export class WarrantyOrderInfoComponent implements OnInit {
       endUserId,
       contractPrice,
       invoiceInformation,
+      logistician,
+      marketBundleQuantity
     } = reference;
     this.formValues.patchValue({
       orderType,
@@ -171,12 +173,13 @@ export class WarrantyOrderInfoComponent implements OnInit {
       hospitalNo: endUserId,
       orderAmount: contractPrice,
       currency: invoiceInformation,
+      om: logistician,
       products: [
         {
           productType: productModel,
           wbs: "",
           itemNo: "",
-          quantity: "",
+          quantity: marketBundleQuantity,
           warranty: {
             stdWarrantyMonths:
               STAND_WARRANTY_MONTH[this.formValues.get("bg").value],
