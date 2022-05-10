@@ -162,7 +162,7 @@ export class RequestFormComponent implements OnInit {
       expectedSaleDate: [null, [Validators.required]], // 预计记认销售日期
       applyArrivalTime: [null, [Validators.required]], // 申请到货时间
       expectedPaymentDate: [null, [Validators.required]], // 预计付款(或场地就位)日期
-      om: [null], // OM
+      om: [null, [Validators.required]], // OM
       exchangeRole: [null], // 换货角色
       exchangeProcessing: [null], // 换货方式
       saleEmail: [null], // 销售邮箱
@@ -271,17 +271,17 @@ export class RequestFormComponent implements OnInit {
   });
 
   initSaleRegions(isNewRequest = false) {
-    const regions = 
+    const regions =
       (JSON.parse(window.localStorage.getItem('profiles')) || []).map((region) => ({
         ...region,
-        label: [region.modality, region.cycleGroup, region.bigArea, region.smallArea].join('-'),
-        value: [region.modality, region.cycleGroup, region.bigArea, region.smallArea].join('-'),
+        label: [region.modality, region.cycleGroup, region.bigArea, region.smallArea].filter((str) => str && str.trim()).join('-'),
+        value: [region.modality, region.cycleGroup, region.bigArea, region.smallArea].filter((str) => str && str.trim()).join('-'),
       }))
     this.saleRegions = regions
     if (isNewRequest && regions.length === 1) {
       const { modality, cycleGroup, bigArea, smallArea } = regions[0]
       this.basicInfo.patchValue({
-        systemRegion: [modality, cycleGroup, bigArea, smallArea].join('-'),
+        systemRegion: [modality, cycleGroup, bigArea, smallArea].filter((str) => str && str.trim()).join('-'),
         bg: modality,
         cycleGroup,
         bigArea,
@@ -748,10 +748,13 @@ export class RequestFormComponent implements OnInit {
     }
 
     if (hasError) {
-      this.message.error('请按要求填写表单信息')
-      return
+      this.message.error('请按要求填写表单信息');
+      return;
     }
-    this.selectApprover.showModal(data)
+    if (!this.verifyProduct()) {
+      return;
+    }
+    this.selectApprover.showModal(data);
   }
 
   public async onSaveDraft() {
@@ -804,7 +807,7 @@ export class RequestFormComponent implements OnInit {
           applyType,
           applyItem,
           applyItemDesc,
-          systemRegion: (bg && cycleGroup) ? [bg, cycleGroup, bigArea, smallArea].join('-') : null,
+          systemRegion: (bg && cycleGroup) ? [bg, cycleGroup, bigArea, smallArea].filter((str) => str && str.trim()).join('-') : null,
           bg, cycleGroup, bigArea, smallArea,
           reason,
           applyFileIds: attachments.map(({ fileId }) => fileId)
@@ -1061,6 +1064,29 @@ export class RequestFormComponent implements OnInit {
 
 
     return true
+  }
+
+  // 校验产品列表
+  // 特批开始生产、物流运输、额外安装费用及其他售后费用  验证产品列表不能为空
+  public verifyProduct() {
+    if (this.applyType === APPLY_TYPE.PRODUCTION || this.applyType === APPLY_TYPE.EXT_INSTALL_COST || this.applyType === APPLY_TYPE.LOGISTICSCOST) {
+      const orderInfo = this.formValues.getRawValue().orderInfo;
+      if (orderInfo && orderInfo.products && orderInfo.products.length > 0) {
+        for (let i = 0; i < orderInfo.products.length; i++) {
+          if (this.isEmpty(orderInfo.products[i].productType) || this.isEmpty(orderInfo.products[i].wbsNo) || this.isEmpty(orderInfo.products[i].itemNo) || this.isEmpty(orderInfo.products[i].quantity)) {
+            this.message.error('请完善产品列表信息');
+            return false;
+          }
+        }
+      } else {
+        this.message.error('请完善产品列表信息');
+        return false;
+      }
+    }
+    return true;
+  }
+  public isEmpty(e) {
+    return e === '' || e === null || e === undefined;
   }
 
 }
