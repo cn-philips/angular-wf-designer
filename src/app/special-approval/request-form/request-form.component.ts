@@ -733,6 +733,11 @@ export class RequestFormComponent implements OnInit {
         }
         hasError = this.basicInfo.invalid || this.orderInfo.invalid
     }
+
+    if (this.applyType === APPLY_TYPE.EXT_WARRANTY && orderInfos[0] && orderInfos[0].products && orderInfos[0].products.length === 0) {
+      this.message.error('请填写延保信息');
+      return
+    }
     // 抄送人和抄送节点必须同时选择或者同时不选择
     if (ccType && !ccPerson) {
       this.message.error('请选择抄送人');
