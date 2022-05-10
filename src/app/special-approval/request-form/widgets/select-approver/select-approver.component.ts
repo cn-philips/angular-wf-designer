@@ -18,6 +18,7 @@ interface Approver {
 }
 
 interface ApproveNode {
+  code: string;
   name: string;
   action: APPROVE_NODE_ACTION;
   mode: APPROVE_NODE_MODE;
@@ -49,12 +50,14 @@ export class SelectApproverComponent implements OnInit {
 
   visible = false;
   modalLoading = false;
-  userList = [];
   submitLoading = false;
 
   fetchUserUrl = "/act/role/getUsersByEmail";
   searchChange$ = new BehaviorSubject("");
-  isSearchLoading = false;
+
+  customUser = {}
+
+  activeNodeCode = null
 
   APPROVE_NODE_MODE = APPROVE_NODE_MODE;
 
@@ -71,7 +74,7 @@ export class SelectApproverComponent implements OnInit {
   ngOnInit() {
     const getUserList = (keyword: string) => {
       if (!keyword) {
-        this.isSearchLoading = false;
+        if (this.activeNodeCode) { this.customUser[this.activeNodeCode].loading = false }
         return [];
       }
       return this.http
@@ -94,8 +97,10 @@ export class SelectApproverComponent implements OnInit {
       .pipe(debounceTime(500))
       .pipe(switchMap(getUserList));
     optionList$.subscribe((data) => {
-      this.userList = data;
-      this.isSearchLoading = false;
+      this.customUser[this.activeNodeCode] = {
+        loading: false,
+        userList: data,
+      }
     });
   }
 
@@ -105,6 +110,14 @@ export class SelectApproverComponent implements OnInit {
       this.modalLoading = true;
       const data = await this.spService.submitCheckRequest(request);
       this.requestInfo = data;
+      data.activeNodeInfoList.forEach(({ code, custom }) => {
+        if (custom) {
+          this.customUser[code] = {
+            loading: false,
+            userList: []
+          }
+        }
+      })
     } catch ({ message }) {
       this.message.error(`获取审批人失败, 请稍候重试`);
       this.onHideModal();
@@ -172,8 +185,9 @@ export class SelectApproverComponent implements OnInit {
     return approvers;
   }
 
-  onSearchUser(keyword: string) {
-    this.isSearchLoading = true;
+  onSearchUser(keyword: string, nodeCode) {
+    this.activeNodeCode = nodeCode
+    this.customUser[nodeCode].loading = true
     this.searchChange$.next(keyword);
   }
 }

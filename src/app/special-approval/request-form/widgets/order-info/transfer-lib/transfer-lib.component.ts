@@ -206,6 +206,7 @@ export class TransferLibComponent implements OnInit {
       invoiceInformation,
       createUser,
       logistician,
+      marketBundleQuantity
     } = reference
     this.salesList0 = [];
     this.salesList0.push({
@@ -244,7 +245,7 @@ export class TransferLibComponent implements OnInit {
         productType: productModel,
         wbs: "",
         itemNo: "",
-        quantity: ""}],
+        quantity: marketBundleQuantity}],
       om: logistician,
       saleEmail: createUser
     })

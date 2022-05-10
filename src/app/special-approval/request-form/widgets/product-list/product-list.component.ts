@@ -2,7 +2,7 @@ import { Component, OnInit, Input } from "@angular/core";
 import { FormGroup } from "@angular/forms";
 import * as moment from "moment";
 
-import { STAND_WARRANTY_MONTH, LOGISTICS_STATUS } from '../../../special-approval.constants';
+import { LOGISTICS_STATUS } from '../../../special-approval.constants';
 import { SpecialApprovalService } from "../../../special-approval.service";
 
 interface Product {
@@ -57,7 +57,7 @@ export class ProductListComponent implements OnInit {
         wbs: "",
         itemNo: "",
         quantity: '1',
-        warranty: { stdWarrantyMonths: STAND_WARRANTY_MONTH[this.bg] },
+        warranty: { stdWarrantyMonths: this.spService.standWarrantyMonth[this.bg] },
       },
     ]);
   }

@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core'
 import { FormGroup } from '@angular/forms'
-import { UploadXHRArgs, UploadFile, NzModalService } from 'ng-zorro-antd'
+import {UploadXHRArgs, UploadFile, NzModalService, NzMessageService} from 'ng-zorro-antd';
 
 import { APPLY_TYPE } from '../../../special-approval.constants'
 import { SpecialApprovalService } from '../../../special-approval.service'
@@ -27,7 +27,7 @@ export class BasicInfoComponent implements OnInit {
 
   APPLY_TYPE = APPLY_TYPE
 
-  constructor(private spService: SpecialApprovalService, private modal: NzModalService) {}
+  constructor(private spService: SpecialApprovalService, private modal: NzModalService, private message: NzMessageService) {}
 
   ngOnInit(): void {}
 
@@ -88,8 +88,12 @@ export class BasicInfoComponent implements OnInit {
 
   // 上传之前的校验(文件类型, 文件大小), 校验不通过, return false, 会阻止自动上传
   onBeforeUpload = (file) => {
+    if (this.formValues.getRawValue().applyFileIds.length >= 5) {
+      this.message.error('最多上传5个文件');
+      return false;
+    }
     console.log('before upload', file);
-    return true
+    return true;
   }
 
   onRemoveFile = (file: UploadFile) => {

@@ -23,7 +23,7 @@
         <nz-form-item>
           <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="bgIn" nzRequired>BG</nz-form-label>
           <nz-form-control [nzSm]="18" [nzXs]="24">
-            <nz-select id="bgIn" formControlName="bgIn" nzAllowClear nzPlaceHolder="请选择" nzMode="multiple">
+            <nz-select id="bgIn" formControlName="bgIn" nzAllowClear nzPlaceHolder="请选择" (ngModelChange)="refuseBgChang($event)" nzMode="multiple">
               <nz-option *ngFor="let bg of selectOptions.bgs" [nzValue]="bg" [nzLabel]="bg == 'PD&IGT'? 'PD&IGT(excel.US)': bg"></nz-option>
             </nz-select>
           </nz-form-control>

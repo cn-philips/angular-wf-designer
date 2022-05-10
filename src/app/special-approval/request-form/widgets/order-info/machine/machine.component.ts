@@ -193,6 +193,8 @@ export class MachineComponent implements OnInit {
       endUserId,
       contractPrice,
       invoiceInformation,
+      logistician,
+      marketBundleQuantity
     } = reference;
     this.orders.at(this.selectIndex).patchValue({
       orderType,
@@ -210,13 +212,14 @@ export class MachineComponent implements OnInit {
       hospitalNo: endUserId,
       orderAmount: contractPrice,
       currency: invoiceInformation,
+      om: logistician,
       products: [
         {
           id: Date.now(),
           productType: productModel,
           wbs: "",
           itemNo: "",
-          quantity: "",
+          quantity: marketBundleQuantity,
         },
       ],
     });

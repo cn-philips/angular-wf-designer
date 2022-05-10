@@ -9,7 +9,5 @@ import { FormGroup } from "@angular/forms";
 export class WarrantyInfoComponent {
   @Input() orderInfo: FormGroup;
   @Input() editable: boolean;
-  @Input() minMon: number;
-  @Input() maxMon: number;
   constructor() {}
 }
