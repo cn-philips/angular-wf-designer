@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpService } from '../services/http.service'
 import { Subject } from 'rxjs'
-import { APPLY_TYPE_MAP, PROCESS_STATUS, NODE_ACTION, PROCESS_STATUS_MAP } from './special-approval.constants'
+import { APPLY_TYPE_MAP, PROCESS_STATUS, NODE_ACTION, PROCESS_STATUS_MAP, STAND_WARRANTY_MONTH } from './special-approval.constants'
 import { DictService } from '../services/dict.service';
+import { Dict } from '../domian';
 
 function getLoginUserCode1() {
   return localStorage.getItem('ng_philips_code1')
@@ -98,6 +99,17 @@ export class SpecialApprovalService {
 
   get usProductList() {
     return this.dictService.getDictListByGroupName('us_product_list').map(({ tag, label }) => ({ label: tag, value: label }))
+  }
+
+  get standWarrantyMonth() {
+    const warrantyMonth: { [key: string]: number } = {}
+    const warrantyMonths = this.dictService.getDictListByGroupName('default_warranty_month')
+    warrantyMonths.forEach(({ code, label }) => {
+      if (STAND_WARRANTY_MONTH[code]) {
+        warrantyMonth[STAND_WARRANTY_MONTH[code]] = Number(label)
+      }
+    })
+    return warrantyMonth
   }
 
   // 获取用户可以使用的申请模板
