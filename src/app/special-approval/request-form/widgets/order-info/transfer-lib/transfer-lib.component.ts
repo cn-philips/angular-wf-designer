@@ -157,21 +157,22 @@ export class TransferLibComponent implements OnInit {
     }
   }
 
-  onShowSelectHospitalModal() {
+  onShowSelectHospitalModal(index) {
+    this.currentImportIndex = index
     this.selectHospital.showModal()
   }
 
   onSelectHospital(hospital: Hospital) {
     const { no, customerName } = hospital
-    this.formValues.patchValue({
+    this.orders.at(this.currentImportIndex).patchValue({
       hospitalNo: no,
       hospitalName: customerName,
     })
     this.onCalcProjectName(0)
   }
 
-  onClearHospital() {
-    this.formValues.patchValue({
+  onClearHospital(index) {
+    this.orders.at(index).patchValue({
       hospitalNo: null,
       hospitalName: null,
     })
@@ -216,7 +217,11 @@ export class TransferLibComponent implements OnInit {
     }
     if (this.currentImportIndex === 0) {
       this.isCreateUser[1] = createUser === getLoginUserCode1();
+      this.referenceImport0 = true
+    } else {
+      this.referenceImport1 = true
     }
+
     this.disableField(this.currentImportIndex)
     this.orders.at(this.currentImportIndex).patchValue({
       orderType,
@@ -243,13 +248,11 @@ export class TransferLibComponent implements OnInit {
       om: logistician,
       saleEmail: createUser
     })
+    this.onCheckExchangeType();
+
   }
 
   ngOnInit(): void {
-    if (this.editable){
-      this.setLeaderEmailList(0)
-      this.setLeaderEmailList(1)
-    }
     if (this.editable && this.orders.at(0).value.saleEmail) {
       this.salesList0.push({
         name: this.orders.at(0).value.saleEmail,
@@ -257,13 +260,18 @@ export class TransferLibComponent implements OnInit {
       })
     }
     if (this.editable && this.orders.at(0).value.bigArea) {
-      this.onBigAreaChange(this.orders.at(0).value.bigArea,0)
+      this.onBigAreaChange(this.orders.at(0).value.cycleGroup,0)
     }
     if (this.editable && this.orders.at(1).value.bigArea) {
-      this.onBigAreaChange(this.orders.at(0).value.bigArea,1)
+      this.onBigAreaChange(this.orders.at(1).value.cycleGroup,1)
     }
+
+
+
     this.checkMoney(0)
-    this.checkMoney(1)
+    if (!this.editable){
+      this.checkMoney(1)
+    }
     this.exchangeMapping(this.exchangeInfo.value.exchangeMethod);
     this.exchangeInfo.get('exchangeMethod').valueChanges.subscribe(next => {
       this.exchangeMapping(next);
@@ -298,9 +306,22 @@ export class TransferLibComponent implements OnInit {
       .pipe(debounceTime(500))
       .pipe(switchMap(getSaleList));
     optionList$.subscribe(data => {
-      this.salesList1 = data;
+      this.salesList0 = data;
       this.isSearchLoading = false;
     });
+    // 放前面会影响数据填充
+    if (this.editable){
+      this.setLeaderEmailList(0)
+      this.setLeaderEmailList(1)
+      if (this.orders.at(0).get('referenceId').value) {
+        this.referenceImport0 = true
+        this.disableField(0)
+      }
+      if (this.orders.at(1).get('referenceId').value) {
+        this.referenceImport1 = true
+        this.disableField(1)
+      }
+    }
   }
 
    // 初始化OM列表
@@ -361,8 +382,8 @@ export class TransferLibComponent implements OnInit {
   * */
   onCheckExchangeType() {
     let exchangeType = ''
-    let outputCurrency = this.orders.at(0).value.currency
-    let inputCurrency = this.orders.at(1).value.currency
+    let outputCurrency = this.orders.at(0).get('currency').value
+    let inputCurrency = this.orders.at(1).get('currency').value
     if (inputCurrency === outputCurrency) {
       exchangeType = 'within ORU'
     } else if (inputCurrency === 'CNY' && outputCurrency === 'USD') {
@@ -410,6 +431,8 @@ export class TransferLibComponent implements OnInit {
   /*
   * @description: 销售邮箱变化
   * */
+  referenceImport0: boolean = false;
+  referenceImport1: boolean = false;
   onSearchSales(keyword: string) {
     this.isSearchLoading = true
     this.searchChange$.next(keyword)
@@ -462,7 +485,6 @@ export class TransferLibComponent implements OnInit {
 
   disableField(index) {
     let disabledFieldsList = [
-      'referenceId',
       'productType',
       'bmc',
       'bg',
