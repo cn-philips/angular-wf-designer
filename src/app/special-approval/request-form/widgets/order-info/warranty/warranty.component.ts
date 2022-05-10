@@ -19,7 +19,6 @@ import {
   ORDER_TYPES,
   BUSINESS_MODEL_LIST,
   CURRENCIES,
-  STAND_WARRANTY_MONTH,
 } from "../../../../special-approval.constants";
 import { SpecialApprovalService } from "../../../../special-approval.service";
 
@@ -181,8 +180,7 @@ export class WarrantyOrderInfoComponent implements OnInit {
           itemNo: "",
           quantity: marketBundleQuantity,
           warranty: {
-            stdWarrantyMonths:
-              STAND_WARRANTY_MONTH[this.formValues.get("bg").value],
+            stdWarrantyMonths: this.spService.standWarrantyMonth[this.formValues.get("bg").value]
           },
         },
       ],

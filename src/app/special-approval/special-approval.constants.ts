@@ -80,9 +80,9 @@ const APPLY_TYPES = [
 ];
 
 const STAND_WARRANTY_MONTH = {
-  "PD&IGT": 12,
-  US: 15,
-  CC: 12,
+  default_warranty_month_pdigt: 'PD&IGT',
+  default_warranty_month_us: 'US',
+  default_warranty_month_cc: 'CC'
 };
 
 const BG_LIST = [
