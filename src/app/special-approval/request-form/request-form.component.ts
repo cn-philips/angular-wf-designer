@@ -101,7 +101,7 @@ export class RequestFormComponent implements OnInit {
   // 转库 form表单字段，单独提取出来
   private transferLibOrderInit = {
     orderType: [null, [Validators.required]], // 订单类型
-    referenceId: [null, [Validators.required]], // Reference Id
+    referenceId: [{ value: null, disabled: true }], // Reference Id
     productType: [null], // 产品型号
     bmc: [null, [Validators.required]], // 产品线
     bg: [{ value: null, disabled: true }], // BG
@@ -264,8 +264,8 @@ export class RequestFormComponent implements OnInit {
     }),
     transferLibOrders: this.fb.group({
       orders: this.fb.array([ // 转库订单详情
-        this.fb.group({...this.transferLibOrderInit}),
-        this.fb.group({...this.transferLibOrderInit})
+        this.fb.group({...this.transferLibOrderInit, applyId: null, id: null}),
+        this.fb.group({...this.transferLibOrderInit, applyId: null, id: null})
       ])
     })
   });
@@ -423,7 +423,7 @@ export class RequestFormComponent implements OnInit {
       if (item === 'sp_lcamendment_apply_item_5') {
         this.basicInfo.controls.applyItemDesc.setValidators([Validators.required]);
       }
-    } else if (type === APPLY_TYPE.TRANSFER_LIB) { //如果是转库，禁用相关form表单内容。
+    } else if (type === APPLY_TYPE.TRANSFER_LIB) {
       //该功能已取消
       // let disabledFieldsList = ['referenceId','productType', 'bmc', 'bigArea', 'businessModel', 'projectName', 'sapOrderNo', 'orderAmount', 'currency', 'saleEmail', 'om']
       // disabledFieldsList.forEach(item => {
@@ -437,7 +437,7 @@ export class RequestFormComponent implements OnInit {
 
     if (bg === 'PD&IGT') {
       this.orderInfo.controls.referenceId.disable();
-      if (type !== APPLY_TYPE.LC_AMENDMENT) {
+      if (type !== APPLY_TYPE.LC_AMENDMENT && type !== APPLY_TYPE.TRANSFER_LIB) {
         this.orderInfo.controls.productType.disable();
       }
     } else {
@@ -713,6 +713,7 @@ export class RequestFormComponent implements OnInit {
             formValidError = true
           }
         })
+
         hasError = this.basicInfo.invalid || formValidError
         break
       default:
@@ -881,6 +882,7 @@ export class RequestFormComponent implements OnInit {
         })
         this.setFormValidators(applyType, applyItem, orderInfos[0].bg)
       } else if(applyType === APPLY_TYPE.TRANSFER_LIB) { // 设置查看详情时代入数据
+        console.log(orderInfos)
         this.formValues.patchValue({
           transferLibOrders: {
             orders: [

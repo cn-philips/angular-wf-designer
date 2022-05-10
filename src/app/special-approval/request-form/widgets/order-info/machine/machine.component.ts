@@ -236,10 +236,25 @@ export class MachineComponent implements OnInit {
   ngOnInit(): void {
     this.initOMUsers()
     this.getLeaderEmail(localStorage.getItem('ng_philips_code1'), 0);
-
     this.orders.at(0).patchValue({
       saleEmail: localStorage.getItem('ng_philips_code1')
     })
+    this.formValues.patchValue({
+      exchangeMethod: '互换',
+      orders:[
+        {
+        exchangeRole: '互换'
+         },
+        {
+          exchangeRole: '互换'
+        }]
+    })
+    if (this.editable && this.orders.at(1).get('saleEmail').value) {
+      this.salesList1.push({
+        name: this.orders.at(1).get('saleEmail').value,
+        email: this.orders.at(1).get('saleEmail').value
+      })
+    }
     if (this.editable) {
       this.orders
         .at(0)

@@ -16,7 +16,7 @@
             </div>
             <div nz-col nzSpan="24">
               <nz-form-item class="order-list-normal-label">
-                <nz-form-label nzRequired>Reference ID</nz-form-label>
+                <nz-form-label>Reference ID</nz-form-label>
               </nz-form-item>
             </div>
             <div nz-col nzSpan="24" [@openClose]="isExpand ? 'close' : 'open'">
@@ -124,7 +124,7 @@
         </nz-card>
       </div>
       <div nz-col nzSpan="9" *ngFor="let ord of orders.controls;let index = index" [formGroupName]="index">
-        <nz-card [nzTitle]="index === 0 ? '转出项目': '转入项目'"  [nzExtra]=" index === 0 ? exportTemplate0: exportTemplate1 " [nzBodyStyle]="{padding: '0'}">
+        <nz-card [nzTitle]="index === 0 ? '转出项目': '转入项目'" [nzBodyStyle]="{padding: '0'}">
           <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
             <div nz-col nzSpan="24"  [@openClose]="isExpand ? 'close' : 'open'">
               <nz-form-item class="order-list-normal-item">
@@ -154,8 +154,8 @@
             <div nz-col nzSpan="24">
               <nz-form-item class="order-list-normal-item">
                 <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-                  <nz-input-group nzFlex style="width: 100%">
-                    <input id="referenceId" type="text" nz-input formControlName="referenceId" class="flex-grow-1" />
+                  <nz-input-group nzFlex style="width: 100%" [nzSuffix]="index === 0 ? exportTemplate0: exportTemplate1">
+                    <input id="referenceId" type="text" nz-input formControlName="referenceId" class="flex-grow-1"/>
                     <nz-form-explain *ngIf="ord.get('referenceId')?.dirty && ord.get('referenceId')?.errors">
                       请输入referenceId
                     </nz-form-explain>
@@ -166,7 +166,7 @@
             <div nz-col nzSpan="24"  [@openClose]="isExpand ? 'close' : 'open'">
               <nz-form-item class="order-list-normal-item">
                 <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-                  <input type="text" nz-input formControlName="productType" disabled />
+                  <input type="text" nz-input formControlName="productType" />
                 </nz-form-control>
               </nz-form-item>
             </div>
@@ -242,16 +242,16 @@
             <div nz-col nzSpan="24"  [@openClose]="isExpand ? 'close' : 'open'">
               <nz-form-item class="order-list-normal-item">
                 <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-                  <nz-input-group style="width: 100%" [nzSuffix]="clearHospitalBtn" [nzAddOnAfter]="selectHospitalBtn">
+                  <nz-input-group style=" width: 100%" [nzSuffix]="clearHospitalBtn" [nzAddOnAfter]="selectHospitalBtn">
                     <input id="hospitalName" type="text" nz-input formControlName="hospitalName" [placeholder]="editable ? '点击右侧按钮选择医院' : ''" />
                   </nz-input-group>
 
                   <ng-template #clearHospitalBtn>
-                    <i nz-icon nz-tooltip class="ant-input-clear-icon" nzTheme="fill" nzType="close-circle" *ngIf="ord.get('hospitalNo').value && editable" (click)="onClearHospital()"></i>
+                    <i nz-icon nz-tooltip class="ant-input-clear-icon" nzTheme="fill" nzType="close-circle" *ngIf="ord.get('hospitalNo').value && editable" (click)="onClearHospital(index)"></i>
                   </ng-template>
 
                   <ng-template #selectHospitalBtn>
-                    <button *ngIf="editable" nz-button nzType="primary" class="ml-md" (click)="onShowSelectHospitalModal()">选择医院</button>
+                    <button *ngIf="editable && !(index === 0 ? referenceImport0 : referenceImport1)" nz-button nzType="primary" class="ml-md" (click)="onShowSelectHospitalModal(index)">选择医院</button>
                   </ng-template>
                 </nz-form-control>
               </nz-form-item>
@@ -286,7 +286,7 @@
             <div nz-col nzSpan="24">
               <nz-form-item class="order-list-normal-item">
                 <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-                  <input *ngIf="isCreateUser[index]" id="orderAmount" type="text" nz-input formControlName="orderAmount" />
+                  <input *ngIf="editable? index === 1 : isCreateUser[index]" id="orderAmount" type="text" nz-input formControlName="orderAmount" />
                   <nz-form-explain *ngIf="ord.get('orderAmount')?.dirty && ord.get('orderAmount')?.errors">
                     请填写合同金额
                   </nz-form-explain>

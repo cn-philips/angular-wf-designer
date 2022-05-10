@@ -289,7 +289,7 @@
               <nz-form-label [nzRequired]="i == 1" nzXl="8" nzXXl="6">销售邮箱</nz-form-label>
               <nz-form-control nzXs="24" nzSm="24" nzMd="14">
                 <nz-select nzShowSearch nzAllowClear formControlName="saleEmail" [nzPlaceHolder]="editable ? '输入查询销售邮箱' : ''" (ngModelChange)="salesChange($event, i)"
-                (nzOnSearch)="onSearchSales($event, i)" [nzServerSearch]="true"
+                (nzOnSearch)="onSearchSales($event, i)" [nzServerSearch]="true" *ngIf="editable"
                 >
 <!--                  <nz-option *ngFor="let item of salesList" [nzLabel]="item" [nzValue]="item"></nz-option>-->
                   <ng-container *ngFor="let sale of i == 0? salesList : salesList1">
@@ -301,6 +301,7 @@
                     <i nz-icon type="loading" class="loading-icon"></i> 查询中...
                   </nz-option>
                 </nz-select>
+                <input nz-input formControlName="saleEmail" *ngIf="!editable">
                 <nz-form-explain *ngIf="ord.get('saleEmail')?.dirty && ord.get('saleEmail')?.errors">
                   请选择销售邮箱
                 </nz-form-explain>
