@@ -164,9 +164,11 @@ export class ReportComponent implements OnInit {
   //BG change后刷新
   refuseBgChang(e) {
     let bgInList = this.formValues.get("bgIn").value;
-    if (bgInList.length == 0) {
+    if (bgInList.length > 0) {
+      this.initPermission(this.formValues.get("bgIn").value);
+    } else {
       this.message.error("请选择BG");
+      this.userPermission = [];
     }
-    this.initPermission(this.formValues.get("bgIn").value);
   }
 }
