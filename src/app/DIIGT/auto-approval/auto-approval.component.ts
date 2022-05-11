@@ -31,7 +31,7 @@ export class AutoApprovalComponent implements OnInit {
     this.router.navigate(["/"]);
   }
   getInit() {
-    
+
     let url = this.activatedRouter.snapshot['_routerState'].url;
         url=url.split("?");
         url=url[0];
@@ -42,7 +42,7 @@ export class AutoApprovalComponent implements OnInit {
       processInstanceTaskId: processInstanceTaskId,
       approvalResult: approvalResult
     }
-    localStorage.setItem("routerInfo", JSON.stringify(routerObj))
+    //localStorage.setItem("routerInfo", JSON.stringify(routerObj))
     this.param.processInstanceTaskId = this.activatedRouter.queryParams['_value'].processInstanceTaskId;
     this.param.approvalResult = this.activatedRouter.queryParams['_value'].approvalResult;
     this.param.phaseTwo = this.activatedRouter.snapshot.queryParams.phaseTwo
@@ -54,10 +54,10 @@ export class AutoApprovalComponent implements OnInit {
           approvalResult,
           phaseTwo
         }
-      });    
+      });
     }
     else {
-      let url = this.param.phaseTwo === 'true' ? '/act/specialapprove/workflow/rapidApproval' : `/act/process/rapidApproval`;     
+      let url = this.param.phaseTwo === 'true' ? '/act/specialapprove/workflow/rapidApproval' : `/act/process/rapidApproval`;
       this.http.post(url, this.param).subscribe((res => {
         if (res.code == '0000') {
           this.successOff = true;
@@ -65,7 +65,7 @@ export class AutoApprovalComponent implements OnInit {
           localStorage.removeItem("routerInfo")
         }
         else{
-          this.load = false;        
+          this.load = false;
           this.lossOff=true;
           localStorage.removeItem("routerInfo")
           this.message.create('error', res.msg);

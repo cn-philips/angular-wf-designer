@@ -273,6 +273,14 @@ export class LayoutSidenavComponent implements OnInit, AfterViewInit, OnDestroy 
     }
   }
 
+  isParentActive(menuItem: any) {
+    if (menuItem.children != undefined && menuItem.children != null) {
+      return menuItem.children.some(item => item.route == this.router.routerState.snapshot.url);
+    } else {
+      return menuItem.route == this.router.routerState.snapshot.url;
+    }
+  }
+
   isMenuActive(url) {
     return this.router.isActive(url, false);
   }
