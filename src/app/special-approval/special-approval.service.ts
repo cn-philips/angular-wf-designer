@@ -203,7 +203,7 @@ export class SpecialApprovalService {
       .get(uri, {
         params: {
           ...params,
-          approveUser: getLoginUserCode1(),
+          approverOrOwner: getLoginUserCode1(),
           orderByClause: "createTime desc",
         },
       })
