@@ -173,7 +173,7 @@
         <nz-form-item>
           <nz-form-label nzXl="8" nzXXl="6" [nzRequired]="bg.value === 'PD&IGT'" nzFor="projectName">项目名称</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <input id="projectName" nz-input formControlName="projectName" [placeholder]="bg.value === 'PD&IGT' ? '' : '自动生成: 医院名称-产品型号'" />
+            <input id="projectName" nz-input formControlName="projectName" [placeholder]="bg.value === 'PD&IGT' ? '' : '自动生成: 医院名称-产品型号'" maxlength="300" />
             <nz-form-explain *ngIf="formValues.get('projectName')?.dirty && formValues.get('projectName')?.errors && bg.value === 'PD&IGT'">
               请填写项目名称
             </nz-form-explain>
@@ -187,7 +187,7 @@
         <nz-form-item>
           <nz-form-label nzXl="8" nzXXl="6" nzRequired nzFor="sapOrderNo">SAP订单号(SO#)</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <input id="sapOrderNo" nz-input formControlName="sapOrderNo" />
+            <input id="sapOrderNo" nz-input formControlName="sapOrderNo" maxlength="50" />
             <nz-form-explain *ngIf="formValues.get('sapOrderNo')?.dirty && formValues.get('sapOrderNo')?.errors">
               请填写SAP订单号(SO#)
             </nz-form-explain>
@@ -199,7 +199,7 @@
           <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzXl="8" nzXXl="6" nzRequired  nzFor="orderAmount">合同金额</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <nz-form-control nzXs="24" nzSm="24" nzMd="9">
-              <input id="orderAmount" type="text" nz-input formControlName="orderAmount" />
+              <input id="orderAmount" type="text" nz-input formControlName="orderAmount" maxlength="12" />
               <nz-form-explain *ngIf="formValues.get('orderAmount')?.dirty && formValues.get('orderAmount')?.errors">
                 请填写合同金额
               </nz-form-explain>
