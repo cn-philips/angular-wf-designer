@@ -554,9 +554,11 @@ export class RequestFormComponent implements OnInit {
         data.orderInfos = [
           {
             ...transferLibOrders.orders.at(0),
+            transferCargo: 'sp_transferlib_order_type_item_1'
           },
           {
             ...transferLibOrders.orders.at(1),
+            transferCargo: 'sp_transferlib_order_type_item_2'
           }
         ]
         data.extInfo = {
@@ -684,6 +686,10 @@ export class RequestFormComponent implements OnInit {
         }
         break
       case APPLY_TYPE.MACHINE_EXCHANGE:
+        if (!orderInfos[0].hospitalName || !orderInfos[1].hospitalName) {
+          this.message.error('请选择医院')
+          return
+        }
         const check = this.checkMachineExchange();
         if (!check){
           return
@@ -706,6 +712,10 @@ export class RequestFormComponent implements OnInit {
       case APPLY_TYPE.TRANSFER_LIB:
         const transferLibOrder = this.transferLibInfos.get('orders') as FormArray
         let formValidError = false
+        if (!transferLibOrder.at(0).get('hospitalName').value || !transferLibOrder.at(1).get('hospitalName').value) {
+          this.message.error('请选择医院再提交')
+          return
+        }
         transferLibOrder.controls.forEach((item, index) => {
           let formGroupItem = item as FormGroup
           this.checkForm(formGroupItem)
@@ -882,16 +892,27 @@ export class RequestFormComponent implements OnInit {
         })
         this.setFormValidators(applyType, applyItem, orderInfos[0].bg)
       } else if(applyType === APPLY_TYPE.TRANSFER_LIB) { // 设置查看详情时代入数据
-        console.log(orderInfos)
+        let order0 = null
+        let order1 = null
+      if (orderInfos[0].transferCargo === 'sp_transferlib_order_type_item_1') {
+         order0 = orderInfos[0]
+      } else {
+        order0 = orderInfos[1]
+      }
+        if (orderInfos[1].transferCargo === 'sp_transferlib_order_type_item_2') {
+          order1 = orderInfos[1]
+        }else {
+          order1 = orderInfos[0]
+        }
         this.formValues.patchValue({
           transferLibOrders: {
             orders: [
               {
-                ...orderInfos[0],
+                ...order0,
                 products: orderInfos[0].products || []
               },
               {
-                ...orderInfos[1],
+                ...order1,
                 products: orderInfos[1].products || []
               }
             ]
