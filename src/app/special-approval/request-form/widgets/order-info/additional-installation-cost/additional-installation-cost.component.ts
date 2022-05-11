@@ -155,8 +155,9 @@ export class AdditionalInstallationCostComponent implements OnInit {
       endUserId,
       contractPrice,
       invoiceInformation,
-      marketBundleQuantity,
-    } = reference
+      logistician,
+      marketBundleQuantity
+    } = reference;
     this.formValues.patchValue({
       orderType,
       referenceId,
@@ -173,6 +174,7 @@ export class AdditionalInstallationCostComponent implements OnInit {
       hospitalNo: endUserId,
       orderAmount: contractPrice,
       currency: invoiceInformation,
+      om: logistician,
       products: [{
         id: Date.now(),
         productType: productModel,
@@ -180,7 +182,7 @@ export class AdditionalInstallationCostComponent implements OnInit {
         itemNo: "",
         quantity: marketBundleQuantity,
       }],
-    })
+    });
   }
 
   ngOnInit(): void {

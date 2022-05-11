@@ -23,6 +23,7 @@ export interface Reference {
   createUser: string; //添加crateuser用于转库判断是否展示金额
   marketBundleQuantity: string;
   logistician: string; // 对应OM
+  marketBundleQuantity: string; // 产品数量
 }
 
 const DEFAULT_SEARCH_PARAMS = {
@@ -55,7 +56,7 @@ export class SelectReferenceComponent implements OnInit {
 
   orderTypes = [
     { label: 'OIT', value: 'OIT' },
-    { label: 'Pre-Book', value: '	Pre-Book' }
+    { label: 'Pre-book', value: 'Pre-Book' }
   ]
 
   @Output() select: EventEmitter<Reference> = new EventEmitter()
