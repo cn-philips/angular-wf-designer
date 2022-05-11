@@ -107,9 +107,9 @@ export class MachineComponent implements OnInit {
     const { hospitalName, productType, bg } = this.orders.at(
       this.selectIndex
     ).value;
-    if (bg === "PD&IGT") {
-      return;
-    }
+    // if (bg === "PD&IGT") {
+    //   return;
+    // }
     const res = [];
     if (this.orders.at(this.selectIndex).get("hospitalName").value) {
       res.push(this.orders.at(this.selectIndex).get("hospitalName").value);
@@ -235,20 +235,23 @@ export class MachineComponent implements OnInit {
 
   ngOnInit(): void {
     this.initOMUsers()
-    this.getLeaderEmail(localStorage.getItem('ng_philips_code1'), 0);
-    this.orders.at(0).patchValue({
-      saleEmail: localStorage.getItem('ng_philips_code1')
-    })
-    this.formValues.patchValue({
-      exchangeMethod: '互换',
-      orders:[
-        {
-        exchangeRole: '互换'
-         },
-        {
-          exchangeRole: '互换'
-        }]
-    })
+    if (this.editable) {
+      this.getLeaderEmail(localStorage.getItem('ng_philips_code1'), 0);
+      this.orders.at(0).patchValue({
+        saleEmail: localStorage.getItem('ng_philips_code1')
+      })
+      this.formValues.patchValue({
+        exchangeMethod: '互换',
+        orders:[
+          {
+            exchangeRole: '互换'
+          },
+          {
+            exchangeRole: '互换'
+          }]
+      })
+    }
+
     if (this.editable && this.orders.at(1).get('saleEmail').value) {
       this.salesList1.push({
         name: this.orders.at(1).get('saleEmail').value,
@@ -273,12 +276,14 @@ export class MachineComponent implements OnInit {
         .at(0)
         .get("productType")
         .valueChanges.subscribe(() => {
+          this.selectIndex = 0
           this.onCalcProjectName();
         });
       this.orders
         .at(1)
         .get("productType")
         .valueChanges.subscribe(() => {
+          this.selectIndex = 1
           this.onCalcProjectName();
         });
     }
