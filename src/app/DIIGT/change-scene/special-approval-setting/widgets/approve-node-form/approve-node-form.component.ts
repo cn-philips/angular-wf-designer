@@ -38,6 +38,10 @@ const FORM_MODE_MAP = {
   [FORM_MODE.EDIT]: "编辑",
 };
 
+interface CC_USER {
+  loading: boolean;
+  userList: User[]
+}
 @Component({
   selector: "sp-setting-approve-node-form",
   templateUrl: "./approve-node-form.component.html",
@@ -52,6 +56,10 @@ export class ApproveNodeFormComponent implements OnInit {
   searchChange$ = new BehaviorSubject("");
   isSearchLoading = false;
   userList: User[] = [];
+
+  ccUserMap: { [key: number]: CC_USER } = {}
+  isSearchCcPerson = false
+  activeCcId = null
 
   modalTitle: string;
   formMode: FORM_MODE;
@@ -110,7 +118,11 @@ export class ApproveNodeFormComponent implements OnInit {
 
     const getUserList = (keyword: string) => {
       if (!keyword) {
-        this.isSearchLoading = false;
+        if (this.activeCcId) {
+          this.ccUserMap[this.activeCcId].loading = false
+        } else {
+          this.isSearchLoading = false;
+        }
         return [];
       }
       return this.http
@@ -133,8 +145,13 @@ export class ApproveNodeFormComponent implements OnInit {
       .pipe(debounceTime(500))
       .pipe(switchMap(getUserList));
     optionList$.subscribe((data) => {
-      this.userList = data;
-      this.isSearchLoading = false;
+      if (this.activeCcId) {
+        this.ccUserMap[this.activeCcId].loading = false
+        this.ccUserMap[this.activeCcId].userList = data
+      } else {
+        this.userList = data;
+        this.isSearchLoading = false;
+      }
     });
   }
 
@@ -179,6 +196,14 @@ export class ApproveNodeFormComponent implements OnInit {
         cc,
       });
 
+      ccPersonList.forEach(({ id, personType, person }) => {
+        if (personType === CC_PERSON_TYPE.ASSIGN_USER) {
+          this.ccUserMap[id] = {
+            loading: false,
+            userList: [{ email: person }]
+          }
+        }
+      })
       this.ccPersonList = ccPersonList;
 
       if (approver) {
@@ -306,8 +331,14 @@ export class ApproveNodeFormComponent implements OnInit {
   }
 
   // 模糊查询用户
-  onSearchUser(keyword: string) {
-    this.isSearchLoading = true;
+  onSearchUser(keyword: string, isSearchCcPerson = false, ccId = null) {
+    this.isSearchCcPerson = isSearchCcPerson
+    this.activeCcId = ccId
+    if (ccId) {
+      this.ccUserMap[ccId] = { loading: true, userList: [] }
+    } else {
+      this.isSearchLoading = true;
+    }
     this.searchChange$.next(keyword);
   }
 

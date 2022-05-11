@@ -100,7 +100,7 @@ export class OitSummaryComponent implements OnInit, AfterViewInit {
     const isMonthView = !!this.formValues.value.month
     this.dashboardService.getOitSummary({
       ...this.formValues.value,
-      year: new Date(this.formValues.value).getFullYear()
+      year: this.formValues.value.year ? this.formValues.value.year.getFullYear(): null,
     }).subscribe(({ data }) => {
       const [xAxisData, amountData, countData ] = data.reduce((calc, { month, day, monthAmount, monthCount }) => {
         this.chartData.totalAmount += monthAmount

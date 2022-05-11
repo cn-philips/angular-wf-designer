@@ -55,7 +55,7 @@ export class SelectReferenceComponent implements OnInit {
 
   orderTypes = [
     { label: 'OIT', value: 'OIT' },
-    { label: 'Pre-book', value: '	Pre-Book' }
+    { label: 'Pre-book', value: 'Pre-Book' }
   ]
 
   @Output() select: EventEmitter<Reference> = new EventEmitter()

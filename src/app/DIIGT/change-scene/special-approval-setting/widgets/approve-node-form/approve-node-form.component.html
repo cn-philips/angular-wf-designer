@@ -178,8 +178,26 @@
                   <nz-select *ngIf="person.personType === CC_PERSON_TYPE.SYSTEM_ROLE" style="width: 100%;" nzShowSearch nzPlaceHolder="请选择" [(ngModel)]="person.person">
                     <nz-option *ngFor="let role of selectOptions.roleList" [nzLabel]="role" [nzValue]="role"></nz-option>
                   </nz-select>
-
-                  <input *ngIf="person.personType === CC_PERSON_TYPE.ASSIGN_USER" placeholder="请输入邮箱" nz-input [(ngModel)]="person.person" />
+                  
+                  <nz-select 
+                    *ngIf="person.personType === CC_PERSON_TYPE.ASSIGN_USER"
+                    style="width: 100%;"
+                    nzPlaceHolder="输入邮箱查询" 
+                    nzShowSearch 
+                    nzAllowClear
+                    [(ngModel)]="person.person"
+                    [nzServerSearch]="true"
+                    (nzOnSearch)="onSearchUser($event, true, person.id)"
+                  >
+                    <ng-container *ngFor="let user of (ccUserMap[person.id]?.userList || [])">
+                      <nz-option *ngIf="!ccUserMap[person.id]?.loading" [nzValue]="user.email" [nzLabel]="user.email" [nzCustomContent]="true">
+                        {{ user.displayName || user.email }}
+                      </nz-option>
+                    </ng-container>
+                    <nz-option *ngIf="ccUserMap[person.id]?.loading" nzDisabled nzCustomContent>
+                      <i nz-icon type="loading" class="loading-icon"></i> 查询中...
+                    </nz-option>
+                  </nz-select>
                 </td>
                 <td>
                   <nz-select style="width: 100%;" nzPlaceHolder="请选择" [(ngModel)]="person.triggerType">

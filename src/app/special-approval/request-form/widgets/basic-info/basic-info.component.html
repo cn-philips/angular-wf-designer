@@ -78,7 +78,8 @@
         <nz-form-item>
           <nz-form-label nzFor="reason" nzXl="8" nzXXl="6" nzRequired>申请原因详细描述</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <textarea rows="4" nz-input formControlName="reason" id="reason"></textarea>
+            <textarea rows="4" nz-input formControlName="reason" id="reason" oninput="if(value.length>1000)value=value.slice(0,1000)"></textarea>
+            <div>还可以输入:{{formValues.get('reason').value?formValues.get('reason').value.length:0}}/{{1000}}</div>
             <nz-alert *ngIf="applyType === APPLY_TYPE.LC_AMENDMENT" nzType="warning" nzMessage="注意: 由于客户原因造成的修改需费用由客户承担" nzShowIcon></nz-alert>
             <nz-form-explain
               *ngIf="formValues.get('reason')?.dirty && formValues.get('reason')?.errors"

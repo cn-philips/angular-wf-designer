@@ -76,7 +76,7 @@
             >SAP订单号(SO#)</nz-form-label
           >
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <input id="sapOrderNo" nz-input formControlName="sapOrderNo" />
+            <input id="sapOrderNo" nz-input formControlName="sapOrderNo" maxlength="50" />
             <nz-form-explain *ngIf="formValues.get('sapOrderNo')?.dirty &&formValues.get('sapOrderNo')?.errors">
               请填写SAP订单号(SO#)
             </nz-form-explain>
@@ -115,6 +115,7 @@
                 type="text"
                 nz-input
                 formControlName="foreignCompanyName"
+                maxlength="100"
               />
               <nz-form-explain
                 *ngIf="
@@ -159,7 +160,7 @@
           <nz-form-item>
             <nz-form-label nzXl="8" nzXXl="6" nzRequired>L/C号码</nz-form-label>
             <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-              <input type="text" nz-input formControlName="lcNo" />
+              <input type="text" nz-input formControlName="lcNo" maxlength="50" />
               <nz-form-explain
                 *ngIf="lcInfo.get('lcNo')?.dirty && lcInfo.get('lcNo')?.errors"
               >
@@ -172,7 +173,7 @@
           <nz-form-item>
             <nz-form-label nzXl="8" nzXXl="6" nzRequired>L/C金额</nz-form-label>
             <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-              <nz-input-number style="width: 100%;" formControlName="lcAmount" [nzMin]="0"></nz-input-number>
+              <nz-input-number style="width: 100%;" formControlName="lcAmount" [nzMin]="0" [nzMax]="999999999999.99"></nz-input-number>
               <nz-form-explain *ngIf="lcInfo.get('lcAmount')?.dirty && lcInfo.get('lcAmount')?.errors">
                 请填写L/C金额
               </nz-form-explain>
@@ -194,7 +195,8 @@
               Non Standard Terms
             </nz-form-label>
             <nz-form-control nzXXl="19" nzXl="19" nzSm="19">
-              <textarea rows="4" nz-input formControlName="nonStandardTerms" id="nonStandardTerms"></textarea>
+              <textarea rows="4" nz-input formControlName="nonStandardTerms" id="nonStandardTerms" oninput="if(value.length>1000)value=value.slice(0,1000)"></textarea>
+              <div>还可以输入:{{lcInfo.get('nonStandardTerms').value?lcInfo.get('nonStandardTerms').value.length:0}}/{{1000}}</div>
               <nz-form-explain *ngIf="lcInfo.get('nonStandardTerms')?.dirty && lcInfo.get('nonStandardTerms')?.errors">
                 请填写Non Standard Terms
               </nz-form-explain>
@@ -216,7 +218,7 @@
               L/C discrepancy描述
             </nz-form-label>
             <nz-form-control nzXXl="19" nzXl="19" nzSm="19">
-              <textarea rows="4" nz-input formControlName="lcDiscrepancy" id="lcDiscrepancy"></textarea>
+              <textarea rows="4" nz-input formControlName="lcDiscrepancy" id="lcDiscrepancy" maxlength="300"></textarea>
               <nz-form-explain *ngIf="lcInfo.get('lcDiscrepancy')?.dirty && lcInfo.get('lcDiscrepancy')?.errors">
                 请填写L/C discrepancy描述
               </nz-form-explain>
@@ -290,6 +292,7 @@
                 nzPlaceHolder="请选择"
                 formControlName="modifyEntry"
                 #modifyEntry
+                (ngModelChange)="onModifyEntryChange($event)"
               >
                 <nz-option
                   *ngFor="let item of selectOptions.modifyEntryList"
@@ -312,7 +315,8 @@
               nzMd="14"
               style="margin-left: -100px"
             >
-              <input type="text" nz-input formControlName="modifyEntryDesc" placeholder="选择其他时填写说明" />
+              <input type="text" nz-input formControlName="modifyEntryDesc" placeholder="选择其他时填写说明" oninput="if(value.length>1000)value=value.slice(0,1000)" />
+              <div>还可以输入:{{lcInfo.get('modifyEntryDesc').value?lcInfo.get('modifyEntryDesc').value.length:0}}/{{1000}}</div>
               <nz-form-explain *ngIf="lcInfo.get('modifyEntryDesc')?.dirty && lcInfo.get('modifyEntryDesc')?.errors">
                 请填写其他修改条目
               </nz-form-explain>
@@ -335,6 +339,7 @@
                 nzPlaceHolder="请选择"
                 formControlName="cancelReason"
                 #cancelReason
+                (ngModelChange)="onCancelReasonChange($event)"
               >
                 <nz-option
                   *ngFor="let item of selectOptions.cancelReasonList"
@@ -358,7 +363,8 @@
               nzMd="14"
               style="margin-left: -100px"
             >
-              <input type="text" nz-input formControlName="cancelReasonDesc" placeholder="选择其他时填写说明" />
+              <input type="text" nz-input formControlName="cancelReasonDesc" placeholder="选择其他时填写说明" oninput="if(value.length>1000)value=value.slice(0,1000)" />
+              <div>还可以输入:{{lcInfo.get('cancelReasonDesc').value?lcInfo.get('cancelReasonDesc').value.length:0}}/{{1000}}</div>
               <nz-form-explain *ngIf="lcInfo.get('cancelReasonDesc')?.dirty && lcInfo.get('cancelReasonDesc')?.errors">
                 请填写其他取消原因
               </nz-form-explain>
