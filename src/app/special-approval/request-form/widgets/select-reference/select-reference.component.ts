@@ -21,7 +21,6 @@ export interface Reference {
   contractPrice: string;
   invoiceInformation: string;
   createUser: string; //添加crateuser用于转库判断是否展示金额
-  marketBundleQuantity: string;
   logistician: string; // 对应OM
   marketBundleQuantity: string; // 产品数量
 }
