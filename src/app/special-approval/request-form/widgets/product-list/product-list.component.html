@@ -24,23 +24,23 @@
   <tbody>
     <tr *ngFor="let product of products.value">
       <td>
-        <input type="text" nz-input [(ngModel)]="product.productType" (ngModelChange)="onProductChange($event)" *ngIf="bg !== 'US'" [disabled]="bg === 'PD&IGT' || !editable" />
-        <nz-select style="width: 100%;" *ngIf="bg === 'US'" [(ngModel)]="product.productType" [nzPlaceHolder]="editable ? '请选择产品型号' : ''" [nzDisabled]="!editable" (ngModelChange)="onProductChange($event)">
+        <input type="text" nz-input [(ngModel)]="product.productType" (ngModelChange)="onProductChange()" *ngIf="bg !== 'US'" [disabled]="bg === 'PD&IGT' || !editable" />
+        <nz-select style="width: 100%;" *ngIf="bg === 'US'" [(ngModel)]="product.productType" [nzPlaceHolder]="editable ? '请选择产品型号' : ''" [nzDisabled]="!editable" (ngModelChange)="onProductChange()">
           <nz-option *ngFor="let item of spService.usProductList" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
         </nz-select>
       </td>
       <td>
-        <input type="text" nz-input [(ngModel)]="product.wbsNo" [disabled]="!editable" />
+        <input type="text" nz-input [(ngModel)]="product.wbsNo" [disabled]="!editable" maxlength="50" />
       </td>
       <td>
-        <input type="text" nz-input [(ngModel)]="product.itemNo" [disabled]="!editable" />
+        <input type="text" nz-input [(ngModel)]="product.itemNo" [disabled]="!editable" maxlength="50" />
       </td>
       <td>
-        <input type="text" nz-input [(ngModel)]="product.quantity" [disabled]="!editable" />
+        <input type="text" nz-input [(ngModel)]="product.quantity" [disabled]="!editable" maxlength="10" />
       </td>
       <ng-container *ngIf="isWarranty">
         <td>
-          <input type="text" nz-input [(ngModel)]="product.equipmentSn" [disabled]="!editable" />
+          <input type="text" nz-input [(ngModel)]="product.equipmentSn" [disabled]="!editable" maxlength="200" />
         </td>
         <td>
           <!-- 合同标准保修月数 -->
@@ -50,8 +50,8 @@
           <!-- POS延保月数 -->
           <nz-input-number
             class="pos-warranty-month"
-            [(ngModel)]="product.warranty.posWarrantyMonths" 
-            (ngModelChange)="onCalcStdWarrantyEndDate(product)" 
+            [(ngModel)]="product.warranty.posWarrantyMonths"
+            (ngModelChange)="onCalcStdWarrantyEndDate(product)"
             [nzMin]="0"
             [disabled]="!editable"
           >
@@ -88,7 +88,7 @@
       </ng-container>
       <ng-container *ngIf="isExchange">
         <td>
-          <input type="text" nz-input [(ngModel)]="product.equipmentSn" [disabled]="!editable" />
+          <input type="text" nz-input [(ngModel)]="product.equipmentSn" [disabled]="!editable" maxlength="200" />
         </td>
         <td>
           <nz-select [(ngModel)]="product.logisticsStatus" [disabled]="!editable">
