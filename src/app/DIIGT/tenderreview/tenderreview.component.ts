@@ -96,86 +96,90 @@ export class TenderreviewComponent implements OnInit {
     let BMCExpert = {};
     // 投标保证金 专家
     let AppExpert = [];
-    if (this.dataBase.productInformations[0] && this.dataBase.productInformations[0].productInformations) {
-      for (let i = 0; i < this.dataBase.productInformations[0].productInformations.length; i++) {
-        // 第二层   mk
-        if (this.dataBase.productInformations[0].productInformations[i].bmc && bmclistarr.indexOf(this.dataBase.productInformations[0].productInformations[i].bmc) == -1) {
-          const bmc = this.dataBase.productInformations[0].productInformations[i].bmc;
-          let cluster = this.dataBase.productInformations[0].productInformations[i].cluster;
-          if (cluster != null) {
-            cluster = cluster.replaceAll('&', '%26');
-          }
-          bmclistarr.push(bmc);
-          BMClist.push({
-            bmc: bmc,
-            name: null
-          });
-          // 根据BMC获取对应专家
-          let url = '/act/preparation/getProductExpert?bmc=' + bmc + '&mainId=' + this.mainId + '&role=Product Sales';
-          if (cluster != null) {
-            url = url + '&cluster=' + cluster;
-          }
-          this.load++;
-          this.http.get(url).subscribe(e => {
-            BMCExpert[bmc] = e.data;
-            this.load--;
-          }, error => {
-            this.load--;
-          });
-
-          let url2 = '/act/preparation/getProductExpert?bmc=' + bmc + '&mainId=' + this.mainId + '&role=Cluster BP';
-          if (cluster != null) {
-            url2 = url2 + '&cluster=' + cluster;
-          }
-          this.load++;
-          this.http.get(url2).subscribe(e => {
-            if (e.data) {
-              for (let d = 0; d < e.data.length; d++) {
-                AppExpert.push({
-                  bmc: bmc,
-                  name: e.data[d].name,
-                  email: e.data[d].email
-                });
+    if (this.dataBase.productInformations) {
+      for (let f = 0; f < this.dataBase.productInformations.length; f++) {
+        if (this.dataBase.productInformations[f] && this.dataBase.productInformations[f].productInformations) {
+          for (let i = 0; i < this.dataBase.productInformations[f].productInformations.length; i++) {
+            // 第二层   mk
+            if (this.dataBase.productInformations[f].productInformations[i].bmc && bmclistarr.indexOf(this.dataBase.productInformations[f].productInformations[i].bmc) == -1) {
+              const bmc = this.dataBase.productInformations[f].productInformations[i].bmc;
+              let cluster = this.dataBase.productInformations[f].productInformations[i].cluster;
+              if (cluster != null) {
+                cluster = cluster.replaceAll('&', '%26');
               }
+              bmclistarr.push(bmc);
+              BMClist.push({
+                bmc: bmc,
+                name: null
+              });
+              // 根据BMC获取对应专家
+              let url = '/act/preparation/getProductExpert?bmc=' + bmc + '&mainId=' + this.mainId + '&role=Product Sales';
+              if (cluster != null) {
+                url = url + '&cluster=' + cluster;
+              }
+              this.load++;
+              this.http.get(url).subscribe(e => {
+                BMCExpert[bmc] = e.data;
+                this.load--;
+              }, error => {
+                this.load--;
+              });
+
+              let url2 = '/act/preparation/getProductExpert?bmc=' + bmc + '&mainId=' + this.mainId + '&role=Cluster BP';
+              if (cluster != null) {
+                url2 = url2 + '&cluster=' + cluster;
+              }
+              this.load++;
+              this.http.get(url2).subscribe(e => {
+                if (e.data) {
+                  for (let d = 0; d < e.data.length; d++) {
+                    AppExpert.push({
+                      bmc: bmc,
+                      name: e.data[d].name,
+                      email: e.data[d].email
+                    });
+                  }
+                }
+                this.load--;
+              }, error => {
+                this.load--;
+              });
             }
-            this.load--;
-          }, error => {
-            this.load--;
-          });
+            // if (this.dataBase.productInformations[0].productInformations[i].productInformations) {
+            //   for (let j = 0; j < this.dataBase.productInformations[0].productInformations[i].productInformations.length; j++) {
+            //     // 第三层   产品
+            //     // this.dataBase.productInformations[0].productInformations[i].bmc = i;
+            //     if (this.dataBase.productInformations[0].productInformations[i].productInformations[j].bmc && bmclistarr.indexOf(this.dataBase.productInformations[0].productInformations[i].productInformations[j].bmc) == -1) {
+            //       const bmc = this.dataBase.productInformations[0].productInformations[i].productInformations[j].bmc;
+            //       let cluster = this.dataBase.productInformations[0].productInformations[i].productInformations[j].cluster;
+            //       cluster = cluster.replaceAll('&', '%26');
+            //       bmclistarr.push(bmc);
+            //       BMClist.push({
+            //         bmc: bmc,
+            //         name: null
+            //       });
+            //       // 根据BMC 获取对应专家
+            //       const url = '/act/preparation/getProductExpert?bmc=' + bmc + '&mainId=' + this.mainId + '&cluster=' + cluster + '&role=Product Sales';
+            //       this.http.get(url).subscribe(e => {
+            //         BMCExpert[bmc] = e.data;
+            //       });
+            //       const url2 = '/act/preparation/getProductExpert?bmc=' + bmc + '&mainId=' + this.mainId + '&cluster=' + cluster + '&role=Cluster BP';
+            //       this.http.get(url2).subscribe(e => {
+            //         if (e.data) {
+            //           for (let d = 0; d < e.data.length; d++) {
+            //             AppExpert.push({
+            //               bmc: bmc,
+            //               name: e.data[d].name,
+            //               email: e.data[d].email
+            //             });
+            //           }
+            //         }
+            //       });
+            //     }
+            //   }
+            // }
+          }
         }
-        // if (this.dataBase.productInformations[0].productInformations[i].productInformations) {
-        //   for (let j = 0; j < this.dataBase.productInformations[0].productInformations[i].productInformations.length; j++) {
-        //     // 第三层   产品
-        //     // this.dataBase.productInformations[0].productInformations[i].bmc = i;
-        //     if (this.dataBase.productInformations[0].productInformations[i].productInformations[j].bmc && bmclistarr.indexOf(this.dataBase.productInformations[0].productInformations[i].productInformations[j].bmc) == -1) {
-        //       const bmc = this.dataBase.productInformations[0].productInformations[i].productInformations[j].bmc;
-        //       let cluster = this.dataBase.productInformations[0].productInformations[i].productInformations[j].cluster;
-        //       cluster = cluster.replaceAll('&', '%26');
-        //       bmclistarr.push(bmc);
-        //       BMClist.push({
-        //         bmc: bmc,
-        //         name: null
-        //       });
-        //       // 根据BMC 获取对应专家
-        //       const url = '/act/preparation/getProductExpert?bmc=' + bmc + '&mainId=' + this.mainId + '&cluster=' + cluster + '&role=Product Sales';
-        //       this.http.get(url).subscribe(e => {
-        //         BMCExpert[bmc] = e.data;
-        //       });
-        //       const url2 = '/act/preparation/getProductExpert?bmc=' + bmc + '&mainId=' + this.mainId + '&cluster=' + cluster + '&role=Cluster BP';
-        //       this.http.get(url2).subscribe(e => {
-        //         if (e.data) {
-        //           for (let d = 0; d < e.data.length; d++) {
-        //             AppExpert.push({
-        //               bmc: bmc,
-        //               name: e.data[d].name,
-        //               email: e.data[d].email
-        //             });
-        //           }
-        //         }
-        //       });
-        //     }
-        //   }
-        // }
       }
     }
     this.dataBase.BMClist = BMClist;

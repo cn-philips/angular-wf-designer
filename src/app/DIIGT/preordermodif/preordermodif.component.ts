@@ -836,6 +836,72 @@ export class PreordermodifComponent implements OnInit {
         } else {
           mklength += this.dataBase.productList[i].productList.length;
         }
+
+        /*非标条款备注验证*/
+        // 付款条款
+        if (productList.paymentProvision === '36b8b294-1864-11ec-9074-54ee75a9b10b') {
+          // 付款条款选择“其他”时，备注不能为空
+          if (this.isEmpty(productList.paymentProvisionRemarks)) {
+            this.message.create('error', '请填写付款条款备注');
+            return;
+          }
+        }
+
+        // 装运及交货
+        if (productList.shipmentDelivery === '1' || productList.shipmentDelivery === 1) {
+          // 装运及交货选择“非标准条款”时，备注不能为空
+          if (this.isEmpty(productList.shipmentDeliveryRemarks)) {
+            this.message.create('error', '请填写装运及交货备注');
+            return;
+          }
+        }
+
+        // 场地准备
+        if (productList.sitePreparation === '1' || productList.sitePreparation === 1) {
+          // 场地准备选择“非标准条款”时，备注不能为空
+          if (this.isEmpty(productList.sitePreparationRemarks)) {
+            this.message.create('error', '请填写场地准备备注');
+            return;
+          }
+        }
+
+        // 安装，验收及保修
+        if (productList.installationWarranty === '1' || productList.installationWarranty === 1) {
+          // 安装，验收及保修选择“非标准条款”时，备注不能为空
+          if (this.isEmpty(productList.installationWarrantyRemarks)) {
+            this.message.create('error', '请填写安装，验收及保修备注');
+            return;
+          }
+        }
+
+        // 履约保函
+        if (productList.performanceBond === '1' || productList.performanceBond === 1) {
+          // 履约保函选择“需要”时，备注不能为空
+          if (this.isEmpty(productList.performanceBondRemarks)) {
+            this.message.create('error', '请填写履约保函备注');
+            return;
+          }
+        }
+
+        /*特批条款备注验证*/
+        // 直投订单合同金额和中标金额有价差
+        if (productList.amountDifference === '1' || productList.amountDifference === 1) {
+          // 直投订单合同金额和中标金额有价差选择“是”时，备注不能为空
+          if (this.isEmpty(productList.amountDifferenceRemarks)) {
+            this.message.create('error', '请填写直投订单合同金额和中标金额有价差备注');
+            return;
+          }
+        }
+
+        // 支持文件缺失需特批进单
+        if (productList.supportFileMissing === '1' || productList.supportFileMissing === 1) {
+          // 支持文件缺失需特批进单选择“是”时，备注不能为空
+          if (this.isEmpty(productList.supportFileMissingRemarks)) {
+            this.message.create('error', '请填写支持文件缺失需特批进单备注');
+            return;
+          }
+        }
+
         //装运方式清空选项
         if (productList.shipmentDelivery == '0') {
           productList.shipmentDeliveryRemarks = "";
