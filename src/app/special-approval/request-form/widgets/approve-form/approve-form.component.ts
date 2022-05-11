@@ -39,7 +39,7 @@ export class ApproveFormComponent implements OnInit, OnChanges {
   @Input() taskId
   @Input() processUsers
   @Input() applicantEmail
-  @Input() referenceId
+  @Input() basicInfo: FormGroup
 
   formValues: FormGroup = this.fb.group({
     remark: [''], // 备注
@@ -66,6 +66,10 @@ export class ApproveFormComponent implements OnInit, OnChanges {
     private message: NzMessageService,
     private router: Router,
   ) { }
+
+  get applyCode() {
+    return this.basicInfo.get('applyCode')
+  }
 
   ngOnInit(): void {
     const getUserList = (keyword: string) => {
@@ -196,8 +200,8 @@ export class ApproveFormComponent implements OnInit, OnChanges {
     const chatUsers = this.formValues.controls.chatUsers.value
     if (chatUsers.length > 0) {
       let teamsLink = TEAMS_LINK_PREFIX + chatUsers.join(',')
-      if (this.referenceId) {
-        teamsLink += `&topicName=${this.referenceId}`
+      if (this.applyCode && this.applyCode.value) {
+        teamsLink += `&topicName=${encodeURIComponent(this.applyCode.value)}`
       }
       window.open(teamsLink, '_blank')
     } else {
