@@ -292,6 +292,7 @@
                 nzPlaceHolder="请选择"
                 formControlName="modifyEntry"
                 #modifyEntry
+                (ngModelChange)="onModifyEntryChange($event)"
               >
                 <nz-option
                   *ngFor="let item of selectOptions.modifyEntryList"
@@ -338,6 +339,7 @@
                 nzPlaceHolder="请选择"
                 formControlName="cancelReason"
                 #cancelReason
+                (ngModelChange)="onCancelReasonChange($event)"
               >
                 <nz-option
                   *ngFor="let item of selectOptions.cancelReasonList"

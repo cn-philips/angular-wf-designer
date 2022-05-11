@@ -150,7 +150,7 @@ export class ProductionOrderInfoComponent implements OnInit {
       contractPrice,
       invoiceInformation,
       logistician,
-      marketBundleQuantity
+      marketBundleQuantity,
     } = reference
     this.formValues.patchValue({
       orderType,

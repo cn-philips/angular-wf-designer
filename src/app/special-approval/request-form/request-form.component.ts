@@ -170,7 +170,6 @@ export class RequestFormComponent implements OnInit {
       salesLeader: [null], // sales Leader 邮箱
       productSalesMgr: [null], // product sales manager邮箱
       products: [[]],
-      orderStatus: [null, [Validators.required]], // 订单状态
       arrivalDate: [null], // 到货日期
     }),
     rddOitOrderInfos: [[]],
@@ -429,10 +428,6 @@ export class RequestFormComponent implements OnInit {
       // disabledFieldsList.forEach(item => {
       //   this.orderInfo.controls[item].disable()
       // })
-    }
-
-    if (type !== APPLY_TYPE.LC_AMENDMENT) {
-      this.orderInfo.controls.orderStatus.clearValidators();
     }
 
     if (bg === 'PD&IGT') {
@@ -830,13 +825,21 @@ export class RequestFormComponent implements OnInit {
       } else if (applyType === APPLY_TYPE.LC_AMENDMENT) {
         const orderInfo = orderInfos[0]
         const { lcInfo: { cancelReason, modifyEntry } } = orderInfo
+        const cancelReasons = cancelReason ? cancelReason.split(',') : null
+        const modifyEntries = modifyEntry ? modifyEntry.split(',') : null
+        if (Array.isArray(cancelReasons) && cancelReasons.includes('sp_lc_other')) {
+          this.lcAmendmentOrderInfo.get('lcInfo').get('cancelReasonDesc').setValidators(Validators.required)
+        }
+        if (Array.isArray(modifyEntries) && modifyEntries.includes('sp_lc_other')) {
+          this.lcAmendmentOrderInfo.get('lcInfo').get('modifyEntryDesc').setValidators(Validators.required)
+        }
         this.formValues.patchValue({
           lcAmendmentOrderInfo: {
             ...orderInfo,
             lcInfo: {
               ...orderInfo.lcInfo,
-              cancelReason: cancelReason ? cancelReason.split(',') : null,
-              modifyEntry: modifyEntry ? modifyEntry.split(',') : null,
+              cancelReason: cancelReasons,
+              modifyEntry: modifyEntries,
             },
             productType: (orderInfo.bg === 'US' && orderInfo.productType) ? orderInfo.productType.split(',') : orderInfo.productType
           }

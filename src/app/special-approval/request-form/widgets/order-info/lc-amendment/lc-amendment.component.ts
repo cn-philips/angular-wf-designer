@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from "@angular/core";
-import { FormControl, FormGroup } from "@angular/forms";
+import { FormControl, FormGroup, Validators } from "@angular/forms";
 
 import { BG_LIST } from "../../../../special-approval.constants";
 import { SpecialApprovalService } from "../../../../special-approval.service";
@@ -37,6 +37,21 @@ export class LcAmendmentOrderInfoComponent implements OnInit {
     return this.spService.bmcList.filter((bmc) => bmc.bg === bg.value)
   }
 
+  onCancelReasonChange(reasons: string[]) {
+    const cancelReasonDesc = this.lcInfo.get('cancelReasonDesc')
+    cancelReasonDesc.clearValidators()
+    if (reasons.includes('sp_lc_other')) {
+      cancelReasonDesc.setValidators(Validators.required)
+    }
+  }
+
+  onModifyEntryChange(entries: string[]) {
+    const modifyEntryDesc = this.lcInfo.get('modifyEntryDesc')
+    modifyEntryDesc.clearValidators()
+    if (entries.includes('sp_lc_other')) {
+      modifyEntryDesc.setValidators(Validators.required)
+    }
+  }
 
   initSelectOptions() {
     const promises = [
