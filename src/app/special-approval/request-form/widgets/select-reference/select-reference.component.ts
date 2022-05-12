@@ -2,7 +2,7 @@ import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { NzMessageService} from 'ng-zorro-antd';
 
 import { SpecialApprovalService } from '../../../special-approval.service'
-import { DEFAULT_ERROR_MESSAGE, BUSINESS_MODEL_MAP } from '../../../special-approval.constants'
+import { DEFAULT_ERROR_MESSAGE, BUSINESS_MODEL_MAP, ORDER_TYPES } from '../../../special-approval.constants'
 
 export interface Reference {
   referenceId: string;
@@ -53,10 +53,7 @@ export class SelectReferenceComponent implements OnInit {
   searchParams = DEFAULT_SEARCH_PARAMS
   businessModelMap = BUSINESS_MODEL_MAP
 
-  orderTypes = [
-    { label: 'OIT', value: 'OIT' },
-    { label: 'Pre-book', value: 'Pre-Book' }
-  ]
+  orderTypes = ORDER_TYPES
 
   @Output() select: EventEmitter<Reference> = new EventEmitter()
   @Output() cancelModal: EventEmitter<any> = new EventEmitter()

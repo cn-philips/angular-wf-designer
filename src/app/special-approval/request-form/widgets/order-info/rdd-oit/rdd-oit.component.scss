@@ -9,3 +9,19 @@
   padding-right: 0;
   background-color: #fff;
 }
+
+:host /deep/ .ant-form-item {
+  margin-bottom: 0;
+}
+
+:host /deep/ .ant-table-tbody td {
+  vertical-align: top;
+}
+
+:host /deep/ .error-msg {
+  color: #f5222d;
+}
+
+:host /deep/ .ant-form-explain {
+  min-height: 0;
+}
