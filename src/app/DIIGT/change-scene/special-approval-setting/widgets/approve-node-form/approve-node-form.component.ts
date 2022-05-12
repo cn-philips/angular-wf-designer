@@ -120,8 +120,10 @@ export class ApproveNodeFormComponent implements OnInit {
       if (!keyword) {
         if (this.activeCcId) {
           this.ccUserMap[this.activeCcId].loading = false
+          this.ccUserMap[this.activeCcId].userList = []
         } else {
           this.isSearchLoading = false;
+          this.userList = []
         }
         return [];
       }
