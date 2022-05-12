@@ -145,7 +145,7 @@ export class RequestFormComponent implements OnInit {
     orderInfo: this.fb.group({
       orderType: [null, [Validators.required]], // 订单类型
       referenceId: [null], // Reference Id
-      productType: [null], // 产品型号
+      productType: [{ value: null, disabled: true }], // 产品型号
       bmc: [null, [Validators.required]], // 产品线
       bg: [{ value: null, disabled: true }, [Validators.required]], // BG
       cycleGroup: [null, [Validators.required]], // 产品区域-team
@@ -205,7 +205,7 @@ export class RequestFormComponent implements OnInit {
         this.fb.group({
           orderType: [null, [Validators.required]], // 订单类型
           referenceId: [null], // Reference Id
-          productType: [null], // 产品型号
+          productType: [{ value: null, disabled: true }], // 产品型号
           bmc: [null, [Validators.required]], // 产品线
           bg: [{ value: null, disabled: true }, [Validators.required]], // BG
           cycleGroup: [null, [Validators.required]], // 产品区域-大区
@@ -229,7 +229,7 @@ export class RequestFormComponent implements OnInit {
         this.fb.group({
           orderType: [null, [Validators.required]], // 订单类型
           referenceId: [null], // Reference Id
-          productType: [null], // 产品型号
+          productType: [{ value: null, disabled: true }], // 产品型号
           bmc: [null, [Validators.required]], // 产品线
           bg: [{ value: null, disabled: true }, [Validators.required]], // BG
           cycleGroup: [null, [Validators.required]], // 产品区域-大区
