@@ -486,7 +486,6 @@ export class TransferLibComponent implements OnInit {
 
   disableField(index) {
     let disabledFieldsList = [
-      'productType',
       'bmc',
       'bg',
       'cycleGroup',
