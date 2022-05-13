@@ -1098,6 +1098,9 @@ export class RequestFormComponent implements OnInit {
   public verifyProduct() {
     if (this.applyType === APPLY_TYPE.PRODUCTION || this.applyType === APPLY_TYPE.EXT_INSTALL_COST || this.applyType === APPLY_TYPE.LOGISTICSCOST) {
       const orderInfo = this.formValues.getRawValue().orderInfo;
+      if (orderInfo && orderInfo.bg && orderInfo.bg.toLowerCase() === 'cc') {
+        return true;
+      }
       if (orderInfo && orderInfo.products && orderInfo.products.length > 0) {
         for (let i = 0; i < orderInfo.products.length; i++) {
           if (this.isEmpty(orderInfo.products[i].productType) || this.isEmpty(orderInfo.products[i].wbsNo) || this.isEmpty(orderInfo.products[i].itemNo) || this.isEmpty(orderInfo.products[i].quantity)) {
