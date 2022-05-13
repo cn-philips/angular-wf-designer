@@ -617,6 +617,7 @@ export class RequestFormComponent implements OnInit {
       this.formValues.controls.orderInfo.disable();
       this.formValues.controls.ccInfo.disable();
       this.formValues.controls.lcAmendmentOrderInfo.disable();
+      this.lcAmendmentOrderInfo.get('lcInfo').disable()
       this.formValues.controls.changeOrderInfos.disable()
       //添加转库disabled
       this.formValues.controls.exchangeInfo.disable()
