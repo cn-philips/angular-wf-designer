@@ -88,6 +88,10 @@ export class RddOitOrderInfoComponent implements OnInit {
     this.initOMUsers()
   }
 
+  get bmcList() {
+    return this.spService.bmcList.filter(({ bg }) => bg === 'US')
+  }
+
   checkImportedHospital(order) {
     order.hospitalLoading = true
     order.hospitalError = false
