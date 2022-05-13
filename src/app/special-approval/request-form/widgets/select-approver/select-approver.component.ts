@@ -74,7 +74,10 @@ export class SelectApproverComponent implements OnInit {
   ngOnInit() {
     const getUserList = (keyword: string) => {
       if (!keyword) {
-        if (this.activeNodeCode) { this.customUser[this.activeNodeCode].loading = false }
+        if (this.activeNodeCode) { 
+          this.customUser[this.activeNodeCode].loading = false
+          this.customUser[this.activeNodeCode].userList = []
+        }
         return [];
       }
       return this.http
