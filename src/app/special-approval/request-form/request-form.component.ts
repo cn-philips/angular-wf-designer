@@ -664,14 +664,14 @@ export class RequestFormComponent implements OnInit {
         break
       case 'sp_lcamendment_apply_item_3':
         lcInfoControls.modifyEntry.setValidators([Validators.required])
-        if (modifyEntry === 'sp_lc_other') {
+        if (modifyEntry.indexOf('sp_lc_other') > -1) {
           lcInfoControls.modifyEntryDesc.setValidators([Validators.required])
         }
         break
       case 'sp_lcamendment_apply_item_4':
         lcInfoControls.cancelReason.setValidators([Validators.required])
         lcInfoControls.newLcIssued.setValidators([Validators.required])
-        if (cancelReason === 'sp_lc_other') {
+        if (cancelReason.indexOf('sp_lc_other') > -1) {
           lcInfoControls.cancelReasonDesc.setValidators([Validators.required])
         }
         break
