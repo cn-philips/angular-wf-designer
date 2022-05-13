@@ -173,7 +173,7 @@
             <div nz-col nzSpan="24">
               <nz-form-item class="order-list-normal-item">
                 <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-                  <nz-select formControlName="bmc" nzPlaceHolder="请选择产品线">
+                  <nz-select formControlName="bmc" nzPlaceHolder="请选择产品线" (ngModelChange)="onBMCChange(index)">
                     <nz-option *ngFor="let item of bmcList" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
                   </nz-select>
                   <nz-form-explain *ngIf="ord.get('bmc')?.dirty && ord.get('bmc')?.errors">
