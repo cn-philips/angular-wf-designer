@@ -241,7 +241,7 @@
           <td>
             <nz-form-item *ngIf="data.isMain">
               <nz-form-control>
-                <input nz-input [(ngModel)]="data.orderAmount" [disabled]="!editable" required />
+                <nz-input-number [(ngModel)]="data.orderAmount" [nzDisabled]="!editable" required style="width: 100%;" [nzMin]="0"></nz-input-number>
                 <nz-form-explain class="error-msg" *ngIf="data.isMain && !data.orderAmount">
                   请填写合同金额
                 </nz-form-explain>

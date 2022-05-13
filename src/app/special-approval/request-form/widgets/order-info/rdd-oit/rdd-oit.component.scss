@@ -1,27 +1,33 @@
-:host /deep/ .ant-btn.ant-btn-link {
-  display: flex;
-  align-items: center;
-  color: #337fbf;
-}
-
-:host /deep/ .ant-input-group-addon {
-  border: none;
-  padding-right: 0;
-  background-color: #fff;
-}
-
-:host /deep/ .ant-form-item {
-  margin-bottom: 0;
-}
-
-:host /deep/ .ant-table-tbody td {
-  vertical-align: top;
-}
-
-:host /deep/ .error-msg {
-  color: #f5222d;
-}
-
-:host /deep/ .ant-form-explain {
-  min-height: 0;
+:host /deep/ {
+  .ant-form-item {
+    margin-bottom: 0;
+  }
+  .ant-table-tbody td {
+    vertical-align: top;
+  }
+  .error-msg {
+    color: #f5222d;
+  }
+  .ant-btn.ant-btn-link {
+    display: flex;
+    align-items: center;
+    color: #337fbf;
+  }
+  .ant-form-explain {
+    min-height: 0;
+  }
+  .ant-input-group-addon {
+    border: none;
+    padding-right: 0;
+    background-color: #fff;
+  }
+  .ant-input-number {
+    border: none;
+  }
+  .ant-input-number-input:disabled {
+    border-bottom: 0.125rem #d4dbdf solid;
+  }
+  .ant-input-number-handler-wrap {
+    display: none;
+  }
 }
