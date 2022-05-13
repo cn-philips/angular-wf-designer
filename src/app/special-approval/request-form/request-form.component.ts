@@ -50,7 +50,7 @@ export class RequestFormComponent implements OnInit {
   public pageTitle: string;
   public requestId;
   public requestInfo = {
-    orderInfos: [{}]
+    orderInfos: [{} as any]
   };
 
   public APPLY_TYPE = APPLY_TYPE;
@@ -559,7 +559,7 @@ export class RequestFormComponent implements OnInit {
         break;
       case APPLY_TYPE.TRANSFER_LIB: // Additional cost
         data.orderInfos = [
-          {
+          { 
             ...transferLibOrders.orders.at(0),
             transferCargo: 'sp_transferlib_order_type_item_1'
           },
@@ -568,6 +568,19 @@ export class RequestFormComponent implements OnInit {
             transferCargo: 'sp_transferlib_order_type_item_2'
           }
         ]
+        this.requestInfo.orderInfos.forEach((order) => {
+          if (order.transferCargo === 'sp_transferlib_order_type_item_1') {
+            data.orderInfos[0] = {
+              ...order,
+              ...data.orderInfos[0]
+            }
+          } else if (order.transferCargo === 'sp_transferlib_order_type_item_2') {
+            data.orderInfos[1] = {
+              ...order,
+              ...data.orderInfos[1]
+            }
+          }
+        })
         data.extInfo = {
           ...exchangeInfo
         }
