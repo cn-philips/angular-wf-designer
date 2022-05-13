@@ -24,6 +24,7 @@ import {
 import {debounceTime, map, switchMap} from "rxjs/operators";
 import {BehaviorSubject, Observable} from "rxjs";
 import {HttpService} from '../../../../../services';
+import {NzMessageService} from 'ng-zorro-antd';
 
 /*
 * @description: 获取当前账户邮箱
@@ -61,6 +62,8 @@ export class TransferLibComponent implements OnInit {
   constructor(
     private spService: SpecialApprovalService,
     private http: HttpService,
+    private message: NzMessageService,
+
   ) { }
 
 
@@ -69,6 +72,7 @@ export class TransferLibComponent implements OnInit {
 
   @Input() formValues: FormGroup
   @Input() exchangeInfo: FormGroup
+  @Input() baseInfo: FormGroup
   @Input() editable = true
   @Input() applyType: string
   @Input() applyItem: string
@@ -77,7 +81,7 @@ export class TransferLibComponent implements OnInit {
   APPLY_TYPE = APPLY_TYPE
   searchChange$ = new BehaviorSubject('');
   showDealerArea: Array<boolean> = [false, false] //是否展示经销商名称字段
-  currentImportIndex: 0 //当前导入数据的tab(转出项目/转入项目)
+  currentImportIndex: number = 0 //当前导入数据的tab(转出项目/转入项目)
   isCreateUser = {
     0: true,
     1: true,
@@ -222,6 +226,10 @@ export class TransferLibComponent implements OnInit {
     } else {
       this.referenceImport1 = true
     }
+   const isDifference = this.bmcCheck(this.currentImportIndex);
+    if (isDifference) {
+      return
+    }
 
     this.disableField(this.currentImportIndex)
     this.orders.at(this.currentImportIndex).patchValue({
@@ -266,8 +274,12 @@ export class TransferLibComponent implements OnInit {
     if (this.editable && this.orders.at(1).value.bigArea) {
       this.onBigAreaChange(this.orders.at(1).value.cycleGroup,1)
     }
+    this.orders.at(0).get('bmc').valueChanges.subscribe(value => {
 
+    })
+    this.orders.at(1).get('bmc').valueChanges.subscribe(value => {
 
+    })
 
     this.checkMoney(0)
     if (!this.editable){
@@ -397,7 +409,14 @@ export class TransferLibComponent implements OnInit {
         ...this.exchangeInfo.value,
         exchangeType
       })
+      this.baseInfo.patchValue({
+        applyItem: exchangeType
+      })
     }
+  }
+
+  onBMCChange(index) {
+    this.bmcCheck(index)
   }
 
   /*
@@ -486,6 +505,8 @@ export class TransferLibComponent implements OnInit {
 
   disableField(index) {
     let disabledFieldsList = [
+      'orderType',
+      'productType',
       'bmc',
       'bg',
       'cycleGroup',
@@ -502,6 +523,23 @@ export class TransferLibComponent implements OnInit {
     disabledFieldsList.forEach(item => {
       this.orders.at(index).get(item).disable()
     })
+  }
+
+  bmcCheck(index) {
+    switch (index) {
+      case 0:
+        if (this.orders.at(1).get('bmc').value && this.orders.at(1).get('bmc').value !== this.orders.at(0).get('bmc').value) {
+          this.message.error('bmc不一致,请重新选择')
+          return true
+        };
+        return false
+      case 1:
+        if (this.orders.at(0).get('bmc').value && this.orders.at(0).get('bmc').value !== this.orders.at(1).get('bmc').value) {
+          this.message.error('bmc不一致,请重新选择')
+          return true
+        }
+        return false
+    }
   }
 
 }

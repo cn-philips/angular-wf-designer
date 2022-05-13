@@ -75,17 +75,14 @@ export class RoleModalityBMCFormComponent implements OnInit {
     const uri = `/act/specialapprove/bmcclusterbg?pageSize=999`;
     this.http.get(uri).subscribe((res) => {
       this.bmcMapping = res.data.rows;
-      let bmcs = [];
+
       let bgs = [];
       for (let i = 0; i < this.bmcMapping.length; i++) {
-        bmcs[i] = this.bmcMapping[i].bmc
         bgs[i] = this.bmcMapping[i].bg
       }
-      let bmc = Array.from(new Set(bmcs))
+
       let bg = Array.from(new Set(bgs))
-      for (let i = 0; i < bmc.length; i++) {
-        this.bmcOptions.push( { label: bmc[i], value: bmc[i] } )
-      }
+
       for (let i = 0; i < bg.length; i++) {
         this.modalityOptions.push( { label: bg[i], value: bg[i] } )
       }
@@ -141,8 +138,11 @@ export class RoleModalityBMCFormComponent implements OnInit {
   }
   // 根据bmc和modality对应cluster
   async ModalityChanges(value: string) {
-    const bmc = this.validateForm.get('bmc').value;
-    this.mappingCluster(bmc, value);
+    this.validateForm.patchValue({
+      bmc: null,
+      cluster: null
+    })
+    this.getBMCList(value)
   }
 
   mappingCluster(bmc: string, modality: string){
@@ -150,6 +150,14 @@ export class RoleModalityBMCFormComponent implements OnInit {
       this.validateForm.patchValue({ // 先清除现有cluster再按规则进行对应
         cluster: null
       })
+
+      if (bmc === 'All') {
+        this.validateForm.patchValue({
+          cluster: modality
+        })
+        return
+      }
+
       const map = this.bmcMapping.find(val => val.bmc === bmc && val.bg === modality);
       if (map !== undefined){
         this.validateForm.patchValue({
@@ -159,4 +167,21 @@ export class RoleModalityBMCFormComponent implements OnInit {
     }
   }
 
+  getBMCList(bg) {
+    const list = this.bmcMapping.filter(value => value.bg === bg)
+    if ( bg === 'CC') {
+      this.bmcOptions = [{
+        label: 'All',
+        value: 'All',
+      }];
+      list.map(value => {
+        this.bmcOptions.push({label: value.bmc, value: value.bmc})
+      })
+    }else {
+      this.bmcOptions = [];
+      list.map(value => {
+        this.bmcOptions.push({label: value.bmc, value: value.bmc})
+      })
+    }
+  }
 }

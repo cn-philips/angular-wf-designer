@@ -727,6 +727,10 @@ export class RequestFormComponent implements OnInit {
       case APPLY_TYPE.TRANSFER_LIB:
         const transferLibOrder = this.transferLibInfos.get('orders') as FormArray
         let formValidError = false
+        if (transferLibOrder.at(0).get('bmc').value !== transferLibOrder.at(1).get('bmc').value) {
+          this.message.error('转入转入bmc不一致，请重新选择')
+          return
+        }
         if (!transferLibOrder.at(0).get('hospitalName').value || !transferLibOrder.at(1).get('hospitalName').value) {
           this.message.error('请选择医院再提交')
           return
