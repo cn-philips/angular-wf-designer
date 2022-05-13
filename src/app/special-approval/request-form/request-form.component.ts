@@ -780,9 +780,27 @@ export class RequestFormComponent implements OnInit {
         hasError = this.basicInfo.invalid || this.orderInfo.invalid
     }
 
-    if (this.applyType === APPLY_TYPE.EXT_WARRANTY && orderInfos[0] && orderInfos[0].products && orderInfos[0].products.length === 0) {
-      this.message.error('请填写延保信息');
-      return
+    if (this.applyType === APPLY_TYPE.EXT_WARRANTY) {
+      if (orderInfos[0] && orderInfos[0].products && orderInfos[0].products.length === 0) {
+        this.message.error('请填写延保信息');
+        return
+      } else {
+        let hasError = false
+        let errorMsg = ''
+        orderInfos[0].products.forEach(({ warranty: { applyExtWarrantyMonths } }) => {
+          if (!applyExtWarrantyMonths) {
+            hasError = true
+            errorMsg = '请填补充完整延保信息'
+          } else if (Number(applyExtWarrantyMonths) <= 0) {
+            hasError = true
+            errorMsg = '申请延保月数必须大于0'
+          }
+        })
+        if (hasError) {
+          this.message.error(errorMsg);
+          return
+        }
+      }
     }
     // 抄送人和抄送节点必须同时选择或者同时不选择
     if (ccType && !ccPerson) {
