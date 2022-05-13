@@ -286,7 +286,7 @@
             <div nz-col nzSpan="24">
               <nz-form-item class="order-list-normal-item">
                 <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-                  <nz-input-number *ngIf="editable? index === 1 : isCreateUser[index]" id="orderAmount" style="width: 100%;" formControlName="orderAmount" [nzMin]="0"></nz-input-number>
+                  <input *ngIf="isCreateUser[index]" id="orderAmount" type="text" nz-input formControlName="orderAmount" />
                   <nz-form-explain *ngIf="ord.get('orderAmount')?.dirty && ord.get('orderAmount')?.errors">
                     请填写合同金额
                   </nz-form-explain>
@@ -308,7 +308,7 @@
             <div nz-col nzSpan="24" [@openClose]="isExpand ? 'close' : 'open'">
               <nz-form-item class="order-list-normal-item">
                 <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-                  <nz-select *ngIf="editable" nzShowSearch nzAllowClear formControlName="saleEmail" [nzPlaceHolder]="editable ? '销售邮箱' : ''" (ngModelChange)="salesChange(index)"
+                  <nz-select *ngIf="editable && index === 0" nzShowSearch nzAllowClear formControlName="saleEmail" [nzPlaceHolder]="editable ? '销售邮箱' : ''" (ngModelChange)="salesChange(index)"
                              (nzOnSearch)="onSearchSales($event)" [nzServerSearch]="true"
                   >
                     <ng-container *ngFor="let sale of index == 0? salesList0 : salesList1">
@@ -320,7 +320,7 @@
                       <i nz-icon type="loading" class="loading-icon"></i> 查询中...
                     </nz-option>
                   </nz-select>
-                  <input *ngIf="!editable" nz-input formControlName="saleEmail">
+                  <input *ngIf="!editable || index === 1" nz-input formControlName="saleEmail" (ngModelChange)="salesChange(index)">
                   <nz-form-explain *ngIf="ord.get('saleEmail')?.dirty && ord.get('saleEmail')?.errors">
                     请选择销售邮箱
                   </nz-form-explain>

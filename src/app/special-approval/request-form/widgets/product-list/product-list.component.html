@@ -15,7 +15,7 @@
         <th nzWidth="130px">申请延保月数</th>
       </ng-container>
       <ng-container *ngIf="isExchange">
-        <th nzWidth="200px">设备SN</th>
+        <th nzWidth="200px" *ngIf="!isNotShip">设备SN</th>
         <th nzWidth="200px">物流状态</th>
       </ng-container>
       <th nzWidth="100px" nzRight="0px" *ngIf="bg !== 'PD&IGT' && editable && !isExchange">Action</th>
@@ -87,11 +87,11 @@
         </td>
       </ng-container>
       <ng-container *ngIf="isExchange">
-        <td>
+        <td *ngIf="!isNotShip">
           <input type="text" nz-input [(ngModel)]="product.equipmentSn" [disabled]="!editable" maxlength="200" />
         </td>
         <td>
-          <nz-select [(ngModel)]="product.logisticsStatus" [disabled]="!editable">
+          <nz-select [(ngModel)]="product.logisticsStatus" [disabled]="!editable" (ngModelChange)="logisticsChange($event)">
             <nz-option *ngFor="let item of selectOptions.logicStatus" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
           </nz-select>
         </td>

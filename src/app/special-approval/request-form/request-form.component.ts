@@ -223,7 +223,7 @@ export class RequestFormComponent implements OnInit {
           projectName: [null, [Validators.required]], // 项目名称
           sapOrderNo: [null, [Validators.required]], // SAP订单号
           currency: [null, [Validators.required]], // 合同金额-货币
-          om: [null], // OM
+          om: [null, [Validators.required]], // OM
           orderDate: [null, [Validators.required]], // 进单日期
           exchangeRole: [null, [Validators.required]], // 换货角色
           saleEmail: [{ value: null, disabled: true }], // 销售邮箱
@@ -247,7 +247,7 @@ export class RequestFormComponent implements OnInit {
           projectName: [null, [Validators.required]], // 项目名称
           sapOrderNo: [null, [Validators.required]], // SAP订单号
           currency: [null, [Validators.required]], // 合同金额-货币
-          om: [null], // OM
+          om: [null, [Validators.required]], // OM
           orderDate: [null, [Validators.required]], // 进单日期
           exchangeRole: [null, [Validators.required]], // 换货角色
           saleEmail: [null], // 销售邮箱
@@ -701,8 +701,15 @@ export class RequestFormComponent implements OnInit {
         const product1 = orders.at(1).get('products')
 
         if (product0.value[0].logisticsStatus !== 1 && product1.value[0].logisticsStatus !== 1){
-          console.log(product0.value.logisticsStatus)
           this.message.error('请至少提交一条已到货产品')
+          return
+        }
+        if ((product0.value[0].logisticsStatus === 0 || product0.value[0].logisticsStatus === 1) && !product0.value[0].equipmentSn) {
+          this.message.error('请按要求填写设备SN')
+          return
+        }
+        if ((product1.value[0].logisticsStatus === 0 || product1.value[0].logisticsStatus === 1) && !product1.value[0].equipmentSn) {
+          this.message.error('请按要求填写设备SN')
           return
         }
         if (!orderInfos[0].hospitalName || !orderInfos[1].hospitalName) {
@@ -861,7 +868,7 @@ export class RequestFormComponent implements OnInit {
         reason, ccType, ccPerson, orderInfos, attachments,
         taskList, nodeInfoList, nodeCode, nodeAction,
         extInfo, orderDifferences,
-        bg, cycleGroup, bigArea, smallArea,
+        bg, cycleGroup, bigArea, smallArea, isDeleted,
       } = data
       this.setPageTitle({ applyType, applyItem }, false)
       this.applyItem = applyItem
@@ -972,7 +979,7 @@ export class RequestFormComponent implements OnInit {
             orders: [
               {
                 ...order0,
-                products: orderInfos[0].products || []
+                products: orderInfos[0].products || [],
               },
               {
                 ...order1,
