@@ -354,7 +354,7 @@ export class SupportFileUpComponent implements OnInit {
       bidAnnouncementCurrency: this.odata.bidAnnouncementCurrency,
       announcementTime: this.odata.announcementTime,
       publicityEndTime: this.odata.publicityEndTime,
-      speciallyExaminedTime: this.odata.speciallyExaminedTime,
+      // speciallyExaminedTime: this.odata.speciallyExaminedTime,
       biddingNotificationSignTime: this.odata.biddingNotificationSignTime
     };
     if (e == 1) {
