@@ -354,7 +354,7 @@ export class TransferLibComponent implements OnInit {
 
     const districtLeaders = await this.spService.getCustomizeEmail(this.getDistrictList('District Leader', undefined, index));
     const salesLeaderLists = await this.spService.getCustomizeEmail(this.getDistrictList('Sales Leader', undefined, index));
-    const productSalesLists = await this.spService.getCustomizeEmail(this.getDistrictList('Product Sales Manager', this.orders.at(index).value.bmc, index))
+    const productSalesLists = await this.spService.getCustomizeEmail(this.getDistrictList('Product Sales Manager', this.orders.at(index).get('bmc').value, index))
 
     await this.orders.at(index).patchValue({
       districtLeader: districtLeaders[0].approverEmail,
@@ -486,7 +486,6 @@ export class TransferLibComponent implements OnInit {
 
   disableField(index) {
     let disabledFieldsList = [
-      'productType',
       'bmc',
       'bg',
       'cycleGroup',

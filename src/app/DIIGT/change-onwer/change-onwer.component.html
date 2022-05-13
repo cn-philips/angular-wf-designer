@@ -68,6 +68,7 @@
     nzWidth="500"
     nzTitle="Add Original Owner  添加原所有人"
     [nzFooter]="modalFooter"
+    (nzOnCancel)="cancelShowOriginalOwner()"
   >
     <ng-container>
       <input nz-input [(ngModel)]="originalOwnerAdd" />

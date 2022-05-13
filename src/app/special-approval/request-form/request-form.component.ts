@@ -19,6 +19,7 @@ import {
 } from '../special-approval.constants';
 import { SelectApproverComponent } from './widgets/select-approver/select-approver.component';
 import { RddOitOrderInfoComponent } from './widgets/order-info/rdd-oit/rdd-oit.component';
+import {MachineComponent} from './widgets/order-info/machine/machine.component';
 
 enum TAB_TYPE {
   BASIC_INFO = 'basic-info',
@@ -44,6 +45,7 @@ export class RequestFormComponent implements OnInit {
   @ViewChild('selectApprover') public selectApprover: SelectApproverComponent;
 
   @ViewChild('rddOitOrderInfo') public rddOitOrderInfo: RddOitOrderInfoComponent;
+  @ViewChild('machineExchange') public machineExchange: MachineComponent;
 
   public pageTitle: string;
   public requestId;
@@ -148,7 +150,7 @@ export class RequestFormComponent implements OnInit {
     orderInfo: this.fb.group({
       orderType: [null, [Validators.required]], // 订单类型
       referenceId: [null], // Reference Id
-      productType: [null], // 产品型号
+      productType: [{ value: null, disabled: true }], // 产品型号
       bmc: [null, [Validators.required]], // 产品线
       bg: [{ value: null, disabled: true }, [Validators.required]], // BG
       cycleGroup: [null, [Validators.required]], // 产品区域-team
@@ -208,7 +210,7 @@ export class RequestFormComponent implements OnInit {
         this.fb.group({
           orderType: [null, [Validators.required]], // 订单类型
           referenceId: [null], // Reference Id
-          productType: [null], // 产品型号
+          productType: [{ value: null, disabled: true }], // 产品型号
           bmc: [null, [Validators.required]], // 产品线
           bg: [{ value: null, disabled: true }, [Validators.required]], // BG
           cycleGroup: [null, [Validators.required]], // 产品区域-大区
@@ -232,7 +234,7 @@ export class RequestFormComponent implements OnInit {
         this.fb.group({
           orderType: [null, [Validators.required]], // 订单类型
           referenceId: [null], // Reference Id
-          productType: [null], // 产品型号
+          productType: [{ value: null, disabled: true }], // 产品型号
           bmc: [null, [Validators.required]], // 产品线
           bg: [{ value: null, disabled: true }, [Validators.required]], // BG
           cycleGroup: [null, [Validators.required]], // 产品区域-大区
@@ -317,6 +319,12 @@ export class RequestFormComponent implements OnInit {
         this.basicInfo.patchValue({ applyItem: item });
       }
       this.applyType = type;
+
+      switch (this.applyType) {
+        case APPLY_TYPE.MACHINE_EXCHANGE:
+          this.setMachineDefaultInfo()
+      break;
+      }
 
       this.basicInfo.patchValue({ applyType: type });
 
@@ -553,9 +561,11 @@ export class RequestFormComponent implements OnInit {
         data.orderInfos = [
           {
             ...transferLibOrders.orders.at(0),
+            transferCargo: 'sp_transferlib_order_type_item_1'
           },
           {
             ...transferLibOrders.orders.at(1),
+            transferCargo: 'sp_transferlib_order_type_item_2'
           }
         ]
         data.extInfo = {
@@ -686,6 +696,20 @@ export class RequestFormComponent implements OnInit {
         }
         break
       case APPLY_TYPE.MACHINE_EXCHANGE:
+        const orders = this.changeOrderInfos.get('orders') as FormArray
+        const product0 = orders.at(0).get('products')
+        const product1 = orders.at(1).get('products')
+
+        if (product0.value[0].logisticsStatus !== 1 && product1.value[0].logisticsStatus !== 1){
+          console.log(product0.value.logisticsStatus)
+          this.message.error('请至少提交一条已到货产品')
+          return
+        }
+        if (!orderInfos[0].hospitalName || !orderInfos[1].hospitalName) {
+          this.message.error('请选择医院再提交')
+          return
+        }
+
         const check = this.checkMachineExchange();
         if (!check){
           return
@@ -708,6 +732,10 @@ export class RequestFormComponent implements OnInit {
       case APPLY_TYPE.TRANSFER_LIB:
         const transferLibOrder = this.transferLibInfos.get('orders') as FormArray
         let formValidError = false
+        if (!transferLibOrder.at(0).get('hospitalName').value || !transferLibOrder.at(1).get('hospitalName').value) {
+          this.message.error('请选择医院再提交')
+          return
+        }
         transferLibOrder.controls.forEach((item, index) => {
           let formGroupItem = item as FormGroup
           this.checkForm(formGroupItem)
@@ -715,7 +743,22 @@ export class RequestFormComponent implements OnInit {
             formValidError = true
           }
         })
-
+        const difference = this.orderDifferencesInfo.get('orderDifferences').value
+        if (!difference || difference.length === 0){
+          this.message.error('请填写差异信息')
+          return
+        } else {
+          for (let i = 0; i < difference.length; i++) {
+            if (!difference[i].configDetail || !difference[i].transferOut || !difference[i].transferIn || !difference[i].handlePlan || !difference[i].cost) {
+              this.message.error('请完整填写差异信息')
+              return
+            }
+          }
+        }
+        console.log(difference)
+        // for (let i = 0; i < difference.length; i++) {
+        //   if (difference[i].)
+        // }
         hasError = this.basicInfo.invalid || formValidError
         break
       default:
@@ -892,16 +935,25 @@ export class RequestFormComponent implements OnInit {
         })
         this.setFormValidators(applyType, applyItem, orderInfos[0].bg)
       } else if(applyType === APPLY_TYPE.TRANSFER_LIB) { // 设置查看详情时代入数据
-        console.log(orderInfos)
+        let order0 = null
+        let order1 = null
+      if (orderInfos[0].transferCargo === 'sp_transferlib_order_type_item_1') {
+         order0 = orderInfos[0]
+        order1 = orderInfos[1]
+      } else {
+        order0 = orderInfos[1]
+        order1 = orderInfos[0]
+      }
+
         this.formValues.patchValue({
           transferLibOrders: {
             orders: [
               {
-                ...orderInfos[0],
+                ...order0,
                 products: orderInfos[0].products || []
               },
               {
-                ...orderInfos[1],
+                ...order1,
                 products: orderInfos[1].products || []
               }
             ]
@@ -1101,4 +1153,22 @@ export class RequestFormComponent implements OnInit {
     return e === '' || e === null || e === undefined;
   }
 
+  public setMachineDefaultInfo() {
+    if (this.editable) {
+      const orders = this.changeOrderInfos.get('orders') as FormArray
+      orders.at(0).patchValue({
+        saleEmail: localStorage.getItem('ng_philips_code1')
+      })
+      this.changeOrderInfos.patchValue({
+        exchangeMethod: '互换',
+        orders: [
+          {
+            exchangeRole: '互换'
+          },
+          {
+            exchangeRole: '互换'
+          }]
+      })
+    }
+  }
 }

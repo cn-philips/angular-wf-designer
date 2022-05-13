@@ -93,7 +93,7 @@ const BG_LIST = [
 
 const ORDER_TYPES = [
   { label: "OIT", value: "OIT" },
-  { label: "Pre-Book", value: "Pre-Book" },
+  { label: "Pre-Book", value: "Pre-book" },
 ];
 
 const CURRENCIES =  [
@@ -133,12 +133,16 @@ const PROCESS_STATUS_MAP = {
 
 const LOGISTICS_STATUS = [
   {
+    label: '已出厂未到货',
+    value: 0
+  },
+  {
     label: '已到货',
     value: 1
   },
   {
-    label: '未到货',
-    value: 0
+    label: '未出厂',
+    value: 2
   }
 ]
 

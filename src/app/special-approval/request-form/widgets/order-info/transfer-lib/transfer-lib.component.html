@@ -154,7 +154,7 @@
             <div nz-col nzSpan="24">
               <nz-form-item class="order-list-normal-item">
                 <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-                  <nz-input-group nzFlex style="width: 100%" [nzSuffix]="index === 0 ? exportTemplate0: exportTemplate1">
+                  <nz-input-group nzFlex style="width: 100%" [nzAddOnAfter]="index === 0 ? exportTemplate0: exportTemplate1">
                     <input id="referenceId" type="text" nz-input formControlName="referenceId" class="flex-grow-1"/>
                     <nz-form-explain *ngIf="ord.get('referenceId')?.dirty && ord.get('referenceId')?.errors">
                       请输入referenceId
@@ -242,8 +242,8 @@
             <div nz-col nzSpan="24"  [@openClose]="isExpand ? 'close' : 'open'">
               <nz-form-item class="order-list-normal-item">
                 <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-                  <nz-input-group style=" width: 100%" [nzSuffix]="clearHospitalBtn" [nzAddOnAfter]="selectHospitalBtn">
-                    <input id="hospitalName" type="text" nz-input formControlName="hospitalName" [placeholder]="editable ? '点击右侧按钮选择医院' : ''" />
+                  <nz-input-group style=" width: 100%" [nzAddOnAfter]="selectHospitalBtn">
+                      <input id="hospitalName" type="text" nz-input formControlName="hospitalName" [placeholder]="editable ? '点击右侧按钮选择医院' : ''"/>
                   </nz-input-group>
 
                   <ng-template #clearHospitalBtn>
@@ -251,7 +251,7 @@
                   </ng-template>
 
                   <ng-template #selectHospitalBtn>
-                    <button *ngIf="editable && !(index === 0 ? referenceImport0 : referenceImport1)" nz-button nzType="primary" class="ml-md" (click)="onShowSelectHospitalModal(index)">选择医院</button>
+                    <button *ngIf="editable" [disabled]="index === 0 ? referenceImport0 : referenceImport1" nz-button nzType="primary" class="ml-md" (click)="onShowSelectHospitalModal(index)">选择医院</button>
                   </ng-template>
                 </nz-form-control>
               </nz-form-item>

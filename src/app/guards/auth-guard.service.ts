@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router, Route,ActivatedRoute } from '@angular/router';
+import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router, Route, ActivatedRoute } from '@angular/router';
 import { HttpService } from '../services';
 import { Observable } from 'rxjs';
 import { CookieService } from 'ngx-cookie-service';
 import { DeviceDetectorService } from 'ngx-device-detector';
 import { debug } from 'util';
-
+import { environment } from '../../environments/environment';
 @Injectable({
   providedIn: 'root'
 })
@@ -20,95 +20,98 @@ export class AuthGuard {
     public activatedRouter: ActivatedRoute,
     private deviceService: DeviceDetectorService) { }
 
-  // canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
-  canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+  // async canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<Observable<boolean> | Promise<boolean> | boolean> {
+  async canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
 
-    // if (this._authService.isAuthenticated()) {
-    //   return true;
-    // }
-
-    // navigate to login page
-    // this.router.navigate(['/logout']);
-    // you can save redirect url so after authing we can move them back to the page they requested
-    // console.log('state-url',state.url==='/');
-
-
-    // console.log('Philips_TOKEN', this.cookieService.get('Philips_TOKEN'));    
-    this.loader = true;
-   // const cook=this.cookieService.check('Philips_TOKEN')
-    let routerInfo=JSON.parse(localStorage.getItem("routerInfo"));
-  if(routerInfo!=null&&routerInfo!=""||routerInfo!=undefined)
-  {
-    this.router.navigate([routerInfo.url], {
-      queryParams: {
-        processInstanceTaskId:routerInfo.processInstanceTaskId,
-        approvalResult:routerInfo.approvalResult
+    const Philips_TOKEN = this.cookieService.get('Philips_TOKEN');
+    if (Philips_TOKEN != "" && Philips_TOKEN != null && Philips_TOKEN != undefined) {
+      let routerInfo:any = JSON.parse(localStorage.getItem("routerInfo"));
+      if (routerInfo != null && routerInfo != "" || routerInfo != undefined) {
+        let keyValue = Object.keys(routerInfo);
+        if (keyValue.length > 1) {
+          let routerInfoParam=JSON.parse(JSON.stringify(routerInfo));
+          delete routerInfoParam.url;
+          localStorage.removeItem("routerInfo");
+          this.router.navigate([routerInfo.url], {
+            queryParams: routerInfoParam
+          });
+          // window.open(url,"_self");
+          return true;
+        }
+        else {
+          localStorage.removeItem("routerInfo");
+          this.router.navigate([routerInfo.url]);
+          // window.open(url,"_self");
+          return true;
+        }
       }
-    });
-    localStorage.removeItem('routerInfo');
-    this.loader = false;
-  }
-  else
-  {
-    this.loader = false;
-    return true;
-      // if(state.url=="/") {
-      //
-      //   console.log('deviceInfo',this.deviceService.getDeviceInfo());
-      //   const devInfo = this.deviceService.getDeviceInfo();
-      //   const userAgent = devInfo.userAgent.toLowerCase();
-      //   if(this.deviceService.isMobile() || userAgent.indexOf('wechat') > -1) {
-      //     this.loader = false;
-      //     this.router.navigate(['m']);
-      //     return false;
-      //   } else {
-      //     this.loader = false;
-      //     return true;
-      //   }
-      // }
-      // else
-      // {
-      //   if(state.url.indexOf('?')!=-1)
-      //   {
-      //     let status=state.url.split("?")
-      //     let url=status[0];
-      //     this.router.navigate([url]);
-      //     this.loader = false;
-      //   }
-      //   else
-      //   {
-      //     this.router.navigate([state.url]);
-      //     this.loader = false;
-      //   }
-      // }
+      else {
+        return true;
+      }
+    }
+    else {
+      let result: any = await this.getuseInfo();
+      if (result.code == '0000') {
+        let routerInfo = JSON.parse(localStorage.getItem("routerInfo"));
+        if (routerInfo != null && routerInfo != "" || routerInfo != undefined) {
+          let keyValue = Object.keys(routerInfo);
+          if (keyValue.length > 1) {
+            localStorage.removeItem("routerInfo");
+            this.router.navigate([routerInfo.url], {
+              queryParams: routerInfo
+            });
+            // window.open(url,"_self");
+            return true;
+          }
+          else {
+            localStorage.removeItem("routerInfo");
+            this.router.navigate([routerInfo.url]);
+            // window.open(url,"_self");
+            return true;
+          }
+        }
+        else {
+          return true;
+        }
+      }
+      else if (result.code == '0002') {
+        if (state.url != '/') {
+          if (state.url.indexOf("?") != -1) {
+            let stateUrl: any = state.url.split("?");
+            let url = stateUrl[0];
+            let routerInfo: any = {};
+            let urlArr = stateUrl[1].split("&");
+            for (let i = 0; i < urlArr.length; i++) {
+              let arg = urlArr[i];
+              let arr1 = arg.split("=");
+              let key = arr1[0];
+              let value = arr1[1];
+              routerInfo[key] = value;
+            }
+            routerInfo.url = stateUrl[0];
+            routerInfo = JSON.stringify(routerInfo);
+            localStorage.setItem("routerInfo", routerInfo);
+          }
+          else {
+            let routerInfo: any = {};
+            routerInfo.url = state.url;
+            routerInfo = JSON.stringify(routerInfo);
+            localStorage.setItem("routerInfo", routerInfo);
+          }
 
-
-
-    // if (this.cookieService.check('Philips_TOKEN') && '' !== this.cookieService.get('Philips_TOKEN')) {
-    //   // console.log('state.url', state.url);
-
-    //   // this.loader = false;
-    //   // return true;
-    // } else {
-
-    //   // this.router.navigateByUrl(state.url)
-    //   // this.http.post('act/relation/isAuthorized', { 'key1': '/relation/isAuthorized' }).subscribe(res => {
-    //   //   console.log('res->', res);
-
-    //   //   if ('0000' == res.code) {
-    //   //     // this.loader = false;
-    //   //     this.router.navigateByUrl(state.url)
-    //   //   } else {
-    //   //     //重定向到错误页
-    //   //     // return false;
-    //   //   }
-    //   // });
-    //   // this.router.navigateByUrl('/logout')
-    //   // return false;
-    // }
+        }
+        location.href = result.data;
+      }
+    }
 
   }
 
+  async getuseInfo() {
+    return new Promise((resolve, reject) => {
+      this.http.post('/act/role/getDiigtUserInfo').subscribe(val => {
+        resolve(val)
+      })
+    })
   }
 
   canActivateChild(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {

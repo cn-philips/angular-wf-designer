@@ -186,12 +186,15 @@
             <nz-form-item>
               <nz-form-label nzXl="8" nzXXl="6">医院名称</nz-form-label>
               <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-                <nz-input-group style="width: 100%" [nzSuffix]="clearHospitalBtn" [nzAddOnAfter]="selectHospitalBtn">
+                <nz-input-group style="width: 100%" [nzSuffix]="i === 0?clearHospitalBtn : clearHospitalBtn1" [nzAddOnAfter]="selectHospitalBtn">
                   <input id="hospitalName" type="text" nz-input formControlName="hospitalName" [placeholder]="editable ? '点击右侧按钮选择医院' : ''" />
                 </nz-input-group>
 
                 <ng-template #clearHospitalBtn>
-                  <i nz-icon nz-tooltip class="ant-input-clear-icon" nzTheme="fill" nzType="close-circle" *ngIf="ord.get('hospitalNo').value && editable" (click)="onClearHospital()"></i>
+                  <i nz-icon nz-tooltip class="ant-input-clear-icon" nzTheme="fill" nzType="close-circle" *ngIf="ord.get('hospitalNo').value && editable" (click)="onClearHospital(0)"></i>
+                </ng-template>
+                <ng-template #clearHospitalBtn1>
+                  <i nz-icon nz-tooltip class="ant-input-clear-icon" nzTheme="fill" nzType="close-circle" *ngIf="ord.get('hospitalNo').value && editable" (click)="onClearHospital(1)"></i>
                 </ng-template>
 
                 <ng-template #selectHospitalBtn>

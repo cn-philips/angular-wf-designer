@@ -23,6 +23,9 @@ export class DifferenceAndCostInfoComponent {
   constructor(private spService: SpecialApprovalService, private modal: NzModalService) {}
 
   ngOnInit(): void {
+    if (this.orders.value.length === 0) {
+      this.onAddAnalysis()
+    }
   }
   /*
   * description: 获取表格数据

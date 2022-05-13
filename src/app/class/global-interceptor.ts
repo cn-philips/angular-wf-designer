@@ -38,12 +38,13 @@ export class GlobalInterceptor implements HttpInterceptor {
                 this.router.navigate(['/errorpage'], this.queryParams);
                 break;
               }
-              case '0002' : { // 未登录
-                
+              case '0002' : { // 未登录                
                 console.log('intercepted router', this.router.url);
-                console.log('intercepted body', event.body);              
-                let url=event.body.data.toString();                
-                location.href = event.body.data.toString();
+                console.log('intercepted body', event.body);  
+                setTimeout(()=>{
+                  let url=event.body.data.toString();                
+                  location.href = event.body.data.toString();
+                },500) 
                 break;
               }
               case '0003': { // cookie超时
@@ -81,5 +82,20 @@ export class GlobalInterceptor implements HttpInterceptor {
     //     }
     // });
   }
+  // summay()
+  // {
+  //   debugger
+  //   var count=0;
+  //   return (event)=>{
+  //      if(count==0)
+  //      {
+  //       setTimeout(()=>{
+  //         let url=event.body.data.toString();                
+  //         location.href = event.body.data.toString();
+  //       },500)    
+  //      }
+  //      count++;
+  //   }
+  // }
 
 }
