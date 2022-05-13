@@ -439,7 +439,9 @@ export class PreordermodifComponent implements OnInit {
           '36b9b838-1864-11ec-9074-54ee75a9b10b',
           '36b9bba4-1864-11ec-9074-54ee75a9b10b',
           '36b9bf46-1864-11ec-9074-54ee75a9b10b',
-          '36b9c46d-1864-11ec-9074-54ee75a9b10b'].indexOf(productList.paymentProvision) !== -1) {
+          '36b9c46d-1864-11ec-9074-54ee75a9b10b',
+          '36b9c198-1864-11ec-9074-54ee75a9b10b',
+          '36b9c34f-1864-11ec-9074-54ee75a9b10b'].indexOf(productList.paymentProvision) !== -1) {
           // 付款条款选择“其他”时，备注不能为空
           if (this.isEmpty(productList.paymentProvisionRemarks)) {
             this.message.create('error', '请填写付款条款备注');
@@ -861,7 +863,9 @@ export class PreordermodifComponent implements OnInit {
           '36b9b838-1864-11ec-9074-54ee75a9b10b',
           '36b9bba4-1864-11ec-9074-54ee75a9b10b',
           '36b9bf46-1864-11ec-9074-54ee75a9b10b',
-          '36b9c46d-1864-11ec-9074-54ee75a9b10b'].indexOf(productList.paymentProvision) !== -1) {
+          '36b9c46d-1864-11ec-9074-54ee75a9b10b',
+          '36b9c198-1864-11ec-9074-54ee75a9b10b',
+          '36b9c34f-1864-11ec-9074-54ee75a9b10b'].indexOf(productList.paymentProvision) !== -1) {
           // 付款条款选择“其他”时，备注不能为空
           if (this.isEmpty(productList.paymentProvisionRemarks)) {
             this.message.create('error', '请填写付款条款备注');
