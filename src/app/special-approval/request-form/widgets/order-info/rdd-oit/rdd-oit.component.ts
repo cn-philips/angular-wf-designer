@@ -4,6 +4,7 @@ import { read, utils } from "xlsx";
 import { NzMessageService } from 'ng-zorro-antd'
 
 import { SpecialApprovalService } from '../../../../special-approval.service'
+import { environment } from "../../../../../../environments/environment";
 
 import {
   ORDER_TYPES,
@@ -13,6 +14,8 @@ import {
 } from "../../../../special-approval.constants";
 import { Hospital, SelectHospitalComponent } from "../../select-hospital/select-hospital.component";
 import { Dealer, SelectDealerComponent } from "../../select-dealer/select-dealer.component";
+
+import { HttpService } from '../../../../../services/http.service'
 
 const excelKeyMap = {
   订单类型: "orderType",
@@ -66,6 +69,8 @@ export class RddOitOrderInfoComponent implements OnInit {
 
   activeOrder = null
 
+  templateUrl = `${environment.base_href}/assets/template/RDD-OIT-180-Template.xlsx`
+
   selectOptions = {
     orderTypes: ORDER_TYPES,
     businessModels: BUSINESS_MODEL_LIST,
@@ -76,10 +81,82 @@ export class RddOitOrderInfoComponent implements OnInit {
   constructor(
     public spService: SpecialApprovalService,
     private message: NzMessageService,
+    private http: HttpService,
   ) {}
 
   ngOnInit(): void {
     this.initOMUsers()
+  }
+
+  get bmcList() {
+    return this.spService.bmcList.filter(({ bg }) => bg === 'US')
+  }
+
+  checkImportedHospital(order) {
+    order.hospitalLoading = true
+    order.hospitalError = false
+    this.http.post(`/act/preparation/getEndUser`, { customerName: order.hospitalName })
+      .subscribe(({ code, data }) => {
+        if (code === '0000') {
+          const { rows } = data
+          if (rows.length === 1) {
+            order.hospitalNo = rows[0].no
+          } else {
+            order.hospitalError = true
+            order.hospitalNo = ''
+            order.hospitalName = ''
+          }
+        } 
+        order.hospitalLoading = false
+    })
+  }
+
+  checkImportedDealer(order) {
+    order.dealerLoading = true
+    order.dealerError = false
+    this.http.post(`/act/preparation/getDealersOnlyWithRegFlag`, { dealerName: order.dealerName })
+      .subscribe(({ code, data }) => {
+        if (code === '0000') {
+          const { rows } = data
+          if (rows.length === 1) {
+            order.dealerCode = rows[0].dealerCode
+          } else {
+            order.dealerError = true
+            order.dealerCode = ''
+            order.dealerName = ''
+          }
+        } 
+        order.dealerLoading = false
+    })
+  }
+
+  isTableValid() {
+    let hasError = false
+    this.formValues.value.forEach((order) => {
+      const { 
+        isMain, orderType, bmc, cycleGroup, bigArea, businessModel,
+        dealerCode, hospitalNo,
+        projectName, sapOrderNo, orderAmount, currency,
+        subProductType, wbsNo, orderDate, originalRdd, deliveryDelayReason, newRdd,
+        exchangeableOrder
+      } = order
+      if (isMain) {
+        if (!(orderType && bmc && cycleGroup && bigArea &&
+          businessModel && projectName && sapOrderNo &&
+          orderAmount && currency && (dealerCode || hospitalNo)
+        )) {
+          hasError = true
+        }
+      }
+      if (!(
+        subProductType && wbsNo && orderDate && originalRdd &&
+        deliveryDelayReason && newRdd &&
+        exchangeableOrder !== null && exchangeableOrder !== undefined
+      )) {
+        hasError = true
+      }
+    })
+    return !hasError
   }
 
   // 导入数据
@@ -133,12 +210,20 @@ export class RddOitOrderInfoComponent implements OnInit {
         } else if(exchangeableOrder === '否') {
           orderInfo.exchangeableOrder = 0
         }
+
+        if(hospitalName) {
+          this.checkImportedHospital(orderInfo)
+        }
+        if (dealerName) {
+          this.checkImportedDealer(orderInfo)
+        }
         return orderInfo
       })
       if (subProductTypes.length > 0) {
         mainOrder.productType = subProductTypes.join(';')
       }
       this.formValues.patchValue(data)
+      this.isTableValid()
       this.message.success('导入成功')
     };
     reader.readAsArrayBuffer(file);
@@ -165,8 +250,8 @@ export class RddOitOrderInfoComponent implements OnInit {
     }
   }
 
-   // 初始化OM列表
-   async initOMUsers() {
+  // 初始化OM列表
+  async initOMUsers() {
     const users = await this.spService.getOMUsers()
     this.selectOptions.oms = users.map(({ name, email }) => ({ label: name, value: email }))
   }
@@ -177,6 +262,7 @@ export class RddOitOrderInfoComponent implements OnInit {
   }
 
   onSelectHospital(hospital: Hospital) {
+    this.activeOrder.hospitalError = false
     const { no, customerName } = hospital
     this.activeOrder.hospitalNo = no
     this.activeOrder.hospitalName = customerName
@@ -193,6 +279,7 @@ export class RddOitOrderInfoComponent implements OnInit {
   }
 
   onSelectDealer(dealer: Dealer) {
+    this.activeOrder.dealerError = false
     const { dealerCode, dealerName } = dealer
     this.activeOrder.dealerCode = dealerCode
     this.activeOrder.dealerName = dealerName
