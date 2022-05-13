@@ -286,7 +286,7 @@
             <div nz-col nzSpan="24">
               <nz-form-item class="order-list-normal-item">
                 <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-                  <input *ngIf="editable? index === 1 : isCreateUser[index]" id="orderAmount" type="text" nz-input formControlName="orderAmount" />
+                  <nz-input-number *ngIf="editable? index === 1 : isCreateUser[index]" id="orderAmount" style="width: 100%;" formControlName="orderAmount" [nzMin]="0"></nz-input-number>
                   <nz-form-explain *ngIf="ord.get('orderAmount')?.dirty && ord.get('orderAmount')?.errors">
                     请填写合同金额
                   </nz-form-explain>

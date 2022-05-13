@@ -199,7 +199,7 @@
           <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzXl="8" nzXXl="6" nzRequired  nzFor="orderAmount">合同金额</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <nz-form-control nzXs="24" nzSm="24" nzMd="9">
-              <input id="orderAmount" type="text" nz-input formControlName="orderAmount" maxlength="12" />
+              <nz-input-number id="orderAmount" style="width: 100%;" formControlName="orderAmount" [nzMin]="0"></nz-input-number>
               <nz-form-explain *ngIf="formValues.get('orderAmount')?.dirty && formValues.get('orderAmount')?.errors">
                 请填写合同金额
               </nz-form-explain>
