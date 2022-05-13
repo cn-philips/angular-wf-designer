@@ -226,10 +226,21 @@ export class TransferLibComponent implements OnInit {
     } else {
       this.referenceImport1 = true
     }
-   const isDifference = this.bmcCheck(this.currentImportIndex);
-    if (isDifference) {
-      return
+    switch (this.currentImportIndex) {
+      case 0:
+        if (this.orders.at(1).get('bmc').value && (this.orders.at(1).get('bmc').value !== bmc)) {
+          this.message.error('bmc不一致,请重新选择')
+          return
+        }
+        break
+      case 1:
+        if (this.orders.at(0).get('bmc').value && (this.orders.at(0).get('bmc').value !== bmc)) {
+          this.message.error('bmc不一致,请重新选择')
+          return
+        }
+        break
     }
+
 
     this.disableField(this.currentImportIndex)
     this.orders.at(this.currentImportIndex).patchValue({
@@ -274,12 +285,7 @@ export class TransferLibComponent implements OnInit {
     if (this.editable && this.orders.at(1).value.bigArea) {
       this.onBigAreaChange(this.orders.at(1).value.cycleGroup,1)
     }
-    this.orders.at(0).get('bmc').valueChanges.subscribe(value => {
 
-    })
-    this.orders.at(1).get('bmc').valueChanges.subscribe(value => {
-
-    })
 
     this.checkMoney(0)
     if (!this.editable){
@@ -299,6 +305,7 @@ export class TransferLibComponent implements OnInit {
           })
         })
       })
+      this.orders.at(1).get('saleEmail').disable();
     }
 
     /*
@@ -501,6 +508,9 @@ export class TransferLibComponent implements OnInit {
     ) {
       this.isCreateUser[index] = false
     }
+    if (index === 0) {
+      this.isCreateUser[index] = (currEmail === transSale)
+    }
   }
 
   disableField(index) {
@@ -528,13 +538,13 @@ export class TransferLibComponent implements OnInit {
   bmcCheck(index) {
     switch (index) {
       case 0:
-        if (this.orders.at(1).get('bmc').value && this.orders.at(1).get('bmc').value !== this.orders.at(0).get('bmc').value) {
+        if (this.orders.at(1).get('bmc').value && (this.orders.at(1).get('bmc').value !== this.orders.at(0).get('bmc').value)) {
           this.message.error('bmc不一致,请重新选择')
           return true
         };
         return false
       case 1:
-        if (this.orders.at(0).get('bmc').value && this.orders.at(0).get('bmc').value !== this.orders.at(1).get('bmc').value) {
+        if (this.orders.at(0).get('bmc').value && (this.orders.at(0).get('bmc').value !== this.orders.at(1).get('bmc').value)) {
           this.message.error('bmc不一致,请重新选择')
           return true
         }

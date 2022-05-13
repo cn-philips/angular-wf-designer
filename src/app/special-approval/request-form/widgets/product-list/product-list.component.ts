@@ -32,6 +32,7 @@ export class ProductListComponent implements OnInit {
   selectOptions = {
     logicStatus: LOGISTICS_STATUS,
   };
+  isNotShip: boolean = false;
 
   constructor(protected spService: SpecialApprovalService) {}
 
@@ -136,5 +137,22 @@ export class ProductListComponent implements OnInit {
       product.warranty.expectedStdWarrantyEnddate = null
     }
     this.onCalcWarrantyMonth(product)
+  }
+
+  logisticsChange(value) {
+    switch (value) {
+      case 0:
+        this.products.value.equipmentSn = null
+        this.isNotShip = false
+        break;
+      case 1:
+        this.products.value.equipmentSn = null
+        this.isNotShip = false
+        break;
+      case 2:
+        this.products.value.equipmentSn = null
+        this.isNotShip = true
+        break
+    }
   }
 }
