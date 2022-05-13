@@ -48,8 +48,8 @@
           <th nzWidth="200px">*是否有可换货期订单</th>
           <th nzWidth="150px">可换货期订单销售</th>
           <th nzWidth="300px">可换货期订单销售区域</th>
-          <th nzWidth="200px">可换货期医院编号</th>
-          <th nzWidth="300px">可换货期医院名称</th>
+          <th nzWidth="400px">可换货期医院名称</th>
+          <th nzWidth="300px">可换货期医院编号</th>
           <th nzWidth="150px">可换货期订单型号</th>
           <th nzWidth="150px">可换货期订单SO#</th>
           <th nzWidth="200px">可换货期订单WBS#</th>
@@ -387,14 +387,38 @@
           <td>
             <nz-form-item>
               <nz-form-control>
-                <input nz-input [(ngModel)]="data.exchangeableHospitalNo" [disabled]="!editable" />
+                <nz-input-group style="width: 100%" [nzSuffix]="clearExchangeHospitalBtn" [nzAddOnAfter]="selectExchangeHospitalBtn">
+                  <input type="text" nz-input [(ngModel)]="data.exchangeableHospitalName" [placeholder]="editable ? '点击右侧按钮选择医院' : ''" disabled />
+                </nz-input-group>
+                <ng-template #clearExchangeHospitalBtn>
+                  <i 
+                    nz-icon
+                    nz-tooltip
+                    class="ant-input-clear-icon"
+                    nzTheme="fill"
+                    nzType="close-circle"
+                    *ngIf="!data.exchangeHospitalLoading && data.exchangeableHospitalName && editable"
+                    (click)="onClearHospital(data, true)"
+                  ></i>
+                </ng-template>
+    
+                <ng-template #selectExchangeHospitalBtn>
+                  <i *ngIf="data.exchangeHospitalLoading" nz-icon nzType="loading" nzTheme="outline"></i>
+                  <button *ngIf="editable && !data.exchangeHospitalLoading" nz-button nzType="primary" class="ml-md" (click)="onShowSelectHospitalModal(data, true)">选择医院</button>
+                </ng-template>
+
+                <nz-form-explain class="error-msg">
+                  <ng-container *ngIf="data.exchangeHospitalError">
+                    医院数据验证失败, 请重新选择
+                  </ng-container>
+                </nz-form-explain>
               </nz-form-control>
             </nz-form-item>
           </td>
           <td>
             <nz-form-item>
               <nz-form-control>
-                <input nz-input [(ngModel)]="data.exchangeableHospitalName" [disabled]="!editable" />
+                <input nz-input [ngModel]="data.exchangeableHospitalNo" disabled [placeholder]="editable ? '点击左侧按钮选择医院' : ''" />
               </nz-form-control>
             </nz-form-item>
           </td>

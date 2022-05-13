@@ -68,6 +68,7 @@ export class RddOitOrderInfoComponent implements OnInit {
   BUSINESS_MODEL = BUSINESS_MODEL
 
   activeOrder = null
+  isExchange = false
 
   templateUrl = `${environment.base_href}/assets/template/RDD-OIT-180-Template.xlsx`
 
@@ -92,22 +93,45 @@ export class RddOitOrderInfoComponent implements OnInit {
     return this.spService.bmcList.filter(({ bg }) => bg === 'US')
   }
 
-  checkImportedHospital(order) {
-    order.hospitalLoading = true
-    order.hospitalError = false
-    this.http.post(`/act/preparation/getEndUser`, { customerName: order.hospitalName })
+  checkImportedHospital(order, isExchange = false) {
+    if (isExchange) {
+      order.exchangeHospitalLoading = true
+      order.exchangeHospitalError = false
+    } else {
+      order.hospitalLoading = true
+      order.hospitalError = false
+    }
+    const customerName = isExchange ? order.exchangeableHospitalName : order.hospitalName
+    this.http.post(`/act/preparation/getEndUser`, { customerName })
       .subscribe(({ code, data }) => {
         if (code === '0000') {
           const { rows } = data
           if (rows.length === 1) {
-            order.hospitalNo = rows[0].no
+            const { customerName, no } = rows[0]
+            if (isExchange) {
+              order.exchangeableHospitalName = customerName
+              order.exchangeableHospitalNo = no
+            } else {
+              order.hospitalName = customerName
+              order.hospitalNo = no
+            }
           } else {
-            order.hospitalError = true
-            order.hospitalNo = ''
-            order.hospitalName = ''
+            if (isExchange) {
+              order.exchangeHospitalError = true
+              order.exchangeableHospitalNo = ''
+              order.exchangeableHospitalName = ''
+            } else {
+              order.hospitalError = true
+              order.hospitalNo = ''
+              order.hospitalName = ''
+            }
           }
-        } 
-        order.hospitalLoading = false
+        }
+        if (isExchange) {
+          order.exchangeHospitalLoading = false
+        } else {
+          order.hospitalLoading = false
+        }
     })
   }
 
@@ -180,7 +204,7 @@ export class RddOitOrderInfoComponent implements OnInit {
         const { 
           applyArrivalTime, bg, bmc, businessModel, currency, cycleGroup, dealerCode, dealerName, expectedPaymentDate, expectedSaleDate,
           hospitalName, hospitalNo, om, orderAmount, orderType, productType, projectName, referenceId, sapOrderNo, exchangeableOrder,
-          subProductType
+          subProductType, exchangeableHospitalName,
         } = orderInfo
         if (bmc) { this.onBmcChange(orderInfo) }
         if (businessModel) {
@@ -211,11 +235,14 @@ export class RddOitOrderInfoComponent implements OnInit {
           orderInfo.exchangeableOrder = 0
         }
 
-        if(hospitalName) {
+        if (hospitalName) {
           this.checkImportedHospital(orderInfo)
         }
         if (dealerName) {
           this.checkImportedDealer(orderInfo)
+        }
+        if (exchangeableHospitalName) {
+          this.checkImportedHospital(orderInfo, true)
         }
         return orderInfo
       })
@@ -256,21 +283,33 @@ export class RddOitOrderInfoComponent implements OnInit {
     this.selectOptions.oms = users.map(({ name, email }) => ({ label: name, value: email }))
   }
 
-  onShowSelectHospitalModal(order) {
+  onShowSelectHospitalModal(order, isExchange = false) {
+    this.isExchange = isExchange
     this.activeOrder = order
     this.selectHospital.showModal()
   }
 
   onSelectHospital(hospital: Hospital) {
-    this.activeOrder.hospitalError = false
     const { no, customerName } = hospital
-    this.activeOrder.hospitalNo = no
-    this.activeOrder.hospitalName = customerName
+    if (this.isExchange) {
+      this.activeOrder.exchangeHospitalError = false
+      this.activeOrder.exchangeableHospitalNo = no
+      this.activeOrder.exchangeableHospitalName = customerName
+    } else {
+      this.activeOrder.hospitalError = false
+      this.activeOrder.hospitalNo = no
+      this.activeOrder.hospitalName = customerName
+    }
   }
 
-  onClearHospital(order) {
-    order.hospitalName = null
-    order.hospitalNo = null
+  onClearHospital(order, isExchange = false) {
+    if (isExchange) {
+      order.exchangeableHospitalName = null
+      order.exchangeableHospitalNo = null
+    } else {
+      order.hospitalName = null
+      order.hospitalNo = null
+    }
   }
 
   onShowSelectDealerModal(order) {
