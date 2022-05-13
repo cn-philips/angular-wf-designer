@@ -18,6 +18,7 @@ import {
   PROCESS_STATUS,
 } from '../special-approval.constants';
 import { SelectApproverComponent } from './widgets/select-approver/select-approver.component';
+import { RddOitOrderInfoComponent } from './widgets/order-info/rdd-oit/rdd-oit.component';
 import {MachineComponent} from './widgets/order-info/machine/machine.component';
 
 enum TAB_TYPE {
@@ -43,6 +44,7 @@ export class RequestFormComponent implements OnInit {
 
   @ViewChild('selectApprover') public selectApprover: SelectApproverComponent;
 
+  @ViewChild('rddOitOrderInfo') public rddOitOrderInfo: RddOitOrderInfoComponent;
   @ViewChild('machineExchange') public machineExchange: MachineComponent;
 
   public pageTitle: string;
@@ -175,7 +177,7 @@ export class RequestFormComponent implements OnInit {
       products: [[]],
       arrivalDate: [null], // 到货日期
     }),
-    rddOitOrderInfos: [[]],
+    rddOitOrderInfos: [[{ isMain: true }]],
     ccInfo: this.fb.group({
       ccType: [null], // 抄送类型
       ccPerson: [[]] // 抄送人
@@ -589,7 +591,9 @@ export class RequestFormComponent implements OnInit {
             deliveryDelayReason, exchangeableHospitalName, exchangeableHospitalNo, exchangeableOrder, exchangeableOrderModel,
             exchangeableOrderSale, exchangeableOrderSaleBigArea, exchangeableOrderSaleCycleGroup,
             exchangeableOrderSaleDate: exchangeableOrderSaleDate ? moment(exchangeableOrderSaleDate).format('YYYY-MM-DD') : null,
-            exchangeableSoNo, exchangeableWbsNo, newRdd, originalRdd, productType: subProductType, wbsNo,
+            originalRdd: originalRdd ? moment(originalRdd).format('YYYY-MM-DD') : null,
+            newRdd: newRdd ? moment(newRdd).format('YYYY-MM-DD') : null,
+            exchangeableSoNo, exchangeableWbsNo, productType: subProductType, wbsNo,
           }
           if (isMain) {
             if (order) {
@@ -623,6 +627,7 @@ export class RequestFormComponent implements OnInit {
       this.formValues.controls.orderInfo.disable();
       this.formValues.controls.ccInfo.disable();
       this.formValues.controls.lcAmendmentOrderInfo.disable();
+      this.lcAmendmentOrderInfo.get('lcInfo').disable()
       this.formValues.controls.changeOrderInfos.disable()
       //添加转库disabled
       this.formValues.controls.exchangeInfo.disable()
@@ -683,8 +688,8 @@ export class RequestFormComponent implements OnInit {
     let hasError = false
     switch(this.applyType) {
       case APPLY_TYPE.RDD_OIT:
-        if (orderInfos.length === 0) {
-          this.message.error('请导入订单信息')
+        if (!this.rddOitOrderInfo.isTableValid()) {
+          this.message.error('请按要求填写订单信息')
           return
         } else {
           hasError = this.basicInfo.invalid
