@@ -18,6 +18,8 @@ import {
   PROCESS_STATUS,
 } from '../special-approval.constants';
 import { SelectApproverComponent } from './widgets/select-approver/select-approver.component';
+import { RddOitOrderInfoComponent } from './widgets/order-info/rdd-oit/rdd-oit.component';
+import {MachineComponent} from './widgets/order-info/machine/machine.component';
 
 enum TAB_TYPE {
   BASIC_INFO = 'basic-info',
@@ -41,6 +43,9 @@ enum TAB_TYPE {
 export class RequestFormComponent implements OnInit {
 
   @ViewChild('selectApprover') public selectApprover: SelectApproverComponent;
+
+  @ViewChild('rddOitOrderInfo') public rddOitOrderInfo: RddOitOrderInfoComponent;
+  @ViewChild('machineExchange') public machineExchange: MachineComponent;
 
   public pageTitle: string;
   public requestId;
@@ -172,7 +177,7 @@ export class RequestFormComponent implements OnInit {
       products: [[]],
       arrivalDate: [null], // 到货日期
     }),
-    rddOitOrderInfos: [[]],
+    rddOitOrderInfos: [[{ isMain: true }]],
     ccInfo: this.fb.group({
       ccType: [null], // 抄送类型
       ccPerson: [[]] // 抄送人
@@ -314,6 +319,12 @@ export class RequestFormComponent implements OnInit {
         this.basicInfo.patchValue({ applyItem: item });
       }
       this.applyType = type;
+
+      switch (this.applyType) {
+        case APPLY_TYPE.MACHINE_EXCHANGE:
+          this.setMachineDefaultInfo()
+      break;
+      }
 
       this.basicInfo.patchValue({ applyType: type });
 
@@ -580,7 +591,9 @@ export class RequestFormComponent implements OnInit {
             deliveryDelayReason, exchangeableHospitalName, exchangeableHospitalNo, exchangeableOrder, exchangeableOrderModel,
             exchangeableOrderSale, exchangeableOrderSaleBigArea, exchangeableOrderSaleCycleGroup,
             exchangeableOrderSaleDate: exchangeableOrderSaleDate ? moment(exchangeableOrderSaleDate).format('YYYY-MM-DD') : null,
-            exchangeableSoNo, exchangeableWbsNo, newRdd, originalRdd, productType: subProductType, wbsNo,
+            originalRdd: originalRdd ? moment(originalRdd).format('YYYY-MM-DD') : null,
+            newRdd: newRdd ? moment(newRdd).format('YYYY-MM-DD') : null,
+            exchangeableSoNo, exchangeableWbsNo, productType: subProductType, wbsNo,
           }
           if (isMain) {
             if (order) {
@@ -614,6 +627,7 @@ export class RequestFormComponent implements OnInit {
       this.formValues.controls.orderInfo.disable();
       this.formValues.controls.ccInfo.disable();
       this.formValues.controls.lcAmendmentOrderInfo.disable();
+      this.lcAmendmentOrderInfo.get('lcInfo').disable()
       this.formValues.controls.changeOrderInfos.disable()
       //添加转库disabled
       this.formValues.controls.exchangeInfo.disable()
@@ -674,18 +688,28 @@ export class RequestFormComponent implements OnInit {
     let hasError = false
     switch(this.applyType) {
       case APPLY_TYPE.RDD_OIT:
-        if (orderInfos.length === 0) {
-          this.message.error('请导入订单信息')
+        if (!this.rddOitOrderInfo.isTableValid()) {
+          this.message.error('请按要求填写订单信息')
           return
         } else {
           hasError = this.basicInfo.invalid
         }
         break
       case APPLY_TYPE.MACHINE_EXCHANGE:
-        if (!orderInfos[0].hospitalName || !orderInfos[1].hospitalName) {
-          this.message.error('请选择医院')
+        const orders = this.changeOrderInfos.get('orders') as FormArray
+        const product0 = orders.at(0).get('products')
+        const product1 = orders.at(1).get('products')
+
+        if (product0.value[0].logisticsStatus !== 1 && product1.value[0].logisticsStatus !== 1){
+          console.log(product0.value.logisticsStatus)
+          this.message.error('请至少提交一条已到货产品')
           return
         }
+        if (!orderInfos[0].hospitalName || !orderInfos[1].hospitalName) {
+          this.message.error('请选择医院再提交')
+          return
+        }
+
         const check = this.checkMachineExchange();
         if (!check){
           return
@@ -708,6 +732,10 @@ export class RequestFormComponent implements OnInit {
       case APPLY_TYPE.TRANSFER_LIB:
         const transferLibOrder = this.transferLibInfos.get('orders') as FormArray
         let formValidError = false
+        if (transferLibOrder.at(0).get('bmc').value !== transferLibOrder.at(1).get('bmc').value) {
+          this.message.error('转入转出bmc不一致，请重新选择')
+          return
+        }
         if (!transferLibOrder.at(0).get('hospitalName').value || !transferLibOrder.at(1).get('hospitalName').value) {
           this.message.error('请选择医院再提交')
           return
@@ -719,7 +747,22 @@ export class RequestFormComponent implements OnInit {
             formValidError = true
           }
         })
-
+        const difference = this.orderDifferencesInfo.get('orderDifferences').value
+        if (!difference || difference.length === 0){
+          this.message.error('请填写差异信息')
+          return
+        } else {
+          for (let i = 0; i < difference.length; i++) {
+            if (!difference[i].configDetail || !difference[i].transferOut || !difference[i].transferIn || !difference[i].handlePlan || !difference[i].cost) {
+              this.message.error('请完整填写差异信息')
+              return
+            }
+          }
+        }
+        console.log(difference)
+        // for (let i = 0; i < difference.length; i++) {
+        //   if (difference[i].)
+        // }
         hasError = this.basicInfo.invalid || formValidError
         break
       default:
@@ -741,9 +784,27 @@ export class RequestFormComponent implements OnInit {
         hasError = this.basicInfo.invalid || this.orderInfo.invalid
     }
 
-    if (this.applyType === APPLY_TYPE.EXT_WARRANTY && orderInfos[0] && orderInfos[0].products && orderInfos[0].products.length === 0) {
-      this.message.error('请填写延保信息');
-      return
+    if (this.applyType === APPLY_TYPE.EXT_WARRANTY) {
+      if (orderInfos[0] && orderInfos[0].products && orderInfos[0].products.length === 0) {
+        this.message.error('请填写延保信息');
+        return
+      } else {
+        let hasError = false
+        let errorMsg = ''
+        orderInfos[0].products.forEach(({ warranty: { applyExtWarrantyMonths } }) => {
+          if (!applyExtWarrantyMonths) {
+            hasError = true
+            errorMsg = '请填补充完整延保信息'
+          } else if (Number(applyExtWarrantyMonths) <= 0) {
+            hasError = true
+            errorMsg = '申请延保月数必须大于0'
+          }
+        })
+        if (hasError) {
+          this.message.error(errorMsg);
+          return
+        }
+      }
     }
     // 抄送人和抄送节点必须同时选择或者同时不选择
     if (ccType && !ccPerson) {
@@ -900,14 +961,12 @@ export class RequestFormComponent implements OnInit {
         let order1 = null
       if (orderInfos[0].transferCargo === 'sp_transferlib_order_type_item_1') {
          order0 = orderInfos[0]
+        order1 = orderInfos[1]
       } else {
         order0 = orderInfos[1]
+        order1 = orderInfos[0]
       }
-        if (orderInfos[1].transferCargo === 'sp_transferlib_order_type_item_2') {
-          order1 = orderInfos[1]
-        }else {
-          order1 = orderInfos[0]
-        }
+
         this.formValues.patchValue({
           transferLibOrders: {
             orders: [
@@ -1119,4 +1178,22 @@ export class RequestFormComponent implements OnInit {
     return e === '' || e === null || e === undefined;
   }
 
+  public setMachineDefaultInfo() {
+    if (this.editable) {
+      const orders = this.changeOrderInfos.get('orders') as FormArray
+      orders.at(0).patchValue({
+        saleEmail: localStorage.getItem('ng_philips_code1')
+      })
+      this.changeOrderInfos.patchValue({
+        exchangeMethod: '互换',
+        orders: [
+          {
+            exchangeRole: '互换'
+          },
+          {
+            exchangeRole: '互换'
+          }]
+      })
+    }
+  }
 }

@@ -2,6 +2,11 @@ import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {HttpService} from '../../../../services';
 
+interface mapping {
+  bg: string,
+  bmc: string,
+  cluster: string
+}
 @Component({
   selector: "app-role-modality-bmc-form",
   templateUrl: "./role-modality-bmc-form.component.html",
@@ -20,98 +25,7 @@ export class RoleModalityBMCFormComponent implements OnInit {
   bmcOptions: any[] = [];
 
   // 对应关系映射
-  bmcMapping = [
-    {
-      bmc: 'AMI',
-      cluster: 'PD',
-      modality: 'PD&IGT'
-    },
-    {
-      bmc: 'CT',
-      cluster: 'PD',
-      modality: 'PD&IGT'
-    },
-    {
-      bmc: 'DXR',
-      cluster: 'PD',
-      modality: 'PD&IGT'
-    },
-    {
-      bmc: 'EDI-CI',
-      cluster: 'PD',
-      modality: 'PD&IGT'
-    },
-    {
-      bmc: 'EDI-ICAP',
-      cluster: 'PD',
-      modality: 'PD&IGT'
-    },
-    {
-      bmc: 'IGT-S',
-      cluster: 'IGT',
-      modality: 'PD&IGT'
-    },
-    {
-      bmc: 'MR',
-      cluster: 'PD',
-      modality: 'PD&IGT'
-    },
-    {
-      bmc: 'PDS-RadOnc',
-      cluster: 'PD',
-      modality: 'PD&IGT'
-    },
-    {
-      bmc: 'Professional Service',
-      cluster: 'S&SD',
-      modality: 'S&SD'
-    },
-    {
-      bmc: 'PDS-DCP',
-      cluster: 'PD',
-      modality: 'PD&IGT'
-    },
-    {
-      bmc: 'US',
-      cluster: 'PD',
-      modality: 'US'
-    },
-    {
-      bmc: 'HPM',
-      cluster: 'CC',
-      modality: 'CC'
-    },
-    {
-      bmc: 'VAD',
-      cluster: 'CC',
-      modality: 'CC'
-    },
-    {
-      bmc: 'DFM',
-      cluster: 'CC',
-      modality: 'CC'
-    },
-    {
-      bmc: 'DECG',
-      cluster: 'CC',
-      modality: 'CC'
-    },
-    {
-      bmc: 'AED',
-      cluster: 'CC',
-      modality: 'CC'
-    },
-    {
-      bmc: 'All',
-      cluster: 'PD&IGT',
-      modality: 'PD&IGT'
-    },
-    {
-      bmc: 'All',
-      cluster: 'CC',
-      modality: 'CC'
-    },
-  ]
+  bmcMapping: mapping[] = []
 
   constructor(
     private fb: FormBuilder,
@@ -124,6 +38,7 @@ export class RoleModalityBMCFormComponent implements OnInit {
       modality: [null, [Validators.required]],
       cluster: [{value: null, disabled: true}],
     });
+
   }
   initRoleOptions() {
     const url = 'act/ecom/homepage/getRole';
@@ -146,31 +61,47 @@ export class RoleModalityBMCFormComponent implements OnInit {
       res(true);
     });
   }
-  initModalityOptions() {
-    return new Promise((res, rej) => {
-      this.http.get('act/ecom/dictData/queryDrop?dictGroup=area_modality').subscribe(response =>{
-        for (let i = 0; i < response.data.length; i++) {
-          this.modalityOptions.push({ label: response.data[i].label, value: response.data[i].label });
-        }
-      });
-      res(true);
+  // initModalityOptions() {
+  //   return new Promise((res, rej) => {
+  //     this.http.get('act/ecom/dictData/queryDrop?dictGroup=area_modality').subscribe(response =>{
+  //       for (let i = 0; i < response.data.length; i++) {
+  //         this.modalityOptions.push({ label: response.data[i].label, value: response.data[i].label });
+  //       }
+  //     });
+  //     res(true);
+  //   });
+  // }
+  async initBMCOptions() {
+    const uri = `/act/specialapprove/bmcclusterbg?pageSize=999`;
+    this.http.get(uri).subscribe((res) => {
+      this.bmcMapping = res.data.rows;
+
+      let bgs = [];
+      for (let i = 0; i < this.bmcMapping.length; i++) {
+        bgs[i] = this.bmcMapping[i].bg
+      }
+
+      let bg = Array.from(new Set(bgs))
+
+      for (let i = 0; i < bg.length; i++) {
+        this.modalityOptions.push( { label: bg[i], value: bg[i] } )
+      }
     });
-  }
-  initBMCOptions() {
-    return new Promise((res, rej) => {
-      this.http.get('act/ecom/dictData/queryDrop?dictGroup=area_bmc').subscribe(response =>{
-        for (let i = 0; i < response.data.length; i++) {
-          this.bmcOptions.push({ label: response.data[i].label, value: response.data[i].label });
-        }
-      });
-      res(true);
-    });
+    // return new Promise((res, rej) => {
+    //   this.http.get('act/ecom/dictData/queryDrop?dictGroup=area_bmc').subscribe(response =>{
+    //     for (let i = 0; i < response.data.length; i++) {
+    //       this.bmcOptions.push({ label: response.data[i].label, value: response.data[i].label });
+    //     }
+    //   });
+    //   res(true);
+    // });
   }
 
-  async ngOnInit() {
+   async ngOnInit() {
+
     this.initRoleOptions();
     this.initTeamOptions();
-    this.initModalityOptions();
+    // this.initModalityOptions();
     this.initBMCOptions();
     if (this.user) {
       this.setUserDetail(this.user);
@@ -207,8 +138,11 @@ export class RoleModalityBMCFormComponent implements OnInit {
   }
   // 根据bmc和modality对应cluster
   async ModalityChanges(value: string) {
-    const bmc = this.validateForm.get('bmc').value;
-    this.mappingCluster(bmc, value);
+    this.validateForm.patchValue({
+      bmc: null,
+      cluster: null
+    })
+    this.getBMCList(value)
   }
 
   mappingCluster(bmc: string, modality: string){
@@ -216,7 +150,15 @@ export class RoleModalityBMCFormComponent implements OnInit {
       this.validateForm.patchValue({ // 先清除现有cluster再按规则进行对应
         cluster: null
       })
-      const map = this.bmcMapping.find(val => val.bmc === bmc && val.modality === modality);
+
+      if (bmc === 'All') {
+        this.validateForm.patchValue({
+          cluster: modality
+        })
+        return
+      }
+
+      const map = this.bmcMapping.find(val => val.bmc === bmc && val.bg === modality);
       if (map !== undefined){
         this.validateForm.patchValue({
           cluster: map.cluster
@@ -225,4 +167,21 @@ export class RoleModalityBMCFormComponent implements OnInit {
     }
   }
 
+  getBMCList(bg) {
+    const list = this.bmcMapping.filter(value => value.bg === bg)
+    if ( bg === 'CC') {
+      this.bmcOptions = [{
+        label: 'All',
+        value: 'All',
+      }];
+      list.map(value => {
+        this.bmcOptions.push({label: value.bmc, value: value.bmc})
+      })
+    }else {
+      this.bmcOptions = [];
+      list.map(value => {
+        this.bmcOptions.push({label: value.bmc, value: value.bmc})
+      })
+    }
+  }
 }

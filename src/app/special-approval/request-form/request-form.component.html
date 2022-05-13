@@ -66,9 +66,9 @@
         <special-approval-transportation-order-info *ngIf="applyType === APPLY_TYPE.LOGISTICSCOST" [editable]="editable" [formValues]="orderInfo"></special-approval-transportation-order-info>
         <special-approval-additional-intallation-cost *ngIf="applyType === APPLY_TYPE.EXT_INSTALL_COST" [editable]="editable" [formValues]="orderInfo"></special-approval-additional-intallation-cost>
         <special-approval-lcamendment-order-info *ngIf="applyType === APPLY_TYPE.LC_AMENDMENT" [editable]="editable" [basicInfo]="basicInfo" [formValues]="lcAmendmentOrderInfo"></special-approval-lcamendment-order-info>
-        <special-approval-rdd-oit-order-info *ngIf="applyType === APPLY_TYPE.RDD_OIT" [formValues]="rddOitOrderInfos" [editable]="editable"></special-approval-rdd-oit-order-info>
-        <special-approval-machineexcange-order-info *ngIf="applyType === APPLY_TYPE.MACHINE_EXCHANGE"  [editable]="editable" [formValues]="changeOrderInfos" [salesLeaders]="salesLeader" [districtLeaders]="districtLeader"></special-approval-machineexcange-order-info>
-        <special-approval-transfer-lib-info *ngIf="applyType === APPLY_TYPE.TRANSFER_LIB" [editable]="editable" [exchangeInfo]="exchangeInfo" [formValues]="transferLibInfos"></special-approval-transfer-lib-info>
+        <special-approval-rdd-oit-order-info #rddOitOrderInfo *ngIf="applyType === APPLY_TYPE.RDD_OIT" [formValues]="rddOitOrderInfos" [editable]="editable"></special-approval-rdd-oit-order-info>
+        <special-approval-machineexcange-order-info #machineExchange *ngIf="applyType === APPLY_TYPE.MACHINE_EXCHANGE"  [editable]="editable" [formValues]="changeOrderInfos" [salesLeaders]="salesLeader" [districtLeaders]="districtLeader"></special-approval-machineexcange-order-info>
+        <special-approval-transfer-lib-info *ngIf="applyType === APPLY_TYPE.TRANSFER_LIB" [editable]="editable" [baseInfo]="basicInfo" [exchangeInfo]="exchangeInfo" [formValues]="transferLibInfos"></special-approval-transfer-lib-info>
       </div>
     </ng-template>
   </ngb-tab>

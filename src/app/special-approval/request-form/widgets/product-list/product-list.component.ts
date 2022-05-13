@@ -126,7 +126,7 @@ export class ProductListComponent implements OnInit {
     if (typeof posWarrantyMonths === 'number') {
       product.warranty.posWarrantyMonths = Math.round(posWarrantyMonths)
     }
-    if (expectedStdWarrantyStartdate && stdWarrantyMonths && typeof posWarrantyMonths === 'number') {
+    if (expectedStdWarrantyStartdate && (stdWarrantyMonths && !isNaN(Number(stdWarrantyMonths))) && typeof posWarrantyMonths === 'number') {
       product.warranty.expectedStdWarrantyEnddate = moment(expectedStdWarrantyStartdate)
       .subtract(1, "days")
       .add(stdWarrantyMonths, "months")

@@ -44,7 +44,7 @@
         </td>
         <td>
           <!-- 合同标准保修月数 -->
-          <input type="text" nz-input [(ngModel)]="product.warranty.stdWarrantyMonths" disabled />
+          <input type="text" nz-input [(ngModel)]="product.warranty.stdWarrantyMonths" (ngModelChange)="onCalcStdWarrantyEndDate(product)" />
         </td>
         <td>
           <!-- POS延保月数 -->
