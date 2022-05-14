@@ -220,13 +220,13 @@ export class RequestFormComponent implements OnInit {
           dealerCode: [{ value: null, disabled: true }], // 经销商编号
           hospitalName: [{ value: null, disabled: true }], // 医院名称
           hospitalNo: [{ value: null, disabled: true }], // 医院编号
-          projectName: [null, [Validators.required]], // 项目名称
+          projectName: [{ value: null, disabled: true }, [Validators.required]], // 项目名称
           sapOrderNo: [null, [Validators.required]], // SAP订单号
           currency: [null, [Validators.required]], // 合同金额-货币
           om: [null, [Validators.required]], // OM
           orderDate: [null, [Validators.required]], // 进单日期
           exchangeRole: [null, [Validators.required]], // 换货角色
-          saleEmail: [{ value: null, disabled: true }], // 销售邮箱
+          saleEmail: [{ value: null, disabled: true }, [Validators.required]], // 销售邮箱
           districtLeader: [{ value: null, disabled: true }], // District Leader邮箱
           salesLeader: [{ value: null, disabled: true }], // sales Leader 邮箱
           products: [[], [Validators.required]],
@@ -244,13 +244,13 @@ export class RequestFormComponent implements OnInit {
           dealerCode: [{ value: null, disabled: true }], // 经销商编号
           hospitalName: [{ value: null, disabled: true }], // 医院名称
           hospitalNo: [{ value: null, disabled: true }], // 医院编号
-          projectName: [null, [Validators.required]], // 项目名称
+          projectName: [{ value: null, disabled: true }, [Validators.required]], // 项目名称
           sapOrderNo: [null, [Validators.required]], // SAP订单号
           currency: [null, [Validators.required]], // 合同金额-货币
           om: [null, [Validators.required]], // OM
           orderDate: [null, [Validators.required]], // 进单日期
           exchangeRole: [null, [Validators.required]], // 换货角色
-          saleEmail: [null], // 销售邮箱
+          saleEmail: [null, [Validators.required]], // 销售邮箱
           districtLeader: [{ value: null, disabled: true }], // District Leader邮箱
           salesLeader: [{ value: null, disabled: true }], // sales Leader 邮箱
           products: [[], [Validators.required]],
@@ -559,7 +559,7 @@ export class RequestFormComponent implements OnInit {
         break;
       case APPLY_TYPE.TRANSFER_LIB: // Additional cost
         data.orderInfos = [
-          { 
+          {
             ...transferLibOrders.orders.at(0),
             transferCargo: 'sp_transferlib_order_type_item_1'
           },

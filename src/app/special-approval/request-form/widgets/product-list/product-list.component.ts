@@ -48,6 +48,9 @@ export class ProductListComponent implements OnInit {
     if (this.isExchange && this.products.value.length === 0){
       this.onAddProduct()
     }
+    if (this.isExchange && this.products.value[0].logisticsStatus === 2){
+      this.isNotShip = true;
+    }
   }
 
   onAddProduct() {

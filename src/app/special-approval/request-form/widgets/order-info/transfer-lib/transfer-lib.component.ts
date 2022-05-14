@@ -212,11 +212,13 @@ export class TransferLibComponent implements OnInit {
       logistician,
       marketBundleQuantity
     } = reference
-    this.salesList0 = [];
-    this.salesList0.push({
-      name: createUser,
-      email: createUser
-    })
+    if (this.currentImportIndex === 0){
+      this.salesList0 = [];
+      this.salesList0.push({
+        name: createUser,
+        email: createUser
+      })
+    }
     if (distributor) {
       this.showDealerArea[this.currentImportIndex] = true
     }
@@ -285,12 +287,17 @@ export class TransferLibComponent implements OnInit {
     if (this.editable && this.orders.at(1).value.bigArea) {
       this.onBigAreaChange(this.orders.at(1).value.cycleGroup,1)
     }
+    // 自动带入销售和leader邮箱
+    this.orders.at(1).patchValue({
+      saleEmail: getLoginUserCode1()
+    })
+    this.salesChange(1)
+    this.orders.at(1).get('saleEmail').disable();
 
-
+    // 是否显示合同金额
     this.checkMoney(0)
-    if (!this.editable){
-      this.checkMoney(1)
-    }
+    this.checkMoney(1)
+    console.log(this.isCreateUser)
     this.exchangeMapping(this.exchangeInfo.value.exchangeMethod);
     this.exchangeInfo.get('exchangeMethod').valueChanges.subscribe(next => {
       this.exchangeMapping(next);
@@ -305,7 +312,7 @@ export class TransferLibComponent implements OnInit {
           })
         })
       })
-      this.orders.at(1).get('saleEmail').disable();
+
     }
 
     /*
@@ -359,7 +366,7 @@ export class TransferLibComponent implements OnInit {
   * */
   async salesChange(index) {
     await this.getLeaderEmail(index)
-    await this.checkMoney(index)
+    this.checkMoney(index)
   }
   async getLeaderEmail(index){
     this.orders.controls.forEach((value , groupIndex) => {
@@ -415,9 +422,6 @@ export class TransferLibComponent implements OnInit {
       this.exchangeInfo.patchValue({
         ...this.exchangeInfo.value,
         exchangeType
-      })
-      this.baseInfo.patchValue({
-        applyItem: exchangeType
       })
     }
   }
@@ -498,18 +502,17 @@ export class TransferLibComponent implements OnInit {
 
   async checkMoney(index) {
     const code = localStorage.getItem('roleCode')
-    const currEmail = getLoginUserCode1()
-    const transSale = this.orders.at(index).value.saleEmail;
-    const transDistrict = this.orders.at(index).value.districtLeader;
-    const transSalesLeader = this.orders.at(index).value.salesLeader;
+    const currEmail = getLoginUserCode1() as string
+    const transSale = this.orders.at(index).get('saleEmail').value as string;
+    const transDistrict = this.orders.at(index).get('districtLeader').value as string;
+    const transSalesLeader = this.orders.at(index).get('salesLeader').value as string;
     if (
       (code === 'Sales Rep/Mgr' || code === 'District Leader' || code === 'Sales Support' || code === 'Sales Leader') &&
-      (currEmail !== transSale && currEmail !== transSalesLeader && currEmail !== transDistrict)
+      currEmail != transSale && currEmail !== transSalesLeader && currEmail !== transDistrict
     ) {
       this.isCreateUser[index] = false
-    }
-    if (index === 0) {
-      this.isCreateUser[index] = (currEmail === transSale)
+    } else {
+      this.isCreateUser[index] = true
     }
   }
 
