@@ -93,7 +93,7 @@ const BG_LIST = [
 
 const ORDER_TYPES = [
   { label: "OIT", value: "OIT" },
-  { label: "Pre-Book", value: "Pre-book" },
+  { label: "Pre-book", value: "Pre-book" },
 ];
 
 const CURRENCIES =  [
