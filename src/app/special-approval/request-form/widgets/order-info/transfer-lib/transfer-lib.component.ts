@@ -212,11 +212,13 @@ export class TransferLibComponent implements OnInit {
       logistician,
       marketBundleQuantity
     } = reference
-    this.salesList0 = [];
-    this.salesList0.push({
-      name: createUser,
-      email: createUser
-    })
+    if (this.currentImportIndex === 0){
+      this.salesList0 = [];
+      this.salesList0.push({
+        name: createUser,
+        email: createUser
+      })
+    }
     if (distributor) {
       this.showDealerArea[this.currentImportIndex] = true
     }
