@@ -263,21 +263,39 @@
           <td>
             <nz-form-item *ngIf="data.isMain">
               <nz-form-control>
-                <nz-date-picker [(ngModel)]="data.expectedSaleDate" style="width: 100%" [nzStyle]="{ width: '100%' }" [disabled]="!editable"></nz-date-picker>
+                <nz-date-picker 
+                  [(ngModel)]="data.expectedSaleDate"
+                  style="width: 100%"
+                  [nzStyle]="{ width: '100%' }"
+                  [disabled]="!editable"
+                  [nzPlaceHolder]="editable ? '请选择日期' : ''"
+                ></nz-date-picker>
               </nz-form-control>
             </nz-form-item>
           </td>
           <td>
             <nz-form-item *ngIf="data.isMain">
               <nz-form-control>
-                <nz-date-picker [(ngModel)]="data.expectedPaymentDate" style="width: 100%" [nzStyle]="{ width: '100%' }" [disabled]="!editable"></nz-date-picker>
+                <nz-date-picker
+                  [(ngModel)]="data.expectedPaymentDate"
+                  style="width: 100%"
+                  [nzStyle]="{ width: '100%' }"
+                  [disabled]="!editable"
+                  [nzPlaceHolder]="editable ? '请选择日期' : ''"
+                ></nz-date-picker>
               </nz-form-control>
             </nz-form-item>
           </td>
           <td>
             <nz-form-item *ngIf="data.isMain">
               <nz-form-control>
-                <nz-date-picker [(ngModel)]="data.applyArrivalTime" style="width: 100%" [nzStyle]="{ width: '100%' }" [disabled]="!editable"></nz-date-picker>
+                <nz-date-picker
+                  [(ngModel)]="data.applyArrivalTime"
+                  style="width: 100%"
+                  [nzStyle]="{ width: '100%' }"
+                  [disabled]="!editable"
+                  [nzPlaceHolder]="editable ? '请选择日期' : ''"
+                ></nz-date-picker>
               </nz-form-control>
             </nz-form-item>
           </td>
@@ -448,7 +466,13 @@
           <td>
             <nz-form-item>
               <nz-form-control>
-                <nz-date-picker [(ngModel)]="data.exchangeableOrderSaleDate" style="width: 100%" [nzStyle]="{ width: '100%' }" [disabled]="!editable"></nz-date-picker>
+                <nz-date-picker 
+                  [(ngModel)]="data.exchangeableOrderSaleDate"
+                  style="width: 100%"
+                  [nzStyle]="{ width: '100%' }"
+                  [disabled]="!editable"
+                  [nzPlaceHolder]="editable ? '请选择日期' : ''"
+                ></nz-date-picker>
               </nz-form-control>
             </nz-form-item>
           </td>
