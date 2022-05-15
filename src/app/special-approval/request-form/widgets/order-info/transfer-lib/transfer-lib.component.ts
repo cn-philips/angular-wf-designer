@@ -223,9 +223,12 @@ export class TransferLibComponent implements OnInit {
       this.showDealerArea[this.currentImportIndex] = true
     }
     if (this.currentImportIndex === 0) {
-      this.isCreateUser[1] = createUser === getLoginUserCode1();
+     this.checkMoney(0)
+     this.checkMoney(1)
       this.referenceImport0 = true
     } else {
+      this.checkMoney(0)
+      this.checkMoney(1)
       this.referenceImport1 = true
     }
     switch (this.currentImportIndex) {
