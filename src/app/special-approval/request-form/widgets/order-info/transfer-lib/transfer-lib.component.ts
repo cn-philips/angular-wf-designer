@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, ViewChild } from '@angular/core';
-import {FormArray, FormControl, FormGroup} from '@angular/forms'
+import {FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
 
 import { Hospital, SelectHospitalComponent, } from '../../select-hospital/select-hospital.component'
 import { Reference, SelectReferenceComponent } from '../../select-reference/select-reference.component'
@@ -290,7 +290,7 @@ export class TransferLibComponent implements OnInit {
     if (this.editable && this.orders.at(1).value.bigArea) {
       this.onBigAreaChange(this.orders.at(1).value.cycleGroup,1)
     }
-
+    this.orders.at(0).get('orderAmount').setValidators(null);
 
     // 是否显示合同金额
     this.checkMoney(0)
