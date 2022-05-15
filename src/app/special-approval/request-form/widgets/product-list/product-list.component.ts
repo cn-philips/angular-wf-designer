@@ -145,15 +145,15 @@ export class ProductListComponent implements OnInit {
   logisticsChange(value) {
     switch (value) {
       case 0:
-        this.products.value.equipmentSn = null
+        this.products.value[0].equipmentSn = null
         this.isNotShip = false
         break;
       case 1:
-        this.products.value.equipmentSn = null
+        this.products.value[0].equipmentSn = null
         this.isNotShip = false
         break;
       case 2:
-        this.products.value.equipmentSn = null
+        this.products.value[0].equipmentSn = null
         this.isNotShip = true
         break
     }

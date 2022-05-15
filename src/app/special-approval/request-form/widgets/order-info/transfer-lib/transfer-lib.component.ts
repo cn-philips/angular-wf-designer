@@ -287,23 +287,24 @@ export class TransferLibComponent implements OnInit {
     if (this.editable && this.orders.at(1).value.bigArea) {
       this.onBigAreaChange(this.orders.at(1).value.cycleGroup,1)
     }
-    // 自动带入销售和leader邮箱
-    this.orders.at(1).patchValue({
-      saleEmail: getLoginUserCode1()
-    })
-    this.salesChange(1)
-    this.orders.at(1).get('saleEmail').disable();
+
 
     // 是否显示合同金额
     this.checkMoney(0)
     this.checkMoney(1)
-    console.log(this.isCreateUser)
+
     this.exchangeMapping(this.exchangeInfo.value.exchangeMethod);
     this.exchangeInfo.get('exchangeMethod').valueChanges.subscribe(next => {
       this.exchangeMapping(next);
     })
     this.initOMUsers()
     if (this.editable) {
+      // 自动带入销售和leader邮箱
+      this.orders.at(1).patchValue({
+        saleEmail: getLoginUserCode1()
+      })
+      this.salesChange(1)
+      this.orders.at(1).get('saleEmail').disable();
       let valueChangedSubscribeList = ['hospitalName', 'productType']
       this.orders.controls.forEach((item, index) => {
         valueChangedSubscribeList.forEach(item => {
