@@ -44,18 +44,19 @@
         </td>
         <td>
           <!-- 合同标准保修月数 -->
-          <input type="text" nz-input [(ngModel)]="product.warranty.stdWarrantyMonths" (ngModelChange)="onCalcStdWarrantyEndDate(product)" />
+          <input type="text" nz-input [(ngModel)]="product.warranty.stdWarrantyMonths" (ngModelChange)="onCalcStdWarrantyEndDate(product)" [disabled]="!editable" />
         </td>
         <td>
           <!-- POS延保月数 -->
           <nz-input-number
+            *ngIf="editable"
             class="pos-warranty-month"
             [(ngModel)]="product.warranty.posWarrantyMonths"
             (ngModelChange)="onCalcStdWarrantyEndDate(product)"
             [nzMin]="0"
-            [disabled]="!editable"
           >
           </nz-input-number>
+          <input *ngIf="!editable" type="text" nz-input placeholder="自动计算" [(ngModel)]="product.warranty.posWarrantyMonths" disabled />
         </td>
         <td>
           <!-- 预计保修开始日期 -->
