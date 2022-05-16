@@ -75,6 +75,8 @@ export class RequestFormComponent implements OnInit {
 
   public taskId: string;
 
+  public pageType: string;
+
   public approveNodeList = [];
   public approveHistory = [];
 
@@ -330,6 +332,12 @@ export class RequestFormComponent implements OnInit {
 
       this.setPageTitle({ applyType: type, applyItem: item });
 
+      if (this.editable && this.applyType === APPLY_TYPE.TRANSFER_LIB) {
+        this.basicInfo.get('applyItem').valueChanges.subscribe( val => {
+          this.setPageTitle({ applyType: type, applyItem: val });
+          this.message.warning('根据币制已将申请类型转变为：' + this.pageType)
+        })
+      }
       if (bg) {
         switch(type) {
           case APPLY_TYPE.MACHINE_EXCHANGE:
@@ -378,6 +386,7 @@ export class RequestFormComponent implements OnInit {
       const item = applyItems.find(({ value }) => value == applyItem);
       if (item && item.label) {
         title += `-${item.label}`
+        this.pageType = item.label
       }
     }
 

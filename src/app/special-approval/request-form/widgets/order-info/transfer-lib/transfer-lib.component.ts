@@ -427,6 +427,10 @@ export class TransferLibComponent implements OnInit {
         ...this.exchangeInfo.value,
         exchangeType
       })
+      this.baseInfo.patchValue({
+        applyItem: exchangeType === 'within ORU' ? 'sp_transferlib_apply_item_1' : exchangeType === 'HK90-CN90' ? 'sp_transferlib_apply_item_2' : 'sp_transferlib_apply_item_3'
+      })
+
     }
   }
 
