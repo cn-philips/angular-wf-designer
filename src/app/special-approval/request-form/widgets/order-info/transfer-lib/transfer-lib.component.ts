@@ -273,7 +273,6 @@ export class TransferLibComponent implements OnInit {
       om: logistician,
       saleEmail: createUser
     })
-    this.onCheckExchangeType();
 
   }
 
@@ -353,6 +352,24 @@ export class TransferLibComponent implements OnInit {
         this.disableField(1)
       }
     }
+    const item = this.baseInfo.get('applyItem').value
+    switch (item) {
+      case 'sp_transferlib_apply_item_1':
+        this.exchangeInfo.patchValue({
+          exchangeType: 'within ORU'
+        })
+        break;
+      case 'sp_transferlib_apply_item_2':
+        this.exchangeInfo.patchValue({
+          exchangeType: 'HK90-CN90'
+        })
+        break;
+      case 'sp_transferlib_apply_item_3':
+        this.exchangeInfo.patchValue({
+          exchangeType: 'CN90-HK90'
+        })
+        break
+    }
   }
 
    // 初始化OM列表
@@ -412,6 +429,7 @@ export class TransferLibComponent implements OnInit {
   * @description: 判断换货类型
   * */
   onCheckExchangeType() {
+   const before = this.exchangeInfo.get('exchangeType').value
     let exchangeType = ''
     let outputCurrency = this.orders.at(0).get('currency').value
     let inputCurrency = this.orders.at(1).get('currency').value
@@ -430,6 +448,9 @@ export class TransferLibComponent implements OnInit {
       this.baseInfo.patchValue({
         applyItem: exchangeType === 'within ORU' ? 'sp_transferlib_apply_item_1' : exchangeType === 'HK90-CN90' ? 'sp_transferlib_apply_item_2' : 'sp_transferlib_apply_item_3'
       })
+      if (before !== exchangeType) {
+        this.message.warning('根据币制已将申请类型转变为：' + exchangeType)
+      }
 
     }
   }

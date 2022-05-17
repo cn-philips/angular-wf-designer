@@ -332,12 +332,6 @@ export class RequestFormComponent implements OnInit {
 
       this.setPageTitle({ applyType: type, applyItem: item });
 
-      if (this.editable && this.applyType === APPLY_TYPE.TRANSFER_LIB) {
-        this.basicInfo.get('applyItem').valueChanges.subscribe( val => {
-          this.setPageTitle({ applyType: type, applyItem: val });
-          this.message.warning('根据币制已将申请类型转变为：' + this.pageType)
-        })
-      }
       if (bg) {
         switch(type) {
           case APPLY_TYPE.MACHINE_EXCHANGE:
@@ -1223,6 +1217,16 @@ export class RequestFormComponent implements OnInit {
             exchangeRole: '互换'
           }]
       })
+    }
+  }
+
+  onItemChange(val: string) {
+    if (this.editable) {
+      if (this.requestId) {
+        this.setPageTitle({ applyType: this.applyType, applyItem: val },false)
+      } else {
+        this.setPageTitle({ applyType: this.applyType, applyItem: val })
+      }
     }
   }
 }
