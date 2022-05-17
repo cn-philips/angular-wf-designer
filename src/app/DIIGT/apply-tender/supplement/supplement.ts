@@ -1767,17 +1767,6 @@ changeLogisticsDescription(){
   }
   // 非发起页面 selAgent_all 获取不到 调用此方法获取
   // 为了 AgreeTitle() 回显
-  public getAllselAgent() {
-    const url = `/act/ecom/bidding/selAgentList`;
-    const data = {
-    };
-    this.http.post(url, data).subscribe(res => {
-      if (res && res.data) {
-        this.selAgent_all = res.data;
-      }
-    }, error => {
-    });
-  }
   public agreeText() {
     if (this.dataBase.distributorAgreement && this.dataBase.distributorAgreement.length > 0) {
       // let data = [];
