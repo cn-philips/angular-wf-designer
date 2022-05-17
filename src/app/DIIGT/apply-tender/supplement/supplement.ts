@@ -1263,9 +1263,13 @@ public params:any={
   // 选择代理商确定
   public async isAgregentOk() {
 
+    let arr = this.child2.selectFind();
+    if (!(arr && arr[0])) {
+      this.message.error('请选择经销商');
+      return;
+    }
     this.loadingAgre = true;
     console.log(1);
-    let arr = this.child2.selectFind();
     //this.agreement.nameEn = arr[0].nameEn;
     // this.dataBase.agreementAgenName = arr[0].dealerName;
 
@@ -1360,8 +1364,12 @@ public params:any={
   }
   // 选择代理商确定
   public async isBidagentOk() {
-    this.loadingBid = true;
     let arr = this.child1.selectFind();
+    if (!(arr && arr[0])) {
+      this.message.error('请选择经销商');
+      return;
+    }
+    this.loadingBid = true;
     const dealer = await this.selAgent(arr[0].dealerCode);
     if (dealer && dealer[0]) {
       this.dataBase.biddingNames = dealer[0].dealerName;
