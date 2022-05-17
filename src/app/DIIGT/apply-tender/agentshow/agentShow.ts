@@ -49,6 +49,11 @@ changePageSize(index)
   this.agentChange(this.params);
 }
 
+searchClick() {
+  this.params.pageNo = 1;
+  this.agentInit();
+}
+
  //加载代理商数据
 agentInit()
 {

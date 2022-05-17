@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core'
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import { FormGroup } from '@angular/forms'
 import {UploadXHRArgs, UploadFile, NzModalService, NzMessageService} from 'ng-zorro-antd';
 
@@ -24,6 +24,8 @@ export class BasicInfoComponent implements OnInit {
   @Input() editable: boolean
   @Input() executed:number = null
   @Input() saleRegions = []
+
+  @Output() itemChange: EventEmitter<string> = new EventEmitter<string>()
 
   APPLY_TYPE = APPLY_TYPE
 
@@ -111,5 +113,9 @@ export class BasicInfoComponent implements OnInit {
         }
       })
     })
+  }
+
+  applyItemChange(val: string) {
+    this.itemChange.emit(val);
   }
 }
