@@ -1,7 +1,7 @@
-<nz-modal 
-  [(nzVisible)]="visible" 
-  nzWidth="1200px" 
-  nzTitle="导入Reference数据" 
+<nz-modal
+  [(nzVisible)]="visible"
+  nzWidth="1200px"
+  nzTitle="导入Reference数据"
   [nzFooter]="null"
   (nzOnCancel)="onHideModal()"
 >
@@ -56,7 +56,7 @@
   </div>
 
   <div class="table-container">
-    <nz-table 
+    <nz-table
       [nzData]="tableData.list"
       [nzShowTotal]="totalTemplate"
       [nzTotal]="tableData.totalCount"
@@ -73,9 +73,9 @@
     >
       <thead>
         <tr>
-          <th nzWidth="220px">Reference ID</th>                     
-          <th nzWidth="120px">订单类型</th> 
-          <th nzWidth="180px">项目名称</th> 
+          <th nzWidth="220px">Reference ID</th>
+          <th nzWidth="120px">订单类型</th>
+          <th nzWidth="180px">项目名称</th>
           <th nzWidth="180px">产品型号</th>
           <th nzWidth="120px">SAP订单号</th>
           <th nzWidth="100px">Team</th>
@@ -86,7 +86,7 @@
           <th nzWidth="120px">经销商编号</th>
           <th nzWidth="220px">医院名称</th>
           <th nzWidth="100px">医院编号</th>
-          <th nzWidth="100px">合同金额</th>
+          <th nzWidth="100px" *ngIf="!moneyHide">合同金额</th>
           <th nzWidth="100px">币制</th>
           <th nzWidth="40px" nzRight="0px">操作</th>
         </tr>
@@ -106,7 +106,7 @@
           <td>{{ reference.dealerCode }}</td>
           <td>{{ reference.endUser }}</td>
           <td>{{ reference.endUserId }}</td>
-          <td>{{ reference.contractPrice }}</td>
+          <td  *ngIf="!moneyHide">{{ reference.contractPrice }}</td>
           <td>{{ reference.invoiceInformation }}</td>
           <td nzRight="0px">
             <button nz-button nzSize="small" nzType="primary" (click)="onSelectReference(reference)">选择</button>

@@ -60,13 +60,15 @@ export class SelectReferenceComponent implements OnInit {
 
   constructor(private spService: SpecialApprovalService, private message: NzMessageService) { }
   needCreateUser: boolean
+  moneyHide: boolean
   ngOnInit(): void {
     this.onHideModal();
   }
 
 
-  public showModal(needCreateUser = true) {
+  public showModal(needCreateUser = true, moneyHide: boolean = false) {
     this.visible = true
+    this.moneyHide = moneyHide
      this.needCreateUser = needCreateUser
     this.getReferenceList(false)
   }
