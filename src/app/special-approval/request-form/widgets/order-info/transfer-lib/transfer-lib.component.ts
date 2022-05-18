@@ -184,7 +184,8 @@ export class TransferLibComponent implements OnInit {
 
   onShowReferenceModal(index, needCreateUser = true) {
     this.currentImportIndex = index
-    this.selectReference.showModal(needCreateUser)
+    const transIndex = (index === 0)
+    this.selectReference.showModal(needCreateUser, transIndex)
   }
   onHideReferenceModal() {
     this.selectReference.onHideModal()
