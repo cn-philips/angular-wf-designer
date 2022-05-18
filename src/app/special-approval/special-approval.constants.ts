@@ -55,6 +55,7 @@ const APPLY_TYPE = {
   RDD_OIT: 'rddoit180reserv',
   MACHINE_EXCHANGE: "machineexchange",
   TRANSFER_LIB: "transferlib",
+  DE_BOOK: "debook",
 }
 
 const APPLY_TYPE_MAP = {
@@ -66,6 +67,7 @@ const APPLY_TYPE_MAP = {
   [APPLY_TYPE.RDD_OIT]: { label: "RDD-OIT>180天订单保留", dictGroup: 'sp_rddoit180reserv_apply_item' },
   [APPLY_TYPE.MACHINE_EXCHANGE]: { label: "机器互换", dictGroup: 'sp_machineexchange_apply_item' },
   [APPLY_TYPE.TRANSFER_LIB]: { label: "转库", dictGroup: 'sp_transferlib_apply_item' },
+  [APPLY_TYPE.DE_BOOK]: { label: "De-Book", dictGroup: 'sp_debook_apply_item' },
 };
 
 const APPLY_TYPES = [
@@ -77,6 +79,7 @@ const APPLY_TYPES = [
   { label: "RDD-OIT>180天订单保留", value: APPLY_TYPE.RDD_OIT },
   { label: "机器互换", value: APPLY_TYPE.MACHINE_EXCHANGE },
   { label: "转库", value: APPLY_TYPE.TRANSFER_LIB },
+  { label: "De-Book", value: APPLY_TYPE.DE_BOOK },
 ];
 
 const STAND_WARRANTY_MONTH = {
