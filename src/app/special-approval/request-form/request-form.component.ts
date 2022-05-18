@@ -133,6 +133,48 @@ export class RequestFormComponent implements OnInit {
     products: [[]],
     arrivalDate: [null, [Validators.required]], // 到货日期
   }
+
+  //cancel order 订单信息字段单独配置
+  public cancelOrderInit = {
+    orderType: [null, [Validators.required]], // 订单类型
+    referenceId: [null], // Reference Id
+    productType: [{ value: null, disabled: true }], // 产品型号
+    bmc: [null, [Validators.required]], // 产品线
+    bg: [{ value: null, disabled: true }, [Validators.required]], // BG
+    cycleGroup: [null, [Validators.required]], // 产品区域-team
+    bigArea: [null, [Validators.required]], // 产品区域-大区
+    businessModel: [null, [Validators.required]], // 业务模式
+    dealerName: [{ value: null, disabled: true }], // 经销商名称
+    dealerCode: [{ value: null, disabled: true }], // 经销商编号
+    hospitalName: [{ value: null, disabled: true }], // 医院名称
+    hospitalNo: [{ value: null, disabled: true }], // 医院编号
+    projectName: [null, [Validators.required]], // 项目名称
+    sapOrderNo: [null, [Validators.required]], // SAP订单号
+    orderAmount: [null, [Validators.required]], // 合同金额-数额
+    currency: [null, [Validators.required]], // 合同金额-货币
+    om: [null, [Validators.required]], // OM
+    orderDate: [null, [Validators.required]], // 进单日期
+    isDebook: [1, [Validators.required]], // 是否De-book
+    orderStatuss: this.fb.group({
+      id: [null],
+      spApplyOrderId: [null], // (关联的字段)
+      startProduction: [0, [Validators.required]], //是否开始生产
+      orderCancelAmountProduction: [null], // 订单取消的额外费用-生产
+      shipped: [0, [Validators.required]], // 是否已发货
+      orderCancelAmountShipped: [null], // 订单取消的额外费用-国际国内段运输仓储费用
+      thirdPartyProcurement: [0, [Validators.required]], // 是否有第三方采购
+      orderCancelAmountPurchase: [null], // 订单取消的额外费用-第三方采购
+      seenSite: [0, [Validators.required]], // 是否看过场地
+      orderCancelAmountSite: [null], // 订单取消的额外费用-场地相关
+      advanceChargeStatus: [0, [Validators.required]], // 预付款状态
+      advanceChargeAmount: [null], // 预付款金额
+      orderActualAmount: [null], // 订单实际发生费用
+      refundAmount: [null], // 退款金额
+      remark: [null], // 备注
+      attachment: [[]], // 附件
+    })
+  };
+
   public formValues = this.fb.group({
     basicInfo: this.fb.group({
       applyCode: [null],
@@ -273,7 +315,8 @@ export class RequestFormComponent implements OnInit {
         this.fb.group({...this.transferLibOrderInit, applyId: null, id: null}),
         this.fb.group({...this.transferLibOrderInit, applyId: null, id: null})
       ])
-    })
+    }),
+    cancelorderInfo: this.fb.group({...this.cancelOrderInit, applyId: null, id: null}),
   });
 
   initSaleRegions(isNewRequest = false) {
@@ -427,6 +470,10 @@ export class RequestFormComponent implements OnInit {
 
   get transferLibInfos() :FormGroup {
     return this.formValues.get('transferLibOrders') as FormGroup
+  }
+
+  get cancelorderInfo() : FormGroup {
+    return this.formValues.get('cancelorderInfo') as FormGroup
   }
 
   public setFormValidators(type, item, bg) {
@@ -634,6 +681,19 @@ export class RequestFormComponent implements OnInit {
           }
         })
         if (order) { data.orderInfos.push(order) }
+        break;
+      case APPLY_TYPE.CANCEL_ORDER: //cancel order
+        data.orderInfos = [
+          {
+            ...this.requestInfo.orderInfos[0],
+            ...orderInfo,
+            applyArrivalTime: applyArrivalTime ? moment(applyArrivalTime).format('YYYY-MM-DD') : null,
+            expectedPaymentDate: expectedPaymentDate ? moment(expectedPaymentDate).format('YYYY-MM-DD') : null,
+            expectedSaleDate: expectedSaleDate ? moment(expectedSaleDate).format('YYYY-MM-DD') : null,
+            products: products.map(({ productType, wbsNo, itemNo, quantity }) => ({ productType, wbsNo, itemNo, quantity }))
+          }
+        ];
+        break;
     }
     return data;
   }
