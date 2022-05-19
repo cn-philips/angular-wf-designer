@@ -271,7 +271,7 @@ export class RequestFormComponent implements OnInit {
   });
 
   initSaleRegions(isNewRequest = false) {
-    const regions = 
+    const regions =
       (JSON.parse(window.localStorage.getItem('profiles')) || []).map((region) => ({
         ...region,
         label: [region.modality, region.cycleGroup, region.bigArea, region.smallArea].join('-'),
@@ -419,7 +419,9 @@ export class RequestFormComponent implements OnInit {
       }
     } else if (type === APPLY_TYPE.PRODUCTION) {
       this.basicInfo.controls.applyItem.disable();
-    } else if (type === APPLY_TYPE.LC_AMENDMENT) {
+    }else if (type === APPLY_TYPE.SPECIAL_DELIVERY) {
+      this.basicInfo.controls.applyItem.disable();
+    }  else if (type === APPLY_TYPE.LC_AMENDMENT) {
       if (item === 'sp_lcamendment_apply_item_5') {
         this.basicInfo.controls.applyItemDesc.setValidators([Validators.required]);
       }
@@ -601,6 +603,18 @@ export class RequestFormComponent implements OnInit {
           }
         })
         if (order) { data.orderInfos.push(order) }
+      case APPLY_TYPE.SPECIAL_DELIVERY: // 特批发货
+        data.orderInfos = [
+          {
+            ...this.requestInfo.orderInfos[0],
+            ...orderInfo,
+            applyArrivalTime: applyArrivalTime ? moment(applyArrivalTime).format('YYYY-MM-DD') : null,
+            expectedPaymentDate: expectedPaymentDate ? moment(expectedPaymentDate).format('YYYY-MM-DD') : null,
+            expectedSaleDate: expectedSaleDate ? moment(expectedSaleDate).format('YYYY-MM-DD') : null,
+            products: products.map(({ productType, wbsNo, itemNo, quantity }) => ({ productType, wbsNo, itemNo, quantity }))
+          }
+        ];
+        break;
     }
     return data;
   }
@@ -810,7 +824,7 @@ export class RequestFormComponent implements OnInit {
         },
       })
       this.requestInfo.orderInfos = orderInfos
-      if (applyType === APPLY_TYPE.PRODUCTION || applyType === APPLY_TYPE.EXT_WARRANTY || applyType === APPLY_TYPE.LOGISTICSCOST || applyType === APPLY_TYPE.EXT_INSTALL_COST) {
+      if (applyType === APPLY_TYPE.PRODUCTION || applyType === APPLY_TYPE.EXT_WARRANTY || applyType === APPLY_TYPE.LOGISTICSCOST || applyType === APPLY_TYPE.EXT_INSTALL_COST || applyType === APPLY_TYPE.SPECIAL_DELIVERY ) {
         this.formValues.patchValue({
           orderInfo: {
             ...orderInfos[0],
