@@ -44,7 +44,7 @@ export class CcInfoComponent implements OnInit {
     }
     if (
       this.applyType === APPLY_TYPE.PRODUCTION ||
-      this.applyType === APPLY_TYPE.TRANSFER_LIB
+      this.applyType === APPLY_TYPE.TRANSFER_LIB || this.applyType === APPLY_TYPE.SPECIAL_DELIVERY
     ) {
       data.show = true
       data.message = '请务必抄送本订单OM，PM'
