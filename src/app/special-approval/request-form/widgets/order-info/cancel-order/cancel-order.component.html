@@ -474,11 +474,13 @@
             </nz-form-item>
           </div>
 
+          <div nz-col nzXs="24" nzSm="24" nzMd="12">
+            <nz-alert nzType="info" nzMessage="取消合同模板地址:{{cancelContractLink.label}} 密码:{{cancelContractLink.value}}"
+              (click)="window.open(cancelContractLink.label, '_blank')"></nz-alert>
+          </div>
         </div>
-
       </form>
     </nz-card>
-
 
   </form>
 

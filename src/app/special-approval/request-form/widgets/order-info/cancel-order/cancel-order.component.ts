@@ -195,6 +195,7 @@ export class CancelOrderComponent implements OnInit {
 
   ngOnInit(): void {
     this.initOMUsers()
+    this.initCancelContractLink();
     if (this.editable) {
       this.formValues.get('hospitalName').valueChanges.subscribe(() => {
         this.onCalcProjectName()
@@ -204,6 +205,8 @@ export class CancelOrderComponent implements OnInit {
         this.onCalcProjectName()
       })
     }
+    
+    console.log("cancelContractLink:",this.cancelContractLink);
     // console.log("editable",this.editable);
     // this.disableField();
   }
@@ -292,9 +295,9 @@ export class CancelOrderComponent implements OnInit {
 
   //取消合同模板地址
   initCancelContractLink() {
-    this.cancelContractLink = this.dictService
-      .getDictListByGroupName("sp_contract_apply_item")
-      .map((item) => {
+
+    this.cancelContractLink = this.dictService.getDictListByGroupName("LINK_QA_PDF_SP_2").map((item) => {
+        console.log("item:",item);
         const url = item.tag;
         return {
           ...item,

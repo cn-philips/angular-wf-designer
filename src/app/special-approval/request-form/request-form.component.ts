@@ -393,6 +393,9 @@ export class RequestFormComponent implements OnInit {
               })
             })
             break;
+          case APPLY_TYPE.CANCEL_ORDER: //cancel order 默认BG
+            this.cancelorderInfo.patchValue({ bg });
+            break
           default:
             this.orderInfo.patchValue({ bg });
         }
