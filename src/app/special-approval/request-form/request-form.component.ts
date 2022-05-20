@@ -14,9 +14,9 @@ import {
   BUSINESS_MODEL,
   APPLY_TYPE,
   APPLY_TYPE_MAP,
-  NODE_ACTION,
   PROCESS_STATUS,
 } from '../special-approval.constants';
+import { APPROVE_NODE_ACTION } from '../../DIIGT/change-scene/special-approval-setting/special-approval-setting.constants'
 import { SelectApproverComponent } from './widgets/select-approver/select-approver.component';
 import { RddOitOrderInfoComponent } from './widgets/order-info/rdd-oit/rdd-oit.component';
 import {MachineComponent} from './widgets/order-info/machine/machine.component';
@@ -46,6 +46,8 @@ export class RequestFormComponent implements OnInit {
 
   @ViewChild('rddOitOrderInfo') public rddOitOrderInfo: RddOitOrderInfoComponent;
   @ViewChild('machineExchange') public machineExchange: MachineComponent;
+
+  isSupplementNode = false
 
   public pageTitle: string;
   public requestId;
@@ -1139,10 +1141,20 @@ export class RequestFormComponent implements OnInit {
       //     return false;
       //   }
       // });
+      if (!!this.taskId) {
+        switch(nodeAction) {
+          case APPROVE_NODE_ACTION.SUPPLEMENT:
+            this.isSupplementNode = true
+            break
+          case APPROVE_NODE_ACTION.FEEDBACK:
+            this.showFeedbackTab = this.isApplicant
+            break
+          default:
+            this.showApproveTab = true
+        }
+      }
 
-      this.showApproveTab = nodeAction !== NODE_ACTION.FEEDBACK && !!this.taskId
-      this.showFeedbackTab = nodeAction === NODE_ACTION.FEEDBACK && this.isApplicant && !!this.taskId;
-      this.showWithdrawBtn = processStatus === PROCESS_STATUS.START && this.isApplicant && nodeAction !== NODE_ACTION.FEEDBACK;
+      this.showWithdrawBtn = processStatus === PROCESS_STATUS.START && this.isApplicant && nodeAction !== APPROVE_NODE_ACTION.FEEDBACK;
       this.approveNodeList = nodeInfoList;
       this.approveHistory = taskList;
       this.setEditable(status, processStatus);

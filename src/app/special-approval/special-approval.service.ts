@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpService } from '../services/http.service'
 import { Subject } from 'rxjs'
-import { APPLY_TYPE_MAP, PROCESS_STATUS, NODE_ACTION, PROCESS_STATUS_MAP, STAND_WARRANTY_MONTH } from './special-approval.constants'
+import { APPLY_TYPE_MAP, PROCESS_STATUS, PROCESS_STATUS_MAP, STAND_WARRANTY_MONTH } from './special-approval.constants'
 import { DictService } from '../services/dict.service';
+import { APPROVE_NODE_ACTION } from '../DIIGT/change-scene/special-approval-setting/special-approval-setting.constants'
 
 function getLoginUserCode1() {
   return localStorage.getItem("ng_philips_code1");
@@ -339,7 +340,7 @@ export class SpecialApprovalService {
       return "已取消";
     }
     if (
-      nodeAction === NODE_ACTION.FEEDBACK &&
+      nodeAction === APPROVE_NODE_ACTION.FEEDBACK &&
       processStatus === PROCESS_STATUS.START
     ) {
       return "待反馈";
