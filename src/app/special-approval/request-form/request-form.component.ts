@@ -171,7 +171,7 @@ export class RequestFormComponent implements OnInit {
       orderActualAmount: [null], // 订单实际发生费用
       refundAmount: [null], // 退款金额
       remark: [null], // 备注
-      attachment: [[]], // 附件
+      attachment: [null], // 附件
     })
   };
 
@@ -859,6 +859,9 @@ export class RequestFormComponent implements OnInit {
         //   if (difference[i].)
         // }
         hasError = this.basicInfo.invalid || formValidError
+        break
+      case APPLY_TYPE.CANCEL_ORDER:
+  
         break
       default:
         for (const i in this.orderInfo.controls) {
