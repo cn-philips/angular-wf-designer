@@ -1,10 +1,5 @@
 import { Component, OnInit } from "@angular/core";
 import { FormBuilder, Validators } from "@angular/forms";
-import {
-  BG_LIST,
-  PROCESS_STATUS,
-  NODE_ACTION,
-} from "../special-approval.constants";
 import { FileService, HttpService, ReportExportService } from "../../services";
 import { NzMessageService } from "ng-zorro-antd";
 import { SpecialApprovalService } from "../special-approval.service";
