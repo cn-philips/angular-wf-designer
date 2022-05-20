@@ -35,6 +35,8 @@ import { ExchangeInfoComponent } from './request-form/widgets/exchange-info/exch
 import { DifferenceAndCostInfoComponent } from './request-form/widgets/difference-and-cost-info/difference-and-cost-info.component'
 import { LcAmendmentOrderInfoComponent } from "./request-form/widgets/order-info/lc-amendment/lc-amendment.component";
 import { RddOitOrderInfoComponent } from "./request-form/widgets/order-info/rdd-oit/rdd-oit.component";
+import { CancelOrderComponent } from "./request-form/widgets/order-info/cancel-order/cancel-order.component";
+import { SpecialDeliveryOrderInfoComponent } from './request-form/widgets/order-info/special-delivery/special-delivery.component'
 
 const COMPONENTS = [
   ApprovedComponent,
@@ -70,7 +72,9 @@ const WIDGETS = [
   AdditionalInstallationCostComponent,
   TransferLibComponent,
   ExchangeInfoComponent,
-  DifferenceAndCostInfoComponent
+  DifferenceAndCostInfoComponent,
+  CancelOrderComponent,
+  SpecialDeliveryOrderInfoComponent
 ];
 
 export {

@@ -57,6 +57,8 @@ const APPLY_TYPE = {
   RDD_OIT: 'rddoit180reserv',
   MACHINE_EXCHANGE: "machineexchange",
   TRANSFER_LIB: "transferlib",
+  CANCEL_ORDER: "cancelorder",
+  SPECIAL_DELIVERY:"delivery", //特批发货
 }
 
 const APPLY_TYPE_MAP = {
@@ -68,7 +70,10 @@ const APPLY_TYPE_MAP = {
   [APPLY_TYPE.RDD_OIT]: { label: "RDD-OIT>180天订单保留", dictGroup: 'sp_rddoit180reserv_apply_item' },
   [APPLY_TYPE.MACHINE_EXCHANGE]: { label: "机器互换", dictGroup: 'sp_machineexchange_apply_item' },
   [APPLY_TYPE.TRANSFER_LIB]: { label: "转库", dictGroup: 'sp_transferlib_apply_item' },
+  [APPLY_TYPE.CANCEL_ORDER]: { label: "Cancel Order申请", dictGroup: 'sp_cancelorder_apply_item' },
+  [APPLY_TYPE.SPECIAL_DELIVERY]: { label: "特批发货", dictGroup: 'sp_delivery_apply_item' },
 };
+
 
 const APPLY_TYPES = [
   { label: "特批开始生产", value: APPLY_TYPE.PRODUCTION },
@@ -79,6 +84,8 @@ const APPLY_TYPES = [
   { label: "RDD-OIT>180天订单保留", value: APPLY_TYPE.RDD_OIT },
   { label: "机器互换", value: APPLY_TYPE.MACHINE_EXCHANGE },
   { label: "转库", value: APPLY_TYPE.TRANSFER_LIB },
+  { label: "Cancel Order申请", value: APPLY_TYPE.CANCEL_ORDER },
+  { label: "特批发货", value: APPLY_TYPE.SPECIAL_DELIVERY },
 ];
 
 const STAND_WARRANTY_MONTH = {

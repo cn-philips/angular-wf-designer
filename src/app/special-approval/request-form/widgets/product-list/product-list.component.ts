@@ -48,6 +48,9 @@ export class ProductListComponent implements OnInit {
     if (this.isExchange && this.products.value.length === 0){
       this.onAddProduct()
     }
+    if (this.isExchange && this.products.value[0].logisticsStatus === 2){
+      this.isNotShip = true;
+    }
   }
 
   onAddProduct() {
@@ -142,15 +145,15 @@ export class ProductListComponent implements OnInit {
   logisticsChange(value) {
     switch (value) {
       case 0:
-        this.products.value.equipmentSn = null
+        this.products.value[0].equipmentSn = null
         this.isNotShip = false
         break;
       case 1:
-        this.products.value.equipmentSn = null
+        this.products.value[0].equipmentSn = null
         this.isNotShip = false
         break;
       case 2:
-        this.products.value.equipmentSn = null
+        this.products.value[0].equipmentSn = null
         this.isNotShip = true
         break
     }

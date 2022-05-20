@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, ViewChild } from '@angular/core';
-import {FormArray, FormControl, FormGroup} from '@angular/forms'
+import {FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
 
 import { Hospital, SelectHospitalComponent, } from '../../select-hospital/select-hospital.component'
 import { Reference, SelectReferenceComponent } from '../../select-reference/select-reference.component'
@@ -184,7 +184,8 @@ export class TransferLibComponent implements OnInit {
 
   onShowReferenceModal(index, needCreateUser = true) {
     this.currentImportIndex = index
-    this.selectReference.showModal(needCreateUser)
+    const transIndex = (index === 0)
+    this.selectReference.showModal(needCreateUser, transIndex)
   }
   onHideReferenceModal() {
     this.selectReference.onHideModal()
@@ -212,18 +213,23 @@ export class TransferLibComponent implements OnInit {
       logistician,
       marketBundleQuantity
     } = reference
-    this.salesList0 = [];
-    this.salesList0.push({
-      name: createUser,
-      email: createUser
-    })
+    if (this.currentImportIndex === 0){
+      this.salesList0 = [];
+      this.salesList0.push({
+        name: createUser,
+        email: createUser
+      })
+    }
     if (distributor) {
       this.showDealerArea[this.currentImportIndex] = true
     }
     if (this.currentImportIndex === 0) {
-      this.isCreateUser[1] = createUser === getLoginUserCode1();
+     this.checkMoney(0)
+     this.checkMoney(1)
       this.referenceImport0 = true
     } else {
+      this.checkMoney(0)
+      this.checkMoney(1)
       this.referenceImport1 = true
     }
     switch (this.currentImportIndex) {
@@ -268,7 +274,6 @@ export class TransferLibComponent implements OnInit {
       om: logistician,
       saleEmail: createUser
     })
-    this.onCheckExchangeType();
 
   }
 
@@ -285,18 +290,24 @@ export class TransferLibComponent implements OnInit {
     if (this.editable && this.orders.at(1).value.bigArea) {
       this.onBigAreaChange(this.orders.at(1).value.cycleGroup,1)
     }
+    this.orders.at(0).get('orderAmount').setValidators(null);
 
-
+    // 是否显示合同金额
     this.checkMoney(0)
-    if (!this.editable){
-      this.checkMoney(1)
-    }
+    this.checkMoney(1)
+
     this.exchangeMapping(this.exchangeInfo.value.exchangeMethod);
     this.exchangeInfo.get('exchangeMethod').valueChanges.subscribe(next => {
       this.exchangeMapping(next);
     })
     this.initOMUsers()
     if (this.editable) {
+      // 自动带入销售和leader邮箱
+      this.orders.at(1).patchValue({
+        saleEmail: getLoginUserCode1()
+      })
+      this.salesChange(1)
+      this.orders.at(1).get('saleEmail').disable();
       let valueChangedSubscribeList = ['hospitalName', 'productType']
       this.orders.controls.forEach((item, index) => {
         valueChangedSubscribeList.forEach(item => {
@@ -305,7 +316,7 @@ export class TransferLibComponent implements OnInit {
           })
         })
       })
-      this.orders.at(1).get('saleEmail').disable();
+
     }
 
     /*
@@ -342,6 +353,24 @@ export class TransferLibComponent implements OnInit {
         this.disableField(1)
       }
     }
+    const item = this.baseInfo.get('applyItem').value
+    switch (item) {
+      case 'sp_transferlib_apply_item_1':
+        this.exchangeInfo.patchValue({
+          exchangeType: 'within ORU'
+        })
+        break;
+      case 'sp_transferlib_apply_item_2':
+        this.exchangeInfo.patchValue({
+          exchangeType: 'HK90-CN90'
+        })
+        break;
+      case 'sp_transferlib_apply_item_3':
+        this.exchangeInfo.patchValue({
+          exchangeType: 'CN90-HK90'
+        })
+        break
+    }
   }
 
    // 初始化OM列表
@@ -359,7 +388,7 @@ export class TransferLibComponent implements OnInit {
   * */
   async salesChange(index) {
     await this.getLeaderEmail(index)
-    await this.checkMoney(index)
+    this.checkMoney(index)
   }
   async getLeaderEmail(index){
     this.orders.controls.forEach((value , groupIndex) => {
@@ -401,6 +430,7 @@ export class TransferLibComponent implements OnInit {
   * @description: 判断换货类型
   * */
   onCheckExchangeType() {
+   const before = this.exchangeInfo.get('exchangeType').value
     let exchangeType = ''
     let outputCurrency = this.orders.at(0).get('currency').value
     let inputCurrency = this.orders.at(1).get('currency').value
@@ -417,8 +447,12 @@ export class TransferLibComponent implements OnInit {
         exchangeType
       })
       this.baseInfo.patchValue({
-        applyItem: exchangeType
+        applyItem: exchangeType === 'within ORU' ? 'sp_transferlib_apply_item_1' : exchangeType === 'HK90-CN90' ? 'sp_transferlib_apply_item_2' : 'sp_transferlib_apply_item_3'
       })
+      if (before !== exchangeType) {
+        this.message.warning('根据币制已将申请类型转变为：' + exchangeType)
+      }
+
     }
   }
 
@@ -498,18 +532,17 @@ export class TransferLibComponent implements OnInit {
 
   async checkMoney(index) {
     const code = localStorage.getItem('roleCode')
-    const currEmail = getLoginUserCode1()
-    const transSale = this.orders.at(index).value.saleEmail;
-    const transDistrict = this.orders.at(index).value.districtLeader;
-    const transSalesLeader = this.orders.at(index).value.salesLeader;
+    const currEmail = getLoginUserCode1() as string
+    const transSale = this.orders.at(index).get('saleEmail').value as string;
+    const transDistrict = this.orders.at(index).get('districtLeader').value as string;
+    const transSalesLeader = this.orders.at(index).get('salesLeader').value as string;
     if (
       (code === 'Sales Rep/Mgr' || code === 'District Leader' || code === 'Sales Support' || code === 'Sales Leader') &&
-      (currEmail !== transSale && currEmail !== transSalesLeader && currEmail !== transDistrict)
+      currEmail != transSale && currEmail !== transSalesLeader && currEmail !== transDistrict
     ) {
       this.isCreateUser[index] = false
-    }
-    if (index === 0) {
-      this.isCreateUser[index] = (currEmail === transSale)
+    } else {
+      this.isCreateUser[index] = true
     }
   }
 

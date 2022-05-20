@@ -107,27 +107,6 @@ public gotoWinIncon(item)
       }));
    })
   }
-  public getDistributorList() {
-    // 进单准备表-选择经销商
-    this.http.get(`/act/preparation/chooseDistributor`).subscribe((rest => {
-      if (rest.code === '0000') {
-
-        let distributorList = rest.data;
-         let select=distributorList.find(vals=>vals.dealerName==this.dataBase.agent);
-         if(select&&select.reminderMessage)
-         {
-           this.redFlagList=select.reminderMessage;
-         }
-         else{
-          this.redFlagList="";
-         }
-      } else {
-        // this.message.create('error', `${rest.msg}`);
-      }
-    }), (error => {
-      this.message.create("error", "请求异常")
-    }));
-  }
   public getPoolList() {
     // 进单准备表-IE Pool选择
     this.http.get(`/act/preparation/chooseIePool`).subscribe((rest => {

@@ -1532,39 +1532,6 @@ export class PreOrderBaseInfoComponent implements OnInit {
     }
   }
 
-  public getDistributorList() {
-    // 进单准备表-选择经销商
-    return new Promise((resolve, reject) => {
-      this.http.get(`/act/preparation/chooseDistributor`).subscribe((rest => {
-        if (rest.code === '0000') {
-          this.distributorList = rest.data;
-          resolve(rest.data);
-          this.dataBase.distributor = this.dataBase.distributor ? this.dataBase.distributor.replace(/\s+/g, "") : "";
-          if (this.dataBase.distributor) {
-            let select = this.distributorList.find(vals => vals.dealerName.replace(/\s+/g, "") == this.dataBase.distributor);
-            if (select) {
-              this.dataBase.distributor1 = select.dealerName;
-              if (this.dataBase.dealerCode == null) {
-                this.dataBase.dealerCode = select.dealerCode;
-              }
-            }
-            this.distributorOff = select ? false : true;
-            if (select && select.reminderMessage) {
-              this.redFlagList = select.reminderMessage;
-            }
-            else {
-              this.redFlagList = "";
-            }
-          }
-        } else {
-          // this.message.create('error', `${rest.msg}`);
-        }
-
-      }), (error => {
-        this.message.create("error", "请求异常")
-      }));
-    })
-  }
   public getPoolList() {
     // 进单准备表-IE Pool选择
     return new Promise((resolve, reject) => {
