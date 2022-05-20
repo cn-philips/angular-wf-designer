@@ -1,10 +1,15 @@
 import { Component, OnInit, Input, ViewChild } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms'
+import {UploadXHRArgs, UploadFile, NzModalService, NzMessageService} from 'ng-zorro-antd';
 
 import { Hospital, SelectHospitalComponent, } from '../../select-hospital/select-hospital.component'
 import { Dealer, SelectDealerComponent } from '../../select-dealer/select-dealer.component'
 import { Reference, SelectReferenceComponent } from '../../select-reference/select-reference.component'
 import { SpecialApprovalService } from '../../../../special-approval.service'
+import { getType } from '../../../../../../assets/js/tools'
+import { Observable, Observer } from 'rxjs'
+import { DictService } from "../../../../../services/dict.service";
+
 import {
   APPLY_TYPE,
   BUSINESS_MODEL,
@@ -14,13 +19,19 @@ import {
   CURRENCIES,
 } from '../../../../special-approval.constants'
 
+interface CommonResponse {
+  code: string;
+  data: any;
+  msg: string
+}
+
 @Component({
   selector: 'special-approval-cancel-order-info',
   templateUrl: './cancel-order.component.html',
   styleUrls: ['./cancel-order.component.scss']
 })
 export class CancelOrderComponent implements OnInit {
-  constructor(public spService: SpecialApprovalService) { }
+  constructor(private spService: SpecialApprovalService, private modal: NzModalService, private message: NzMessageService, private dictService: DictService) {}
 
 
   @ViewChild('selectHospital') selectHospital: SelectHospitalComponent
@@ -32,6 +43,9 @@ export class CancelOrderComponent implements OnInit {
   @Input() formValues: FormGroup
   @Input() editable = true
   @Input() baseInfo: FormGroup
+  @Input() supportFileList: UploadFile[] = [];
+
+  cancelContractLink: any = [];
 
   APPLY_TYPE = APPLY_TYPE
 
@@ -66,8 +80,9 @@ export class CancelOrderComponent implements OnInit {
       return false
     }
   }
+  
+  get orderInfoStatus(): FormGroup { return this.formValues.get('orderInfoStatus') as FormGroup }
 
-  get orderStatuss(): FormGroup { return this.formValues.get('orderStatuss') as FormGroup }
 
   onProductTypeChange(value) {
     console.log('产品型号');
@@ -156,8 +171,7 @@ export class CancelOrderComponent implements OnInit {
       endUserId,
       contractPrice,
       invoiceInformation,
-      logistician,
-      marketBundleQuantity
+      logistician
     } = reference;
     this.formValues.patchValue({
       orderType,
@@ -176,13 +190,6 @@ export class CancelOrderComponent implements OnInit {
       orderAmount: contractPrice,
       currency: invoiceInformation,
       om: logistician,
-      products: [{
-        id: Date.now(),
-        productType: productModel,
-        wbs: "",
-        itemNo: "",
-        quantity: marketBundleQuantity,
-      }],
     });
   }
 
@@ -197,6 +204,8 @@ export class CancelOrderComponent implements OnInit {
         this.onCalcProjectName()
       })
     }
+    // console.log("editable",this.editable);
+    // this.disableField();
   }
 
    // 初始化OM列表
@@ -204,4 +213,95 @@ export class CancelOrderComponent implements OnInit {
     const users = await this.spService.getOMUsers()
     this.selectOptions.oms = users.map(({ name, email }) => ({ label: name, value: email }))
   }
+
+  disableField() {
+    let disabledFieldsList = [
+      "spApplyOrderId", 
+      "startProduction",
+      "orderCancelAmountProduction", 
+      "shipped",
+      "orderCancelAmountShipped",
+      "thirdPartyProcurement",
+      "orderCancelAmountPurchase", 
+      "seenSite", 
+      "orderCancelAmountSite",
+      "advanceChargeStatus",
+      "advanceChargeAmount",
+      "orderActualAmount",
+      "refundAmount",
+      "remark",
+      "attachment"
+    ]
+    disabledFieldsList.forEach(item => {
+      this.orderInfoStatus.get(item).disable();
+    })
+  }
+
+  //上传附件
+  onUploadFile = (item: UploadXHRArgs) => {
+    const formData = new FormData()
+    const file = item.file as any
+    formData.append('file', file)
+    formData.append('fileType', getType(file))
+    formData.append('filename', file.name)
+
+    return this.spService.uploadFile(formData).subscribe(
+      (response: CommonResponse) => {
+        const { data, code } = response
+        if ('0000' === code) {
+          const curFileIds = this.orderInfoStatus.get('attachment').value as String[]
+          this.orderInfoStatus.patchValue({ attachment: curFileIds.concat(data) })
+          item.onSuccess({ fileId: data }, file, response)
+        } else {
+          item.onError({}, file)
+        }
+      },
+      err => {
+        item.onError!(err, item.file!)
+      }
+    )
+  }
+
+  // 上传之前的校验(文件类型, 文件大小), 校验不通过, return false, 会阻止自动上传
+  onBeforeUpload = (file) => {
+    if (this.orderInfoStatus.getRawValue().attachment.length >= 1) {
+      this.message.error('最多上传1个文件');
+      return false;
+    }
+    console.log('before upload', file);
+    return true;
+  }
+
+  onRemoveFile = (file: UploadFile) => {
+    const { response, name } = file
+    return new Observable((observer: Observer<boolean>) => {
+      this.modal.confirm({
+        nzTitle: `确定移除文件${name}?`,
+        nzOnOk: () => {
+          const curFileIds = this.orderInfoStatus.get('attachment').value as String[]
+          this.orderInfoStatus.patchValue({ attachment: curFileIds.filter((fileId) => fileId !== response.fileId) })
+          observer.next(true)
+        },
+        nzOnCancel: () => {
+          observer.next(false)
+        }
+      })
+    })
+  }
+
+
+  //取消合同模板地址
+  initCancelContractLink() {
+    this.cancelContractLink = this.dictService
+      .getDictListByGroupName("sp_contract_apply_item")
+      .map((item) => {
+        const url = item.tag;
+        return {
+          ...item,
+          label:url,
+          value: item.label, //url
+        };
+      });
+  }
+
 }

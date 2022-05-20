@@ -155,7 +155,7 @@ export class RequestFormComponent implements OnInit {
     om: [null, [Validators.required]], // OM
     orderDate: [null, [Validators.required]], // 进单日期
     isDebook: [1, [Validators.required]], // 是否De-book
-    orderStatuss: this.fb.group({
+    orderInfoStatus: this.fb.group({   // 订单状态信息
       id: [null],
       spApplyOrderId: [null], // (关联的字段)
       startProduction: [0, [Validators.required]], //是否开始生产
@@ -509,7 +509,7 @@ export class RequestFormComponent implements OnInit {
   }
 
   public getFormData() {
-    const { basicInfo, orderInfo, ccInfo, rddOitOrderInfos, changeOrderInfos, lcAmendmentOrderInfo,transferLibOrders, exchangeInfo, orderDifferences  } = this.formValues.getRawValue()
+    const { basicInfo, orderInfo, ccInfo, rddOitOrderInfos, changeOrderInfos, lcAmendmentOrderInfo,transferLibOrders, exchangeInfo, orderDifferences, cancelorderInfo  } = this.formValues.getRawValue()
     const { applyArrivalTime, expectedPaymentDate, expectedSaleDate, products } = orderInfo
     const extInfo = {
       exchangeMethod: changeOrderInfos.exchangeMethod
@@ -685,12 +685,10 @@ export class RequestFormComponent implements OnInit {
       case APPLY_TYPE.CANCEL_ORDER: //cancel order
         data.orderInfos = [
           {
-            ...this.requestInfo.orderInfos[0],
-            ...orderInfo,
-            applyArrivalTime: applyArrivalTime ? moment(applyArrivalTime).format('YYYY-MM-DD') : null,
-            expectedPaymentDate: expectedPaymentDate ? moment(expectedPaymentDate).format('YYYY-MM-DD') : null,
-            expectedSaleDate: expectedSaleDate ? moment(expectedSaleDate).format('YYYY-MM-DD') : null,
-            products: products.map(({ productType, wbsNo, itemNo, quantity }) => ({ productType, wbsNo, itemNo, quantity }))
+            ...cancelorderInfo,
+            orderInfoStatus: {
+              ...cancelorderInfo.orderInfoStatus,
+            }
           }
         ];
         break;
@@ -1076,6 +1074,16 @@ export class RequestFormComponent implements OnInit {
             orderDifferences: orderDifferences
           }
         })
+        this.setFormValidators(applyType, applyItem, orderInfos[0].bg)
+      } else if(applyType === APPLY_TYPE.CANCEL_ORDER) {
+        this.formValues.patchValue({
+          cancelorderInfo: {
+            ...orderInfos[0],
+            orderInfoStatus: {
+              ...orderInfos[0].orderInfoStatus
+            }
+          }
+        });
         this.setFormValidators(applyType, applyItem, orderInfos[0].bg)
       }
 

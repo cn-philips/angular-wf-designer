@@ -36,9 +36,9 @@
     <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
       <div nz-col nzXs="24" nzSm="24" nzMd="12">
         <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6">产品型号</nz-form-label>
+          <nz-form-label nzXl="8" nzXXl="6" nzRequired>产品型号</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <input type="text" nz-input formControlName="productType" disabled />
+            <input type="text" nz-input formControlName="productType" />
           </nz-form-control>
         </nz-form-item>
       </div>
@@ -128,7 +128,7 @@
             </nz-input-group>
             <ng-template #clearDealerBtn>
               <i nz-icon nz-tooltip class="ant-input-clear-icon" nzTheme="fill" nzType="close-circle"
-                *ngIf="formValues.get('dealerCode').value && editable"></i>
+                *ngIf="formValues.get('dealerCode').value && editable" (click)="onClearDealer()"></i>
             </ng-template>
 
             <ng-template #selectDealerBtn>
@@ -266,22 +266,6 @@
       </div>
     </div>
 
-    <!-- <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
-      <div nz-col nzXs="24" nzSm="24" nzMd="12">
-        <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6" nzRequired>预计记认销售日期</nz-form-label>
-          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <nz-date-picker formControlName="expectedSaleDate" style="width: 100%" [nzStyle]="{ width: '100%' }">
-            </nz-date-picker>
-            <nz-form-explain
-              *ngIf="formValues.get('expectedSaleDate')?.dirty && formValues.get('expectedSaleDate')?.errors">
-              请选择预计记认销售日期
-            </nz-form-explain>
-          </nz-form-control>
-        </nz-form-item>
-      </div>
-    </div> -->
-
     <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
       <div nz-col nzXs="24" nzSm="24" nzMd="12">
         <nz-form-item>
@@ -300,7 +284,7 @@
     </div>
 
     <nz-card class="mtb1rem" nzTitle="订单状态信息">
-      <form nz-form [formGroup]="orderStatuss">
+      <form nz-form [formGroup]="orderInfoStatus">
         <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
           <div nz-col nzXs="24" nzSm="24" nzMd="12">
             <nz-form-item>
@@ -318,8 +302,8 @@
             <nz-form-item>
               <nz-form-label nzXl="12" nzXXl="8">订单取消的额外费用-生产</nz-form-label>
               <nz-form-control nzXs="24" nzSm="24" nzMd="12">
-                <input id="orderCancelAmountProduction" nz-input formControlName="orderCancelAmountProduction"
-                  maxlength="50" />
+                <nz-input-number id="orderCancelAmountProduction" style="width: 100%;"
+                  formControlName="orderCancelAmountProduction" [nzMin]="0"></nz-input-number>
                 <!-- <nz-form-explain *ngIf="formValues.get('')?.dirty && formValues.get('')?.errors">
                   请填写订单取消的额外费用-生产
                 </nz-form-explain> -->
@@ -345,8 +329,9 @@
             <nz-form-item>
               <nz-form-label nzXl="12" nzXXl="8">订单取消的额外费用-<br>国际国内段运输仓储费</nz-form-label>
               <nz-form-control nzXs="24" nzSm="24" nzMd="12">
-                <input id="orderCancelAmountShipped" nz-input formControlName="orderCancelAmountShipped"
-                  maxlength="50" />
+                <nz-input-number id="orderCancelAmountShipped" style="width: 100%;"
+                  formControlName="orderCancelAmountShipped" [nzMin]="0">
+                </nz-input-number>
                 <!-- <nz-form-explain *ngIf="formValues.get('')?.dirty && formValues.get('')?.errors">
                   请填写订单取消的额外费用-生产
                 </nz-form-explain> -->
@@ -370,10 +355,11 @@
 
           <div nz-col nzXs="24" nzSm="24" nzMd="12" *ngIf="thirdPartyProcurement.value">
             <nz-form-item>
-              <nz-form-label nzXl="12" nzXXl="8">订单取消的额外费用-第三方采购</nz-form-label>
+              <nz-form-label nzXl="12" nzXXl="8">订单取消的额外费用-<br>第三方采购</nz-form-label>
               <nz-form-control nzXs="24" nzSm="24" nzMd="12">
-                <input id="orderCancelAmountPurchase" nz-input formControlName="orderCancelAmountPurchase"
-                  maxlength="50" />
+                <nz-input-number id="orderCancelAmountPurchase" style="width: 100%;"
+                  formControlName="orderCancelAmountPurchase" [nzMin]="0">
+                </nz-input-number>
                 <!-- <nz-form-explain *ngIf="formValues.get('')?.dirty && formValues.get('')?.errors">
                   请填写订单取消的额外费用-生产
                 </nz-form-explain> -->
@@ -397,9 +383,11 @@
 
           <div nz-col nzXs="24" nzSm="24" nzMd="12" *ngIf="seenSite.value">
             <nz-form-item>
-              <nz-form-label nzXl="12" nzXXl="8">订单取消的额外费用-场地相关</nz-form-label>
+              <nz-form-label nzXl="12" nzXXl="8">订单取消的额外费用-<br>场地相关</nz-form-label>
               <nz-form-control nzXs="24" nzSm="24" nzMd="12">
-                <input id="orderCancelAmountSite" nz-input formControlName="orderCancelAmountSite" maxlength="50" />
+                <nz-input-number id="orderCancelAmountSite" style="width: 100%;" formControlName="orderCancelAmountSite"
+                  [nzMin]="0">
+                </nz-input-number>
                 <!-- <nz-form-explain *ngIf="formValues.get('')?.dirty && formValues.get('')?.errors">
                   请填写订单取消的额外费用-生产
                 </nz-form-explain> -->
@@ -436,17 +424,20 @@
         <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
           <div nz-col nzXs="24" nzSm="24" nzMd="12">
             <nz-form-item>
-              <nz-form-label nzXl="8" nzXXl="8" nzFor="">订单实际发生费用</nz-form-label>
+              <nz-form-label nzXl="8" nzXXl="8">订单实际发生费用</nz-form-label>
               <nz-form-control nzXs="24" nzSm="24" nzMd="12">
-                <input id="" nz-input formControlName="orderActualAmount" maxlength="50" />
+                <nz-input-number id="orderActualAmount" style="width: 100%;" formControlName="orderActualAmount"
+                  [nzMin]="0">
+                </nz-input-number>
               </nz-form-control>
             </nz-form-item>
           </div>
           <div nz-col nzXs="24" nzSm="24" nzMd="12">
             <nz-form-item>
-              <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzXl="8" nzXXl="6">退款金额
+              <!-- <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzXl="8" nzXXl="6">退款金额 -->
+              <nz-form-label nzXl="12" nzXXl="8">退款金额
               </nz-form-label>
-              <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <nz-form-control nzXs="24" nzSm="24" nzMd="12">
                 <nz-input-number id="refundAmount" style="width: 100%;" formControlName="refundAmount" [nzMin]="0">
                 </nz-input-number>
               </nz-form-control>
@@ -464,6 +455,27 @@
             </nz-form-item>
           </div>
         </div>
+
+        <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+          <div nz-col nzXs="24" nzSm="24" nzMd="12">
+            <nz-form-item>
+              <nz-form-label nzFor="" nzXl="8" nzXXl="8" class="upload-file-label">附件</nz-form-label>
+              <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                <nz-upload nzType="drag" nzAction="/act/system/upload" [nzMultiple]="true"
+                  [nzFileList]="supportFileList" [nzBeforeUpload]="onBeforeUpload" [nzCustomRequest]="onUploadFile"
+                  [nzRemove]="onRemoveFile" [nzDisabled]="!editable" [nzShowUploadList]="editable">
+                  <p class="ant-upload-drag-icon">
+                    <i nz-icon nzType="inbox"></i>
+                  </p>
+                  <p class="ant-upload-text">点击或者拖拽上传</p>
+                </nz-upload>
+                <app-upload-file-list *ngIf="!editable" [fileList]="supportFileList"></app-upload-file-list>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+        </div>
+
       </form>
     </nz-card>
 
