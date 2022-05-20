@@ -36,6 +36,7 @@ import { DifferenceAndCostInfoComponent } from './request-form/widgets/differenc
 import { LcAmendmentOrderInfoComponent } from "./request-form/widgets/order-info/lc-amendment/lc-amendment.component";
 import { RddOitOrderInfoComponent } from "./request-form/widgets/order-info/rdd-oit/rdd-oit.component";
 import { CancelOrderComponent } from "./request-form/widgets/order-info/cancel-order/cancel-order.component";
+import { SpecialDeliveryOrderInfoComponent } from './request-form/widgets/order-info/special-delivery/special-delivery.component'
 
 const COMPONENTS = [
   ApprovedComponent,
@@ -72,7 +73,8 @@ const WIDGETS = [
   TransferLibComponent,
   ExchangeInfoComponent,
   DifferenceAndCostInfoComponent,
-  CancelOrderComponent
+  CancelOrderComponent,
+  SpecialDeliveryOrderInfoComponent
 ];
 
 export {

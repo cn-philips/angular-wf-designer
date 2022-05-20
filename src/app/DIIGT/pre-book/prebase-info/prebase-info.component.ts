@@ -1238,37 +1238,6 @@ export class PrebaseInfoComponent implements OnInit {
       }));
     })
   }
-  // 进单准备表-选择经销商
-  public getDistributorList() {
-    return new Promise((resolve, reject) => {
-      this.http.get(`/act/preparation/chooseDistributor`).subscribe((rest => {
-        if (rest.code === '0000') {
-          this.distributorList = rest.data;
-          resolve(rest.data);
-          this.dataBase.distributor = this.dataBase.distributor ? this.dataBase.distributor.replace(/\s+/g, "") : "";
-          if (this.dataBase.distributor) {
-            let select = this.distributorList.find(vals => vals.dealerName.replace(/\s+/g, "") == this.dataBase.distributor);
-            if (select) {
-              this.dataBase.distributor1 = select.dealerName;
-              this.dataBase.dealerCode = select.dealerCode;
-            }
-            this.distributorOff = select ? false : true;
-            if (select && select.reminderMessage) {
-              this.redFlagList = select.reminderMessage;
-            }
-            else {
-              this.redFlagList = "";
-            }
-          }
-        } else {
-          // this.message.create('error', `${rest.msg}`);
-        }
-
-      }), (error => {
-        this.message.create("error", "请求异常")
-      }));
-    })
-  }
   //选择经销商1
   public changeDistributor() {
     const ASYNS = async () => {

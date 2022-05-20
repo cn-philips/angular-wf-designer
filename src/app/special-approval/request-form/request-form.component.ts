@@ -375,12 +375,6 @@ export class RequestFormComponent implements OnInit {
 
       this.setPageTitle({ applyType: type, applyItem: item });
 
-      if (this.editable && this.applyType === APPLY_TYPE.TRANSFER_LIB) {
-        this.basicInfo.get('applyItem').valueChanges.subscribe( val => {
-          this.setPageTitle({ applyType: type, applyItem: val });
-          this.message.warning('根据币制已将申请类型转变为：' + this.pageType)
-        })
-      }
       if (bg) {
         switch(type) {
           case APPLY_TYPE.MACHINE_EXCHANGE:
@@ -486,7 +480,9 @@ export class RequestFormComponent implements OnInit {
       }
     } else if (type === APPLY_TYPE.PRODUCTION) {
       this.basicInfo.controls.applyItem.disable();
-    } else if (type === APPLY_TYPE.LC_AMENDMENT) {
+    }else if (type === APPLY_TYPE.SPECIAL_DELIVERY) {
+      this.basicInfo.controls.applyItem.disable();
+    }  else if (type === APPLY_TYPE.LC_AMENDMENT) {
       if (item === 'sp_lcamendment_apply_item_5') {
         this.basicInfo.controls.applyItemDesc.setValidators([Validators.required]);
       }
@@ -689,6 +685,18 @@ export class RequestFormComponent implements OnInit {
             orderInfoStatus: {
               ...cancelorderInfo.orderInfoStatus,
             }
+          }
+        ];
+        break;
+      case APPLY_TYPE.SPECIAL_DELIVERY: // 特批发货
+        data.orderInfos = [
+          {
+            ...this.requestInfo.orderInfos[0],
+            ...orderInfo,
+            applyArrivalTime: applyArrivalTime ? moment(applyArrivalTime).format('YYYY-MM-DD') : null,
+            expectedPaymentDate: expectedPaymentDate ? moment(expectedPaymentDate).format('YYYY-MM-DD') : null,
+            expectedSaleDate: expectedSaleDate ? moment(expectedSaleDate).format('YYYY-MM-DD') : null,
+            products: products.map(({ productType, wbsNo, itemNo, quantity }) => ({ productType, wbsNo, itemNo, quantity }))
           }
         ];
         break;
@@ -973,7 +981,7 @@ export class RequestFormComponent implements OnInit {
         },
       })
       this.requestInfo.orderInfos = orderInfos
-      if (applyType === APPLY_TYPE.PRODUCTION || applyType === APPLY_TYPE.EXT_WARRANTY || applyType === APPLY_TYPE.LOGISTICSCOST || applyType === APPLY_TYPE.EXT_INSTALL_COST) {
+      if (applyType === APPLY_TYPE.PRODUCTION || applyType === APPLY_TYPE.EXT_WARRANTY || applyType === APPLY_TYPE.LOGISTICSCOST || applyType === APPLY_TYPE.EXT_INSTALL_COST || applyType === APPLY_TYPE.SPECIAL_DELIVERY ) {
         this.formValues.patchValue({
           orderInfo: {
             ...orderInfos[0],
@@ -1291,6 +1299,16 @@ export class RequestFormComponent implements OnInit {
             exchangeRole: '互换'
           }]
       })
+    }
+  }
+
+  onItemChange(val: string) {
+    if (this.editable) {
+      if (this.requestId) {
+        this.setPageTitle({ applyType: this.applyType, applyItem: val },false)
+      } else {
+        this.setPageTitle({ applyType: this.applyType, applyItem: val })
+      }
     }
   }
 }

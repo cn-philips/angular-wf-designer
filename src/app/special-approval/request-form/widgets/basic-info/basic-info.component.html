@@ -44,7 +44,7 @@
         <nz-form-item>
           <nz-form-label nzXl="8" nzXXl="6">申请原因</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <nz-select formControlName="applyItem" nzPlaceHolder="请选择申请原因">
+            <nz-select formControlName="applyItem" nzPlaceHolder="请选择申请原因" (ngModelChange)="applyItemChange($event)">
               <nz-option *ngFor="let item of applyItems" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
             </nz-select>
             <nz-form-explain
