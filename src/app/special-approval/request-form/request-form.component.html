@@ -7,50 +7,47 @@
 </nz-card>
 
 <div class="tabs-box">
-  <div
-    nz-row
-    nzType="flex"
-    nzJustify="end"
-    nzAlign="middle"
-    class="tabs-box-actions"
-  >
+  <div nz-row nzType="flex" nzJustify="end" nzAlign="middle" class="tabs-box-actions">
     <div nz-col nzSpan="24">
       <nz-form-item>
         <nz-form-control [nzSm]="24" [nzXs]="24" style="text-align: right">
-          <button nz-button nz-popconfirm nzType="text" nzTitle="确定保存草稿?" class="bg-success text-white" *ngIf="showSaveBtn" [disabled]="submitLoading" (nzOnConfirm)="onSaveDraft()">保存</button>
-          <button nz-button nz-popconfirm nzType="primary" nzTitle="确定提交申请?" *ngIf="showSubmitBtn" [disabled]="submitLoading" (nzOnConfirm)="onSubmit()">提交</button>
-          <button nz-button nz-popconfirm nzDanger nzTitle="确定撤回申请?" *ngIf="showWithdrawBtn" (nzOnConfirm)="onWithdrawRequest()">撤回</button>
-          <button nz-button nz-popconfirm nzDanger nzTitle="确定取消申请?" *ngIf="showCancelBtn" (nzOnConfirm)="onCancelRequest()">取消申请</button>
-          <button nz-button nz-popconfirm nzDanger nzTitle="确定删除草稿?" *ngIf="showDeleteBtn" (nzOnConfirm)="onDeleteRequest()">删除</button>
+          <button nz-button nz-popconfirm nzType="text" nzTitle="确定保存草稿?" class="bg-success text-white"
+            *ngIf="showSaveBtn" [disabled]="submitLoading" (nzOnConfirm)="onSaveDraft()">保存</button>
+          <button nz-button nz-popconfirm nzType="primary" nzTitle="确定提交申请?" *ngIf="showSubmitBtn"
+            [disabled]="submitLoading" (nzOnConfirm)="onSubmit()">提交</button>
+          <button nz-button nz-popconfirm nzDanger nzTitle="确定撤回申请?" *ngIf="showWithdrawBtn"
+            (nzOnConfirm)="onWithdrawRequest()">撤回</button>
+          <button nz-button nz-popconfirm nzDanger nzTitle="确定取消申请?" *ngIf="showCancelBtn"
+            (nzOnConfirm)="onCancelRequest()">取消申请</button>
+          <button nz-button nz-popconfirm nzDanger nzTitle="确定删除草稿?" *ngIf="showDeleteBtn"
+            (nzOnConfirm)="onDeleteRequest()">删除</button>
         </nz-form-control>
       </nz-form-item>
     </div>
   </div>
 </div>
 
-<ngb-tabset
-  type="tabs"
-  [destroyOnHide]="false"
-  [activeId]="acitveTabId"
-  class="nav-tabs-top nav-responsive-xl mtb1rem"
->
+<ngb-tabset type="tabs" [destroyOnHide]="false" [activeId]="acitveTabId" class="nav-tabs-top nav-responsive-xl mtb1rem">
   <ngb-tab [id]="TAB_TYPES.BASIC_INFO">
     <ng-template ngbTabTitle>
       <span class="tab-title"><strong>申请详情</strong></span>
     </ng-template>
     <ng-template ngbTabContent>
       <div class="card-body">
-        <special-approval-basic-info [saleRegions]="saleRegions" [executed]="executed" [editable]="editable" [formValues]="basicInfo" (itemChange)="onItemChange($event)" [supportFileList]="supportFileList"></special-approval-basic-info>
+        <special-approval-basic-info [saleRegions]="saleRegions" [executed]="executed" [editable]="editable"
+          [formValues]="basicInfo" (itemChange)="onItemChange($event)" [supportFileList]="supportFileList">
+        </special-approval-basic-info>
       </div>
     </ng-template>
   </ngb-tab>
-  <ngb-tab [id]="TAB_TYPES.EXCHANGE_INFO"  *ngIf="applyType === APPLY_TYPE.TRANSFER_LIB">
+  <ngb-tab [id]="TAB_TYPES.EXCHANGE_INFO" *ngIf="applyType === APPLY_TYPE.TRANSFER_LIB">
     <ng-template ngbTabTitle>
       <span class="tab-title"><strong>换货信息</strong></span>
     </ng-template>
     <ng-template ngbTabContent>
       <div class="card-body">
-        <special-approval-exchange-info [executed]="executed" [editable]="editable" [formValues]="exchangeInfo" [supportFileList]="supportFileList"></special-approval-exchange-info>
+        <special-approval-exchange-info [executed]="executed" [editable]="editable" [formValues]="exchangeInfo"
+          [supportFileList]="supportFileList"></special-approval-exchange-info>
       </div>
     </ng-template>
   </ngb-tab>
@@ -60,27 +57,45 @@
     </ng-template>
     <ng-template ngbTabContent>
       <div class="card-body">
-        <special-approval-production-order-info *ngIf="applyType === APPLY_TYPE.PRODUCTION" [applyItem]="applyItem" [editable]="editable" [formValues]="orderInfo"></special-approval-production-order-info>
-        <special-approval-warranty-order-info *ngIf="applyType === APPLY_TYPE.EXT_WARRANTY" [editable]="editable" [formValues]="orderInfo"></special-approval-warranty-order-info>
+        <special-approval-production-order-info *ngIf="applyType === APPLY_TYPE.PRODUCTION" [applyItem]="applyItem"
+          [editable]="editable" [formValues]="orderInfo"></special-approval-production-order-info>
+        <special-approval-warranty-order-info *ngIf="applyType === APPLY_TYPE.EXT_WARRANTY" [editable]="editable"
+          [formValues]="orderInfo"></special-approval-warranty-order-info>
         <!-- <special-approval-order-info [applyItem]="applyItem" [applyType]="applyType" [editable]="editable" [formValues]="orderInfo"></special-approval-order-info> -->
-        <special-approval-transportation-order-info *ngIf="applyType === APPLY_TYPE.LOGISTICSCOST" [editable]="editable" [formValues]="orderInfo"></special-approval-transportation-order-info>
-        <special-approval-additional-intallation-cost *ngIf="applyType === APPLY_TYPE.EXT_INSTALL_COST" [editable]="editable" [formValues]="orderInfo"></special-approval-additional-intallation-cost>
-        <special-approval-lcamendment-order-info *ngIf="applyType === APPLY_TYPE.LC_AMENDMENT" [editable]="editable" [basicInfo]="basicInfo" [formValues]="lcAmendmentOrderInfo"></special-approval-lcamendment-order-info>
-        <special-approval-rdd-oit-order-info #rddOitOrderInfo *ngIf="applyType === APPLY_TYPE.RDD_OIT" [formValues]="rddOitOrderInfos" [editable]="editable"></special-approval-rdd-oit-order-info>
-        <special-approval-machineexcange-order-info #machineExchange *ngIf="applyType === APPLY_TYPE.MACHINE_EXCHANGE"  [editable]="editable" [formValues]="changeOrderInfos" [salesLeaders]="salesLeader" [districtLeaders]="districtLeader"></special-approval-machineexcange-order-info>
-        <special-approval-transfer-lib-info *ngIf="applyType === APPLY_TYPE.TRANSFER_LIB" [editable]="editable" [baseInfo]="basicInfo" [exchangeInfo]="exchangeInfo" [formValues]="transferLibInfos"></special-approval-transfer-lib-info>
-        <special-approval-specialdelivery-order-info *ngIf="applyType === APPLY_TYPE.SPECIAL_DELIVERY" [editable]="editable" [basicInfo]="basicInfo" [formValues]="orderInfo"></special-approval-specialdelivery-order-info>
+        <special-approval-transportation-order-info *ngIf="applyType === APPLY_TYPE.LOGISTICSCOST" [editable]="editable"
+          [formValues]="orderInfo"></special-approval-transportation-order-info>
+        <special-approval-additional-intallation-cost *ngIf="applyType === APPLY_TYPE.EXT_INSTALL_COST"
+          [editable]="editable" [formValues]="orderInfo"></special-approval-additional-intallation-cost>
+        <special-approval-lcamendment-order-info *ngIf="applyType === APPLY_TYPE.LC_AMENDMENT" [editable]="editable"
+          [basicInfo]="basicInfo" [formValues]="lcAmendmentOrderInfo"></special-approval-lcamendment-order-info>
+        <special-approval-rdd-oit-order-info #rddOitOrderInfo *ngIf="applyType === APPLY_TYPE.RDD_OIT"
+          [formValues]="rddOitOrderInfos" [editable]="editable"></special-approval-rdd-oit-order-info>
+        <special-approval-machineexcange-order-info #machineExchange *ngIf="applyType === APPLY_TYPE.MACHINE_EXCHANGE"
+          [editable]="editable" [formValues]="changeOrderInfos" [salesLeaders]="salesLeader"
+          [districtLeaders]="districtLeader"></special-approval-machineexcange-order-info>
+        <special-approval-transfer-lib-info *ngIf="applyType === APPLY_TYPE.TRANSFER_LIB" [editable]="editable"
+          [baseInfo]="basicInfo" [exchangeInfo]="exchangeInfo" [formValues]="transferLibInfos">
+        </special-approval-transfer-lib-info>
+        <special-approval-cancel-order-info *ngIf="applyType === APPLY_TYPE.CANCEL_ORDER" [editable]="editable"
+          [baseInfo]="basicInfo" [formValues]="cancelorderInfo"></special-approval-cancel-order-info>
+        <special-approval-specialdelivery-order-info *ngIf="applyType === APPLY_TYPE.SPECIAL_DELIVERY"
+          [editable]="editable" [basicInfo]="basicInfo" [formValues]="orderInfo">
+        </special-approval-specialdelivery-order-info>
       </div>
     </ng-template>
   </ngb-tab>
-  <ngb-tab [id]="TAB_TYPES.DIFFERENCE_AND_COST_INFO"  *ngIf="applyType === APPLY_TYPE.TRANSFER_LIB">
+  <ngb-tab [id]="TAB_TYPES.DIFFERENCE_AND_COST_INFO" *ngIf="applyType === APPLY_TYPE.TRANSFER_LIB">
     <ng-template ngbTabTitle>
       <span class="tab-title"><strong>配置差异及成本分析</strong></span>
     </ng-template>
     <ng-template ngbTabContent>
       <div class="card-body">
-        <special-approval-difference-and-cost-info [executed]="executed" [editable]="editable" [exchangeInfo]="exchangeInfo" [formValues]="orderDifferencesInfo" [supportFileList]="supportFileList"></special-approval-difference-and-cost-info>
-        <special-approval-machineexcange-order-info *ngIf="applyType === APPLY_TYPE.MACHINE_EXCHANGE" [editable]="editable" [formValues]="changeOrderInfos" [salesLeaders]="salesLeader" [districtLeaders]="districtLeader"></special-approval-machineexcange-order-info>
+        <special-approval-difference-and-cost-info [executed]="executed" [editable]="editable"
+          [exchangeInfo]="exchangeInfo" [formValues]="orderDifferencesInfo" [supportFileList]="supportFileList">
+        </special-approval-difference-and-cost-info>
+        <special-approval-machineexcange-order-info *ngIf="applyType === APPLY_TYPE.MACHINE_EXCHANGE"
+          [editable]="editable" [formValues]="changeOrderInfos" [salesLeaders]="salesLeader"
+          [districtLeaders]="districtLeader"></special-approval-machineexcange-order-info>
       </div>
     </ng-template>
   </ngb-tab>
@@ -100,7 +115,8 @@
     </ng-template>
     <ng-template ngbTabContent>
       <div class="card-body">
-        <special-approval-cc-info [editable]="editable" [formValues]="ccInfo" [userList]="userList" [applyType]="applyType"></special-approval-cc-info>
+        <special-approval-cc-info [editable]="editable" [formValues]="ccInfo" [userList]="userList"
+          [applyType]="applyType"></special-approval-cc-info>
       </div>
     </ng-template>
   </ngb-tab>
@@ -120,7 +136,8 @@
     </ng-template>
     <ng-template ngbTabContent>
       <div class="card-body">
-        <special-approval-approve-form [basicInfo]="basicInfo" [applicantEmail]="applicantEmail" [processUsers]="processUsers" [taskId]="taskId" [requestId]="requestId"></special-approval-approve-form>
+        <special-approval-approve-form [basicInfo]="basicInfo" [applicantEmail]="applicantEmail"
+          [processUsers]="processUsers" [taskId]="taskId" [requestId]="requestId"></special-approval-approve-form>
       </div>
     </ng-template>
   </ngb-tab>
