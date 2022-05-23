@@ -25,7 +25,7 @@
           <th nzWidth="200px">产品型号</th>
           <th nzWidth="150px">*产品线</th>
           <th nzWidth="150px">BG(Modality)</th>
-          <th nzWidth="300px">*销售区域</th>
+          <th nzWidth="300px">销售区域</th>
           <th nzWidth="180px">*业务模式</th>
           <th nzWidth="400px">经销商名称</th>
           <th nzWidth="300px">经销商编号</th>
@@ -113,9 +113,6 @@
                 <nz-select style="width: 48%;" [(ngModel)]="data.bigArea" [disabled]="!editable" required>
                   <nz-option *ngFor="let item of spService.cycleGroupBigAreaMap[data.cycleGroup]" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
                 </nz-select>
-                <nz-form-explain class="error-msg" *ngIf="!(data.cycleGroup && data.bigArea)">
-                  请选择销售区域
-                </nz-form-explain>
               </nz-form-control>
             </nz-form-item>
           </td>
