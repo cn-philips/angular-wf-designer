@@ -24,7 +24,7 @@
             </nz-input-group>
 
             <ng-template #importReferenceBtn>
-              <button *ngIf="editable && bg.value === 'PD&IGT'" nz-button nzType="primary" class="ml-md" (click)="onShowReferenceModal()">导入数据</button>
+              <button *ngIf="editable" nz-button nzType="primary" class="ml-md" (click)="onShowReferenceModal()">导入数据</button>
             </ng-template>
           </nz-form-control>
         </nz-form-item>
@@ -82,14 +82,15 @@
                 <nz-option *ngIf="bigAreas.length === 0" nzLabel="请先选择Team/Cycle Group" [nzDisabled]="true"></nz-option>
               </nz-select>
             </nz-input-group>
-            <div style="display: flex;">
-              <nz-form-explain style="width: 48%;margin-right:4%" >
-                <span style="color:#f5222d" *ngIf="formValues.get('cycleGroup')?.dirty && formValues.get('cycleGroup')?.errors">请选择销售区域</span>
-              </nz-form-explain>
-              <nz-form-explain style="width: 48%" *ngIf="formValues.get('bigArea')?.dirty && formValues.get('bigArea')?.errors">
-                <span style="color:#f5222d">请选择销售区域</span>
-              </nz-form-explain>
-            </div>
+<!--            <div style="display: flex;">-->
+<!--              <nz-form-explain style="width: 48%;margin-right:4%" >-->
+<!--                <span style="color:#f5222d" *ngIf="formValues.get('cycleGroup')?.dirty && formValues.get('cycleGroup')?.errors">请选择销售区域</span>-->
+<!--              </nz-form-explain>-->
+<!--              <nz-form-explain style="width: 48%" *ngIf="formValues.get('bigArea')?.dirty && formValues.get('bigArea')?.errors">-->
+<!--                <span style="color:#f5222d">请选择销售区域</span>-->
+<!--              </nz-form-explain>-->
+<!--            </div>-->
+
           </nz-form-control>
         </nz-form-item>
       </div>
@@ -286,7 +287,6 @@
     </div>
 
   </form>
-
   <app-select-hospital #selectHospital (select)="onSelectHospital($event)"></app-select-hospital>
   <app-select-dealer #selectDealer (select)="onSelectDealer($event)"></app-select-dealer>
   <app-select-reference #selectReference (select)="onSelectReference($event)"></app-select-reference>
