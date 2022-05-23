@@ -158,14 +158,14 @@ export class RddOitOrderInfoComponent implements OnInit {
     let hasError = false
     this.formValues.value.forEach((order) => {
       const { 
-        isMain, orderType, bmc, cycleGroup, bigArea, businessModel,
+        isMain, orderType, bmc, businessModel,
         dealerCode, hospitalNo,
         projectName, sapOrderNo, orderAmount, currency,
         subProductType, wbsNo, orderDate, originalRdd, deliveryDelayReason, newRdd,
         exchangeableOrder
       } = order
       if (isMain) {
-        if (!(orderType && bmc && cycleGroup && bigArea &&
+        if (!(orderType && bmc &&
           businessModel && projectName && sapOrderNo &&
           orderAmount && currency && (dealerCode || hospitalNo)
         )) {
