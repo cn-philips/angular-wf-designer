@@ -59,6 +59,7 @@ const APPLY_TYPE = {
   TRANSFER_LIB: "transferlib",
   CANCEL_ORDER: "cancelorder",
   SPECIAL_DELIVERY:"delivery", //特批发货
+  NONE_DIRECT_ORDER:"nonedirectorder",//非直销订单按直销方式确认收入
 }
 
 const APPLY_TYPE_MAP = {
@@ -72,6 +73,7 @@ const APPLY_TYPE_MAP = {
   [APPLY_TYPE.TRANSFER_LIB]: { label: "转库", dictGroup: 'sp_transferlib_apply_item' },
   [APPLY_TYPE.CANCEL_ORDER]: { label: "Cancel Order申请", dictGroup: 'sp_cancelorder_apply_item' },
   [APPLY_TYPE.SPECIAL_DELIVERY]: { label: "特批发货", dictGroup: 'sp_delivery_apply_item' },
+  [APPLY_TYPE.NONE_DIRECT_ORDER]:{label: "非直销订单按直销方式确认收入", dictGroup: 'sp_nonedirectorder_apply_item'},
 };
 
 
@@ -86,6 +88,7 @@ const APPLY_TYPES = [
   { label: "转库", value: APPLY_TYPE.TRANSFER_LIB },
   { label: "Cancel Order申请", value: APPLY_TYPE.CANCEL_ORDER },
   { label: "特批发货", value: APPLY_TYPE.SPECIAL_DELIVERY },
+  {label: "非直销订单按直销方式确认收入", value: APPLY_TYPE.NONE_DIRECT_ORDER},
 ];
 
 const STAND_WARRANTY_MONTH = {
