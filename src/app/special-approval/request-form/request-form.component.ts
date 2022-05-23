@@ -345,7 +345,8 @@ export class RequestFormComponent implements OnInit {
     if (
       applyType === APPLY_TYPE.PRODUCTION ||
       applyType === APPLY_TYPE.LOGISTICSCOST ||
-      applyType === APPLY_TYPE.EXT_INSTALL_COST  
+      applyType === APPLY_TYPE.EXT_INSTALL_COST  ||
+      applyType === APPLY_TYPE.NONE_DIRECT_ORDER
     ) {
       this.orderInfo.patchValue({
         products: [{}]
@@ -730,7 +731,20 @@ export class RequestFormComponent implements OnInit {
           }
         ];
         break;
+      case APPLY_TYPE.NONE_DIRECT_ORDER:
+        data.orderInfos = [
+          {
+            ...this.requestInfo.orderInfos[0],
+            ...orderInfo,
+            applyArrivalTime: applyArrivalTime ? moment(applyArrivalTime).format('YYYY-MM-DD') : null,
+            expectedPaymentDate: expectedPaymentDate ? moment(expectedPaymentDate).format('YYYY-MM-DD') : null,
+            expectedSaleDate: expectedSaleDate ? moment(expectedSaleDate).format('YYYY-MM-DD') : null,
+            products: products.map(({ productType, wbsNo, itemNo, quantity }) => ({ productType, wbsNo, itemNo, quantity }))
+          }
+        ];
+        break;
     }
+
     return data;
   }
 
@@ -891,7 +905,7 @@ export class RequestFormComponent implements OnInit {
         hasError = this.basicInfo.invalid || formValidError
         break
       case APPLY_TYPE.CANCEL_ORDER:
-  
+
         break
       default:
         for (const i in this.orderInfo.controls) {
@@ -1014,7 +1028,7 @@ export class RequestFormComponent implements OnInit {
         },
       })
       this.requestInfo.orderInfos = orderInfos
-      if (applyType === APPLY_TYPE.PRODUCTION || applyType === APPLY_TYPE.EXT_WARRANTY || applyType === APPLY_TYPE.LOGISTICSCOST || applyType === APPLY_TYPE.EXT_INSTALL_COST || applyType === APPLY_TYPE.SPECIAL_DELIVERY ) {
+      if (applyType === APPLY_TYPE.PRODUCTION || applyType === APPLY_TYPE.EXT_WARRANTY || applyType === APPLY_TYPE.LOGISTICSCOST || applyType === APPLY_TYPE.EXT_INSTALL_COST || applyType === APPLY_TYPE.SPECIAL_DELIVERY || applyType===APPLY_TYPE.NONE_DIRECT_ORDER ) {
         this.formValues.patchValue({
           orderInfo: {
             ...orderInfos[0],
@@ -1175,7 +1189,7 @@ export class RequestFormComponent implements OnInit {
             this.isSupplementNode = true
             break
           case APPROVE_NODE_ACTION.FEEDBACK:
-            this.showFeedbackTab = this.isApplicant
+            this.showFeedbackTab = true
             break
           default:
             this.showApproveTab = true
@@ -1303,7 +1317,7 @@ export class RequestFormComponent implements OnInit {
   // 校验产品列表
   // 特批开始生产、物流运输、额外安装费用及其他售后费用  验证产品列表不能为空
   public verifyProduct() {
-    if (this.applyType === APPLY_TYPE.PRODUCTION || this.applyType === APPLY_TYPE.EXT_INSTALL_COST || this.applyType === APPLY_TYPE.LOGISTICSCOST) {
+    if (this.applyType === APPLY_TYPE.PRODUCTION || this.applyType === APPLY_TYPE.EXT_INSTALL_COST || this.applyType === APPLY_TYPE.LOGISTICSCOST || this.applyType === APPLY_TYPE.NONE_DIRECT_ORDER) {
       const orderInfo = this.formValues.getRawValue().orderInfo;
       if (orderInfo && orderInfo.bg && orderInfo.bg.toLowerCase() === 'cc') {
         return true;
