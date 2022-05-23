@@ -427,6 +427,7 @@ export class RequestFormComponent implements OnInit {
     if (type === APPLY_TYPE.EXT_WARRANTY) {
       this.orderInfo.controls.applyArrivalTime.clearValidators();
       this.orderInfo.controls.expectedPaymentDate.clearValidators();
+      this.orderInfo.controls.expectedSaleDate.clearValidators();
       this.orderInfo.controls.om.clearValidators();
       if (item === 'sp_warranty_apply_item_5') {
         this.basicInfo.controls.applyItemDesc.setValidators([Validators.required]);
