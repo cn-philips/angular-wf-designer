@@ -36,12 +36,12 @@
             </div>
             <div nz-col nzSpan="24">
               <nz-form-item class="order-list-normal-label">
-                <nz-form-label nzRequired>销售区域-Team</nz-form-label>
+                <nz-form-label>销售区域-Team</nz-form-label>
               </nz-form-item>
             </div>
             <div nz-col nzSpan="24">
               <nz-form-item class="order-list-normal-label">
-                <nz-form-label nzRequired>销售区域-大区</nz-form-label>
+                <nz-form-label>销售区域-大区</nz-form-label>
               </nz-form-item>
             </div>
             <div nz-col nzSpan="24">
@@ -200,12 +200,6 @@
                       <nz-option *ngIf="spService.cycleGroups.length === 0" nzLabel="请先选择Team/Cycle Group" [nzDisabled]="true"></nz-option>
                     </nz-select>
                   </nz-input-group>
-<!--                  <input nz-input formControlName="bigArea" style="width: 100%" placeholder="Team/Cycle Group">-->
-                  <div style="display: flex;">
-                    <nz-form-explain style="width: 100%;" >
-                      <span style="color:#f5222d" *ngIf="ord.get('cycleGroup')?.dirty && ord.get('cycleGroup')?.errors">请选择销售区域</span>
-                    </nz-form-explain>
-                  </div>
                 </nz-form-control>
               </nz-form-item>
             </div>
@@ -219,11 +213,6 @@
                     </nz-select>
                   </nz-input-group>
                   <input nz-input formControlName="bigArea" style="width: 100%" placeholder="Region" *ngIf="!editable">
-                  <div style="display: flex;">
-                    <nz-form-explain style="width: 100%" *ngIf="ord.get('bigArea')?.dirty && ord.get('bigArea')?.errors">
-                      <span style="color:#f5222d">请先选择Team/Cycle Group</span>
-                    </nz-form-explain>
-                  </div>
                 </nz-form-control>
               </nz-form-item>
             </div>
