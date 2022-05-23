@@ -296,6 +296,30 @@ export class RequestFormComponent implements OnInit {
     }
   }
 
+  initProductList(applyType) {
+    if (
+      applyType === APPLY_TYPE.PRODUCTION ||
+      applyType === APPLY_TYPE.LOGISTICSCOST ||
+      applyType === APPLY_TYPE.EXT_INSTALL_COST  
+    ) {
+      this.orderInfo.patchValue({
+        products: [{}]
+      })
+    } else if (applyType === APPLY_TYPE.EXT_WARRANTY) {
+      this.orderInfo.patchValue({
+        products: [{ warranty: { stdWarrantyMonths: this.spService.standWarrantyMonth['PD&IGT'] } }]
+      })
+    } else if (applyType === APPLY_TYPE.MACHINE_EXCHANGE) {
+      const orders = this.changeOrderInfos.get('orders') as FormArray
+      orders.at(0).patchValue({ products: [{}] })
+      orders.at(1).patchValue({ products: [{}] })
+    } else if (applyType === APPLY_TYPE.TRANSFER_LIB) {
+      const orders = this.transferLibInfos.get('orders') as FormArray
+      orders.at(0).patchValue({ products: [{}] })
+      orders.at(1).patchValue({ products: [{}] })
+    }
+  }
+
   public ngOnInit(): void {
     const { params: { requestId }, queryParams: { type, item, taskId,  bg } } = this.route.snapshot;
     // detail page
@@ -352,6 +376,9 @@ export class RequestFormComponent implements OnInit {
             break;
           default:
             this.orderInfo.patchValue({ bg });
+        }
+        if (bg === 'PD&IGT') {
+          this.initProductList(type)
         }
       }
       this.pageLoading = false;
