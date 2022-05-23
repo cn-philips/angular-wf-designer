@@ -14,9 +14,9 @@ import {
   BUSINESS_MODEL,
   APPLY_TYPE,
   APPLY_TYPE_MAP,
-  NODE_ACTION,
   PROCESS_STATUS,
 } from '../special-approval.constants';
+import { APPROVE_NODE_ACTION } from '../../DIIGT/change-scene/special-approval-setting/special-approval-setting.constants'
 import { SelectApproverComponent } from './widgets/select-approver/select-approver.component';
 import { RddOitOrderInfoComponent } from './widgets/order-info/rdd-oit/rdd-oit.component';
 import {MachineComponent} from './widgets/order-info/machine/machine.component';
@@ -46,6 +46,8 @@ export class RequestFormComponent implements OnInit {
 
   @ViewChild('rddOitOrderInfo') public rddOitOrderInfo: RddOitOrderInfoComponent;
   @ViewChild('machineExchange') public machineExchange: MachineComponent;
+
+  isSupplementNode = false
 
   public pageTitle: string;
   public requestId;
@@ -133,6 +135,48 @@ export class RequestFormComponent implements OnInit {
     products: [[]],
     arrivalDate: [null, [Validators.required]], // 到货日期
   }
+
+  //cancel order 订单信息字段单独配置
+  public cancelOrderInit = {
+    orderType: [null, [Validators.required]], // 订单类型
+    referenceId: [null], // Reference Id
+    productType: [{ value: null, disabled: true }], // 产品型号
+    bmc: [null, [Validators.required]], // 产品线
+    bg: [{ value: null, disabled: true }, [Validators.required]], // BG
+    cycleGroup: [null, [Validators.required]], // 产品区域-team
+    bigArea: [null, [Validators.required]], // 产品区域-大区
+    businessModel: [null, [Validators.required]], // 业务模式
+    dealerName: [{ value: null, disabled: true }], // 经销商名称
+    dealerCode: [{ value: null, disabled: true }], // 经销商编号
+    hospitalName: [{ value: null, disabled: true }], // 医院名称
+    hospitalNo: [{ value: null, disabled: true }], // 医院编号
+    projectName: [null, [Validators.required]], // 项目名称
+    sapOrderNo: [null, [Validators.required]], // SAP订单号
+    orderAmount: [null, [Validators.required]], // 合同金额-数额
+    currency: [null, [Validators.required]], // 合同金额-货币
+    om: [null, [Validators.required]], // OM
+    orderDate: [null, [Validators.required]], // 进单日期
+    isDebook: [1, [Validators.required]], // 是否De-book
+    orderInfoStatus: this.fb.group({   // 订单状态信息
+      id: [null],
+      spApplyOrderId: [null], // (关联的字段)
+      startProduction: [0, [Validators.required]], //是否开始生产
+      orderCancelAmountProduction: [null], // 订单取消的额外费用-生产
+      shipped: [0, [Validators.required]], // 是否已发货
+      orderCancelAmountShipped: [null], // 订单取消的额外费用-国际国内段运输仓储费用
+      thirdPartyProcurement: [0, [Validators.required]], // 是否有第三方采购
+      orderCancelAmountPurchase: [null], // 订单取消的额外费用-第三方采购
+      seenSite: [0, [Validators.required]], // 是否看过场地
+      orderCancelAmountSite: [null], // 订单取消的额外费用-场地相关
+      advanceChargeStatus: [0, [Validators.required]], // 预付款状态
+      advanceChargeAmount: [null], // 预付款金额
+      orderActualAmount: [null], // 订单实际发生费用
+      refundAmount: [null], // 退款金额
+      remark: [null], // 备注
+      attachment: [null], // 附件
+    })
+  };
+
   public formValues = this.fb.group({
     basicInfo: this.fb.group({
       applyCode: [null],
@@ -273,7 +317,8 @@ export class RequestFormComponent implements OnInit {
         this.fb.group({...this.transferLibOrderInit, applyId: null, id: null}),
         this.fb.group({...this.transferLibOrderInit, applyId: null, id: null})
       ])
-    })
+    }),
+    cancelorderInfo: this.fb.group({...this.cancelOrderInit, applyId: null, id: null}),
   });
 
   initSaleRegions(isNewRequest = false) {
@@ -423,6 +468,10 @@ export class RequestFormComponent implements OnInit {
     return this.formValues.get('transferLibOrders') as FormGroup
   }
 
+  get cancelorderInfo() : FormGroup {
+    return this.formValues.get('cancelorderInfo') as FormGroup
+  }
+
   public setFormValidators(type, item, bg) {
     if (type === APPLY_TYPE.EXT_WARRANTY) {
       this.orderInfo.controls.applyArrivalTime.clearValidators();
@@ -433,7 +482,9 @@ export class RequestFormComponent implements OnInit {
       }
     } else if (type === APPLY_TYPE.PRODUCTION) {
       this.basicInfo.controls.applyItem.disable();
-    } else if (type === APPLY_TYPE.LC_AMENDMENT) {
+    }else if (type === APPLY_TYPE.SPECIAL_DELIVERY) {
+      this.basicInfo.controls.applyItem.disable();
+    }  else if (type === APPLY_TYPE.LC_AMENDMENT) {
       if (item === 'sp_lcamendment_apply_item_5') {
         this.basicInfo.controls.applyItemDesc.setValidators([Validators.required]);
       }
@@ -456,7 +507,7 @@ export class RequestFormComponent implements OnInit {
   }
 
   public getFormData() {
-    const { basicInfo, orderInfo, ccInfo, rddOitOrderInfos, changeOrderInfos, lcAmendmentOrderInfo,transferLibOrders, exchangeInfo, orderDifferences  } = this.formValues.getRawValue()
+    const { basicInfo, orderInfo, ccInfo, rddOitOrderInfos, changeOrderInfos, lcAmendmentOrderInfo,transferLibOrders, exchangeInfo, orderDifferences, cancelorderInfo  } = this.formValues.getRawValue()
     const { applyArrivalTime, expectedPaymentDate, expectedSaleDate, products } = orderInfo
     const extInfo = {
       exchangeMethod: changeOrderInfos.exchangeMethod
@@ -628,6 +679,29 @@ export class RequestFormComponent implements OnInit {
           }
         })
         if (order) { data.orderInfos.push(order) }
+        break;
+      case APPLY_TYPE.CANCEL_ORDER: //cancel order
+        data.orderInfos = [
+          {
+            ...cancelorderInfo,
+            orderInfoStatus: {
+              ...cancelorderInfo.orderInfoStatus,
+            }
+          }
+        ];
+        break;
+      case APPLY_TYPE.SPECIAL_DELIVERY: // 特批发货
+        data.orderInfos = [
+          {
+            ...this.requestInfo.orderInfos[0],
+            ...orderInfo,
+            applyArrivalTime: applyArrivalTime ? moment(applyArrivalTime).format('YYYY-MM-DD') : null,
+            expectedPaymentDate: expectedPaymentDate ? moment(expectedPaymentDate).format('YYYY-MM-DD') : null,
+            expectedSaleDate: expectedSaleDate ? moment(expectedSaleDate).format('YYYY-MM-DD') : null,
+            products: products.map(({ productType, wbsNo, itemNo, quantity }) => ({ productType, wbsNo, itemNo, quantity }))
+          }
+        ];
+        break;
     }
     return data;
   }
@@ -788,6 +862,9 @@ export class RequestFormComponent implements OnInit {
         // }
         hasError = this.basicInfo.invalid || formValidError
         break
+      case APPLY_TYPE.CANCEL_ORDER:
+  
+        break
       default:
         for (const i in this.orderInfo.controls) {
           this.orderInfo.controls[i].markAsDirty();
@@ -909,7 +986,7 @@ export class RequestFormComponent implements OnInit {
         },
       })
       this.requestInfo.orderInfos = orderInfos
-      if (applyType === APPLY_TYPE.PRODUCTION || applyType === APPLY_TYPE.EXT_WARRANTY || applyType === APPLY_TYPE.LOGISTICSCOST || applyType === APPLY_TYPE.EXT_INSTALL_COST) {
+      if (applyType === APPLY_TYPE.PRODUCTION || applyType === APPLY_TYPE.EXT_WARRANTY || applyType === APPLY_TYPE.LOGISTICSCOST || applyType === APPLY_TYPE.EXT_INSTALL_COST || applyType === APPLY_TYPE.SPECIAL_DELIVERY ) {
         this.formValues.patchValue({
           orderInfo: {
             ...orderInfos[0],
@@ -1011,6 +1088,16 @@ export class RequestFormComponent implements OnInit {
           }
         })
         this.setFormValidators(applyType, applyItem, orderInfos[0].bg)
+      } else if(applyType === APPLY_TYPE.CANCEL_ORDER) {
+        this.formValues.patchValue({
+          cancelorderInfo: {
+            ...orderInfos[0],
+            orderInfoStatus: {
+              ...orderInfos[0].orderInfoStatus
+            }
+          }
+        });
+        this.setFormValidators(applyType, applyItem, orderInfos[0].bg)
       }
 
       const userSet = new Set<string>();
@@ -1054,10 +1141,20 @@ export class RequestFormComponent implements OnInit {
       //     return false;
       //   }
       // });
+      if (!!this.taskId) {
+        switch(nodeAction) {
+          case APPROVE_NODE_ACTION.SUPPLEMENT:
+            this.isSupplementNode = true
+            break
+          case APPROVE_NODE_ACTION.FEEDBACK:
+            this.showFeedbackTab = this.isApplicant
+            break
+          default:
+            this.showApproveTab = true
+        }
+      }
 
-      this.showApproveTab = nodeAction !== NODE_ACTION.FEEDBACK && !!this.taskId
-      this.showFeedbackTab = nodeAction === NODE_ACTION.FEEDBACK && this.isApplicant && !!this.taskId;
-      this.showWithdrawBtn = processStatus === PROCESS_STATUS.START && this.isApplicant && nodeAction !== NODE_ACTION.FEEDBACK;
+      this.showWithdrawBtn = processStatus === PROCESS_STATUS.START && this.isApplicant && nodeAction !== APPROVE_NODE_ACTION.FEEDBACK;
       this.approveNodeList = nodeInfoList;
       this.approveHistory = taskList;
       this.setEditable(status, processStatus);

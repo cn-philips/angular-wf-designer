@@ -1,3 +1,5 @@
+import { APPROVE_NODE_ACTION } from '../DIIGT/change-scene/special-approval-setting/special-approval-setting.constants'
+
 const DEFAULT_SUCCESS_MESSAGE = "操作成功";
 const SUCCESS_MESSAGE = {
   DELETE_DRAFT: "删除成功",
@@ -55,6 +57,8 @@ const APPLY_TYPE = {
   RDD_OIT: 'rddoit180reserv',
   MACHINE_EXCHANGE: "machineexchange",
   TRANSFER_LIB: "transferlib",
+  CANCEL_ORDER: "cancelorder",
+  SPECIAL_DELIVERY:"delivery", //特批发货
   DE_BOOK: "debook",
 }
 
@@ -68,6 +72,8 @@ const APPLY_TYPE_MAP = {
   [APPLY_TYPE.MACHINE_EXCHANGE]: { label: "机器互换", dictGroup: 'sp_machineexchange_apply_item' },
   [APPLY_TYPE.TRANSFER_LIB]: { label: "转库", dictGroup: 'sp_transferlib_apply_item' },
   [APPLY_TYPE.DE_BOOK]: { label: "De-Book", dictGroup: 'sp_debook_apply_item' },
+  [APPLY_TYPE.CANCEL_ORDER]: { label: "Cancel Order申请", dictGroup: 'sp_cancelorder_apply_item' },
+  [APPLY_TYPE.SPECIAL_DELIVERY]: { label: "特批发货", dictGroup: 'sp_delivery_apply_item' },
 };
 
 const APPLY_TYPES = [
@@ -80,6 +86,8 @@ const APPLY_TYPES = [
   { label: "机器互换", value: APPLY_TYPE.MACHINE_EXCHANGE },
   { label: "转库", value: APPLY_TYPE.TRANSFER_LIB },
   { label: "De-Book", value: APPLY_TYPE.DE_BOOK },
+  { label: "Cancel Order申请", value: APPLY_TYPE.CANCEL_ORDER },
+  { label: "特批发货", value: APPLY_TYPE.SPECIAL_DELIVERY },
 ];
 
 const STAND_WARRANTY_MONTH = {
@@ -110,11 +118,6 @@ const CC_TYPES = [
   { label: '最终节点通过', value: 'lastapproved' },
 ]
 
-const NODE_ACTION = {
-  APPROVE: 'approve',
-  FEEDBACK: 'feedback'
-}
-
 const PROCESS_STATUS = {
   START: 'START',
   DRAFT: 'DRAFT',
@@ -126,7 +129,7 @@ const PROCESS_STATUS = {
 
 const PROCESS_STATUS_MAP = {
   [PROCESS_STATUS.START]: '待审批',
-  [NODE_ACTION.FEEDBACK]: '待反馈',
+  [APPROVE_NODE_ACTION.FEEDBACK]: '待反馈',
   [PROCESS_STATUS.DRAFT]: '草稿',
   [PROCESS_STATUS.COMPLETED]: '已完成',
   [PROCESS_STATUS.REJECTED]: '已退回',
@@ -202,7 +205,6 @@ export {
   CURRENCIES,
   CC_TYPES,
   PROCESS_STATUS,
-  NODE_ACTION,
   PROCESS_STATUS_MAP,
   EXCHANGE_TYPE_LIST,
   EXCHANGE_METHODS_LIST,

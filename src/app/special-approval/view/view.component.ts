@@ -6,7 +6,8 @@ import * as moment from 'moment'
 
 import { SpecialApprovalService } from '../special-approval.service'
 import { SearchParams, RequestItem } from '../special-approval'
-import { DEFAULT_ERROR_MESSAGE, APPLY_TYPES, BG_LIST, PROCESS_STATUS, NODE_ACTION } from '../special-approval.constants'
+import { DEFAULT_ERROR_MESSAGE, APPLY_TYPES, BG_LIST, PROCESS_STATUS } from '../special-approval.constants'
+import { APPROVE_NODE_ACTION } from '../../DIIGT/change-scene/special-approval-setting/special-approval-setting.constants'
 
 @Component({
   selector: 'special-approval-view',
@@ -31,7 +32,7 @@ export class ViewComponent implements OnInit {
     applyTypes: APPLY_TYPES,
     statuses: [
       { label: '待审批', value: PROCESS_STATUS.START },
-      { label: '待反馈', value: NODE_ACTION.FEEDBACK },
+      { label: '待反馈', value: APPROVE_NODE_ACTION.FEEDBACK },
       { label: '已完成', value: PROCESS_STATUS.COMPLETED },
       { label: '已退回', value: PROCESS_STATUS.REJECTED },
       { label: '已撤回', value: PROCESS_STATUS.WITHDRAW },
@@ -74,8 +75,8 @@ export class ViewComponent implements OnInit {
       if (processStatus) {
         if (processStatus === PROCESS_STATUS.CANCELLED) {
           params.status = 0
-        } else if (processStatus === NODE_ACTION.FEEDBACK){
-          params.nodeAction = NODE_ACTION.FEEDBACK
+        } else if (processStatus === APPROVE_NODE_ACTION.FEEDBACK){
+          params.nodeAction = APPROVE_NODE_ACTION.FEEDBACK
           params.status = 1
         } else {
           params.processStatus = processStatus
