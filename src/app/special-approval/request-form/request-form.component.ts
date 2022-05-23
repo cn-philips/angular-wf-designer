@@ -345,7 +345,8 @@ export class RequestFormComponent implements OnInit {
     if (
       applyType === APPLY_TYPE.PRODUCTION ||
       applyType === APPLY_TYPE.LOGISTICSCOST ||
-      applyType === APPLY_TYPE.EXT_INSTALL_COST  
+      applyType === APPLY_TYPE.EXT_INSTALL_COST  ||
+      applyType === APPLY_TYPE.NONE_DIRECT_ORDER
     ) {
       this.orderInfo.patchValue({
         products: [{}]
