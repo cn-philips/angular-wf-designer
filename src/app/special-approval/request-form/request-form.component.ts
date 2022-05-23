@@ -112,8 +112,8 @@ export class RequestFormComponent implements OnInit {
     productType: [null], // 产品型号
     bmc: [null, [Validators.required]], // 产品线
     bg: [{ value: null, disabled: true }], // BG
-    cycleGroup: [null, [Validators.required]], // 产品区域-小区
-    bigArea: [null, [Validators.required]], // 产品区域-大区
+    cycleGroup: [null], // 产品区域-小区
+    bigArea: [null], // 产品区域-大区
     businessModel: [null, [Validators.required]], // 业务模式
     hospitalName: [{ value: null, disabled: true }], // 医院名称
     hospitalNo: [{ value: null, disabled: true }], // 医院编号
@@ -155,8 +155,8 @@ export class RequestFormComponent implements OnInit {
       productType: [{ value: null, disabled: true }], // 产品型号
       bmc: [null, [Validators.required]], // 产品线
       bg: [{ value: null, disabled: true }, [Validators.required]], // BG
-      cycleGroup: [null, [Validators.required]], // 产品区域-team
-      bigArea: [null, [Validators.required]], // 产品区域-大区
+      cycleGroup: [null], // 产品区域-team
+      bigArea: [null], // 产品区域-大区
       businessModel: [null, [Validators.required]], // 业务模式
       dealerName: [{ value: null, disabled: true }], // 经销商名称
       dealerCode: [{ value: null, disabled: true }], // 经销商编号
@@ -215,8 +215,8 @@ export class RequestFormComponent implements OnInit {
           productType: [{ value: null, disabled: true }], // 产品型号
           bmc: [null, [Validators.required]], // 产品线
           bg: [{ value: null, disabled: true }, [Validators.required]], // BG
-          cycleGroup: [null, [Validators.required]], // 产品区域-大区
-          bigArea: [null, [Validators.required]], // 产品区域-小区
+          cycleGroup: [null], // 产品区域-大区
+          bigArea: [null], // 产品区域-小区
           businessModel: [null, [Validators.required]], // 业务模式
           dealerName: [{ value: null, disabled: true }], // 经销商名称
           dealerCode: [{ value: null, disabled: true }], // 经销商编号
@@ -239,8 +239,8 @@ export class RequestFormComponent implements OnInit {
           productType: [{ value: null, disabled: true }], // 产品型号
           bmc: [null, [Validators.required]], // 产品线
           bg: [{ value: null, disabled: true }, [Validators.required]], // BG
-          cycleGroup: [null, [Validators.required]], // 产品区域-大区
-          bigArea: [null, [Validators.required]], // 产品区域-小区
+          cycleGroup: [null], // 产品区域-大区
+          bigArea: [null], // 产品区域-小区
           businessModel: [null, [Validators.required]], // 业务模式
           dealerName: [{ value: null, disabled: true }], // 经销商名称
           dealerCode: [{ value: null, disabled: true }], // 经销商编号
@@ -293,6 +293,30 @@ export class RequestFormComponent implements OnInit {
         bigArea,
         smallArea
       })
+    }
+  }
+
+  initProductList(applyType) {
+    if (
+      applyType === APPLY_TYPE.PRODUCTION ||
+      applyType === APPLY_TYPE.LOGISTICSCOST ||
+      applyType === APPLY_TYPE.EXT_INSTALL_COST  
+    ) {
+      this.orderInfo.patchValue({
+        products: [{}]
+      })
+    } else if (applyType === APPLY_TYPE.EXT_WARRANTY) {
+      this.orderInfo.patchValue({
+        products: [{ warranty: { stdWarrantyMonths: this.spService.standWarrantyMonth['PD&IGT'] } }]
+      })
+    } else if (applyType === APPLY_TYPE.MACHINE_EXCHANGE) {
+      const orders = this.changeOrderInfos.get('orders') as FormArray
+      orders.at(0).patchValue({ products: [{}] })
+      orders.at(1).patchValue({ products: [{}] })
+    } else if (applyType === APPLY_TYPE.TRANSFER_LIB) {
+      const orders = this.transferLibInfos.get('orders') as FormArray
+      orders.at(0).patchValue({ products: [{}] })
+      orders.at(1).patchValue({ products: [{}] })
     }
   }
 
@@ -352,6 +376,9 @@ export class RequestFormComponent implements OnInit {
             break;
           default:
             this.orderInfo.patchValue({ bg });
+        }
+        if (bg === 'PD&IGT') {
+          this.initProductList(type)
         }
       }
       this.pageLoading = false;
@@ -427,6 +454,7 @@ export class RequestFormComponent implements OnInit {
     if (type === APPLY_TYPE.EXT_WARRANTY) {
       this.orderInfo.controls.applyArrivalTime.clearValidators();
       this.orderInfo.controls.expectedPaymentDate.clearValidators();
+      this.orderInfo.controls.expectedSaleDate.clearValidators();
       this.orderInfo.controls.om.clearValidators();
       if (item === 'sp_warranty_apply_item_5') {
         this.basicInfo.controls.applyItemDesc.setValidators([Validators.required]);
