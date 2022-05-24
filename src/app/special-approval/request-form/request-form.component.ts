@@ -504,6 +504,7 @@ export class RequestFormComponent implements OnInit {
   }
 
   public setFormValidators(type, item, bg) {
+    let clearedFields
     switch(type) {
       case APPLY_TYPE.EXT_WARRANTY:
         clearedFields = ['applyArrivalTime', 'expectedPaymentDate']
