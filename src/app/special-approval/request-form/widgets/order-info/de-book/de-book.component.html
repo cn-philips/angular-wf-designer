@@ -21,30 +21,30 @@
     >
       <thead>
       <tr>
-        <th nzWidth="200px">产品型号</th>
+        <th nzWidth="200px" *ngIf="false">产品型号</th>
         <th nzWidth="150px">产品线</th>
         <th nzWidth="150px">BG(Modality)</th>
         <th nzWidth="300px">销售区域</th>
         <th nzWidth="180px">业务模式</th>
-        <th nzWidth="250px">产品型号</th>
         <th nzWidth="300px">医院编号</th>
         <th nzWidth="400px">医院名称</th>
-        <th nzWidth="200px">SAP 订单号(SO#)</th>
-        <th nzWidth="150px">订单WBS#</th>
         <th nzWidth="150px">进单日期</th>
         <th nzWidth="150px">合同金额</th>
         <th nzWidth="120px">币制</th>
         <th nzWidth="150px">De-Book原因</th>
-        <th nzWidth="250px">Remark</th>
+        <th nzWidth="150px">Remark</th>
+        <th nzWidth="200px">SAP 订单号(SO#)</th>
+        <th nzWidth="250px">产品型号</th>
+        <th nzWidth="150px">订单WBS#</th>
 <!--        <th nzWidth="150px" nzRight="0px">Action</th>-->
       </tr>
       </thead>
       <tbody>
         <tr *ngFor="let data of formValues.value;let index = index">
-          <td>
+          <td *ngIf="false">
             <nz-form-item>
               <nz-form-control>
-                <input nz-input [(ngModel)]="data.projectName" [disabled]="!editable" />
+                <input nz-input [(ngModel)]="data.productType" [disabled]="!editable" />
               </nz-form-control>
             </nz-form-item>
           </td>
@@ -54,6 +54,9 @@
                 <nz-select [(ngModel)]="data.bmc" style="width: 100%;" [disabled]="!editable" (ngModelChange)="onBmcChange(data)" required>
                   <nz-option *ngFor="let item of bmcList" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
                 </nz-select>
+                <nz-form-explain class="error-msg" *ngIf="!data.bmc">
+                  请选择产品线
+                </nz-form-explain>
               </nz-form-control>
             </nz-form-item>
           </td>
@@ -64,9 +67,7 @@
                 <!--                <nz-option *ngFor="let item of selectOptions.orderTypes" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>-->
                 <!--              </nz-select>-->
                 <input nz-input [(ngModel)]="data.bg" disabled />
-                <nz-form-explain class="error-msg" *ngIf="!data.bg">
-                  请选择bg
-                </nz-form-explain>
+
               </nz-form-control>
             </nz-form-item>
           </td>
@@ -79,9 +80,6 @@
                 <nz-select style="width: 48%;" [(ngModel)]="data.bigArea" [disabled]="!editable" required>
                   <nz-option *ngFor="let item of spService.cycleGroupBigAreaMap[data.cycleGroup]" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
                 </nz-select>
-                <nz-form-explain class="error-msg" *ngIf="!(data.cycleGroup && data.bigArea)">
-                  请选择销售区域
-                </nz-form-explain>
               </nz-form-control>
             </nz-form-item>
           </td>
@@ -97,17 +95,11 @@
               </nz-form-control>
             </nz-form-item>
           </td>
+
           <td>
             <nz-form-item>
               <nz-form-control>
-                <input nz-input [(ngModel)]="data.productType" [disabled]="!editable" required/>
-              </nz-form-control>
-            </nz-form-item>
-          </td>
-          <td>
-            <nz-form-item>
-              <nz-form-control>
-                <input nz-input [(ngModel)]="data.hospitalNo" [disabled]="!editable" />
+                <input nz-input [(ngModel)]="data.hospitalNo" [disabled]="true" />
               </nz-form-control>
             </nz-form-item>
           </td>
@@ -123,7 +115,7 @@
 
                 <ng-template #selectHospitalBtn>
                   <i *ngIf="data.hospitalLoading" nz-icon nzType="loading" nzTheme="outline"></i>
-                  <button nz-button nzType="primary" class="ml-md" (click)="onShowSelectHospitalModal(data)">选择医院</button>
+                  <button nz-button nzType="primary" class="ml-md" (click)="onShowSelectHospitalModal(data)" [disabled]="!editable">选择医院</button>
                 </ng-template>
 
                 <nz-form-explain class="error-msg">
@@ -140,26 +132,6 @@
                   </ng-container>
                 </nz-form-explain>
               </nz-form-control>
-            </nz-form-item>
-          </td>
-          <td>
-            <nz-form-item>
-              <nz-form-control>
-                <input nz-input [(ngModel)]="data.sapOrderNo" [disabled]="!editable" required/>
-              </nz-form-control>
-              <nz-form-explain class="error-msg" *ngIf="!data.sapOrderNo">
-                请输入SAP No
-              </nz-form-explain>
-            </nz-form-item>
-          </td>
-          <td>
-            <nz-form-item>
-              <nz-form-control>
-                <input nz-input [(ngModel)]="data.wbsNo" [disabled]="!editable" required/>
-              </nz-form-control>
-              <nz-form-explain class="error-msg" *ngIf="!data.wbsNo">
-                请输入WBS No
-              </nz-form-explain>
             </nz-form-item>
           </td>
           <td>
@@ -219,10 +191,44 @@
                     style="width: 120px"
                     nz-input
                     nz-tooltip
+                    [disabled]="!editable"
                     [ngModel]="data.remark"
                   />
                 </nz-tooltip>
               </nz-form-control>
+            </nz-form-item>
+          </td>
+          <td>
+            <nz-form-item>
+              <nz-form-control>
+                <input nz-input [(ngModel)]="data.sapOrderNo" [disabled]="!editable" required/>
+              </nz-form-control>
+              <nz-form-explain class="error-msg" *ngIf="!data.sapOrderNo">
+                请输入SAP No
+              </nz-form-explain>
+            </nz-form-item>
+          </td>
+          <td>
+            <nz-form-item>
+              <nz-form-control>
+                <input nz-input *ngIf=" data.bg !== 'US'" [(ngModel)]="data.productType1" [disabled]="!editable"  required/>
+                <nz-select *ngIf="data.bg === 'US'" [(ngModel)]="data.productType1" style="width: 100%;" (ngModelChange)="onProductChange($event, data)" [disabled]="!editable" nzMode="multiple" required >
+                  <nz-option *ngFor="let item of usProductList" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+                </nz-select>
+                <nz-form-explain class="error-msg" *ngIf="!data.productType1">
+                  请填写产品型号
+                </nz-form-explain>
+              </nz-form-control>
+            </nz-form-item>
+          </td>
+          <td>
+            <nz-form-item>
+              <nz-form-control>
+                <input nz-input [(ngModel)]="data.wbsNo" [disabled]="!editable" required/>
+              </nz-form-control>
+              <nz-form-explain class="error-msg" *ngIf="!data.wbsNo">
+                请输入WBS No
+              </nz-form-explain>
             </nz-form-item>
           </td>
 <!--          <td nzRight="0px">-->

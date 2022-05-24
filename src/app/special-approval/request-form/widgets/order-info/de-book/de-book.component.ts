@@ -10,16 +10,16 @@ import {NzMessageService} from 'ng-zorro-antd';
 import {HttpService} from '../../../../../services';
 import {FormGroup} from '@angular/forms';
 import {Hospital, SelectHospitalComponent} from '../../select-hospital/select-hospital.component';
-
+import * as moment from 'moment'
 
 const excelKeyMap = {
-  项目名称: "projectName",
+  项目名称: "productType",
   产品线: "bmc",
   'BG(Modality)': "bg",
   '销售区域-team': "cycleGroup",
   '销售区域-大区': "bigArea",
   业务模式: "businessModel",
-  产品型号: "productType",
+  产品型号: "productType1",
   医院编号: "hospitalNo",
   医院名称: "hospitalName",
   "SAP 订单号（SO#）": "sapOrderNo",
@@ -27,7 +27,7 @@ const excelKeyMap = {
   进单日期: "orderDate",
   合同金额: "orderAmount",
   币制: "currency",
-  'De-Book原因': "debookReason",
+  'De-Book原因': "deBookReason",
   'Remark': "remark",
 };
 @Component({
@@ -68,6 +68,10 @@ export class DeBookComponent implements OnInit {
     return this.spService.bmcList
   }
 
+  get usProductList(){
+    return this.spService.usProductList
+  }
+
   debookReasonList = [
     { label: '资金问题', value: '资金问题' },
     { label: '在建新大楼', value: '在建新大楼' },
@@ -96,8 +100,6 @@ export class DeBookComponent implements OnInit {
       // const header = this.get
       const results = utils.sheet_to_json(worksheet);
       console.log(results);
-      let mainOrder = null
-      let subProductTypes = []
       const data = results.map((order, index) => {
         const orderInfo = Object.keys(order).reduce((calc, cur) => {
           calc[excelKeyMap[cur.trim()]] = order[cur]
@@ -105,50 +107,24 @@ export class DeBookComponent implements OnInit {
         }, {}) as any
         console.log(orderInfo)
         const {
-          productName, bg, bmc, cycleGroup, bigArea, businessModel, productType,
+          productType, bg, bmc, cycleGroup, bigArea, businessModel, productType1,
          hospitalName, hospitalNo, sapOrderNo, wbsNo, orderDate, orderAmount, currency, deBookReason, remark
         } = orderInfo
-        // if (bmc) { this.onBmcChange(orderInfo) }
+        if (bmc) { this.onBmcChange(orderInfo) }
         if (businessModel) {
           const model = BUSINESS_MODEL_LIST.find(({ label }) => label === businessModel)
           orderInfo.businessModel = model.value
         }
-        if (
-          productName || bg || bmc || businessModel || currency || cycleGroup ||
-           hospitalName || hospitalNo || bigArea || orderAmount || wbsNo || productType || deBookReason ||
-          orderDate || sapOrderNo || index === 0
-        ) {
-          // if (mainOrder) {
-          //   mainOrder.productType = subProductTypes.join(';')
-          // }
-          subProductTypes = []
-          mainOrder = orderInfo
-        } else {
-          orderInfo.parent = mainOrder
+        if (orderDate) {
+          orderInfo.orderDate = moment(orderDate).utc().format('YYYY-MM-DD')
         }
-        // if (subProductType && subProductType.trim()) {
-        //   subProductTypes.push(subProductType)
-        // }
-        // if (exchangeableOrder === '是') {
-        //   orderInfo.exchangeableOrder = 1
-        // } else if(exchangeableOrder === '否') {
-        //   orderInfo.exchangeableOrder = 0
-        // }
-        //
-        // if (hospitalName) {
-        //   this.checkImportedHospital(orderInfo)
-        // }
-        // if (dealerName) {
-        //   this.checkImportedDealer(orderInfo)
-        // }
-        // if (exchangeableHospitalName) {
-        //   this.checkImportedHospital(orderInfo, true)
-        // }
+
+      if ( productType1.length > 0) {
+        orderInfo.productType = productType1.join(';')
+      }
         return orderInfo
       })
-      if (subProductTypes.length > 0) {
-        mainOrder.productType = subProductTypes.join(';')
-      }
+
       this.formValues.patchValue(data)
       // this.isTableValid()
       this.message.success('导入成功')
@@ -161,6 +137,7 @@ export class DeBookComponent implements OnInit {
     const bmc = this.spService.bmcList.find(({ value }) => value === order.bmc);
     if (bmc) {
       order.bg = bmc.bg;
+      order.productType = null
     }
   }
 
@@ -189,13 +166,13 @@ export class DeBookComponent implements OnInit {
     this.formValues.patchValue([
       ...this.formValues.value,
       {
-        productName: null,
+        productType: null,
         bmc: null,
         bg: null,
         cycleGroup: null,
         bigArea: null,
         businessModel: null,
-        productType: null,
+        productType1: null,
         sapOrderNo: null,
         wbsNo: null,
         item: null,
@@ -216,14 +193,14 @@ export class DeBookComponent implements OnInit {
     let hasError = false
     this.formValues.value.forEach((order) => {
       const {
-        productName, bg, bmc, cycleGroup, bigArea, businessModel, productType,
+        productType, bg, bmc, businessModel, productType1,
         hospitalName, hospitalNo, sapOrderNo, wbsNo, orderDate, orderAmount, currency, deBookReason, remark
       } = order
 
       console.log(order)
-        if (!(bg && bmc && cycleGroup && bigArea &&
-          businessModel && productType && sapOrderNo && wbsNo && orderDate &&
-          orderAmount && currency && hospitalNo && hospitalName && deBookReason && productName
+        if (!(bg && bmc &&
+          businessModel && productType1 && sapOrderNo && wbsNo && orderDate &&
+          orderAmount && currency && hospitalNo && hospitalName && deBookReason && productType
         )) {
           hasError = true
         }
@@ -232,4 +209,7 @@ export class DeBookComponent implements OnInit {
     return !hasError
   }
 
+  onProductChange(vals: [], order) {
+    order.projectName = vals.join(';');
+  }
 }

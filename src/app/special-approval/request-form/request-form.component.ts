@@ -48,6 +48,8 @@ export class RequestFormComponent implements OnInit {
   @ViewChild('rddOitOrderInfo') public rddOitOrderInfo: RddOitOrderInfoComponent;
   @ViewChild('machineExchange') public machineExchange: MachineComponent;
 
+  @ViewChild('deBookOrderInfo') public deBookInfo: DeBookComponent;
+
   isSupplementNode = false
 
   public pageTitle: string;
@@ -507,6 +509,7 @@ export class RequestFormComponent implements OnInit {
   }
 
   public setFormValidators(type, item, bg) {
+    let clearedFields
     switch(type) {
       case APPLY_TYPE.EXT_WARRANTY:
         clearedFields = ['applyArrivalTime', 'expectedPaymentDate']
@@ -756,28 +759,29 @@ export class RequestFormComponent implements OnInit {
         let saps = []
         deBookOrderInfos.forEach((debookOrderInfo) => {
           const {
-            productName, bg, bmc, cycleGroup, bigArea, businessModel, productType,
+            productType, bg, bmc, cycleGroup, bigArea, businessModel, productType1,
             hospitalName, hospitalNo, sapOrderNo, wbsNo, orderDate, orderAmount, currency, deBookReason, remark
           } = debookOrderInfo;
 
           const product = {
-            productType, wbsNo,
+            productType: productType1,
+            wbsNo: wbsNo,
           }
           const order = {
             ...debookOrderInfo,
-            products: [product]
+            products: []
           }
           if (!saps.includes(sapOrderNo)) {
             saps.push(sapOrderNo)
-          } else {
-            data.orderInfos.find(value => value.sapOrderNo === sapOrderNo)
             order.products.push(product)
+            data.orderInfos.push(order)
+          } else {
+          const debookorder = data.orderInfos.filter(value => value.sapOrderNo === sapOrderNo)
+            debookorder[0].products.push(product)
           }
-
-        data.orderInfos.push(order)
-        console.log(data.orderInfos)
       })
-      break
+        console.log(data.orderInfos)
+        break
     }
     return data;
   }
@@ -940,8 +944,6 @@ export class RequestFormComponent implements OnInit {
         break
       case APPLY_TYPE.DE_BOOK:
         if (!this.deBookInfo.isTableValid()) {
-          console.log(!this.deBookInfo.isTableValid())
-          console.log('123123')
           this.message.error('请按要求填写订单信息')
           return
         } else {
@@ -1185,9 +1187,19 @@ export class RequestFormComponent implements OnInit {
         });
         this.setFormValidators(applyType, applyItem, orderInfos[0].bg)
       } else if (applyType === APPLY_TYPE.DE_BOOK) {
+        let debooks = []
+        orderInfos.map( (order) => {
+          order.products.map( ({ wbsNo, productType }) => {
+              debooks.push({
+                ...order,
+                wbsNo: wbsNo,
+                productType1: productType,
+              })
+          })
+        })
         this.formValues.patchValue({
             deBookOrderInfos:[
-              ...orderInfos
+              ...debooks
             ]
         })
         console.log(this.deBookOrderInfos.value)
