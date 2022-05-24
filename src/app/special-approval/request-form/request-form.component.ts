@@ -47,7 +47,6 @@ export class RequestFormComponent implements OnInit {
 
   @ViewChild('rddOitOrderInfo') public rddOitOrderInfo: RddOitOrderInfoComponent;
   @ViewChild('machineExchange') public machineExchange: MachineComponent;
-  @ViewChild('deBookOrderInfo') public deBookInfo: DeBookComponent;
 
   isSupplementNode = false
 
@@ -116,8 +115,8 @@ export class RequestFormComponent implements OnInit {
     productType: [null], // 产品型号
     bmc: [null, [Validators.required]], // 产品线
     bg: [{ value: null, disabled: true }], // BG
-    cycleGroup: [null, [Validators.required]], // 产品区域-小区
-    bigArea: [null, [Validators.required]], // 产品区域-大区
+    cycleGroup: [null], // 产品区域-小区
+    bigArea: [null], // 产品区域-大区
     businessModel: [null, [Validators.required]], // 业务模式
     hospitalName: [{ value: null, disabled: true }], // 医院名称
     hospitalNo: [{ value: null, disabled: true }], // 医院编号
@@ -201,8 +200,8 @@ export class RequestFormComponent implements OnInit {
       productType: [{ value: null, disabled: true }], // 产品型号
       bmc: [null, [Validators.required]], // 产品线
       bg: [{ value: null, disabled: true }, [Validators.required]], // BG
-      cycleGroup: [null, [Validators.required]], // 产品区域-team
-      bigArea: [null, [Validators.required]], // 产品区域-大区
+      cycleGroup: [null], // 产品区域-team
+      bigArea: [null], // 产品区域-大区
       businessModel: [null, [Validators.required]], // 业务模式
       dealerName: [{ value: null, disabled: true }], // 经销商名称
       dealerCode: [{ value: null, disabled: true }], // 经销商编号
@@ -261,8 +260,8 @@ export class RequestFormComponent implements OnInit {
           productType: [{ value: null, disabled: true }], // 产品型号
           bmc: [null, [Validators.required]], // 产品线
           bg: [{ value: null, disabled: true }, [Validators.required]], // BG
-          cycleGroup: [null, [Validators.required]], // 产品区域-大区
-          bigArea: [null, [Validators.required]], // 产品区域-小区
+          cycleGroup: [null], // 产品区域-大区
+          bigArea: [null], // 产品区域-小区
           businessModel: [null, [Validators.required]], // 业务模式
           dealerName: [{ value: null, disabled: true }], // 经销商名称
           dealerCode: [{ value: null, disabled: true }], // 经销商编号
@@ -285,8 +284,8 @@ export class RequestFormComponent implements OnInit {
           productType: [{ value: null, disabled: true }], // 产品型号
           bmc: [null, [Validators.required]], // 产品线
           bg: [{ value: null, disabled: true }, [Validators.required]], // BG
-          cycleGroup: [null, [Validators.required]], // 产品区域-大区
-          bigArea: [null, [Validators.required]], // 产品区域-小区
+          cycleGroup: [null], // 产品区域-大区
+          bigArea: [null], // 产品区域-小区
           businessModel: [null, [Validators.required]], // 业务模式
           dealerName: [{ value: null, disabled: true }], // 经销商名称
           dealerCode: [{ value: null, disabled: true }], // 经销商编号
@@ -341,6 +340,31 @@ export class RequestFormComponent implements OnInit {
         bigArea,
         smallArea
       })
+    }
+  }
+
+  initProductList(applyType) {
+    if (
+      applyType === APPLY_TYPE.PRODUCTION ||
+      applyType === APPLY_TYPE.LOGISTICSCOST ||
+      applyType === APPLY_TYPE.EXT_INSTALL_COST  ||
+      applyType === APPLY_TYPE.NONE_DIRECT_ORDER
+    ) {
+      this.orderInfo.patchValue({
+        products: [{}]
+      })
+    } else if (applyType === APPLY_TYPE.EXT_WARRANTY) {
+      this.orderInfo.patchValue({
+        products: [{ warranty: { stdWarrantyMonths: this.spService.standWarrantyMonth['PD&IGT'] } }]
+      })
+    } else if (applyType === APPLY_TYPE.MACHINE_EXCHANGE) {
+      const orders = this.changeOrderInfos.get('orders') as FormArray
+      orders.at(0).patchValue({ products: [{}] })
+      orders.at(1).patchValue({ products: [{}] })
+    } else if (applyType === APPLY_TYPE.TRANSFER_LIB) {
+      const orders = this.transferLibInfos.get('orders') as FormArray
+      orders.at(0).patchValue({ products: [{}] })
+      orders.at(1).patchValue({ products: [{}] })
     }
   }
 
@@ -400,6 +424,9 @@ export class RequestFormComponent implements OnInit {
             break;
           default:
             this.orderInfo.patchValue({ bg });
+        }
+        if (bg === 'PD&IGT') {
+          this.initProductList(type)
         }
       }
       this.pageLoading = false;
@@ -483,6 +510,7 @@ export class RequestFormComponent implements OnInit {
     if (type === APPLY_TYPE.EXT_WARRANTY) {
       this.orderInfo.controls.applyArrivalTime.clearValidators();
       this.orderInfo.controls.expectedPaymentDate.clearValidators();
+      this.orderInfo.controls.expectedSaleDate.clearValidators();
       this.orderInfo.controls.om.clearValidators();
       if (item === 'sp_warranty_apply_item_5') {
         this.basicInfo.controls.applyItemDesc.setValidators([Validators.required]);
@@ -709,6 +737,18 @@ export class RequestFormComponent implements OnInit {
           }
         ];
         break;
+      case APPLY_TYPE.NONE_DIRECT_ORDER:
+        data.orderInfos = [
+          {
+            ...this.requestInfo.orderInfos[0],
+            ...orderInfo,
+            applyArrivalTime: applyArrivalTime ? moment(applyArrivalTime).format('YYYY-MM-DD') : null,
+            expectedPaymentDate: expectedPaymentDate ? moment(expectedPaymentDate).format('YYYY-MM-DD') : null,
+            expectedSaleDate: expectedSaleDate ? moment(expectedSaleDate).format('YYYY-MM-DD') : null,
+            products: products.map(({ productType, wbsNo, itemNo, quantity }) => ({ productType, wbsNo, itemNo, quantity }))
+          }
+        ];
+        break;
 
       case APPLY_TYPE.DE_BOOK:
         data.orderInfos = []
@@ -738,7 +778,7 @@ export class RequestFormComponent implements OnInit {
       })
       break
     }
-    return data
+    return data;
   }
 
   // 设置页面是否可编辑, 满足以下情况可编辑
@@ -1031,7 +1071,7 @@ export class RequestFormComponent implements OnInit {
         },
       })
       this.requestInfo.orderInfos = orderInfos
-      if (applyType === APPLY_TYPE.PRODUCTION || applyType === APPLY_TYPE.EXT_WARRANTY || applyType === APPLY_TYPE.LOGISTICSCOST || applyType === APPLY_TYPE.EXT_INSTALL_COST || applyType === APPLY_TYPE.SPECIAL_DELIVERY ) {
+      if (applyType === APPLY_TYPE.PRODUCTION || applyType === APPLY_TYPE.EXT_WARRANTY || applyType === APPLY_TYPE.LOGISTICSCOST || applyType === APPLY_TYPE.EXT_INSTALL_COST || applyType === APPLY_TYPE.SPECIAL_DELIVERY || applyType===APPLY_TYPE.NONE_DIRECT_ORDER ) {
         this.formValues.patchValue({
           orderInfo: {
             ...orderInfos[0],
@@ -1199,7 +1239,7 @@ export class RequestFormComponent implements OnInit {
             this.isSupplementNode = true
             break
           case APPROVE_NODE_ACTION.FEEDBACK:
-            this.showFeedbackTab = this.isApplicant
+            this.showFeedbackTab = true
             break
           default:
             this.showApproveTab = true
@@ -1327,7 +1367,7 @@ export class RequestFormComponent implements OnInit {
   // 校验产品列表
   // 特批开始生产、物流运输、额外安装费用及其他售后费用  验证产品列表不能为空
   public verifyProduct() {
-    if (this.applyType === APPLY_TYPE.PRODUCTION || this.applyType === APPLY_TYPE.EXT_INSTALL_COST || this.applyType === APPLY_TYPE.LOGISTICSCOST) {
+    if (this.applyType === APPLY_TYPE.PRODUCTION || this.applyType === APPLY_TYPE.EXT_INSTALL_COST || this.applyType === APPLY_TYPE.LOGISTICSCOST || this.applyType === APPLY_TYPE.NONE_DIRECT_ORDER) {
       const orderInfo = this.formValues.getRawValue().orderInfo;
       if (orderInfo && orderInfo.bg && orderInfo.bg.toLowerCase() === 'cc') {
         return true;

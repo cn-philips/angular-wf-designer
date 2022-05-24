@@ -75,6 +75,7 @@
         <special-approval-specialdelivery-order-info *ngIf="applyType === APPLY_TYPE.SPECIAL_DELIVERY"
                                                      [editable]="editable" [basicInfo]="basicInfo" [formValues]="orderInfo">
         </special-approval-specialdelivery-order-info>
+        <special-approval-none-direct-order-info *ngIf="applyType === APPLY_TYPE.NONE_DIRECT_ORDER" [editable]="editable" [formValues]="orderInfo"></special-approval-none-direct-order-info>
       </div>
     </ng-template>
   </ngb-tab>

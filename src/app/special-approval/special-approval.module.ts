@@ -30,14 +30,16 @@ import { WarrantyOrderInfoComponent } from "./request-form/widgets/order-info/wa
 import { TransportationOrderInfoComponent } from "./request-form/widgets/order-info/transportation/transportation.component";
 import { MachineComponent } from "./request-form/widgets/order-info/machine/machine.component";
 import { AdditionalInstallationCostComponent } from "./request-form/widgets/order-info/additional-installation-cost/additional-installation-cost.component";
-import { TransferLibComponent } from './request-form/widgets/order-info/transfer-lib/transfer-lib.component'
-import { ExchangeInfoComponent } from './request-form/widgets/exchange-info/exchange-info.component'
-import { DifferenceAndCostInfoComponent } from './request-form/widgets/difference-and-cost-info/difference-and-cost-info.component'
+import { TransferLibComponent } from './request-form/widgets/order-info/transfer-lib/transfer-lib.component';
+import { ExchangeInfoComponent } from './request-form/widgets/exchange-info/exchange-info.component';
+import { DifferenceAndCostInfoComponent } from './request-form/widgets/difference-and-cost-info/difference-and-cost-info.component';
 import { LcAmendmentOrderInfoComponent } from "./request-form/widgets/order-info/lc-amendment/lc-amendment.component";
 import { RddOitOrderInfoComponent } from "./request-form/widgets/order-info/rdd-oit/rdd-oit.component";
 import { CancelOrderComponent } from "./request-form/widgets/order-info/cancel-order/cancel-order.component";
-import { SpecialDeliveryOrderInfoComponent } from './request-form/widgets/order-info/special-delivery/special-delivery.component'
+import { SpecialDeliveryOrderInfoComponent } from './request-form/widgets/order-info/special-delivery/special-delivery.component';
+import { NoNedirectOrderInfoComponent } from './request-form/widgets/order-info/none-direct-order/none-direct-order.component';
 import { DeBookComponent } from './request-form/widgets/order-info/de-book/de-book.component';
+
 
 const COMPONENTS = [
   ApprovedComponent,
@@ -76,6 +78,7 @@ const WIDGETS = [
   DifferenceAndCostInfoComponent,
   CancelOrderComponent,
   SpecialDeliveryOrderInfoComponent,
+  NoNedirectOrderInfoComponent,
   DeBookComponent,
 ];
 

@@ -60,7 +60,7 @@ interface Sales {
 export class TransferLibComponent implements OnInit {
 
   constructor(
-    private spService: SpecialApprovalService,
+    protected spService: SpecialApprovalService,
     private http: HttpService,
     private message: NzMessageService,
 
