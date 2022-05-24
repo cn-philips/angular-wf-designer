@@ -137,7 +137,6 @@ export class DeBookComponent implements OnInit {
     const bmc = this.spService.bmcList.find(({ value }) => value === order.bmc);
     if (bmc) {
       order.bg = bmc.bg;
-      order.productType = null
     }
   }
 

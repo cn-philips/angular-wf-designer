@@ -762,7 +762,9 @@ export class RequestFormComponent implements OnInit {
             productType, bg, bmc, cycleGroup, bigArea, businessModel, productType1,
             hospitalName, hospitalNo, sapOrderNo, wbsNo, orderDate, orderAmount, currency, deBookReason, remark
           } = debookOrderInfo;
-
+          if (!debookOrderInfo.productType) {
+            debookOrderInfo.productType = productType1
+          }
           const product = {
             productType: productType1,
             wbsNo: wbsNo,
