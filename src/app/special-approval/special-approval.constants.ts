@@ -61,6 +61,8 @@ const APPLY_TYPE = {
   SPECIAL_DELIVERY:"delivery", //特批发货
   NONE_DIRECT_ORDER:"nonedirectorder",//非直销订单按直销方式确认收入
   DE_BOOK: "debook",
+  ORDER_REPLACEMENT:'orderreplacement', // 订单替换
+
 }
 
 const APPLY_TYPE_MAP = {
@@ -76,6 +78,8 @@ const APPLY_TYPE_MAP = {
   [APPLY_TYPE.CANCEL_ORDER]: { label: "Cancel Order申请", dictGroup: 'sp_cancelorder_apply_item' },
   [APPLY_TYPE.SPECIAL_DELIVERY]: { label: "特批发货", dictGroup: 'sp_delivery_apply_item' },
   [APPLY_TYPE.NONE_DIRECT_ORDER]:{label: "非直销订单按直销方式确认收入", dictGroup: 'sp_nonedirectorder_apply_item'},
+  [APPLY_TYPE.ORDER_REPLACEMENT]: { label: "订单替换", dictGroup: 'sp_orderreplacement_apply_item' },
+
 };
 
 
@@ -92,6 +96,7 @@ const APPLY_TYPES = [
   { label: "Cancel Order申请", value: APPLY_TYPE.CANCEL_ORDER },
   { label: "特批发货", value: APPLY_TYPE.SPECIAL_DELIVERY },
   {label: "非直销订单按直销方式确认收入", value: APPLY_TYPE.NONE_DIRECT_ORDER},
+  { label: "订单替换", value: APPLY_TYPE.ORDER_REPLACEMENT },
 ];
 
 const STAND_WARRANTY_MONTH = {

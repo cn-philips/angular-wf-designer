@@ -33,7 +33,8 @@ enum TAB_TYPE {
   APPROVE_HISTORY = 'approve-history',
   FEEDBACK = 'feedback',
   EXCHANGE_INFO = 'exchange-info',
-  DIFFERENCE_AND_COST_INFO = 'difference-and-cost-info'
+  DIFFERENCE_AND_COST_INFO = 'difference-and-cost-info',
+  SUPPLEMENT_INFO = 'supplement-info',
 }
 
 @Component({
@@ -143,7 +144,7 @@ export class RequestFormComponent implements OnInit {
   public cancelOrderInit = {
     orderType: [null, [Validators.required]], // 订单类型
     referenceId: [null], // Reference Id
-    productType: [{ value: null, disabled: true }], // 产品型号
+    productType: [null ], // 产品型号
     bmc: [null, [Validators.required]], // 产品线
     bg: [{ value: null, disabled: true }, [Validators.required]], // BG
     cycleGroup: [null, [Validators.required]], // 产品区域-team
@@ -159,26 +160,35 @@ export class RequestFormComponent implements OnInit {
     currency: [null, [Validators.required]], // 合同金额-货币
     om: [null, [Validators.required]], // OM
     orderDate: [null, [Validators.required]], // 进单日期
-    isDebook: [1, [Validators.required]], // 是否De-book
+    deBook: ['1', [Validators.required]], // 是否De-book
     orderInfoStatus: this.fb.group({   // 订单状态信息
       id: [null],
       spApplyOrderId: [null], // (关联的字段)
-      startProduction: [0, [Validators.required]], //是否开始生产
-      orderCancelAmountProduction: [null], // 订单取消的额外费用-生产
-      shipped: [0, [Validators.required]], // 是否已发货
-      orderCancelAmountShipped: [null], // 订单取消的额外费用-国际国内段运输仓储费用
-      thirdPartyProcurement: [0, [Validators.required]], // 是否有第三方采购
-      orderCancelAmountPurchase: [null], // 订单取消的额外费用-第三方采购
-      seenSite: [0, [Validators.required]], // 是否看过场地
-      orderCancelAmountSite: [null], // 订单取消的额外费用-场地相关
-      advanceChargeStatus: [0, [Validators.required]], // 预付款状态
-      advanceChargeAmount: [null], // 预付款金额
-      orderActualAmount: [null], // 订单实际发生费用
-      refundAmount: [null], // 退款金额
+      startProduction: ['0'], //是否开始生产 required
+      orderCancelAmountProduction: [null], // 订单取消的额外费用-生产 
+      shipped: ['0'], // 是否已发货 required
+      orderCancelAmountShipped: [null], // 订单取消的额外费用-国际国内段运输仓储费用 
+      thirdPartyProcurement: ['0'], // 是否有第三方采购 required
+      orderCancelAmountPurchase: [null], // 订单取消的额外费用-第三方采购 
+      seenSite: ['0'], // 是否看过场地 required
+      orderCancelAmountSite: [null], // 订单取消的额外费用-场地相关 
+      advanceChargeStatus: ['0'], // 预付款状态 required
+      advanceChargeAmount: [null], // 预付款金额 
+      orderActualAmount: [null], // 订单实际发生费用 
+      refundAmount: [null], // 退款金额 
       remark: [null], // 备注
       attachment: [null], // 附件
     })
   };
+
+  // 补充信息节点form数据单独配置
+  public supplementFormValues: FormGroup = this.fb.group({
+    remark: [''], // 备注
+    attachments: [[]], // 支持文件
+    notify: [0], // 是否通知用户
+    notifier: [null], // 通知用户邮箱列表, 字符串, 逗号隔开
+    chatUsers: [[]],
+  })
 
   public formValues = this.fb.group({
     basicInfo: this.fb.group({
@@ -225,6 +235,9 @@ export class RequestFormComponent implements OnInit {
       productSalesMgr: [null], // product sales manager邮箱
       products: [[]],
       arrivalDate: [null], // 到货日期
+      newSapOrderNo: [null], // 新SAP订单号 适用于订单替换
+      newSapCreateTime: [null], // 新SAP订单号创建日期 适用于订单替换
+      createTime: [null], //创建日期
     }),
     rddOitOrderInfos: [[{ isMain: true }]],
     ccInfo: this.fb.group({
@@ -424,6 +437,9 @@ export class RequestFormComponent implements OnInit {
               })
             })
             break;
+          case APPLY_TYPE.CANCEL_ORDER: //cancel order 默认BG
+            this.cancelorderInfo.patchValue({ bg });
+            break
           default:
             this.orderInfo.patchValue({ bg });
         }
@@ -534,7 +550,15 @@ export class RequestFormComponent implements OnInit {
         clearedFields = ['expectedPaymentDate', 'applyArrivalTime', 'expectedSaleDate']
         clearedFields.forEach((fieldName) => this.orderInfo.controls[fieldName].clearValidators())
         break
+      case APPLY_TYPE.CANCEL_ORDER:
+        if (bg == 'CC') {
+          this.cancelorderInfo.controls.productType.clearValidators();
+        } else {
+          this.cancelorderInfo.controls.productType.setValidators([Validators.required]);
+        }
+        break
     }
+
     if (bg === 'PD&IGT') {
       this.orderInfo.controls.referenceId.disable();
       if (type !== APPLY_TYPE.LC_AMENDMENT && type !== APPLY_TYPE.TRANSFER_LIB) {
@@ -805,6 +829,8 @@ export class RequestFormComponent implements OnInit {
       this.formValues.controls.exchangeInfo.disable()
       this.formValues.controls.orderDifferences.disable()
       this.formValues.controls.transferLibOrders.disable()
+      // 添加cancel order disabbled
+      this.formValues.controls.cancelorderInfo.disable()
     }
     this.editable = editable;
   }
@@ -857,6 +883,7 @@ export class RequestFormComponent implements OnInit {
     }
     const data = this.getFormData()
     const { ccType, ccPerson, orderInfos } = data
+    const { businessModel, hospitalNo, dealerCode } = orderInfos[0]
     let hasError = false
     switch(this.applyType) {
       case APPLY_TYPE.RDD_OIT:
@@ -953,7 +980,26 @@ export class RequestFormComponent implements OnInit {
         }
         break
       case APPLY_TYPE.CANCEL_ORDER:
-
+        for (const i in this.cancelorderInfo.controls) {
+          this.cancelorderInfo.controls[i].markAsDirty();
+          this.cancelorderInfo.controls[i].updateValueAndValidity();
+        }
+        const orderInfoStatus =  this.cancelorderInfo.get('orderInfoStatus') as FormGroup;
+        for (const i in orderInfoStatus.controls) {
+          orderInfoStatus.controls[i].markAsDirty();
+          orderInfoStatus.controls[i].updateValueAndValidity();
+        }
+        // 医院和经销商必填一项
+        if (businessModel === BUSINESS_MODEL.DISTRIBUTOR_DEAL) {
+          if (!hospitalNo && !dealerCode) {
+            this.message.error('请选择医院或者经销商')
+            return
+          }
+        } else if(!hospitalNo){
+          this.message.error('请选择医院')
+          return
+        }
+        hasError = this.basicInfo.invalid || this.cancelorderInfo.invalid;
         break
       default:
         for (const i in this.orderInfo.controls) {
@@ -961,7 +1007,7 @@ export class RequestFormComponent implements OnInit {
           this.orderInfo.controls[i].updateValueAndValidity();
         }
         // 医院和经销商必填一项
-        const { businessModel, hospitalNo, dealerCode } = orderInfos[0]
+        // const { businessModel, hospitalNo, dealerCode } = orderInfos[0]
         if (businessModel === BUSINESS_MODEL.DISTRIBUTOR_DEAL) {
           if (!hospitalNo && !dealerCode) {
             this.message.error('请选择医院或者经销商')
@@ -972,6 +1018,7 @@ export class RequestFormComponent implements OnInit {
           return
         }
         hasError = this.basicInfo.invalid || this.orderInfo.invalid
+        break
     }
 
     if (this.applyType === APPLY_TYPE.EXT_WARRANTY) {
@@ -1038,6 +1085,65 @@ export class RequestFormComponent implements OnInit {
       this.message.remove(id);
     }
   }
+
+  //补充信息审批保存
+  public async onApproveSave() {
+    const id = this.message.loading(LOADING_MESSAGE.SAVE_DRAFT, { nzDuration: 0 }).messageId;
+    try {
+      this.submitLoading = true;
+      const formData = this.getFormData();
+      const { remark, attachments, notify, notifier } = this.supplementFormValues.getRawValue()
+      // supplementFormValues
+      const data = {
+        applyId: this.requestId,
+        attachments: attachments,
+        notify,
+        notifier: notify ? notifier.join(','): '',
+        remark,
+        taskInstId: this.taskId,
+        applyInfos: formData
+      }
+      await this.spService.approveSubmitRequest(data);
+      this.message.success(SUCCESS_MESSAGE.SAVE_DRAFT);
+      this.navigateToHomePage();
+    } catch ({ message }) {
+      this.message.error(ERROR_MESSAGE.SAVE_DRAFT);
+      console.error(`保存失败, ${message}`);
+    } finally {
+      this.submitLoading = false;
+      this.message.remove(id);
+    }
+  }
+
+  //补充信息审批操作
+  async onApproveSubmit(action: string){
+      try {
+        const { remark, attachments, notify, notifier } = this.supplementFormValues.getRawValue()
+        const id = this.message.loading(LOADING_MESSAGE.APPROVE, { nzDuration: 0 }).messageId
+        this.submitLoading = true;
+        const formData = this.getFormData();
+        const data = {
+          applyId: this.requestId,
+          attachments: attachments,
+          result: action,
+          notify,
+          notifier: notify ? notifier.join(','): '',
+          remark,
+          taskInstId: this.taskId,
+          applyInfos: formData,
+        }
+        
+        await this.spService.approveRequest(data);
+        this.message.remove(id)
+        this.message.success(SUCCESS_MESSAGE.APPROVE)
+        this.router.navigate(['/special-approval/home'])
+      } catch ({ message }) {
+        this.message.error(ERROR_MESSAGE.APPROVE)
+        console.error(`审批失败, ${message}`);
+      } finally {
+        this.submitLoading = false
+      }
+    }
 
   public async getRequestDetail(requestId) {
     try {
@@ -1251,7 +1357,7 @@ export class RequestFormComponent implements OnInit {
       if (!!this.taskId) {
         switch(nodeAction) {
           case APPROVE_NODE_ACTION.SUPPLEMENT:
-            this.isSupplementNode = true
+            this.isSupplementNode = true;
             break
           case APPROVE_NODE_ACTION.FEEDBACK:
             this.showFeedbackTab = true
