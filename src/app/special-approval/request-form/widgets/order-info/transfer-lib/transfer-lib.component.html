@@ -86,7 +86,7 @@
             </div>
             <div nz-col nzSpan="24">
               <nz-form-item class="order-list-normal-label">
-                <nz-form-label nzRequired>OM</nz-form-label>
+                <nz-form-label>OM</nz-form-label>
               </nz-form-item>
             </div>
 
@@ -322,9 +322,6 @@
                   <nz-select formControlName="om" [nzPlaceHolder]="editable ? '请选择OM' : ''">
                     <nz-option *ngFor="let item of selectOptions.oms" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
                   </nz-select>
-                  <nz-form-explain *ngIf="ord.get('om')?.dirty && ord.get('om')?.errors">
-                    请选择OM
-                  </nz-form-explain>
                 </nz-form-control>
               </nz-form-item>
             </div>
