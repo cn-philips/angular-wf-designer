@@ -24,7 +24,7 @@ export class DistributorListComponent implements OnInit {
     total: 0,
     pageNo: 1,
     pageSize: 5,
-    agreementNo:"", //协议号 
+    agreementNo:"", //协议号
     dealerCode:"", //经销code
     dealerName:"", //经销商名称
     selectName:"", //当前选中
@@ -48,7 +48,7 @@ export class DistributorListComponent implements OnInit {
   {
     this.pageParam.pageNo = index;
     this.agentInit()
-  
+
   }
   //分页页码参数pageSize
   changePageSize(index)
@@ -57,7 +57,7 @@ export class DistributorListComponent implements OnInit {
     this.agentInit()
   }
   //代理商单选事件
-  agentChange(index){ 
+  agentChange(index){
     this.agentDatas.map((res,i)=>{
          res.radio=index==i?true:false;
     })
@@ -79,8 +79,8 @@ export class DistributorListComponent implements OnInit {
       return arr;
   }
   agentInit() {
-    //经销用户列表  
-    this.loading=true; 
+    //经销用户列表
+    this.loading=true;
     this.http.post(`/act/preparation/getDealersOnlyWithRegFlag`, this.pageParam).subscribe((rest => {
       if (rest.code === '0000') {
         this.loading=false;
@@ -93,6 +93,11 @@ export class DistributorListComponent implements OnInit {
     }), (error => {
       this.message.create("error", "请求异常")
     }));
+  }
+
+  searchClick() {
+    this.pageParam.pageNo = 1;
+    this.agentInit();
   }
 
 }
