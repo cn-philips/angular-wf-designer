@@ -311,9 +311,7 @@ export class CancelOrderComponent implements OnInit {
   }
 
   //打开url
-  // 打开SharePoint链接
   openLink(url) {
-    console.log("url",url)
     if(url != "" && url != null && url != undefined){
       window.open(url, "_blank");
     }
