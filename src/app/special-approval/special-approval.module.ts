@@ -38,6 +38,8 @@ import { RddOitOrderInfoComponent } from "./request-form/widgets/order-info/rdd-
 import { CancelOrderComponent } from "./request-form/widgets/order-info/cancel-order/cancel-order.component";
 import { SpecialDeliveryOrderInfoComponent } from './request-form/widgets/order-info/special-delivery/special-delivery.component';
 import { NoNedirectOrderInfoComponent } from './request-form/widgets/order-info/none-direct-order/none-direct-order.component';
+import { DeBookComponent } from './request-form/widgets/order-info/de-book/de-book.component';
+
 
 const COMPONENTS = [
   ApprovedComponent,
@@ -76,7 +78,8 @@ const WIDGETS = [
   DifferenceAndCostInfoComponent,
   CancelOrderComponent,
   SpecialDeliveryOrderInfoComponent,
-  NoNedirectOrderInfoComponent
+  NoNedirectOrderInfoComponent,
+  DeBookComponent,
 ];
 
 export {

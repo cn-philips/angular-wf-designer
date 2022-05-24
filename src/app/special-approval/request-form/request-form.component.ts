@@ -20,6 +20,7 @@ import { APPROVE_NODE_ACTION } from '../../DIIGT/change-scene/special-approval-s
 import { SelectApproverComponent } from './widgets/select-approver/select-approver.component';
 import { RddOitOrderInfoComponent } from './widgets/order-info/rdd-oit/rdd-oit.component';
 import {MachineComponent} from './widgets/order-info/machine/machine.component';
+import {DeBookComponent} from './widgets/order-info/de-book/de-book.component';
 
 enum TAB_TYPE {
   BASIC_INFO = 'basic-info',
@@ -46,6 +47,8 @@ export class RequestFormComponent implements OnInit {
 
   @ViewChild('rddOitOrderInfo') public rddOitOrderInfo: RddOitOrderInfoComponent;
   @ViewChild('machineExchange') public machineExchange: MachineComponent;
+
+  @ViewChild('deBookOrderInfo') public deBookInfo: DeBookComponent;
 
   isSupplementNode = false
 
@@ -318,6 +321,7 @@ export class RequestFormComponent implements OnInit {
         this.fb.group({...this.transferLibOrderInit, applyId: null, id: null})
       ])
     }),
+    deBookOrderInfos: [[]],
     cancelorderInfo: this.fb.group({...this.cancelOrderInit, applyId: null, id: null}),
   });
 
@@ -500,6 +504,10 @@ export class RequestFormComponent implements OnInit {
     return this.formValues.get('cancelorderInfo') as FormGroup
   }
 
+  get deBookOrderInfos(): FormGroup {
+    return this.formValues.get('deBookOrderInfos') as FormGroup
+  }
+
   public setFormValidators(type, item, bg) {
     let clearedFields
     switch(type) {
@@ -538,7 +546,7 @@ export class RequestFormComponent implements OnInit {
   }
 
   public getFormData() {
-    const { basicInfo, orderInfo, ccInfo, rddOitOrderInfos, changeOrderInfos, lcAmendmentOrderInfo,transferLibOrders, exchangeInfo, orderDifferences, cancelorderInfo  } = this.formValues.getRawValue()
+    const { basicInfo, orderInfo, ccInfo, rddOitOrderInfos, changeOrderInfos, lcAmendmentOrderInfo,transferLibOrders, exchangeInfo, orderDifferences, cancelorderInfo, deBookOrderInfos  } = this.formValues.getRawValue()
     const { applyArrivalTime, expectedPaymentDate, expectedSaleDate, products } = orderInfo
     const extInfo = {
       exchangeMethod: changeOrderInfos.exchangeMethod
@@ -745,8 +753,38 @@ export class RequestFormComponent implements OnInit {
           }
         ];
         break;
-    }
 
+      case APPLY_TYPE.DE_BOOK:
+        data.orderInfos = []
+        let saps = []
+        deBookOrderInfos.forEach((debookOrderInfo) => {
+          const {
+            productType, bg, bmc, cycleGroup, bigArea, businessModel, productType1,
+            hospitalName, hospitalNo, sapOrderNo, wbsNo, orderDate, orderAmount, currency, deBookReason, remark
+          } = debookOrderInfo;
+          if (!debookOrderInfo.productType) {
+            debookOrderInfo.productType = productType1
+          }
+          const product = {
+            productType: productType1,
+            wbsNo: wbsNo,
+          }
+          const order = {
+            ...debookOrderInfo,
+            products: []
+          }
+          if (!saps.includes(sapOrderNo)) {
+            saps.push(sapOrderNo)
+            order.products.push(product)
+            data.orderInfos.push(order)
+          } else {
+          const debookorder = data.orderInfos.filter(value => value.sapOrderNo === sapOrderNo)
+            debookorder[0].products.push(product)
+          }
+      })
+        console.log(data.orderInfos)
+        break
+    }
     return data;
   }
 
@@ -905,6 +943,14 @@ export class RequestFormComponent implements OnInit {
         //   if (difference[i].)
         // }
         hasError = this.basicInfo.invalid || formValidError
+        break
+      case APPLY_TYPE.DE_BOOK:
+        if (!this.deBookInfo.isTableValid()) {
+          this.message.error('请按要求填写订单信息')
+          return
+        } else {
+          hasError = this.basicInfo.invalid
+        }
         break
       case APPLY_TYPE.CANCEL_ORDER:
 
@@ -1142,6 +1188,23 @@ export class RequestFormComponent implements OnInit {
           }
         });
         this.setFormValidators(applyType, applyItem, orderInfos[0].bg)
+      } else if (applyType === APPLY_TYPE.DE_BOOK) {
+        let debooks = []
+        orderInfos.map( (order) => {
+          order.products.map( ({ wbsNo, productType }) => {
+              debooks.push({
+                ...order,
+                wbsNo: wbsNo,
+                productType1: productType,
+              })
+          })
+        })
+        this.formValues.patchValue({
+            deBookOrderInfos:[
+              ...debooks
+            ]
+        })
+        console.log(this.deBookOrderInfos.value)
       }
 
       const userSet = new Set<string>();
