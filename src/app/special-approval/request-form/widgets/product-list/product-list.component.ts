@@ -28,6 +28,7 @@ export class ProductListComponent implements OnInit {
   @Input() editable: boolean;
   @Input() isWarranty: boolean;
   @Input() isExchange: boolean;
+  @Input() isNoneDirect:boolean;
 
   selectOptions = {
     logicStatus: LOGISTICS_STATUS,

@@ -31,13 +31,15 @@ enum APPROVE_NODE_ACTION {
   APPROVE = "approve",
   FEEDBACK = "feedback",
   VALIDATE = "validate",
+  SUPPLEMENT = "supplement"
 }
 
 const APPROVE_NODE_ACTION_MAP = {
-  apply: "申请",
-  approve: "审批",
-  feedback: "反馈",
-  validate: "验证",
+  [APPROVE_NODE_ACTION.APPLY]: "申请",
+  [APPROVE_NODE_ACTION.APPROVE]: "审批",
+  [APPROVE_NODE_ACTION.FEEDBACK]: "反馈",
+  [APPROVE_NODE_ACTION.VALIDATE]: "验证",
+  [APPROVE_NODE_ACTION.SUPPLEMENT]: '补充信息'
 };
 
 const APPROVE_NODE_ACTION_LIST = [

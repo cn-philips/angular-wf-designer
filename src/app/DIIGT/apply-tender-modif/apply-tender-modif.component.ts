@@ -207,20 +207,6 @@ export class ApplyTenderModifComponent implements OnInit {
     this.getApproved(mainId);
     // this.getAllselAgent();
   }
-  public getAllselAgent() {
-    const url = `/act/ecom/bidding/selAgentList`;
-    this.selAgent_all_loading = true;
-    const data = {
-    };
-    this.http.post(url, data).subscribe(res => {
-      if (res && res.data) {
-        this.selAgent_all = res.data;
-      }
-      this.selAgent_all_loading = false;
-    }, error => {
-      this.selAgent_all_loading = false;
-    });
-  }
   public getApproved(mainId) {
 
     return;
