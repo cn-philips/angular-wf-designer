@@ -513,7 +513,7 @@ export class RequestFormComponent implements OnInit {
           }
         ];
         break;
-      case APPLY_TYPE.EXT_WARRANTY: // 延长保修
+      case APPLY_TYPE.EXT_WARRANTY: // 免费延长保修
         data.orderInfos = [
           {
             ...this.requestInfo.orderInfos[0],
@@ -1208,7 +1208,7 @@ export class RequestFormComponent implements OnInit {
   }
 
   // 校验产品列表
-  // 特批开始生产、物流运输、额外安装费用及其他售后费用  验证产品列表不能为空
+  // 特批开始生产、飞利浦承担额外清关、仓储、物流费用、用户自定义审批  验证产品列表不能为空
   public verifyProduct() {
     if (this.applyType === APPLY_TYPE.PRODUCTION || this.applyType === APPLY_TYPE.EXT_INSTALL_COST || this.applyType === APPLY_TYPE.LOGISTICSCOST) {
       const orderInfo = this.formValues.getRawValue().orderInfo;
