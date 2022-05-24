@@ -20,6 +20,7 @@ import { APPROVE_NODE_ACTION } from '../../DIIGT/change-scene/special-approval-s
 import { SelectApproverComponent } from './widgets/select-approver/select-approver.component';
 import { RddOitOrderInfoComponent } from './widgets/order-info/rdd-oit/rdd-oit.component';
 import {MachineComponent} from './widgets/order-info/machine/machine.component';
+import {DeBookComponent} from './widgets/order-info/de-book/de-book.component';
 
 enum TAB_TYPE {
   BASIC_INFO = 'basic-info',
@@ -46,6 +47,7 @@ export class RequestFormComponent implements OnInit {
 
   @ViewChild('rddOitOrderInfo') public rddOitOrderInfo: RddOitOrderInfoComponent;
   @ViewChild('machineExchange') public machineExchange: MachineComponent;
+  @ViewChild('deBookOrderInfo') public deBookInfo: DeBookComponent;
 
   isSupplementNode = false
 
@@ -318,6 +320,7 @@ export class RequestFormComponent implements OnInit {
         this.fb.group({...this.transferLibOrderInit, applyId: null, id: null})
       ])
     }),
+    deBookOrderInfos: [[]],
     cancelorderInfo: this.fb.group({...this.cancelOrderInit, applyId: null, id: null}),
   });
 
@@ -472,6 +475,10 @@ export class RequestFormComponent implements OnInit {
     return this.formValues.get('cancelorderInfo') as FormGroup
   }
 
+  get deBookOrderInfos(): FormGroup {
+    return this.formValues.get('deBookOrderInfos') as FormGroup
+  }
+
   public setFormValidators(type, item, bg) {
     if (type === APPLY_TYPE.EXT_WARRANTY) {
       this.orderInfo.controls.applyArrivalTime.clearValidators();
@@ -507,7 +514,7 @@ export class RequestFormComponent implements OnInit {
   }
 
   public getFormData() {
-    const { basicInfo, orderInfo, ccInfo, rddOitOrderInfos, changeOrderInfos, lcAmendmentOrderInfo,transferLibOrders, exchangeInfo, orderDifferences, cancelorderInfo  } = this.formValues.getRawValue()
+    const { basicInfo, orderInfo, ccInfo, rddOitOrderInfos, changeOrderInfos, lcAmendmentOrderInfo,transferLibOrders, exchangeInfo, orderDifferences, cancelorderInfo, deBookOrderInfos  } = this.formValues.getRawValue()
     const { applyArrivalTime, expectedPaymentDate, expectedSaleDate, products } = orderInfo
     const extInfo = {
       exchangeMethod: changeOrderInfos.exchangeMethod
@@ -702,8 +709,36 @@ export class RequestFormComponent implements OnInit {
           }
         ];
         break;
+
+      case APPLY_TYPE.DE_BOOK:
+        data.orderInfos = []
+        let saps = []
+        deBookOrderInfos.forEach((debookOrderInfo) => {
+          const {
+            productName, bg, bmc, cycleGroup, bigArea, businessModel, productType,
+            hospitalName, hospitalNo, sapOrderNo, wbsNo, orderDate, orderAmount, currency, deBookReason, remark
+          } = debookOrderInfo;
+
+          const product = {
+            productType, wbsNo,
+          }
+          const order = {
+            ...debookOrderInfo,
+            products: [product]
+          }
+          if (!saps.includes(sapOrderNo)) {
+            saps.push(sapOrderNo)
+          } else {
+            data.orderInfos.find(value => value.sapOrderNo === sapOrderNo)
+            order.products.push(product)
+          }
+
+        data.orderInfos.push(order)
+        console.log(data.orderInfos)
+      })
+      break
     }
-    return data;
+    return data
   }
 
   // 设置页面是否可编辑, 满足以下情况可编辑
@@ -862,8 +897,18 @@ export class RequestFormComponent implements OnInit {
         // }
         hasError = this.basicInfo.invalid || formValidError
         break
+      case APPLY_TYPE.DE_BOOK:
+        if (!this.deBookInfo.isTableValid()) {
+          console.log(!this.deBookInfo.isTableValid())
+          console.log('123123')
+          this.message.error('请按要求填写订单信息')
+          return
+        } else {
+          hasError = this.basicInfo.invalid
+        }
+        break
       case APPLY_TYPE.CANCEL_ORDER:
-  
+
         break
       default:
         for (const i in this.orderInfo.controls) {
@@ -1098,6 +1143,13 @@ export class RequestFormComponent implements OnInit {
           }
         });
         this.setFormValidators(applyType, applyItem, orderInfos[0].bg)
+      } else if (applyType === APPLY_TYPE.DE_BOOK) {
+        this.formValues.patchValue({
+            deBookOrderInfos:[
+              ...orderInfos
+            ]
+        })
+        console.log(this.deBookOrderInfos.value)
       }
 
       const userSet = new Set<string>();
