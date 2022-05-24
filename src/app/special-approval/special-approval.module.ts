@@ -39,7 +39,8 @@ import { CancelOrderComponent } from "./request-form/widgets/order-info/cancel-o
 import { SpecialDeliveryOrderInfoComponent } from './request-form/widgets/order-info/special-delivery/special-delivery.component';
 import { NoNedirectOrderInfoComponent } from './request-form/widgets/order-info/none-direct-order/none-direct-order.component';
 import { DeBookComponent } from './request-form/widgets/order-info/de-book/de-book.component';
-
+import { OrderReplacementComponent } from "./request-form/widgets/order-info/order-replacement/order-replacement.component";
+import { SupplementFormComponent } from "./request-form/widgets/supplement-form/supplement-form.component";
 
 const COMPONENTS = [
   ApprovedComponent,
@@ -80,6 +81,8 @@ const WIDGETS = [
   SpecialDeliveryOrderInfoComponent,
   NoNedirectOrderInfoComponent,
   DeBookComponent,
+  OrderReplacementComponent,
+  SupplementFormComponent,
 ];
 
 export {

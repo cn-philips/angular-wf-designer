@@ -36,9 +36,20 @@
     <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
       <div nz-col nzXs="24" nzSm="24" nzMd="12">
         <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6" nzRequired>产品型号</nz-form-label>
+          <nz-form-label nzXl="8" nzXXl="6" [nzRequired]="bg.value != 'CC'">产品型号</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <input type="text" nz-input formControlName="productType" />
+            <input type="text" nz-input formControlName="productType"
+              *ngIf="bg.value === 'PD&IGT' || bg.value === 'CC'" />
+            <nz-select style="width: 100%;" *ngIf="bg.value === 'US'" formControlName="productType"
+              nzPlaceHolder="请选择产品型号">
+              <nz-option *ngFor="let item of spService.usProductList" [nzLabel]="item.label" [nzValue]="item.value">
+              </nz-option>
+            </nz-select>
+            <nz-form-explain
+              *ngIf="bg.value != 'CC' && formValues.get('productType')?.dirty && formValues.get('productType')?.errors">
+              请选择产品型号
+            </nz-form-explain>
+
           </nz-form-control>
         </nz-form-item>
       </div>
@@ -257,9 +268,9 @@
         <nz-form-item>
           <nz-form-label nzXl="8" nzXXl="6" nzRequired>是否De-book</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <nz-radio-group formControlName="isDebook" #isDebook>
-              <label nz-radio [nzValue]="1">是</label>
-              <label nz-radio [nzValue]="0">否</label>
+            <nz-radio-group formControlName="deBook" #deBook>
+              <label nz-radio [nzValue]="'1'">是</label>
+              <label nz-radio [nzValue]="'0'">否</label>
             </nz-radio-group>
           </nz-form-control>
         </nz-form-item>
@@ -291,14 +302,14 @@
               <nz-form-label nzXl="8" nzXXl="8" nzRequired>是否开始生产</nz-form-label>
               <nz-form-control nzXs="24" nzSm="24" nzMd="12">
                 <nz-radio-group formControlName="startProduction" #startProduction>
-                  <label nz-radio [nzValue]="1">是</label>
-                  <label nz-radio [nzValue]="0">否</label>
+                  <label nz-radio [nzValue]="'1'">是</label>
+                  <label nz-radio [nzValue]="'0'">否</label>
                 </nz-radio-group>
               </nz-form-control>
             </nz-form-item>
           </div>
 
-          <div nz-col nzXs="24" nzSm="24" nzMd="12" *ngIf="startProduction.value">
+          <div nz-col nzXs="24" nzSm="24" nzMd="12" *ngIf="startProduction.value=='1'">
             <nz-form-item>
               <nz-form-label nzXl="12" nzXXl="8">订单取消的额外费用-生产</nz-form-label>
               <nz-form-control nzXs="24" nzSm="24" nzMd="12">
@@ -318,14 +329,14 @@
               <nz-form-label nzXl="8" nzXXl="8" nzRequired>是否已发货</nz-form-label>
               <nz-form-control nzXs="24" nzSm="24" nzMd="12">
                 <nz-radio-group formControlName="shipped" #shipped>
-                  <label nz-radio [nzValue]="1">是</label>
-                  <label nz-radio [nzValue]="0">否</label>
+                  <label nz-radio [nzValue]="'1'">是</label>
+                  <label nz-radio [nzValue]="'0'">否</label>
                 </nz-radio-group>
               </nz-form-control>
             </nz-form-item>
           </div>
 
-          <div nz-col nzXs="24" nzSm="24" nzMd="12" *ngIf="shipped.value">
+          <div nz-col nzXs="24" nzSm="24" nzMd="12" *ngIf="shipped.value=='1'">
             <nz-form-item>
               <nz-form-label nzXl="12" nzXXl="8">订单取消的额外费用-<br>国际国内段运输仓储费</nz-form-label>
               <nz-form-control nzXs="24" nzSm="24" nzMd="12">
@@ -346,14 +357,14 @@
               <nz-form-label nzXl="8" nzXXl="8" nzRequired>是否有第三方采购</nz-form-label>
               <nz-form-control nzXs="24" nzSm="24" nzMd="12">
                 <nz-radio-group formControlName="thirdPartyProcurement" #thirdPartyProcurement>
-                  <label nz-radio [nzValue]="1">是</label>
-                  <label nz-radio [nzValue]="0">否</label>
+                  <label nz-radio [nzValue]="'1'">是</label>
+                  <label nz-radio [nzValue]="'0'">否</label>
                 </nz-radio-group>
               </nz-form-control>
             </nz-form-item>
           </div>
 
-          <div nz-col nzXs="24" nzSm="24" nzMd="12" *ngIf="thirdPartyProcurement.value">
+          <div nz-col nzXs="24" nzSm="24" nzMd="12" *ngIf="thirdPartyProcurement.value=='1'">
             <nz-form-item>
               <nz-form-label nzXl="12" nzXXl="8">订单取消的额外费用-<br>第三方采购</nz-form-label>
               <nz-form-control nzXs="24" nzSm="24" nzMd="12">
@@ -374,14 +385,14 @@
               <nz-form-label nzXl="8" nzXXl="8" nzRequired>是否看过场地</nz-form-label>
               <nz-form-control nzXs="24" nzSm="24" nzMd="12">
                 <nz-radio-group formControlName="seenSite" #seenSite>
-                  <label nz-radio [nzValue]="1">是</label>
-                  <label nz-radio [nzValue]="0">否</label>
+                  <label nz-radio [nzValue]="'1'">是</label>
+                  <label nz-radio [nzValue]="'0'">否</label>
                 </nz-radio-group>
               </nz-form-control>
             </nz-form-item>
           </div>
 
-          <div nz-col nzXs="24" nzSm="24" nzMd="12" *ngIf="seenSite.value">
+          <div nz-col nzXs="24" nzSm="24" nzMd="12" *ngIf="seenSite.value=='1'">
             <nz-form-item>
               <nz-form-label nzXl="12" nzXXl="8">订单取消的额外费用-<br>场地相关</nz-form-label>
               <nz-form-control nzXs="24" nzSm="24" nzMd="12">
@@ -402,14 +413,14 @@
               <nz-form-label nzXl="8" nzXXl="8" nzRequired>预付款状态</nz-form-label>
               <nz-form-control nzXs="24" nzSm="24" nzMd="12">
                 <nz-radio-group formControlName="advanceChargeStatus" #advanceChargeStatus>
-                  <label nz-radio [nzValue]="1">是</label>
-                  <label nz-radio [nzValue]="0">否</label>
+                  <label nz-radio [nzValue]="'1'">是</label>
+                  <label nz-radio [nzValue]="'0'">否</label>
                 </nz-radio-group>
               </nz-form-control>
             </nz-form-item>
           </div>
 
-          <div nz-col nzXs="24" nzSm="24" nzMd="12" *ngIf="advanceChargeStatus.value">
+          <div nz-col nzXs="24" nzSm="24" nzMd="12" *ngIf="advanceChargeStatus.value=='1'">
             <nz-form-item>
               <nz-form-label nzXl="12" nzXXl="8">预付款金额</nz-form-label>
               <nz-form-control nzXs="24" nzSm="24" nzMd="12">
@@ -463,20 +474,21 @@
               <nz-form-control nzXs="24" nzSm="24" nzMd="14">
                 <nz-upload nzType="drag" nzAction="/act/system/upload" [nzMultiple]="true"
                   [nzFileList]="supportFileList" [nzBeforeUpload]="onBeforeUpload" [nzCustomRequest]="onUploadFile"
-                  [nzRemove]="onRemoveFile" [nzDisabled]="!editable" [nzShowUploadList]="editable">
+                  [nzRemove]="onRemoveFile" [nzDisabled]="!isSupplementNode" [nzShowUploadList]="isSupplementNode">
                   <p class="ant-upload-drag-icon">
                     <i nz-icon nzType="inbox"></i>
                   </p>
                   <p class="ant-upload-text">点击或者拖拽上传</p>
                 </nz-upload>
-                <app-upload-file-list *ngIf="!editable" [fileList]="supportFileList"></app-upload-file-list>
+                <app-upload-file-list *ngIf="!isSupplementNode" [fileList]="supportFileList"></app-upload-file-list>
               </nz-form-control>
             </nz-form-item>
           </div>
 
-          <div nz-col nzXs="24" nzSm="24" nzMd="12">
-            <nz-alert nzType="info" nzMessage="取消合同模板地址:{{cancelContractLink.label}} 密码:{{cancelContractLink.value}}"
-              (click)="window.open(cancelContractLink.label, '_blank')"></nz-alert>
+          <div nz-col nzXs="24" nzSm="24" nzMd="12" *ngIf="isSupplementNode">
+            <nz-alert nzType="info" nz-tooltip nzTitle="点击跳转" style="cursor:pointer;"
+              nzMessage="取消合同模板地址:{{cancelContractLink.label}} 密码:{{cancelContractLink.value}}"
+              (click)="openLink(cancelContractLink.label)"></nz-alert>
           </div>
         </div>
       </form>

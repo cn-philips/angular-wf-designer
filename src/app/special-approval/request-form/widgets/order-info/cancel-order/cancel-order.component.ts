@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, ViewChild } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms'
+import { FormControl, FormGroup, Validators} from '@angular/forms'
 import {UploadXHRArgs, UploadFile, NzModalService, NzMessageService} from 'ng-zorro-antd';
 
 import { Hospital, SelectHospitalComponent, } from '../../select-hospital/select-hospital.component'
@@ -45,7 +45,9 @@ export class CancelOrderComponent implements OnInit {
   @Input() baseInfo: FormGroup
   @Input() supportFileList: UploadFile[] = [];
 
-  cancelContractLink: any = [];
+  @Input() isSupplementNode = false
+
+  cancelContractLink: any = {};
 
   APPLY_TYPE = APPLY_TYPE
 
@@ -195,7 +197,6 @@ export class CancelOrderComponent implements OnInit {
 
   ngOnInit(): void {
     this.initOMUsers()
-    this.initCancelContractLink();
     if (this.editable) {
       this.formValues.get('hospitalName').valueChanges.subscribe(() => {
         this.onCalcProjectName()
@@ -206,9 +207,18 @@ export class CancelOrderComponent implements OnInit {
       })
     }
     
-    console.log("cancelContractLink:",this.cancelContractLink);
-    // console.log("editable",this.editable);
-    // this.disableField();
+    //是否是补充信息节点
+    if(!this.isSupplementNode){
+      this.disableField();
+    } else {
+      this.formValues.controls.orderInfoStatus.enable();
+      this.initCancelContractLink();
+      this.orderInfoStatus.get('startProduction').setValidators(Validators.required); //是否开始生产
+      this.orderInfoStatus.get('shipped').setValidators(Validators.required); // 是否已发货
+      this.orderInfoStatus.get('thirdPartyProcurement').setValidators(Validators.required); // 是否有第三方采购
+      this.orderInfoStatus.get('seenSite').setValidators(Validators.required); // 是否看过场地
+      this.orderInfoStatus.get('advanceChargeStatus').setValidators(Validators.required); // 预付款状态
+    }
   }
 
    // 初始化OM列表
@@ -232,15 +242,14 @@ export class CancelOrderComponent implements OnInit {
       "advanceChargeAmount",
       "orderActualAmount",
       "refundAmount",
-      "remark",
-      "attachment"
+      "remark"
     ]
     disabledFieldsList.forEach(item => {
       this.orderInfoStatus.get(item).disable();
     })
   }
 
-  //上传附件
+  //上传附件 (只能上传一个文件)
   onUploadFile = (item: UploadXHRArgs) => {
     const formData = new FormData()
     const file = item.file as any
@@ -252,8 +261,7 @@ export class CancelOrderComponent implements OnInit {
       (response: CommonResponse) => {
         const { data, code } = response
         if ('0000' === code) {
-          const curFileIds = this.orderInfoStatus.get('attachment').value as String[]
-          this.orderInfoStatus.patchValue({ attachment: curFileIds.concat(data) })
+          this.orderInfoStatus.patchValue({ attachment: data})
           item.onSuccess({ fileId: data }, file, response)
         } else {
           item.onError({}, file)
@@ -267,7 +275,7 @@ export class CancelOrderComponent implements OnInit {
 
   // 上传之前的校验(文件类型, 文件大小), 校验不通过, return false, 会阻止自动上传
   onBeforeUpload = (file) => {
-    if (this.orderInfoStatus.getRawValue().attachment.length >= 1) {
+    if (this.orderInfoStatus.getRawValue().attachment != null) {
       this.message.error('最多上传1个文件');
       return false;
     }
@@ -281,8 +289,8 @@ export class CancelOrderComponent implements OnInit {
       this.modal.confirm({
         nzTitle: `确定移除文件${name}?`,
         nzOnOk: () => {
-          const curFileIds = this.orderInfoStatus.get('attachment').value as String[]
-          this.orderInfoStatus.patchValue({ attachment: curFileIds.filter((fileId) => fileId !== response.fileId) })
+          // const curFileIds = this.orderInfoStatus.get('attachment').value as String[]
+          this.orderInfoStatus.patchValue({ attachment: null })
           observer.next(true)
         },
         nzOnCancel: () => {
@@ -295,16 +303,20 @@ export class CancelOrderComponent implements OnInit {
 
   //取消合同模板地址
   initCancelContractLink() {
+    const list = this.dictService.getDictListByGroupName("sp_contract_apply_item")
+    .map(({ tag, label }) => ({ label: tag, value: label }));
+    if (list.length > 0) {
+      this.cancelContractLink = list[0];
+    }
+  }
 
-    this.cancelContractLink = this.dictService.getDictListByGroupName("LINK_QA_PDF_SP_2").map((item) => {
-        console.log("item:",item);
-        const url = item.tag;
-        return {
-          ...item,
-          label:url,
-          value: item.label, //url
-        };
-      });
+  //打开url
+  // 打开SharePoint链接
+  openLink(url) {
+    console.log("url",url)
+    if(url != "" && url != null && url != undefined){
+      window.open(url, "_blank");
+    }
   }
 
 }

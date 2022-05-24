@@ -283,6 +283,13 @@ export class SpecialApprovalService {
     return formatResponse(res);
   }
 
+  // 审批提交（补充信息）
+  async approveSubmitRequest(data) {
+    const uri = `/act/specialapprove/apply/approveSave`;
+    const res = await this.http.post(uri, data).toPromise();
+    return formatResponse(res);
+  }
+
   // 撤回申请
   async withdrawRequest(requestId) {
     const uri = `/act/specialapprove/apply/${requestId}/withdraw`;
