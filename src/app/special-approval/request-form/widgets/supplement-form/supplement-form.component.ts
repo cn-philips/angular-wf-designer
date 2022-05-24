@@ -183,43 +183,9 @@ export class SupplementFormComponent implements OnInit, OnChanges {
       this.message.error('请选择指定用户')
       return
     }
-    console.log("clik!!!")
     this.onApSubmit.emit(action);
   }
-  // async onSubmit(action) {
-  //   try {
-  //     const { remark, attachments, notify, notifier } = this.formValues.getRawValue()
-  //     if (action === 'REJECTED' && (!remark || !remark.trim())) {
-  //       this.message.error('请填写备注')
-  //       this.showWarnMsg = true
-  //       return
-  //     }
-  //     if (notify == 1 && !notifier) {
-  //       this.message.error('请选择指定用户')
-  //       return
-  //     }
-  //     const id = this.message.loading(LOADING_MESSAGE.APPROVE, { nzDuration: 0 }).messageId
-  //     this.submitLoading = true
-  //     const data = {
-  //       applyId: this.requestId,
-  //       attachments: attachments,
-  //       result: action,
-  //       notify,
-  //       notifier: notify ? notifier.join(','): '',
-  //       remark,
-  //       taskInstId: this.taskId,
-  //     }
-  //     await this.spService.approveRequest(data)
-  //     this.message.remove(id)
-  //     this.message.success(SUCCESS_MESSAGE.APPROVE)
-  //     this.router.navigate(['/special-approval/home'])
-  //   } catch ({ message }) {
-  //     this.message.error(ERROR_MESSAGE.APPROVE)
-  //     console.error(`审批失败, ${message}`);
-  //   } finally {
-  //     this.submitLoading = false
-  //   }
-  // }
+  
 
   onStartChat() {
     const teamsLink = TEAMS_LINK_PREFIX + this.applicantEmail
