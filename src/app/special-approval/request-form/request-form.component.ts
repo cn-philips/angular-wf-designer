@@ -125,7 +125,7 @@ export class RequestFormComponent implements OnInit {
     currency: [null, [Validators.required]], // 合同金额-货币
     expectedSaleDate: [null, [Validators.required]], // 预计记认销售日期
     expectedPaymentDate: [null, [Validators.required]], // 预计付款(或场地就位)日期
-    om: [null, [Validators.required]], // OM
+    om: [null], // OM
     exchangeRole: [{ value: null, disabled: true }, [Validators.required]], // 换货角色
     exchangeProcessing: [null], // 换货方式
     saleEmail: [null, [Validators.required]], // 销售邮箱
@@ -213,7 +213,7 @@ export class RequestFormComponent implements OnInit {
       expectedSaleDate: [null, [Validators.required]], // 预计记认销售日期
       applyArrivalTime: [null, [Validators.required]], // 申请到货时间
       expectedPaymentDate: [null, [Validators.required]], // 预计付款(或场地就位)日期
-      om: [null, [Validators.required]], // OM
+      om: [null], // OM
       exchangeRole: [null], // 换货角色
       exchangeProcessing: [null], // 换货方式
       saleEmail: [null], // 销售邮箱
@@ -269,7 +269,7 @@ export class RequestFormComponent implements OnInit {
           projectName: [{ value: null, disabled: true }, [Validators.required]], // 项目名称
           sapOrderNo: [null, [Validators.required]], // SAP订单号
           currency: [null, [Validators.required]], // 合同金额-货币
-          om: [null, [Validators.required]], // OM
+          om: [null], // OM
           orderDate: [null, [Validators.required]], // 进单日期
           exchangeRole: [null, [Validators.required]], // 换货角色
           saleEmail: [{ value: null, disabled: true }, [Validators.required]], // 销售邮箱
@@ -293,7 +293,7 @@ export class RequestFormComponent implements OnInit {
           projectName: [{ value: null, disabled: true }, [Validators.required]], // 项目名称
           sapOrderNo: [null, [Validators.required]], // SAP订单号
           currency: [null, [Validators.required]], // 合同金额-货币
-          om: [null, [Validators.required]], // OM
+          om: [null], // OM
           orderDate: [null, [Validators.required]], // 进单日期
           exchangeRole: [null, [Validators.required]], // 换货角色
           saleEmail: [null, [Validators.required]], // 销售邮箱
@@ -345,7 +345,8 @@ export class RequestFormComponent implements OnInit {
     if (
       applyType === APPLY_TYPE.PRODUCTION ||
       applyType === APPLY_TYPE.LOGISTICSCOST ||
-      applyType === APPLY_TYPE.EXT_INSTALL_COST  
+      applyType === APPLY_TYPE.EXT_INSTALL_COST  ||
+      applyType === APPLY_TYPE.NONE_DIRECT_ORDER
     ) {
       this.orderInfo.patchValue({
         products: [{}]
@@ -500,30 +501,31 @@ export class RequestFormComponent implements OnInit {
   }
 
   public setFormValidators(type, item, bg) {
-    if (type === APPLY_TYPE.EXT_WARRANTY) {
-      this.orderInfo.controls.applyArrivalTime.clearValidators();
-      this.orderInfo.controls.expectedPaymentDate.clearValidators();
-      this.orderInfo.controls.expectedSaleDate.clearValidators();
-      this.orderInfo.controls.om.clearValidators();
-      if (item === 'sp_warranty_apply_item_5') {
-        this.basicInfo.controls.applyItemDesc.setValidators([Validators.required]);
-      }
-    } else if (type === APPLY_TYPE.PRODUCTION) {
-      this.basicInfo.controls.applyItem.disable();
-    }else if (type === APPLY_TYPE.SPECIAL_DELIVERY) {
-      this.basicInfo.controls.applyItem.disable();
-    }  else if (type === APPLY_TYPE.LC_AMENDMENT) {
-      if (item === 'sp_lcamendment_apply_item_5') {
-        this.basicInfo.controls.applyItemDesc.setValidators([Validators.required]);
-      }
-    } else if (type === APPLY_TYPE.TRANSFER_LIB) {
-      //该功能已取消
-      // let disabledFieldsList = ['referenceId','productType', 'bmc', 'bigArea', 'businessModel', 'projectName', 'sapOrderNo', 'orderAmount', 'currency', 'saleEmail', 'om']
-      // disabledFieldsList.forEach(item => {
-      //   this.orderInfo.controls[item].disable()
-      // })
+    switch(type) {
+      case APPLY_TYPE.EXT_WARRANTY:
+        clearedFields = ['applyArrivalTime', 'expectedPaymentDate']
+        if (bg === 'CC') {
+          clearedFields.push('expectedSaleDate')
+        }
+        clearedFields.forEach((fieldName) => this.orderInfo.controls[fieldName].clearValidators())
+        if (item === 'sp_warranty_apply_item_5') {
+          this.basicInfo.controls.applyItemDesc.setValidators([Validators.required]);
+        }
+        break
+      case APPLY_TYPE.LC_AMENDMENT:
+        if (item === 'sp_lcamendment_apply_item_5') {
+          this.basicInfo.controls.applyItemDesc.setValidators([Validators.required]);
+        }
+        break
+      case APPLY_TYPE.EXT_INSTALL_COST:
+        clearedFields = ['expectedPaymentDate', 'applyArrivalTime', 'expectedSaleDate']
+        clearedFields.forEach((fieldName) => this.orderInfo.controls[fieldName].clearValidators())
+        break
+      case APPLY_TYPE.LOGISTICSCOST:
+        clearedFields = ['expectedPaymentDate', 'applyArrivalTime', 'expectedSaleDate']
+        clearedFields.forEach((fieldName) => this.orderInfo.controls[fieldName].clearValidators())
+        break
     }
-
     if (bg === 'PD&IGT') {
       this.orderInfo.controls.referenceId.disable();
       if (type !== APPLY_TYPE.LC_AMENDMENT && type !== APPLY_TYPE.TRANSFER_LIB) {
@@ -730,7 +732,20 @@ export class RequestFormComponent implements OnInit {
           }
         ];
         break;
+      case APPLY_TYPE.NONE_DIRECT_ORDER:
+        data.orderInfos = [
+          {
+            ...this.requestInfo.orderInfos[0],
+            ...orderInfo,
+            applyArrivalTime: applyArrivalTime ? moment(applyArrivalTime).format('YYYY-MM-DD') : null,
+            expectedPaymentDate: expectedPaymentDate ? moment(expectedPaymentDate).format('YYYY-MM-DD') : null,
+            expectedSaleDate: expectedSaleDate ? moment(expectedSaleDate).format('YYYY-MM-DD') : null,
+            products: products.map(({ productType, wbsNo, itemNo, quantity }) => ({ productType, wbsNo, itemNo, quantity }))
+          }
+        ];
+        break;
     }
+
     return data;
   }
 
@@ -891,7 +906,7 @@ export class RequestFormComponent implements OnInit {
         hasError = this.basicInfo.invalid || formValidError
         break
       case APPLY_TYPE.CANCEL_ORDER:
-  
+
         break
       default:
         for (const i in this.orderInfo.controls) {
@@ -1014,7 +1029,7 @@ export class RequestFormComponent implements OnInit {
         },
       })
       this.requestInfo.orderInfos = orderInfos
-      if (applyType === APPLY_TYPE.PRODUCTION || applyType === APPLY_TYPE.EXT_WARRANTY || applyType === APPLY_TYPE.LOGISTICSCOST || applyType === APPLY_TYPE.EXT_INSTALL_COST || applyType === APPLY_TYPE.SPECIAL_DELIVERY ) {
+      if (applyType === APPLY_TYPE.PRODUCTION || applyType === APPLY_TYPE.EXT_WARRANTY || applyType === APPLY_TYPE.LOGISTICSCOST || applyType === APPLY_TYPE.EXT_INSTALL_COST || applyType === APPLY_TYPE.SPECIAL_DELIVERY || applyType===APPLY_TYPE.NONE_DIRECT_ORDER ) {
         this.formValues.patchValue({
           orderInfo: {
             ...orderInfos[0],
@@ -1087,13 +1102,13 @@ export class RequestFormComponent implements OnInit {
       } else if(applyType === APPLY_TYPE.TRANSFER_LIB) { // 设置查看详情时代入数据
         let order0 = null
         let order1 = null
-      if (orderInfos[0].transferCargo === 'sp_transferlib_order_type_item_1') {
-         order0 = orderInfos[0]
-        order1 = orderInfos[1]
-      } else {
-        order0 = orderInfos[1]
-        order1 = orderInfos[0]
-      }
+        if (orderInfos[0].transferCargo === 'sp_transferlib_order_type_item_1') {
+          order0 = orderInfos[0]
+          order1 = orderInfos[1]
+        } else {
+          order0 = orderInfos[1]
+          order1 = orderInfos[0]
+        }
 
         this.formValues.patchValue({
           transferLibOrders: {
@@ -1175,7 +1190,7 @@ export class RequestFormComponent implements OnInit {
             this.isSupplementNode = true
             break
           case APPROVE_NODE_ACTION.FEEDBACK:
-            this.showFeedbackTab = this.isApplicant
+            this.showFeedbackTab = true
             break
           default:
             this.showApproveTab = true
@@ -1265,11 +1280,11 @@ export class RequestFormComponent implements OnInit {
     const product1 = order1.get('products').value[0]
     const product2 = order2.get('products').value[0]
     if (
-      product1.itemNo == null || product1.itemNo == '' ||
+      ((product1.itemNo == null || product1.itemNo == '') && order1.get('bg').value !== 'CC') ||
       product1.logisticsStatus == null ||
       product1.productType == null ||
       product1.quantity == null || product1.quantity == '' ||
-      product1.wbsNo == null || product1.wbsNo == ''
+      ((product1.wbsNo == null || product1.wbsNo == '') && order1.get('bg').value !== 'CC')
     ){
         this.message.error('订单1: 产品信息未填写完整')
       return false;
@@ -1281,11 +1296,11 @@ export class RequestFormComponent implements OnInit {
     }
 
     if (
-      product2.itemNo == null || product2.itemNo == '' ||
+      ((product2.itemNo == null || product2.itemNo == '') && order2.get('bg').value !== 'CC') ||
       product2.logisticsStatus == null ||
       product2.productType == null ||
       product2.quantity == null || product2.quantity == '' ||
-      product2.wbsNo == null || product2.wbsNo == ''
+      ((product2.wbsNo == null || product2.wbsNo == '') && order2.get('bg').value !== 'CC')
     ){
       this.message.error('订单2: 产品信息未填写完整')
       return false;
@@ -1303,7 +1318,7 @@ export class RequestFormComponent implements OnInit {
   // 校验产品列表
   // 特批开始生产、飞利浦承担额外清关、仓储、物流费用、用户自定义审批  验证产品列表不能为空
   public verifyProduct() {
-    if (this.applyType === APPLY_TYPE.PRODUCTION || this.applyType === APPLY_TYPE.EXT_INSTALL_COST || this.applyType === APPLY_TYPE.LOGISTICSCOST) {
+    if (this.applyType === APPLY_TYPE.PRODUCTION || this.applyType === APPLY_TYPE.EXT_INSTALL_COST || this.applyType === APPLY_TYPE.LOGISTICSCOST || this.applyType === APPLY_TYPE.NONE_DIRECT_ORDER) {
       const orderInfo = this.formValues.getRawValue().orderInfo;
       if (orderInfo && orderInfo.bg && orderInfo.bg.toLowerCase() === 'cc') {
         return true;
