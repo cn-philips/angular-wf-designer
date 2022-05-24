@@ -18,13 +18,16 @@
         <th nzWidth="200px"  *ngIf="!isNotShip">设备SN</th>
         <th nzWidth="200px">物流状态</th>
       </ng-container>
+      <ng-container *ngIf="isNoneDirect">
+        <th nzWidth="200px" *ngIf="!isNotShip">设备SN</th>
+      </ng-container>
       <th nzWidth="100px" nzRight="0px" *ngIf="bg !== 'PD&IGT' && editable && !isExchange">Action</th>
     </tr>
   </thead>
   <tbody>
     <tr *ngFor="let product of products.value">
       <td>
-        <input type="text" nz-input [(ngModel)]="product.productType" (ngModelChange)="onProductChange()" *ngIf="bg !== 'US'" [disabled]="bg === 'PD&IGT' || !editable" />
+        <input type="text" nz-input [(ngModel)]="product.productType" (ngModelChange)="onProductChange()" *ngIf="bg !== 'US'" [disabled]="!editable" />
         <nz-select style="width: 100%;" *ngIf="bg === 'US'" [(ngModel)]="product.productType" [nzPlaceHolder]="editable ? '请选择产品型号' : ''" [nzDisabled]="!editable" (ngModelChange)="onProductChange()">
           <nz-option *ngFor="let item of spService.usProductList" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
         </nz-select>
@@ -95,6 +98,11 @@
           <nz-select [(ngModel)]="product.logisticsStatus" [disabled]="!editable" (ngModelChange)="logisticsChange($event)">
             <nz-option *ngFor="let item of selectOptions.logicStatus" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
           </nz-select>
+        </td>
+      </ng-container>
+      <ng-container *ngIf="isNoneDirect">
+        <td *ngIf="!isNotShip">
+          <input type="text" nz-input [(ngModel)]="product.equipmentSn" [disabled]="!editable" maxlength="200" />
         </td>
       </ng-container>
       <td nzRight="0px" *ngIf="bg !== 'PD&IGT' && editable && !isExchange">

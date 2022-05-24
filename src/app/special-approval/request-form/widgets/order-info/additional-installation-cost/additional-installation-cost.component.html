@@ -70,7 +70,7 @@
     <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
       <div nz-col nzXs="24" nzSm="24" nzMd="12">
         <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6" nzRequired>销售区域</nz-form-label>
+          <nz-form-label nzXl="8" nzXXl="6">销售区域</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <nz-input-group style="width: 100%;font-size: 0;">
               <nz-select formControlName="cycleGroup" style="width: 48%;margin-right:4%" nzPlaceHolder="Team/Cycle Group" (ngModelChange)="onCycleGroupChange()">
@@ -82,14 +82,6 @@
                 <nz-option *ngIf="bigAreas.length === 0" nzLabel="请先选择Team/Cycle Group" [nzDisabled]="true"></nz-option>
               </nz-select>
             </nz-input-group>
-            <div style="display: flex;">
-              <nz-form-explain style="width: 48%;margin-right:4%" >
-                <span style="color:#f5222d" *ngIf="formValues.get('cycleGroup')?.dirty && formValues.get('cycleGroup')?.errors">请选择销售区域</span>
-              </nz-form-explain>
-              <nz-form-explain style="width: 48%" *ngIf="formValues.get('bigArea')?.dirty && formValues.get('bigArea')?.errors">
-                <span style="color:#f5222d">请选择销售区域</span>
-              </nz-form-explain>
-            </div>
           </nz-form-control>
         </nz-form-item>
       </div>
@@ -261,14 +253,11 @@
     <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
       <div nz-col nzXs="24" nzSm="24" nzMd="12">
         <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6" nzRequired>OM</nz-form-label>
+          <nz-form-label nzXl="8" nzXXl="6">OM</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <nz-select formControlName="om" [nzPlaceHolder]="editable ? '请选择OM' : ''">
               <nz-option *ngFor="let item of selectOptions.oms" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
             </nz-select>
-            <nz-form-explain *ngIf="formValues.get('om')?.dirty && formValues.get('om')?.errors">
-              请选择OM
-            </nz-form-explain>
           </nz-form-control>
         </nz-form-item>
       </div>

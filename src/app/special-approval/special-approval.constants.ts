@@ -59,33 +59,36 @@ const APPLY_TYPE = {
   TRANSFER_LIB: "transferlib",
   CANCEL_ORDER: "cancelorder",
   SPECIAL_DELIVERY:"delivery", //特批发货
+  NONE_DIRECT_ORDER:"nonedirectorder",//非直销订单按直销方式确认收入
 }
 
 const APPLY_TYPE_MAP = {
   [APPLY_TYPE.PRODUCTION]: { label: "特批开始生产", dictGroup: 'sp_production_apply_item' },
-  [APPLY_TYPE.EXT_WARRANTY]: { label: '延长保修', dictGroup: 'sp_warranty_apply_item' },
-  [APPLY_TYPE.EXT_INSTALL_COST]: { label: "额外安装费用及其他", dictGroup: 'sp_installcost_apply_item' },
-  [APPLY_TYPE.LOGISTICSCOST]: { label: "物流运输", dictGroup: 'sp_logisticscost_apply_item' },
-  [APPLY_TYPE.LC_AMENDMENT]: { label: "LC Amendments申请", dictGroup: 'sp_lcamendment_apply_item' },
-  [APPLY_TYPE.RDD_OIT]: { label: "RDD-OIT>180天订单保留", dictGroup: 'sp_rddoit180reserv_apply_item' },
-  [APPLY_TYPE.MACHINE_EXCHANGE]: { label: "机器互换", dictGroup: 'sp_machineexchange_apply_item' },
+  [APPLY_TYPE.EXT_WARRANTY]: { label: '免费延长保修', dictGroup: 'sp_warranty_apply_item' },
+  [APPLY_TYPE.EXT_INSTALL_COST]: { label: "用户自定义审批", dictGroup: 'sp_installcost_apply_item' },
+  [APPLY_TYPE.LOGISTICSCOST]: { label: "飞利浦承担额外清关、仓储、物流费用", dictGroup: 'sp_logisticscost_apply_item' },
+  [APPLY_TYPE.LC_AMENDMENT]: { label: "L/C Amendment", dictGroup: 'sp_lcamendment_apply_item' },
+  [APPLY_TYPE.RDD_OIT]: { label: "RDD-OIT > 180 days订单保留", dictGroup: 'sp_rddoit180reserv_apply_item' },
+  [APPLY_TYPE.MACHINE_EXCHANGE]: { label: "商务条款不变，机器互换", dictGroup: 'sp_machineexchange_apply_item' },
   [APPLY_TYPE.TRANSFER_LIB]: { label: "转库", dictGroup: 'sp_transferlib_apply_item' },
   [APPLY_TYPE.CANCEL_ORDER]: { label: "Cancel Order申请", dictGroup: 'sp_cancelorder_apply_item' },
   [APPLY_TYPE.SPECIAL_DELIVERY]: { label: "特批发货", dictGroup: 'sp_delivery_apply_item' },
+  [APPLY_TYPE.NONE_DIRECT_ORDER]:{label: "非直销订单按直销方式确认收入", dictGroup: 'sp_nonedirectorder_apply_item'},
 };
 
 
 const APPLY_TYPES = [
   { label: "特批开始生产", value: APPLY_TYPE.PRODUCTION },
-  { label: "延长保修", value: APPLY_TYPE.EXT_WARRANTY },
-  { label: "额外安装费用及其他", value: APPLY_TYPE.EXT_INSTALL_COST },
-  { label: "物流运输-特别仓储", value: APPLY_TYPE.LOGISTICSCOST },
-  { label: "LC Amendment申请", value: APPLY_TYPE.LC_AMENDMENT },
-  { label: "RDD-OIT>180天订单保留", value: APPLY_TYPE.RDD_OIT },
-  { label: "机器互换", value: APPLY_TYPE.MACHINE_EXCHANGE },
+  { label: "免费延长保修", value: APPLY_TYPE.EXT_WARRANTY },
+  { label: "用户自定义审批", value: APPLY_TYPE.EXT_INSTALL_COST },
+  { label: "飞利浦承担额外清关、仓储、物流费用", value: APPLY_TYPE.LOGISTICSCOST },
+  { label: "L/C Amendment", value: APPLY_TYPE.LC_AMENDMENT },
+  { label: "RDD-OIT > 180 days订单保留", value: APPLY_TYPE.RDD_OIT },
+  { label: "商务条款不变，机器互换", value: APPLY_TYPE.MACHINE_EXCHANGE },
   { label: "转库", value: APPLY_TYPE.TRANSFER_LIB },
   { label: "Cancel Order申请", value: APPLY_TYPE.CANCEL_ORDER },
   { label: "特批发货", value: APPLY_TYPE.SPECIAL_DELIVERY },
+  {label: "非直销订单按直销方式确认收入", value: APPLY_TYPE.NONE_DIRECT_ORDER},
 ];
 
 const STAND_WARRANTY_MONTH = {
