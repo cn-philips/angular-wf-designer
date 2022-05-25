@@ -28,7 +28,7 @@ interface CommonResponse {
   styleUrls: ['./order-replacement.component.scss']
 })
 export class OrderReplacementComponent implements OnInit {
-  constructor(private spService: SpecialApprovalService,) {}
+  constructor(public spService: SpecialApprovalService,) {}
 
 
   @ViewChild('selectHospital') selectHospital: SelectHospitalComponent
@@ -76,7 +76,7 @@ export class OrderReplacementComponent implements OnInit {
       return false
     }
   }
-  
+
   get orderInfoStatus(): FormGroup { return this.formValues.get('orderInfoStatus') as FormGroup }
 
 
@@ -200,7 +200,7 @@ export class OrderReplacementComponent implements OnInit {
         this.onCalcProjectName()
       })
     }
-    
+
     console.log("cancelContractLink:",this.cancelContractLink);
     // console.log("editable",this.editable);
     // this.disableField();
@@ -214,14 +214,14 @@ export class OrderReplacementComponent implements OnInit {
 
   disableField() {
     let disabledFieldsList = [
-      "spApplyOrderId", 
+      "spApplyOrderId",
       "startProduction",
-      "orderCancelAmountProduction", 
+      "orderCancelAmountProduction",
       "shipped",
       "orderCancelAmountShipped",
       "thirdPartyProcurement",
-      "orderCancelAmountPurchase", 
-      "seenSite", 
+      "orderCancelAmountPurchase",
+      "seenSite",
       "orderCancelAmountSite",
       "advanceChargeStatus",
       "advanceChargeAmount",
@@ -235,6 +235,6 @@ export class OrderReplacementComponent implements OnInit {
     })
   }
 
- 
+
 
 }

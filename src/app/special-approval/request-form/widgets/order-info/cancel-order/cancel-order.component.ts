@@ -31,7 +31,7 @@ interface CommonResponse {
   styleUrls: ['./cancel-order.component.scss']
 })
 export class CancelOrderComponent implements OnInit {
-  constructor(private spService: SpecialApprovalService, private modal: NzModalService, private message: NzMessageService, private dictService: DictService) {}
+  constructor(public spService: SpecialApprovalService, private modal: NzModalService, private message: NzMessageService, private dictService: DictService) {}
 
 
   @ViewChild('selectHospital') selectHospital: SelectHospitalComponent
@@ -82,7 +82,7 @@ export class CancelOrderComponent implements OnInit {
       return false
     }
   }
-  
+
   get orderInfoStatus(): FormGroup { return this.formValues.get('orderInfoStatus') as FormGroup }
 
 
@@ -206,7 +206,7 @@ export class CancelOrderComponent implements OnInit {
         this.onCalcProjectName()
       })
     }
-    
+
     //是否是补充信息节点
     if(!this.isSupplementNode){
       this.disableField();
@@ -229,14 +229,14 @@ export class CancelOrderComponent implements OnInit {
 
   disableField() {
     let disabledFieldsList = [
-      "spApplyOrderId", 
+      "spApplyOrderId",
       "startProduction",
-      "orderCancelAmountProduction", 
+      "orderCancelAmountProduction",
       "shipped",
       "orderCancelAmountShipped",
       "thirdPartyProcurement",
-      "orderCancelAmountPurchase", 
-      "seenSite", 
+      "orderCancelAmountPurchase",
+      "seenSite",
       "orderCancelAmountSite",
       "advanceChargeStatus",
       "advanceChargeAmount",
