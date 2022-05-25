@@ -1117,33 +1117,33 @@ export class RequestFormComponent implements OnInit {
 
   //补充信息审批操作
   async onApproveSubmit(action: string){
-      try {
-        const { remark, attachments, notify, notifier } = this.supplementFormValues.getRawValue()
-        const id = this.message.loading(LOADING_MESSAGE.APPROVE, { nzDuration: 0 }).messageId
-        this.submitLoading = true;
-        const formData = this.getFormData();
-        const data = {
-          applyId: this.requestId,
-          attachments: attachments,
-          result: action,
-          notify,
-          notifier: notify ? notifier.join(','): '',
-          remark,
-          taskInstId: this.taskId,
-          applyInfos: formData,
-        }
-        
-        await this.spService.approveRequest(data);
-        this.message.remove(id)
-        this.message.success(SUCCESS_MESSAGE.APPROVE)
-        this.router.navigate(['/special-approval/home'])
-      } catch ({ message }) {
-        this.message.error(ERROR_MESSAGE.APPROVE)
-        console.error(`审批失败, ${message}`);
-      } finally {
-        this.submitLoading = false
+    try {
+      const { remark, attachments, notify, notifier } = this.supplementFormValues.getRawValue()
+      const id = this.message.loading(LOADING_MESSAGE.APPROVE, { nzDuration: 0 }).messageId
+      this.submitLoading = true;
+      const formData = this.getFormData();
+      const data = {
+        applyId: this.requestId,
+        attachments: attachments,
+        result: action,
+        notify,
+        notifier: notify ? notifier.join(','): '',
+        remark,
+        taskInstId: this.taskId,
+        applyInfos: formData,
       }
+      
+      await this.spService.approveRequest(data);
+      this.message.remove(id)
+      this.message.success(SUCCESS_MESSAGE.APPROVE)
+      this.router.navigate(['/special-approval/home'])
+    } catch ({ message }) {
+      this.message.error(ERROR_MESSAGE.APPROVE)
+      console.error(`审批失败, ${message}`);
+    } finally {
+      this.submitLoading = false
     }
+  }
 
   public async getRequestDetail(requestId) {
     try {
