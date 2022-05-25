@@ -1,0 +1,239 @@
+<nz-card class="mtb1rem" nzTitle="订单信息">
+  <form nz-form [formGroup]="formValues">
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="12">
+        <nz-form-item>
+          <nz-form-label nzXl="8" nzXXl="6" nzRequired nzFor="orderType">订单类型</nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <nz-select formControlName="orderType" nzPlaceHolder="请选择订单类型">
+              <nz-option *ngFor="let item of selectOptions.orderTypes" [nzLabel]="item.label" [nzValue]="item.value">
+              </nz-option>
+            </nz-select>
+            <nz-form-explain *ngIf="formValues.get('orderType')?.dirty && formValues.get('orderType')?.errors">
+              请选择订单类型
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+
+      <div nz-col nzXs="24" nzSm="24" nzMd="12">
+        <nz-form-item>
+          <nz-form-label nzXl="8" nzXXl="6" nzFor="referenceId">Reference ID</nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <nz-input-group nzFlex style="width: 100%" [nzAddOnAfter]="importReferenceBtn">
+              <input id="referenceId" type="text" nz-input formControlName="referenceId" class="flex-grow-1" />
+            </nz-input-group>
+
+            <ng-template #importReferenceBtn>
+              <button *ngIf="editable" nz-button nzType="primary" class="ml-md"
+                (click)="onShowReferenceModal()">导入数据</button>
+            </ng-template>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="12">
+        <nz-form-item>
+          <nz-form-label nzXl="8" nzXXl="6" nzRequired>产品线</nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <nz-select formControlName="bmc" nzPlaceHolder="请选择产品线">
+              <nz-option *ngFor="let item of bmcList" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+            </nz-select>
+            <nz-form-explain *ngIf="formValues.get('bmc')?.dirty && formValues.get('bmc')?.errors">
+              请选择产品线
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+
+      <div nz-col nzXs="24" nzSm="24" nzMd="12">
+        <nz-form-item>
+          <nz-form-label nzXl="8" nzXXl="6">BG</nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <nz-select formControlName="bg" nzPlaceHolder="请先选择BG" #bg>
+              <nz-option *ngFor="let item of selectOptions.bgList" [nzLabel]="item.label" [nzValue]="item.value">
+              </nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="12">
+        <nz-form-item>
+          <nz-form-label nzXl="8" nzXXl="6" nzRequired>销售区域</nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <nz-input-group style="width: 100%;font-size: 0;">
+              <nz-select formControlName="cycleGroup" style="width: 48%;margin-right:4%"
+                nzPlaceHolder="Team/Cycle Group" (ngModelChange)="onCycleGroupChange()">
+                <nz-option *ngFor="let item of spService.cycleGroups" [nzLabel]="item.label" [nzValue]="item.value">
+                </nz-option>
+              </nz-select>
+
+              <nz-select formControlName="bigArea" style="width: 48%" nzPlaceHolder="Region">
+                <nz-option *ngFor="let item of bigAreas" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+                <nz-option *ngIf="bigAreas.length === 0" nzLabel="请先选择Team/Cycle Group" [nzDisabled]="true"></nz-option>
+              </nz-select>
+            </nz-input-group>
+            <div style="display: flex;">
+              <nz-form-explain style="width: 48%;margin-right:4%">
+                <span style="color:#f5222d"
+                  *ngIf="formValues.get('cycleGroup')?.dirty && formValues.get('cycleGroup')?.errors">请选择销售区域</span>
+              </nz-form-explain>
+              <nz-form-explain style="width: 48%"
+                *ngIf="formValues.get('bigArea')?.dirty && formValues.get('bigArea')?.errors">
+                <span style="color:#f5222d">请选择销售区域</span>
+              </nz-form-explain>
+            </div>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+
+    </div>
+
+    <!-- <div nz-row nzType="flex" nzJustify="start" nzAlign="middle" *ngIf="showDealerArea">
+      <div nz-col nzXs="24" nzSm="24" nzMd="12">
+        <nz-form-item>
+          <nz-form-label nzXl="8" nzXXl="6">经销商名称</nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <nz-input-group style="width: 100%" [nzSuffix]="clearDealerBtn" [nzAddOnAfter]="selectDealerBtn">
+              <input id="dealerName" type="text" nz-input formControlName="dealerName"
+                [placeholder]="editable ? '点击右侧按钮选择经销商' : ''" />
+            </nz-input-group>
+            <ng-template #clearDealerBtn>
+              <i nz-icon nz-tooltip class="ant-input-clear-icon" nzTheme="fill" nzType="close-circle"
+                *ngIf="formValues.get('dealerCode').value && editable" (click)="onClearDealer()"></i>
+            </ng-template>
+
+            <ng-template #selectDealerBtn>
+              <button *ngIf="editable" nz-button nzType="primary" class="ml-md"
+                (click)="onShowSelectDealerModal()">选择经销商</button>
+            </ng-template>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+
+      <div nz-col nzXs="24" nzSm="24" nzMd="12">
+        <nz-form-item>
+          <nz-form-label nzXl="8" nzXXl="6">经销商编号</nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <input id="dealerCode" nz-input formControlName="dealerCode" [disabled]="true" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="12">
+        <nz-form-item>
+          <nz-form-label nzXl="8" nzXXl="6">医院名称</nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <nz-input-group style="width: 100%" [nzSuffix]="clearHospitalBtn" [nzAddOnAfter]="selectHospitalBtn">
+              <input id="hospitalName" type="text" nz-input formControlName="hospitalName"
+                [placeholder]="editable ? '点击右侧按钮选择医院' : ''" />
+            </nz-input-group>
+
+            <ng-template #clearHospitalBtn>
+              <i nz-icon nz-tooltip class="ant-input-clear-icon" nzTheme="fill" nzType="close-circle"
+                *ngIf="formValues.get('hospitalNo').value && editable" (click)="onClearHospital()"></i>
+            </ng-template>
+
+            <ng-template #selectHospitalBtn>
+              <button *ngIf="editable" nz-button nzType="primary" class="ml-md"
+                (click)="onShowSelectHospitalModal()">选择医院</button>
+            </ng-template>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+
+      <div nz-col nzXs="24" nzSm="24" nzMd="12">
+        <nz-form-item>
+          <nz-form-label nzXl="8" nzXXl="6">医院编号</nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <input id="hospitalNo" nz-input formControlName="hospitalNo" [disabled]="true" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div> -->
+
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="12">
+        <nz-form-item>
+          <nz-form-label nzXl="8" nzXXl="6" [nzRequired]="bg.value === 'PD&IGT'" nzFor="projectName">项目名称
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <input id="projectName" nz-input formControlName="projectName"
+              [placeholder]="bg.value === 'PD&IGT' ? '' : '自动生成: 医院名称-产品型号'" maxlength="300" />
+            <nz-form-explain
+              *ngIf="formValues.get('projectName')?.dirty && formValues.get('projectName')?.errors && bg.value === 'PD&IGT'">
+              请填写项目名称
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="12">
+        <nz-form-item>
+          <nz-form-label nzXl="8" nzXXl="6" nzRequired nzFor="sapOrderNo">SAP订单号(SO#)</nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <input id="sapOrderNo" nz-input formControlName="sapOrderNo" maxlength="50" />
+            <nz-form-explain *ngIf="formValues.get('sapOrderNo')?.dirty && formValues.get('sapOrderNo')?.errors">
+              请填写SAP订单号(SO#)
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzXs="24" nzSm="24" nzMd="12">
+        <nz-form-item>
+          <nz-form-label nzXl="8" nzXXl="6" nzRequired>创建时间</nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <nz-date-picker formControlName="createTime" style="width: 100%" [nzStyle]="{ width: '100%' }">
+            </nz-date-picker>
+            <nz-form-explain *ngIf="formValues.get('createTime')?.dirty && formValues.get('createTime')?.errors">
+              请选择创建时间
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="12">
+        <nz-form-item>
+          <nz-form-label nzXl="8" nzXXl="6" nzRequired nzFor="newSapOrderNo">新SAP订单号(SO#)</nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <input id="newSapOrderNo" nz-input formControlName="newSapOrderNo" maxlength="50" />
+            <nz-form-explain *ngIf="formValues.get('newSapOrderNo')?.dirty && formValues.get('newSapOrderNo')?.errors">
+              请填写新SAP订单号(SO#)
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzXs="24" nzSm="24" nzMd="12">
+        <nz-form-item>
+          <nz-form-label nzXl="8" nzXXl="6" nzRequired>创建时间</nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <nz-date-picker formControlName="newSapCreateTime" style="width: 100%" [nzStyle]="{ width: '100%' }">
+            </nz-date-picker>
+            <nz-form-explain
+              *ngIf="formValues.get('newSapCreateTime')?.dirty && formValues.get('newSapCreateTime')?.errors">
+              请选择新创建时间
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+  </form>
+
+
+
+  <app-select-hospital #selectHospital (select)="onSelectHospital($event)"></app-select-hospital>
+  <app-select-dealer #selectDealer (select)="onSelectDealer($event)"></app-select-dealer>
+  <app-select-reference #selectReference (select)="onSelectReference($event)"></app-select-reference>
+</nz-card>
