@@ -5,7 +5,6 @@ import { Hospital, SelectHospitalComponent, } from '../../select-hospital/select
 import { Dealer, SelectDealerComponent } from '../../select-dealer/select-dealer.component'
 import { Reference, SelectReferenceComponent } from '../../select-reference/select-reference.component'
 import { SpecialApprovalService } from '../../../../special-approval.service'
-import { getType } from '../../../../../../assets/js/tools'
 
 import {
   APPLY_TYPE,
@@ -41,7 +40,6 @@ export class OrderReplacementComponent implements OnInit {
   @Input() editable = true
   @Input() baseInfo: FormGroup
 
-  cancelContractLink: any = [];
 
   APPLY_TYPE = APPLY_TYPE
 
@@ -155,55 +153,53 @@ export class OrderReplacementComponent implements OnInit {
       referenceId,
       orderType,
       projectName,
-      productModel,
+      // productModel,
       sap,
       team,
       region,
       bmc,
-      businessModel,
-      distributor,
-      dealerCode,
-      endUser,
-      endUserId,
-      contractPrice,
-      invoiceInformation,
-      logistician
+
+      // businessModel,
+      // distributor,
+      // dealerCode,
+      // endUser,
+      // endUserId,
+      // contractPrice,
+      // invoiceInformation,
+      // logistician
     } = reference;
     this.formValues.patchValue({
       orderType,
       referenceId,
       projectName,
-      productType: productModel,
+      // productType: productModel,
       sapOrderNo: sap,
       cycleGroup: team,
       bigArea: region,
       bmc,
-      businessModel: businessModel ? businessModel.toLowerCase() : null,
-      dealerName: distributor,
-      dealerCode,
-      hospitalName: endUser,
-      hospitalNo: endUserId,
-      orderAmount: contractPrice,
-      currency: invoiceInformation,
-      om: logistician,
+      // businessModel: businessModel ? businessModel.toLowerCase() : null,
+      // dealerName: distributor,
+      // dealerCode,
+      // hospitalName: endUser,
+      // hospitalNo: endUserId,
+      // orderAmount: contractPrice,
+      // currency: invoiceInformation,
+      // om: logistician,
     });
   }
 
   ngOnInit(): void {
     this.initOMUsers()
-    if (this.editable) {
-      this.formValues.get('hospitalName').valueChanges.subscribe(() => {
-        this.onCalcProjectName()
-      })
+    // if (this.editable) {
+    //   this.formValues.get('hospitalName').valueChanges.subscribe(() => {
+    //     this.onCalcProjectName()
+    //   })
 
-      this.formValues.get('productType').valueChanges.subscribe(() => {
-        this.onCalcProjectName()
-      })
-    }
-
-    console.log("cancelContractLink:",this.cancelContractLink);
-    // console.log("editable",this.editable);
-    // this.disableField();
+    //   this.formValues.get('productType').valueChanges.subscribe(() => {
+    //     this.onCalcProjectName()
+    //   })
+    // }
+    
   }
 
    // 初始化OM列表
