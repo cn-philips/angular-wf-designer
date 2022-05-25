@@ -73,11 +73,11 @@
           <nz-form-label nzXl="8" nzXXl="6">销售区域</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <nz-input-group style="width: 100%;font-size: 0;">
-              <nz-select formControlName="cycleGroup" style="width: 48%;margin-right:4%" nzPlaceHolder="Team/Cycle Group" (ngModelChange)="onCycleGroupChange()">
+              <nz-select formControlName="cycleGroup" style="width: 48%;margin-right:4%" [nzPlaceHolder]="editable ? 'Team/Cycle Group' : ''" (ngModelChange)="onCycleGroupChange()">
                 <nz-option *ngFor="let item of spService.cycleGroups" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
               </nz-select>
 
-              <nz-select formControlName="bigArea" style="width: 48%" nzPlaceHolder="Region">
+              <nz-select formControlName="bigArea" style="width: 48%" [nzPlaceHolder]="editable ? 'Region' : ''">
                 <nz-option *ngFor="let item of bigAreas" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
                 <nz-option *ngIf="bigAreas.length === 0" nzLabel="请先选择Team/Cycle Group" [nzDisabled]="true"></nz-option>
               </nz-select>
