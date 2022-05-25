@@ -195,7 +195,7 @@
               <nz-form-item class="order-list-normal-item">
                 <nz-form-control nzXs="24" nzSm="24" nzMd="14">
                   <nz-input-group style="width: 100%;font-size: 0;">
-                    <nz-select formControlName="cycleGroup" style="width: 100%;margin-right:4%" nzPlaceHolder="Team/Cycle Group" (ngModelChange)="onBigAreaChange($event, index)">
+                    <nz-select formControlName="cycleGroup" style="width: 100%;margin-right:4%" [nzPlaceHolder]="editable ? 'Team/Cycle Group' : ''" (ngModelChange)="onBigAreaChange($event, index)">
                       <nz-option *ngFor="let item of spService.cycleGroups" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
                       <nz-option *ngIf="spService.cycleGroups.length === 0" nzLabel="请先选择Team/Cycle Group" [nzDisabled]="true"></nz-option>
                     </nz-select>
@@ -207,7 +207,7 @@
               <nz-form-item class="order-list-normal-item">
                 <nz-form-control nzXs="24" nzSm="24" nzMd="14">
                   <nz-input-group style="width: 100%;font-size: 0;" *ngIf="editable">
-                    <nz-select formControlName="bigArea" style="width: 100%" nzPlaceHolder="Region">
+                    <nz-select formControlName="bigArea" style="width: 100%" [nzPlaceHolder]="editable ? 'Region' : ''">
                       <nz-option *ngFor="let item of index == 0? selectOptions.bigArea0 : selectOptions.bigArea1 " [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
                       <nz-option *ngIf="(index == 0? selectOptions.bigArea0.length === 0 : selectOptions.bigArea1.length === 0 )" nzLabel="请先选择Team/Cycle Group" [nzDisabled]="true"></nz-option>
                     </nz-select>

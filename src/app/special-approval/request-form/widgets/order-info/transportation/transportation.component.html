@@ -73,11 +73,11 @@
           <nz-form-label nzXl="8" nzXXl="6">销售区域</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <nz-input-group style="width: 100%;font-size: 0;">
-              <nz-select formControlName="cycleGroup" style="width: 48%;margin-right:4%" nzPlaceHolder="Team/Cycle Group" (ngModelChange)="onCycleGroupChange()">
+              <nz-select formControlName="cycleGroup" style="width: 48%;margin-right:4%" [nzPlaceHolder]="editable ? 'Team/Cycle Group' : ''" (ngModelChange)="onCycleGroupChange()">
                 <nz-option *ngFor="let item of spService.cycleGroups" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
               </nz-select>
 
-              <nz-select formControlName="bigArea" style="width: 48%" nzPlaceHolder="Region">
+              <nz-select formControlName="bigArea" style="width: 48%" [nzPlaceHolder]="editable ? 'Region' : ''">
                 <nz-option *ngFor="let item of bigAreas" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
                 <nz-option *ngIf="bigAreas.length === 0" nzLabel="请先选择Team/Cycle Group" [nzDisabled]="true"></nz-option>
               </nz-select>
@@ -214,23 +214,17 @@
     <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
       <div nz-col nzXs="24" nzSm="24" nzMd="12">
         <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6" nzRequired>{{'预计付款日期' }}</nz-form-label>
+          <nz-form-label nzXl="8" nzXXl="6" nzRequired>预计付款日期</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <nz-date-picker formControlName="expectedPaymentDate" style="width: 100%" [nzStyle]="{ width: '100%' }"></nz-date-picker>
-            <nz-form-explain *ngIf="formValues.get('expectedPaymentDate')?.dirty && formValues.get('expectedPaymentDate')?.errors">
-              {{'请选择预计付款日期'}}
-            </nz-form-explain>
+            <nz-date-picker formControlName="expectedPaymentDate" style="width: 100%" [nzStyle]="{ width: '100%' }" [nzPlaceHolder]="editable ? '请选择日期' : ''"></nz-date-picker>
           </nz-form-control>
         </nz-form-item>
       </div>
       <div nz-col nzXs="24" nzSm="24" nzMd="12">
         <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6" nzRequired>申请到货日期</nz-form-label>
+          <nz-form-label nzXl="8" nzXXl="6">申请到货日期</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <nz-date-picker formControlName="applyArrivalTime" style="width: 100%" [nzStyle]="{ width: '100%' }"></nz-date-picker>
-            <nz-form-explain *ngIf="formValues.get('applyArrivalTime')?.dirty && formValues.get('applyArrivalTime')?.errors">
-              请选择申请到货日期
-            </nz-form-explain>
+            <nz-date-picker formControlName="applyArrivalTime" style="width: 100%" [nzStyle]="{ width: '100%' }" [nzPlaceHolder]="editable ? '请选择日期' : ''"></nz-date-picker>
           </nz-form-control>
         </nz-form-item>
       </div>
@@ -239,12 +233,9 @@
     <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
       <div nz-col nzXs="24" nzSm="24" nzMd="12">
         <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6" nzRequired>预计记认销售日期</nz-form-label>
+          <nz-form-label nzXl="8" nzXXl="6">预计记认销售日期</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <nz-date-picker formControlName="expectedSaleDate" style="width: 100%" [nzStyle]="{ width: '100%' }"></nz-date-picker>
-            <nz-form-explain *ngIf="formValues.get('expectedSaleDate')?.dirty && formValues.get('expectedSaleDate')?.errors">
-              请选择预计记认销售日期
-            </nz-form-explain>
+            <nz-date-picker formControlName="expectedSaleDate" style="width: 100%" [nzStyle]="{ width: '100%' }" [nzPlaceHolder]="editable ? '请选择日期' : ''"></nz-date-picker>
           </nz-form-control>
         </nz-form-item>
       </div>
