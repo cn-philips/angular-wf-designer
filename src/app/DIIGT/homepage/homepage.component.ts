@@ -113,18 +113,28 @@ initManuals(){
 
     // special approval
     this.http.get(`/act/ecom/dictData/queryDrop?dictGroup=LINK_QA_PDF_SP`).subscribe(res => {
-      if (res.code === '0000' && res.data) {
-        const manualListSp = [...res.data];
-        const strRegex = /\.(pdf)$/;
-        manualListSp.map(e => {
-          if (e.label && strRegex.test(e.label.toLowerCase())) {
-            e.type = 'pdf';
-          } else {
-            e.type = 'video';
-          }
+      const sp_pdf = [...res.data];
+      // const strRegex = /\.(pdf)$/;
+      if (sp_pdf) {
+        sp_pdf.map(e => {
+          e.type = 'pdf';
+          // if (e.label && strRegex.test(e.label.toLowerCase())) {
+          //   e.type = 'pdf';
+          // } else {
+          //   e.type = 'video';
+          // }
         });
-        this.manualListSp = manualListSp;
       }
+      this.http.get(`/act/ecom/dictData/queryDrop?dictGroup=LINK_QA_LINK_SP`).subscribe( rest => {
+        const sp_video = [...rest.data];
+        if (sp_video) {
+          sp_video.map(e => {
+            e.type = 'video';
+          });
+        }
+        this.manualListSp = [...sp_pdf, ...sp_video];
+      });
+
     });
   }
   //打开pdf
