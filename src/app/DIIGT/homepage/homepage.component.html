@@ -8,6 +8,18 @@
   </head>
   <body>
     <div class="homepage-container">
+      <!-- message -->
+      <div style="padding-bottom: 16px" *ngIf="message_length > 0">
+        <div *ngFor="let item of message_error" class="message_div" #message>
+          <nz-alert nzType="error" [nzMessage]="item.label" nzCloseable (nzOnClose)="closeMessage(message)"></nz-alert>
+        </div>
+        <div *ngFor="let item of message_info" class="message_div" #message>
+          <nz-alert nzType="info" [nzMessage]="item.label" nzCloseable (nzOnClose)="closeMessage(message)"></nz-alert>
+        </div>
+        <div *ngFor="let item of message_warning" class="message_div" #message>
+          <nz-alert nzType="warning" [nzMessage]="item.label" nzCloseable (nzOnClose)="closeMessage(message)"></nz-alert>
+        </div>
+      </div>
       <div class="">
         <div>
           <div class="float-left carousel-wrapper">
@@ -63,9 +75,9 @@
                       </div>
                     </div>
 
-                    <div class="dashboard_sp_message">
-                      特批模块已于2022年4月10日上线，OIT后的特批申请请在特批模块中发起！
-                    </div>
+<!--                    <div class="dashboard_sp_message">-->
+<!--                      特批模块已于2022年4月10日上线，OIT后的特批申请请在特批模块中发起！-->
+<!--                    </div>-->
                   </div>
                 </div>
                 <!-- 图片 -->
