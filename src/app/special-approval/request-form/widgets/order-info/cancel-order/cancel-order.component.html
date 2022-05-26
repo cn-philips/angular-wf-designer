@@ -85,7 +85,7 @@
     <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
       <div nz-col nzXs="24" nzSm="24" nzMd="12">
         <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6" nzRequired>销售区域</nz-form-label>
+          <nz-form-label nzXl="8" nzXXl="6" [nzRequired]="bg.value != 'CC'">销售区域</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <nz-input-group style="width: 100%;font-size: 0;">
               <nz-select formControlName="cycleGroup" style="width: 48%;margin-right:4%"
@@ -281,7 +281,7 @@
     <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
       <div nz-col nzXs="24" nzSm="24" nzMd="12">
         <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6" nzRequired>OM</nz-form-label>
+          <nz-form-label nzXl="8" nzXXl="6" [nzRequired]="bg.value != 'CC'">OM</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <nz-select formControlName="om" [nzPlaceHolder]="editable ? '请选择OM' : ''">
               <nz-option *ngFor="let item of selectOptions.oms" [nzLabel]="item.label" [nzValue]="item.value">
@@ -295,7 +295,7 @@
       </div>
     </div>
 
-    <nz-card class="mtb1rem" nzTitle="订单状态信息">
+    <nz-card class="mtb1rem" nzTitle="订单信息-订单状态信息">
       <form nz-form [formGroup]="orderInfoStatus">
         <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
           <div nz-col nzXs="24" nzSm="24" nzMd="12">
@@ -306,6 +306,10 @@
                   <label nz-radio [nzValue]="'1'">是</label>
                   <label nz-radio [nzValue]="'0'">否</label>
                 </nz-radio-group>
+                <nz-form-explain
+                  *ngIf="orderInfoStatus.get('startProduction')?.dirty && orderInfoStatus.get('startProduction')?.errors">
+                  请选择是否开始生产
+                </nz-form-explain>
               </nz-form-control>
             </nz-form-item>
           </div>
@@ -316,9 +320,6 @@
               <nz-form-control nzXs="24" nzSm="24" nzMd="12">
                 <nz-input-number id="orderCancelAmountProduction" style="width: 100%;"
                   formControlName="orderCancelAmountProduction" [nzMin]="0"></nz-input-number>
-                <!-- <nz-form-explain *ngIf="formValues.get('')?.dirty && formValues.get('')?.errors">
-                  请填写订单取消的额外费用-生产
-                </nz-form-explain> -->
               </nz-form-control>
             </nz-form-item>
           </div>
@@ -333,20 +334,21 @@
                   <label nz-radio [nzValue]="'1'">是</label>
                   <label nz-radio [nzValue]="'0'">否</label>
                 </nz-radio-group>
+                <nz-form-explain
+                  *ngIf="orderInfoStatus.get('shipped')?.dirty && orderInfoStatus.get('shipped')?.errors">
+                  请选择是否已发货
+                </nz-form-explain>
               </nz-form-control>
             </nz-form-item>
           </div>
 
           <div nz-col nzXs="24" nzSm="24" nzMd="12" *ngIf="shipped.value=='1'">
             <nz-form-item>
-              <nz-form-label nzXl="12" nzXXl="8">订单取消的额外费用-<br>国际国内段运输仓储费</nz-form-label>
+              <nz-form-label nzXl="12" nzXXl="8">订单取消的额外费用-<br>国际国内段运输仓储费用</nz-form-label>
               <nz-form-control nzXs="24" nzSm="24" nzMd="12">
                 <nz-input-number id="orderCancelAmountShipped" style="width: 100%;"
                   formControlName="orderCancelAmountShipped" [nzMin]="0">
                 </nz-input-number>
-                <!-- <nz-form-explain *ngIf="formValues.get('')?.dirty && formValues.get('')?.errors">
-                  请填写订单取消的额外费用-生产
-                </nz-form-explain> -->
               </nz-form-control>
             </nz-form-item>
           </div>
@@ -361,6 +363,10 @@
                   <label nz-radio [nzValue]="'1'">是</label>
                   <label nz-radio [nzValue]="'0'">否</label>
                 </nz-radio-group>
+                <nz-form-explain
+                  *ngIf="orderInfoStatus.get('thirdPartyProcurement')?.dirty && orderInfoStatus.get('thirdPartyProcurement')?.errors">
+                  请选择是否有第三方采购
+                </nz-form-explain>
               </nz-form-control>
             </nz-form-item>
           </div>
@@ -372,9 +378,6 @@
                 <nz-input-number id="orderCancelAmountPurchase" style="width: 100%;"
                   formControlName="orderCancelAmountPurchase" [nzMin]="0">
                 </nz-input-number>
-                <!-- <nz-form-explain *ngIf="formValues.get('')?.dirty && formValues.get('')?.errors">
-                  请填写订单取消的额外费用-生产
-                </nz-form-explain> -->
               </nz-form-control>
             </nz-form-item>
           </div>
@@ -389,6 +392,10 @@
                   <label nz-radio [nzValue]="'1'">是</label>
                   <label nz-radio [nzValue]="'0'">否</label>
                 </nz-radio-group>
+                <nz-form-explain
+                  *ngIf="orderInfoStatus.get('seenSite')?.dirty && orderInfoStatus.get('seenSite')?.errors">
+                  请选择是否看过场地
+                </nz-form-explain>
               </nz-form-control>
             </nz-form-item>
           </div>
@@ -400,9 +407,6 @@
                 <nz-input-number id="orderCancelAmountSite" style="width: 100%;" formControlName="orderCancelAmountSite"
                   [nzMin]="0">
                 </nz-input-number>
-                <!-- <nz-form-explain *ngIf="formValues.get('')?.dirty && formValues.get('')?.errors">
-                  请填写订单取消的额外费用-生产
-                </nz-form-explain> -->
               </nz-form-control>
             </nz-form-item>
           </div>
@@ -417,6 +421,10 @@
                   <label nz-radio [nzValue]="'1'">是</label>
                   <label nz-radio [nzValue]="'0'">否</label>
                 </nz-radio-group>
+                <nz-form-explain
+                  *ngIf="orderInfoStatus.get('advanceChargeStatus')?.dirty && orderInfoStatus.get('advanceChargeStatus')?.errors">
+                  请选择预付款状态
+                </nz-form-explain>
               </nz-form-control>
             </nz-form-item>
           </div>
