@@ -186,6 +186,7 @@ export class ApproveNodeFormComponent implements OnInit {
         approver,
         approveRole,
         approverCustom,
+        approverInitiator,
         cc,
         ccPersonList = [],
       } = data;
@@ -208,19 +209,17 @@ export class ApproveNodeFormComponent implements OnInit {
       })
       this.ccPersonList = ccPersonList;
 
-      if (approver) {
-        this.formValues.patchValue({
-          approveUserType: APPROVE_USER_TYPE.ASSIGN_USER,
-        });
+      let approveUserType = null
+      if (approverCustom === 1) {
+        approveUserType = APPROVE_USER_TYPE.USER_SELECT
+      } else if (approverInitiator === 1) {
+        approveUserType = APPROVE_USER_TYPE.APPLY_USER
+      } else if (approver) {
+        approveUserType = APPROVE_USER_TYPE.ASSIGN_USER
       } else if (approveRole) {
-        this.formValues.patchValue({
-          approveUserType: APPROVE_USER_TYPE.SYSTEM_ROLE,
-        });
-      } else if (approverCustom === 1) {
-        this.formValues.patchValue({
-          approveUserType: APPROVE_USER_TYPE.USER_SELECT,
-        });
+        approveUserType = APPROVE_USER_TYPE.SYSTEM_ROLE
       }
+      this.formValues.patchValue({ approveUserType });
 
       if (mode === APPROVE_NODE_MODE.PARALLEL) {
         const approvers = approver ? approver.split(",") : []
@@ -238,7 +237,7 @@ export class ApproveNodeFormComponent implements OnInit {
       }
     }
     if (this.isApplyNode) {
-      this.selectOptions.approveUserTypes = APPROVE_USER_TYPES.filter(({ value }) => value !== APPROVE_USER_TYPE.USER_SELECT)
+      this.selectOptions.approveUserTypes = APPROVE_USER_TYPES.filter(({ value }) => value !== APPROVE_USER_TYPE.USER_SELECT && value !== APPROVE_USER_TYPE.APPLY_USER)
     } else {
       this.selectOptions.approveUserTypes = APPROVE_USER_TYPES
     }
@@ -307,25 +306,25 @@ export class ApproveNodeFormComponent implements OnInit {
         action,
         mode: mode === APPROVE_NODE_MODE.NONE ? null : mode,
         cc,
-        approver,
-        approveRole,
+        approver: null,
+        approveRole: null,
         approverCustom: 0,
+        approverInitiator: 0,
         ccPersonList: this.ccPersonList,
       };
-      if (approveUserType === APPROVE_USER_TYPE.USER_SELECT) {
-        approveNode.approver = null;
-        approveNode.approveRole = null;
-        approveNode.approverCustom = 1;
-      } else if (approveUserType === APPROVE_USER_TYPE.SYSTEM_ROLE) {
-        approveNode.approver = null;
-        if (Array.isArray(approveRole)) {
-          approveNode.approveRole = approveRole.join(",");
-        }
-      } else {
-        approveNode.approveRole = null;
-        if (Array.isArray(approver)) {
-          approveNode.approver = approver.join(",");
-        }
+      switch(approveUserType) {
+        case APPROVE_USER_TYPE.USER_SELECT:
+          approveNode.approverCustom = 1;
+          break
+        case APPROVE_USER_TYPE.SYSTEM_ROLE:
+          approveNode.approveRole = Array.isArray(approveRole) ? approveRole.join(",") : approveRole
+          break
+        case APPROVE_USER_TYPE.ASSIGN_USER:
+          approveNode.approver = Array.isArray(approver) ? approver.join(",") : approver
+          break
+        case APPROVE_USER_TYPE.APPLY_USER:
+          approveNode.approverInitiator = 1
+          break
       }
       this.onHideModal();
       this.success.emit(approveNode);

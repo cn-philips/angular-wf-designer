@@ -171,7 +171,7 @@ export class HomeComponent implements OnInit {
               return true;
             }
           })
-          .map(({ bg, applyType, applyItem, remark }) => {
+          .map(({ bg, applyType, applyItem, remark, applyNodeApproveRole }) => {
             if (!tabSet.has(applyType)) {
               this.tabList.push({
                 title: APPLY_TYPE_MAP[applyType].label,
@@ -186,6 +186,7 @@ export class HomeComponent implements OnInit {
               item: applyItem,
               desc: remark,
               bg,
+              role: applyNodeApproveRole
             };
           });
         this.filteredTemplateList = this.allTemplateList;
@@ -304,9 +305,9 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  onNavigateToNewRequest({ type, item, bg }) {
+  onNavigateToNewRequest({ type, item, bg, role }) {
     this.router.navigate(["/special-approval/new-request"], {
-      queryParams: { type, item, bg },
+      queryParams: { type, item, bg, role },
     });
   }
 
