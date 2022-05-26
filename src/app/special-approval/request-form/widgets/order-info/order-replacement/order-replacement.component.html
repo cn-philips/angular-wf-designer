@@ -25,7 +25,7 @@
             </nz-input-group>
 
             <ng-template #importReferenceBtn>
-              <button *ngIf="editable" nz-button nzType="primary" class="ml-md"
+              <button *ngIf="editable && bg.value === 'PD&IGT'" nz-button nzType="primary" class="ml-md"
                 (click)="onShowReferenceModal()">导入数据</button>
             </ng-template>
           </nz-form-control>
@@ -94,81 +94,15 @@
 
     </div>
 
-    <!-- <div nz-row nzType="flex" nzJustify="start" nzAlign="middle" *ngIf="showDealerArea">
-      <div nz-col nzXs="24" nzSm="24" nzMd="12">
-        <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6">经销商名称</nz-form-label>
-          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <nz-input-group style="width: 100%" [nzSuffix]="clearDealerBtn" [nzAddOnAfter]="selectDealerBtn">
-              <input id="dealerName" type="text" nz-input formControlName="dealerName"
-                [placeholder]="editable ? '点击右侧按钮选择经销商' : ''" />
-            </nz-input-group>
-            <ng-template #clearDealerBtn>
-              <i nz-icon nz-tooltip class="ant-input-clear-icon" nzTheme="fill" nzType="close-circle"
-                *ngIf="formValues.get('dealerCode').value && editable" (click)="onClearDealer()"></i>
-            </ng-template>
-
-            <ng-template #selectDealerBtn>
-              <button *ngIf="editable" nz-button nzType="primary" class="ml-md"
-                (click)="onShowSelectDealerModal()">选择经销商</button>
-            </ng-template>
-          </nz-form-control>
-        </nz-form-item>
-      </div>
-
-      <div nz-col nzXs="24" nzSm="24" nzMd="12">
-        <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6">经销商编号</nz-form-label>
-          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <input id="dealerCode" nz-input formControlName="dealerCode" [disabled]="true" />
-          </nz-form-control>
-        </nz-form-item>
-      </div>
-    </div>
-
     <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
       <div nz-col nzXs="24" nzSm="24" nzMd="12">
         <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6">医院名称</nz-form-label>
-          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <nz-input-group style="width: 100%" [nzSuffix]="clearHospitalBtn" [nzAddOnAfter]="selectHospitalBtn">
-              <input id="hospitalName" type="text" nz-input formControlName="hospitalName"
-                [placeholder]="editable ? '点击右侧按钮选择医院' : ''" />
-            </nz-input-group>
-
-            <ng-template #clearHospitalBtn>
-              <i nz-icon nz-tooltip class="ant-input-clear-icon" nzTheme="fill" nzType="close-circle"
-                *ngIf="formValues.get('hospitalNo').value && editable" (click)="onClearHospital()"></i>
-            </ng-template>
-
-            <ng-template #selectHospitalBtn>
-              <button *ngIf="editable" nz-button nzType="primary" class="ml-md"
-                (click)="onShowSelectHospitalModal()">选择医院</button>
-            </ng-template>
-          </nz-form-control>
-        </nz-form-item>
-      </div>
-
-      <div nz-col nzXs="24" nzSm="24" nzMd="12">
-        <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6">医院编号</nz-form-label>
-          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <input id="hospitalNo" nz-input formControlName="hospitalNo" [disabled]="true" />
-          </nz-form-control>
-        </nz-form-item>
-      </div>
-    </div> -->
-
-    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
-      <div nz-col nzXs="24" nzSm="24" nzMd="12">
-        <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6" [nzRequired]="bg.value === 'PD&IGT'" nzFor="projectName">项目名称
+          <nz-form-label nzXl="8" nzXXl="6" nzRequired nzFor="projectName">项目名称
           </nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <input id="projectName" nz-input formControlName="projectName"
-              [placeholder]="bg.value === 'PD&IGT' ? '' : '自动生成: 医院名称-产品型号'" maxlength="300" />
-            <nz-form-explain
-              *ngIf="formValues.get('projectName')?.dirty && formValues.get('projectName')?.errors && bg.value === 'PD&IGT'">
+              [placeholder]="bg.value === 'PD&IGT' ? '' : '请填写项目名称'" maxlength="300" />
+            <nz-form-explain *ngIf="formValues.get('projectName')?.dirty && formValues.get('projectName')?.errors">
               请填写项目名称
             </nz-form-explain>
           </nz-form-control>
@@ -192,9 +126,9 @@
         <nz-form-item>
           <nz-form-label nzXl="8" nzXXl="6" nzRequired>创建时间</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <nz-date-picker formControlName="createTime" style="width: 100%" [nzStyle]="{ width: '100%' }">
+            <nz-date-picker formControlName="sapCreateTime" style="width: 100%" [nzStyle]="{ width: '100%' }">
             </nz-date-picker>
-            <nz-form-explain *ngIf="formValues.get('createTime')?.dirty && formValues.get('createTime')?.errors">
+            <nz-form-explain *ngIf="formValues.get('sapCreateTime')?.dirty && formValues.get('sapCreateTime')?.errors">
               请选择创建时间
             </nz-form-explain>
           </nz-form-control>
@@ -233,7 +167,5 @@
 
 
 
-  <app-select-hospital #selectHospital (select)="onSelectHospital($event)"></app-select-hospital>
-  <app-select-dealer #selectDealer (select)="onSelectDealer($event)"></app-select-dealer>
   <app-select-reference #selectReference (select)="onSelectReference($event)"></app-select-reference>
 </nz-card>

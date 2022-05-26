@@ -202,7 +202,7 @@ export class RequestFormComponent implements OnInit {
     sapOrderNo: [null, [Validators.required]], // SAP订单号
     newSapOrderNo: [null, [Validators.required]], // 新SAP订单号 适用于订单替换
     newSapCreateTime: [null, [Validators.required]], // 新SAP订单号创建日期 适用于订单替换
-    createTime: [null, [Validators.required]], //创建日期
+    sapCreateTime: [null, [Validators.required]], //创建日期
   }
 
   public formValues = this.fb.group({
@@ -572,11 +572,18 @@ export class RequestFormComponent implements OnInit {
         break
       case APPLY_TYPE.CANCEL_ORDER:
         if (bg == 'CC') {
-          this.cancelorderInfo.controls.productType.clearValidators();
+          //销售区域和OM非必填
+          clearedFields = ['cycleGroup', 'bigArea', 'om', 'productType'];
+          clearedFields.forEach((fieldName) => this.cancelorderInfo.controls[fieldName].clearValidators());
         } else {
           this.cancelorderInfo.controls.productType.setValidators([Validators.required]);
         }
         break
+      case APPLY_TYPE.ORDER_REPLACEMENT:
+          if (bg == 'PD&IGT') {
+            this.orderReplacementInfo.controls.referenceId.disable();
+          } 
+          break
     }
 
     if (bg === 'PD&IGT') {
@@ -1154,33 +1161,61 @@ export class RequestFormComponent implements OnInit {
 
   //补充信息审批操作
   async onApproveSubmit(action: string){
-    try {
-      const { remark, attachments, notify, notifier } = this.supplementFormValues.getRawValue()
-      const id = this.message.loading(LOADING_MESSAGE.APPROVE, { nzDuration: 0 }).messageId
-      this.submitLoading = true;
-      const formData = this.getFormData();
-      const data = {
-        applyId: this.requestId,
-        attachments: attachments,
-        result: action,
-        notify,
-        notifier: notify ? notifier.join(','): '',
-        remark,
-        taskInstId: this.taskId,
-        applyInfos: formData,
+    //数据校验,检查补充信息必填字段
+    let hasError  = this.checkSupplementFormValidators();
+    if(!hasError) {
+      try {
+        const { remark, attachments, notify, notifier } = this.supplementFormValues.getRawValue()
+        const id = this.message.loading(LOADING_MESSAGE.APPROVE, { nzDuration: 0 }).messageId
+        this.submitLoading = true;
+        const formData = this.getFormData();
+        const data = {
+          applyId: this.requestId,
+          attachments: attachments,
+          result: action,
+          notify,
+          notifier: notify ? notifier.join(','): '',
+          remark,
+          taskInstId: this.taskId,
+          applyInfos: formData,
+        }
+       
+        await this.spService.approveRequest(data);
+        this.message.remove(id)
+        this.message.success(SUCCESS_MESSAGE.APPROVE)
+        this.router.navigate(['/special-approval/home'])
+      } catch ({ message }) {
+        this.message.error(ERROR_MESSAGE.APPROVE)
+        console.error(`审批失败, ${message}`);
+      } finally {
+        this.submitLoading = false
       }
-      
-      await this.spService.approveRequest(data);
-      this.message.remove(id)
-      this.message.success(SUCCESS_MESSAGE.APPROVE)
-      this.router.navigate(['/special-approval/home'])
-    } catch ({ message }) {
-      this.message.error(ERROR_MESSAGE.APPROVE)
-      console.error(`审批失败, ${message}`);
-    } finally {
-      this.submitLoading = false
+    } else {
+      return;
     }
   }
+
+  //验证补充信息节点提交时，补充信息的必填字段
+  public checkSupplementFormValidators(){
+    let hasError = false;
+    switch(this.applyType) {
+      case APPLY_TYPE.CANCEL_ORDER:  //cancel order 补充信息必填
+        const orderInfoStatus =  this.cancelorderInfo.get('orderInfoStatus') as FormGroup;
+        for (const i in orderInfoStatus.controls) {
+          orderInfoStatus.controls[i].markAsDirty();
+          orderInfoStatus.controls[i].updateValueAndValidity();
+        }
+        hasError =  this.cancelorderInfo.invalid;
+        break
+      default:
+        break
+    }
+    if (hasError) {
+      this.message.error('请按要求填写表单信息');
+    }
+    return hasError;
+  }
+
 
   public async getRequestDetail(requestId) {
     try {
