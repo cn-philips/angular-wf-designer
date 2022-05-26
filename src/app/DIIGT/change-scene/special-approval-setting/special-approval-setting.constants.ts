@@ -60,6 +60,10 @@ const APPROVE_NODE_ACTION_LIST = [
     label: APPROVE_NODE_ACTION_MAP[APPROVE_NODE_ACTION.VALIDATE],
     value: APPROVE_NODE_ACTION.VALIDATE,
   },
+  {
+    label: APPROVE_NODE_ACTION_MAP[APPROVE_NODE_ACTION.SUPPLEMENT],
+    value: APPROVE_NODE_ACTION.SUPPLEMENT,
+  },
 ];
 
 enum CC_PERSON_TYPE {
@@ -78,12 +82,14 @@ enum APPROVE_USER_TYPE {
   SYSTEM_ROLE = 'systemrole', // 系统角色
   ASSIGN_USER = 'preuser', // 指定用户
   USER_SELECT = 'userselect', // 用户选择
+  APPLY_USER = 'applyuser', // 申请人
 }
 
 const APPROVE_USER_TYPES = [
   { label: '系统角色', value: APPROVE_USER_TYPE.SYSTEM_ROLE },
   { label: '指定用户', value: APPROVE_USER_TYPE.ASSIGN_USER },
   { label: '用户选择', value: APPROVE_USER_TYPE.USER_SELECT },
+  { label: '申请人', value: APPROVE_USER_TYPE.APPLY_USER },
 ]
 
 enum CC_TRIGGER_TYPE {

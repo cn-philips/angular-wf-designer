@@ -118,6 +118,7 @@ export class ApproveProcFormComponent implements OnInit {
         cc: 0,
         ccPersonList: [],
         approverCustom: 0,
+        approverInitiator: 0,
       };
       nodeList.push(node);
     }
@@ -196,10 +197,9 @@ export class ApproveProcFormComponent implements OnInit {
   }
 
   formatNodeApprover(approveNode: ApproveNode) {
-    const { approver, approveRole, approverCustom } = approveNode
-    if (approverCustom) {
-      return '用户选择'
-    }
+    const { approver, approveRole, approverCustom, approverInitiator } = approveNode
+    if (approverCustom) { return '用户选择' }
+    if (approverInitiator) { return '申请人' }
     if (approver) {
       const approvers = approver.split(',').map((approver) => `指定用户-${approver}`)
       return approvers.join(',')

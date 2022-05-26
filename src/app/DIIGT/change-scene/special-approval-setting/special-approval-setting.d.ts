@@ -42,6 +42,7 @@ interface ApproveNode {
   approveRole: string;
   approver: string;
   approverCustom: number;
+  approverInitiator: number;
   remark?: string;
   status: number | boolean;
   cc: number;

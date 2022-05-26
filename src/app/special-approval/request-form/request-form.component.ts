@@ -351,13 +351,15 @@ export class RequestFormComponent implements OnInit {
     orderReplacementInfo: this.fb.group({...this.orderReplacementInit, applyId: null, id: null}),
   });
 
-  initSaleRegions(isNewRequest = false) {
+  initSaleRegions(role, isNewRequest = false) {
     const regions =
-      (JSON.parse(window.localStorage.getItem('profiles')) || []).map((region) => ({
-        ...region,
-        label: [region.modality, region.cycleGroup, region.bigArea, region.smallArea].filter((str) => str && str.trim()).join('-'),
-        value: [region.modality, region.cycleGroup, region.bigArea, region.smallArea].filter((str) => str && str.trim()).join('-'),
-      }))
+      (JSON.parse(window.localStorage.getItem('profiles')) || [])
+        .filter(({ role: roleName }) => (role && role === roleName) || !role)
+        .map((region) => ({
+          ...region,
+          label: [region.modality, region.cycleGroup, region.bigArea, region.smallArea].filter((str) => str && str.trim()).join('-'),
+          value: [region.modality, region.cycleGroup, region.bigArea, region.smallArea].filter((str) => str && str.trim()).join('-'),
+        }))
     this.saleRegions = regions
     if (isNewRequest && regions.length === 1) {
       const { modality, cycleGroup, bigArea, smallArea } = regions[0]
@@ -397,13 +399,13 @@ export class RequestFormComponent implements OnInit {
   }
 
   public ngOnInit(): void {
-    const { params: { requestId }, queryParams: { type, item, taskId,  bg } } = this.route.snapshot;
+    const { params: { requestId }, queryParams: { type, item, taskId, bg, role } } = this.route.snapshot;
     // detail page
     if (requestId) {
       this.taskId = taskId;
       this.requestId = requestId;
       this.getRequestDetail(requestId);
-      this.initSaleRegions()
+      this.initSaleRegions(role)
     } else {
       // new page
       this.basicInfo.patchValue({
@@ -465,7 +467,7 @@ export class RequestFormComponent implements OnInit {
       }
       this.pageLoading = false;
       this.setFormValidators(type, item, bg);
-      this.initSaleRegions(true)
+      this.initSaleRegions(role, true)
     }
   }
 
