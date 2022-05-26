@@ -164,15 +164,15 @@ export class RequestFormComponent implements OnInit {
     orderInfoStatus: this.fb.group({   // 订单状态信息
       id: [null],
       spApplyOrderId: [null], // (关联的字段)
-      startProduction: ['0'], //是否开始生产 required
+      startProduction: [null], //是否开始生产 required
       orderCancelAmountProduction: [null], // 订单取消的额外费用-生产 
-      shipped: ['0'], // 是否已发货 required
+      shipped: [null], // 是否已发货 required
       orderCancelAmountShipped: [null], // 订单取消的额外费用-国际国内段运输仓储费用 
-      thirdPartyProcurement: ['0'], // 是否有第三方采购 required
+      thirdPartyProcurement: [null], // 是否有第三方采购 required
       orderCancelAmountPurchase: [null], // 订单取消的额外费用-第三方采购 
-      seenSite: ['0'], // 是否看过场地 required
+      seenSite: [null], // 是否看过场地 required
       orderCancelAmountSite: [null], // 订单取消的额外费用-场地相关 
-      advanceChargeStatus: ['0'], // 预付款状态 required
+      advanceChargeStatus: [null], // 预付款状态 required
       advanceChargeAmount: [null], // 预付款金额 
       orderActualAmount: [null], // 订单实际发生费用 
       refundAmount: [null], // 退款金额 
@@ -189,6 +189,21 @@ export class RequestFormComponent implements OnInit {
     notifier: [null], // 通知用户邮箱列表, 字符串, 逗号隔开
     chatUsers: [[]],
   })
+
+  // 订单替换form表单信息单独配置
+  orderReplacementInit = {
+    orderType: [null, [Validators.required]], // 订单类型
+    referenceId: [null], // Reference Id
+    bmc: [null, [Validators.required]], // 产品线
+    bg: [{ value: null, disabled: true }, [Validators.required]], // BG
+    cycleGroup: [null, [Validators.required]], // 产品区域-team
+    bigArea: [null, [Validators.required]], // 产品区域-大区
+    projectName: [null, [Validators.required]], // 项目名称
+    sapOrderNo: [null, [Validators.required]], // SAP订单号
+    newSapOrderNo: [null, [Validators.required]], // 新SAP订单号 适用于订单替换
+    newSapCreateTime: [null, [Validators.required]], // 新SAP订单号创建日期 适用于订单替换
+    sapCreateTime: [null, [Validators.required]], //创建日期
+  }
 
   public formValues = this.fb.group({
     basicInfo: this.fb.group({
@@ -235,9 +250,6 @@ export class RequestFormComponent implements OnInit {
       productSalesMgr: [null], // product sales manager邮箱
       products: [[]],
       arrivalDate: [null], // 到货日期
-      newSapOrderNo: [null], // 新SAP订单号 适用于订单替换
-      newSapCreateTime: [null], // 新SAP订单号创建日期 适用于订单替换
-      createTime: [null], //创建日期
     }),
     rddOitOrderInfos: [[{ isMain: true }]],
     ccInfo: this.fb.group({
@@ -336,6 +348,7 @@ export class RequestFormComponent implements OnInit {
     }),
     deBookOrderInfos: [[]],
     cancelorderInfo: this.fb.group({...this.cancelOrderInit, applyId: null, id: null}),
+    orderReplacementInfo: this.fb.group({...this.orderReplacementInit, applyId: null, id: null}),
   });
 
   initSaleRegions(role, isNewRequest = false) {
@@ -442,6 +455,9 @@ export class RequestFormComponent implements OnInit {
           case APPLY_TYPE.CANCEL_ORDER: //cancel order 默认BG
             this.cancelorderInfo.patchValue({ bg });
             break
+          case APPLY_TYPE.ORDER_REPLACEMENT: //订单替换 默认BG
+            this.orderReplacementInfo.patchValue({ bg });
+            break
           default:
             this.orderInfo.patchValue({ bg });
         }
@@ -526,6 +542,10 @@ export class RequestFormComponent implements OnInit {
     return this.formValues.get('deBookOrderInfos') as FormGroup
   }
 
+  get orderReplacementInfo(): FormGroup {
+    return this.formValues.get('orderReplacementInfo') as FormGroup
+  }
+
   public setFormValidators(type, item, bg) {
     let clearedFields
     switch(type) {
@@ -554,11 +574,18 @@ export class RequestFormComponent implements OnInit {
         break
       case APPLY_TYPE.CANCEL_ORDER:
         if (bg == 'CC') {
-          this.cancelorderInfo.controls.productType.clearValidators();
+          //销售区域和OM非必填
+          clearedFields = ['cycleGroup', 'bigArea', 'om', 'productType'];
+          clearedFields.forEach((fieldName) => this.cancelorderInfo.controls[fieldName].clearValidators());
         } else {
           this.cancelorderInfo.controls.productType.setValidators([Validators.required]);
         }
         break
+      case APPLY_TYPE.ORDER_REPLACEMENT:
+          if (bg == 'PD&IGT') {
+            this.orderReplacementInfo.controls.referenceId.disable();
+          } 
+          break
     }
 
     if (bg === 'PD&IGT') {
@@ -572,7 +599,7 @@ export class RequestFormComponent implements OnInit {
   }
 
   public getFormData() {
-    const { basicInfo, orderInfo, ccInfo, rddOitOrderInfos, changeOrderInfos, lcAmendmentOrderInfo,transferLibOrders, exchangeInfo, orderDifferences, cancelorderInfo, deBookOrderInfos  } = this.formValues.getRawValue()
+    const { basicInfo, orderInfo, ccInfo, rddOitOrderInfos, changeOrderInfos, lcAmendmentOrderInfo,transferLibOrders, exchangeInfo, orderDifferences, cancelorderInfo, deBookOrderInfos, orderReplacementInfo  } = this.formValues.getRawValue()
     const { applyArrivalTime, expectedPaymentDate, expectedSaleDate, products } = orderInfo
     const extInfo = {
       exchangeMethod: changeOrderInfos.exchangeMethod
@@ -807,8 +834,16 @@ export class RequestFormComponent implements OnInit {
           const debookorder = data.orderInfos.filter(value => value.sapOrderNo === sapOrderNo)
             debookorder[0].products.push(product)
           }
-      })
-        console.log(data.orderInfos)
+        })
+        break
+      case APPLY_TYPE.ORDER_REPLACEMENT: // 订单替换
+        data.orderInfos = [
+          {
+            ...orderReplacementInfo,
+          }
+        ];
+        break
+      default:
         break
     }
     return data;
@@ -833,6 +868,8 @@ export class RequestFormComponent implements OnInit {
       this.formValues.controls.transferLibOrders.disable()
       // 添加cancel order disabbled
       this.formValues.controls.cancelorderInfo.disable()
+      // 添加订单替换 orderReplacement disabbled
+      this.formValues.controls.orderReplacementInfo.disable()
     }
     this.editable = editable;
   }
@@ -1003,6 +1040,13 @@ export class RequestFormComponent implements OnInit {
         }
         hasError = this.basicInfo.invalid || this.cancelorderInfo.invalid;
         break
+      case APPLY_TYPE.ORDER_REPLACEMENT: //订单替换
+        for (const i in this.orderReplacementInfo.controls) {
+          this.orderReplacementInfo.controls[i].markAsDirty();
+          this.orderReplacementInfo.controls[i].updateValueAndValidity();
+        }
+        hasError = this.basicInfo.invalid || this.orderReplacementInfo.invalid
+        break
       default:
         for (const i in this.orderInfo.controls) {
           this.orderInfo.controls[i].markAsDirty();
@@ -1119,33 +1163,61 @@ export class RequestFormComponent implements OnInit {
 
   //补充信息审批操作
   async onApproveSubmit(action: string){
-    try {
-      const { remark, attachments, notify, notifier } = this.supplementFormValues.getRawValue()
-      const id = this.message.loading(LOADING_MESSAGE.APPROVE, { nzDuration: 0 }).messageId
-      this.submitLoading = true;
-      const formData = this.getFormData();
-      const data = {
-        applyId: this.requestId,
-        attachments: attachments,
-        result: action,
-        notify,
-        notifier: notify ? notifier.join(','): '',
-        remark,
-        taskInstId: this.taskId,
-        applyInfos: formData,
+    //数据校验,检查补充信息必填字段
+    let hasError  = this.checkSupplementFormValidators();
+    if(!hasError) {
+      try {
+        const { remark, attachments, notify, notifier } = this.supplementFormValues.getRawValue()
+        const id = this.message.loading(LOADING_MESSAGE.APPROVE, { nzDuration: 0 }).messageId
+        this.submitLoading = true;
+        const formData = this.getFormData();
+        const data = {
+          applyId: this.requestId,
+          attachments: attachments,
+          result: action,
+          notify,
+          notifier: notify ? notifier.join(','): '',
+          remark,
+          taskInstId: this.taskId,
+          applyInfos: formData,
+        }
+       
+        await this.spService.approveRequest(data);
+        this.message.remove(id)
+        this.message.success(SUCCESS_MESSAGE.APPROVE)
+        this.router.navigate(['/special-approval/home'])
+      } catch ({ message }) {
+        this.message.error(ERROR_MESSAGE.APPROVE)
+        console.error(`审批失败, ${message}`);
+      } finally {
+        this.submitLoading = false
       }
-      
-      await this.spService.approveRequest(data);
-      this.message.remove(id)
-      this.message.success(SUCCESS_MESSAGE.APPROVE)
-      this.router.navigate(['/special-approval/home'])
-    } catch ({ message }) {
-      this.message.error(ERROR_MESSAGE.APPROVE)
-      console.error(`审批失败, ${message}`);
-    } finally {
-      this.submitLoading = false
+    } else {
+      return;
     }
   }
+
+  //验证补充信息节点提交时，补充信息的必填字段
+  public checkSupplementFormValidators(){
+    let hasError = false;
+    switch(this.applyType) {
+      case APPLY_TYPE.CANCEL_ORDER:  //cancel order 补充信息必填
+        const orderInfoStatus =  this.cancelorderInfo.get('orderInfoStatus') as FormGroup;
+        for (const i in orderInfoStatus.controls) {
+          orderInfoStatus.controls[i].markAsDirty();
+          orderInfoStatus.controls[i].updateValueAndValidity();
+        }
+        hasError =  this.cancelorderInfo.invalid;
+        break
+      default:
+        break
+    }
+    if (hasError) {
+      this.message.error('请按要求填写表单信息');
+    }
+    return hasError;
+  }
+
 
   public async getRequestDetail(requestId) {
     try {
@@ -1313,6 +1385,13 @@ export class RequestFormComponent implements OnInit {
             ]
         })
         console.log(this.deBookOrderInfos.value)
+      } else if (applyType === APPLY_TYPE.ORDER_REPLACEMENT) {
+        this.formValues.patchValue({
+          orderReplacementInfo: {
+            ...orderInfos[0],
+          }
+        });
+        this.setFormValidators(applyType, applyItem, orderInfos[0].bg)
       }
 
       const userSet = new Set<string>();
