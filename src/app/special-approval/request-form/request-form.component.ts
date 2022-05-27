@@ -161,20 +161,20 @@ export class RequestFormComponent implements OnInit {
     deBook: ['1', [Validators.required]], // 是否De-book
     orderInfoStatus: this.fb.group({   // 订单状态信息
       id: [null],
-      spApplyOrderId: [null], // (关联的字段)
-      startProduction: [null], //是否开始生产 required
-      orderCancelAmountProduction: [null], // 订单取消的额外费用-生产
-      shipped: [null], // 是否已发货 required
-      orderCancelAmountShipped: [null], // 订单取消的额外费用-国际国内段运输仓储费用
-      thirdPartyProcurement: [null], // 是否有第三方采购 required
-      orderCancelAmountPurchase: [null], // 订单取消的额外费用-第三方采购
-      seenSite: [null], // 是否看过场地 required
-      orderCancelAmountSite: [null], // 订单取消的额外费用-场地相关
-      advanceChargeStatus: [null], // 预付款状态 required
-      advanceChargeAmount: [null], // 预付款金额
-      orderActualAmount: [null], // 订单实际发生费用
-      refundAmount: [null], // 退款金额
-      remark: [null], // 备注
+      spApplyOrderId: [{ value: null, disabled: true }], // (关联的字段)
+      startProduction: [{ value: null, disabled: true }], //是否开始生产 required
+      orderCancelAmountProduction: [{ value: null, disabled: true }], // 订单取消的额外费用-生产 
+      shipped: [{ value: null, disabled: true }], // 是否已发货 required
+      orderCancelAmountShipped: [{ value: null, disabled: true }], // 订单取消的额外费用-国际国内段运输仓储费用 
+      thirdPartyProcurement: [{ value: null, disabled: true }], // 是否有第三方采购 required
+      orderCancelAmountPurchase: [{ value: null, disabled: true }], // 订单取消的额外费用-第三方采购 
+      seenSite: [{ value: null, disabled: true }], // 是否看过场地 required
+      orderCancelAmountSite: [{ value: null, disabled: true }], // 订单取消的额外费用-场地相关 
+      advanceChargeStatus: [{ value: null, disabled: true }], // 预付款状态 required
+      advanceChargeAmount: [{ value: null, disabled: true }], // 预付款金额 
+      orderActualAmount: [{ value: null, disabled: true }], // 订单实际发生费用 
+      refundAmount: [{ value: null, disabled: true }], // 退款金额 
+      remark: [{ value: null, disabled: true }], // 备注
       attachment: [null], // 附件
     })
   };
