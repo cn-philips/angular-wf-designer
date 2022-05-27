@@ -28,10 +28,11 @@ export class NoNedirectOrderInfoComponent implements OnInit {
 
   @ViewChild('selectReference') selectReference: SelectReferenceComponent
 
-  @Input() formValues: FormGroup
-  @Input() editable = true
-  @Input() applyType: string
-  @Input() applyItem: string
+  @Input() basicInfo: FormGroup;
+  @Input() formValues: FormGroup;
+  @Input() editable = true;
+  @Input() applyItem: string;
+  @Input() baseInfo: FormGroup
 
   APPLY_TYPE = APPLY_TYPE
 
@@ -181,6 +182,7 @@ export class NoNedirectOrderInfoComponent implements OnInit {
         wbs: "",
         itemNo: "",
         quantity: marketBundleQuantity,
+        equipmentSn:"",
       }],
     })
   }
@@ -195,6 +197,9 @@ export class NoNedirectOrderInfoComponent implements OnInit {
       this.formValues.get('productType').valueChanges.subscribe(() => {
         this.onCalcProjectName()
       })
+    }
+    if (this.formValues.get('bg').value === 'PD&IGT'){
+      this.formValues.get('referenceId').disable();
     }
   }
 
