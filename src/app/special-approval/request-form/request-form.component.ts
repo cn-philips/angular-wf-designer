@@ -45,10 +45,8 @@ enum TAB_TYPE {
 export class RequestFormComponent implements OnInit {
 
   @ViewChild('selectApprover') public selectApprover: SelectApproverComponent;
-
   @ViewChild('rddOitOrderInfo') public rddOitOrderInfo: RddOitOrderInfoComponent;
   @ViewChild('machineExchange') public machineExchange: MachineComponent;
-
   @ViewChild('deBookOrderInfo') public deBookInfo: DeBookComponent;
 
   isSupplementNode = false
@@ -163,20 +161,20 @@ export class RequestFormComponent implements OnInit {
     deBook: ['1', [Validators.required]], // 是否De-book
     orderInfoStatus: this.fb.group({   // 订单状态信息
       id: [null],
-      spApplyOrderId: [null], // (关联的字段)
-      startProduction: [null], //是否开始生产 required
-      orderCancelAmountProduction: [null], // 订单取消的额外费用-生产 
-      shipped: [null], // 是否已发货 required
-      orderCancelAmountShipped: [null], // 订单取消的额外费用-国际国内段运输仓储费用 
-      thirdPartyProcurement: [null], // 是否有第三方采购 required
-      orderCancelAmountPurchase: [null], // 订单取消的额外费用-第三方采购 
-      seenSite: [null], // 是否看过场地 required
-      orderCancelAmountSite: [null], // 订单取消的额外费用-场地相关 
-      advanceChargeStatus: [null], // 预付款状态 required
-      advanceChargeAmount: [null], // 预付款金额 
-      orderActualAmount: [null], // 订单实际发生费用 
-      refundAmount: [null], // 退款金额 
-      remark: [null], // 备注
+      spApplyOrderId: [{ value: null, disabled: true }], // (关联的字段)
+      startProduction: [{ value: null, disabled: true }], //是否开始生产 required
+      orderCancelAmountProduction: [{ value: null, disabled: true }], // 订单取消的额外费用-生产 
+      shipped: [{ value: null, disabled: true }], // 是否已发货 required
+      orderCancelAmountShipped: [{ value: null, disabled: true }], // 订单取消的额外费用-国际国内段运输仓储费用 
+      thirdPartyProcurement: [{ value: null, disabled: true }], // 是否有第三方采购 required
+      orderCancelAmountPurchase: [{ value: null, disabled: true }], // 订单取消的额外费用-第三方采购 
+      seenSite: [{ value: null, disabled: true }], // 是否看过场地 required
+      orderCancelAmountSite: [{ value: null, disabled: true }], // 订单取消的额外费用-场地相关 
+      advanceChargeStatus: [{ value: null, disabled: true }], // 预付款状态 required
+      advanceChargeAmount: [{ value: null, disabled: true }], // 预付款金额 
+      orderActualAmount: [{ value: null, disabled: true }], // 订单实际发生费用 
+      refundAmount: [{ value: null, disabled: true }], // 退款金额 
+      remark: [{ value: null, disabled: true }], // 备注
       attachment: [null], // 附件
     })
   };
@@ -357,6 +355,36 @@ export class RequestFormComponent implements OnInit {
     deBookOrderInfos: [[]],
     cancelorderInfo: this.fb.group({...this.cancelOrderInit, applyId: null, id: null, isDeleted: 0}),
     orderReplacementInfo: this.fb.group({...this.orderReplacementInit, applyId: null, id: null}),
+    noneDirectOrderInfo: this.fb.group({
+      orderType: [null, [Validators.required]], // 订单类型
+      referenceId: [null], // Reference Id
+      productType: [{ value: null, disabled: true }], // 产品型号
+      bmc: [null, [Validators.required]], // 产品线
+      bg: [{ value: null, disabled: true }, [Validators.required]], // BG
+      cycleGroup: [null], // 产品区域-team
+      bigArea: [null], // 产品区域-大区
+      businessModel: [null, [Validators.required]], // 业务模式
+      dealerName: [{ value: null, disabled: true }], // 经销商名称
+      dealerCode: [{ value: null, disabled: true }], // 经销商编号
+      hospitalName: [{ value: null, disabled: true }], // 医院名称
+      hospitalNo: [{ value: null, disabled: true }], // 医院编号
+      projectName: [null, [Validators.required]], // 项目名称
+      sapOrderNo: [null, [Validators.required]], // SAP订单号
+      orderAmount: [null, [Validators.required]], // 合同金额-数额
+      currency: [null, [Validators.required]], // 合同金额-货币
+      expectedSaleDate: [null], // 预计记认销售日期
+      // applyArrivalTime: [null], // 申请到货时间
+      // expectedPaymentDate: [null, [Validators.required]], // 预计付款(或场地就位)日期
+      om: [null], // OM
+      exchangeRole: [null], // 换货角色
+      exchangeProcessing: [null], // 换货方式
+      saleEmail: [null], // 销售邮箱
+      districtLeader: [null], // District Leader邮箱
+      salesLeader: [null], // sales Leader 邮箱
+      productSalesMgr: [null], // product sales manager邮箱
+      products: [[]],
+      arrivalDate: [null], // 到货日期
+    }),
   });
 
   initSaleRegions(role, isNewRequest = false) {
@@ -386,7 +414,7 @@ export class RequestFormComponent implements OnInit {
       applyType === APPLY_TYPE.PRODUCTION ||
       applyType === APPLY_TYPE.LOGISTICSCOST ||
       applyType === APPLY_TYPE.EXT_INSTALL_COST  ||
-      applyType === APPLY_TYPE.NONE_DIRECT_ORDER
+      applyType === APPLY_TYPE.SPECIAL_DELIVERY
     ) {
       this.orderInfo.patchValue({
         products: [{}]
@@ -403,6 +431,11 @@ export class RequestFormComponent implements OnInit {
       const orders = this.transferLibInfos.get('orders') as FormArray
       orders.at(0).patchValue({ products: [{}] })
       orders.at(1).patchValue({ products: [{}] })
+    }else if(applyType===APPLY_TYPE.NONE_DIRECT_ORDER){
+      this.noneDirectOrderInfo.patchValue(
+        {
+          products: [{}]
+        })
     }
   }
 
@@ -465,6 +498,9 @@ export class RequestFormComponent implements OnInit {
             break
           case APPLY_TYPE.ORDER_REPLACEMENT: //订单替换 默认BG
             this.orderReplacementInfo.patchValue({ bg });
+            break
+          case APPLY_TYPE.NONE_DIRECT_ORDER: //非直销订单
+            this.noneDirectOrderInfo.patchValue({bg});
             break
           default:
             this.orderInfo.patchValue({ bg });
@@ -546,6 +582,10 @@ export class RequestFormComponent implements OnInit {
     return this.formValues.get('cancelorderInfo') as FormGroup
   }
 
+  get noneDirectOrderInfo() : FormGroup {
+    return this.formValues.get('noneDirectOrderInfo') as FormGroup
+  }
+
   get deBookOrderInfos(): FormGroup {
     return this.formValues.get('deBookOrderInfos') as FormGroup
   }
@@ -610,8 +650,9 @@ export class RequestFormComponent implements OnInit {
   }
 
   public getFormData() {
-    const { basicInfo, orderInfo, ccInfo, rddOitOrderInfos, changeOrderInfos, lcAmendmentOrderInfo,transferLibOrders, exchangeInfo, orderDifferences, cancelorderInfo, deBookOrderInfos, orderReplacementInfo  } = this.formValues.getRawValue()
+    const { basicInfo, orderInfo, ccInfo, rddOitOrderInfos, changeOrderInfos, lcAmendmentOrderInfo, transferLibOrders, exchangeInfo, orderDifferences, cancelorderInfo, deBookOrderInfos, orderReplacementInfo, noneDirectOrderInfo  } = this.formValues.getRawValue()
     const { applyArrivalTime, expectedPaymentDate, expectedSaleDate, products } = orderInfo
+    const { noneDirectaleDate, noneDirectProducts } = noneDirectOrderInfo
     const extInfo = {
       exchangeMethod: changeOrderInfos.exchangeMethod
     }
@@ -805,15 +846,12 @@ export class RequestFormComponent implements OnInit {
           }
         ];
         break;
-      case APPLY_TYPE.NONE_DIRECT_ORDER:
+      case APPLY_TYPE.NONE_DIRECT_ORDER:   //非直销订单
         data.orderInfos = [
           {
-            ...this.requestInfo.orderInfos[0],
-            ...orderInfo,
-            applyArrivalTime: applyArrivalTime ? moment(applyArrivalTime).format('YYYY-MM-DD') : null,
-            expectedPaymentDate: expectedPaymentDate ? moment(expectedPaymentDate).format('YYYY-MM-DD') : null,
-            expectedSaleDate: expectedSaleDate ? moment(expectedSaleDate).format('YYYY-MM-DD') : null,
-            products: products.map(({ productType, wbsNo, itemNo, quantity }) => ({ productType, wbsNo, itemNo, quantity }))
+            ...noneDirectOrderInfo,
+            noneDirectSaleDate: expectedSaleDate ? moment(expectedSaleDate).format('YYYY-MM-DD') : null,
+            noneDirectProducts: products.map(({ productType, wbsNo, itemNo, equipmentSn, quantity }) => ({ productType, wbsNo, itemNo, equipmentSn, quantity }))
           }
         ];
         break;
@@ -873,6 +911,7 @@ export class RequestFormComponent implements OnInit {
       this.formValues.controls.lcAmendmentOrderInfo.disable();
       this.lcAmendmentOrderInfo.get('lcInfo').disable()
       this.formValues.controls.changeOrderInfos.disable()
+      this.formValues.controls.noneDirectOrderInfo.disable();
       //添加转库disabled
       this.formValues.controls.exchangeInfo.disable()
       this.formValues.controls.orderDifferences.disable()
@@ -1058,6 +1097,16 @@ export class RequestFormComponent implements OnInit {
         }
         hasError = this.basicInfo.invalid || this.orderReplacementInfo.invalid
         break
+
+      case APPLY_TYPE.NONE_DIRECT_ORDER: //非直销
+        for (const i in this.noneDirectOrderInfo.controls) {
+          this.noneDirectOrderInfo.controls[i].markAsDirty();
+          this.noneDirectOrderInfo.controls[i].updateValueAndValidity();
+
+        }
+        hasError = this.basicInfo.invalid || this.noneDirectOrderInfo.invalid
+        break
+
       default:
         for (const i in this.orderInfo.controls) {
           this.orderInfo.controls[i].markAsDirty();
@@ -1196,7 +1245,7 @@ export class RequestFormComponent implements OnInit {
           taskInstId: this.taskId,
           applyInfos: formData,
         }
-       
+
         await this.spService.approveRequest(data);
         this.message.remove(id)
         this.message.success(SUCCESS_MESSAGE.APPROVE)
@@ -1638,7 +1687,7 @@ export class RequestFormComponent implements OnInit {
   // 校验产品列表
   // 特批开始生产、飞利浦承担额外清关、仓储、物流费用、用户自定义审批  验证产品列表不能为空
   public verifyProduct() {
-    if (this.applyType === APPLY_TYPE.PRODUCTION || this.applyType === APPLY_TYPE.EXT_INSTALL_COST || this.applyType === APPLY_TYPE.LOGISTICSCOST || this.applyType === APPLY_TYPE.NONE_DIRECT_ORDER) {
+    if (this.applyType === APPLY_TYPE.PRODUCTION || this.applyType === APPLY_TYPE.EXT_INSTALL_COST || this.applyType === APPLY_TYPE.LOGISTICSCOST) {
       const orderInfo = this.formValues.getRawValue().orderInfo;
       if (orderInfo && orderInfo.bg && orderInfo.bg.toLowerCase() === 'cc') {
         return true;
@@ -1651,6 +1700,23 @@ export class RequestFormComponent implements OnInit {
           }
         }
       } else {
+        this.message.error('请完善产品列表信息');
+        return false;
+      }
+    }else if (this.applyType === APPLY_TYPE.NONE_DIRECT_ORDER){    //非直销订单 验证产品列表不能为空
+      const orderInfo = this.formValues.getRawValue().noneDirectOrderInfo;
+      if (orderInfo && orderInfo.bg && orderInfo.bg.toLowerCase() === 'cc') {
+        return true;
+      }
+      if (orderInfo && orderInfo.products && orderInfo.products.length > 0) {
+        for (let i = 0; i < orderInfo.products.length; i++) {
+          if (this.isEmpty(orderInfo.products[i].productType) || this.isEmpty(orderInfo.products[i].wbsNo) || this.isEmpty(orderInfo.products[i].itemNo) || this.isEmpty(orderInfo.products[i].quantity)) {
+            this.message.error('请完善产品列表信息');
+            return false;
+          }
+        }
+      }
+      else {
         this.message.error('请完善产品列表信息');
         return false;
       }

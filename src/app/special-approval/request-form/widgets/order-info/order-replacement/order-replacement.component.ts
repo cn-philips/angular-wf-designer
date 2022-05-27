@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ViewChild } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, OnChanges, SimpleChanges } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 
 import { Reference, SelectReferenceComponent } from '../../select-reference/select-reference.component'
@@ -19,7 +19,7 @@ import {
   templateUrl: './order-replacement.component.html',
   styleUrls: ['./order-replacement.component.scss']
 })
-export class OrderReplacementComponent implements OnInit {
+export class OrderReplacementComponent implements OnInit, OnChanges {
   constructor(public spService: SpecialApprovalService,) {}
 
 
@@ -90,8 +90,12 @@ export class OrderReplacementComponent implements OnInit {
 
   ngOnInit(): void {
     this.initOMUsers()
+  }
+
+  //监测 @Input值的变化
+  ngOnChanges(changes: SimpleChanges): void {
     //是否是反馈信息节点
-    if(this.showFeedbackTab){
+    if (changes.showFeedbackTab && changes.showFeedbackTab.currentValue) {
       let clearedFields = ['newSapOrderNo', 'newSapCreateTime'];
       clearedFields.forEach((fieldName) => this.formValues.controls[fieldName].enable());
       clearedFields.forEach((fieldName) => this.formValues.controls[fieldName].setValidators([Validators.required]));
