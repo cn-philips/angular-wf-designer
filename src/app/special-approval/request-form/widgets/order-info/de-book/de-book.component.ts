@@ -3,7 +3,8 @@ import {read, utils} from 'xlsx';
 import { BUSINESS_MODEL_LIST,
          CURRENCIES,
          ORDER_TYPES,
-         BUSINESS_MODEL } from '../../../../special-approval.constants';
+         BUSINESS_MODEL,
+         BG_LIST } from '../../../../special-approval.constants';
 import {environment} from '../../../../../../environments/environment';
 import {SpecialApprovalService} from '../../../../special-approval.service';
 import {NzMessageService} from 'ng-zorro-antd';
@@ -45,10 +46,12 @@ export class DeBookComponent implements OnInit {
 
   @ViewChild('selectHospital') selectHospital: SelectHospitalComponent
 
+  BG_LIST=BG_LIST
 
   templateUrl = `${environment.base_href}/assets/template/de-book.xlsx`
   isExchange: boolean;
   activeOrder = null
+  currBg: string;
 
 
   constructor(
@@ -62,6 +65,7 @@ export class DeBookComponent implements OnInit {
     businessModels: BUSINESS_MODEL_LIST,
     currencies: CURRENCIES,
     oms: [],
+    bmcs: []
   };
 
   get bmcList() {
@@ -81,6 +85,8 @@ export class DeBookComponent implements OnInit {
    ]
 
   ngOnInit() {
+    console.log(JSON.parse(localStorage.getItem('profiles')))
+    this.currBg = JSON.parse(localStorage.getItem('profiles'))[0].modality
     if (this.formValues.value.length === 0) {
       this.createOrder()
     }
@@ -91,6 +97,7 @@ export class DeBookComponent implements OnInit {
   }
 
   onImportOrderInfo = (file) => {
+    this.selectOptions.bmcs = this.bmcList
     const reader = new FileReader();
     reader.onload = (e: any) => {
       const workbook = read(e.target.result, { type: "array" });
@@ -167,7 +174,7 @@ export class DeBookComponent implements OnInit {
       {
         productType: null,
         bmc: null,
-        bg: null,
+        bg: this.currBg,
         cycleGroup: null,
         bigArea: null,
         businessModel: null,
@@ -181,6 +188,8 @@ export class DeBookComponent implements OnInit {
         debookReason: null,
       }
     ])
+    this.selectOptions.bmcs = this.bmcList.filter(value => value.bg === this.currBg)
+
   }
 
   deleteOrder(order) {
@@ -190,12 +199,20 @@ export class DeBookComponent implements OnInit {
 
   isTableValid() {
     let hasError = false
+    let checkbg = null
     this.formValues.value.forEach((order) => {
       const {
         productType, bg, bmc, businessModel, productType1,
         hospitalName, hospitalNo, sapOrderNo, wbsNo, orderDate, orderAmount, currency, deBookReason, remark
       } = order
-
+      if (checkbg) {
+        if (checkbg !== bg){
+          this.message.error('存在BG不一致的记录')
+          hasError = true
+        }
+      } else {
+        checkbg = bg
+      }
       console.log(order)
         if (!(bg && bmc &&
           businessModel && productType1 && sapOrderNo && wbsNo && orderDate &&
@@ -210,5 +227,10 @@ export class DeBookComponent implements OnInit {
 
   onProductChange(vals: [], order) {
     order.projectName = vals.join(';');
+  }
+
+  onBgChange(val: string, order) {
+    order.bmc = null
+    this.selectOptions.bmcs = this.bmcList.filter(value => value.bg === val);
   }
 }
