@@ -91,7 +91,7 @@
           [editable]="editable" [basicInfo]="basicInfo" [formValues]="orderInfo">
         </special-approval-specialdelivery-order-info>
         <special-approval-none-direct-order-info *ngIf="applyType === APPLY_TYPE.NONE_DIRECT_ORDER"
-          [editable]="editable" [formValues]="orderInfo"></special-approval-none-direct-order-info>
+          [editable]="editable" [baseInfo]="basicInfo" [formValues]="noneDirectOrderInfo"></special-approval-none-direct-order-info>
         <special-approval-order-replacement-info *ngIf="applyType === APPLY_TYPE.ORDER_REPLACEMENT"
           [editable]="editable" [baseInfo]="basicInfo" [formValues]="orderReplacementInfo">
         </special-approval-order-replacement-info>
