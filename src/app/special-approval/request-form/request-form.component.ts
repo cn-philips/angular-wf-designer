@@ -147,8 +147,8 @@ export class RequestFormComponent implements OnInit {
     productType: [null ], // 产品型号
     bmc: [null, [Validators.required]], // 产品线
     bg: [{ value: null, disabled: true }, [Validators.required]], // BG
-    cycleGroup: [null, [Validators.required]], // 产品区域-team
-    bigArea: [null, [Validators.required]], // 产品区域-大区
+    cycleGroup: [null], // 产品区域-team
+    bigArea: [null], // 产品区域-大区
     businessModel: [null, [Validators.required]], // 业务模式
     dealerName: [{ value: null, disabled: true }], // 经销商名称
     dealerCode: [{ value: null, disabled: true }], // 经销商编号
@@ -158,7 +158,7 @@ export class RequestFormComponent implements OnInit {
     sapOrderNo: [null, [Validators.required]], // SAP订单号
     orderAmount: [null, [Validators.required]], // 合同金额-数额
     currency: [null, [Validators.required]], // 合同金额-货币
-    om: [null, [Validators.required]], // OM
+    om: [null], // OM
     orderDate: [null, [Validators.required]], // 进单日期
     deBook: ['1', [Validators.required]], // 是否De-book
     orderInfoStatus: this.fb.group({   // 订单状态信息
@@ -190,6 +190,14 @@ export class RequestFormComponent implements OnInit {
     chatUsers: [[]],
   })
 
+  //反馈节点tab数据配置
+  public feedBackFormValues: FormGroup = this.fb.group({
+    remark: [null], // 备注
+    attachments: [[]], // 支持文件
+    notify: [0], // 是否通知用户
+    notifier: [null], // 通知用户邮箱列表, 字符串, 逗号隔开
+  })
+
   // 订单替换form表单信息单独配置
   orderReplacementInit = {
     orderType: [null, [Validators.required]], // 订单类型
@@ -200,8 +208,8 @@ export class RequestFormComponent implements OnInit {
     bigArea: [null, [Validators.required]], // 产品区域-大区
     projectName: [null, [Validators.required]], // 项目名称
     sapOrderNo: [null, [Validators.required]], // SAP订单号
-    newSapOrderNo: [null, [Validators.required]], // 新SAP订单号 适用于订单替换
-    newSapCreateTime: [null, [Validators.required]], // 新SAP订单号创建日期 适用于订单替换
+    newSapOrderNo: [{ value: null, disabled: true }], // 新SAP订单号 适用于订单替换
+    newSapCreateTime: [{ value: null, disabled: true }], // 新SAP订单号创建日期 适用于订单替换
     sapCreateTime: [null, [Validators.required]], //创建日期
   }
 
@@ -347,7 +355,7 @@ export class RequestFormComponent implements OnInit {
       ])
     }),
     deBookOrderInfos: [[]],
-    cancelorderInfo: this.fb.group({...this.cancelOrderInit, applyId: null, id: null}),
+    cancelorderInfo: this.fb.group({...this.cancelOrderInit, applyId: null, id: null, isDeleted: 0}),
     orderReplacementInfo: this.fb.group({...this.orderReplacementInit, applyId: null, id: null}),
   });
 
@@ -575,17 +583,20 @@ export class RequestFormComponent implements OnInit {
       case APPLY_TYPE.CANCEL_ORDER:
         if (bg == 'CC') {
           //销售区域和OM非必填
-          clearedFields = ['cycleGroup', 'bigArea', 'om', 'productType'];
+          clearedFields = ['productType'];
           clearedFields.forEach((fieldName) => this.cancelorderInfo.controls[fieldName].clearValidators());
         } else {
           this.cancelorderInfo.controls.productType.setValidators([Validators.required]);
         }
+        if (bg == 'PD&IGT') {
+          this.cancelorderInfo.controls.referenceId.disable();
+        }
         break
       case APPLY_TYPE.ORDER_REPLACEMENT:
-          if (bg == 'PD&IGT') {
-            this.orderReplacementInfo.controls.referenceId.disable();
-          } 
-          break
+        if (bg == 'PD&IGT') {
+          this.orderReplacementInfo.controls.referenceId.disable();
+        } 
+        break
     }
 
     if (bg === 'PD&IGT') {
@@ -1163,8 +1174,12 @@ export class RequestFormComponent implements OnInit {
 
   //补充信息审批操作
   async onApproveSubmit(action: string){
-    //数据校验,检查补充信息必填字段
-    let hasError  = this.checkSupplementFormValidators();
+    let hasError  = false;
+    //判断 拒绝还是通过 action === 'REJECTED'
+    if (action != 'REJECTED') {
+      //数据校验,检查补充信息必填字段
+      hasError  = this.checkRequiredFormValidators();
+    }
     if(!hasError) {
       try {
         const { remark, attachments, notify, notifier } = this.supplementFormValues.getRawValue()
@@ -1197,21 +1212,75 @@ export class RequestFormComponent implements OnInit {
     }
   }
 
-  //验证补充信息节点提交时，补充信息的必填字段
-  public checkSupplementFormValidators(){
-    let hasError = false;
-    switch(this.applyType) {
-      case APPLY_TYPE.CANCEL_ORDER:  //cancel order 补充信息必填
-        const orderInfoStatus =  this.cancelorderInfo.get('orderInfoStatus') as FormGroup;
-        for (const i in orderInfoStatus.controls) {
-          orderInfoStatus.controls[i].markAsDirty();
-          orderInfoStatus.controls[i].updateValueAndValidity();
+  //反馈节点审批
+  public async onFeedBackSubmit(action: number) {
+    //数据校验,检查反馈节点信息必填字段
+    let hasError  = this.checkRequiredFormValidators();
+    if(!hasError) {
+      try {
+        const { remark, attachments, notify, notifier } = this.feedBackFormValues.getRawValue();
+        const formData = this.getFormData();
+        const data = {
+          applyId: this.requestId,
+          attachments: attachments,
+          executed: action,
+          notify,
+          notifier: notify ? notifier.join(','): '',
+          remark,
+          taskInstId: this.taskId,
+          result: 'APPROVED',
+          applyInfos: formData,
         }
-        hasError =  this.cancelorderInfo.invalid;
-        break
-      default:
-        break
+  
+        const id = this.message.loading(LOADING_MESSAGE.FEEDBACK, { nzDuration: 0 }).messageId
+        this.submitLoading = true
+        await this.spService.approveRequest(data)
+        this.message.remove(id)
+        this.message.success(SUCCESS_MESSAGE.FEEDBACK)
+        this.router.navigate(['/special-approval/home'])
+      } catch ({ message }) {
+        this.message.error(ERROR_MESSAGE.FEEDBACK)
+        console.error(`反馈失败, ${message}`);
+      } finally {
+        this.submitLoading = false
+      }
+    } else {
+      return;
     }
+  }
+
+  //验证补充信息、反馈 等节点提交时的必填字段
+  public checkRequiredFormValidators(){
+    let hasError = false;
+    if (this.isSupplementNode) { //补充信息
+      switch(this.applyType) {
+        case APPLY_TYPE.CANCEL_ORDER:  //cancel order 补充信息必填
+          const orderInfoStatus =  this.cancelorderInfo.get('orderInfoStatus') as FormGroup;
+          for (const i in orderInfoStatus.controls) {
+            orderInfoStatus.controls[i].markAsDirty();
+            orderInfoStatus.controls[i].updateValueAndValidity();
+          }
+          hasError =  this.cancelorderInfo.invalid;
+          break
+        default:
+          break
+      }
+
+    } else if(this.showFeedbackTab) { //反馈
+      switch(this.applyType) {
+        case APPLY_TYPE.ORDER_REPLACEMENT:  //订单替换必填字段验证
+          const orderReplacementInfo =  this.orderReplacementInfo as FormGroup;
+          for (const i in orderReplacementInfo.controls) {
+            orderReplacementInfo.controls[i].markAsDirty();
+            orderReplacementInfo.controls[i].updateValueAndValidity();
+          }
+          hasError =  this.orderReplacementInfo.invalid;
+          break
+        default:
+          break
+      }
+    }
+
     if (hasError) {
       this.message.error('请按要求填写表单信息');
     }

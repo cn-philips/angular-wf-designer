@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, ViewChild } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms'
+import { FormControl, FormGroup, Validators } from '@angular/forms'
 
 import { Reference, SelectReferenceComponent } from '../../select-reference/select-reference.component'
 import { SpecialApprovalService } from '../../../../special-approval.service'
@@ -28,6 +28,7 @@ export class OrderReplacementComponent implements OnInit {
   @Input() formValues: FormGroup
   @Input() editable = true
   @Input() baseInfo: FormGroup
+  @Input() showFeedbackTab = false;
 
 
   APPLY_TYPE = APPLY_TYPE
@@ -89,7 +90,12 @@ export class OrderReplacementComponent implements OnInit {
 
   ngOnInit(): void {
     this.initOMUsers()
-
+    //是否是反馈信息节点
+    if(this.showFeedbackTab){
+      let clearedFields = ['newSapOrderNo', 'newSapCreateTime'];
+      clearedFields.forEach((fieldName) => this.formValues.controls[fieldName].enable());
+      clearedFields.forEach((fieldName) => this.formValues.controls[fieldName].setValidators([Validators.required]));
+    }
   }
 
    // 初始化OM列表

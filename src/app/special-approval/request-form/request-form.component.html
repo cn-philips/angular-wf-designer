@@ -93,7 +93,8 @@
         <special-approval-none-direct-order-info *ngIf="applyType === APPLY_TYPE.NONE_DIRECT_ORDER"
           [editable]="editable" [formValues]="orderInfo"></special-approval-none-direct-order-info>
         <special-approval-order-replacement-info *ngIf="applyType === APPLY_TYPE.ORDER_REPLACEMENT"
-          [editable]="editable" [baseInfo]="basicInfo" [formValues]="orderReplacementInfo">
+          [editable]="editable" [baseInfo]="basicInfo" [formValues]="orderReplacementInfo"
+          [showFeedbackTab]="showFeedbackTab">
         </special-approval-order-replacement-info>
       </div>
     </ng-template>
@@ -174,7 +175,9 @@
     </ng-template>
     <ng-template ngbTabContent>
       <div class="card-body">
-        <special-approval-feedback [taskId]="taskId" [requestId]="requestId"></special-approval-feedback>
+        <special-approval-feedback (onFbSubmit)="onFeedBackSubmit($event)" [taskId]="taskId" [requestId]="requestId"
+          [formValues]="feedBackFormValues">
+        </special-approval-feedback>
       </div>
     </ng-template>
   </ngb-tab>

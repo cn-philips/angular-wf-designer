@@ -85,7 +85,7 @@
     <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
       <div nz-col nzXs="24" nzSm="24" nzMd="12">
         <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6" [nzRequired]="bg.value != 'CC'">销售区域</nz-form-label>
+          <nz-form-label nzXl="8" nzXXl="6">销售区域</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <nz-input-group style="width: 100%;font-size: 0;">
               <nz-select formControlName="cycleGroup" style="width: 48%;margin-right:4%"
@@ -281,7 +281,7 @@
     <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
       <div nz-col nzXs="24" nzSm="24" nzMd="12">
         <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6" [nzRequired]="bg.value != 'CC'">OM</nz-form-label>
+          <nz-form-label nzXl="8" nzXXl="6">OM</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <nz-select formControlName="om" [nzPlaceHolder]="editable ? '请选择OM' : ''">
               <nz-option *ngFor="let item of selectOptions.oms" [nzLabel]="item.label" [nzValue]="item.value">
