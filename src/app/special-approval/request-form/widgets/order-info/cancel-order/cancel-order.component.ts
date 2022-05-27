@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ViewChild } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, OnChanges, SimpleChanges } from '@angular/core';
 import { FormControl, FormGroup, Validators} from '@angular/forms'
 import {UploadXHRArgs, UploadFile, NzModalService, NzMessageService} from 'ng-zorro-antd';
 
@@ -30,7 +30,7 @@ interface CommonResponse {
   templateUrl: './cancel-order.component.html',
   styleUrls: ['./cancel-order.component.scss']
 })
-export class CancelOrderComponent implements OnInit {
+export class CancelOrderComponent implements OnInit, OnChanges {
   constructor(public spService: SpecialApprovalService, private modal: NzModalService, private message: NzMessageService, private dictService: DictService) {}
 
 
@@ -207,18 +207,20 @@ export class CancelOrderComponent implements OnInit {
       })
     }
 
+  }
+
+  //监测 @Input值的变化
+  ngOnChanges(changes: SimpleChanges): void {
     //是否是补充信息节点
-    if(!this.isSupplementNode){
-      this.disableField();
-    } else {
+    if (changes.isSupplementNode && changes.isSupplementNode.currentValue) {
       this.formValues.controls.orderInfoStatus.enable();
       this.initCancelContractLink();
       this.orderInfoStatus.get('startProduction').setValidators(Validators.required); //是否开始生产
       this.orderInfoStatus.get('shipped').setValidators(Validators.required); // 是否已发货
       this.orderInfoStatus.get('thirdPartyProcurement').setValidators(Validators.required); // 是否有第三方采购
       this.orderInfoStatus.get('seenSite').setValidators(Validators.required); // 是否看过场地
-      this.orderInfoStatus.get('advanceChargeStatus').setValidators(Validators.required); // 预付款状态
-    }
+      this.orderInfoStatus.get('advanceChargeStatus').setValidators(Validators.required); // 预付款状
+    } 
   }
 
    // 初始化OM列表
@@ -227,27 +229,6 @@ export class CancelOrderComponent implements OnInit {
     this.selectOptions.oms = users.map(({ name, email }) => ({ label: name, value: email }))
   }
 
-  disableField() {
-    let disabledFieldsList = [
-      "spApplyOrderId",
-      "startProduction",
-      "orderCancelAmountProduction",
-      "shipped",
-      "orderCancelAmountShipped",
-      "thirdPartyProcurement",
-      "orderCancelAmountPurchase",
-      "seenSite",
-      "orderCancelAmountSite",
-      "advanceChargeStatus",
-      "advanceChargeAmount",
-      "orderActualAmount",
-      "refundAmount",
-      "remark"
-    ]
-    disabledFieldsList.forEach(item => {
-      this.orderInfoStatus.get(item).disable();
-    })
-  }
 
   //上传附件 (只能上传一个文件)
   onUploadFile = (item: UploadXHRArgs) => {
