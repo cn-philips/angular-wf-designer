@@ -1,3 +1,16 @@
-:host /deep/ .ant-input-number-handler-wrap {
-  display: none;
+:host /deep/ {
+  .ant-input-group-addon {
+    border: none;
+    padding-right: 0;
+    background-color: #fff;
+  }
+  .ant-input-number {
+    border: none;
+  }
+  .ant-input-number-input:disabled {
+    border-bottom: 0.125rem #d4dbdf solid;
+  }
+  .ant-input-number-handler-wrap {
+    display: none;
+  }
 }
