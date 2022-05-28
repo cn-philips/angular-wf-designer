@@ -261,6 +261,7 @@ import { AutoApprovalComponent } from './DIIGT/auto-approval/auto-approval.compo
 
 import { SpecialApprovalModule } from './special-approval/special-approval.module'
 import { SpecialApprovalSettingModule } from './DIIGT/change-scene/special-approval-setting/special-approval-setting.module'
+import {TropeAngleBracketsModule} from '../vendor/libs/trope-angle-brackets/trope-angle-brackets.module';
 
 // registerLocaleData(localeCn, localeCnExtra);
 registerLocaleData(zh);
@@ -320,7 +321,7 @@ registerLocaleData(zh);
     TrainingcostModalComponent,
     ShomeComponent,
     CktakeComponent,
-  
+
     MyPpendingComponent,
     MyCompleteComponent,
     BidComponent,
@@ -346,7 +347,7 @@ registerLocaleData(zh);
     ContractsigningComponent,
     ApprovalrecordComponent,
     OitcompleteComponent,
- 
+
     InorderComponent,
     InorderInComponent,
     InorderExComponent,
@@ -504,6 +505,7 @@ registerLocaleData(zh);
       cancelButtonType: 'default btn-sm',
       confirmButtonType: 'primary btn-sm'
     }),
+    TropeAngleBracketsModule,
   ],
 
   entryComponents: [

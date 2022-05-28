@@ -238,24 +238,19 @@ initManuals(){
   public message_error: any = [];
   public message_info: any = [];
   public message_warning: any = [];
-  public message_length: any = 0;
   public getMessage() {
     this.http.get('/act/ecom/dictData/queryDrop?dictGroup=MESSAGE_ERROR').subscribe(res => {
       this.message_error = [...res.data];
-      this.message_length += this.message_error && this.message_error.length > 0 ? this.message_error.length : 0;
     });
     this.http.get('/act/ecom/dictData/queryDrop?dictGroup=MESSAGE_INFO').subscribe(res => {
       this.message_info = [...res.data];
-      this.message_length += this.message_info && this.message_info.length > 0 ? this.message_info.length : 0;
     });
     this.http.get('/act/ecom/dictData/queryDrop?dictGroup=MESSAGE_WARNING').subscribe(res => {
       this.message_warning = [...res.data];
-      this.message_length += this.message_warning && this.message_warning.length > 0 ? this.message_warning.length : 0;
     });
   }
-  public closeMessage(e) {
-    e.style.display = 'none';
-    this.message_length --;
+  public closeMessage(msgArr: any, index: any) {
+    msgArr.splice(index, 1);
   }
 
 }
