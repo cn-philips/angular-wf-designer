@@ -9,65 +9,17 @@
   <body>
     <div class="homepage-container">
       <!-- message -->
-      <div style="padding-bottom: 16px" #message_box>
+      <div style="padding-bottom: 16px" *ngIf="message_length > 0">
         <div *ngFor="let item of message_error" class="message_div" #message>
-          <div class="message message_error">
-            <i style="color: #f5222d" class="message_i"><svg viewBox="64 64 896 896" fill="currentColor" width="1em" height="1em" class="ng-tns-c9-0" data-icon="close-circle" aria-hidden="true"><path d="M685.4 354.8c0-4.4-3.6-8-8-8l-66 .3L512 465.6l-99.3-118.4-66.1-.3c-4.4 0-8 3.5-8 8 0 1.9.7 3.7 1.9 5.2l130.1 155L340.5 670a8.32 8.32 0 0 0-1.9 5.2c0 4.4 3.6 8 8 8l66.1-.3L512 564.4l99.3 118.4 66 .3c4.4 0 8-3.5 8-8 0-1.9-.7-3.7-1.9-5.2L553.5 515l130.1-155c1.2-1.4 1.8-3.3 1.8-5.2z"></path><path d="M512 65C264.6 65 64 265.6 64 513s200.6 448 448 448 448-200.6 448-448S759.4 65 512 65zm0 820c-205.4 0-372-166.6-372-372s166.6-372 372-372 372 166.6 372 372-166.6 372-372 372z"></path></svg></i>
-            <span [innerHTML]="trusHtml(item.label)"></span>
-            <a class="message_close" (click)="closeMessage(message,message_box)"><i><svg viewBox="64 64 896 896" fill="currentColor" width="1em" height="1em" class="ng-tns-c11-0" data-icon="close" aria-hidden="true"><path d="M563.8 512l262.5-312.9c4.4-5.2.7-13.1-6.1-13.1h-79.8c-4.7 0-9.2 2.1-12.3 5.7L511.6 449.8 295.1 191.7c-3-3.6-7.5-5.7-12.3-5.7H203c-6.8 0-10.5 7.9-6.1 13.1L459.4 512 196.9 824.9A7.95 7.95 0 0 0 203 838h79.8c4.7 0 9.2-2.1 12.3-5.7l216.5-258.1 216.5 258.1c3 3.6 7.5 5.7 12.3 5.7h79.8c6.8 0 10.5-7.9 6.1-13.1L563.8 512z"></path></svg></i></a>
-          </div>
+          <nz-alert nzType="error" [nzMessage]="item.label" nzCloseable (nzOnClose)="closeMessage(message)"></nz-alert>
         </div>
         <div *ngFor="let item of message_info" class="message_div" #message>
-          <div class="message message_info">
-            <i style="color: #1890ff" class="message_i"><svg viewBox="64 64 896 896" fill="currentColor" width="1em" height="1em" class="ng-tns-c9-1" data-icon="info-circle" aria-hidden="true"><path d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm0 820c-205.4 0-372-166.6-372-372s166.6-372 372-372 372 166.6 372 372-166.6 372-372 372z"></path><path d="M464 336a48 48 0 1 0 96 0 48 48 0 1 0-96 0zm72 112h-48c-4.4 0-8 3.6-8 8v272c0 4.4 3.6 8 8 8h48c4.4 0 8-3.6 8-8V456c0-4.4-3.6-8-8-8z"></path></svg></i>
-            <span [innerHTML]="trusHtml(item.label)"></span>
-            <a class="message_close" (click)="closeMessage(message,message_box)"><i><svg viewBox="64 64 896 896" fill="currentColor" width="1em" height="1em" class="ng-tns-c11-0" data-icon="close" aria-hidden="true"><path d="M563.8 512l262.5-312.9c4.4-5.2.7-13.1-6.1-13.1h-79.8c-4.7 0-9.2 2.1-12.3 5.7L511.6 449.8 295.1 191.7c-3-3.6-7.5-5.7-12.3-5.7H203c-6.8 0-10.5 7.9-6.1 13.1L459.4 512 196.9 824.9A7.95 7.95 0 0 0 203 838h79.8c4.7 0 9.2-2.1 12.3-5.7l216.5-258.1 216.5 258.1c3 3.6 7.5 5.7 12.3 5.7h79.8c6.8 0 10.5-7.9 6.1-13.1L563.8 512z"></path></svg></i></a>
-          </div>
+          <nz-alert nzType="info" [nzMessage]="item.label" nzCloseable (nzOnClose)="closeMessage(message)"></nz-alert>
         </div>
         <div *ngFor="let item of message_warning" class="message_div" #message>
-          <div class="message message_warning">
-            <i style="color: #faad14" class="message_i"><svg viewBox="64 64 896 896" fill="currentColor" width="1em" height="1em" class="ng-tns-c9-2" data-icon="exclamation-circle" aria-hidden="true"><path d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm0 820c-205.4 0-372-166.6-372-372s166.6-372 372-372 372 166.6 372 372-166.6 372-372 372z"></path><path d="M464 688a48 48 0 1 0 96 0 48 48 0 1 0-96 0zm24-112h48c4.4 0 8-3.6 8-8V296c0-4.4-3.6-8-8-8h-48c-4.4 0-8 3.6-8 8v272c0 4.4 3.6 8 8 8z"></path></svg></i>
-            <span [innerHTML]="trusHtml(item.label)"></span>
-            <a class="message_close" (click)="closeMessage(message,message_box)"><i><svg viewBox="64 64 896 896" fill="currentColor" width="1em" height="1em" class="ng-tns-c11-0" data-icon="close" aria-hidden="true"><path d="M563.8 512l262.5-312.9c4.4-5.2.7-13.1-6.1-13.1h-79.8c-4.7 0-9.2 2.1-12.3 5.7L511.6 449.8 295.1 191.7c-3-3.6-7.5-5.7-12.3-5.7H203c-6.8 0-10.5 7.9-6.1 13.1L459.4 512 196.9 824.9A7.95 7.95 0 0 0 203 838h79.8c4.7 0 9.2-2.1 12.3-5.7l216.5-258.1 216.5 258.1c3 3.6 7.5 5.7 12.3 5.7h79.8c6.8 0 10.5-7.9 6.1-13.1L563.8 512z"></path></svg></i></a>
-          </div>
+          <nz-alert nzType="warning" [nzMessage]="item.label" nzCloseable (nzOnClose)="closeMessage(message)"></nz-alert>
         </div>
       </div>
-
-<!--      <div style="padding-bottom: 16px" [ngClass]="{'remove':message_length < 1}">-->
-<!--        <div *ngFor="let item of message_error" class="message_div" #message>-->
-<!--          <div class="message message_error2">-->
-<!--            <i style="color: #f5222d" class="message_i"><svg viewBox="64 64 896 896" fill="currentColor" width="1em" height="1em" class="ng-tns-c9-0" data-icon="close-circle" aria-hidden="true"><path d="M685.4 354.8c0-4.4-3.6-8-8-8l-66 .3L512 465.6l-99.3-118.4-66.1-.3c-4.4 0-8 3.5-8 8 0 1.9.7 3.7 1.9 5.2l130.1 155L340.5 670a8.32 8.32 0 0 0-1.9 5.2c0 4.4 3.6 8 8 8l66.1-.3L512 564.4l99.3 118.4 66 .3c4.4 0 8-3.5 8-8 0-1.9-.7-3.7-1.9-5.2L553.5 515l130.1-155c1.2-1.4 1.8-3.3 1.8-5.2z"></path><path d="M512 65C264.6 65 64 265.6 64 513s200.6 448 448 448 448-200.6 448-448S759.4 65 512 65zm0 820c-205.4 0-372-166.6-372-372s166.6-372 372-372 372 166.6 372 372-166.6 372-372 372z"></path></svg></i>-->
-<!--            <span [innerHTML]="trusHtml(item.label)"></span>-->
-<!--            <a class="message_close" (click)="closeMessage(message)"><i><svg viewBox="64 64 896 896" fill="currentColor" width="1em" height="1em" class="ng-tns-c11-0" data-icon="close" aria-hidden="true"><path d="M563.8 512l262.5-312.9c4.4-5.2.7-13.1-6.1-13.1h-79.8c-4.7 0-9.2 2.1-12.3 5.7L511.6 449.8 295.1 191.7c-3-3.6-7.5-5.7-12.3-5.7H203c-6.8 0-10.5 7.9-6.1 13.1L459.4 512 196.9 824.9A7.95 7.95 0 0 0 203 838h79.8c4.7 0 9.2-2.1 12.3-5.7l216.5-258.1 216.5 258.1c3 3.6 7.5 5.7 12.3 5.7h79.8c6.8 0 10.5-7.9 6.1-13.1L563.8 512z"></path></svg></i></a>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--        <div *ngFor="let item of message_info" class="message_div" #message>-->
-<!--          <div class="message message_info2">-->
-<!--            <i style="color: #1890ff" class="message_i"><svg viewBox="64 64 896 896" fill="currentColor" width="1em" height="1em" class="ng-tns-c9-1" data-icon="info-circle" aria-hidden="true"><path d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm0 820c-205.4 0-372-166.6-372-372s166.6-372 372-372 372 166.6 372 372-166.6 372-372 372z"></path><path d="M464 336a48 48 0 1 0 96 0 48 48 0 1 0-96 0zm72 112h-48c-4.4 0-8 3.6-8 8v272c0 4.4 3.6 8 8 8h48c4.4 0 8-3.6 8-8V456c0-4.4-3.6-8-8-8z"></path></svg></i>-->
-<!--            <span [innerHTML]="trusHtml(item.label)"></span>-->
-<!--            <a class="message_close" (click)="closeMessage(message)"><i><svg viewBox="64 64 896 896" fill="currentColor" width="1em" height="1em" class="ng-tns-c11-0" data-icon="close" aria-hidden="true"><path d="M563.8 512l262.5-312.9c4.4-5.2.7-13.1-6.1-13.1h-79.8c-4.7 0-9.2 2.1-12.3 5.7L511.6 449.8 295.1 191.7c-3-3.6-7.5-5.7-12.3-5.7H203c-6.8 0-10.5 7.9-6.1 13.1L459.4 512 196.9 824.9A7.95 7.95 0 0 0 203 838h79.8c4.7 0 9.2-2.1 12.3-5.7l216.5-258.1 216.5 258.1c3 3.6 7.5 5.7 12.3 5.7h79.8c6.8 0 10.5-7.9 6.1-13.1L563.8 512z"></path></svg></i></a>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--        <div *ngFor="let item of message_warning" class="message_div" #message>-->
-<!--          <div class="message message_warning2">-->
-<!--            <i style="color: #faad14" class="message_i"><svg viewBox="64 64 896 896" fill="currentColor" width="1em" height="1em" class="ng-tns-c9-2" data-icon="exclamation-circle" aria-hidden="true"><path d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm0 820c-205.4 0-372-166.6-372-372s166.6-372 372-372 372 166.6 372 372-166.6 372-372 372z"></path><path d="M464 688a48 48 0 1 0 96 0 48 48 0 1 0-96 0zm24-112h48c4.4 0 8-3.6 8-8V296c0-4.4-3.6-8-8-8h-48c-4.4 0-8 3.6-8 8v272c0 4.4 3.6 8 8 8z"></path></svg></i>-->
-<!--            <span [innerHTML]="trusHtml(item.label)"></span>-->
-<!--            <a class="message_close" (click)="closeMessage(message)"><i><svg viewBox="64 64 896 896" fill="currentColor" width="1em" height="1em" class="ng-tns-c11-0" data-icon="close" aria-hidden="true"><path d="M563.8 512l262.5-312.9c4.4-5.2.7-13.1-6.1-13.1h-79.8c-4.7 0-9.2 2.1-12.3 5.7L511.6 449.8 295.1 191.7c-3-3.6-7.5-5.7-12.3-5.7H203c-6.8 0-10.5 7.9-6.1 13.1L459.4 512 196.9 824.9A7.95 7.95 0 0 0 203 838h79.8c4.7 0 9.2-2.1 12.3-5.7l216.5-258.1 216.5 258.1c3 3.6 7.5 5.7 12.3 5.7h79.8c6.8 0 10.5-7.9 6.1-13.1L563.8 512z"></path></svg></i></a>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--      </div>-->
-
-<!--      <div style="padding-bottom: 16px" *ngIf="message_length > 0">-->
-<!--        <div *ngFor="let item of message_error" class="message_div" #message>-->
-<!--          <nz-alert nzShowIcon nzType="error" [nzMessage]="item.label" nzCloseable (nzOnClose)="closeMessage(message)"></nz-alert>-->
-<!--        </div>-->
-<!--        <div *ngFor="let item of message_info" class="message_div" #message>-->
-<!--          <nz-alert nzShowIcon nzType="info" [nzMessage]="item.label" nzCloseable (nzOnClose)="closeMessage(message)"></nz-alert>-->
-<!--        </div>-->
-<!--        <div *ngFor="let item of message_warning" class="message_div" #message>-->
-<!--          <nz-alert nzShowIcon nzType="warning" [nzMessage]="item.label" nzCloseable (nzOnClose)="closeMessage(message)"></nz-alert>-->
-<!--        </div>-->
-<!--      </div>-->
       <div class="">
         <div>
           <div class="float-left carousel-wrapper">

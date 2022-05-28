@@ -6,14 +6,13 @@ import { environment } from '../../../environments/environment';
 import { resolve } from 'url';
 import { validateStyleParams } from '@angular/animations/browser/src/util';
 import { NzCarouselModule } from 'ng-zorro-antd/carousel';
-import {DomSanitizer} from '@angular/platform-browser';
 @Component({
   selector:'igt-homepage',
   templateUrl:'./homepage.component.html',
   styleUrls:['./homepage.component.scss']
 })
 export class HomepageComponent implements OnInit {
-  constructor(private http: HttpService, private message: NzMessageService, private el:ElementRef,  private router: Router,private domSanitizer: DomSanitizer) { }
+  constructor(private http: HttpService, private message: NzMessageService, private el:ElementRef,  private router: Router,) { }
   public showDashboard:Boolean = false
   public isProcessing:Boolean = false
   inTimer:NodeJS.Timer = null
@@ -236,8 +235,6 @@ initManuals(){
     );
   }
 
-  // 关闭过滤动画时间 s
-  public transitionTime: number = 0.2;
   public message_error: any = [];
   public message_info: any = [];
   public message_warning: any = [];
@@ -256,38 +253,9 @@ initManuals(){
       this.message_length += this.message_warning && this.message_warning.length > 0 ? this.message_warning.length : 0;
     });
   }
-  public closeMessage(e, box) {
+  public closeMessage(e) {
+    e.style.display = 'none';
     this.message_length --;
-    //
-    e.classList.add('remove');
-    if (this.message_length < 1) {
-      box.classList.add('remove');
-    }
-    return;
-    // 关闭动画
-    e.style.height = e.offsetHeight + 'px';
-    e.style.transition = this.transitionTime + 's';
-    const _this = this;
-    setTimeout(function() {
-      e.style.transform = 'scaleY(0)';
-      _this.closeBack(e, box);
-    }, 100);
-  }
-
-  /*关闭动画执行完毕回调*/
-  public closeBack(e, box) {
-    // 隐藏所有
-    const _this = this;
-    setTimeout(function() {
-      e.classList.add('remove');
-      if (_this.message_length < 1) {
-        box.classList.add('remove');
-      }
-      }, this.transitionTime * 1000);
-  }
-
-  public trusHtml(e) {
-    return this.domSanitizer.bypassSecurityTrustHtml(e);
   }
 
 }
