@@ -21,6 +21,7 @@ import { SelectApproverComponent } from './widgets/select-approver/select-approv
 import { RddOitOrderInfoComponent } from './widgets/order-info/rdd-oit/rdd-oit.component';
 import {MachineComponent} from './widgets/order-info/machine/machine.component';
 import {DeBookComponent} from './widgets/order-info/de-book/de-book.component';
+import {LastbuyComponent} from './widgets/order-info/lastbuy/lastbuy.component';
 
 enum TAB_TYPE {
   BASIC_INFO = 'basic-info',
@@ -48,6 +49,7 @@ export class RequestFormComponent implements OnInit {
   @ViewChild('rddOitOrderInfo') public rddOitOrderInfo: RddOitOrderInfoComponent;
   @ViewChild('machineExchange') public machineExchange: MachineComponent;
   @ViewChild('deBookOrderInfo') public deBookInfo: DeBookComponent;
+  @ViewChild('lastBuyOrderInfo') public lastBuyOrderInfo: LastbuyComponent;
 
   isSupplementNode = false
 
@@ -163,17 +165,17 @@ export class RequestFormComponent implements OnInit {
       id: [null],
       spApplyOrderId: [{ value: null, disabled: true }], // (关联的字段)
       startProduction: [{ value: null, disabled: true }], //是否开始生产 required
-      orderCancelAmountProduction: [{ value: null, disabled: true }], // 订单取消的额外费用-生产 
+      orderCancelAmountProduction: [{ value: null, disabled: true }], // 订单取消的额外费用-生产
       shipped: [{ value: null, disabled: true }], // 是否已发货 required
-      orderCancelAmountShipped: [{ value: null, disabled: true }], // 订单取消的额外费用-国际国内段运输仓储费用 
+      orderCancelAmountShipped: [{ value: null, disabled: true }], // 订单取消的额外费用-国际国内段运输仓储费用
       thirdPartyProcurement: [{ value: null, disabled: true }], // 是否有第三方采购 required
-      orderCancelAmountPurchase: [{ value: null, disabled: true }], // 订单取消的额外费用-第三方采购 
+      orderCancelAmountPurchase: [{ value: null, disabled: true }], // 订单取消的额外费用-第三方采购
       seenSite: [{ value: null, disabled: true }], // 是否看过场地 required
-      orderCancelAmountSite: [{ value: null, disabled: true }], // 订单取消的额外费用-场地相关 
+      orderCancelAmountSite: [{ value: null, disabled: true }], // 订单取消的额外费用-场地相关
       advanceChargeStatus: [{ value: null, disabled: true }], // 预付款状态 required
-      advanceChargeAmount: [{ value: null, disabled: true }], // 预付款金额 
-      orderActualAmount: [{ value: null, disabled: true }], // 订单实际发生费用 
-      refundAmount: [{ value: null, disabled: true }], // 退款金额 
+      advanceChargeAmount: [{ value: null, disabled: true }], // 预付款金额
+      orderActualAmount: [{ value: null, disabled: true }], // 订单实际发生费用
+      refundAmount: [{ value: null, disabled: true }], // 退款金额
       remark: [{ value: null, disabled: true }], // 备注
       attachment: [null], // 附件
     })
@@ -219,6 +221,7 @@ export class RequestFormComponent implements OnInit {
       applyType: [null, [Validators.required]], // 申请类型
       applyItem: [{ value: null, disabled: true }, [Validators.required]], // 申请原因
       applyItemDesc: [null], // 其他原因说明
+      lastBuyPlan: [null], // Last Buy计划说明
       reason: [null, [Validators.required]], // 申请原因
       applyFileIds: [[]], // 申请附件
       systemRegion: [null, [Validators.required]],
@@ -353,6 +356,7 @@ export class RequestFormComponent implements OnInit {
       ])
     }),
     deBookOrderInfos: [[]],
+    lastBuyInfos: [[]],
     cancelorderInfo: this.fb.group({...this.cancelOrderInit, applyId: null, id: null, isDeleted: 0}),
     orderReplacementInfo: this.fb.group({...this.orderReplacementInit, applyId: null, id: null}),
     noneDirectOrderInfo: this.fb.group({
@@ -594,6 +598,10 @@ export class RequestFormComponent implements OnInit {
     return this.formValues.get('orderReplacementInfo') as FormGroup
   }
 
+  get lastBuyInfos(): FormGroup {
+    return this.formValues.get('lastBuyInfos') as FormGroup
+  }
+
   public setFormValidators(type, item, bg) {
     let clearedFields
     switch(type) {
@@ -620,6 +628,9 @@ export class RequestFormComponent implements OnInit {
         clearedFields = ['expectedPaymentDate', 'applyArrivalTime', 'expectedSaleDate']
         clearedFields.forEach((fieldName) => this.orderInfo.controls[fieldName].clearValidators())
         break
+      case APPLY_TYPE.PRE_BOOK_LASTBUY:
+        this.basicInfo.controls.lastBuyPlan.setValidators([Validators.required]);
+        break
       case APPLY_TYPE.CANCEL_ORDER:
         if (bg == 'CC') {
           //销售区域和OM非必填
@@ -635,7 +646,7 @@ export class RequestFormComponent implements OnInit {
       case APPLY_TYPE.ORDER_REPLACEMENT:
         if (bg == 'PD&IGT') {
           this.orderReplacementInfo.controls.referenceId.disable();
-        } 
+        }
         break
     }
 
@@ -650,7 +661,7 @@ export class RequestFormComponent implements OnInit {
   }
 
   public getFormData() {
-    const { basicInfo, orderInfo, ccInfo, rddOitOrderInfos, changeOrderInfos, lcAmendmentOrderInfo, transferLibOrders, exchangeInfo, orderDifferences, cancelorderInfo, deBookOrderInfos, orderReplacementInfo, noneDirectOrderInfo  } = this.formValues.getRawValue()
+    const { basicInfo, orderInfo, ccInfo, rddOitOrderInfos, changeOrderInfos, lcAmendmentOrderInfo, transferLibOrders, exchangeInfo, orderDifferences, cancelorderInfo, deBookOrderInfos, orderReplacementInfo, noneDirectOrderInfo, lastBuyInfos  } = this.formValues.getRawValue()
     const { applyArrivalTime, expectedPaymentDate, expectedSaleDate, products } = orderInfo
     const { noneDirectaleDate, noneDirectProducts } = noneDirectOrderInfo
     const extInfo = {
@@ -892,6 +903,11 @@ export class RequestFormComponent implements OnInit {
           }
         ];
         break
+      case APPLY_TYPE.PRE_BOOK_LASTBUY:
+        data.orderInfos = [
+          ...lastBuyInfos
+        ]
+        break
       default:
         break
     }
@@ -1097,7 +1113,14 @@ export class RequestFormComponent implements OnInit {
         }
         hasError = this.basicInfo.invalid || this.orderReplacementInfo.invalid
         break
-
+      case APPLY_TYPE.PRE_BOOK_LASTBUY:
+        if (!this.lastBuyOrderInfo.isTableValid()) {
+          this.message.error('请按要求填写订单信息')
+          return
+        } else {
+          hasError = this.basicInfo.invalid
+        }
+        break
       case APPLY_TYPE.NONE_DIRECT_ORDER: //非直销
         for (const i in this.noneDirectOrderInfo.controls) {
           this.noneDirectOrderInfo.controls[i].markAsDirty();
@@ -1207,7 +1230,7 @@ export class RequestFormComponent implements OnInit {
         notifier: notify ? notifier.join(','): '',
         remark,
         taskInstId: this.taskId,
-        applyInfos: formData
+        applyInfos: formData,
       }
       await this.spService.approveSubmitRequest(data);
       this.message.success(SUCCESS_MESSAGE.SAVE_DRAFT);
@@ -1280,7 +1303,7 @@ export class RequestFormComponent implements OnInit {
           result: 'APPROVED',
           applyInfos: formData,
         }
-  
+
         const id = this.message.loading(LOADING_MESSAGE.FEEDBACK, { nzDuration: 0 }).messageId
         this.submitLoading = true
         await this.spService.approveRequest(data)
@@ -1311,6 +1334,14 @@ export class RequestFormComponent implements OnInit {
           }
           hasError =  this.cancelorderInfo.invalid;
           break
+        case APPLY_TYPE.PRE_BOOK_LASTBUY:  //cancel order 补充信息必填
+          for (let i = 0; i < this.lastBuyInfos.value.length; i++) {
+            if (!this.lastBuyInfos.value[i].actualOitDate || !this.lastBuyInfos.value[i].warehouseArrangement) {
+              hasError = true
+              return
+            }
+          }
+          break
         default:
           break
       }
@@ -1329,7 +1360,6 @@ export class RequestFormComponent implements OnInit {
           break
       }
     }
-
     if (hasError) {
       this.message.error('请按要求填写表单信息');
     }
@@ -1349,7 +1379,7 @@ export class RequestFormComponent implements OnInit {
         reason, ccType, ccPerson, orderInfos, attachments,
         taskList, nodeInfoList, nodeCode, nodeAction,
         extInfo, orderDifferences,
-        bg, cycleGroup, bigArea, smallArea, isDeleted,
+        bg, cycleGroup, bigArea, smallArea, isDeleted, lastBuyPlan,
       } = data
       this.setPageTitle({ applyType, applyItem }, false)
       this.applyItem = applyItem
@@ -1366,7 +1396,8 @@ export class RequestFormComponent implements OnInit {
           systemRegion: (bg && cycleGroup) ? [bg, cycleGroup, bigArea, smallArea].filter((str) => str && str.trim()).join('-') : null,
           bg, cycleGroup, bigArea, smallArea,
           reason,
-          applyFileIds: attachments.map(({ fileId }) => fileId)
+          applyFileIds: attachments.map(({ fileId }) => fileId),
+          lastBuyPlan
         },
         ccInfo: {
           ccType,
@@ -1510,6 +1541,12 @@ export class RequestFormComponent implements OnInit {
           }
         });
         this.setFormValidators(applyType, applyItem, orderInfos[0].bg)
+      } else if (this.applyType === APPLY_TYPE.PRE_BOOK_LASTBUY) {
+        this.formValues.patchValue({
+          lastBuyInfos:[
+            ...orderInfos
+          ]
+        })
       }
 
       const userSet = new Set<string>();
