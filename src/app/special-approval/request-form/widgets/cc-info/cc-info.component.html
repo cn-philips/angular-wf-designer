@@ -1,4 +1,9 @@
-<nz-alert nzType="info" nzMessage="请选择需要抄送的人员。请确保抄送人为有权限了解申请信息的人员且不是流程已定义的抄送人" nzShowIcon></nz-alert>
+<nz-alert nzType="info" nzShowIcon [nzMessage]="nzMessage">
+  <ng-template #nzMessage>
+    <div>请谨慎选择需要抄送的人员和抄送节点，避免过多重复通知邮件。请确保抄送人为有权限了解申请信息的人员。</div>
+    <div style="font-weight:bold">注意：无需抄送审批人（审批人已有通知邮件）</div>
+  </ng-template>
+</nz-alert>
 <nz-card class="mtb1rem" nzTitle="抄送人选择">
   <form nz-form [formGroup]="formValues">
     <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
