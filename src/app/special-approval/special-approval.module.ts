@@ -41,6 +41,7 @@ import { NoNedirectOrderInfoComponent } from './request-form/widgets/order-info/
 import { DeBookComponent } from './request-form/widgets/order-info/de-book/de-book.component';
 import { OrderReplacementComponent } from "./request-form/widgets/order-info/order-replacement/order-replacement.component";
 import { SupplementFormComponent } from "./request-form/widgets/supplement-form/supplement-form.component";
+import { LastbuyComponent } from './request-form/widgets/order-info/lastbuy/lastbuy.component';
 
 const COMPONENTS = [
   ApprovedComponent,
@@ -83,6 +84,7 @@ const WIDGETS = [
   DeBookComponent,
   OrderReplacementComponent,
   SupplementFormComponent,
+  LastbuyComponent,
 ];
 
 export {

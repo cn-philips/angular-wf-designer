@@ -73,6 +73,23 @@
       </div>
     </div>
 
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle" *ngIf="applyType === APPLY_TYPE.PRE_BOOK_LASTBUY">
+      <div nz-col nzXs="24" nzSm="24" nzMd="12">
+        <nz-form-item>
+          <nz-form-label nzFor="reason" nzXl="8" nzXXl="6" nzRequired>Last Buy 计划说明</nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <textarea rows="4" nz-input formControlName="lastBuyPlan" id="lastBuyPlan" oninput="if(value.length>1000)value=value.slice(0,1000)"></textarea>
+            <div>还可以输入:{{formValues.get('lastBuyPlan').value?formValues.get('lastBuyPlan').value.length:0}}/{{1000}}</div>
+            <nz-form-explain
+              *ngIf="formValues.get('lastBuyPlan')?.dirty && formValues.get('lastBuyPlan')?.errors"
+            >
+              请填写Last Buy 计划说明
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
     <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
       <div nz-col nzXs="24" nzSm="24" nzMd="12">
         <nz-form-item>
