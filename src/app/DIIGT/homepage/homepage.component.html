@@ -8,6 +8,18 @@
   </head>
   <body>
     <div class="homepage-container">
+      <!-- message -->
+      <div class="message-root-div" *ngIf="message_error.length>0 || message_info.length>0 || message_warning.length>0">
+        <div *ngFor="let item of message_error let i = index">
+          <nz-alert nzType="error" [nzMessage]="item.label" nzShowIcon nzCloseable (nzOnClose)="closeMessage(message_error, i)" trope-angle-brackets></nz-alert>
+        </div>
+        <div *ngFor="let item of message_warning let i = index">
+          <nz-alert nzType="warning" [nzMessage]="item.label" nzShowIcon nzCloseable (nzOnClose)="closeMessage(message_warning, i)" trope-angle-brackets></nz-alert>
+        </div>
+        <div *ngFor="let item of message_info let i = index">
+          <nz-alert nzType="info" [nzMessage]="item.label" nzShowIcon nzCloseable (nzOnClose)="closeMessage(message_info, i)" trope-angle-brackets></nz-alert>
+        </div>
+      </div>
       <div class="">
         <div>
           <div class="float-left carousel-wrapper">
@@ -63,9 +75,9 @@
                       </div>
                     </div>
 
-                    <div class="dashboard_sp_message">
-                      特批模块已于2022年4月10日上线，OIT后的特批申请请在特批模块中发起！
-                    </div>
+<!--                    <div class="dashboard_sp_message">-->
+<!--                      特批模块已于2022年4月10日上线，OIT后的特批申请请在特批模块中发起！-->
+<!--                    </div>-->
                   </div>
                 </div>
                 <!-- 图片 -->
