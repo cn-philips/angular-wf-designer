@@ -22,8 +22,8 @@
           <button nz-button nz-popconfirm nzDanger nzTitle="确定删除草稿?" *ngIf="showDeleteBtn"
             (nzOnConfirm)="onDeleteRequest()">删除</button>
 
-          <!-- 补充信息 审批保存 -->
-          <ng-container *ngIf="isSupplementNode">
+          <!-- 补充信息，反馈节点order 保存 -->
+          <ng-container *ngIf="isSupplementNode || showFeedbackTab">
             <button nz-button nz-popconfirm nzType="text" nzTitle="确定保存?" class="bg-success text-white"
               (nzOnConfirm)="onApproveSave()">保存</button>
           </ng-container>
@@ -88,10 +88,11 @@
           [baseInfo]="basicInfo" [formValues]="cancelorderInfo" [isSupplementNode]="isSupplementNode">
         </special-approval-cancel-order-info>
         <special-approval-specialdelivery-order-info *ngIf="applyType === APPLY_TYPE.SPECIAL_DELIVERY"
-          [editable]="editable" [basicInfo]="basicInfo" [formValues]="orderInfo">
+          [editable]="editable" [basicInfo]="basicInfo" [formValues]="orderInfo" [applyItem]="applyItem">
         </special-approval-specialdelivery-order-info>
         <special-approval-none-direct-order-info *ngIf="applyType === APPLY_TYPE.NONE_DIRECT_ORDER"
-          [editable]="editable" [baseInfo]="basicInfo" [formValues]="noneDirectOrderInfo"></special-approval-none-direct-order-info>
+          [editable]="editable" [baseInfo]="basicInfo" [formValues]="noneDirectOrderInfo">
+        </special-approval-none-direct-order-info>
         <special-approval-order-replacement-info *ngIf="applyType === APPLY_TYPE.ORDER_REPLACEMENT"
           [editable]="editable" [baseInfo]="basicInfo" [formValues]="orderReplacementInfo"
           [showFeedbackTab]="showFeedbackTab">

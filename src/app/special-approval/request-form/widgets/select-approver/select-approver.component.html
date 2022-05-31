@@ -13,7 +13,7 @@
           <td>{{ node.name }}</td>
           <td>
             <div *ngIf="!node.custom">
-              <div *ngFor="let approver of formatApprover(node.approverList)">
+              <div *ngFor="let approver of formatApprover(node.approverList,node.initiator)">
                 {{ approver }}
               </div>
             </div>
