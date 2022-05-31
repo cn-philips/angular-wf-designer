@@ -153,7 +153,8 @@
         <nz-form-item>
           <nz-form-label nzXl="8" nzXXl="6" [nzRequired]="showFeedbackTab">创建时间</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <nz-date-picker formControlName="newSapCreateTime" style="width: 100%" [nzStyle]="{ width: '100%' }">
+            <nz-date-picker formControlName="newSapCreateTime" style="width: 100%" [nzStyle]="{ width: '100%' }"
+              [nzPlaceHolder]="showFeedbackTab ? '请选择日期':''">
             </nz-date-picker>
             <nz-form-explain
               *ngIf="formValues.get('newSapCreateTime')?.dirty && formValues.get('newSapCreateTime')?.errors">

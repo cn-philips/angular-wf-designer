@@ -230,7 +230,7 @@ export class CancelOrderComponent implements OnInit, OnChanges {
   }
 
 
-  //上传附件 (只能上传一个文件)
+  //上传附件
   onUploadFile = (item: UploadXHRArgs) => {
     const formData = new FormData()
     const file = item.file as any
@@ -242,7 +242,8 @@ export class CancelOrderComponent implements OnInit, OnChanges {
       (response: CommonResponse) => {
         const { data, code } = response
         if ('0000' === code) {
-          this.orderInfoStatus.patchValue({ attachment: data})
+          const curFileIds = this.formValues.get('attachment').value as String[]
+          this.orderInfoStatus.patchValue({ attachment: curFileIds.concat(data)})
           item.onSuccess({ fileId: data }, file, response)
         } else {
           item.onError({}, file)
@@ -256,8 +257,8 @@ export class CancelOrderComponent implements OnInit, OnChanges {
 
   // 上传之前的校验(文件类型, 文件大小), 校验不通过, return false, 会阻止自动上传
   onBeforeUpload = (file) => {
-    if (this.orderInfoStatus.getRawValue().attachment != null) {
-      this.message.error('最多上传1个文件');
+    if (this.orderInfoStatus.getRawValue().attachment .length >= 5) {
+      this.message.error('最多上传5个文件');
       return false;
     }
     console.log('before upload', file);
@@ -270,8 +271,8 @@ export class CancelOrderComponent implements OnInit, OnChanges {
       this.modal.confirm({
         nzTitle: `确定移除文件${name}?`,
         nzOnOk: () => {
-          // const curFileIds = this.orderInfoStatus.get('attachment').value as String[]
-          this.orderInfoStatus.patchValue({ attachment: null })
+          const curFileIds = this.orderInfoStatus.get('attachment').value as String[]
+          this.orderInfoStatus.patchValue({ attachment: curFileIds.filter((fileId) => fileId !== response.fileId) })
           observer.next(true)
         },
         nzOnCancel: () => {

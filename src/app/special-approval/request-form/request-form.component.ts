@@ -177,7 +177,7 @@ export class RequestFormComponent implements OnInit {
       orderActualAmount: [{ value: null, disabled: true }], // 订单实际发生费用
       refundAmount: [{ value: null, disabled: true }], // 退款金额
       remark: [{ value: null, disabled: true }], // 备注
-      attachment: [null], // 附件
+      attachment: [[]], // 附件
     })
   };
 
@@ -1215,7 +1215,7 @@ export class RequestFormComponent implements OnInit {
     }
   }
 
-  //补充信息审批保存
+  //补充信息，反馈节点保存
   public async onApproveSave() {
     const id = this.message.loading(LOADING_MESSAGE.SAVE_DRAFT, { nzDuration: 0 }).messageId;
     try {
@@ -1245,7 +1245,7 @@ export class RequestFormComponent implements OnInit {
   }
 
   //补充信息审批操作
-  async onApproveSubmit(action: string){
+  public async onApproveSubmit(action: string){
     let hasError  = false;
     //判断 拒绝还是通过 action === 'REJECTED'
     if (action != 'REJECTED') {
@@ -1284,7 +1284,7 @@ export class RequestFormComponent implements OnInit {
     }
   }
 
-  //反馈节点审批
+  //反馈节点审批 
   public async onFeedBackSubmit(action: number) {
     //数据校验,检查反馈节点信息必填字段
     let hasError  = this.checkRequiredFormValidators();
