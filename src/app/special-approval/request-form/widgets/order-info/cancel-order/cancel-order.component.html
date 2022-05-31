@@ -200,7 +200,7 @@
           <nz-form-label nzXl="8" nzXXl="6" [nzRequired]="bg.value === 'PD&IGT'" nzFor="projectName">项目名称
           </nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <input id="projectName" nz-input formControlName="projectName"
+            <input id="projectName" nz-input formControlName="projectName" [disabled]="bg.value != 'PD&IGT'"
               [placeholder]="bg.value === 'PD&IGT' ? '' : '自动生成: 医院名称-产品型号'" maxlength="300" />
             <nz-form-explain
               *ngIf="formValues.get('projectName')?.dirty && formValues.get('projectName')?.errors && bg.value === 'PD&IGT'">
