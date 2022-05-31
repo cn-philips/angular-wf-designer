@@ -52,7 +52,7 @@ export class LastbuyComponent implements OnInit {
 
   @Input() editable = true
   @Input() formValues: FormGroup;
-  @Input() isSupplementNode: boolean = false;
+  @Input() showFeedbackTab: boolean = false;
 
   BUSINESS_MODEL = BUSINESS_MODEL
 
@@ -293,9 +293,8 @@ export class LastbuyComponent implements OnInit {
         orderAmount: null,
         currency: null,
         om: null,
-        stockingAgreementFileId: null,
-        stockingAgreementFileName: null,
-        stockingAgreementFileIds: [],
+        stockingAgreementFile: [],
+        stockingAgreementFileList: [],
         expectedPaymentDate: null,
         expectedSitePlaceDate: null,
         expectedSaleDate: null,
@@ -349,14 +348,18 @@ export class LastbuyComponent implements OnInit {
       (response: CommonResponse) => {
         const { data, code } = response
         if ('0000' === code) {
-          this.formValues.value[this.upIndex].stockingAgreementFileId = data
-          console.log( this.formValues.value[this.upIndex].stockingAgreementFileIds)
-          console.log( this.formValues.value[this.upIndex].stockingAgreementFileId)
           console.log( this.formValues.value)
+          console.log( this.formValues.value[this.upIndex])
+          if (!this.formValues.value[this.upIndex].stockingAgreementFile) {
+            this.formValues.value[this.upIndex].stockingAgreementFile = []
+          }
+          this.formValues.value[this.upIndex].stockingAgreementFile.push({fileId: data})
+          console.log( this.formValues.value[this.upIndex].stockingAgreementFile)
+
           item.onSuccess({ fileId: data }, file, response)
         } else {
           item.onError({}, file)
-          console.log( this.formValues.value[this.upIndex].stockingAgreementFileId)
+          console.log( this.formValues.value[this.upIndex].stockingAgreementFile)
         }
       },
       err => {
