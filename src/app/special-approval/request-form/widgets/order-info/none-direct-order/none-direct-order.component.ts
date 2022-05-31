@@ -189,6 +189,7 @@ export class NoNedirectOrderInfoComponent implements OnInit {
 
   ngOnInit(): void {
     this.initOMUsers()
+    this.editProjectName()
     if (this.editable) {
       this.formValues.get('hospitalName').valueChanges.subscribe(() => {
         this.onCalcProjectName()
@@ -208,4 +209,11 @@ export class NoNedirectOrderInfoComponent implements OnInit {
     const users = await this.spService.getOMUsers()
     this.selectOptions.oms = users.map(({ name, email }) => ({ label: name, value: email }))
   }
+
+  //当 bg !=== PD&IGT 特定条件下:项目名称不可编辑
+   async editProjectName(){
+     if (this.formValues.get('bg').value !== 'PD&IGT'){
+       this.formValues.get('projectName').disable();
+     }
+   }
 }
