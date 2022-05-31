@@ -50,8 +50,8 @@
           <td>
             <nz-form-item>
               <nz-form-control>
-                <nz-select [(ngModel)]="data.bmc" style="width: 100%;" [disabled]="!editable" (ngModelChange)="onBmcChange(data)" required>
-                  <nz-option *ngFor="let item of bmcList" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+                <nz-select [(ngModel)]="data.bmc" style="width: 100%;" [disabled]="!editable" required>
+                  <nz-option *ngFor="let item of selectOptions.bmcs[index]" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
                 </nz-select>
                 <nz-form-explain class="error-msg" *ngIf="!data.bmc">
                   请选择产品线
@@ -62,7 +62,7 @@
           <td>
             <nz-form-item>
               <nz-form-control>
-                              <nz-select [(ngModel)]="data.bg" style="width: 100%;" [disabled]="!editable"  required>
+                              <nz-select [(ngModel)]="data.bg" style="width: 100%;" [disabled]="!editable" (ngModelChange)="onBgChange($event, data,index)" required>
                                 <nz-option *ngFor="let item of BG_LIST" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
                               </nz-select>
 <!--                <input nz-input [(ngModel)]="data.bg" disabled />-->
@@ -225,7 +225,7 @@
           </td>
           <td nzRight="0px">
 <!--            <a nz-icon nzType="edit" nzTheme="outline" style="font-size: 16px"></a>&emsp;-->
-            <a nz-icon nzType="delete" nzTheme="outline" style="font-size: 16px" (click)="deleteOrder(data)"></a>
+            <a nz-icon nzType="delete" nzTheme="outline" style="font-size: 16px" (click)="deleteOrder(data, index)"></a>
           </td>
         </tr>
       </tbody>

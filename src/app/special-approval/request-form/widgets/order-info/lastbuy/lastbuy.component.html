@@ -44,8 +44,8 @@
         <th nzWidth="200px">预计记认销售日期</th>
         <th nzWidth="200px">*产品型号</th>
         <th nzWidth="200px">*数量</th>
-        <th nzWidth="200px" *ngIf="isSupplementNode">仓储安排</th>
-        <th nzWidth="200px" *ngIf="isSupplementNode">实际OIT日期</th>
+        <th nzWidth="200px" *ngIf="showFeedbackTab">仓储安排</th>
+        <th nzWidth="200px" *ngIf="showFeedbackTab">实际OIT日期</th>
       </tr>
       </thead>
       <tbody>
@@ -271,7 +271,7 @@
 <!--              [nzShowUploadList]="editable"-->
               <nz-upload
                 nzAction="/act/system/upload"
-                [nzFileList]="data.stockingAgreementFileIds"
+                [nzFileList]="data.stockingAgreementFileList"
                 [nzCustomRequest]="onUploadFile"
                 (click)="uploadIndex(i)"
                 [nzLimit]="1"
@@ -279,11 +279,14 @@
               >
                 <button nz-button><i nz-icon nzType="upload"></i><span>请选择文件</span></button>
               </nz-upload>
-              <div>
-                <a style="color: blue" (click)="onDownloadFile(data.stockingAgreementFileId, data.stockingAgreementFileName)" [title]="data.stockingAgreementFileName">
-                  {{ data.stockingAgreementFileName}}
-                </a>
-              </div>
+<!--              <div>-->
+<!--                <a style="color: blue" (click)="onDownloadFile(data.stockingAgreementFileId, data.stockingAgreementFileName)" [title]="data.stockingAgreementFileName">-->
+<!--                  {{ data.stockingAgreementFileName}}-->
+<!--                </a>-->
+<!--                -->
+<!--              </div>-->
+              <app-upload-file-list *ngIf="!editable" [fileList]="data.stockingAgreementFile"></app-upload-file-list>
+
             </nz-form-control>
           </nz-form-item>
         </td>
@@ -361,23 +364,23 @@
             </nz-form-control>
           </nz-form-item>
         </td>
-        <td *ngIf="isSupplementNode">
+        <td *ngIf="showFeedbackTab">
           <nz-form-item>
             <nz-form-control>
-              <nz-select style="width: 100%;" [(ngModel)]="data.warehouseArrangement" (ngModelChange)="onProductChange($event,data)" [disabled]="!isSupplementNode" required>
+              <nz-select style="width: 100%;" [(ngModel)]="data.warehouseArrangement" [disabled]="!showFeedbackTab" required>
                 <nz-option *ngFor="let item of selectOptions.wareHouse" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
               </nz-select>
             </nz-form-control>
           </nz-form-item>
         </td>
-        <td *ngIf="isSupplementNode">
+        <td *ngIf="showFeedbackTab">
           <nz-form-item>
             <nz-form-control>
               <nz-date-picker
                 [(ngModel)]="data.actualOitDate"
                 style="width: 100%"
                 [nzStyle]="{ width: '100%' }"
-                [disabled]="!isSupplementNode"
+                [disabled]="!showFeedbackTab"
                 [nzPlaceHolder]="editable ? '请选择日期' : ''"
               ></nz-date-picker>
             </nz-form-control>

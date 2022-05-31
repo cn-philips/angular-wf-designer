@@ -188,12 +188,13 @@ export class DeBookComponent implements OnInit {
         debookReason: null,
       }
     ])
-    this.selectOptions.bmcs = this.bmcList.filter(value => value.bg === this.currBg)
+    this.selectOptions.bmcs.push([this.bmcList.filter(value => value.bg === this.currBg)])
 
   }
 
-  deleteOrder(order) {
+  deleteOrder(order, index) {
     const orders = this.formValues.value.filter(data => data !== order);
+    this.selectOptions.bmcs = this.selectOptions.bmcs.filter((value, index1) => index1 !== index)
     this.formValues.patchValue(orders);
   }
 
@@ -229,8 +230,8 @@ export class DeBookComponent implements OnInit {
     order.projectName = vals.join(';');
   }
 
-  onBgChange(val: string, order) {
+  onBgChange(val: string, order, index) {
     order.bmc = null
-    this.selectOptions.bmcs = this.bmcList.filter(value => value.bg === val);
+    this.selectOptions.bmcs[index] = this.bmcList.filter(value => value.bg === val);
   }
 }
