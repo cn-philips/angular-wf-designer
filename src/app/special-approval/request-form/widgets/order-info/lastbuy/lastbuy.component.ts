@@ -353,8 +353,7 @@ export class LastbuyComponent implements OnInit {
           if (!this.formValues.value[this.upIndex].stockingAgreementFile) {
             this.formValues.value[this.upIndex].stockingAgreementFile = []
           }
-          const fileids = this.formValues.value[this.upIndex].stockingAgreementFile as string[]
-          this.formValues.value[this.upIndex].stockingAgreementFile = fileids.concat(data)
+          this.formValues.value[this.upIndex].stockingAgreementFile.push({fileId: data})
           console.log( this.formValues.value[this.upIndex].stockingAgreementFile)
 
           item.onSuccess({ fileId: data }, file, response)
