@@ -376,7 +376,7 @@ export class RequestFormComponent implements OnInit {
       sapOrderNo: [null, [Validators.required]], // SAP订单号
       orderAmount: [null, [Validators.required]], // 合同金额-数额
       currency: [null, [Validators.required]], // 合同金额-货币
-      expectedSaleDate: [null], // 预计记认销售日期
+      expectedSaleDate: [null,[Validators.required]], // 预计记认销售日期
       // applyArrivalTime: [null], // 申请到货时间
       // expectedPaymentDate: [null, [Validators.required]], // 预计付款(或场地就位)日期
       om: [null], // OM
@@ -663,7 +663,6 @@ export class RequestFormComponent implements OnInit {
   public getFormData() {
     const { basicInfo, orderInfo, ccInfo, rddOitOrderInfos, changeOrderInfos, lcAmendmentOrderInfo, transferLibOrders, exchangeInfo, orderDifferences, cancelorderInfo, deBookOrderInfos, orderReplacementInfo, noneDirectOrderInfo, lastBuyInfos  } = this.formValues.getRawValue()
     const { applyArrivalTime, expectedPaymentDate, expectedSaleDate, products } = orderInfo
-    const { noneDirectaleDate, noneDirectProducts } = noneDirectOrderInfo
     const extInfo = {
       exchangeMethod: changeOrderInfos.exchangeMethod
     }
@@ -861,8 +860,8 @@ export class RequestFormComponent implements OnInit {
         data.orderInfos = [
           {
             ...noneDirectOrderInfo,
-            noneDirectSaleDate: expectedSaleDate ? moment(expectedSaleDate).format('YYYY-MM-DD') : null,
-            noneDirectProducts: products.map(({ productType, wbsNo, itemNo, equipmentSn, quantity }) => ({ productType, wbsNo, itemNo, equipmentSn, quantity }))
+            expectedSaleDate: expectedSaleDate ? moment(expectedSaleDate).format('YYYY-MM-DD') : null,
+            products: products.map(({ productType, wbsNo, itemNo, equipmentSn, quantity }) => ({ productType, wbsNo, itemNo, equipmentSn, quantity }))
           }
         ];
         break;
@@ -1125,7 +1124,15 @@ export class RequestFormComponent implements OnInit {
         for (const i in this.noneDirectOrderInfo.controls) {
           this.noneDirectOrderInfo.controls[i].markAsDirty();
           this.noneDirectOrderInfo.controls[i].updateValueAndValidity();
-
+        }
+        if (businessModel === BUSINESS_MODEL.DISTRIBUTOR_DEAL) {
+          if (!hospitalNo && !dealerCode) {
+            this.message.error('请选择医院或者经销商')
+            return
+          }
+        } else if(!hospitalNo){
+          this.message.error('请选择医院')
+          return
         }
         hasError = this.basicInfo.invalid || this.noneDirectOrderInfo.invalid
         break
@@ -1405,7 +1412,7 @@ export class RequestFormComponent implements OnInit {
         },
       })
       this.requestInfo.orderInfos = orderInfos
-      if (applyType === APPLY_TYPE.PRODUCTION || applyType === APPLY_TYPE.EXT_WARRANTY || applyType === APPLY_TYPE.LOGISTICSCOST || applyType === APPLY_TYPE.EXT_INSTALL_COST || applyType === APPLY_TYPE.SPECIAL_DELIVERY || applyType===APPLY_TYPE.NONE_DIRECT_ORDER ) {
+      if (applyType === APPLY_TYPE.PRODUCTION || applyType === APPLY_TYPE.EXT_WARRANTY || applyType === APPLY_TYPE.LOGISTICSCOST || applyType === APPLY_TYPE.EXT_INSTALL_COST || applyType === APPLY_TYPE.SPECIAL_DELIVERY || applyType === APPLY_TYPE.NONE_DIRECT_ORDER ) {
         this.formValues.patchValue({
           orderInfo: {
             ...orderInfos[0],

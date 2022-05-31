@@ -111,7 +111,7 @@
               <input id="dealerName" type="text" nz-input formControlName="dealerName" [placeholder]="editable ? '点击右侧按钮选择经销商' : ''" />
             </nz-input-group>
             <ng-template #clearDealerBtn>
-              <i nz-icon nz-tooltip class="ant-input-clear-icon" nzTheme="fill" nzType="close-circle" *ngIf="formValues.get('dealerCode').value && editable"></i>
+              <i nz-icon nz-tooltip class="ant-input-clear-icon" nzTheme="fill" nzType="close-circle" *ngIf="formValues.get('dealerCode').value && editable" (click)="onClearDealer()"></i>
             </ng-template>
 
             <ng-template #selectDealerBtn>
