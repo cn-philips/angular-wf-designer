@@ -377,8 +377,6 @@ export class RequestFormComponent implements OnInit {
       orderAmount: [null, [Validators.required]], // 合同金额-数额
       currency: [null, [Validators.required]], // 合同金额-货币
       expectedSaleDate: [null,[Validators.required]], // 预计记认销售日期
-      // applyArrivalTime: [null], // 申请到货时间
-      // expectedPaymentDate: [null, [Validators.required]], // 预计付款(或场地就位)日期
       om: [null], // OM
       exchangeRole: [null], // 换货角色
       exchangeProcessing: [null], // 换货方式
@@ -857,13 +855,13 @@ export class RequestFormComponent implements OnInit {
         ];
         break;
       case APPLY_TYPE.NONE_DIRECT_ORDER:   //非直销订单
-        data.orderInfos = [
+        data.orderInfos[0] =
           {
             ...noneDirectOrderInfo,
-            expectedSaleDate: expectedSaleDate ? moment(expectedSaleDate).format('YYYY-MM-DD') : null,
-            products: products.map(({ productType, wbsNo, itemNo, equipmentSn, quantity }) => ({ productType, wbsNo, itemNo, equipmentSn, quantity }))
+            expectedSaleDate: noneDirectOrderInfo.expectedSaleDate ? moment(noneDirectOrderInfo.expectedSaleDate).format('YYYY-MM-DD') : null,
+            products: noneDirectOrderInfo.products.map(({ productType, wbsNo, itemNo, equipmentSn, quantity }) => ({ productType, wbsNo, itemNo, equipmentSn, quantity }))
           }
-        ];
+        ;
         break;
 
       case APPLY_TYPE.DE_BOOK:
@@ -1291,7 +1289,7 @@ export class RequestFormComponent implements OnInit {
     }
   }
 
-  //反馈节点审批 
+  //反馈节点审批
   public async onFeedBackSubmit(action: number) {
     //数据校验,检查反馈节点信息必填字段
     let hasError  = this.checkRequiredFormValidators();
@@ -1412,7 +1410,7 @@ export class RequestFormComponent implements OnInit {
         },
       })
       this.requestInfo.orderInfos = orderInfos
-      if (applyType === APPLY_TYPE.PRODUCTION || applyType === APPLY_TYPE.EXT_WARRANTY || applyType === APPLY_TYPE.LOGISTICSCOST || applyType === APPLY_TYPE.EXT_INSTALL_COST || applyType === APPLY_TYPE.SPECIAL_DELIVERY || applyType === APPLY_TYPE.NONE_DIRECT_ORDER ) {
+      if (applyType === APPLY_TYPE.PRODUCTION || applyType === APPLY_TYPE.EXT_WARRANTY || applyType === APPLY_TYPE.LOGISTICSCOST || applyType === APPLY_TYPE.EXT_INSTALL_COST || applyType === APPLY_TYPE.SPECIAL_DELIVERY) {
         this.formValues.patchValue({
           orderInfo: {
             ...orderInfos[0],
@@ -1554,6 +1552,13 @@ export class RequestFormComponent implements OnInit {
             ...orderInfos
           ]
         })
+      }else if(this.applyType === APPLY_TYPE.NONE_DIRECT_ORDER){
+        this.formValues.patchValue({
+          noneDirectOrderInfo:{
+            ...orderInfos[0],
+          }
+        })
+
       }
 
       const userSet = new Set<string>();
