@@ -6,7 +6,7 @@ import { HttpService } from '../../../services';
 import { ToastrService } from 'ngx-toastr';
 import { NgbModal, ModalDismissReasons, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { NzMessageService } from 'ng-zorro-antd';
-import { getuuid, disreduce,codeString} from "../../../../assets/js/tools"
+import {getuuid, disreduce, codeString, haveRolesArr} from '../../../../assets/js/tools';
 import { JsonPipe } from '@angular/common';
 import { load } from '@angular/core/src/render3';
 import { disableDebugTools } from '@angular/platform-browser';
@@ -66,6 +66,8 @@ export class PreproductInfoComponent implements OnInit {
    public priceValueList: any = {
 
    };
+  // 价格查看权限
+  public price_permission: boolean = false;
   ngOnInit()
   {
     this.flag = this.activatedRouter.queryParams['_value'].flag;
@@ -77,7 +79,11 @@ export class PreproductInfoComponent implements OnInit {
       totalPrice: new FormControl({ value: '', disabled: false }),
       totalContractPrice: new FormControl({ value: '', disabled: false }),
       taxrate: new FormControl({ value: '', disabled: this.disa }),
-    })
+    });
+    const arr = JSON.parse(localStorage.getItem('permissions'));
+    if (arr) {
+      this.price_permission = haveRolesArr(arr.price);
+    }
   }
   ngOnChanges(changes: SimpleChange): void {
     this.dataBase.detail.status = this.activatedRouter.queryParams['_value'].state ? this.activatedRouter.queryParams['_value'].state : "";

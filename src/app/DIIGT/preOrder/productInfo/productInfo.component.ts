@@ -6,7 +6,7 @@ import { HttpService } from '../../../services';
 import { ToastrService } from 'ngx-toastr';
 import { NgbModal, ModalDismissReasons, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { NzMessageService,UploadFile} from 'ng-zorro-antd';
-import { getuuid, disreduce,getType,upLoadFileNew} from "../../../../assets/js/tools"
+import {getuuid, disreduce, getType, upLoadFileNew, haveRolesArr} from '../../../../assets/js/tools';
 import { JsonPipe } from '@angular/common';
 import { load } from '@angular/core/src/render3';
 import { disableDebugTools } from '@angular/platform-browser';
@@ -57,6 +57,8 @@ export class PreOrderProductInfoComponent implements OnInit {
 
   };
 
+  // 价格查看权限
+  public price_permission: boolean = false;
   listOfSelection = [
     {
       text: 'Select All Row',
@@ -169,6 +171,10 @@ export class PreOrderProductInfoComponent implements OnInit {
       isVerify:new FormControl({ value: '', disabled: this.disa }),
     })
    this.getproductExpertList();
+    const arr = JSON.parse(localStorage.getItem('permissions'));
+    if (arr) {
+      this.price_permission = haveRolesArr(arr.price);
+    }
   }
 
   nzRemoveFile= (file: UploadFile): any => {
