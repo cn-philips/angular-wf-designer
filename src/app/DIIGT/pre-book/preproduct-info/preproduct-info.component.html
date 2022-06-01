@@ -21,7 +21,7 @@
         </nz-form-item>
       </div>
       <div  nz-col>
-        <nz-form-item *ngIf="dataBase.tableColOff">
+        <nz-form-item *ngIf="price_permission">
           <div class="opera-oppo-input-group">
             <nz-form-label nzFor="email">
               E-COM Total<br>
@@ -95,7 +95,7 @@
             <label class="font16" [nzDisabled]="ishow==true" [ngModel]="itemData.checked"
               (ngModelChange)="modelChange(i)" nz-checkbox>Order {{ itemData.modelNumber}}</label>
           </div>
-          <nz-form-item *ngIf="dataBase.tableColOff&&(dataBase.financialProgramme=='2'||dataBase.financialProgramme=='1')&&dataBase.financialProgrammeCost!=0.0000">
+          <nz-form-item *ngIf="price_permission&&(dataBase.financialProgramme=='2'||dataBase.financialProgramme=='1')&&dataBase.financialProgrammeCost!=0.0000">
             <div class="opera-oppo-input-group">
               <nz-form-label nzFor="email">
                 金融方案金额
@@ -110,7 +110,7 @@
               </nz-form-control>
             </div>
           </nz-form-item>
-          <nz-form-item *ngIf="dataBase.tableColOff">
+          <nz-form-item *ngIf="price_permission">
             <div class="opera-oppo-input-group">
               <nz-form-label nzFor="email">
                 Order Unit Contract Price 进单单位合同价
@@ -166,13 +166,13 @@
             <th nzAlign="center" nzWidth="200px"><span>NMPA Validity</span><br>证书有效期</th>
             <th nzAlign="center" nzWidth="150px">Simulation ID</th>
             <th nzAlign="center" nzWidth="220px">Market Bundle ID</th>
-            <th *ngIf="dataBase.tableColOff" nzAlign="center" nzWidth="200px"><span>Net price</span><br>审批价</th>
-            <th *ngIf="dataBase.tableColOff" nzAlign="center" nzWidth="200px">Trade In</th>
+            <th *ngIf="price_permission" nzAlign="center" nzWidth="200px"><span>Net price</span><br>审批价</th>
+            <th *ngIf="price_permission" nzAlign="center" nzWidth="200px">Trade In</th>
             <th nzAlign="center" nzWidth="200px">Opportunity ID</th>
             <th nzAlign="center" nzWidth="200px"><span>Opprtunity Hierarchy Link</span><br>商机层级链接</th>
             <th nzAlign="center" nzWidth="200px"><span>Product Sales</span><br>产品专家</th>
-            <th *ngIf="dataBase.tableColOff" nzAlign="center" nzWidth="200px"><span>Sales promotion</span><br>促销号</th>
-            <th *ngIf="dataBase.tableColOff" nzAlign="center" nzWidth="200px">Rebate</th>
+            <th *ngIf="price_permission" nzAlign="center" nzWidth="200px"><span>Sales promotion</span><br>促销号</th>
+            <th *ngIf="price_permission" nzAlign="center" nzWidth="200px">Rebate</th>
             <th nzAlign="center" nzWidth="200px"><span>Configuration File</span><br>配置文件</th>
             <th *ngIf="flag!=='1'&&ishow==false" nzRight="0px" nzWidth="200px"><span>Action</span><br>操作</th>
           </tr>
@@ -192,13 +192,13 @@
             <td nzAlign="center">{{data.nmpaRegistrationExpried|TimeFormatePipeNow}}</td>
             <td nzAlign="center">{{data.simulationIds}}</td>
             <td nzAlign="center">{{data.dealFormMarketBundleId}}</td>
-            <td *ngIf="dataBase.tableColOff" nzAlign="center">{{data.approvalPrice|NumberThousandth}}</td>
-            <td *ngIf="dataBase.tableColOff" nzAlign="center">{{data.tradeCost|NumberThousandth}}</td>
+            <td *ngIf="price_permission" nzAlign="center">{{data.approvalPrice|NumberThousandth}}</td>
+            <td *ngIf="price_permission" nzAlign="center">{{data.tradeCost|NumberThousandth}}</td>
             <td nzAlign="center">{{data.opportunityId}}</td>
             <td nzAlign="center">{{data.businessOpportunityHierarchyLink}}</td>
             <td nzAlign="center">{{data.productExpert!=""&&data.productExpert!=null?data.productExpert:"无"}}</td>
-            <td *ngIf="dataBase.tableColOff" nzAlign="center">{{data.promotions!=""&&data.promotions!=null?data.promotions:"无"}}</td>
-            <td *ngIf="dataBase.tableColOff" nzAlign="center">{{data.rebates!=""&&data.rebates!=null?data.rebates:"无"}}</td>
+            <td *ngIf="price_permission" nzAlign="center">{{data.promotions!=""&&data.promotions!=null?data.promotions:"无"}}</td>
+            <td *ngIf="price_permission" nzAlign="center">{{data.rebates!=""&&data.rebates!=null?data.rebates:"无"}}</td>
             <td nzAlign="center">
               <button *ngFor="let file of data.configurationFileList; index as j;"  nz-tooltip [nzTitle]="file.configurationFile"
                       class="down link-tesk" nz-button nzType="link" (click)="fileDwon(file.id)" >

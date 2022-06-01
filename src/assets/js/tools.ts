@@ -131,10 +131,10 @@ export function getType(file)  //取文件后缀
 }
 
 /**
- * 上传文件@file 表单获取到的file值 
+ * 上传文件@file 表单获取到的file值
  */
  export function upLoadFileNew(file:any)
- { 
+ {
     const isLt2M = file.size / 1024 / 1024 < 100; // 文件大小不超过100M
     const fileType = getType(file);
     if (fileType === 'exe' || fileType === 'bat') {
@@ -173,8 +173,8 @@ export function getType(file)  //取文件后缀
           this.message.create('error', res.msg);
         }
       }),(error)=>{
-           this.load=false; 
-           rejcet(this.load);         
+           this.load=false;
+           rejcet(this.load);
            this.message.create('error',"上传失败!");
       });
     })
@@ -210,24 +210,24 @@ export function upLoadFile(fileList:any, file:any, fileId:any,dataBase='dataBase
 
 }
 
-/**  
+/**
   * 用于多文件回上传回显使用
    * @param   fileList 回显数组
    * @param   name 接口返回数组
    */
- export function viewDatas(fileList,name:any) {    
+ export function viewDatas(fileList,name:any) {
  if(name)
  {
   const bidWinningNotice = name
   if (bidWinningNotice != null&&bidWinningNotice!=""&&bidWinningNotice.length>0) {
-    fileList= [];    
+    fileList= [];
     bidWinningNotice.map(vals=>{
       let obj = { uid: "", name: "", fileId: "" }
       obj.uid = vals.fileId;
       obj.fileId = vals.fileId;
       obj.name =vals.fileName?vals.fileName:"文件下载";
       fileList=fileList.concat(obj);
-    })  
+    })
     return  fileList;
   }
   else{
@@ -236,8 +236,8 @@ export function upLoadFile(fileList:any, file:any, fileId:any,dataBase='dataBase
  }
  else{
    return [];
- }       
-  
+ }
+
 }
 /**
  * 多个文件上传
@@ -377,7 +377,7 @@ export function isadopt(param)
     let nowDate = new Date(new Date().setHours(0, 0, 0, 0)).getTime()
     let iRemain: any = (endDate - nowDate) / 1000;
     iRemain = iRemain / 86400;
-    iRemain = parseInt(iRemain) + 1;           
+    iRemain = parseInt(iRemain) + 1;
     if (iRemain >= 1) {
       return "通过";
     }
@@ -390,4 +390,15 @@ export function isadopt(param)
   }
 }
 
-
+// 判断当前角色是否在数组内
+export function haveRolesArr(arr) {
+  const roles = JSON.parse(localStorage.getItem('roles'));
+  if (roles && arr) {
+    for (let i = 0; i < roles.length; i++) {
+      if (arr.indexOf(roles[i]) !== -1) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
