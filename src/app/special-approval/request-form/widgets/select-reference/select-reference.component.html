@@ -2,7 +2,7 @@
   [(nzVisible)]="visible"
   nzWidth="1200px"
   nzTitle="导入Reference数据"
-  [nzFooter]="null"
+  [nzFooter]="multipleImport"
   (nzOnCancel)="onHideModal()"
 >
   <div nz-row class="search-form" nzType="flex" nzJustify="start" nzAlign="middle" nzGutter="36">
@@ -10,7 +10,7 @@
       <nz-form-item>
         <nz-form-label nzXl="8">订单类型</nz-form-label>
         <nz-form-control [nzSpan]="16">
-          <nz-select style="width: 100%;" [(ngModel)]="searchParams.orderType" nzAllowClear nzPlaceHolder="请选择订单类型">
+          <nz-select style="width: 100%;" [(ngModel)]="searchParams.orderType" [disabled]="isMultipleSelect" nzAllowClear nzPlaceHolder="请选择订单类型">
             <nz-option *ngFor="let item of orderTypes" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
           </nz-select>
         </nz-form-control>
@@ -73,6 +73,7 @@
     >
       <thead>
         <tr>
+          <th nzWidth="40px" nzLeft="0px" *ngIf="isMultipleSelect"></th>
           <th nzWidth="220px">Reference ID</th>
           <th nzWidth="120px">订单类型</th>
           <th nzWidth="180px">项目名称</th>
@@ -88,11 +89,12 @@
           <th nzWidth="100px">医院编号</th>
           <th nzWidth="100px" *ngIf="!moneyHide">合同金额</th>
           <th nzWidth="100px">币制</th>
-          <th nzWidth="40px" nzRight="0px">操作</th>
+          <th nzWidth="40px" nzRight="0px" *ngIf="!isMultipleSelect">操作</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let reference of tableData.list">
+          <td *ngIf="isMultipleSelect"  nzShowCheckbox (nzCheckedChange)="refreshStatus($event,reference)"></td>
           <td>{{ reference.referenceId }}</td>
           <td>{{ reference.orderType }}</td>
           <td>{{ reference.projectName }}</td>
@@ -108,7 +110,7 @@
           <td>{{ reference.endUserId }}</td>
           <td  *ngIf="!moneyHide">{{ reference.contractPrice }}</td>
           <td>{{ reference.invoiceInformation }}</td>
-          <td nzRight="0px">
+          <td nzRight="0px" *ngIf="!isMultipleSelect">
             <button nz-button nzSize="small" nzType="primary" (click)="onSelectReference(reference)">选择</button>
           </td>
         </tr>
@@ -117,4 +119,8 @@
 
     <ng-template #totalTemplate let-total> 数据总条数 {{ tableData.totalCount }} </ng-template>
   </div>
+
 </nz-modal>
+<ng-template #multipleImport>
+  <button nz-button nzType="primary" *ngIf="isMultipleSelect" (click)="onSelectMultipleReference()">确定</button>
+</ng-template>
