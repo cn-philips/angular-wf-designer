@@ -1,5 +1,5 @@
-import { Component, OnInit, Input, ViewChild } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms'
+import { Component, OnInit, Input, ViewChild, OnChanges, SimpleChanges } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms'
 import {SpecialApprovalService} from '../../../../special-approval.service';
 import {Hospital, SelectHospitalComponent} from '../../select-hospital/select-hospital.component';
 import {Dealer, SelectDealerComponent} from '../../select-dealer/select-dealer.component';
@@ -18,7 +18,7 @@ import {
   templateUrl: './none-direct-order.component.html',
   styleUrls: ['./none-direct-order.component.scss']
 })
-export class NoNedirectOrderInfoComponent implements OnInit {
+export class NoNedirectOrderInfoComponent implements OnInit, OnChanges {
   constructor(public spService: SpecialApprovalService) { }
 
 
@@ -33,6 +33,7 @@ export class NoNedirectOrderInfoComponent implements OnInit {
   @Input() editable = true;
   @Input() applyItem: string;
   @Input() baseInfo: FormGroup
+  @Input() showFeedbackTab = false;
 
   APPLY_TYPE = APPLY_TYPE
 
@@ -216,4 +217,14 @@ export class NoNedirectOrderInfoComponent implements OnInit {
        this.formValues.get('projectName').disable();
      }
    }
+
+   //监测 @Input值的变化
+  ngOnChanges(changes: SimpleChanges): void {
+    //是否是反馈信息节点
+    if (changes.showFeedbackTab && changes.showFeedbackTab.currentValue) {
+      let clearedFields = ['actualSaleDate'];
+      clearedFields.forEach((fieldName) => this.formValues.controls[fieldName].enable());
+      clearedFields.forEach((fieldName) => this.formValues.controls[fieldName].setValidators([Validators.required]));
+    }
+  }
 }

@@ -62,7 +62,8 @@ export class BasicInfoComponent implements OnInit {
   get showApplyItemDesc(): boolean {
     return (this.applyType === APPLY_TYPE.EXT_WARRANTY && this.applyItem == 'sp_warranty_apply_item_5') ||
       (this.applyType === APPLY_TYPE.LC_AMENDMENT && this.applyItem == 'sp_lcamendment_apply_item_5') ||
-      (this.applyType === APPLY_TYPE.NONE_DIRECT_ORDER&& this.applyItem == 'sp_nonedirectorder_apply_item_2')
+      (this.applyType === APPLY_TYPE.NONE_DIRECT_ORDER&& this.applyItem == 'sp_nonedirectorder_apply_item_2') ||
+      (this.applyType === APPLY_TYPE.ORDER_REPLACEMENT&& this.applyItem == 'sp_orderreplacement_apply_item_5')
   }
 
   onUploadFile = (item: UploadXHRArgs) => {
