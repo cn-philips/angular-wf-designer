@@ -43,7 +43,7 @@ export class CancelOrderComponent implements OnInit, OnChanges {
   @Input() formValues: FormGroup
   @Input() editable = true
   @Input() baseInfo: FormGroup
-  @Input() supportFileList: UploadFile[] = [];
+  @Input() cancelOrderFileList: UploadFile[] = [];
 
   @Input() isSupplementNode = false
 
@@ -242,7 +242,7 @@ export class CancelOrderComponent implements OnInit, OnChanges {
       (response: CommonResponse) => {
         const { data, code } = response
         if ('0000' === code) {
-          const curFileIds = this.formValues.get('attachment').value as String[]
+          const curFileIds = this.orderInfoStatus.get('attachment').value as String[]
           this.orderInfoStatus.patchValue({ attachment: curFileIds.concat(data)})
           item.onSuccess({ fileId: data }, file, response)
         } else {
@@ -257,7 +257,7 @@ export class CancelOrderComponent implements OnInit, OnChanges {
 
   // 上传之前的校验(文件类型, 文件大小), 校验不通过, return false, 会阻止自动上传
   onBeforeUpload = (file) => {
-    if (this.orderInfoStatus.getRawValue().attachment .length >= 5) {
+    if (this.orderInfoStatus.getRawValue().attachment.length >= 5) {
       this.message.error('最多上传5个文件');
       return false;
     }

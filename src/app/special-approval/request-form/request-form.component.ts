@@ -77,6 +77,8 @@ export class RequestFormComponent implements OnInit {
 
   public supportFileList = [];
 
+  public cancelOrderFileList = [];
+
   public userList = [];
 
   public taskId: string;
@@ -138,6 +140,7 @@ export class RequestFormComponent implements OnInit {
     productSalesMgr: [null], // product sales manager邮箱
     products: [[]],
     arrivalDate: [null, [Validators.required]], // 到货日期
+    actualSaleDate: [{ value: null, disabled: true }], // 实际记认销售日期
   }
 
   //cancel order 订单信息字段单独配置
@@ -178,6 +181,7 @@ export class RequestFormComponent implements OnInit {
       refundAmount: [{ value: null, disabled: true }], // 退款金额
       remark: [{ value: null, disabled: true }], // 备注
       attachment: [[]], // 附件
+      cancleOrderAttachment: [[]] // 附件List 显示
     })
   };
 
@@ -259,6 +263,9 @@ export class RequestFormComponent implements OnInit {
       productSalesMgr: [null], // product sales manager邮箱
       products: [[]],
       arrivalDate: [null], // 到货日期
+      actualPaymentDate: [{ value: null, disabled: true }], // 实际付款日期（未付款）
+      actualSitePlaceDate: [{ value: null, disabled: true }], // 实际场地就位日期（场地未好） 
+      actualSaleDate: [{ value: null, disabled: true }], // 实际记认销售日期
     }),
     rddOitOrderInfos: [[{ isMain: true }]],
     ccInfo: this.fb.group({
@@ -312,6 +319,7 @@ export class RequestFormComponent implements OnInit {
           saleEmail: [{ value: null, disabled: true }, [Validators.required]], // 销售邮箱
           districtLeader: [{ value: null, disabled: true }], // District Leader邮箱
           salesLeader: [{ value: null, disabled: true }], // sales Leader 邮箱
+          actualSaleDate: [{ value: null, disabled: true }], // 实际记认销售日期
           products: [[], [Validators.required]],
         }),
         this.fb.group({
@@ -386,6 +394,7 @@ export class RequestFormComponent implements OnInit {
       productSalesMgr: [null], // product sales manager邮箱
       products: [[]],
       arrivalDate: [null], // 到货日期
+      actualSaleDate: [{ value: null, disabled: true }], // 实际记认销售日期
     }),
   });
 
@@ -639,11 +648,16 @@ export class RequestFormComponent implements OnInit {
         }
         if (bg == 'PD&IGT') {
           this.cancelorderInfo.controls.referenceId.disable();
+        } else {
+          this.cancelorderInfo.controls.projectName.disable();
         }
         break
       case APPLY_TYPE.ORDER_REPLACEMENT:
         if (bg == 'PD&IGT') {
           this.orderReplacementInfo.controls.referenceId.disable();
+        }
+        if (item === 'sp_orderreplacement_apply_item_5') {
+          this.basicInfo.controls.applyItemDesc.setValidators([Validators.required]);
         }
         break
     }
@@ -661,6 +675,7 @@ export class RequestFormComponent implements OnInit {
   public getFormData() {
     const { basicInfo, orderInfo, ccInfo, rddOitOrderInfos, changeOrderInfos, lcAmendmentOrderInfo, transferLibOrders, exchangeInfo, orderDifferences, cancelorderInfo, deBookOrderInfos, orderReplacementInfo, noneDirectOrderInfo, lastBuyInfos  } = this.formValues.getRawValue()
     const { applyArrivalTime, expectedPaymentDate, expectedSaleDate, products } = orderInfo
+    const { noneDirectaleDate, noneDirectProducts } = noneDirectOrderInfo
     const extInfo = {
       exchangeMethod: changeOrderInfos.exchangeMethod
     }
@@ -836,8 +851,10 @@ export class RequestFormComponent implements OnInit {
         data.orderInfos = [
           {
             ...cancelorderInfo,
+            productType: Array.isArray(cancelorderInfo.productType) ? cancelorderInfo.productType.join(',') : cancelorderInfo.productType,
             orderInfoStatus: {
               ...cancelorderInfo.orderInfoStatus,
+              attachment: cancelorderInfo.orderInfoStatus.attachment || []
             }
           }
         ];
@@ -1293,7 +1310,6 @@ export class RequestFormComponent implements OnInit {
           taskInstId: this.taskId,
           applyInfos: formData,
         }
-
         await this.spService.approveRequest(data);
         this.message.remove(id)
         this.message.success(SUCCESS_MESSAGE.APPROVE)
@@ -1373,6 +1389,46 @@ export class RequestFormComponent implements OnInit {
 
     } else if(this.showFeedbackTab) { //反馈
       switch(this.applyType) {
+        case APPLY_TYPE.PRODUCTION: // 特批开始生产
+          for (const i in this.orderInfo.controls) {
+            this.orderInfo.controls[i].markAsDirty();
+            this.orderInfo.controls[i].updateValueAndValidity();
+          }
+          hasError = this.orderInfo.invalid;
+          break
+        case APPLY_TYPE.EXT_WARRANTY: // 免费延长保修
+          for (const i in this.orderInfo.controls) {
+            this.orderInfo.controls[i].markAsDirty();
+            this.orderInfo.controls[i].updateValueAndValidity();
+          }
+          hasError = this.orderInfo.invalid;
+          break
+        case APPLY_TYPE.MACHINE_EXCHANGE:  // 机器互换
+          const orders = this.changeOrderInfos.get('orders') as FormArray
+          orders.at(0).get('actualSaleDate').markAsDirty();
+          orders.at(0).get('actualSaleDate').updateValueAndValidity();
+          hasError =  orders.at(0).get('actualSaleDate').invalid;
+          break
+        case APPLY_TYPE.TRANSFER_LIB:  //转库
+          const transferLibOrder = this.transferLibInfos.get('orders') as FormArray
+          transferLibOrder.at(1).get('actualSaleDate').markAsDirty();
+          transferLibOrder.at(1).get('actualSaleDate').updateValueAndValidity();
+          hasError =  transferLibOrder.at(1).get('actualSaleDate').invalid;
+          break
+        case APPLY_TYPE.SPECIAL_DELIVERY: // 特批发货
+          for (const i in this.orderInfo.controls) {
+            this.orderInfo.controls[i].markAsDirty();
+            this.orderInfo.controls[i].updateValueAndValidity();
+          }
+          hasError = this.orderInfo.invalid;
+          break
+        case APPLY_TYPE.NONE_DIRECT_ORDER: // 非直销订单按直销方式确认收入
+          for (const i in this.noneDirectOrderInfo.controls) {
+            this.noneDirectOrderInfo.controls[i].markAsDirty();
+            this.noneDirectOrderInfo.controls[i].updateValueAndValidity();
+          }
+          hasError = this.noneDirectOrderInfo.invalid;
+          break
         case APPLY_TYPE.ORDER_REPLACEMENT:  //订单替换必填字段验证
           const orderReplacementInfo =  this.orderReplacementInfo as FormGroup;
           for (const i in orderReplacementInfo.controls) {
@@ -1533,11 +1589,25 @@ export class RequestFormComponent implements OnInit {
         })
         this.setFormValidators(applyType, applyItem, orderInfos[0].bg)
       } else if(applyType === APPLY_TYPE.CANCEL_ORDER) {
+        //初始化文件列表
+        const attachmentList = orderInfos[0].orderInfoStatus.cancleOrderAttachment || [];
+        this.cancelOrderFileList = attachmentList.map(({ fileId, name, size, type }) => ({
+          uid: fileId,
+          fileId,
+          name,
+          size,
+          type,
+          filename: name,
+          response: { fileId }
+        }));
+        const fileIdList = attachmentList.map(({ fileId }) => (fileId));
         this.formValues.patchValue({
           cancelorderInfo: {
             ...orderInfos[0],
+            productType: (orderInfos[0].bg === 'US' && orderInfos[0].productType) ? orderInfos[0].productType.split(',') : orderInfos[0].productType,
             orderInfoStatus: {
-              ...orderInfos[0].orderInfoStatus
+              ...orderInfos[0].orderInfoStatus,
+              attachment: fileIdList || []
             }
           }
         });

@@ -260,7 +260,8 @@ import { MailApprovalComponent } from './DIIGT/mail-approval/mail-approval.compo
 import { AutoApprovalComponent } from './DIIGT/auto-approval/auto-approval.component';
 
 import { SpecialApprovalModule } from './special-approval/special-approval.module'
-import { SpecialApprovalSettingModule } from './DIIGT/change-scene/special-approval-setting/special-approval-setting.module'
+import { SpecialApprovalSettingModule } from './DIIGT/change-scene/special-approval-setting/special-approval-setting.module';
+import { PricePermissionsPipe } from './pipes/price-permissions.pipe';
 
 // registerLocaleData(localeCn, localeCnExtra);
 registerLocaleData(zh);
@@ -470,6 +471,7 @@ registerLocaleData(zh);
     DistributorListComponent,
     MailApprovalComponent,
     AutoApprovalComponent,
+    PricePermissionsPipe,
    ],
 
   imports: [
