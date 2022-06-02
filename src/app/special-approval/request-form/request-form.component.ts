@@ -300,7 +300,7 @@ export class RequestFormComponent implements OnInit {
     if (
       applyType === APPLY_TYPE.PRODUCTION ||
       applyType === APPLY_TYPE.LOGISTICSCOST ||
-      applyType === APPLY_TYPE.EXT_INSTALL_COST  
+      applyType === APPLY_TYPE.EXT_INSTALL_COST
     ) {
       this.orderInfo.patchValue({
         products: [{}]
@@ -808,7 +808,7 @@ export class RequestFormComponent implements OnInit {
           return
         } else {
           for (let i = 0; i < difference.length; i++) {
-            if (!difference[i].configDetail || !difference[i].transferOut || !difference[i].transferIn || !difference[i].handlePlan || !difference[i].cost) {
+            if (!difference[i].configDetail || !difference[i].transferOut || !difference[i].transferIn || !difference[i].handlePlan || !difference[i].cost !== null) {
               this.message.error('请完整填写差异信息')
               return
             }
