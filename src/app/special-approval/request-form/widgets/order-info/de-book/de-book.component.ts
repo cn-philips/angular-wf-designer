@@ -19,7 +19,6 @@ const excelKeyMap = {
   'BG(Modality)': "bg",
   '销售区域-team': "cycleGroup",
   '销售区域-大区': "bigArea",
-  业务模式: "businessModel",
   产品型号: "productType1",
   医院编号: "hospitalNo",
   医院名称: "hospitalName",
@@ -114,14 +113,11 @@ export class DeBookComponent implements OnInit {
         }, {}) as any
         console.log(orderInfo)
         const {
-          productType, bg, bmc, cycleGroup, bigArea, businessModel, productType1,
+          productType, bg, bmc, cycleGroup, bigArea, productType1,
          hospitalName, hospitalNo, sapOrderNo, wbsNo, orderDate, orderAmount, currency, deBookReason, remark
         } = orderInfo
         if (bmc) { this.onBmcChange(orderInfo) }
-        if (businessModel) {
-          const model = BUSINESS_MODEL_LIST.find(({ label }) => label === businessModel)
-          orderInfo.businessModel = model.value
-        }
+
         if (orderDate) {
           orderInfo.orderDate = moment(orderDate).utc().format('YYYY-MM-DD')
         }
@@ -133,6 +129,9 @@ export class DeBookComponent implements OnInit {
       })
 
       this.formValues.patchValue(data)
+      for (let i = 0; i < this.selectOptions.bmcs.length; i++) {
+        this.selectOptions.bmcs[i] = this.bmcList
+      }
       // this.isTableValid()
       this.message.success('导入成功')
     };
@@ -177,7 +176,6 @@ export class DeBookComponent implements OnInit {
         bg: this.currBg,
         cycleGroup: null,
         bigArea: null,
-        businessModel: null,
         productType1: null,
         sapOrderNo: null,
         wbsNo: null,
@@ -188,7 +186,7 @@ export class DeBookComponent implements OnInit {
         debookReason: null,
       }
     ])
-    this.selectOptions.bmcs.push([this.bmcList.filter(value => value.bg === this.currBg)])
+    this.selectOptions.bmcs.push(this.bmcList.filter(value => value.bg === this.currBg))
 
   }
 
@@ -203,23 +201,26 @@ export class DeBookComponent implements OnInit {
     let checkbg = null
     this.formValues.value.forEach((order) => {
       const {
-        productType, bg, bmc, businessModel, productType1,
+        productType, bg, bmc, productType1,
         hospitalName, hospitalNo, sapOrderNo, wbsNo, orderDate, orderAmount, currency, deBookReason, remark
       } = order
       if (checkbg) {
         if (checkbg !== bg){
           this.message.error('存在BG不一致的记录')
           hasError = true
+          return !hasError
         }
       } else {
         checkbg = bg
       }
       console.log(order)
         if (!(bg && bmc &&
-          businessModel && productType1 && sapOrderNo && wbsNo && orderDate &&
+           productType1 && sapOrderNo && wbsNo && orderDate &&
           orderAmount && currency && hospitalNo && hospitalName && deBookReason && productType
         )) {
+          this.message.error('请按要求填写订单信息')
           hasError = true
+          return !hasError
         }
 
     })
@@ -227,7 +228,7 @@ export class DeBookComponent implements OnInit {
   }
 
   onProductChange(vals: [], order) {
-    order.projectName = vals.join(';');
+    order.productType1 = vals.join(';');
   }
 
   onBgChange(val: string, order, index) {

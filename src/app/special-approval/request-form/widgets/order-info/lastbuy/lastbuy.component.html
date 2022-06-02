@@ -36,18 +36,19 @@
         <th nzWidth="300px">医院编号</th>
         <th nzWidth="300px">*项目名称</th>
         <th nzWidth="200px">*SAP 订单号（SO#）</th>
-        <th nzWidth="150px">*合同金额</th>
+        <th nzWidth="150px">*合同金额(参考金额,非最终金额)</th>
         <th nzWidth="120px">*币制</th>
         <th nzWidth="220px">OM</th>
         <th nzWidth="250px">备货协议附件</th>
-        <th nzWidth="220px">预计付款日期</th>
-        <th nzWidth="220px">预计场地就位日期</th>
-        <th nzWidth="200px">申请到货日期</th>
-        <th nzWidth="200px">预计记认销售日期</th>
+        <th nzWidth="220px">*预计付款日期</th>
+        <th nzWidth="220px">*预计场地就位日期</th>
+        <th nzWidth="200px">*申请到货日期</th>
+        <th nzWidth="200px">*预计记认销售日期</th>
         <th nzWidth="200px">*产品型号</th>
         <th nzWidth="200px">*数量</th>
         <th nzWidth="200px" *ngIf="showFeedbackTab">仓储安排</th>
         <th nzWidth="200px" *ngIf="showFeedbackTab">实际OIT日期</th>
+        <th nzWidth="40px">操作</th>
       </tr>
       </thead>
       <tbody>
@@ -55,7 +56,7 @@
         <td>
           <nz-form-item>
             <nz-form-control>
-              <nz-select [(ngModel)]="data.orderType" style="width: 100%;" [disabled]="!editable" required>
+              <nz-select [(ngModel)]="data.orderType" style="width: 100%;" disabled required>
                 <nz-option *ngFor="let item of selectOptions.orderTypes" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
               </nz-select>
               <nz-form-explain class="error-msg" *ngIf="!data.orderType">
@@ -74,7 +75,7 @@
         <td>
           <nz-form-item>
             <nz-form-control>
-              <input nz-input disabled [ngModel]="data.productType" disabled />
+              <input nz-input disabled [ngModel]="data.productType" />
             </nz-form-control>
           </nz-form-item>
         </td>
@@ -82,7 +83,7 @@
           <nz-form-item>
             <nz-form-control>
               <nz-select style="width: 100%;" [(ngModel)]="data.bmc" (ngModelChange)="onBmcChange(data)" [disabled]="!editable" required>
-                <nz-option *ngFor="let item of bmcList" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+                <nz-option *ngFor="let item of editable? selectOptions.bmcs[i] : bmcList" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
               </nz-select>
               <nz-form-explain class="error-msg" *ngIf="!data.bmc">
                 请选择产品线
@@ -93,7 +94,10 @@
         <td>
           <nz-form-item>
             <nz-form-control>
-              <input nz-input disabled [ngModel]="data.bg" disabled required />
+              <nz-select [(ngModel)]="data.bg" style="width: 100%;" [disabled]="!editable" (ngModelChange)="onBgChange($event, data,i)" required>
+                <nz-option *ngFor="let item of BG_LIST" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+              </nz-select>
+<!--              <input nz-input disabled [ngModel]="data.bg" disabled required />-->
             </nz-form-control>
           </nz-form-item>
         </td>
@@ -287,6 +291,9 @@
                 [disabled]="!editable"
                 [nzPlaceHolder]="editable ? '请选择日期' : ''"
               ></nz-date-picker>
+              <nz-form-explain class="error-msg" *ngIf="!data.expectedPaymentDate">
+                请填写预计付款日期
+              </nz-form-explain>
             </nz-form-control>
           </nz-form-item>
         </td>
@@ -301,6 +308,9 @@
                 [disabled]="!editable"
                 [nzPlaceHolder]="editable ? '请选择日期' : ''"
               ></nz-date-picker>
+              <nz-form-explain class="error-msg" *ngIf="!data.expectedSitePlaceDate">
+                请填写预计场地就位日期
+              </nz-form-explain>
             </nz-form-control>
           </nz-form-item>
         </td>
@@ -314,6 +324,9 @@
                 [disabled]="!editable"
                 [nzPlaceHolder]="editable ? '请选择日期' : ''"
               ></nz-date-picker>
+              <nz-form-explain class="error-msg" *ngIf="!data.applyArrivalTime">
+                请填写申请到货日期
+              </nz-form-explain>
             </nz-form-control>
           </nz-form-item>
         </td>
@@ -327,16 +340,19 @@
                 [disabled]="!editable"
                 [nzPlaceHolder]="editable ? '请选择日期' : ''"
               ></nz-date-picker>
+              <nz-form-explain class="error-msg" *ngIf="!data.expectedSaleDate">
+                请填写预计记认销售日期
+              </nz-form-explain>
             </nz-form-control>
           </nz-form-item>
         </td>
         <td>
           <nz-form-item>
             <nz-form-control>
-              <nz-select style="width: 100%;" [(ngModel)]="data.productType" *ngIf="data.bg !== 'PD&IGT'" (ngModelChange)="onProductChange($event,data)" [disabled]="!editable" required>
+              <nz-select style="width: 100%;" [(ngModel)]="data.productType" *ngIf="data.bg === 'US'" [disabled]="!editable" required>
                 <nz-option *ngFor="let item of spService.usProductList" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
               </nz-select>
-              <input nz-input disabled *ngIf="data.bg === 'PD&IGT'" [(ngModel)]="data.productType" required />
+              <input nz-input *ngIf="data.bg !== 'US'" [disabled]="!editable" [(ngModel)]="data.productType" required />
               <nz-form-explain class="error-msg" *ngIf="!data.productType">
                 请选择产品型号
               </nz-form-explain>
@@ -375,6 +391,9 @@
             </nz-form-control>
           </nz-form-item>
         </td>
+        <td nzRight="0px">
+          <a nz-icon nzType="delete" nzTheme="outline" style="font-size: 16px" (click)="deleteOrder(data)"></a>
+        </td>
       </tr>
       </tbody>
     </nz-table>
@@ -385,5 +404,5 @@
 
 <app-select-hospital #selectHospital (select)="onSelectHospital($event)"></app-select-hospital>
 <app-select-dealer #selectDealer (select)="onSelectDealer($event)"></app-select-dealer>
-<app-select-reference #selectReference (selectMultiple)="onSelectMultipleReference($event)" [isMultipleSelect]="true" (cancelModal)="onHideReferenceModal()"></app-select-reference>
+<app-select-reference #selectReference (selectMultiple)="onSelectMultipleReference($event)" [isMultipleSelect]="true" [defaultOrderType]="'Pre-book'" (cancelModal)="onHideReferenceModal()"></app-select-reference>
 

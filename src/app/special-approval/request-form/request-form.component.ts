@@ -878,6 +878,9 @@ export class RequestFormComponent implements OnInit {
           const product = {
             productType: productType1,
             wbsNo: wbsNo,
+            deBookReason,
+            remark,
+            orderDate
           }
           const order = {
             ...debookOrderInfo,
@@ -901,9 +904,28 @@ export class RequestFormComponent implements OnInit {
         ];
         break
       case APPLY_TYPE.PRE_BOOK_LASTBUY:
-        data.orderInfos = [
-          ...lastBuyInfos
-        ]
+        data.orderInfos = []
+        let lastBuySaps = []
+        lastBuyInfos.forEach(lastBuyInfo => {
+          const { productType, quantity, sapOrderNo } = lastBuyInfo
+              const lastBuyProduct = {
+                  productType: productType,
+                  quantity: quantity
+              }
+
+              const lastBuyOrder = {
+                ...lastBuyInfo,
+                products: []
+              }
+          if (!lastBuySaps.includes(sapOrderNo)) {
+            lastBuySaps.push(sapOrderNo)
+            lastBuyOrder.products.push(lastBuyProduct)
+            data.orderInfos.push(lastBuyOrder)
+          } else {
+            const lastbuyorder = data.orderInfos.filter(value => value.sapOrderNo === sapOrderNo)
+            lastbuyorder[0].products.push(lastBuyProduct)
+          }
+        })
         break
       default:
         break
@@ -1061,7 +1083,7 @@ export class RequestFormComponent implements OnInit {
           return
         } else {
           for (let i = 0; i < difference.length; i++) {
-            if (!difference[i].configDetail || !difference[i].transferOut || !difference[i].transferIn || !difference[i].handlePlan || !difference[i].cost) {
+            if (!difference[i].configDetail || !difference[i].transferOut || !difference[i].transferIn || !difference[i].handlePlan || difference[i].cost == null) {
               this.message.error('请完整填写差异信息')
               return
             }
@@ -1075,7 +1097,6 @@ export class RequestFormComponent implements OnInit {
         break
       case APPLY_TYPE.DE_BOOK:
         if (!this.deBookInfo.isTableValid()) {
-          this.message.error('请按要求填写订单信息')
           return
         } else {
           hasError = this.basicInfo.invalid
@@ -1112,7 +1133,6 @@ export class RequestFormComponent implements OnInit {
         break
       case APPLY_TYPE.PRE_BOOK_LASTBUY:
         if (!this.lastBuyOrderInfo.isTableValid()) {
-          this.message.error('请按要求填写订单信息')
           return
         } else {
           hasError = this.basicInfo.invalid
@@ -1525,11 +1545,14 @@ export class RequestFormComponent implements OnInit {
       } else if (applyType === APPLY_TYPE.DE_BOOK) {
         let debooks = []
         orderInfos.map( (order) => {
-          order.products.map( ({ wbsNo, productType }) => {
+          order.products.map( ({ wbsNo, productType, deBookReason, remark, orderDate }) => {
               debooks.push({
                 ...order,
                 wbsNo: wbsNo,
                 productType1: productType,
+                deBookReason: deBookReason,
+                remark: remark,
+                orderDate: orderDate
               })
           })
         })
@@ -1547,9 +1570,19 @@ export class RequestFormComponent implements OnInit {
         });
         this.setFormValidators(applyType, applyItem, orderInfos[0].bg)
       } else if (this.applyType === APPLY_TYPE.PRE_BOOK_LASTBUY) {
+        let lastBuys = []
+        orderInfos.map( (order) => {
+          order.products.map( ({ quantity, productType, }) => {
+            lastBuys.push({
+              ...order,
+              quantity: quantity,
+              productType: productType
+            })
+          })
+        })
         this.formValues.patchValue({
           lastBuyInfos:[
-            ...orderInfos
+            ...lastBuys
           ]
         })
       }else if(this.applyType === APPLY_TYPE.NONE_DIRECT_ORDER){

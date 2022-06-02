@@ -58,6 +58,7 @@ export class SelectReferenceComponent implements OnInit {
   @Output() cancelModal: EventEmitter<any> = new EventEmitter()
 
   @Input() isMultipleSelect: boolean = false;
+  @Input() defaultOrderType: string;
   @Output() selectMultiple: EventEmitter<Reference[]> = new EventEmitter()
 
   selectReferenceList: Reference[] = [];
@@ -67,8 +68,14 @@ export class SelectReferenceComponent implements OnInit {
   moneyHide: boolean
   ngOnInit(): void {
     this.onHideModal();
-    if (this.isMultipleSelect){
-      this.searchParams.orderType = 'Pre-book'
+    this.searchParams =  {
+      pageNo: 1,
+      pageSize: 5,
+      orderType: this.defaultOrderType ? this.defaultOrderType : null,
+      sap: null,
+      referenceId: null,
+      endUser: null,
+      distributor: null,
     }
   }
 
@@ -99,7 +106,7 @@ export class SelectReferenceComponent implements OnInit {
     this.searchParams =  {
       pageNo: 1,
       pageSize: 5,
-      orderType: null,
+      orderType: this.defaultOrderType ? this.defaultOrderType : null,
       sap: null,
       referenceId: null,
       endUser: null,
