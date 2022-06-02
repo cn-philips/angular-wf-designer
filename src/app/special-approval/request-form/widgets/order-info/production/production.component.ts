@@ -1,5 +1,5 @@
-import { Component, OnInit, Input, ViewChild } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms'
+import { Component, OnInit, Input, ViewChild, OnChanges, SimpleChanges } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms'
 
 import { Hospital, SelectHospitalComponent, } from '../../select-hospital/select-hospital.component'
 import { Dealer, SelectDealerComponent } from '../../select-dealer/select-dealer.component'
@@ -19,7 +19,7 @@ import {
   templateUrl: './production.component.html',
   styleUrls: ['./production.component.scss']
 })
-export class ProductionOrderInfoComponent implements OnInit {
+export class ProductionOrderInfoComponent implements OnInit, OnChanges {
   constructor(public spService: SpecialApprovalService) { }
 
 
@@ -32,6 +32,7 @@ export class ProductionOrderInfoComponent implements OnInit {
   @Input() formValues: FormGroup
   @Input() editable = true
   @Input() applyItem: string
+  @Input() showFeedbackTab = false;
 
   APPLY_TYPE = APPLY_TYPE
 
@@ -191,7 +192,22 @@ export class ProductionOrderInfoComponent implements OnInit {
     }
   }
 
-   // 初始化OM列表
+  //监测 @Input值的变化
+  ngOnChanges(changes: SimpleChanges): void {
+    //是否是反馈信息节点
+    if (changes.showFeedbackTab && changes.showFeedbackTab.currentValue) {
+      let clearedFields = [];
+      if(this.applyItem === 'sp_production_apply_item_1') {
+        clearedFields = ['actualPaymentDate', 'actualSaleDate'];
+      } else {
+        clearedFields = ['actualSitePlaceDate', 'actualSaleDate'];
+      }
+      clearedFields.forEach((fieldName) => this.formValues.controls[fieldName].enable());
+      clearedFields.forEach((fieldName) => this.formValues.controls[fieldName].setValidators([Validators.required]));
+    }
+  }
+
+  // 初始化OM列表
   async initOMUsers() {
     const users = await this.spService.getOMUsers()
     this.selectOptions.oms = users.map(({ name, email }) => ({ label: name, value: email }))

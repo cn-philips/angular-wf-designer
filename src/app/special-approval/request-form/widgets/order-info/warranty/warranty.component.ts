@@ -1,5 +1,5 @@
-import { Component, OnInit, Input, ViewChild } from "@angular/core";
-import { FormControl, FormGroup } from "@angular/forms";
+import { Component, OnInit, Input, ViewChild, OnChanges, SimpleChanges } from "@angular/core";
+import { FormControl, FormGroup, Validators} from "@angular/forms";
 
 import {
   Hospital,
@@ -27,7 +27,7 @@ import { SpecialApprovalService } from "../../../../special-approval.service";
   templateUrl: "./warranty.component.html",
   styleUrls: ["./warranty.component.scss"],
 })
-export class WarrantyOrderInfoComponent implements OnInit {
+export class WarrantyOrderInfoComponent implements OnInit, OnChanges {
   constructor(public spService: SpecialApprovalService) { }
 
   @ViewChild("selectHospital") selectHospital: SelectHospitalComponent;
@@ -38,6 +38,7 @@ export class WarrantyOrderInfoComponent implements OnInit {
 
   @Input() formValues: FormGroup;
   @Input() editable = true;
+  @Input() showFeedbackTab = false;
 
   selectOptions = {
     orderTypes: ORDER_TYPES,
@@ -196,6 +197,16 @@ export class WarrantyOrderInfoComponent implements OnInit {
       this.formValues.get("productType").valueChanges.subscribe(() => {
         this.onCalcProjectName();
       });
+    }
+  }
+
+  //监测 @Input值的变化
+  ngOnChanges(changes: SimpleChanges): void {
+    //是否是反馈信息节点
+    if (changes.showFeedbackTab && changes.showFeedbackTab.currentValue) {
+      let clearedFields = ['actualSaleDate'];
+      clearedFields.forEach((fieldName) => this.formValues.controls[fieldName].enable());
+      clearedFields.forEach((fieldName) => this.formValues.controls[fieldName].setValidators([Validators.required]));
     }
   }
 }
