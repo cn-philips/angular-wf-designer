@@ -62,6 +62,9 @@ const APPLY_TYPE = {
   NONE_DIRECT_ORDER:"nonedirectorder",//非直销订单按直销方式确认收入
   DE_BOOK: "debook",
   ORDER_REPLACEMENT:'orderreplacement', // 订单替换
+  COO_US: 'coous',
+  COO_PDIGT: 'coopdigt',
+  COO_CC: 'coocc',
   PRE_BOOK_LASTBUY:'lastbuy', // 订单替换
 
 }
@@ -80,6 +83,9 @@ const APPLY_TYPE_MAP = {
   [APPLY_TYPE.SPECIAL_DELIVERY]: { label: "特批发货", dictGroup: 'sp_delivery_apply_item' },
   [APPLY_TYPE.NONE_DIRECT_ORDER]:{label: "非直销订单按直销方式确认收入", dictGroup: 'sp_nonedirectorder_apply_item'},
   [APPLY_TYPE.ORDER_REPLACEMENT]: { label: "订单替换", dictGroup: 'sp_orderreplacement_apply_item' },
+  [APPLY_TYPE.COO_US]: { label: "COO-US", dictGroup: 'sp_coous_apply_item' },
+  [APPLY_TYPE.COO_PDIGT]: { label: "COO-PD&IGT", dictGroup: 'sp_coopdigt_apply_item' },
+  [APPLY_TYPE.COO_CC]: { label: "COO-CC", dictGroup: 'sp_coocc_apply_item' },
   [APPLY_TYPE.PRE_BOOK_LASTBUY]: { label: "Pre-book特批生产", dictGroup: 'sp_lastbuy_apply_item' },
 
 };
@@ -97,8 +103,11 @@ const APPLY_TYPES = [
   { label: "De-Book", value: APPLY_TYPE.DE_BOOK },
   { label: "Cancel Order申请", value: APPLY_TYPE.CANCEL_ORDER },
   { label: "特批发货", value: APPLY_TYPE.SPECIAL_DELIVERY },
-  {label: "非直销订单按直销方式确认收入", value: APPLY_TYPE.NONE_DIRECT_ORDER},
+  { label: "非直销订单按直销方式确认收入", value: APPLY_TYPE.NONE_DIRECT_ORDER},
   { label: "订单替换", value: APPLY_TYPE.ORDER_REPLACEMENT },
+  { label: "COO-US", value: APPLY_TYPE.COO_US },
+  { label: "COO-PD&IGT", value: APPLY_TYPE.COO_PDIGT },
+  { label: "COO-CC", value: APPLY_TYPE.COO_CC },
   { label: "Pre-book特批生产", value: APPLY_TYPE.PRE_BOOK_LASTBUY },
 ];
 
@@ -198,6 +207,27 @@ const EXCHANGE_EXPORT_ROLES = () => {
     {label: '转出/转入', value: '转出/转入'}
   ]
 }
+
+const FIELD_STATUS_OTHER = '其他'
+
+const FIELD_STATUS_LIST = [
+  { label: '场地OK', value: '场地OK'},
+  { label: '老医院新大楼在建', value: '老医院新大楼在建'},
+  { label: '新医院/新院区在建', value: '新医院/新院区在建'},
+  { label: FIELD_STATUS_OTHER, value: FIELD_STATUS_OTHER},
+]
+
+const PAYMENT_METHOD_LIST = [
+  { label: '100% LC at sight', value: '100% LC at sight' },
+  { label: '100% TT in advance', value: '100% TT in advance' },
+  { label: '15% before OIT, 85% before shipment', value: '15% before OIT, 85% before shipment' },
+  { label: '10% before OIT, 90% after installation', value: '10% before OIT, 90% after installation' },
+  { label: '100% LC 180 days after sight', value: '100% LC 180 days after sight' },
+  { label: '100% LC 120 days after sight', value: '100% LC 120 days after sight' },
+  { label: '100% LC 90 days after sight', value: '100% LC 90 days after sight' },
+  { label: '其他', value: '其他' },
+]
+
 export {
   DEFAULT_SUCCESS_MESSAGE,
   SUCCESS_MESSAGE,
@@ -223,4 +253,7 @@ export {
   LOGISTICS_STATUS,
   EXCHANGE_IMPORT_ROLES,
   EXCHANGE_EXPORT_ROLES,
+  FIELD_STATUS_OTHER,
+  FIELD_STATUS_LIST,
+  PAYMENT_METHOD_LIST,
 };

@@ -19,9 +19,11 @@ import {
 import { APPROVE_NODE_ACTION } from '../../DIIGT/change-scene/special-approval-setting/special-approval-setting.constants'
 import { SelectApproverComponent } from './widgets/select-approver/select-approver.component';
 import { RddOitOrderInfoComponent } from './widgets/order-info/rdd-oit/rdd-oit.component';
-import {MachineComponent} from './widgets/order-info/machine/machine.component';
-import {DeBookComponent} from './widgets/order-info/de-book/de-book.component';
-import {LastbuyComponent} from './widgets/order-info/lastbuy/lastbuy.component';
+import { MachineComponent } from './widgets/order-info/machine/machine.component';
+import { DeBookComponent } from './widgets/order-info/de-book/de-book.component';
+import { LastbuyComponent } from './widgets/order-info/lastbuy/lastbuy.component'
+import { CooUsOrderInfoComponent } from './widgets/order-info/coo-us/coo-us.component'
+import { CooPdIgtOrderInfoComponent } from './widgets/order-info/coo-pdigt/coo-pdigt.component'
 
 enum TAB_TYPE {
   BASIC_INFO = 'basic-info',
@@ -49,6 +51,9 @@ export class RequestFormComponent implements OnInit {
   @ViewChild('rddOitOrderInfo') public rddOitOrderInfo: RddOitOrderInfoComponent;
   @ViewChild('machineExchange') public machineExchange: MachineComponent;
   @ViewChild('deBookOrderInfo') public deBookInfo: DeBookComponent;
+  @ViewChild('cooUsOrderInfo') public cooUsOrderInfo: CooUsOrderInfoComponent;
+  @ViewChild('cooPdIgtOrderInfo') public cooPdIgtOrderInfo: CooPdIgtOrderInfoComponent;
+
   @ViewChild('lastBuyOrderInfo') public lastBuyOrderInfo: LastbuyComponent;
 
   isSupplementNode = false
@@ -920,6 +925,11 @@ export class RequestFormComponent implements OnInit {
           }
         ];
         break
+      case APPLY_TYPE.COO_US:
+        const { cooInfo, orderInfos } = this.cooUsOrderInfo.getData()
+        data.cooInfo = cooInfo
+        data.orderInfos = orderInfos
+        break
       case APPLY_TYPE.PRE_BOOK_LASTBUY:
         data.orderInfos = []
         let lastBuySaps = []
@@ -1148,6 +1158,10 @@ export class RequestFormComponent implements OnInit {
         }
         hasError = this.basicInfo.invalid || this.orderReplacementInfo.invalid
         break
+      case APPLY_TYPE.COO_US:
+        const isValid = this.cooUsOrderInfo.validate()
+        hasError = this.basicInfo.invalid || !isValid
+        break
       case APPLY_TYPE.PRE_BOOK_LASTBUY:
         if (this.lastBuyOrderInfo.isTableValid()) {
           return
@@ -1348,7 +1362,6 @@ export class RequestFormComponent implements OnInit {
           result: 'APPROVED',
           applyInfos: formData,
         }
-
         const id = this.message.loading(LOADING_MESSAGE.FEEDBACK, { nzDuration: 0 }).messageId
         this.submitLoading = true
         await this.spService.approveRequest(data)
@@ -1361,8 +1374,6 @@ export class RequestFormComponent implements OnInit {
       } finally {
         this.submitLoading = false
       }
-    } else {
-      return;
     }
   }
 
@@ -1386,6 +1397,9 @@ export class RequestFormComponent implements OnInit {
               return
             }
           }
+          break
+        case APPLY_TYPE.COO_US:
+          hasError = !this.cooUsOrderInfo.validate()
           break
         default:
           break
@@ -1440,6 +1454,9 @@ export class RequestFormComponent implements OnInit {
             orderReplacementInfo.controls[i].updateValueAndValidity();
           }
           hasError =  this.orderReplacementInfo.invalid;
+          break
+        case APPLY_TYPE.COO_US:
+          hasError = !this.cooUsOrderInfo.validate()
           break
         default:
           break
@@ -1643,6 +1660,13 @@ export class RequestFormComponent implements OnInit {
           }
         });
         this.setFormValidators(applyType, applyItem, orderInfos[0].bg)
+      } else if (applyType === APPLY_TYPE.COO_US) {
+         const intervalId = setInterval(() => {
+          if(this.cooUsOrderInfo) {
+            this.cooUsOrderInfo.initData(data)
+            clearInterval(intervalId)
+          }
+        }, 1000)
       } else if (this.applyType === APPLY_TYPE.PRE_BOOK_LASTBUY) {
         let lastBuys = []
         orderInfos.map( (order) => {

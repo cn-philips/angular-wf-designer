@@ -1,0 +1,22 @@
+<nz-upload
+  nzType="drag"
+  [nzMultiple]="true"
+  [nzLimit]="limit"
+  [nzCustomRequest]="onUploadFile"
+  [(nzFileList)]="fileList"
+  [nzRemove]="onRemoveFile"
+  [nzBeforeUpload]="onBeforeUpload"
+  [nzDisabled]="disabled"
+  [nzShowUploadList]="!disabled"
+>
+  <p class="ant-upload-drag-icon">
+    <i nz-icon nzType="inbox"></i>
+  </p>
+  <p class="ant-upload-text">点击或者拖拽上传</p>
+</nz-upload>
+
+<div class="upload-file-list" *ngIf="disabled">
+  <div *ngFor="let file of fileList" class="file-item" (click)="onDownloadFile(file)" [title]="file.name">
+    {{ file.name }}
+  </div>
+</div>

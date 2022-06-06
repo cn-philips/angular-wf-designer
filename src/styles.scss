@@ -331,6 +331,12 @@ body {
   font-size: 14px !important;
 }
 
+.has-error {
+  .ant-input-number-input, .ant-select-selection{
+    border-color: #f5222d !important;
+  }
+}
 
-
-
+.ant-input-number-input:focus {
+  border-color: #337fbf !important;
+}
