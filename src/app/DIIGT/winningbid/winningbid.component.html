@@ -32,8 +32,8 @@
     <ng-container>
       <div>
         <nz-form-item>
-          <nz-form-label [nzSm]="4" [nzXs]="24" [nzRequired]="true">Cancellation Reasons<br>取消原因</nz-form-label>
-          <nz-form-control [nzSm]="18" [nzXs]="24">
+          <nz-form-label [nzSm]="4" [nzXs]="24" [nzRequired]="true" style="min-width: 160px !important;">Cancellation Reasons<br>取消原因</nz-form-label>
+          <nz-form-control [nzSm]="14" [nzXs]="24">
             <textarea nz-input oninput="if(value.length>255)value=value.slice(0,255)" nz-input placeholder=""
                       [nzAutosize]="{ minRows: 2, maxRows: 6 }" [(ngModel)]="remarks"></textarea>
 <!--            <ng-container *ngIf="odata && odata.remarks">-->
