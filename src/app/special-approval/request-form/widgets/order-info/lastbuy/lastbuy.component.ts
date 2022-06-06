@@ -43,6 +43,9 @@ export class LastbuyComponent implements OnInit {
   isExchange: boolean;
   activeOrder = null
   private upIndex: number;
+  private currBg: string;
+
+  BG_LIST=BG_LIST
 
 
   constructor(
@@ -57,6 +60,7 @@ export class LastbuyComponent implements OnInit {
     businessModels: BUSINESS_MODEL_LIST,
     currencies: CURRENCIES,
     oms: [],
+    bmcs: [],
     wareHouse: [{label:'W/H', value: 'W/H'},
       {label:'FTZ', value: 'FTZ'},
       {label:'医院', value: '医院'},
@@ -73,6 +77,7 @@ export class LastbuyComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.currBg = JSON.parse(localStorage.getItem('profiles'))[0].modality
     if (this.formValues.value.length === 0) {
       this.createOrder()
     }
@@ -143,11 +148,11 @@ export class LastbuyComponent implements OnInit {
     this.formValues.patchValue([
       ...this.formValues.value,
       {
-        orderType: null,
+        orderType: 'Pre-book',
         referenceId: null,
         subProductType: null,
         bmc: null,
-        bg: null,
+        bg: this.currBg,
         cycleGroup: null,
         bigArea: null,
         businessModel: null,
@@ -172,6 +177,8 @@ export class LastbuyComponent implements OnInit {
         warehouseArrangement: null,
       }
     ])
+    this.selectOptions.bmcs.push(this.bmcList.filter(value => value.bg === this.currBg))
+
   }
 
   deleteOrder(order) {
@@ -181,27 +188,34 @@ export class LastbuyComponent implements OnInit {
 
   isTableValid() {
     let hasError = false
+    let checkbg = null
     this.formValues.value.forEach((order) => {
       const {
         orderType, referenceId, subProductType, bg, bmc, cycleGroup, bigArea, businessModel, dealerCode, dealerName,
         hospitalName, hospitalNo, projectName, sapOrderNo,  orderAmount, currency, om, stockingAgreementFileId, expectedPaymentDate,
-        expectedSitePlaceDate, expectedSaleDate, productType, quantity
+        expectedSitePlaceDate, expectedSaleDate, productType, quantity , applyArrivalTime
       } = order
 
-      console.log(order)
+      if (checkbg) {
+        if (checkbg !== bg){
+          this.message.error('存在BG不一致的记录')
+          hasError = true
+          return !hasError
+        }
+      } else {
+        checkbg = bg
+      }
       if (!(orderType && bmc &&
         businessModel && projectName && sapOrderNo &&
-        orderAmount && currency && (dealerCode || hospitalNo)
+        orderAmount && currency && (dealerCode || hospitalNo) && expectedPaymentDate && expectedSitePlaceDate
+        && applyArrivalTime && expectedSaleDate
       )) {
+        this.message.error('请按要求填写订单信息')
         hasError = true
+        return !hasError
       }
-
     })
     return !hasError
-  }
-
-  onProductChange(vals: [], order) {
-    order.projectName = vals.join(';');
   }
 
 
@@ -295,14 +309,20 @@ export class LastbuyComponent implements OnInit {
       }
       return orderInfo
     })
-    console.log(data)
     this.formValues.patchValue(data)
-
+    for (let i = 0; i < this.selectOptions.bmcs.length; i++) {
+      this.selectOptions.bmcs[i] = this.bmcList
+    }
   }
   onShowReferenceModal(needCreateUser = false) {
     this.selectReference.showModal(needCreateUser)
   }
   onHideReferenceModal() {
     this.selectReference.onHideModal()
+  }
+
+  onBgChange(val: string, order, index) {
+    order.bmc = null
+    this.selectOptions.bmcs[index] = this.bmcList.filter(value => value.bg === val);
   }
 }
