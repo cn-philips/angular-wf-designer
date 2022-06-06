@@ -1110,7 +1110,7 @@ export class RequestFormComponent implements OnInit {
           return
         } else {
           for (let i = 0; i < difference.length; i++) {
-            if (!difference[i].configDetail || !difference[i].transferOut || !difference[i].transferIn || !difference[i].handlePlan || !difference[i].cost !== null) {
+            if (!difference[i].configDetail || !difference[i].transferOut || !difference[i].transferIn || !difference[i].handlePlan || difference[i].cost == null) {
               this.message.error('请完整填写差异信息')
               return
             }
@@ -1163,7 +1163,7 @@ export class RequestFormComponent implements OnInit {
         hasError = this.basicInfo.invalid || !isValid
         break
       case APPLY_TYPE.PRE_BOOK_LASTBUY:
-        if (!this.lastBuyOrderInfo.isTableValid()) {
+        if (this.lastBuyOrderInfo.isTableValid()) {
           return
         } else {
           hasError = this.basicInfo.invalid
@@ -1263,7 +1263,11 @@ export class RequestFormComponent implements OnInit {
       this.message.success(SUCCESS_MESSAGE.SAVE_DRAFT);
       this.navigateToHomePage();
     } catch ({ message }) {
-      this.message.error(ERROR_MESSAGE.SAVE_DRAFT);
+      if (this.applyType === APPLY_TYPE.MACHINE_EXCHANGE) {
+        this.message.error(`保存失败, ${message}`);
+      } else {
+        this.message.error(ERROR_MESSAGE.SAVE_DRAFT);
+      }
       console.error(`保存失败, ${message}`);
     } finally {
       this.submitLoading = false;

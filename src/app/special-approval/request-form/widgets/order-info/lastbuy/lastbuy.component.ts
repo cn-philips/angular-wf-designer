@@ -189,6 +189,8 @@ export class LastbuyComponent implements OnInit {
   isTableValid() {
     let hasError = false
     let checkbg = null
+    let errorCode = 0
+
     this.formValues.value.forEach((order) => {
       const {
         orderType, referenceId, subProductType, bg, bmc, cycleGroup, bigArea, businessModel, dealerCode, dealerName,
@@ -198,9 +200,8 @@ export class LastbuyComponent implements OnInit {
 
       if (checkbg) {
         if (checkbg !== bg){
-          this.message.error('存在BG不一致的记录')
           hasError = true
-          return !hasError
+          errorCode = 1
         }
       } else {
         checkbg = bg
@@ -210,12 +211,19 @@ export class LastbuyComponent implements OnInit {
         orderAmount && currency && (dealerCode || hospitalNo) && expectedPaymentDate && expectedSitePlaceDate
         && applyArrivalTime && expectedSaleDate
       )) {
-        this.message.error('请按要求填写订单信息')
         hasError = true
-        return !hasError
+        errorCode = 2
       }
     })
-    return !hasError
+    switch (errorCode) {
+      case 1:
+        this.message.error('存在BG不一致的记录')
+        break
+      case 2:
+        this.message.error('请按要求填写订单信息')
+        break
+    }
+    return hasError
   }
 
 

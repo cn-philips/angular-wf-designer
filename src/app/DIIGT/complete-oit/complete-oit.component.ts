@@ -281,7 +281,12 @@ export class CompleteOitComponent implements OnInit {
       this.http.get(`/act/preparation/oitCheck?mainId=` + decodeString(this.activatedRouter.queryParams['_value'].id)).subscribe(res => {
 
         if (res.code === '0000') {
+          let oMlist = [];
+          if (this.oitData.oMlist) {
+            oMlist = this.oitData.oMlist;
+          }
           this.oitData = res.data;
+          this.oitData.oMlist = oMlist;
           this.oitData.deBook = this.oitData.deBook ? this.oitData.deBook : "0";
           this.oitData.reBook = this.oitData.reBook ? this.oitData.reBook : "0";
           this.oitData.isCancel=this.oitData.isCancel?this.oitData.isCancel:"0";
