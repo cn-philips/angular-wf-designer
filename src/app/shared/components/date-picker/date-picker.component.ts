@@ -4,7 +4,7 @@ import * as moment from 'moment'
 
 const DEFAULT_FORMAT = {
   date: 'YYYY-MM-DD',
-  month: 'YYYY-MM-DD'
+  month: 'YYYY-MM-01'
 }
 
 @Component({

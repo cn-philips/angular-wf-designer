@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, ViewChild, OnChanges, SimpleChanges } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
-import { BG_LIST, BUSINESS_MODEL_LIST, CURRENCIES, FIELD_STATUS_LIST, FIELD_STATUS_OTHER, PAYMENT_METHOD_LIST } from '../../../../special-approval.constants'
+import { BG_LIST, BUSINESS_MODEL, BUSINESS_MODEL_LIST, CURRENCIES, FIELD_STATUS_LIST, FIELD_STATUS_OTHER, PAYMENT_METHOD_LIST } from '../../../../special-approval.constants'
 import { SpecialApprovalService } from '../../../../special-approval.service'
 import { Dealer, SelectDealerComponent } from '../../select-dealer/select-dealer.component';
 
@@ -13,6 +13,7 @@ import { Dealer, SelectDealerComponent } from '../../select-dealer/select-dealer
 export class CooUsOrderInfoComponent implements OnInit, OnChanges {
 
   originOrderInfo = {}
+  originCooInfo = {}
   
   @ViewChild('selectDealer') selectDealer: SelectDealerComponent
   @Input() editable = true
@@ -20,6 +21,7 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
   loginUserCode1 = localStorage.getItem('ng_philips_code1')
 
   FIELD_STATUS_OTHER = FIELD_STATUS_OTHER
+  BUSINESS_MODEL = BUSINESS_MODEL
 
   showScPlanningField = false
   showOmField = false
@@ -59,10 +61,10 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
 
   cooInfo = this.fb.group({
     isBid: [null, [Validators.required]], // 是否中标
-    pending: [null, [Validators.required]], // 目前pending环节
-    expectedBiddingDate: [null, [Validators.required]], // 预计招标月份
-    losingOrders: [null, [Validators.required]], // 丢单风险
-    expectedNewUserDate: [null, [Validators.required]], // 如丢单，预计寻得新用户月份
+    pending: [null], // 目前pending环节
+    expectedBiddingDate: [null], // 预计招标月份
+    losingOrders: [null], // 丢单风险
+    expectedNewUserDate: [null], // 如丢单，预计寻得新用户月份
     fieldStatus: [null, [Validators.required]], // 场地状态
     fieldStatusExplain: [null], // 场地状态-补充说明
     newOrOldHospital: [null, [Validators.required]], // 新建医院还是老医院新院区
@@ -196,12 +198,17 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
           break
         case 'node4': // OA补充信息
           // orderInfo
-          orderInfoEnabledFields.push('dealerName', 'dealerCode', 'purchaseOrderNo')
-          orderInfoRequiredFields.push('dealerName', 'dealerCode', 'purchaseOrderNo')
+          orderInfoRequiredFields.push('purchaseOrderNo')
+          orderInfoEnabledFields.push('purchaseOrderNo')
           // products
           productsRequiredFields.push('equipmentDescription', 'equipmentDescriptionEn', 'guaranteeMonth')
           productsEnabledFields.push('equipmentDescription', 'equipmentDescriptionEn', 'guaranteeMonth')
           this.showSelectDealerBtn = true
+          if (this.orderInfo.get('businessModel').value === BUSINESS_MODEL.DISTRIBUTOR_DEAL) {
+            orderInfoRequiredFields.push('dealerName', 'dealerCode')
+            orderInfoEnabledFields.push('dealerName', 'dealerCode')
+            this.showSelectDealerBtn = true
+          }
           break
         case 'node7': // 申请人反馈
           // cooInfo
@@ -250,6 +257,15 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
     }
   }
 
+  onIsBidChange(isBid) {
+    const fields = ['pending', 'expectedBiddingDate', 'losingOrders', 'expectedNewUserDate']
+    if (isBid === '0') {
+      fields.forEach((fieldName) => this.cooInfo.get(fieldName).setValidators(Validators.required))
+    } else {
+      fields.forEach((fieldName) => this.cooInfo.get(fieldName).clearValidators())
+    }
+  }
+
   public validate() {
     // orderInfo
     const orderInfo = this.orderInfo
@@ -292,7 +308,10 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
     products = products.map((product, index) => index === 0 ? { ...product, ...cooProduct } : product)
     orderInfo.products = products
     delete orderInfo.cooProduct
-    const cooInfo = this.cooInfo.getRawValue()
+    const cooInfo = {
+      ...this.originCooInfo,
+      ...this.cooInfo.getRawValue(),
+    }
     return {
       cooInfo,
       orderInfos: [orderInfo]
@@ -304,6 +323,7 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
     const orderInfo = orderInfos[0]
     const products = orderInfo.products
     this.originOrderInfo = orderInfo
+    this.originCooInfo = cooInfo
     this.orderInfo.patchValue({
       ...orderInfo,
       products: products ? products : []

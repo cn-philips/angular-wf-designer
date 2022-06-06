@@ -1340,36 +1340,34 @@ export class RequestFormComponent implements OnInit {
   public async onFeedBackSubmit(action: number) {
     //数据校验,检查反馈节点信息必填字段
     let hasError  = this.checkRequiredFormValidators();
-    // if(!hasError) {
-    //   try {
-    //     const { remark, attachments, notify, notifier } = this.feedBackFormValues.getRawValue();
-    //     const formData = this.getFormData();
-    //     const data = {
-    //       applyId: this.requestId,
-    //       attachments: attachments,
-    //       executed: action,
-    //       notify,
-    //       notifier: notify ? notifier.join(','): '',
-    //       remark,
-    //       taskInstId: this.taskId,
-    //       result: 'APPROVED',
-    //       applyInfos: formData,
-    //     }
-    //     const id = this.message.loading(LOADING_MESSAGE.FEEDBACK, { nzDuration: 0 }).messageId
-    //     this.submitLoading = true
-    //     await this.spService.approveRequest(data)
-    //     this.message.remove(id)
-    //     this.message.success(SUCCESS_MESSAGE.FEEDBACK)
-    //     this.router.navigate(['/special-approval/home'])
-    //   } catch ({ message }) {
-    //     this.message.error(ERROR_MESSAGE.FEEDBACK)
-    //     console.error(`反馈失败, ${message}`);
-    //   } finally {
-    //     this.submitLoading = false
-    //   }
-    // } else {
-    //   return;
-    // }
+    if(!hasError) {
+      try {
+        const { remark, attachments, notify, notifier } = this.feedBackFormValues.getRawValue();
+        const formData = this.getFormData();
+        const data = {
+          applyId: this.requestId,
+          attachments: attachments,
+          executed: action,
+          notify,
+          notifier: notify ? notifier.join(','): '',
+          remark,
+          taskInstId: this.taskId,
+          result: 'APPROVED',
+          applyInfos: formData,
+        }
+        const id = this.message.loading(LOADING_MESSAGE.FEEDBACK, { nzDuration: 0 }).messageId
+        this.submitLoading = true
+        await this.spService.approveRequest(data)
+        this.message.remove(id)
+        this.message.success(SUCCESS_MESSAGE.FEEDBACK)
+        this.router.navigate(['/special-approval/home'])
+      } catch ({ message }) {
+        this.message.error(ERROR_MESSAGE.FEEDBACK)
+        console.error(`反馈失败, ${message}`);
+      } finally {
+        this.submitLoading = false
+      }
+    }
   }
 
   //验证补充信息、反馈 等节点提交时的必填字段
