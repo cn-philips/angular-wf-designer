@@ -7,7 +7,7 @@
         批量导入
       </button>
     </nz-upload>
-    <a [href]="templateUrl" download="de-book.xlsx">De-book信息导入模板.xlsx</a>
+    <a [href]="templateUrl" download="De-Book Template.xlsx">De-book信息导入模板.xlsx</a>
   </header>
 
   <div class="table-container">
@@ -51,7 +51,7 @@
             <nz-form-item>
               <nz-form-control>
                 <nz-select [(ngModel)]="data.bmc" style="width: 100%;" *ngIf="editable" required>
-                  <nz-option *ngFor="let item of selectOptions.bmcs[index]" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+                  <nz-option *ngFor="let item of selectOptions.bmcs[index] ? selectOptions.bmcs[index] : bmcList" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
                 </nz-select>
                 <input nz-input [(ngModel)]="data.bmc" [disabled]="!editable" *ngIf="!editable"  />
                 <nz-form-explain class="error-msg" *ngIf="!data.bmc">

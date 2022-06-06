@@ -47,7 +47,7 @@ export class DeBookComponent implements OnInit {
 
   BG_LIST=BG_LIST
 
-  templateUrl = `${environment.base_href}/assets/template/de-book.xlsx`
+  templateUrl = `${environment.base_href}/assets/template/De-Book Template.xlsx`
   isExchange: boolean;
   activeOrder = null
   currBg: string;
@@ -199,6 +199,7 @@ export class DeBookComponent implements OnInit {
   isTableValid() {
     let hasError = false
     let checkbg = null
+    let errorCode = 0
     this.formValues.value.forEach((order) => {
       const {
         productType, bg, bmc, productType1,
@@ -206,24 +207,28 @@ export class DeBookComponent implements OnInit {
       } = order
       if (checkbg) {
         if (checkbg !== bg){
-          this.message.error('存在BG不一致的记录')
-          hasError = true
-          return !hasError
+         errorCode = 1
         }
       } else {
         checkbg = bg
       }
-      console.log(order)
         if (!(bg && bmc &&
            productType1 && sapOrderNo && wbsNo && orderDate &&
           orderAmount && currency && hospitalNo && hospitalName && deBookReason && productType
         )) {
-          this.message.error('请按要求填写订单信息')
-          hasError = true
-          return !hasError
+         errorCode = 2
         }
 
     })
+    switch (errorCode) {
+      case 1:
+        this.message.error('存在BG不一致的记录')
+        break
+      case 2:
+        this.message.error('请按要求填写订单信息')
+        console.log('order')
+        break
+    }
     return !hasError
   }
 
