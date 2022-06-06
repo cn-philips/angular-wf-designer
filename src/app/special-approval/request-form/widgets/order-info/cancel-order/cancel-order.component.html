@@ -41,7 +41,7 @@
             <input type="text" nz-input formControlName="productType"
               *ngIf="bg.value === 'PD&IGT' || bg.value === 'CC'" />
             <nz-select style="width: 100%;" *ngIf="bg.value === 'US'" formControlName="productType"
-              nzPlaceHolder="请选择产品型号">
+              nzPlaceHolder="请选择产品型号" nzMode="multiple" nzAllowClear>
               <nz-option *ngFor="let item of spService.usProductList" [nzLabel]="item.label" [nzValue]="item.value">
               </nz-option>
             </nz-select>
@@ -85,7 +85,7 @@
     <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
       <div nz-col nzXs="24" nzSm="24" nzMd="12">
         <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6" [nzRequired]="bg.value != 'CC'">销售区域</nz-form-label>
+          <nz-form-label nzXl="8" nzXXl="6">销售区域</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <nz-input-group style="width: 100%;font-size: 0;">
               <nz-select formControlName="cycleGroup" style="width: 48%;margin-right:4%"
@@ -256,8 +256,8 @@
         <nz-form-item>
           <nz-form-label nzXl="8" nzXXl="6" nzRequired>进单时间</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <nz-date-picker formControlName="orderDate" style="width: 100%" [nzStyle]="{ width: '100%' }">
-            </nz-date-picker>
+            <nz-month-picker formControlName="orderDate" style="width: 100%" [nzStyle]="{ width: '100%' }">
+            </nz-month-picker>
             <nz-form-explain *ngIf="formValues.get('orderDate')?.dirty && formValues.get('orderDate')?.errors">
               请选择进单时间
             </nz-form-explain>
@@ -281,7 +281,7 @@
     <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
       <div nz-col nzXs="24" nzSm="24" nzMd="12">
         <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6" [nzRequired]="bg.value != 'CC'">OM</nz-form-label>
+          <nz-form-label nzXl="8" nzXXl="6">OM</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <nz-select formControlName="om" [nzPlaceHolder]="editable ? '请选择OM' : ''">
               <nz-option *ngFor="let item of selectOptions.oms" [nzLabel]="item.label" [nzValue]="item.value">
@@ -482,14 +482,14 @@
               <nz-form-label nzFor="attachment" nzXl="8" nzXXl="8" class="upload-file-label">附件</nz-form-label>
               <nz-form-control nzXs="24" nzSm="24" nzMd="14">
                 <nz-upload nzType="drag" nzAction="/act/system/upload" [nzMultiple]="true" *ngIf="isSupplementNode"
-                  [nzFileList]="supportFileList" [nzBeforeUpload]="onBeforeUpload" [nzCustomRequest]="onUploadFile"
+                  [nzFileList]="cancelOrderFileList" [nzBeforeUpload]="onBeforeUpload" [nzCustomRequest]="onUploadFile"
                   [nzRemove]="onRemoveFile" [nzDisabled]="!isSupplementNode" [nzShowUploadList]="isSupplementNode">
                   <p class="ant-upload-drag-icon">
                     <i nz-icon nzType="inbox"></i>
                   </p>
                   <p class="ant-upload-text">点击或者拖拽上传</p>
                 </nz-upload>
-                <app-upload-file-list *ngIf="!isSupplementNode" [fileList]="supportFileList"></app-upload-file-list>
+                <app-upload-file-list *ngIf="!isSupplementNode" [fileList]="cancelOrderFileList"></app-upload-file-list>
               </nz-form-control>
             </nz-form-item>
           </div>

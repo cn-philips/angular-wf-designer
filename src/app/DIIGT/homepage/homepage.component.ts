@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit } from '@angular/core';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import { HttpService} from '../../services';
 import {NzMessageService} from 'ng-zorro-antd';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -31,11 +31,12 @@ export class HomepageComponent implements OnInit {
     //   this._play()
     //   this.play()
     // })
-    this.initLinks()
-    this.initSupport()
+    this.initLinks();
+    this.initSupport();
 
 
-    this.initManuals()
+    this.initManuals();
+    this.getMessage();
   }
   private async initLinks(){
     this.linkList=[
@@ -113,18 +114,28 @@ initManuals(){
 
     // special approval
     this.http.get(`/act/ecom/dictData/queryDrop?dictGroup=LINK_QA_PDF_SP`).subscribe(res => {
-      if (res.code === '0000' && res.data) {
-        const manualListSp = [...res.data];
-        const strRegex = /\.(pdf)$/;
-        manualListSp.map(e => {
-          if (e.label && strRegex.test(e.label.toLowerCase())) {
-            e.type = 'pdf';
-          } else {
-            e.type = 'video';
-          }
+      const sp_pdf = [...res.data];
+      // const strRegex = /\.(pdf)$/;
+      if (sp_pdf) {
+        sp_pdf.map(e => {
+          e.type = 'pdf';
+          // if (e.label && strRegex.test(e.label.toLowerCase())) {
+          //   e.type = 'pdf';
+          // } else {
+          //   e.type = 'video';
+          // }
         });
-        this.manualListSp = manualListSp;
       }
+      this.http.get(`/act/ecom/dictData/queryDrop?dictGroup=LINK_QA_LINK_SP`).subscribe( rest => {
+        const sp_video = [...rest.data];
+        if (sp_video) {
+          sp_video.map(e => {
+            e.type = 'video';
+          });
+        }
+        this.manualListSp = [...sp_pdf, ...sp_video];
+      });
+
     });
   }
   //打开pdf
@@ -223,4 +234,23 @@ initManuals(){
       // rect.right >= 0
     );
   }
+
+  public message_error: any = [];
+  public message_info: any = [];
+  public message_warning: any = [];
+  public getMessage() {
+    this.http.get('/act/ecom/dictData/queryDrop?dictGroup=MESSAGE_ERROR').subscribe(res => {
+      this.message_error = [...res.data];
+    });
+    this.http.get('/act/ecom/dictData/queryDrop?dictGroup=MESSAGE_INFO').subscribe(res => {
+      this.message_info = [...res.data];
+    });
+    this.http.get('/act/ecom/dictData/queryDrop?dictGroup=MESSAGE_WARNING').subscribe(res => {
+      this.message_warning = [...res.data];
+    });
+  }
+  public closeMessage(msgArr: any, index: any) {
+    msgArr.splice(index, 1);
+  }
+
 }

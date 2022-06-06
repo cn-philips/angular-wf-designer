@@ -1,4 +1,4 @@
-<nz-card nzTitle="De-Book">
+<nz-card nzTitle="订单信息">
   <header *ngIf="editable">
     <button nz-button nzType="primary" (click)="createOrder()">+ 新建订单信息</button>
     <nz-upload nzAction="" [nzShowUploadList]="false" [nzBeforeUpload]="onImportOrderInfo">
@@ -7,7 +7,7 @@
         批量导入
       </button>
     </nz-upload>
-    <a [href]="templateUrl" download="de-book.xlsx">de-book.xlsx</a>
+    <a [href]="templateUrl" download="de-book.xlsx">De-book信息导入模板.xlsx</a>
   </header>
 
   <div class="table-container">
@@ -25,7 +25,6 @@
         <th nzWidth="150px">产品线</th>
         <th nzWidth="150px">BG(Modality)</th>
         <th nzWidth="300px">销售区域</th>
-        <th nzWidth="180px">业务模式</th>
         <th nzWidth="300px">医院编号</th>
         <th nzWidth="400px">医院名称</th>
         <th nzWidth="150px">进单日期</th>
@@ -36,7 +35,7 @@
         <th nzWidth="200px">SAP 订单号(SO#)</th>
         <th nzWidth="250px">产品型号</th>
         <th nzWidth="150px">订单WBS#</th>
-<!--        <th nzWidth="150px" nzRight="0px">Action</th>-->
+        <th nzWidth="150px" nzRight="0px">Action</th>
       </tr>
       </thead>
       <tbody>
@@ -51,9 +50,10 @@
           <td>
             <nz-form-item>
               <nz-form-control>
-                <nz-select [(ngModel)]="data.bmc" style="width: 100%;" [disabled]="!editable" (ngModelChange)="onBmcChange(data)" required>
-                  <nz-option *ngFor="let item of bmcList" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+                <nz-select [(ngModel)]="data.bmc" style="width: 100%;" *ngIf="editable" required>
+                  <nz-option *ngFor="let item of selectOptions.bmcs[index]" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
                 </nz-select>
+                <input nz-input [(ngModel)]="data.bmc" [disabled]="!editable" *ngIf="!editable"  />
                 <nz-form-explain class="error-msg" *ngIf="!data.bmc">
                   请选择产品线
                 </nz-form-explain>
@@ -63,10 +63,10 @@
           <td>
             <nz-form-item>
               <nz-form-control>
-                <!--              <nz-select [(ngModel)]="data.bg" style="width: 100%;" [disabled]="!editable" required>-->
-                <!--                <nz-option *ngFor="let item of selectOptions.orderTypes" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>-->
-                <!--              </nz-select>-->
-                <input nz-input [(ngModel)]="data.bg" disabled />
+                              <nz-select [(ngModel)]="data.bg" style="width: 100%;" [disabled]="!editable" (ngModelChange)="onBgChange($event, data,index)" required>
+                                <nz-option *ngFor="let item of BG_LIST" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+                              </nz-select>
+<!--                <input nz-input [(ngModel)]="data.bg" disabled />-->
 
               </nz-form-control>
             </nz-form-item>
@@ -83,19 +83,6 @@
               </nz-form-control>
             </nz-form-item>
           </td>
-          <td>
-            <nz-form-item>
-              <nz-form-control>
-                <nz-select [(ngModel)]="data.businessModel" style="width: 100%;" [disabled]="!editable" required>
-                  <nz-option *ngFor="let item of selectOptions.businessModels" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
-                </nz-select>
-                <nz-form-explain class="error-msg" *ngIf="!data.businessModel">
-                  请选择team
-                </nz-form-explain>
-              </nz-form-control>
-            </nz-form-item>
-          </td>
-
           <td>
             <nz-form-item>
               <nz-form-control>
@@ -144,6 +131,9 @@
                   [disabled]="!editable"
                   [nzPlaceHolder]="editable ? '请选择日期' : ''"
                 ></nz-date-picker>
+                <nz-form-explain class="error-msg" *ngIf="!data.orderDate">
+                  请选择进单日期
+                </nz-form-explain>
               </nz-form-control>
             </nz-form-item>
           </td>
@@ -176,7 +166,7 @@
                   <nz-option *ngFor="let item of debookReasonList" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
                 </nz-select>
                 <nz-form-explain class="error-msg" *ngIf="!data.deBookReason">
-                  请选择de-book原因
+                  请选择De-Book原因
                 </nz-form-explain>
               </nz-form-control>
             </nz-form-item>
@@ -184,17 +174,10 @@
           <td>
             <nz-form-item>
               <nz-form-control>
-                <!--              <input nz-input [(ngModel)]="data.remark" [disabled]="!editable" />-->
-                <nz-tooltip nzTrigger="hover" nzPlacement="topLeft" nzOverlayClassName="numeric-input" [nzTitle]="data.remark">
-                  <input
-                    #inputElement
-                    style="width: 120px"
-                    nz-input
-                    nz-tooltip
-                    [disabled]="!editable"
-                    [ngModel]="data.remark"
-                  />
-                </nz-tooltip>
+                <input nz-input [(ngModel)]="data.remark" [disabled]="!editable" [title]="data.remark" />
+                <nz-form-explain class="error-msg" *ngIf="!data.remark">
+                  请填写Remark
+                </nz-form-explain>
               </nz-form-control>
             </nz-form-item>
           </td>
@@ -204,7 +187,7 @@
                 <input nz-input [(ngModel)]="data.sapOrderNo" [disabled]="!editable" required/>
               </nz-form-control>
               <nz-form-explain class="error-msg" *ngIf="!data.sapOrderNo">
-                请输入SAP No
+                请填写SAP订单号
               </nz-form-explain>
             </nz-form-item>
           </td>
@@ -227,14 +210,14 @@
                 <input nz-input [(ngModel)]="data.wbsNo" [disabled]="!editable" required/>
               </nz-form-control>
               <nz-form-explain class="error-msg" *ngIf="!data.wbsNo">
-                请输入WBS No
+                请填写订单WBS#
               </nz-form-explain>
             </nz-form-item>
           </td>
-<!--          <td nzRight="0px">-->
+          <td nzRight="0px">
 <!--            <a nz-icon nzType="edit" nzTheme="outline" style="font-size: 16px"></a>&emsp;-->
-<!--            <a nz-icon nzType="delete" nzTheme="outline" style="font-size: 16px" (click)="deleteOrder(data)"></a>-->
-<!--          </td>-->
+            <a nz-icon nzType="delete" nzTheme="outline" style="font-size: 16px" (click)="deleteOrder(data, index)"></a>
+          </td>
         </tr>
       </tbody>
     </nz-table>

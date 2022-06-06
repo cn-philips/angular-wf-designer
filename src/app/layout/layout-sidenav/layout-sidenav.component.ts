@@ -172,11 +172,22 @@ export class LayoutSidenavComponent implements OnInit, AfterViewInit, OnDestroy 
 
     this.spService.getWaitingApproveList(params)
       .then(({ total }) => this.spTaskTotal = total)
-      .catch(error => this.message.create('error', `${error.message}`))
+      .catch(error => this.message.create('error', `${error.message}`));
 
     this.spService.getDraftList(params)
       .then(({ total }) => this.spDraftTotal = total)
-      .catch((error) => this.message.create('error', `${error.message}`))
+      .catch((error) => this.message.create('error', `${error.message}`));
+
+    this.getPricePermissionsAll();
+  }
+
+  public getPricePermissionsAll() {
+    const url = '/act/fieldPermissions/getPermissionsAll';
+    this.http.get(url).subscribe(res => {
+      if (res && res.data) {
+        window.localStorage.setItem('permissions', JSON.stringify(res.data));
+      }
+    });
   }
 
   ngAfterViewInit() {

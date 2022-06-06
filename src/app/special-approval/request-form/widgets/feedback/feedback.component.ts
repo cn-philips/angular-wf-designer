@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, EventEmitter, Output} from '@angular/core';
 import { FormGroup, FormBuilder } from '@angular/forms'
 import { Router } from '@angular/router'
 import { UploadXHRArgs, UploadFile, NzModalService, NzMessageService } from 'ng-zorro-antd'
@@ -35,13 +35,16 @@ export class FeedbackComponent implements OnInit {
 
   @Input() requestId
   @Input() taskId
+  @Input() formValues: FormGroup
 
-  formValues: FormGroup = this.fb.group({
-    remark: [null], // 备注
-    attachments: [[]], // 支持文件
-    notify: [0], // 是否通知用户
-    notifier: [null], // 通知用户邮箱列表, 字符串, 逗号隔开
-  })
+  @Output() onFbSubmit = new EventEmitter<number>();
+
+  // formValues: FormGroup = this.fb.group({
+  //   remark: [null], // 备注
+  //   attachments: [[]], // 支持文件
+  //   notify: [0], // 是否通知用户
+  //   notifier: [null], // 通知用户邮箱列表, 字符串, 逗号隔开
+  // })
 
   supportFileList: UploadFile[] = []
   
@@ -138,35 +141,11 @@ export class FeedbackComponent implements OnInit {
   }
 
   async onSubmit(action) {
-    try {
-      const { remark, attachments, notify, notifier } = this.formValues.getRawValue()
-      if (notify == 1 && !notifier) {
-        this.message.error('请选择指定用户')
-        return
-      }
-      const data = {
-        applyId: this.requestId,
-        attachments: attachments,
-        executed: action,
-        notify,
-        notifier: notify ? notifier.join(','): '',
-        remark,
-        taskInstId: this.taskId,
-        result: 'APPROVED',
-      }
-
-      const id = this.message.loading(LOADING_MESSAGE.FEEDBACK, { nzDuration: 0 }).messageId
-      this.submitLoading = true
-      await this.spService.approveRequest(data)
-      this.message.remove(id)
-      this.message.success(SUCCESS_MESSAGE.FEEDBACK)
-      this.router.navigate(['/special-approval/home'])
-    } catch ({ message }) {
-      this.message.error(ERROR_MESSAGE.FEEDBACK)
-      console.error(`反馈失败, ${message}`);
-    } finally {
-      this.submitLoading = false
+    const { remark, attachments, notify, notifier } = this.formValues.getRawValue()
+    if (notify == 1 && !notifier) {
+      this.message.error('请选择指定用户');
+      return
     }
-    
+    this.onFbSubmit.emit(action);
   }
 }

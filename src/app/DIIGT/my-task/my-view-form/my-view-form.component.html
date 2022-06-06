@@ -319,17 +319,17 @@
         <button nz-button [nzType]="'primary'" (click)="exportExcel($event)" [nzLoading]="loadingButton.exportExcel"
           style="margin-left: 10px;">Export to Excel  导出Excel</button>
         <button nz-button [nzType]="'primary'" (click)="projectReport($event, validateForm.value)"
-          [nzLoading]="loadingButton.projectReport" style="margin-left: 10px;">OIT Report</button>
+          [nzLoading]="loadingButton.projectReport" style="margin-left: 10px;" *appPermissionsIf="'report_oit'">OIT Report</button>
         <button nz-button [nzType]="'primary'" (click)="showModeal()" [nzLoading]="loadingButton.opportunityReport"
-          style="margin-left: 10px;" *ngIf="isOALeader">进单状态-按Opportunity查询</button>
+          style="margin-left: 10px;" *appPermissionsIf="'report_opportunity'">进单状态-按Opportunity查询</button>
         <button nz-button [nzType]="'primary'" (click)="BundleReport($event)" [nzLoading]="loadingButton.BundleReport"
-          style="margin-left: 10px;">Search by Order 进单状态-按进单准备表查询</button>
+          style="margin-left: 10px;" *appPermissionsIf="'report_preparation'">Search by Order 进单状态-按进单准备表查询</button>
         <button nz-button [nzType]="'primary'" (click)="biddingReport($event)" [nzLoading]="loadingButton.biddingReport"
-          style="margin-left: 10px;">Bidding Report</button>
+          style="margin-left: 10px;" *appPermissionsIf="'report_bidding'">Bidding Report</button>
         <button nz-button [nzType]="'primary'" (click)="prebookReport($event)" [nzLoading]="loadingButton.preBookReport"
-                style="margin-left: 10px;">PreBook Report</button>
+                style="margin-left: 10px;" *appPermissionsIf="'report_prebook'">PreBook Report</button>
         <button nz-button [nzType]="'primary'" (click)="POSReport($event)" [nzLoading]="loadingButton.POSReport"
-          style="margin-left: 10px;" *ngIf="isOA">POS Report</button>
+          style="margin-left: 10px;" *appPermissionsIf="'report_pos'">POS Report</button>
         <a style="font-size:14px;margin-left: 10px;color: #1890ff;" (click)="toggleCollapse()">
           {{ isCollapse ? 'Collapse 收起' : 'Expand 展开' }}
           <i nz-icon [type]="isCollapse ? 'up' : 'down'"></i>

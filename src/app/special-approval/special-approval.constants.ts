@@ -65,6 +65,8 @@ const APPLY_TYPE = {
   COO_US: 'coous',
   COO_PDIGT: 'coopdigt',
   COO_CC: 'coocc',
+  PRE_BOOK_LASTBUY:'lastbuy', // 订单替换
+
 }
 
 const APPLY_TYPE_MAP = {
@@ -84,6 +86,8 @@ const APPLY_TYPE_MAP = {
   [APPLY_TYPE.COO_US]: { label: "COO-US", dictGroup: 'sp_coous_apply_item' },
   [APPLY_TYPE.COO_PDIGT]: { label: "COO-PD&IGT", dictGroup: 'sp_coopdigt_apply_item' },
   [APPLY_TYPE.COO_CC]: { label: "COO-CC", dictGroup: 'sp_coocc_apply_item' },
+  [APPLY_TYPE.PRE_BOOK_LASTBUY]: { label: "Pre-book特批生产", dictGroup: 'sp_lastbuy_apply_item' },
+
 };
 
 
@@ -104,6 +108,7 @@ const APPLY_TYPES = [
   { label: "COO-US", value: APPLY_TYPE.COO_US },
   { label: "COO-PD&IGT", value: APPLY_TYPE.COO_PDIGT },
   { label: "COO-CC", value: APPLY_TYPE.COO_CC },
+  { label: "Pre-book特批生产", value: APPLY_TYPE.PRE_BOOK_LASTBUY },
 ];
 
 const STAND_WARRANTY_MONTH = {

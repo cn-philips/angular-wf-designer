@@ -394,7 +394,7 @@
       <nz-form-item style="margin-bottom: 6px">
         <nz-form-label [nzSm]="8" [nzXs]="24"><span>Order Unit Contract Price</span><br>进单单位合同价</nz-form-label>
         <nz-form-control [nzSm]="14" [nzXs]="24">
-          <input type="text" class="form-control" disabled [ngModel]="dataBase.contractPrice|NumberThousandth"
+          <input type="text" class="form-control" disabled [ngModel]="dataBase.contractPrice|NumberThousandth|pricePermissions"
             placeholder="无">
         </nz-form-control>
       </nz-form-item>
@@ -550,7 +550,7 @@
         </nz-form-control>
       </nz-form-item>
     </div>
-    <div nz-col nzXs="24" nzSm="24" nzMd="12">
+    <div nz-col nzXs="24" nzSm="24" nzMd="12" *appPermissionsIf="'sofon_file'">
       <nz-form-item style="margin-bottom: 6px">
         <nz-form-label [nzSm]="8" [nzXs]="24">Sofon Final Quotation <br>and supporting files</nz-form-label>
         <nz-form-control [nzSm]="14" [nzXs]="24">
@@ -602,7 +602,7 @@
                 <nz-form-label style="padding:0px !important" [nzSm]="8" [nzXs]="24">Price 价格</nz-form-label>
                 <nz-form-control [nzSm]="14" [nzXs]="24">
                   <input nz-input class="form-control" placeholder="-" readonly nz-tooltip [nzTitle]="item.localCtp1"
-                    [ngModel]="item.localCtp1|NumberThousandth" />
+                    [ngModel]="item.localCtp1|NumberThousandth|pricePermissions" />
                 </nz-form-control>
               </div>
             </div>
@@ -653,7 +653,7 @@
                 <td nzAlign="center">{{data.chapter}}</td>
                 <td nzAlign="center">{{data.posId}}</td>
                 <td nzAlign="center">{{data.posIdName}}</td>
-                <td nzAlign="center">{{data.posLocalCtp|NumberThousandth}}</td>
+                <td nzAlign="center">{{data.posLocalCtp|NumberThousandth|pricePermissions}}</td>
               </tr>
             </tbody>
           </nz-table>
@@ -710,7 +710,7 @@
                 <td nzAlign="center">{{data.dealFormSimulationMbId}}</td>
                 <td nzAlign="center">{{data.marketBundleName}}</td>
                 <td nzAlign="center">{{data.name}}</td>
-                <td nzAlign="center">{{data.costs1|NumberThousandth}}</td>
+                <td nzAlign="center">{{data.costs1|NumberThousandth|pricePermissions}}</td>
               </tr>
             </tbody>
           </nz-table>

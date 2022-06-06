@@ -1132,7 +1132,7 @@
           <nz-form-label nzSm="8" nzXl="8" nzXXl="8">Order Unit Contract Price<br>进单单位合同价</nz-form-label>
           <nz-form-control nzSm="14" nzXl="14" nzXXl="14">
             <input type="text" class="form-control" value="" formControlName="contractPrice"
-                   [ngModel]="dataBase.contractPrice|NumberThousandth" />
+                   [ngModel]="dataBase.contractPrice|NumberThousandth|pricePermissions" />
           </nz-form-control>
         </nz-form-item>
       </div>

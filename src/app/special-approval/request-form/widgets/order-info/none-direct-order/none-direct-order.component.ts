@@ -1,5 +1,5 @@
-import { Component, OnInit, Input, ViewChild } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms'
+import { Component, OnInit, Input, ViewChild, OnChanges, SimpleChanges } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms'
 import {SpecialApprovalService} from '../../../../special-approval.service';
 import {Hospital, SelectHospitalComponent} from '../../select-hospital/select-hospital.component';
 import {Dealer, SelectDealerComponent} from '../../select-dealer/select-dealer.component';
@@ -18,7 +18,7 @@ import {
   templateUrl: './none-direct-order.component.html',
   styleUrls: ['./none-direct-order.component.scss']
 })
-export class NoNedirectOrderInfoComponent implements OnInit {
+export class NoNedirectOrderInfoComponent implements OnInit, OnChanges {
   constructor(public spService: SpecialApprovalService) { }
 
 
@@ -28,10 +28,12 @@ export class NoNedirectOrderInfoComponent implements OnInit {
 
   @ViewChild('selectReference') selectReference: SelectReferenceComponent
 
-  @Input() formValues: FormGroup
-  @Input() editable = true
-  @Input() applyType: string
-  @Input() applyItem: string
+  @Input() basicInfo: FormGroup;
+  @Input() formValues: FormGroup;
+  @Input() editable = true;
+  @Input() applyItem: string;
+  @Input() baseInfo: FormGroup
+  @Input() showFeedbackTab = false;
 
   APPLY_TYPE = APPLY_TYPE
 
@@ -181,12 +183,14 @@ export class NoNedirectOrderInfoComponent implements OnInit {
         wbs: "",
         itemNo: "",
         quantity: marketBundleQuantity,
+        equipmentSn:"",
       }],
     })
   }
 
   ngOnInit(): void {
     this.initOMUsers()
+    this.editProjectName()
     if (this.editable) {
       this.formValues.get('hospitalName').valueChanges.subscribe(() => {
         this.onCalcProjectName()
@@ -196,11 +200,31 @@ export class NoNedirectOrderInfoComponent implements OnInit {
         this.onCalcProjectName()
       })
     }
+    if (this.formValues.get('bg').value === 'PD&IGT'){
+      this.formValues.get('referenceId').disable();
+    }
   }
 
   // 初始化OM列表
   async initOMUsers() {
     const users = await this.spService.getOMUsers()
     this.selectOptions.oms = users.map(({ name, email }) => ({ label: name, value: email }))
+  }
+
+  //当 bg !=== PD&IGT 特定条件下:项目名称不可编辑
+   async editProjectName(){
+     if (this.formValues.get('bg').value !== 'PD&IGT'){
+       this.formValues.get('projectName').disable();
+     }
+   }
+
+   //监测 @Input值的变化
+  ngOnChanges(changes: SimpleChanges): void {
+    //是否是反馈信息节点
+    if (changes.showFeedbackTab && changes.showFeedbackTab.currentValue) {
+      let clearedFields = ['actualSaleDate'];
+      clearedFields.forEach((fieldName) => this.formValues.controls[fieldName].enable());
+      clearedFields.forEach((fieldName) => this.formValues.controls[fieldName].setValidators([Validators.required]));
+    }
   }
 }

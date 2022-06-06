@@ -22,8 +22,8 @@
           <button nz-button nz-popconfirm nzDanger nzTitle="确定删除草稿?" *ngIf="showDeleteBtn"
             (nzOnConfirm)="onDeleteRequest()">删除</button>
 
-          <!-- 补充信息 审批保存 -->
-          <ng-container *ngIf="isSupplementNode">
+          <!-- 补充信息，反馈节点order 保存 -->
+          <ng-container *ngIf="isSupplementNode || showFeedbackTab">
             <button nz-button nz-popconfirm nzType="text" nzTitle="确定保存?" class="bg-success text-white"
               (nzOnConfirm)="onApproveSave()">保存</button>
           </ng-container>
@@ -64,9 +64,10 @@
     <ng-template ngbTabContent>
       <div class="card-body">
         <special-approval-production-order-info *ngIf="applyType === APPLY_TYPE.PRODUCTION" [applyItem]="applyItem"
-          [editable]="editable" [formValues]="orderInfo"></special-approval-production-order-info>
+          [editable]="editable" [formValues]="orderInfo" [showFeedbackTab]="showFeedbackTab">
+        </special-approval-production-order-info>
         <special-approval-warranty-order-info *ngIf="applyType === APPLY_TYPE.EXT_WARRANTY" [editable]="editable"
-          [formValues]="orderInfo"></special-approval-warranty-order-info>
+          [formValues]="orderInfo" [showFeedbackTab]="showFeedbackTab"></special-approval-warranty-order-info>
         <!-- <special-approval-order-info [applyItem]="applyItem" [applyType]="applyType" [editable]="editable" [formValues]="orderInfo"></special-approval-order-info> -->
         <special-approval-transportation-order-info *ngIf="applyType === APPLY_TYPE.LOGISTICSCOST" [editable]="editable"
           [formValues]="orderInfo"></special-approval-transportation-order-info>
@@ -78,25 +79,35 @@
           [formValues]="rddOitOrderInfos" [editable]="editable"></special-approval-rdd-oit-order-info>
         <special-approval-machineexcange-order-info #machineExchange *ngIf="applyType === APPLY_TYPE.MACHINE_EXCHANGE"
           [editable]="editable" [formValues]="changeOrderInfos" [salesLeaders]="salesLeader"
-          [districtLeaders]="districtLeader"></special-approval-machineexcange-order-info>
+          [districtLeaders]="districtLeader" [showFeedbackTab]="showFeedbackTab">
+        </special-approval-machineexcange-order-info>
         <special-approval-transfer-lib-info *ngIf="applyType === APPLY_TYPE.TRANSFER_LIB" [editable]="editable"
-          [baseInfo]="basicInfo" [exchangeInfo]="exchangeInfo" [formValues]="transferLibInfos">
+          [baseInfo]="basicInfo" [exchangeInfo]="exchangeInfo" [formValues]="transferLibInfos"
+          [showFeedbackTab]="showFeedbackTab">
         </special-approval-transfer-lib-info>
         <special-approval-debook-info #deBookOrderInfo *ngIf="applyType === APPLY_TYPE.DE_BOOK" [editable]="editable"
           [formValues]="deBookOrderInfos"></special-approval-debook-info>
         <special-approval-cancel-order-info *ngIf="applyType === APPLY_TYPE.CANCEL_ORDER" [editable]="editable"
-          [baseInfo]="basicInfo" [formValues]="cancelorderInfo" [isSupplementNode]="isSupplementNode">
+          [baseInfo]="basicInfo" [formValues]="cancelorderInfo" [isSupplementNode]="isSupplementNode"
+          [cancelOrderFileList]="cancelOrderFileList">
         </special-approval-cancel-order-info>
         <special-approval-specialdelivery-order-info *ngIf="applyType === APPLY_TYPE.SPECIAL_DELIVERY"
-          [editable]="editable" [basicInfo]="basicInfo" [formValues]="orderInfo">
+          [editable]="editable" [basicInfo]="basicInfo" [formValues]="orderInfo" [applyItem]="applyItem"
+          [showFeedbackTab]="showFeedbackTab">
         </special-approval-specialdelivery-order-info>
         <special-approval-none-direct-order-info *ngIf="applyType === APPLY_TYPE.NONE_DIRECT_ORDER"
-          [editable]="editable" [formValues]="orderInfo"></special-approval-none-direct-order-info>
+          [editable]="editable" [baseInfo]="basicInfo" [formValues]="noneDirectOrderInfo"
+          [showFeedbackTab]="showFeedbackTab">
+        </special-approval-none-direct-order-info>
         <special-approval-order-replacement-info *ngIf="applyType === APPLY_TYPE.ORDER_REPLACEMENT"
-          [editable]="editable" [baseInfo]="basicInfo" [formValues]="orderReplacementInfo">
+          [editable]="editable" [baseInfo]="basicInfo" [formValues]="orderReplacementInfo"
+          [showFeedbackTab]="showFeedbackTab">
         </special-approval-order-replacement-info>
         <special-approval-coo-us-order-info [editable]="editable" #cooUsOrderInfo *ngIf="applyType === APPLY_TYPE.COO_US">
         </special-approval-coo-us-order-info>
+        <special-approval-lastbuy-info #lastBuyOrderInfo *ngIf="applyType === APPLY_TYPE.PRE_BOOK_LASTBUY"
+          [editable]="editable" [formValues]="lastBuyInfos" [showFeedbackTab]="showFeedbackTab">
+        </special-approval-lastbuy-info>
       </div>
     </ng-template>
   </ngb-tab>
@@ -176,7 +187,9 @@
     </ng-template>
     <ng-template ngbTabContent>
       <div class="card-body">
-        <special-approval-feedback [taskId]="taskId" [requestId]="requestId"></special-approval-feedback>
+        <special-approval-feedback (onFbSubmit)="onFeedBackSubmit($event)" [taskId]="taskId" [requestId]="requestId"
+          [formValues]="feedBackFormValues">
+        </special-approval-feedback>
       </div>
     </ng-template>
   </ngb-tab>

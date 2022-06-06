@@ -42,6 +42,7 @@ import { DeBookComponent } from './request-form/widgets/order-info/de-book/de-bo
 import { OrderReplacementComponent } from "./request-form/widgets/order-info/order-replacement/order-replacement.component";
 import { SupplementFormComponent } from "./request-form/widgets/supplement-form/supplement-form.component";
 import { CooUsOrderInfoComponent } from './request-form/widgets/order-info/coo-us/coo-us.component'
+import { LastbuyComponent } from './request-form/widgets/order-info/lastbuy/lastbuy.component';
 
 const COMPONENTS = [
   ApprovedComponent,
@@ -85,6 +86,7 @@ const WIDGETS = [
   OrderReplacementComponent,
   SupplementFormComponent,
   CooUsOrderInfoComponent,
+  LastbuyComponent,
 ];
 
 export {

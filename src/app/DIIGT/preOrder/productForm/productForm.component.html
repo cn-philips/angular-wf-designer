@@ -2,7 +2,7 @@
   <app-apploading [load]="load"></app-apploading>
   <div *ngIf="disa" nz-row nzType="flex" nzJustify="start" nzAlign="middle">
     <div nz-col nzSpan="8">
-      <nz-form-item>
+      <nz-form-item *appPermissionsIf="'sofon_file'">
         <nz-form-label nzXXl="10" nzXl="10" nzRequired nzSm="12">Sofon File<br> Sofon文件</nz-form-label>
         <nz-form-control [nzSm]="12" [nzXs]="24">
           <!-- <button

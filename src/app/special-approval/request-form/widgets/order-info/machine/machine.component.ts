@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
 import {
   APPLY_TYPE,
   BUSINESS_MODEL,
@@ -20,7 +20,7 @@ import {
   Reference,
   SelectReferenceComponent,
 } from "../../select-reference/select-reference.component";
-import { FormArray, FormBuilder, FormControl, FormGroup } from "@angular/forms";
+import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from "@angular/forms";
 import { BehaviorSubject, Observable } from "rxjs";
 import { debounceTime, map, switchMap } from "rxjs/operators";
 import { HttpService } from "../../../../../services";
@@ -35,7 +35,7 @@ interface Sales {
   templateUrl: "./machine.component.html",
   styleUrls: ["./machine.component.scss"],
 })
-export class MachineComponent implements OnInit {
+export class MachineComponent implements OnInit, OnChanges {
   @Input() salesLeaders: string[];
   @Input() districtLeaders: string[];
 
@@ -68,6 +68,7 @@ export class MachineComponent implements OnInit {
   @Input() editable = true;
   @Input() applyType: string;
   @Input() applyItem: string;
+  @Input() showFeedbackTab = false;
 
   APPLY_TYPE = APPLY_TYPE;
 
@@ -363,4 +364,14 @@ export class MachineComponent implements OnInit {
     this.isSearchLoading = true
     this.searchChange$.next(keyword)
   }
+
+  //监测 @Input值的变化
+  ngOnChanges(changes: SimpleChanges): void {
+    //是否是反馈信息节点
+    if (changes.showFeedbackTab && changes.showFeedbackTab.currentValue) {
+      this.orders.at(0).get('actualSaleDate').enable();
+      this.orders.at(0).get('actualSaleDate').setValidators([Validators.required]);
+    }
+  }
+
 }

@@ -260,7 +260,9 @@ import { MailApprovalComponent } from './DIIGT/mail-approval/mail-approval.compo
 import { AutoApprovalComponent } from './DIIGT/auto-approval/auto-approval.component';
 
 import { SpecialApprovalModule } from './special-approval/special-approval.module'
-import { SpecialApprovalSettingModule } from './DIIGT/change-scene/special-approval-setting/special-approval-setting.module'
+import { SpecialApprovalSettingModule } from './DIIGT/change-scene/special-approval-setting/special-approval-setting.module';
+import { PricePermissionsPipe } from './pipes/price-permissions.pipe';
+import { PermissionsIfDirective } from './directive/permissions-if.directive';
 
 // registerLocaleData(localeCn, localeCnExtra);
 registerLocaleData(zh);
@@ -320,7 +322,7 @@ registerLocaleData(zh);
     TrainingcostModalComponent,
     ShomeComponent,
     CktakeComponent,
-  
+
     MyPpendingComponent,
     MyCompleteComponent,
     BidComponent,
@@ -346,7 +348,7 @@ registerLocaleData(zh);
     ContractsigningComponent,
     ApprovalrecordComponent,
     OitcompleteComponent,
- 
+
     InorderComponent,
     InorderInComponent,
     InorderExComponent,
@@ -470,6 +472,8 @@ registerLocaleData(zh);
     DistributorListComponent,
     MailApprovalComponent,
     AutoApprovalComponent,
+    PricePermissionsPipe,
+    PermissionsIfDirective,
    ],
 
   imports: [

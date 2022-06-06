@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ViewChild } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, OnChanges, SimpleChanges } from '@angular/core';
 import { FormControl, FormGroup, Validators} from '@angular/forms'
 import {UploadXHRArgs, UploadFile, NzModalService, NzMessageService} from 'ng-zorro-antd';
 
@@ -30,7 +30,7 @@ interface CommonResponse {
   templateUrl: './cancel-order.component.html',
   styleUrls: ['./cancel-order.component.scss']
 })
-export class CancelOrderComponent implements OnInit {
+export class CancelOrderComponent implements OnInit, OnChanges {
   constructor(public spService: SpecialApprovalService, private modal: NzModalService, private message: NzMessageService, private dictService: DictService) {}
 
 
@@ -43,7 +43,7 @@ export class CancelOrderComponent implements OnInit {
   @Input() formValues: FormGroup
   @Input() editable = true
   @Input() baseInfo: FormGroup
-  @Input() supportFileList: UploadFile[] = [];
+  @Input() cancelOrderFileList: UploadFile[] = [];
 
   @Input() isSupplementNode = false
 
@@ -207,18 +207,20 @@ export class CancelOrderComponent implements OnInit {
       })
     }
 
+  }
+
+  //监测 @Input值的变化
+  ngOnChanges(changes: SimpleChanges): void {
     //是否是补充信息节点
-    if(!this.isSupplementNode){
-      this.disableField();
-    } else {
+    if (changes.isSupplementNode && changes.isSupplementNode.currentValue) {
       this.formValues.controls.orderInfoStatus.enable();
       this.initCancelContractLink();
       this.orderInfoStatus.get('startProduction').setValidators(Validators.required); //是否开始生产
       this.orderInfoStatus.get('shipped').setValidators(Validators.required); // 是否已发货
       this.orderInfoStatus.get('thirdPartyProcurement').setValidators(Validators.required); // 是否有第三方采购
       this.orderInfoStatus.get('seenSite').setValidators(Validators.required); // 是否看过场地
-      this.orderInfoStatus.get('advanceChargeStatus').setValidators(Validators.required); // 预付款状态
-    }
+      this.orderInfoStatus.get('advanceChargeStatus').setValidators(Validators.required); // 预付款状
+    } 
   }
 
    // 初始化OM列表
@@ -227,29 +229,8 @@ export class CancelOrderComponent implements OnInit {
     this.selectOptions.oms = users.map(({ name, email }) => ({ label: name, value: email }))
   }
 
-  disableField() {
-    let disabledFieldsList = [
-      "spApplyOrderId",
-      "startProduction",
-      "orderCancelAmountProduction",
-      "shipped",
-      "orderCancelAmountShipped",
-      "thirdPartyProcurement",
-      "orderCancelAmountPurchase",
-      "seenSite",
-      "orderCancelAmountSite",
-      "advanceChargeStatus",
-      "advanceChargeAmount",
-      "orderActualAmount",
-      "refundAmount",
-      "remark"
-    ]
-    disabledFieldsList.forEach(item => {
-      this.orderInfoStatus.get(item).disable();
-    })
-  }
 
-  //上传附件 (只能上传一个文件)
+  //上传附件
   onUploadFile = (item: UploadXHRArgs) => {
     const formData = new FormData()
     const file = item.file as any
@@ -261,7 +242,8 @@ export class CancelOrderComponent implements OnInit {
       (response: CommonResponse) => {
         const { data, code } = response
         if ('0000' === code) {
-          this.orderInfoStatus.patchValue({ attachment: data})
+          const curFileIds = this.orderInfoStatus.get('attachment').value as String[]
+          this.orderInfoStatus.patchValue({ attachment: curFileIds.concat(data)})
           item.onSuccess({ fileId: data }, file, response)
         } else {
           item.onError({}, file)
@@ -275,8 +257,8 @@ export class CancelOrderComponent implements OnInit {
 
   // 上传之前的校验(文件类型, 文件大小), 校验不通过, return false, 会阻止自动上传
   onBeforeUpload = (file) => {
-    if (this.orderInfoStatus.getRawValue().attachment != null) {
-      this.message.error('最多上传1个文件');
+    if (this.orderInfoStatus.getRawValue().attachment.length >= 5) {
+      this.message.error('最多上传5个文件');
       return false;
     }
     console.log('before upload', file);
@@ -289,8 +271,8 @@ export class CancelOrderComponent implements OnInit {
       this.modal.confirm({
         nzTitle: `确定移除文件${name}?`,
         nzOnOk: () => {
-          // const curFileIds = this.orderInfoStatus.get('attachment').value as String[]
-          this.orderInfoStatus.patchValue({ attachment: null })
+          const curFileIds = this.orderInfoStatus.get('attachment').value as String[]
+          this.orderInfoStatus.patchValue({ attachment: curFileIds.filter((fileId) => fileId !== response.fileId) })
           observer.next(true)
         },
         nzOnCancel: () => {

@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ViewChild } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, OnChanges, SimpleChanges } from '@angular/core';
 import {FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
 
 import { Hospital, SelectHospitalComponent, } from '../../select-hospital/select-hospital.component'
@@ -57,7 +57,7 @@ interface Sales {
     ])
   ]
 })
-export class TransferLibComponent implements OnInit {
+export class TransferLibComponent implements OnInit, OnChanges {
 
   constructor(
     protected spService: SpecialApprovalService,
@@ -77,6 +77,7 @@ export class TransferLibComponent implements OnInit {
   @Input() applyType: string
   @Input() applyItem: string
   @Input() bmcs = []
+  @Input() showFeedbackTab = false;
 
   APPLY_TYPE = APPLY_TYPE
   searchChange$ = new BehaviorSubject('');
@@ -582,6 +583,15 @@ export class TransferLibComponent implements OnInit {
           return true
         }
         return false
+    }
+  }
+
+  //监测 @Input值的变化
+  ngOnChanges(changes: SimpleChanges): void {
+    //是否是反馈信息节点
+    if (changes.showFeedbackTab && changes.showFeedbackTab.currentValue) {
+      this.orders.at(1).get('actualSaleDate').enable();
+      this.orders.at(1).get('actualSaleDate').setValidators([Validators.required]);
     }
   }
 

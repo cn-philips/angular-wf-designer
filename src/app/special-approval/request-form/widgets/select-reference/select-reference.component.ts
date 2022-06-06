@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { NzMessageService} from 'ng-zorro-antd';
 
 import { SpecialApprovalService } from '../../../special-approval.service'
@@ -52,17 +52,31 @@ export class SelectReferenceComponent implements OnInit {
   tableData = DEFAULT_TABLE_DATA
   searchParams = DEFAULT_SEARCH_PARAMS
   businessModelMap = BUSINESS_MODEL_MAP
-
   orderTypes = ORDER_TYPES
 
   @Output() select: EventEmitter<Reference> = new EventEmitter()
   @Output() cancelModal: EventEmitter<any> = new EventEmitter()
+
+  @Input() isMultipleSelect: boolean = false;
+  @Input() defaultOrderType: string;
+  @Output() selectMultiple: EventEmitter<Reference[]> = new EventEmitter()
+
+  selectReferenceList: Reference[] = [];
 
   constructor(private spService: SpecialApprovalService, private message: NzMessageService) { }
   needCreateUser: boolean
   moneyHide: boolean
   ngOnInit(): void {
     this.onHideModal();
+    this.searchParams =  {
+      pageNo: 1,
+      pageSize: 5,
+      orderType: this.defaultOrderType ? this.defaultOrderType : null,
+      sap: null,
+      referenceId: null,
+      endUser: null,
+      distributor: null,
+    }
   }
 
 
@@ -92,7 +106,7 @@ export class SelectReferenceComponent implements OnInit {
     this.searchParams =  {
       pageNo: 1,
       pageSize: 5,
-      orderType: null,
+      orderType: this.defaultOrderType ? this.defaultOrderType : null,
       sap: null,
       referenceId: null,
       endUser: null,
@@ -109,4 +123,19 @@ export class SelectReferenceComponent implements OnInit {
     this.select.emit(reference)
     this.onHideModal()
   }
+
+  onSelectMultipleReference() {
+    this.selectMultiple.emit(this.selectReferenceList)
+    this.selectReferenceList = []
+    this.onHideModal()
+  }
+
+  refreshStatus(status, reference): void {
+    if(status){
+      this.selectReferenceList.push(reference);
+    } else if(!status) {
+      this.selectReferenceList = this.selectReferenceList.filter(val => reference !== val)
+    }
+  }
+
 }

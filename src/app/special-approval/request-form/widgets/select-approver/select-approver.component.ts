@@ -173,16 +173,20 @@ export class SelectApproverComponent implements OnInit {
     }
   }
 
-  formatApprover(approverList: Approver[]) {
+  formatApprover(approverList: Approver[], initiator) {
     const approvers = approverList.map(({ user, role }) => {
-      if (role) {
-        if (user) {
-          return `系统角色-${role}(${user})`;
-        } else {
-          return `系统角色-${role}`;
-        }
+      if (initiator) {
+        return `申请人-${user}`;
       } else {
-        return `指定用户-${user}`;
+        if (role) {
+          if (user) {
+            return `系统角色-${role}(${user})`;
+          } else {
+            return `系统角色-${role}`;
+          }
+        } else {
+          return `指定用户-${user}`;
+        }
       }
     });
     return approvers;
