@@ -112,13 +112,13 @@
         <nz-form-label [nzSm]="5" [nzXs]="24" nzFor="email">Other Document<br> 其它文件</nz-form-label>
         <nz-form-control [nzSm]="7" [nzXs]="24"style="margin-top: 15px">
           <div class="flex">
-            <nz-upload [(nzFileList)]="otherList" [nzBeforeUpload]="otherBeforeUpload" [nzLimit]="1"
+            <nz-upload *ngIf="!disas" [(nzFileList)]="otherList" [nzBeforeUpload]="otherBeforeUpload" [nzLimit]="1"
               [nzRemove]="nzRemoveOther" [nzPreview]="dwonLoad">
               <button [disabled]="disas" nz-button><i nz-icon nzType="upload"></i><span>Upload 上传附件</span></button>
             </nz-upload>
           </div>
-          <!-- <button *ngIf="(flag == 1&&oitInfor.other)||(this.status!='DOITWJSC'&&oitInfor.other)" nz-tooltip [nzTitle]="oitInfor.otherNames" class="down link-tesk" nz-button nzType="link"
-          (click)="fileDwon(oitInfor.other)">{{oitInfor.otherNames?oitInfor.otherNames:"文件下载"}}</button> -->
+          <button *ngIf="disas" nz-tooltip [nzTitle]="oitInfor.otherNames" class="down link-tesk" nz-button nzType="link"
+          (click)="fileDwon(oitInfor.other)">{{oitInfor.otherNames?oitInfor.otherNames:"文件下载"}}</button>
         </nz-form-control>
       </nz-form-item>
     </div>

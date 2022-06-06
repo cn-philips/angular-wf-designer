@@ -64,7 +64,7 @@ export class OitcompleteComponent implements OnInit {
     private aRoute: ActivatedRoute,
     private message: NzMessageService,
   ) {
-    
+
    }
 //oit完成查询接口
 public getFormDetails(id) {
@@ -72,8 +72,8 @@ public getFormDetails(id) {
     this.http.get(`/act/preparation/oitCheck?mainId=${id}`).subscribe(res => {
 
       if (res.code === '0000') {
-             
-        this.oitInfor.logisticsTime=res.data.logisticsTime; 
+
+        this.oitInfor.logisticsTime=res.data.logisticsTime;
         reslove(res.data)
       } else {
         this.message.create('error', res.msg);
@@ -81,7 +81,7 @@ public getFormDetails(id) {
     });
   })
 }
-  
+
   // 审批记录
   getTableData() {
     return new Promise((resolve, reject) => {
@@ -89,31 +89,33 @@ public getFormDetails(id) {
         mainBusinessID: decodeString(this.activatedRouter.queryParams['_value'].id),
       };
       this.http.post(`/act/process/getProcessWorkHisInfo`, params).subscribe(rest => {
-        if (rest.code === '0000') {          
+        if (rest.code === '0000') {
           let listOfData =  rest.data.reverse();
-          let roleList=JSON.parse(localStorage.getItem("roles"));         
-          let roleOff=roleList.some(val=>val=='OA');
+          let roleList=JSON.parse(localStorage.getItem("roles"));
+          let roleOff=roleList.some(val=>val=='OA'||val=='OA Leader');
           if (roleOff) {
-            let user = localStorage.getItem("roleAgents");
-            let owner=listOfData.filter(vals=>user.indexOf(vals.assignee)>-1);  
-            this.disas = (owner&&owner.length>0&&this.status!='change_oit_approval'&&this.status!='change_oit') ? false : true;
+            // let user = localStorage.getItem("roleAgents");
+            // let owner=listOfData.filter(vals=>user.indexOf(vals.assignee)>-1);
+            this.disas = (this.status!='change_oit_approval'&&this.status!='change_oit') ? false : true;
           }
-          
+
           if (!this.disas) {
              if(this.oitInfor.supportFile)
              {
-              
+
               this.debookFlag = true;
               this.rebookFlag = true;
               this.isCancelFlag = true;
               this.validateForm.controls.deBookDate.disable();
               this.validateForm.controls.reBookDate.disable();
+              this.validateForm.controls.logistician.disable();
              }
              else
              {
                 this.rebookFlag = false;
                 this.debookFlag = false;
                 this.isCancelFlag = false;
+               this.validateForm.controls.logistician.enable();
                 if (this.oitInfor.deBook == '1') {
                   this.debookFlags = true;
                   this.debookFlag = true;
@@ -135,6 +137,7 @@ public getFormDetails(id) {
             this.rebookFlag = true;
             this.debookFlag = true;
             this.isCancelFlag=true;
+            this.validateForm.controls.logistician.disable();
           }
         } else {
           this.message.create('error', `${rest.msg}`);
@@ -160,12 +163,12 @@ public getFormDetails(id) {
     }
   }
   //更新附件的方法
-  updata() {    
+  updata() {
     this.oitInfor.mainId = decodeString(this.activatedRouter.queryParams['_value'].id);
     this.oitInfor.logisticsTime && (this.oitInfor.logisticsTime = formatDatesNowMth(this.oitInfor.logisticsTime))
     if(this.oitInfor.isCancel=='1')
     {
-      
+
       if (this.oitInfor.supportFile == '' || this.oitInfor.supportFile == undefined || this.oitInfor.supportFile == null) {
         this.message.create("error", "请上传支持文件");
         return
@@ -178,7 +181,7 @@ public getFormDetails(id) {
       this.oitInfor.supportFile="";
       this.oitInfor.cancelTime=null;
     }
-    let url = "/act/preparation/oitUploadDeBook";       
+    let url = "/act/preparation/oitUploadDeBook";
     if (this.oitInfor.deBook == '1') {
       if (this.oitInfor.deBookDate == '' || this.oitInfor.deBookDate == undefined || this.oitInfor.deBookDate == null) {
         this.message.create("error", "De-book日期");
@@ -190,7 +193,18 @@ public getFormDetails(id) {
         this.message.create("error", "re-book日期");
         return
       }
-    }    
+    }
+    // 提交下拉人员
+    if (this.oitInfor.logistician) {
+      this.oitInfor.expertList = [];
+      const usrArr = this.oitInfor.oMlist.find(res => this.oitInfor.logistician == res.email);
+      const obj = {
+        name: usrArr.name,
+        userId: usrArr.id,
+        email: usrArr.email
+      };
+      this.oitInfor.expertList.push(obj);
+    }
     this.load = true;
     this.http.post(url, this.oitInfor).subscribe((res => {
       this.load = false;
@@ -306,7 +320,7 @@ public getFormDetails(id) {
       this.message.create('error', '文件大小不超过100M');
       return false;
     }
-    // this.upload('otherList', file, 'other');   
+    // this.upload('otherList', file, 'other');
     let upLoadFilesNow = upLoadFiles.bind(this)
     upLoadFilesNow('otherList', file).then(vals => {
       let fileList = [];
@@ -364,9 +378,9 @@ public getFormDetails(id) {
     {
       if(this.dataBase.hsId)
       {
-        this.validateForm.controls.logisticsTime.disable();  
-        this.getFormDetails(this.dataBase.hsId);   
-      }      
+        this.validateForm.controls.logisticsTime.disable();
+        this.getFormDetails(this.dataBase.hsId);
+      }
     }
   }
   ngOnInit() {
@@ -389,9 +403,9 @@ public getFormDetails(id) {
       cancelTime:new FormControl({ value: '', disabled:true})
     });
     this.getTableData();
-   
+
   }
-  public gotoOit(item) {   
+  public gotoOit(item) {
     console.log(location.origin + environment.base_href + '/#/' + 'completeOit?id=' + codeString(item.lastMainId) + '&flag=1'+'&status=OITEND');
     window.open(location.origin + environment.base_href + '/#/' + 'completeOit?id=' + codeString(item.lastMainId) + '&flag=1'+'&status=OITEND');
   }
@@ -451,5 +465,5 @@ public getFormDetails(id) {
     // let newDate=`${year}-${months}`;
     return differenceInCalendarDays(current, this.oitInfor.deBookDate) < 0
   };
-  
+
 }
