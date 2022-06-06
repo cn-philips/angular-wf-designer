@@ -1,16 +1,16 @@
 import { Component, OnInit, Input, ViewChild, OnChanges, SimpleChanges } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
-import { BG_LIST, BUSINESS_MODEL, BUSINESS_MODEL_LIST, CURRENCIES, FIELD_STATUS_LIST, FIELD_STATUS_OTHER, PAYMENT_METHOD_LIST } from '../../../../special-approval.constants'
+import { ORDER_TYPES, BUSINESS_MODEL, BUSINESS_MODEL_LIST, CURRENCIES, FIELD_STATUS_LIST, FIELD_STATUS_OTHER, PAYMENT_METHOD_LIST } from '../../../../special-approval.constants'
 import { SpecialApprovalService } from '../../../../special-approval.service'
 import { Dealer, SelectDealerComponent } from '../../select-dealer/select-dealer.component';
 
 @Component({
-  selector: 'special-approval-coo-us-order-info',
-  templateUrl: 'coo-us.component.html',
-  styleUrls: ['./cos-us.component.scss']
+  selector: 'special-approval-coo-pdigt-order-info',
+  templateUrl: 'coo-pdigt.component.html',
+  styleUrls: ['./cos-pdigt.component.scss']
 })
 
-export class CooUsOrderInfoComponent implements OnInit, OnChanges {
+export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
 
   originOrderInfo = {}
   originCooInfo = {}
@@ -31,20 +31,30 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
   showSelectDealerBtn = false
 
   orderInfo = this.fb.group({
+    orderType: [null, [Validators.required]], // 订单类型
+    referenceId: [{ value: null, disabled: true }], // Reference Id
     productType: [{ value: null, disabled: true }], // 产品型号
     bmc: [null, [Validators.required]], // 产品线
-    bg: [{ value: 'US', disabled: true }], // BG
+    bg: [{ value: 'PD&IGT', disabled: true }], // BG
     cycleGroup: [null], // Cycle Group
     bigArea: [null], // 大区
     businessModel: [null, [Validators.required]], // 业务模式
+    dealerName: [{ value: null, disabled: true }], // 经销商名称
+    dealerCode: [{ value: null, disabled: true }], // 经销商编号
+    hospitalName: [{ value: null, disabled: true }], // 医院名称
+    hospitalNo: [{ value: null, disabled: true }], // 医院编号
+    foreignCompany: [null], // 外贸公司
+    foreignCompanyNo: [null], // 外贸公司编号
     sapOrderNo: [null, [Validators.required]], // SAP订单号
+    orderAmount: [null, [Validators.required]], // 合同金额-数额
+    currency: [null, [Validators.required]], // 合同金额-货币
     om: [null], // OM
-    products: this.fb.array([], [Validators.required]),
-    contractNo: [null], // 合同号
-    currency: [null], // 币制
-    shipToName: [null], // ship-to name
+    cooSign: [null, [Validators.required]], // COO签署方
+    contractBuyer: [null, [Validators.required]], // 合同买方
+    philipsName: [null, [Validators.required]], // 飞利浦实体名称
+    contractNo: [null, [Validators.required]], // 合同号
     paymentMethod: [null], // 付款方式
-    paymentReceived: [null], // 全款是否已经收到
+    products: this.fb.array([], [Validators.required]), // 产品列表
     cooProduct: this.fb.group({
       cipPort: [null], // 是否为CIP港口
       airTransportNo: [null], // POD扫描件/空运单
@@ -54,35 +64,26 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
       customsClearancePort: [null], // 清关口岸中文
       customsClearancePortEn: [null], // 清关口岸英文
     }),
-    dealerName: [{ value: null, disabled: true }], // 经销商名称
-    dealerCode: [{ value: null, disabled: true }], // 经销商编号
+    shipToName: [null], // ship-to name
+    paymentReceived: [null], // 全款是否已经收到
+    receivedAmount: [null], // 已收金额
     purchaseOrderNo: [null], // 采购订单
+    purchaseAgreement: [null], // 买卖协议
   })
 
   cooInfo = this.fb.group({
-    isBid: [null, [Validators.required]], // 是否中标
-    pending: [null], // 目前pending环节
-    expectedBiddingDate: [null], // 预计招标月份
-    losingOrders: [null], // 丢单风险
-    expectedNewUserDate: [null], // 如丢单，预计寻得新用户月份
-    fieldStatus: [null, [Validators.required]], // 场地状态
-    fieldStatusExplain: [null], // 场地状态-补充说明
-    newOrOldHospital: [null, [Validators.required]], // 新建医院还是老医院新院区
-    expectedFieldDate: [null, [Validators.required]], // 预计场地就位日期
-    planIcfDate: [null, [Validators.required]], // 计划ICF时间
     installationOrDispatch: [null, [Validators.required]], // 是否已装机或派单
     threeMonthsAfterArrival: [null, [Validators.required]], // 是否到货>3个月
     cooSignedNotIcf: [null, [Validators.required]], // 经销商是否为COO签署12个月内未签回ICF
     specialApproval: [null, [Validators.required]], // 是否需要特批
     applySignedDate: [null], // 申请签署日期
     cooConfirmationLetterDraft: [null], // COO确认函草稿
-    airTransportNoDealer: [null], // 经销商盖章后的空运单
     cooConfirmationLetterDealer: [null], // 经销商盖章后的COO确认函
     cooConfirmationLetterSign: [null], // 双签后的COO确认函
   })
 
   selectOptions = {
-    bgList: BG_LIST,
+    orderTypes: ORDER_TYPES,
     businessModels: BUSINESS_MODEL_LIST,
     oms: [],
     currencies: CURRENCIES,
@@ -347,18 +348,15 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
 
   createProduct() {
     return this.fb.group({
-      wbsNo: [null, [Validators.required]], // 订单WBS#
-      itemNo: [null, [Validators.required]], // Item#
+      productType: [null, [Validators.required]], // 产品型号
       quantity: [null, [Validators.required]], // 数量
-      productType: [null], // 产品型号
+      wbsNo: [null], // 订单WBS#
+      itemNo: [null], // Item#
+      equipmentSn: [null], // 设备SN号
       orderDate: [null], // 进单日期
       productionDate: [null], // 出厂日期
       arrivalDate: [null], // 到货日期
       goodsDeliveryDate: [null], // 货物送达日期
-      equipmentSn: [null], // 设备SN号
-      equipmentDescription: [null], // 设备名称和描述中文
-      equipmentDescriptionEn: [null], // 设备名称和描述英文
-      guaranteeMonth: [null], // 保修期
     })
   }
 

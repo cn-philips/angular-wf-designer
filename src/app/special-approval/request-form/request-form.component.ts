@@ -21,7 +21,9 @@ import { SelectApproverComponent } from './widgets/select-approver/select-approv
 import { RddOitOrderInfoComponent } from './widgets/order-info/rdd-oit/rdd-oit.component';
 import { MachineComponent } from './widgets/order-info/machine/machine.component';
 import { DeBookComponent } from './widgets/order-info/de-book/de-book.component';
+import { LastbuyComponent } from './widgets/order-info/lastbuy/lastbuy.component'
 import { CooUsOrderInfoComponent } from './widgets/order-info/coo-us/coo-us.component'
+import { CooPdIgtOrderInfoComponent } from './widgets/order-info/coo-pdigt/coo-pdigt.component'
 
 enum TAB_TYPE {
   BASIC_INFO = 'basic-info',
@@ -50,6 +52,7 @@ export class RequestFormComponent implements OnInit {
   @ViewChild('machineExchange') public machineExchange: MachineComponent;
   @ViewChild('deBookOrderInfo') public deBookInfo: DeBookComponent;
   @ViewChild('cooUsOrderInfo') public cooUsOrderInfo: CooUsOrderInfoComponent;
+  @ViewChild('cooPdIgtOrderInfo') public cooPdIgtOrderInfo: CooPdIgtOrderInfoComponent;
 
   @ViewChild('lastBuyOrderInfo') public lastBuyOrderInfo: LastbuyComponent;
 
