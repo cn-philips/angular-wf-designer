@@ -205,7 +205,7 @@
                 <nz-form-control nzXs="24" nzSm="24" nzMd="14">
                   <nz-input-group style="width: 100%;font-size: 0;">
                     <nz-select formControlName="cycleGroup" style="width: 100%;margin-right:4%"
-                      nzPlaceHolder="Team/Cycle Group" (ngModelChange)="onBigAreaChange($event, index)">
+                      [nzPlaceHolder]="editable?'Team/Cycle Group' : ''" (ngModelChange)="onBigAreaChange($event, index)">
                       <nz-option *ngFor="let item of spService.cycleGroups" [nzLabel]="item.label"
                         [nzValue]="item.value"></nz-option>
                       <nz-option *ngIf="spService.cycleGroups.length === 0" nzLabel="请先选择Team/Cycle Group"
@@ -234,7 +234,7 @@
                         nzLabel="请先选择Team/Cycle Group" [nzDisabled]="true"></nz-option>
                     </nz-select>
                   </nz-input-group>
-                  <input nz-input formControlName="bigArea" style="width: 100%" placeholder="Region" *ngIf="!editable">
+                  <input nz-input formControlName="bigArea" style="width: 100%" *ngIf="!editable">
                   <div style="display: flex;">
                     <nz-form-explain style="width: 100%"
                       *ngIf="ord.get('bigArea')?.dirty && ord.get('bigArea')?.errors">

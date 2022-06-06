@@ -43,8 +43,8 @@ export class MyViewFormComponent implements OnInit {
     preBookReport: false
   };
   public nzLoading=false;
-  public isOA = false;
-  public isOALeader = false;
+  // public isOA = false;
+  // public isOALeader = false;
   value: string;
   selectedValue = null;
   validateForm: FormGroup;
@@ -199,17 +199,17 @@ export class MyViewFormComponent implements OnInit {
       oitDateEnd: this.searchConditions.oitDateEnd,
       teams: this.searchConditions.teams,
     });
-    const roleCode = JSON.parse(localStorage.getItem('roles'));
-    if (roleCode) {
-      roleCode.map(e => {
-        if (e === 'OA' || e === 'OA Leader') {
-          this.isOA = true;
-        }
-        if (e === 'OA Leader') {
-          this.isOALeader = true;
-        }
-      });
-    }
+    // const roleCode = JSON.parse(localStorage.getItem('roles'));
+    // if (roleCode) {
+    //   roleCode.map(e => {
+    //     if (e === 'OA' || e === 'OA Leader') {
+    //       this.isOA = true;
+    //     }
+    //     if (e === 'OA Leader') {
+    //       this.isOALeader = true;
+    //     }
+    //   });
+    // }
     // if (roleCode === 'OA' || roleCode === 'OA Leader') {
     //   this.isOA = true;
     // }

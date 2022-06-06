@@ -264,7 +264,7 @@ export class RequestFormComponent implements OnInit {
       products: [[]],
       arrivalDate: [null], // 到货日期
       actualPaymentDate: [{ value: null, disabled: true }], // 实际付款日期（未付款）
-      actualSitePlaceDate: [{ value: null, disabled: true }], // 实际场地就位日期（场地未好） 
+      actualSitePlaceDate: [{ value: null, disabled: true }], // 实际场地就位日期（场地未好）
       actualSaleDate: [{ value: null, disabled: true }], // 实际记认销售日期
     }),
     rddOitOrderInfos: [[{ isMain: true }]],
@@ -1100,7 +1100,7 @@ export class RequestFormComponent implements OnInit {
           return
         } else {
           for (let i = 0; i < difference.length; i++) {
-            if (!difference[i].configDetail || !difference[i].transferOut || !difference[i].transferIn || !difference[i].handlePlan || difference[i].cost == null) {
+            if (!difference[i].configDetail || !difference[i].transferOut || !difference[i].transferIn || !difference[i].handlePlan || !difference[i].cost !== null) {
               this.message.error('请完整填写差异信息')
               return
             }
