@@ -95,6 +95,8 @@
         <special-approval-order-replacement-info *ngIf="applyType === APPLY_TYPE.ORDER_REPLACEMENT"
           [editable]="editable" [baseInfo]="basicInfo" [formValues]="orderReplacementInfo">
         </special-approval-order-replacement-info>
+        <special-approval-coo-us-order-info [editable]="editable" #cooUsOrderInfo *ngIf="applyType === APPLY_TYPE.COO_US">
+        </special-approval-coo-us-order-info>
       </div>
     </ng-template>
   </ngb-tab>
