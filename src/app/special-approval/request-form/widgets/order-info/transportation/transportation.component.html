@@ -36,7 +36,7 @@
         <nz-form-item>
           <nz-form-label nzXl="8" nzXXl="6">产品型号</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <input type="text" nz-input formControlName="productType" disabled />
+            <input type="text" nz-input formControlName="productType" disabled [title]="formValues.get('productType').value" />
           </nz-form-control>
         </nz-form-item>
       </div>
@@ -107,7 +107,7 @@
           <nz-form-label nzXl="8" nzXXl="6">经销商名称</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <nz-input-group style="width: 100%" [nzSuffix]="clearDealerBtn" [nzAddOnAfter]="selectDealerBtn">
-              <input id="dealerName" type="text" nz-input formControlName="dealerName" [placeholder]="editable ? '点击右侧按钮选择经销商' : ''" />
+              <input id="dealerName" type="text" nz-input formControlName="dealerName" [title]="formValues.get('dealerName').value" [placeholder]="editable ? '点击右侧按钮选择经销商' : ''" />
             </nz-input-group>
             <ng-template #clearDealerBtn>
               <i nz-icon nz-tooltip class="ant-input-clear-icon" nzTheme="fill" nzType="close-circle" *ngIf="formValues.get('dealerCode').value && editable"></i>
@@ -136,7 +136,7 @@
           <nz-form-label nzXl="8" nzXXl="6">医院名称</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <nz-input-group style="width: 100%" [nzSuffix]="clearHospitalBtn" [nzAddOnAfter]="selectHospitalBtn">
-              <input id="hospitalName" type="text" nz-input formControlName="hospitalName" [placeholder]="editable ? '点击右侧按钮选择医院' : ''" />
+              <input id="hospitalName" type="text" nz-input formControlName="hospitalName" [title]="formValues.get('hospitalName').value" [placeholder]="editable ? '点击右侧按钮选择医院' : ''" />
             </nz-input-group>
 
             <ng-template #clearHospitalBtn>
@@ -165,7 +165,7 @@
         <nz-form-item>
           <nz-form-label nzXl="8" nzXXl="6" [nzRequired]="bg.value === 'PD&IGT'" nzFor="projectName">项目名称</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <input id="projectName" nz-input formControlName="projectName" [placeholder]="bg.value === 'PD&IGT' ? '' : '自动生成: 医院名称-产品型号'" maxlength="300" />
+            <input id="projectName" nz-input formControlName="projectName" [placeholder]="bg.value === 'PD&IGT' ? '' : '自动生成: 医院名称-产品型号'" [title]="formValues.get('projectName').value" maxlength="300" />
             <nz-form-explain *ngIf="formValues.get('projectName')?.dirty && formValues.get('projectName')?.errors && bg.value === 'PD&IGT'">
               请填写项目名称
             </nz-form-explain>
