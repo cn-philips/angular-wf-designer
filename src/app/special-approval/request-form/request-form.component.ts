@@ -930,6 +930,11 @@ export class RequestFormComponent implements OnInit {
         data.cooInfo = cooInfo
         data.orderInfos = orderInfos
         break
+      case APPLY_TYPE.COO_PDIGT:
+        const cooPdIgtData = this.cooPdIgtOrderInfo.getData()
+        data.cooInfo = cooPdIgtData.cooInfo
+        data.orderInfos = cooPdIgtData.orderInfos
+        break
       case APPLY_TYPE.PRE_BOOK_LASTBUY:
         data.orderInfos = []
         let lastBuySaps = []
@@ -1185,7 +1190,10 @@ export class RequestFormComponent implements OnInit {
         }
         hasError = this.basicInfo.invalid || this.noneDirectOrderInfo.invalid
         break
-
+      case APPLY_TYPE.COO_PDIGT:
+        const isCooPdIgtValid = this.cooPdIgtOrderInfo.validate()
+        hasError = this.basicInfo.invalid || !isCooPdIgtValid
+        break
       default:
         for (const i in this.orderInfo.controls) {
           this.orderInfo.controls[i].markAsDirty();
@@ -1401,6 +1409,9 @@ export class RequestFormComponent implements OnInit {
         case APPLY_TYPE.COO_US:
           hasError = !this.cooUsOrderInfo.validate()
           break
+        case APPLY_TYPE.COO_PDIGT:
+          hasError = !this.cooPdIgtOrderInfo.validate()
+          break
         default:
           break
       }
@@ -1457,6 +1468,9 @@ export class RequestFormComponent implements OnInit {
           break
         case APPLY_TYPE.COO_US:
           hasError = !this.cooUsOrderInfo.validate()
+          break
+        case APPLY_TYPE.COO_PDIGT:
+          hasError = !this.cooPdIgtOrderInfo.validate()
           break
         default:
           break
@@ -1664,6 +1678,13 @@ export class RequestFormComponent implements OnInit {
          const intervalId = setInterval(() => {
           if(this.cooUsOrderInfo) {
             this.cooUsOrderInfo.initData(data)
+            clearInterval(intervalId)
+          }
+        }, 1000)
+      } else if (applyType === APPLY_TYPE.COO_PDIGT) {
+        const intervalId = setInterval(() => {
+          if(this.cooPdIgtOrderInfo) {
+            this.cooPdIgtOrderInfo.initData(data)
             clearInterval(intervalId)
           }
         }, 1000)
