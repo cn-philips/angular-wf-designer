@@ -2288,6 +2288,9 @@ export class PreOrderBaseInfoComponent implements OnInit {
       sameFlag: new FormControl({ value: 'Nancy', disabled: this.disa }, null), // 外贸公司是否与经销商相同
       contractSignatory: new FormControl({ value: 'Nancy', disabled: this.disa }, Validators.required), // 合同签署人
       contractSignatoryPost: new FormControl({ value: 'Nancy', disabled: this.disa }, Validators.required), // 合同签署人职务
+      marketBundleQuantity: new FormControl({ value: 'Nancy', disabled: true }, null),
+      sofonNo: new FormControl({ value: 'Nancy', disabled: this.disa }, Validators.required),
+      switchValid:new FormControl({value:''})
     });
     //this.dataBase.sameFlag = '0';
     // if (this.dataBase.detail.status === '' || this.showChek === false) {
@@ -3063,5 +3066,127 @@ export class PreOrderBaseInfoComponent implements OnInit {
       }
       (this.dataBase.supportFileMissing == '1' && !flag) && this.validateForm.controls.supportFileMissing.enable();
     }
+  }
+  public upmode = true;
+
+  public switchValid = true;
+
+  //   sofon文件选择框
+  public isVisible = false;
+  public isVisibleSofon: boolean = false;
+
+  // tslint:disable-next-line:variable-name
+  public configFile_ClassType: String = '/simulationConf';
+  // tslint:disable-next-line:variable-name
+  public sofonFile_ClassType: String = '/SofonOAReturnDoc,SofonOAReturnXml';
+  public sonfonFile:any=[];
+
+  public files: any = {
+    thelist: []
+  };
+  public fileChecked: String[]; // 选中的文件数组
+  public changeupmode(mode): void {
+    this.upmode = !mode;
+    this.dataBase.sofonName = '';
+    this.dataBase.sofonNames = '';
+    this.dataBase.sofonNameFileList = [];
+  }
+  @ViewChild('tranfSingle')tranfSingle; //调用Sofon
+  // 对话框事件方法
+  public showModal(): void {
+    this.isVisible = true;
+    this.getfilelist();
+  }
+  log(value: string[]): void {
+    this.fileChecked = value;
+  }
+  public getfilelist() {
+    const dealFormId = this.dataBase.dealFormId;
+    if (dealFormId != '' && dealFormId != undefined && dealFormId != null) {
+      this.http.get(`/act/preparation/getAttachmentFromCP/` + dealFormId + this.sofonFile_ClassType).subscribe((res => {
+        for (let i = 0; i < res.data.length; i++) {
+          this.files.thelist[i] = res.data[i];
+        }
+      }), error => {
+
+      });
+    } else {
+      this.message.create('error', '请先查询dealFormId');
+    }
+  }
+  // 上传sofon文件
+  public sofonNameBeforeUpload = (file: UploadFile): boolean => {
+    const isLt2M = file.size / 1024 / 1024 < 100; // 文件大小不超过100M
+    const fileType = getType(file);
+    if (fileType === 'exe' || fileType === 'bat') {
+      this.message.create('error', '上传文件格式错误!');
+      return false;
+    }
+    if (!isLt2M) {
+      this.message.create('error', '文件大小不超过100M');
+      return false;
+    }
+    this.upload('sofonNameFileList', file, 'sofonFile');
+    return false;
+  }
+  // 删除sofon文件
+  public nzRemovsofonName = (file: UploadFile): any => {
+    this.dataBase.sofonFile = '';
+    return true;
+  }
+  public handleCancelSofon(): void {
+    this.isVisibleSofon = false;
+  }
+  public handleOkSofon(): void {
+
+    if(this.tranfSingle.checkOptionsOne.length<1)
+    {
+      this.message.create('warning', '请选择Sofon文件');
+      return;
+    }
+    this.dataBase.sofonName = this.tranfSingle.checkOptionsOne[0].sofonFile;
+    this.dataBase.sofonNameurl = this.tranfSingle.checkOptionsOne[0].sofonFileUrl;
+    this.tranfSingle.radioValue = '1';
+    this.tranfSingle.checkOptionsOne = [];
+    this.isVisibleSofon = false;
+  }
+  handleCancel(): void {
+    this.isVisible = false;
+  }
+  handleOk(): void {
+    // 只选一个文件时不打包
+    if (this.fileChecked != null && this.fileChecked.length == 1){
+      this.http.get('/act/system/upload/cp/' + this.fileChecked[0]).subscribe((res1 => {
+        if (res1.code == '0000') {
+          // this.uploadZipFileName = res1.data.FileName;
+          this.dataBase.sofonFileName = res1.data.FileName;
+          this.dataBase.sofonFile = res1.data.FileId;
+          this.message.create('success', '文件上传成功！');
+        }
+      }), error => {
+        this.message.create('error', '文件上传失败！');
+      });
+
+      this.isVisible = false;
+    }// 多选文件打包
+    else if (this.fileChecked != null && this.fileChecked.length > 1) {
+      // ======================================  上传sofon文件
+      this.http.post('/act/system/upload/cp', this.fileChecked).subscribe((res1 => {
+        if (res1.code == '0000') {
+          // this.uploadZipFileName = res1.data.FileName;
+          this.dataBase.sofonFileName = res1.data.FileName;
+          this.dataBase.sofonFile = res1.data.FileId;
+          this.message.create('success', '文件上传成功！');
+        }
+      }), error => {
+        this.message.create('error', '文件上传失败！');
+      });
+
+
+      this.isVisible = false;
+    }else {
+      this.message.create('error', '请选择文件！');
+    }
+
   }
 }

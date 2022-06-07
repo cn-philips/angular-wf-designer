@@ -205,6 +205,9 @@ export class InorderComponent implements OnInit {
           this.dataBase.contractCancelReferenceId= res.data.contractCancelReferenceId;
           this.dataBase.contractCancelMainId= res.data.contractCancelMainId;
           this.dataBase.preparationProductCompany = res.data.preparationProductCompany;
+          this.dataBase.sofonFileNames = res.data.sofonFileName; // 名字
+          this.dataBase.finalSofonQuotation = res.data.sofonNo; // finalSofonQuotation
+          this.dataBase.marketBundleQuantity = res.data.marketBundleQuantity; // 台数
           this.infor.detail = {
             id: '',
             flag: '',
@@ -265,12 +268,12 @@ export class InorderComponent implements OnInit {
 
         this.dataBase.relationshipLink = rest.data.businessOpportunityHierarchyLink // 商机层级关系链接
         this.dataBase.sofonFile = rest.data.sofonFile;//sofonFile
-        this.dataBase.sofonFileNames = rest.data.sofonFileNames;//名字
+        // this.dataBase.sofonFileNames = rest.data.sofonFileNames;//名字
         this.dataBase.countryOrigin = rest.data.countryOrigin?rest.data.countryOrigin:"" // 原产地中文
         this.dataBase.medicalDeviceName=rest.data.medicalDeviceName;//医疗器械名称
         this.dataBase.nmpaRegistrationExpried=rest.data.nmpaRegistrationExpried;//NMPA证有效期截止日期
         this.dataBase.countryOriginEn=rest.data.countryOriginEn?rest.data.countryOriginEn:"" //原产地英文
-        this.dataBase.finalSofonQuotation=rest.data.sofonNo //finalSofonQuotation
+        // this.dataBase.finalSofonQuotation=rest.data.sofonNo //finalSofonQuotation
         this.dataBase.tradeList = rest.data.cosOppTradeIns!=null&&rest.data.cosOppTradeIns.length>0?rest.data.cosOppTradeIns:[{name:"",costs1:""}]; // tradeIn
         this.dataBase.warrantyList = rest.data.cosOppExtendedWarranties!=null&&rest.data.cosOppExtendedWarranties!=""&&rest.data.cosOppExtendedWarranties.length>0?rest.data.cosOppExtendedWarranties:[] // 延长保修
         this.dataBase.productList = rest.data.cosOppThirdParties!=null&&rest.data.cosOppThirdParties!=""&&rest.data.cosOppThirdParties.length>0?rest.data.cosOppThirdParties:[] // 第三方
