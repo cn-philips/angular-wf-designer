@@ -89,12 +89,12 @@
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <nz-input-group style="width: 100%;font-size: 0;">
               <nz-select formControlName="cycleGroup" style="width: 48%;margin-right:4%"
-                nzPlaceHolder="Team/Cycle Group" (ngModelChange)="onCycleGroupChange()">
+                [nzPlaceHolder]="editable ? 'Team/Cycle Group' : ''" (ngModelChange)="onCycleGroupChange()">
                 <nz-option *ngFor="let item of spService.cycleGroups" [nzLabel]="item.label" [nzValue]="item.value">
                 </nz-option>
               </nz-select>
 
-              <nz-select formControlName="bigArea" style="width: 48%" nzPlaceHolder="Region">
+              <nz-select formControlName="bigArea" style="width: 48%" [nzPlaceHolder]="editable ? 'Region' : ''">
                 <nz-option *ngFor="let item of bigAreas" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
                 <nz-option *ngIf="bigAreas.length === 0" nzLabel="请先选择Team/Cycle Group" [nzDisabled]="true"></nz-option>
               </nz-select>
@@ -495,9 +495,12 @@
           </div>
 
           <div nz-col nzXs="24" nzSm="24" nzMd="12" *ngIf="isSupplementNode">
-            <nz-alert nzType="info" nz-tooltip nzTitle="点击跳转" style="cursor:pointer;"
-              nzMessage="取消合同模板地址:{{cancelContractLink.label}} 密码:{{cancelContractLink.value}}"
-              (click)="openLink(cancelContractLink.label)"></nz-alert>
+            <nz-alert nzType="info" [nzMessage]="nzMessage">
+              <ng-template #nzMessage>
+                <div>取消合同模板地址:<a href="cancelContractLink.label" target='_blank'>{{cancelContractLink.label}}</a>
+                  密码:{{cancelContractLink.value}}</div>
+              </ng-template>
+            </nz-alert>
           </div>
         </div>
       </form>

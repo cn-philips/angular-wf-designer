@@ -427,4 +427,11 @@ export class SpecialApprovalService {
     const data = formatResponse(res);
     return data;
   }
+
+  //我的代办转派
+  async transferOrderRequest(data) {
+    const uri = `act/specialapprove/transferOrderRecord`;
+    const res = await this.http.post(uri, data).toPromise();
+    return formatResponse(res);
+  }
 }
