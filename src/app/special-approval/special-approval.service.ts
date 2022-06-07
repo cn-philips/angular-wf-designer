@@ -37,6 +37,8 @@ export class SpecialApprovalService {
 
   cycleGroupBigAreaMap = {};
 
+  foreignCompanyList = []
+
   constructor(private http: HttpService, private dictService: DictService) {
     this.initCycleGroupBigArea();
     this.initBmcClusterBg();
@@ -89,6 +91,16 @@ export class SpecialApprovalService {
         this.bmcClusterBgs = res.data.rows;
       }
     });
+  }
+
+  async getForeignCompany() {
+    if (this.foreignCompanyList.length > 0) {
+      return this.foreignCompanyList
+    }
+    const uri = "/act/preparation/chooseIePool";
+    const res = await this.http.get(uri).toPromise();
+    const data = formatResponse(res);
+    return data;
   }
 
   changeSpTaskCount(taskCount) {

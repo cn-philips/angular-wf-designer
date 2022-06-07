@@ -203,7 +203,6 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
           // products
           productsRequiredFields.push('equipmentDescription', 'equipmentDescriptionEn', 'guaranteeMonth')
           productsEnabledFields.push('equipmentDescription', 'equipmentDescriptionEn', 'guaranteeMonth')
-          this.showSelectDealerBtn = true
           if (this.orderInfo.get('businessModel').value === BUSINESS_MODEL.DISTRIBUTOR_DEAL) {
             orderInfoRequiredFields.push('dealerName', 'dealerCode')
             orderInfoEnabledFields.push('dealerName', 'dealerCode')

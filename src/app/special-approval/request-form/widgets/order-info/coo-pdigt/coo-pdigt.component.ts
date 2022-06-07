@@ -1,8 +1,17 @@
 import { Component, OnInit, Input, ViewChild, OnChanges, SimpleChanges } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
-import { ORDER_TYPES, BUSINESS_MODEL, BUSINESS_MODEL_LIST, CURRENCIES, FIELD_STATUS_LIST, FIELD_STATUS_OTHER, PAYMENT_METHOD_LIST } from '../../../../special-approval.constants'
+import { 
+  ORDER_TYPES,
+  BUSINESS_MODEL,
+  BUSINESS_MODEL_LIST,
+  CURRENCIES,
+  PAYMENT_METHOD_PDIGT_LIST,
+  PAYMENT_METHOD_PDIGT_OTHER,
+} from '../../../../special-approval.constants'
 import { SpecialApprovalService } from '../../../../special-approval.service'
 import { Dealer, SelectDealerComponent } from '../../select-dealer/select-dealer.component';
+import { Hospital, SelectHospitalComponent } from '../../select-hospital/select-hospital.component';
+import { Reference, SelectReferenceComponent } from '../../select-reference/select-reference.component'
 
 @Component({
   selector: 'special-approval-coo-pdigt-order-info',
@@ -15,21 +24,21 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
   originOrderInfo = {}
   originCooInfo = {}
   
+  @ViewChild('selectHospital') selectHospital: SelectHospitalComponent
   @ViewChild('selectDealer') selectDealer: SelectDealerComponent
+  @ViewChild('selectReference') selectReference: SelectReferenceComponent
   @Input() editable = true
 
   loginUserCode1 = localStorage.getItem('ng_philips_code1')
 
-  FIELD_STATUS_OTHER = FIELD_STATUS_OTHER
   BUSINESS_MODEL = BUSINESS_MODEL
+  PAYMENT_METHOD_PDIGT_OTHER = PAYMENT_METHOD_PDIGT_OTHER
 
-  showScPlanningField = false
   showOmField = false
-  showOaField = false
-  showSalesFeedbackField = false
-  showScPlanningFeedbackField = false
-  showSelectDealerBtn = false
-
+  showPmField = false
+  showPmFeedbackField = false
+  isPurchaseAgreementRequired = false
+  
   orderInfo = this.fb.group({
     orderType: [null, [Validators.required]], // 订单类型
     referenceId: [{ value: null, disabled: true }], // Reference Id
@@ -44,7 +53,7 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
     hospitalName: [{ value: null, disabled: true }], // 医院名称
     hospitalNo: [{ value: null, disabled: true }], // 医院编号
     foreignCompany: [null], // 外贸公司
-    foreignCompanyNo: [null], // 外贸公司编号
+    foreignCompanyNo: [{ value: null, disabled: true }], // 外贸公司编号
     sapOrderNo: [null, [Validators.required]], // SAP订单号
     orderAmount: [null, [Validators.required]], // 合同金额-数额
     currency: [null, [Validators.required]], // 合同金额-货币
@@ -53,11 +62,12 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
     contractBuyer: [null, [Validators.required]], // 合同买方
     philipsName: [null, [Validators.required]], // 飞利浦实体名称
     contractNo: [null, [Validators.required]], // 合同号
-    paymentMethod: [null], // 付款方式
-    products: this.fb.array([], [Validators.required]), // 产品列表
+    paymentMethod: [null, [Validators.required]], // 付款方式
+    paymentMethodOther: [null], // 付款方式-其他
+    products: this.fb.array([this.createProduct()], [Validators.required]), // 产品列表
     cooProduct: this.fb.group({
       cipPort: [null], // 是否为CIP港口
-      airTransportNo: [null], // POD扫描件/空运单
+      airTransportNo: [null], // POD扫描件
       addressType: [null], // 送达地址类型
       deliveryAddress: [null], // 货物送达地址中文
       deliveryAddressEn: [null], // 货物送达地址英文
@@ -87,8 +97,8 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
     businessModels: BUSINESS_MODEL_LIST,
     oms: [],
     currencies: CURRENCIES,
-    fieldStatusList: FIELD_STATUS_LIST,
-    paymentMethodList: PAYMENT_METHOD_LIST,
+    paymentMethodList: PAYMENT_METHOD_PDIGT_LIST,
+    foreignCompanies: []
   } 
 
   get products(): FormArray {
@@ -110,7 +120,7 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
   }
 
   get bmcList() {
-    return this.spService.bmcList.filter((bmc) => bmc.bg === 'US')
+    return this.spService.bmcList.filter((bmc) => bmc.bg === 'PD&IGT')
   }
 
   constructor(
@@ -120,6 +130,7 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
 
   ngOnInit() {
     this.initOMUsers()
+    this.initForeignCompanies()
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -130,9 +141,9 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
     }
   }
 
-  // node1: SC Planning补充信息
-  // node3: OM 补充信息
-  // node4: OA 补充信息
+  // node1: OM 补充信息
+  // node2: 上传经销商盖章后的COO确认函
+  // node6: 上传双签后的COO确认函
   setFormValidators({ nodeCode, nodeInfoList }) {
     const currentNode = nodeInfoList.find(({ code }) => code === nodeCode)
     const orderInfoRequiredFields = []
@@ -150,74 +161,48 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
       isActiveApprover = approverList.some(({ approved, user }) => !approved && user === this.loginUserCode1)
     }
     if (nodeCode > 'node0') {
-      this.showScPlanningField = true
-    }
-
-    if (nodeCode > 'node2') {
       this.showOmField = true
     }
 
-    if(nodeCode > 'node3') {
-      this.showOaField = true
+    if (nodeCode > 'node1') {
+      this.showPmField = true
     }
 
-    if(nodeCode > 'node6') {
-      this.showSalesFeedbackField = true
-    }
-
-    if (nodeCode > 'node7') {
-      this.showScPlanningFeedbackField = true
+    if(nodeCode > 'node5') {
+      this.showPmFeedbackField = true
     }
 
     if (isActiveApprover) {
       switch (nodeCode) {
-        case 'node1': // SC Planning补充信息
+        case 'node1': // OM补充信息
           // orderInfo
-          orderInfoRequiredFields.push('contractNo', 'currency', 'shipToName')
-          orderInfoEnabledFields.push('contractNo', 'currency', 'shipToName')
+          orderInfoRequiredFields.push('shipToName', 'paymentReceived', 'receivedAmount', 'purchaseOrderNo')
+          orderInfoEnabledFields.push('shipToName', 'paymentReceived', 'receivedAmount', 'purchaseOrderNo', 'purchaseAgreement')
+          if (this.orderInfo.get('currency').value === 'USD') {
+            orderInfoRequiredFields.push('purchaseAgreement')
+            this.isPurchaseAgreementRequired = true
+          }
           // products
-          productsRequiredFields.push('productType', 'orderDate', 'productionDate', 'arrivalDate')
-          productsEnabledFields.push('productType', 'orderDate', 'productionDate', 'arrivalDate')
-          break
-        case 'node3': // OM补充信息 
-          // orderInfo
-          orderInfoEnabledFields.push('paymentMethod', 'paymentReceived')
-          orderInfoRequiredFields.push('paymentMethod', 'paymentReceived')
-          // products
-          productsRequiredFields.push('goodsDeliveryDate', 'equipmentSn')
-          productsEnabledFields.push('goodsDeliveryDate', 'equipmentSn')
+          productsRequiredFields.push('equipmentSn', 'orderDate', 'productionDate', 'arrivalDate', 'goodsDeliveryDate')
+          productsEnabledFields.push('wbsNo', 'itemNo', 'equipmentSn', 'orderDate', 'productionDate', 'arrivalDate', 'goodsDeliveryDate')
           // cooProduct
           cooProductEnabledFields.push(
             'cipPort', 'airTransportNo', 'addressType',
             'deliveryAddress', 'deliveryAddressEn',
             'customsClearancePort', 'customsClearancePortEn'
           )
-          cooProductRequiredFields.push('airTransportNo', 'addressType', 'customsClearancePort', 'customsClearancePortEn')
-          if (this.cooProduct.get('cipPort').value === '0') {
-            cooProductRequiredFields.push('deliveryAddress', 'deliveryAddressEn')
-          }
+          cooProductRequiredFields.push(
+            'cipPort', 'airTransportNo', 'addressType',
+            'deliveryAddress', 'deliveryAddressEn',
+            'customsClearancePort', 'customsClearancePortEn'
+          )
           break
-        case 'node4': // OA补充信息
-          // orderInfo
-          orderInfoRequiredFields.push('purchaseOrderNo')
-          orderInfoEnabledFields.push('purchaseOrderNo')
-          // products
-          productsRequiredFields.push('equipmentDescription', 'equipmentDescriptionEn', 'guaranteeMonth')
-          productsEnabledFields.push('equipmentDescription', 'equipmentDescriptionEn', 'guaranteeMonth')
-          this.showSelectDealerBtn = true
-          if (this.orderInfo.get('businessModel').value === BUSINESS_MODEL.DISTRIBUTOR_DEAL) {
-            orderInfoRequiredFields.push('dealerName', 'dealerCode')
-            orderInfoEnabledFields.push('dealerName', 'dealerCode')
-            this.showSelectDealerBtn = true
-          }
-          break
-        case 'node7': // 申请人反馈
+        case 'node2': // PM补充信息
           // cooInfo
-          cooInfoRequiredFields.push('applySignedDate', 'cooConfirmationLetterDraft', 'airTransportNoDealer', 'cooConfirmationLetterDealer')
-          cooInfoEnabledFields.push('applySignedDate', 'cooConfirmationLetterDraft', 'airTransportNoDealer', 'cooConfirmationLetterDealer')
+          cooInfoRequiredFields.push('applySignedDate', 'cooConfirmationLetterDraft', 'cooConfirmationLetterDealer')
+          cooInfoEnabledFields.push('applySignedDate', 'cooConfirmationLetterDraft', 'cooConfirmationLetterDealer')
           break
-        case 'node8': // SC Planning反馈
-          // cooInfo
+        case 'node6':
           cooInfoRequiredFields.push('cooConfirmationLetterSign')
           cooInfoEnabledFields.push('cooConfirmationLetterSign')
           break
@@ -240,30 +225,22 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
     })
   }
 
-  onFieldStatusChange(status) {
-    if(status === FIELD_STATUS_OTHER) {
-      this.cooInfo.get('fieldStatusExplain').setValidators(Validators.required)
+  onForeignCompanyChange(companyName) {
+    const control = this.orderInfo.get('foreignCompanyNo')
+    if (companyName) {
+      const company = this.selectOptions.foreignCompanies.find(({ corporateName }) => corporateName === companyName)
+      control.setValue(company.serialNumber)
     } else {
-      this.cooInfo.get('fieldStatusExplain').clearValidators()
+      control.setValue(null)
     }
   }
 
-  onCipPortChange(cipPort) {
-    if (cipPort === '0') {
-      this.cooProduct.get('deliveryAddress').setValidators(Validators.required)
-      this.cooProduct.get('deliveryAddressEn').setValidators(Validators.required)
+  onPaymentMethodChange(method) {
+    const paymentMethodOther = this.orderInfo.get('paymentMethodOther')
+    if (method === PAYMENT_METHOD_PDIGT_OTHER) {
+      paymentMethodOther.setValidators(Validators.required)
     } else {
-      this.cooProduct.get('deliveryAddress').clearValidators()
-      this.cooProduct.get('deliveryAddressEn').clearValidators()
-    }
-  }
-
-  onIsBidChange(isBid) {
-    const fields = ['pending', 'expectedBiddingDate', 'losingOrders', 'expectedNewUserDate']
-    if (isBid === '0') {
-      fields.forEach((fieldName) => this.cooInfo.get(fieldName).setValidators(Validators.required))
-    } else {
-      fields.forEach((fieldName) => this.cooInfo.get(fieldName).clearValidators())
+      paymentMethodOther.clearValidators()
     }
   }
 
@@ -322,25 +299,16 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
   public initData(data) {
     const { orderInfos, cooInfo } = data
     const orderInfo = orderInfos[0]
-    const products = orderInfo.products
+    const product = orderInfo.products[0]
     this.originOrderInfo = orderInfo
     this.originCooInfo = cooInfo
-    this.orderInfo.patchValue({
-      ...orderInfo,
-      products: products ? products : []
-    })
+    this.orderInfo.patchValue(orderInfo)
 
-    if (products) {
-      this.cooProduct.patchValue(products[0])
-      // formArray不能直接patchValue
-      products.forEach((product, index) => {
-        const newProduct = this.createProduct()
-        if (!this.editable) {
-          newProduct.disable()
-        }
-        this.products.push(newProduct)
-        this.products.at(index).patchValue(product)
-      })
+    this.cooProduct.patchValue(product)
+    const productGroup = this.products.at(0)
+    productGroup.patchValue(product)
+    if (!this.editable) {
+      productGroup.disabled
     }
     this.cooInfo.patchValue(cooInfo)
     this.setFormValidators(data)
@@ -348,7 +316,7 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
 
   createProduct() {
     return this.fb.group({
-      productType: [null, [Validators.required]], // 产品型号
+      productType: [null], // 产品型号
       quantity: [null, [Validators.required]], // 数量
       wbsNo: [null], // 订单WBS#
       itemNo: [null], // Item#
@@ -364,13 +332,27 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
     this.orderInfo.patchValue({ bigArea: null })
   }
 
-  onAddProduct() {
-    this.products.push(this.createProduct())
+  onCalcOrderProductType(productType) {
+    this.orderInfo.patchValue({
+      productType
+    })
   }
 
-  onDeleteProduct(index) {
-    this.products.removeAt(index)
-    this.onCalcOrderProductType()
+  // 初始化OM列表
+  async initOMUsers() {
+    this.spService.getOMUsers().then((users) => {
+      this.selectOptions.oms = users.map(({ name, email }) => ({ label: name, value: email }))
+    })
+  }
+
+  async initForeignCompanies() {
+    this.spService.getForeignCompany().then((foreignCompanies) => {
+      this.selectOptions.foreignCompanies = foreignCompanies
+    })
+  }
+
+  onShowSelectDealerModal() {
+    this.selectDealer.showModal()
   }
 
   onSelectDealer(dealer: Dealer) {
@@ -388,24 +370,30 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
     })
   }
 
-  onShowSelectDealerModal() {
-    this.selectDealer.showModal()
+  onShowReferenceModal() {
+    this.selectReference.showModal()
   }
 
-  onCalcOrderProductType() {
-    const products = this.products.value as any[]
-    const orderProductType = products
-      .filter(({ productType }) => productType)
-      .map(({ productType }) => productType)
-      .join(';')
+  onSelectReference(reference: Reference) {
+    
+  }
+
+  onShowSelectHospitalModal() {
+    this.selectHospital.showModal()
+  }
+
+  onSelectHospital(hospital: Hospital) {
+    const { no, customerName } = hospital
     this.orderInfo.patchValue({
-      productType: orderProductType
+      hospitalNo: no,
+      hospitalName: customerName,
     })
   }
 
-  // 初始化OM列表
-  async initOMUsers() {
-    const users = await this.spService.getOMUsers()
-    this.selectOptions.oms = users.map(({ name, email }) => ({ label: name, value: email }))
+  onClearHospital() {
+    this.orderInfo.patchValue({
+      hospitalNo: null,
+      hospitalName: null,
+    })
   }
 }
