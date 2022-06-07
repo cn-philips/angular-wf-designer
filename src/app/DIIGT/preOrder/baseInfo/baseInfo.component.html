@@ -1125,7 +1125,7 @@
 
 
 
-    <!--合同表会显示以下3个字段-->
+    <!--合同表会显示以下6个字段-->
     <div nz-row nzType="flex" nzJustify="start" nzAlign="middle" *ngIf="conTable">
       <div nz-col nzXs="24" nzSm="24" nzMd="12">
         <nz-form-item>
@@ -1171,6 +1171,69 @@
           </nz-form-control>
         </nz-form-item>
       </div>
+      <div nz-col nzXs="24" nzSm="24" nzMd="12">
+        <nz-form-item>
+          <nz-form-label nzSm="8" nzXl="8" nzXXl="8"><span>Qty</span><br>台数</nz-form-label>
+          <nz-form-control nzSm="14" nzXl="14" nzXXl="14">
+            <input type="text" oninput="if(value.length>255)value=value.slice(0,255)" class="form-control" value="" formControlName="marketBundleQuantity"
+                   [(ngModel)]="dataBase.marketBundleQuantity" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzXs="24" nzSm="24" nzMd="12">
+        <nz-form-item>
+          <nz-form-label nzSm="8" nzXl="8" nzXXl="8" [nzRequired]=true>Sofon No</nz-form-label>
+          <nz-form-control nzSm="14" nzXl="14" nzXXl="14">
+            <input type="text" oninput="if(value.length>255)value=value.slice(0,255)" class="form-control" value="" formControlName="sofonNo"
+                   [(ngModel)]="dataBase.sofonNo" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzXs="24" nzSm="24" nzMd="12">
+        <nz-form-item>
+          <nz-form-label nzSm="8" nzXl="8" nzXXl="8">Sofon File<br> Sofon文件</nz-form-label>
+          <nz-form-control nzSm="14" nzXl="14" nzXXl="14">
+            <div *ngIf="!disa">
+              <nz-switch  [(ngModel)]="switchValid" formControlName="switchValid" (click)="changeupmode(upmode)"></nz-switch><span style="font-size: xx-small;padding-top: 10%">&emsp;Select Sofon File From CP<br> 从CP选择文件</span>
+            </div>
+            <div *ngIf="upmode">
+              <button nz-button *ngIf="!disa" (click)="showModal()" [disabled]="disa" style="display: inline-block">
+                <i nz-icon nzType="cloud-upload" nzTheme="outline"></i><span style="font-size: small">Select File 选择Sofon文件</span>
+              </button>
+            </div>
+
+            <div *ngIf="!upmode">
+              <nz-upload *ngIf="!disa" class="uploads" style="display: inline-block" [(nzFileList)]="dataBase.sofonNameFileList" [nzBeforeUpload]="sofonNameBeforeUpload" [nzLimit]="1" [nzPreview]="dwonLoad" [nzRemove]="nzRemovsofonName" [nzDisabled]="disa">
+                <button nz-button>
+                  <i nz-icon nzType="upload"></i><span style="font-size: small">Upload 上传本地文件</span>
+                </button>
+              </nz-upload>
+            </div>
+
+
+            <button *ngIf="dataBase.sofonFileName&&(upmode||disa)" nz-tooltip [nzTitle]="dataBase.sofonFileName" class="down link-tesk" nz-button nzType="link" (click)="fileDwon(dataBase.sofonFile)">
+              {{dataBase.sofonFileName?dataBase.sofonFileName:"下载文件"}}
+            </button>
+            <!--sofon文件弹框-->
+            <nz-modal [(nzVisible)]="isVisible" nzTitle="Select Sofon File 选择Sofon文件" (nzOnCancel)="handleCancel()" [nzFooter]="modalFooter">
+              <nz-checkbox-wrapper style="width: 100%;" (nzOnChange)="log($event)">
+                <label nz-checkbox *ngFor="let file of files.thelist; index as i" [nzValue]="file.id">{{file.fileName}}</label>
+              </nz-checkbox-wrapper>
+              <ng-template #modalFooter>
+                <button nz-button nzType="default" (click)="handleCancel()">Cancel 取消</button>
+                <button nz-button nzType="primary" (click)="handleOk()" >OK 确定</button>
+              </ng-template>
+            </nz-modal>
+
+            <nz-modal [(nzVisible)]="isVisibleSofon" nzTitle="Sofon选择区" nzOkText="确认" nzCancelText="取消" nzCentered
+                      nzWidth="900" (nzOnCancel)="handleCancelSofon()" (nzOnOk)="handleOkSofon()">
+              <app-transferbox-single [dataBase]="sonfonFile" #tranfSingle></app-transferbox-single>
+            </nz-modal>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+
+
     </div>
 
     <div nz-col nzXs="24" nzSm="24" nzMd="24" *ngIf="dataBase.entryMode != 'STOCK' && mainId" nzAlign="middle">
