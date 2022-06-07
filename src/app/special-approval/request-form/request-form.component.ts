@@ -429,7 +429,7 @@ export class RequestFormComponent implements OnInit {
     if (
       applyType === APPLY_TYPE.PRODUCTION ||
       applyType === APPLY_TYPE.LOGISTICSCOST ||
-      applyType === APPLY_TYPE.EXT_INSTALL_COST  ||
+      applyType === APPLY_TYPE.EXT_INSTALL_COST ||
       applyType === APPLY_TYPE.SPECIAL_DELIVERY
     ) {
       this.orderInfo.patchValue({
@@ -680,7 +680,6 @@ export class RequestFormComponent implements OnInit {
   public getFormData() {
     const { basicInfo, orderInfo, ccInfo, rddOitOrderInfos, changeOrderInfos, lcAmendmentOrderInfo, transferLibOrders, exchangeInfo, orderDifferences, cancelorderInfo, deBookOrderInfos, orderReplacementInfo, noneDirectOrderInfo, lastBuyInfos  } = this.formValues.getRawValue()
     const { applyArrivalTime, expectedPaymentDate, expectedSaleDate, products } = orderInfo
-    const { noneDirectaleDate, noneDirectProducts } = noneDirectOrderInfo
     const extInfo = {
       exchangeMethod: changeOrderInfos.exchangeMethod
     }
