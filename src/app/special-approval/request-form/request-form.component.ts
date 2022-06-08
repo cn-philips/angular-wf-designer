@@ -878,12 +878,13 @@ export class RequestFormComponent implements OnInit {
         ];
         break;
       case APPLY_TYPE.NONE_DIRECT_ORDER:   //非直销订单
-        data.orderInfos[0] =
-          {
+        data.orderInfos=
+          [{
+            ...this.requestInfo.orderInfos[0],
             ...noneDirectOrderInfo,
             expectedSaleDate: noneDirectOrderInfo.expectedSaleDate ? moment(noneDirectOrderInfo.expectedSaleDate).format('YYYY-MM-DD') : null,
             products: noneDirectOrderInfo.products.map(({ productType, wbsNo, itemNo, equipmentSn, quantity }) => ({ productType, wbsNo, itemNo, equipmentSn, quantity }))
-          }
+          }]
         ;
         break;
 
@@ -1716,8 +1717,9 @@ export class RequestFormComponent implements OnInit {
         })
       }else if(this.applyType === APPLY_TYPE.NONE_DIRECT_ORDER){
         this.formValues.patchValue({
-          noneDirectOrderInfo:{
+          noneDirectOrderInfo: {
             ...orderInfos[0],
+            products: orderInfos[0].products || []
           }
         })
 
@@ -1896,9 +1898,9 @@ export class RequestFormComponent implements OnInit {
   }
 
   // 校验产品列表
-  // 特批开始生产、飞利浦承担额外清关、仓储、物流费用、用户自定义审批  验证产品列表不能为空
+  // 特批开始生产、飞利浦承担额外清关、仓储、物流费用、特批发货、用户自定义审批  验证产品列表不能为空
   public verifyProduct() {
-    if (this.applyType === APPLY_TYPE.PRODUCTION || this.applyType === APPLY_TYPE.EXT_INSTALL_COST || this.applyType === APPLY_TYPE.LOGISTICSCOST) {
+    if (this.applyType === APPLY_TYPE.PRODUCTION || this.applyType === APPLY_TYPE.EXT_INSTALL_COST || this.applyType === APPLY_TYPE.LOGISTICSCOST || this.applyType === APPLY_TYPE.SPECIAL_DELIVERY) {
       const orderInfo = this.formValues.getRawValue().orderInfo;
       if (orderInfo && orderInfo.bg && orderInfo.bg.toLowerCase() === 'cc') {
         return true;
