@@ -371,6 +371,18 @@
       </nz-form-item>
     </div>
   </div>
+
+  <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+    <div nz-col nzXs="24" nzSm="24" nzMd="12">
+      <nz-form-item style="margin-bottom: 6px">
+        <nz-form-label [nzSm]="8" [nzXs]="24"><span>Qty</span><br>台数</nz-form-label>
+        <nz-form-control [nzSm]="14" [nzXs]="24">
+          <input type="text" class="form-control" [(ngModel)]="dataBase.marketBundleQuantity" disabled placeholder="无">
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+
   <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
     <div nz-col nzXs="24" nzSm="24" nzMd="12">
       <nz-form-item style="margin-bottom: 6px">
