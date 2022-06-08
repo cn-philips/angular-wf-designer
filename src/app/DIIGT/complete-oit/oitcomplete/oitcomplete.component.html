@@ -244,7 +244,7 @@
     </div>
     <div nz-col nzSpan="24">
       <nz-form-item>
-        <nz-form-label [nzSm]="5" [nzXs]="24" nzFor="email"><span>OIT  Completion Supporting Documents</span><br>OIT 完成凭证文件</nz-form-label>
+        <nz-form-label [nzRequired]="requiredByPaymentProvision()" [nzSm]="5" [nzXs]="24" nzFor="email"><span>OIT  Completion Supporting Documents</span><br>OIT 完成凭证文件</nz-form-label>
         <nz-form-control [nzSm]="7" [nzXs]="24">
           <nz-upload *ngIf="this.status=='DOITWJSC'" [(nzFileList)]="fileFileList" [nzBeforeUpload]="fileBeforeUpload"
             [nzLimit]="1" [nzRemove]="nzRemoveFile" [nzPreview]="dwonLoad">

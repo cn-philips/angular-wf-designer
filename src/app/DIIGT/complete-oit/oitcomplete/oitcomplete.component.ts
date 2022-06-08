@@ -29,6 +29,7 @@ export class OitcompleteComponent implements OnInit {
   public realTimeOff = false;
   public status: any;//当前路由状态
   @Input() public dataBase: any = {};
+  @Input() public dataBaseOrderSummary: any = {}; // orderSummary数据
   @Output() myUpdata = new EventEmitter()
   public validateForm: FormGroup;
   public load: any = false;
@@ -466,4 +467,13 @@ public getFormDetails(id) {
     return differenceInCalendarDays(current, this.oitInfor.deBookDate) < 0
   };
 
+  @Input() paymentProvision = [];
+  // OIT完成凭证文件字段 按 付款方式 判断必填
+  public requiredByPaymentProvision() {
+    if (this.dataBaseOrderSummary && this.dataBaseOrderSummary.paymentProvision && this.paymentProvision.indexOf(this.dataBaseOrderSummary.paymentProvision) !== -1) {
+      // 必填
+      return true;
+    }
+    return false;
+  }
 }
