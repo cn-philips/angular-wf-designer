@@ -430,7 +430,7 @@ export class SpecialApprovalService {
 
   //我的代办转派
   async transferOrderRequest(data) {
-    const uri = `act/specialapprove/transferOrderRecord`;
+    const uri = `act/spTransferOrderRecord/transferOrderRecord`;
     const res = await this.http.post(uri, data).toPromise();
     return formatResponse(res);
   }
