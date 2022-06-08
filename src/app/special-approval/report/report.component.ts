@@ -39,7 +39,7 @@ export class ReportComponent implements OnInit {
         { value: "特批开始生产报表", type: "production" },
         {value: '特批发货报表', type: 'delivery'},
         { value: "飞利浦承担额外清关、仓储、物流费用", type: "logisticscost" },
-        // {value: 'Last Buy特批生产发货', type: ''},
+        {value: 'Last Buy特批生产发货', type: 'lastbuy'},
       ],
     },
     {
@@ -61,13 +61,9 @@ export class ReportComponent implements OnInit {
       label: "订单质量管理",
       items: [
         { value: "RDD-OIT > 180 days订单保留", type: "rddoit180reserv" },
-        // { value: 'Cancel Order', type: 'cancelorder' },
+        { value: 'Cancel Order', type: 'cancelorder' },
         { value: 'De-book', type: 'debook' },
-        //     { value: 'Order Replace/Aging', type: '' },
-        //     { value: 'COO US', type: 'coous' },
-        //     { value: 'COO CC', type: 'coocc' },
-        //     { value: 'COO PD&IGT', type: 'coopdigt' },
-        //     { value: '经销商签署安装报告的特批', type: '' },
+        { value: 'Order Replace/Aging', type: 'orderreplacement' },
       ],
     },
     {

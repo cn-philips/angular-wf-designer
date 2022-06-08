@@ -324,6 +324,7 @@ export class RequestFormComponent implements OnInit {
           saleEmail: [{ value: null, disabled: true }, [Validators.required]], // 销售邮箱
           districtLeader: [{ value: null, disabled: true }], // District Leader邮箱
           salesLeader: [{ value: null, disabled: true }], // sales Leader 邮箱
+          expectedSaleDate: [null, [Validators.required]], // 预计记认销售日期
           actualSaleDate: [{ value: null, disabled: true }], // 实际记认销售日期
           products: [[], [Validators.required]],
         }),
@@ -752,6 +753,7 @@ export class RequestFormComponent implements OnInit {
       case APPLY_TYPE.MACHINE_EXCHANGE:
         data.orderInfos = [
           {
+            transferCargo: 'sp_machineexchange_order_type_item_1',
             ...this.requestInfo.orderInfos[0],
             ...changeOrderInfos.orders.at(0),
             applyArrivalTime: applyArrivalTime ? moment(applyArrivalTime).format('YYYY-MM-DD') : null,
@@ -760,6 +762,7 @@ export class RequestFormComponent implements OnInit {
             products: changeOrderInfos.orders.at(0).products.map(({ productType, wbsNo, itemNo, quantity, equipmentSn, logisticsStatus }) => ({ productType, wbsNo, itemNo, quantity, equipmentSn, logisticsStatus }))
           },
           {
+            transferCargo: 'sp_machineexchange_order_type_item_2',
             ...this.requestInfo.orderInfos[1],
             ...changeOrderInfos.orders.at(1),
             applyArrivalTime: applyArrivalTime ? moment(applyArrivalTime).format('YYYY-MM-DD') : null,
@@ -767,7 +770,6 @@ export class RequestFormComponent implements OnInit {
             expectedSaleDate: expectedSaleDate ? moment(expectedSaleDate).format('YYYY-MM-DD') : null,
             products: changeOrderInfos.orders.at(1).products.map(({ productType, wbsNo, itemNo, quantity, equipmentSn, logisticsStatus }) => ({ productType, wbsNo, itemNo, quantity, equipmentSn, logisticsStatus }))
           }
-
         ]
         break;
       case APPLY_TYPE.EXT_INSTALL_COST: // Additional cost
@@ -1574,17 +1576,26 @@ export class RequestFormComponent implements OnInit {
         this.salesLeader[0] = orderInfos[0].salesLeader
         this.districtLeader[1] = orderInfos[1].districtLeader
         this.salesLeader[1] = orderInfos[1].salesLeader
+        let orders0 = null
+        let orders1 = null
+        if (orderInfos[0].transferCargo === 'sp_machineexchange_order_type_item_1') {
+          orders0 = orderInfos[0]
+          orders1 = orderInfos[1]
+        } else {
+          orders0 = orderInfos[1]
+          orders1 = orderInfos[0]
+        }
         this.formValues.patchValue({
           changeOrderInfos: {
             exchangeMethod: extInfo ? extInfo.exchangeMethod : null,
             orders: [
               {
-                ...orderInfos[0],
-                products: orderInfos[0].products || []
+                ...orders0,
+                products: orders0.products || []
               },
               {
-                ...orderInfos[1],
-                products: orderInfos[1].products || []
+                ...orders1,
+                products: orders1.products || []
               }
             ]
           }
