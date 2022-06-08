@@ -215,9 +215,7 @@
       </ng-template>
     </ngb-tab>
     <ngb-tab id="complete-padd">
-      <ng-template ngbTabTitle
-        ><span class="tab-title"><strong>OIT Completion<br> OIT完成</strong></span></ng-template
-      >
+      <ng-template ngbTabTitle><span class="tab-title"><strong>OIT Completion<br> OIT完成</strong></span></ng-template>
       <ng-template ngbTabContent>
         <div class="card-body">
           <app-oitcomplete
@@ -225,6 +223,8 @@
             [dataBase]="infor"
             [oitInfor]="oitData"
             [disa]="true"
+            [dataBaseOrderSummary]="dataBase"
+            [paymentProvision]="paymentProvision"
             (myUpdata)="getFormDetails()"
           ></app-oitcomplete>
           <div class="tr mb10 mr10">
