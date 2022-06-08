@@ -9,7 +9,8 @@
 <div class="bg-white py-2">
   <div nzType="flex" nz-row nzJustify="center" nzAlign="middle" class="mb-2 pt-2">
     <div nz-col [nzSpan]="1" class="text-center">
-      <span class="ant-avatar ant-avatar-lg ant-avatar-circle ant-avatar-icon bg-primary d-flex align-items-center justify-content-center">
+      <span
+        class="ant-avatar ant-avatar-lg ant-avatar-circle ant-avatar-icon bg-primary d-flex align-items-center justify-content-center">
         <i nz-icon nzType="control" nzTheme="outline"></i>
       </span>
     </div>
@@ -28,7 +29,8 @@
           <nz-form-label [nzSm]="6" [nzXs]="24">申请类型</nz-form-label>
           <nz-form-control [nzSm]="18" [nzXs]="24">
             <nz-select formControlName="applyType" nzAllowClear nzPlaceHolder="Select 请选择">
-              <nz-option *ngFor="let type of selectOptions.applyTypes" [nzValue]="type.value" [nzLabel]="type.label"></nz-option>
+              <nz-option *ngFor="let type of selectOptions.applyTypes" [nzValue]="type.value" [nzLabel]="type.label">
+              </nz-option>
             </nz-select>
           </nz-form-control>
         </nz-form-item>
@@ -74,19 +76,27 @@
     </div>
   </form>
 
-  <nz-table
-    [nzData]="tableData.list"
-    [nzLoading]="tableData.loading"
-    [nzFrontPagination]="false"
-    [nzTotal]="tableData.count"
-    [nzScroll]="{ x: '1000px' }"
-    [(nzPageIndex)]="searchParams.pageNo"
-    [(nzPageSize)]="searchParams.pageSize"
-    (nzPageIndexChange)="getTableData()"
-    (nzPageSizeChange)="getTableData()"
-  >
+  <div class="components-table-demo-control-bar">
+    <form nz-form nzLayout="inline">
+      <nz-form-item>
+        <nz-form-label><label>批量操作</label></nz-form-label>
+        <nz-form-control>
+          <nz-switch [(ngModel)]="checkbox" name="checkbox"></nz-switch>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item *ngIf="checkbox">
+        <button nz-button nzType="info" style="margin-top: 4px" (click)="showModal()">转派</button>
+      </nz-form-item>
+    </form>
+  </div>
+
+  <nz-table [nzData]="tableData.list" [nzLoading]="tableData.loading" [nzFrontPagination]="false"
+    [nzTotal]="tableData.count" [nzScroll]="{ x: '1000px' }" [(nzPageIndex)]="searchParams.pageNo"
+    [(nzPageSize)]="searchParams.pageSize" (nzPageIndexChange)="getTableData()" (nzPageSizeChange)="getTableData()">
     <thead>
       <tr>
+        <th nzShowCheckbox *ngIf="checkbox" [(nzChecked)]="allChecked" [nzIndeterminate]="indeterminate"
+          (nzCheckedChange)="checkAll($event)"></th>
         <th>申请编号</th>
         <th>申请类型</th>
         <th>发起人</th>
@@ -98,6 +108,8 @@
     </thead>
     <tbody>
       <tr *ngFor="let data of tableData.list">
+        <td nzShowCheckbox *ngIf="checkbox" [(nzChecked)]="mapOfCheckedId[data.applyCode]"
+          (nzCheckedChange)="refreshStatus()"></td>
         <td>{{ data.applyCode }}</td>
         <td>{{ spService.formatApplyType(data.applyType) }}</td>
         <td>{{ data.applicant }}</td>
@@ -105,9 +117,78 @@
         <td>{{ data.nodeName }}</td>
         <td>{{ data.createTime }}</td>
         <td nzRight="0px">
-          <button nz-button nzType="primary" nzSize="small" (click)="onNavigateToRequestDetail(data)">{{ data.nodeAction === 'feedback' ? '反馈' : '审批' }}</button>
+          <button nz-button nzType="primary" nzSize="small" (click)="onNavigateToRequestDetail(data)">{{ data.nodeAction
+            === 'feedback' ? '反馈' : '审批' }}</button>
         </td>
       </tr>
     </tbody>
   </nz-table>
 </nz-card>
+
+<div>
+  <form nz-form [formGroup]="reassignParams">
+    <nz-modal [(nzVisible)]="isVisible" nzTitle="提示" (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk()"
+      [nzOkLoading]="isOkLoading">
+      <div nz-row nzType="flex" nzJustify="center" nzAlign="middle" nzType="flex">
+        <div nz-col style="font-size: 24px;" nzSpan="2">
+          <i nz-icon nzType="warning" nzTheme="twotone"></i>
+        </div>
+        <div nz-col nzSpan="20" style="margin-top: 10px;">
+          <p>请选择任务转派给接收人</p>
+        </div>
+      </div>
+
+      <div nz-row nzType="flex" nzJustify="start" nzAlign="middle" style="margin-top: 20px;">
+        <div nz-col nzOffset="2" nzSpan="18">
+          <nz-form-item>
+            <nz-form-label nzXl="8" nzXXl="6" nzFor="role">角色</nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="16">
+              <nz-select formControlName="role" nzPlaceHolder="请选择" style="width: 100%;"
+                (ngModelChange)="onRolesChange()">
+                <nz-option *ngFor="let item of selectOptions.roleList" [nzLabel]="item.label" [nzValue]="item.value">
+                </nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+
+      <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+        <div nz-col nzOffset="2" nzSpan="18">
+          <nz-form-item>
+            <nz-form-label nzXl="8" nzXXl="6" nzRequired>接收人</nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="16">
+              <nz-select nzShowSearch nzAllowClear formControlName="receiver" nzPlaceHolder="请选择" style="width: 100%;">
+                <nz-option *ngFor="let item of selectOptions.userList" [nzLabel]="item.label" [nzValue]="item.value">
+                </nz-option>
+                <nz-option *ngIf="selectOptions.userList.length === 0" nzLabel="请先选择角色" [nzDisabled]="true"></nz-option>
+              </nz-select>
+              <nz-form-explain *ngIf="reassignParams.get('receiver')?.dirty && reassignParams.get('receiver')?.errors">
+                请选择接收人
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+
+      <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+        <div nz-col nzOffset="2" nzSpan="18">
+          <nz-form-item>
+            <nz-form-label nzFor="" nzXl="8" nzXXl="6" nzRequired>备注</nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="16">
+              <textarea rows="4" nz-input formControlName="transferReason" id="transferReason"
+                oninput="if(value.length>1000)value=value.slice(0,1000)" placeholder="说明转派原因"></textarea>
+              <div>
+                还可以输入:{{reassignParams.get('transferReason').value?reassignParams.get('transferReason').value.length:0}}/{{1000}}
+              </div>
+              <nz-form-explain
+                *ngIf="reassignParams.get('transferReason')?.dirty && reassignParams.get('transferReason')?.errors">
+                请填写备注
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+    </nz-modal>
+  </form>
+</div>
