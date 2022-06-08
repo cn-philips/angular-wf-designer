@@ -358,6 +358,20 @@
         <div nz-row nzType="flex" nzJustify="start" nzAlign="middle" *ngIf="i === 0">
           <div nz-col nzXs="24" nzSm="24" nzMd="12">
             <nz-form-item>
+              <nz-form-label nzXl="8" nzXXl="6" [nzRequired]="showFeedbackTab">预计记认销售日期</nz-form-label>
+              <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                <nz-date-picker formControlName="expectedSaleDate" style="width: 100%" [nzStyle]="{ width: '100%' }"
+                                [nzPlaceHolder]="showFeedbackTab ? '请选择日期':''">
+                </nz-date-picker>
+                <nz-form-explain
+                  *ngIf="formValues.get('expectedSaleDate')?.dirty && formValues.get('expectedSaleDate')?.errors">
+                  请选择预计记认销售日期
+                </nz-form-explain>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          <div nz-col nzXs="24" nzSm="24" nzMd="12">
+            <nz-form-item>
               <nz-form-label nzXl="8" nzXXl="6" [nzRequired]="showFeedbackTab">实际记认销售日期</nz-form-label>
               <nz-form-control nzXs="24" nzSm="24" nzMd="14">
                 <nz-date-picker formControlName="actualSaleDate" style="width: 100%" [nzStyle]="{ width: '100%' }"
