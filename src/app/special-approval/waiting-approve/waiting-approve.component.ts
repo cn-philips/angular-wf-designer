@@ -195,8 +195,7 @@ export class WaitingApproveComponent implements OnInit {
       item.receiver = receiver;
       item.transferReason = transferReason;
     })
-    const data = { spTransferOrderRecordDtoList:dataList };
-    return data;
+    return dataList;
   }
 
   public navigateToHomePage() {
