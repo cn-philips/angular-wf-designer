@@ -383,6 +383,54 @@ export class CompleteOitComponent implements OnInit {
     })
   }
 
+  public paymentProvision = [
+    // DI&IGT-10% TT before OIT, 80% TT before FP, 10% TT against AC
+    '36b8911e-1864-11ec-9074-54ee75a9b10b',
+    '36b8aa28-1864-11ec-9074-54ee75a9b10b',
+    '36b8b0e2-1864-11ec-9074-54ee75a9b10b',
+    '36b9bd6c-1864-11ec-9074-54ee75a9b10b',
+
+    // DI&IGT-10% TT before OIT, 90% TT before FP
+    '36b891ec-1864-11ec-9074-54ee75a9b10b',
+    '36b8aabd-1864-11ec-9074-54ee75a9b10b',
+    '36b8b186-1864-11ec-9074-54ee75a9b10b',
+    '36b9c3c7-1864-11ec-9074-54ee75a9b10b',
+
+    // DI&IGT-15% before OIT, 85% before FP
+    '36b77667-1a64-11ec-ac74-54ee75sss10z',
+    '36b8a048-1864-11ec-9074-54ee75a9b10b',
+    '36b8b3c2-1864-11ec-9074-54ee75a9b10b',
+    '36b8b61a-1864-11ec-9074-54ee75a9b10b',
+
+    // DI&IGT-30% TT before OIT, 60% TT before FP, 10% TT against ICF
+    '36b88971-1864-11ec-9074-54ee75a9b10b',
+    '36b8a15a-1864-11ec-9074-54ee75a9b10b',
+    '36b8a731-1864-11ec-9074-54ee75a9b10b',
+    '36b8ab53-1864-11ec-9074-54ee75a9b10b',
+    '36b8b4e8-1864-11ec-9074-54ee75a9b10b',
+    '36b9b6d6-1864-11ec-9074-54ee75a9b10b',
+
+    // DI&IGT-100% TT before OIT
+    '36b89318-1864-11ec-9074-54ee75a9b10b',
+    '36b8947c-1864-11ec-9074-54ee75a9b10b',
+    '36b895ce-1864-11ec-9074-54ee75a9b10b',
+    '36b89656-1864-11ec-9074-54ee75a9b10b',
+    '36b8a219-1864-11ec-9074-54ee75a9b10b',
+    '36b8a460-1864-11ec-9074-54ee75a9b10b',
+    '36b8a8e0-1864-11ec-9074-54ee75a9b10b',
+    '36b8abe8-1864-11ec-9074-54ee75a9b10b',
+    '36b8add5-1864-11ec-9074-54ee75a9b10b',
+    '36b8b221-1864-11ec-9074-54ee75a9b10b',
+    '36b9baf4-1864-11ec-9074-54ee75a9b10b',
+    '36b9bea4-1864-11ec-9074-54ee75a9b10b',
+    '36b9c2d8-1864-11ec-9074-54ee75a9b10b',
+
+    // DI&IGT-100% LC before OIT
+    '36b9c23b-1864-11ec-9074-54ee75a9b10b',
+
+    // DI&IGT-30%TT before OIT, 70% TT before FP
+    '36b9c0da-1864-11ec-9074-54ee75a9b10b'
+  ];
 
   submit(number: number, flag?: any) {
     this.oitData.check = number;
@@ -412,6 +460,12 @@ export class CompleteOitComponent implements OnInit {
         this.myskip("complete-padd");
         this.message.create("error", "请上传出口管制文件");
         return;
+      }
+      if (this.dataBase && this.dataBase.paymentProvision && this.paymentProvision.indexOf(this.dataBase.paymentProvision) !== -1) {
+        if (this.oitData.file === '' || this.oitData.file === null) {
+          this.message.create('error', '请上传OIT完成凭证文件');
+          return;
+        }
       }
     }
     //提交下拉人员
