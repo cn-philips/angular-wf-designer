@@ -107,7 +107,7 @@
       <div nz-col nzXs="24" nzSm="24" nzMd="12">
         <nz-form-item>
           <nz-form-label nzXl="8" nzXXl="6">经销商名称</nz-form-label>
-          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14" [ngClass]="orderInfo.get('dealerName')?.dirty && orderInfo.errors?.hospitalDealerRequired ? 'has-error' : ''">
             <nz-input-group style="width: 100%" [nzSuffix]="clearDealerBtn" [nzAddOnAfter]="selectDealerBtn">
               <input type="text" nz-input formControlName="dealerName" [placeholder]="editable ? '点击右侧按钮选择经销商' : ''" />
             </nz-input-group>
@@ -120,8 +120,8 @@
               <button *ngIf="editable" nz-button nzType="primary" class="ml-md"
                 (click)="onShowSelectDealerModal()">选择经销商</button>
             </ng-template>
-            <nz-form-explain *ngIf="orderInfo.get('dealerName')?.dirty && orderInfo.get('dealerName')?.errors">
-              请选择经销商
+            <nz-form-explain *ngIf="orderInfo.get('dealerName')?.dirty && orderInfo.errors?.hospitalDealerRequired">
+              请选择医院或者经销商
             </nz-form-explain>
           </nz-form-control>
         </nz-form-item>
@@ -140,8 +140,8 @@
     <div nz-row>
       <div nz-col nzXs="24" nzSm="24" nzMd="12">
         <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6">医院名称</nz-form-label>
-          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+          <nz-form-label nzXl="8" nzXXl="6" [nzRequired]="businessModel.value!==BUSINESS_MODEL.DISTRIBUTOR_DEAL">医院名称</nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14" [ngClass]="orderInfo.get('hospitalName')?.dirty && (orderInfo.errors?.hospitalDealerRequired || orderInfo.errors?.hospitalRequired) ? 'has-error' : ''">
             <nz-input-group style="width: 100%" [nzSuffix]="clearHospitalBtn" [nzAddOnAfter]="selectHospitalBtn">
               <input id="hospitalName" type="text" nz-input formControlName="hospitalName"
                 [placeholder]="editable ? '点击右侧按钮选择医院' : ''" />
@@ -156,21 +156,25 @@
               <button *ngIf="editable" nz-button nzType="primary" class="ml-md"
                 (click)="onShowSelectHospitalModal()">选择医院</button>
             </ng-template>
+            <nz-form-explain *ngIf="orderInfo.get('hospitalName')?.dirty && orderInfo.errors?.hospitalDealerRequired">
+              请选择医院或者经销商
+            </nz-form-explain>
+            <nz-form-explain *ngIf="orderInfo.get('hospitalName')?.dirty && orderInfo.errors?.hospitalRequired">
+              请选择医院
+            </nz-form-explain>
           </nz-form-control>
         </nz-form-item>
       </div>
 
       <div nz-col nzXs="24" nzSm="24" nzMd="12">
         <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6">医院编号</nz-form-label>
+          <nz-form-label nzXl="8" nzXXl="6" [nzRequired]="businessModel.value!==BUSINESS_MODEL.DISTRIBUTOR_DEAL">医院编号</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <input id="hospitalNo" nz-input formControlName="hospitalNo" [disabled]="true" />
+            <input id="hospitalNo" nz-input formControlName="hospitalNo" />
           </nz-form-control>
         </nz-form-item>
       </div>
     </div>
-
-    
 
     <div nz-row>
       <div nz-col nzXs="24" nzSm="24" nzMd="12">
@@ -485,7 +489,12 @@
           <nz-form-item>
             <nz-form-label nzXl="8" nzXXl="6" nzRequired nzFor="receivedAmount">已收金额</nz-form-label>
             <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-              <nz-input-number id="receivedAmount" style="width: 100%;" formControlName="receivedAmount" [nzMin]="0"></nz-input-number>
+              <nz-input-group style="width: 100%" [nzAddOnAfter]="amountPercentAddOn">
+                <nz-input-number id="receivedAmount" style="width: 100%;" formControlName="receivedAmount" [nzMin]="0"></nz-input-number>
+              </nz-input-group>
+              <ng-template #amountPercentAddOn>
+                <span style="display:inline-block;width:100px;text-align:left;">占比: {{ amountPercent }}</span>
+              </ng-template>
               <nz-form-explain *ngIf="orderInfo.get('receivedAmount')?.dirty && orderInfo.get('receivedAmount')?.errors">
                 请填写已收金额
               </nz-form-explain>
@@ -537,7 +546,7 @@
 
           <div nz-col nzXs="24" nzSm="24" nzMd="12">
             <nz-form-item>
-              <nz-form-label nzXl="8" nzXXl="6" nzRequired>POD扫描件</nz-form-label>
+              <nz-form-label nzXl="8" nzXXl="6" nzRequired>POD扫描件, 如为CIP 港口导致没有POD，请提供空运单</nz-form-label>
               <nz-form-control nzXs="24" nzSm="24" nzMd="14">
                 <shared-upload-file formControlName="airTransportNo"></shared-upload-file>
                 <nz-form-explain *ngIf="cooProduct.get('airTransportNo')?.dirty && cooProduct.get('airTransportNo')?.errors">
@@ -634,9 +643,14 @@
               <label nz-radio nzValue="1">是</label>
               <label nz-radio nzValue="0">否</label>
             </nz-radio-group>
-            <nz-form-explain *ngIf="cooInfo.get('installationOrDispatch')?.dirty && cooInfo.get('installationOrDispatch')?.errors">
-              请选择是否已装机或派单
-            </nz-form-explain>
+            <ng-container *ngIf="cooInfo.get('installationOrDispatch')?.dirty && cooInfo.get('installationOrDispatch')?.errors">
+              <nz-form-explain *ngIf="cooInfo.get('installationOrDispatch')?.errors?.required">
+                请选择是否已装机或派单
+              </nz-form-explain>
+              <nz-form-explain *ngIf="cooInfo.get('installationOrDispatch')?.errors?.disableSubmit">
+                是否已装机或派单选择"是"时, 无法提交特批申请
+              </nz-form-explain>
+            </ng-container>
           </nz-form-control>
         </nz-form-item>
       </div>
@@ -649,9 +663,14 @@
               <label nz-radio nzValue="1">是</label>
               <label nz-radio nzValue="0">否</label>
             </nz-radio-group>
-            <nz-form-explain *ngIf="cooInfo.get('threeMonthsAfterArrival')?.dirty && cooInfo.get('threeMonthsAfterArrival')?.errors">
-              请选择是否到货>3个月
-            </nz-form-explain>
+            <ng-container *ngIf="cooInfo.get('threeMonthsAfterArrival')?.dirty && cooInfo.get('threeMonthsAfterArrival')?.errors">
+              <nz-form-explain *ngIf="cooInfo.get('threeMonthsAfterArrival')?.errors?.required">
+                请选择是否到货>3个月
+              </nz-form-explain>
+              <nz-form-explain *ngIf="cooInfo.get('threeMonthsAfterArrival')?.errors?.disableSubmit">
+                是否到货>3个月选择"是"时, 无法提交特批申请
+              </nz-form-explain>
+            </ng-container>
           </nz-form-control>
         </nz-form-item>
       </div>
@@ -661,7 +680,7 @@
         <nz-form-item>
           <nz-form-label nzXl="8" nzXXl="6" nzRequired>经销商是否为COO签署12个月内未签回ICF</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <nz-radio-group formControlName="cooSignedNotIcf">
+            <nz-radio-group formControlName="cooSignedNotIcf" (ngModelChange)="onCooSignedNotIcf($event)">
               <label nz-radio nzValue="1">是</label>
               <label nz-radio nzValue="0">否</label>
             </nz-radio-group>

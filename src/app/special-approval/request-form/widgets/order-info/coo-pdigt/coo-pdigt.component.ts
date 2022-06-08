@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, ViewChild, OnChanges, SimpleChanges } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
+import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms'
 import { 
   ORDER_TYPES,
   BUSINESS_MODEL,
@@ -13,12 +13,30 @@ import { Dealer, SelectDealerComponent } from '../../select-dealer/select-dealer
 import { Hospital, SelectHospitalComponent } from '../../select-hospital/select-hospital.component';
 import { Reference, SelectReferenceComponent } from '../../select-reference/select-reference.component'
 
+
+const hospitalDealerValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
+  const businessModel = control.get('businessModel').value
+  const hospitalName = control.get('hospitalName').value
+  const dealerName = control.get('dealerName').value
+  if (businessModel === BUSINESS_MODEL.DISTRIBUTOR_DEAL) {
+    if (!hospitalName && !dealerName) {
+      return { hospitalDealerRequired: true }
+    }
+  } else if(!hospitalName) {
+    return { hospitalRequired: true  }
+  }
+  return null
+}
+
+const disableSubmitValidtor: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
+  return control.value === '1' ? { disableSubmit: true } : null
+}
+
 @Component({
   selector: 'special-approval-coo-pdigt-order-info',
   templateUrl: 'coo-pdigt.component.html',
   styleUrls: ['./cos-pdigt.component.scss']
 })
-
 export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
 
   originOrderInfo = {}
@@ -79,13 +97,13 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
     receivedAmount: [null], // 已收金额
     purchaseOrderNo: [null], // 采购订单
     purchaseAgreement: [null], // 买卖协议
-  })
+  }, { validators: hospitalDealerValidator })
 
   cooInfo = this.fb.group({
-    installationOrDispatch: [null, [Validators.required]], // 是否已装机或派单
-    threeMonthsAfterArrival: [null, [Validators.required]], // 是否到货>3个月
+    installationOrDispatch: [null, [Validators.required, disableSubmitValidtor]], // 是否已装机或派单
+    threeMonthsAfterArrival: [null, [Validators.required, disableSubmitValidtor]], // 是否到货>3个月
     cooSignedNotIcf: [null, [Validators.required]], // 经销商是否为COO签署12个月内未签回ICF
-    specialApproval: [null, [Validators.required]], // 是否需要特批
+    specialApproval: [{ value: null, disabled: true }, [Validators.required]], // 是否需要特批
     applySignedDate: [null], // 申请签署日期
     cooConfirmationLetterDraft: [null], // COO确认函草稿
     cooConfirmationLetterDealer: [null], // 经销商盖章后的COO确认函
@@ -100,6 +118,15 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
     paymentMethodList: PAYMENT_METHOD_PDIGT_LIST,
     foreignCompanies: []
   } 
+
+  // 已收金额/合同金额
+  get amountPercent() {
+    let { orderAmount, receivedAmount } = this.orderInfo.getRawValue()
+    receivedAmount = Number(receivedAmount || 0)
+    orderAmount = Number(orderAmount)
+    const percent = Number(receivedAmount / orderAmount * 100).toFixed(2)
+    return `${percent}%`
+  }
 
   get products(): FormArray {
     return this.orderInfo.get('products') as FormArray
@@ -328,6 +355,12 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
     })
   }
 
+  onCooSignedNotIcf(cooSignedNotIcf) {
+    this.cooInfo.patchValue({
+      specialApproval: cooSignedNotIcf
+    })
+  }
+
   onCycleGroupChange() {
     this.orderInfo.patchValue({ bigArea: null })
   }
@@ -375,7 +408,45 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
   }
 
   onSelectReference(reference: Reference) {
-    
+    const {
+      referenceId,
+      orderType,
+      productModel,
+      sap,
+      team,
+      region,
+      bmc,
+      businessModel,
+      distributor,
+      dealerCode,
+      endUser,
+      endUserId,
+      contractPrice,
+      invoiceInformation,
+      logistician,
+      marketBundleQuantity,
+    } = reference
+    this.orderInfo.patchValue({
+      referenceId,
+      orderType,
+      productModel,
+      sapOrderNo: sap,
+      cycleGroup: team,
+      bigArea: region,
+      bmc,
+      businessModel: businessModel ? businessModel.toLowerCase() : null,
+      dealerName: distributor,
+      dealerCode,
+      hospitalName: endUser,
+      hospitalNo: endUserId,
+      orderAmount: contractPrice,
+      currency: invoiceInformation,
+      om: logistician,
+    })
+    this.products.at(0).patchValue({
+      productType: productModel,
+      quantity: marketBundleQuantity,
+    })
   }
 
   onShowSelectHospitalModal() {

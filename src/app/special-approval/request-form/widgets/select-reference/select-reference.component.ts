@@ -83,7 +83,7 @@ export class SelectReferenceComponent implements OnInit {
   public showModal(needCreateUser = true, moneyHide: boolean = false) {
     this.visible = true
     this.moneyHide = moneyHide
-     this.needCreateUser = needCreateUser
+    this.needCreateUser = needCreateUser
     this.getReferenceList(false)
   }
 
