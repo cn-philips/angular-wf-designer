@@ -258,7 +258,8 @@ export class RequestFormComponent implements OnInit {
       currency: [null, [Validators.required]], // 合同金额-货币
       expectedSaleDate: [null, [Validators.required]], // 预计记认销售日期
       applyArrivalTime: [null, [Validators.required]], // 申请到货时间
-      expectedPaymentDate: [null, [Validators.required]], // 预计付款(或场地就位)日期
+      expectedPaymentDate: [null], // 预计付款日期
+      expectedSitePlaceDate: [null], // 预计场地就位日期
       om: [null], // OM
       exchangeRole: [null], // 换货角色
       exchangeProcessing: [null], // 换货方式
@@ -666,6 +667,20 @@ export class RequestFormComponent implements OnInit {
           this.basicInfo.controls.applyItemDesc.setValidators([Validators.required]);
         }
         break
+      case APPLY_TYPE.PRODUCTION:
+        if (item === 'sp_production_apply_item_1') {
+          this.orderInfo.get('expectedPaymentDate').setValidators(Validators.required)
+        } else if (item === 'sp_production_apply_item_2') {
+          this.orderInfo.get('expectedSitePlaceDate').setValidators(Validators.required)
+        }
+        break
+      case APPLY_TYPE.SPECIAL_DELIVERY:
+        if (item === 'sp_delivery_apply_item_1') {
+          this.orderInfo.get('expectedPaymentDate').setValidators(Validators.required)
+        } else if (item === 'sp_delivery_apply_item_2') {
+          this.orderInfo.get('expectedSitePlaceDate').setValidators(Validators.required)
+        }
+        break
     }
 
     if (bg === 'PD&IGT') {
@@ -680,7 +695,7 @@ export class RequestFormComponent implements OnInit {
 
   public getFormData() {
     const { basicInfo, orderInfo, ccInfo, rddOitOrderInfos, changeOrderInfos, lcAmendmentOrderInfo, transferLibOrders, exchangeInfo, orderDifferences, cancelorderInfo, deBookOrderInfos, orderReplacementInfo, noneDirectOrderInfo, lastBuyInfos  } = this.formValues.getRawValue()
-    const { applyArrivalTime, expectedPaymentDate, expectedSaleDate, products } = orderInfo
+    const { applyArrivalTime, expectedPaymentDate, expectedSitePlaceDate, expectedSaleDate, products } = orderInfo
     const extInfo = {
       exchangeMethod: changeOrderInfos.exchangeMethod
     }
@@ -699,6 +714,7 @@ export class RequestFormComponent implements OnInit {
             ...orderInfo,
             applyArrivalTime: applyArrivalTime ? moment(applyArrivalTime).format('YYYY-MM-DD') : null,
             expectedPaymentDate: expectedPaymentDate ? moment(expectedPaymentDate).format('YYYY-MM-DD') : null,
+            expectedSitePlaceDate: expectedSitePlaceDate ? moment(expectedSitePlaceDate).format('YYYY-MM-DD') : null,
             expectedSaleDate: expectedSaleDate ? moment(expectedSaleDate).format('YYYY-MM-DD') : null,
             products: products.map(({ productType, wbsNo, itemNo, quantity }) => ({ productType, wbsNo, itemNo, quantity }))
           }
@@ -872,6 +888,7 @@ export class RequestFormComponent implements OnInit {
             ...orderInfo,
             applyArrivalTime: applyArrivalTime ? moment(applyArrivalTime).format('YYYY-MM-DD') : null,
             expectedPaymentDate: expectedPaymentDate ? moment(expectedPaymentDate).format('YYYY-MM-DD') : null,
+            expectedSitePlaceDate: expectedSitePlaceDate ? moment(expectedSitePlaceDate).format('YYYY-MM-DD') : null,
             expectedSaleDate: expectedSaleDate ? moment(expectedSaleDate).format('YYYY-MM-DD') : null,
             products: products.map(({ productType, wbsNo, itemNo, quantity }) => ({ productType, wbsNo, itemNo, quantity }))
           }
