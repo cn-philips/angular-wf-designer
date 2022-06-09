@@ -1,15 +1,19 @@
 import { Component, OnInit, Input, ViewChild, OnChanges, SimpleChanges } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
-import { BG_LIST, BUSINESS_MODEL, BUSINESS_MODEL_LIST, CURRENCIES, FIELD_STATUS_LIST, FIELD_STATUS_OTHER, PAYMENT_METHOD_LIST } from '../../../../special-approval.constants'
+import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms'
+import { BG_LIST, BUSINESS_MODEL, BUSINESS_MODEL_LIST, CURRENCIES, FIELD_STATUS_LIST, FIELD_STATUS_OTHER, PAYMENT_METHOD_LIST, PROCESS_STATUS } from '../../../../special-approval.constants'
 import { SpecialApprovalService } from '../../../../special-approval.service'
 import { Dealer, SelectDealerComponent } from '../../select-dealer/select-dealer.component';
+
+
+const disableSubmitValidtor: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
+  return control.value === '1' ? { disableSubmit: true } : null
+}
 
 @Component({
   selector: 'special-approval-coo-us-order-info',
   templateUrl: 'coo-us.component.html',
   styleUrls: ['./cos-us.component.scss']
 })
-
 export class CooUsOrderInfoComponent implements OnInit, OnChanges {
 
   originOrderInfo = {}
@@ -70,10 +74,10 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
     newOrOldHospital: [null, [Validators.required]], // 新建医院还是老医院新院区
     expectedFieldDate: [null, [Validators.required]], // 预计场地就位日期
     planIcfDate: [null, [Validators.required]], // 计划ICF时间
-    installationOrDispatch: [null, [Validators.required]], // 是否已装机或派单
-    threeMonthsAfterArrival: [null, [Validators.required]], // 是否到货>3个月
+    installationOrDispatch: [null, [Validators.required, disableSubmitValidtor]], // 是否已装机或派单
+    threeMonthsAfterArrival: [null, [Validators.required, disableSubmitValidtor]], // 是否到货>3个月
     cooSignedNotIcf: [null, [Validators.required]], // 经销商是否为COO签署12个月内未签回ICF
-    specialApproval: [null, [Validators.required]], // 是否需要特批
+    specialApproval: [{ value: null, disabled: true }, [Validators.required]], // 是否需要特批
     applySignedDate: [null], // 申请签署日期
     cooConfirmationLetterDraft: [null], // COO确认函草稿
     airTransportNoDealer: [null], // 经销商盖章后的空运单
@@ -132,7 +136,7 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
   // node1: SC Planning补充信息
   // node3: OM 补充信息
   // node4: OA 补充信息
-  setFormValidators({ nodeCode, nodeInfoList }) {
+  setFormValidators({ nodeCode, nodeInfoList, processStatus }) {
     const currentNode = nodeInfoList.find(({ code }) => code === nodeCode)
     const orderInfoRequiredFields = []
     const orderInfoEnabledFields = []
@@ -148,80 +152,90 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
       const { approverList } = currentNode
       isActiveApprover = approverList.some(({ approved, user }) => !approved && user === this.loginUserCode1)
     }
-    if (nodeCode > 'node0') {
-      this.showScPlanningField = true
-    }
+    switch(processStatus) {
+      case PROCESS_STATUS.COMPLETED:
+        this.showScPlanningField = true
+        this.showOmField = true
+        this.showOaField = true
+        this.showSalesFeedbackField = true
+        this.showScPlanningFeedbackField = true
+        break
+      case PROCESS_STATUS.START:
+        if (nodeCode > 'node0') {
+          this.showScPlanningField = true
+        }
+    
+        if (nodeCode > 'node2') {
+          this.showOmField = true
+        }
+    
+        if(nodeCode > 'node3') {
+          this.showOaField = true
+        }
+    
+        if(nodeCode > 'node6') {
+          this.showSalesFeedbackField = true
+        }
+    
+        if (nodeCode > 'node7') {
+          this.showScPlanningFeedbackField = true
+        }
 
-    if (nodeCode > 'node2') {
-      this.showOmField = true
-    }
-
-    if(nodeCode > 'node3') {
-      this.showOaField = true
-    }
-
-    if(nodeCode > 'node6') {
-      this.showSalesFeedbackField = true
-    }
-
-    if (nodeCode > 'node7') {
-      this.showScPlanningFeedbackField = true
-    }
-
-    if (isActiveApprover) {
-      switch (nodeCode) {
-        case 'node1': // SC Planning补充信息
-          // orderInfo
-          orderInfoRequiredFields.push('contractNo', 'currency', 'shipToName')
-          orderInfoEnabledFields.push('contractNo', 'currency', 'shipToName')
-          // products
-          productsRequiredFields.push('productType', 'orderDate', 'productionDate', 'arrivalDate')
-          productsEnabledFields.push('productType', 'orderDate', 'productionDate', 'arrivalDate')
-          break
-        case 'node3': // OM补充信息 
-          // orderInfo
-          orderInfoEnabledFields.push('paymentMethod', 'paymentReceived')
-          orderInfoRequiredFields.push('paymentMethod', 'paymentReceived')
-          // products
-          productsRequiredFields.push('goodsDeliveryDate', 'equipmentSn')
-          productsEnabledFields.push('goodsDeliveryDate', 'equipmentSn')
-          // cooProduct
-          cooProductEnabledFields.push(
-            'cipPort', 'airTransportNo', 'addressType',
-            'deliveryAddress', 'deliveryAddressEn',
-            'customsClearancePort', 'customsClearancePortEn'
-          )
-          cooProductRequiredFields.push('airTransportNo', 'addressType', 'customsClearancePort', 'customsClearancePortEn')
-          if (this.cooProduct.get('cipPort').value === '0') {
-            cooProductRequiredFields.push('deliveryAddress', 'deliveryAddressEn')
+        if (isActiveApprover) {
+          switch (nodeCode) {
+            case 'node1': // SC Planning补充信息
+              // orderInfo
+              orderInfoRequiredFields.push('contractNo', 'currency', 'shipToName')
+              orderInfoEnabledFields.push('contractNo', 'currency', 'shipToName')
+              // products
+              productsRequiredFields.push('productType', 'orderDate', 'productionDate', 'arrivalDate')
+              productsEnabledFields.push('productType', 'orderDate', 'productionDate', 'arrivalDate')
+              break
+            case 'node3': // OM补充信息 
+              // orderInfo
+              orderInfoEnabledFields.push('paymentMethod', 'paymentReceived')
+              orderInfoRequiredFields.push('paymentMethod', 'paymentReceived')
+              // products
+              productsRequiredFields.push('goodsDeliveryDate', 'equipmentSn')
+              productsEnabledFields.push('goodsDeliveryDate', 'equipmentSn')
+              // cooProduct
+              cooProductEnabledFields.push(
+                'cipPort', 'airTransportNo', 'addressType',
+                'deliveryAddress', 'deliveryAddressEn',
+                'customsClearancePort', 'customsClearancePortEn'
+              )
+              cooProductRequiredFields.push('airTransportNo', 'addressType', 'customsClearancePort', 'customsClearancePortEn')
+              if (this.cooProduct.get('cipPort').value === '0') {
+                cooProductRequiredFields.push('deliveryAddress', 'deliveryAddressEn')
+              }
+              break
+            case 'node4': // OA补充信息
+              // orderInfo
+              orderInfoRequiredFields.push('purchaseOrderNo')
+              orderInfoEnabledFields.push('purchaseOrderNo')
+              // products
+              productsRequiredFields.push('equipmentDescription', 'equipmentDescriptionEn', 'guaranteeMonth')
+              productsEnabledFields.push('equipmentDescription', 'equipmentDescriptionEn', 'guaranteeMonth')
+              if (this.orderInfo.get('businessModel').value === BUSINESS_MODEL.DISTRIBUTOR_DEAL) {
+                orderInfoRequiredFields.push('dealerName', 'dealerCode')
+                orderInfoEnabledFields.push('dealerName', 'dealerCode')
+                this.showSelectDealerBtn = true
+              }
+              break
+            case 'node7': // 申请人反馈
+              // cooInfo
+              cooInfoRequiredFields.push('applySignedDate', 'cooConfirmationLetterDraft', 'airTransportNoDealer', 'cooConfirmationLetterDealer')
+              cooInfoEnabledFields.push('applySignedDate', 'cooConfirmationLetterDraft', 'airTransportNoDealer', 'cooConfirmationLetterDealer')
+              break
+            case 'node8': // SC Planning反馈
+              // cooInfo
+              cooInfoRequiredFields.push('cooConfirmationLetterSign')
+              cooInfoEnabledFields.push('cooConfirmationLetterSign')
+              break
           }
-          break
-        case 'node4': // OA补充信息
-          // orderInfo
-          orderInfoRequiredFields.push('purchaseOrderNo')
-          orderInfoEnabledFields.push('purchaseOrderNo')
-          // products
-          productsRequiredFields.push('equipmentDescription', 'equipmentDescriptionEn', 'guaranteeMonth')
-          productsEnabledFields.push('equipmentDescription', 'equipmentDescriptionEn', 'guaranteeMonth')
-          if (this.orderInfo.get('businessModel').value === BUSINESS_MODEL.DISTRIBUTOR_DEAL) {
-            orderInfoRequiredFields.push('dealerName', 'dealerCode')
-            orderInfoEnabledFields.push('dealerName', 'dealerCode')
-            this.showSelectDealerBtn = true
-          }
-          break
-        case 'node7': // 申请人反馈
-          // cooInfo
-          cooInfoRequiredFields.push('applySignedDate', 'cooConfirmationLetterDraft', 'airTransportNoDealer', 'cooConfirmationLetterDealer')
-          cooInfoEnabledFields.push('applySignedDate', 'cooConfirmationLetterDraft', 'airTransportNoDealer', 'cooConfirmationLetterDealer')
-          break
-        case 'node8': // SC Planning反馈
-          // cooInfo
-          cooInfoRequiredFields.push('cooConfirmationLetterSign')
-          cooInfoEnabledFields.push('cooConfirmationLetterSign')
-          break
-      }
+        }
+        break
     }
-
     orderInfoRequiredFields.forEach((fieldName) => this.orderInfo.get(fieldName).setValidators(Validators.required))
     orderInfoEnabledFields.forEach((fieldName) => this.orderInfo.get(fieldName).enable())
     cooProductRequiredFields.forEach((fieldName) => this.cooProduct.get(fieldName).setValidators(Validators.required))
@@ -358,6 +372,12 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
       equipmentDescription: [null], // 设备名称和描述中文
       equipmentDescriptionEn: [null], // 设备名称和描述英文
       guaranteeMonth: [null], // 保修期
+    })
+  }
+
+  onCooSignedNotIcf(cooSignedNotIcf) {
+    this.cooInfo.patchValue({
+      specialApproval: cooSignedNotIcf
     })
   }
 
