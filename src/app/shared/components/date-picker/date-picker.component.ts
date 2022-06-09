@@ -58,6 +58,8 @@ export class DatePickerComponent implements OnInit, ControlValueAccessor {
   onDateChange(date) {
     const formatStr = this.format || DEFAULT_FORMAT[this.mode]
     const _value = date ? moment(date).format(formatStr) : null
+    console.log(_value);
+    
     this.onChange(_value)
   }
 }

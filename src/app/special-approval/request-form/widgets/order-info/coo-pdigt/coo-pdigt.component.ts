@@ -7,6 +7,7 @@ import {
   CURRENCIES,
   PAYMENT_METHOD_PDIGT_LIST,
   PAYMENT_METHOD_PDIGT_OTHER,
+  PROCESS_STATUS,
 } from '../../../../special-approval.constants'
 import { SpecialApprovalService } from '../../../../special-approval.service'
 import { Dealer, SelectDealerComponent } from '../../select-dealer/select-dealer.component';
@@ -171,7 +172,7 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
   // node1: OM 补充信息
   // node2: 上传经销商盖章后的COO确认函
   // node6: 上传双签后的COO确认函
-  setFormValidators({ nodeCode, nodeInfoList }) {
+  setFormValidators({ nodeCode, nodeInfoList, processStatus }) {
     const currentNode = nodeInfoList.find(({ code }) => code === nodeCode)
     const orderInfoRequiredFields = []
     const orderInfoEnabledFields = []
@@ -187,53 +188,49 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
       const { approverList } = currentNode
       isActiveApprover = approverList.some(({ approved, user }) => !approved && user === this.loginUserCode1)
     }
-    if (nodeCode > 'node0') {
-      this.showOmField = true
-    }
-
-    if (nodeCode > 'node1') {
-      this.showPmField = true
-    }
-
-    if(nodeCode > 'node5') {
-      this.showPmFeedbackField = true
-    }
-
-    if (isActiveApprover) {
-      switch (nodeCode) {
-        case 'node1': // OM补充信息
-          // orderInfo
-          orderInfoRequiredFields.push('shipToName', 'paymentReceived', 'receivedAmount', 'purchaseOrderNo')
-          orderInfoEnabledFields.push('shipToName', 'paymentReceived', 'receivedAmount', 'purchaseOrderNo', 'purchaseAgreement')
-          if (this.orderInfo.get('currency').value === 'USD') {
-            orderInfoRequiredFields.push('purchaseAgreement')
-            this.isPurchaseAgreementRequired = true
+    switch(processStatus) {
+      case PROCESS_STATUS.COMPLETED:
+        this.showOmField = true
+        this.showPmField = true
+        this.showPmFeedbackField = true
+        break
+      case PROCESS_STATUS.START:
+        if (isActiveApprover) {
+          switch (nodeCode) {
+            case 'node1': // OM补充信息
+              // orderInfo
+              orderInfoRequiredFields.push('shipToName', 'paymentReceived', 'receivedAmount', 'purchaseOrderNo')
+              orderInfoEnabledFields.push('shipToName', 'paymentReceived', 'receivedAmount', 'purchaseOrderNo', 'purchaseAgreement')
+              if (this.orderInfo.get('currency').value === 'USD') {
+                orderInfoRequiredFields.push('purchaseAgreement')
+                this.isPurchaseAgreementRequired = true
+              }
+              // products
+              productsRequiredFields.push('equipmentSn', 'orderDate', 'productionDate', 'arrivalDate', 'goodsDeliveryDate')
+              productsEnabledFields.push('wbsNo', 'itemNo', 'equipmentSn', 'orderDate', 'productionDate', 'arrivalDate', 'goodsDeliveryDate')
+              // cooProduct
+              cooProductEnabledFields.push(
+                'cipPort', 'airTransportNo', 'addressType',
+                'deliveryAddress', 'deliveryAddressEn',
+                'customsClearancePort', 'customsClearancePortEn'
+              )
+              cooProductRequiredFields.push(
+                'cipPort', 'airTransportNo', 'addressType',
+                'deliveryAddress', 'deliveryAddressEn',
+                'customsClearancePort', 'customsClearancePortEn'
+              )
+              break
+            case 'node2': // PM补充信息
+              // cooInfo
+              cooInfoRequiredFields.push('applySignedDate', 'cooConfirmationLetterDraft', 'cooConfirmationLetterDealer')
+              cooInfoEnabledFields.push('applySignedDate', 'cooConfirmationLetterDraft', 'cooConfirmationLetterDealer')
+              break
+            case 'node6':
+              cooInfoRequiredFields.push('cooConfirmationLetterSign')
+              cooInfoEnabledFields.push('cooConfirmationLetterSign')
+              break
           }
-          // products
-          productsRequiredFields.push('equipmentSn', 'orderDate', 'productionDate', 'arrivalDate', 'goodsDeliveryDate')
-          productsEnabledFields.push('wbsNo', 'itemNo', 'equipmentSn', 'orderDate', 'productionDate', 'arrivalDate', 'goodsDeliveryDate')
-          // cooProduct
-          cooProductEnabledFields.push(
-            'cipPort', 'airTransportNo', 'addressType',
-            'deliveryAddress', 'deliveryAddressEn',
-            'customsClearancePort', 'customsClearancePortEn'
-          )
-          cooProductRequiredFields.push(
-            'cipPort', 'airTransportNo', 'addressType',
-            'deliveryAddress', 'deliveryAddressEn',
-            'customsClearancePort', 'customsClearancePortEn'
-          )
-          break
-        case 'node2': // PM补充信息
-          // cooInfo
-          cooInfoRequiredFields.push('applySignedDate', 'cooConfirmationLetterDraft', 'cooConfirmationLetterDealer')
-          cooInfoEnabledFields.push('applySignedDate', 'cooConfirmationLetterDraft', 'cooConfirmationLetterDealer')
-          break
-        case 'node6':
-          cooInfoRequiredFields.push('cooConfirmationLetterSign')
-          cooInfoEnabledFields.push('cooConfirmationLetterSign')
-          break
-      }
+        }
     }
 
     orderInfoRequiredFields.forEach((fieldName) => this.orderInfo.get(fieldName).setValidators(Validators.required))
