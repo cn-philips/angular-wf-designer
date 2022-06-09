@@ -37,8 +37,8 @@
           <sidenav-menu
             icon="{{ item.icon }}"
             text="{{ item.jurisdictionName }}"
-            [active]="isActiveParent(item.route)"
-            [open]="isMenuOpenAlt(item.route)"
+            [active]="isParentActive(item)"
+            [open]="isParentActive(item)"
           >
             <!-- {{item.jurisdictionName}} -->
             <ng-container
