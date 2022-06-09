@@ -240,15 +240,27 @@
 
     <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
       <div nz-col nzXs="24" nzSm="24" nzMd="12">
-        <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6" nzRequired>{{ applyItem === 'sp_delivery_apply_item_1' ? '预计付款日期' :
-            '预计场地就位日期' }}</nz-form-label>
+        <!--applyItem==='未付款'：预计付款日期-->
+        <nz-form-item *ngIf="applyItem ==='sp_delivery_apply_item_1'">
+          <nz-form-label nzXl="8" nzXXl="6" nzRequired>预计付款日期</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <nz-date-picker formControlName="expectedPaymentDate" style="width: 100%" [nzStyle]="{ width: '100%' }">
             </nz-date-picker>
             <nz-form-explain
               *ngIf="formValues.get('expectedPaymentDate')?.dirty && formValues.get('expectedPaymentDate')?.errors">
-              {{ applyItem === 'sp_delivery_apply_item_1' ? '请选择预计付款日期' : '请选择预计场地就位日期' }}
+              请选择预计付款日期
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+        <!--applyItem==='场地未好'：预计场地就位日期-->
+        <nz-form-item *ngIf="applyItem ==='sp_delivery_apply_item_2'">
+          <nz-form-label nzXl="8" nzXXl="6" nzRequired>预计场地就位日期</nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <nz-date-picker formControlName="expectedSitePlaceDate" style="width: 100%" [nzStyle]="{ width: '100%' }">
+            </nz-date-picker>
+            <nz-form-explain
+              *ngIf="formValues.get('expectedSitePlaceDate')?.dirty && formValues.get('expectedSitePlaceDate')?.errors">
+              请选择预计场地就位日期
             </nz-form-explain>
           </nz-form-control>
         </nz-form-item>
