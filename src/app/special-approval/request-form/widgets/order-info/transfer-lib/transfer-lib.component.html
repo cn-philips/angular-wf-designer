@@ -205,7 +205,8 @@
                 <nz-form-control nzXs="24" nzSm="24" nzMd="14">
                   <nz-input-group style="width: 100%;font-size: 0;">
                     <nz-select formControlName="cycleGroup" style="width: 100%;margin-right:4%"
-                      [nzPlaceHolder]="editable?'Team/Cycle Group' : ''" (ngModelChange)="onBigAreaChange($event, index)">
+                      [nzPlaceHolder]="editable?'Team/Cycle Group' : ''"
+                      (ngModelChange)="onBigAreaChange($event, index)">
                       <nz-option *ngFor="let item of spService.cycleGroups" [nzLabel]="item.label"
                         [nzValue]="item.value"></nz-option>
                       <nz-option *ngIf="spService.cycleGroups.length === 0" nzLabel="请先选择Team/Cycle Group"
@@ -310,8 +311,8 @@
             <div nz-col nzSpan="24" [@openClose]="isExpand ? 'close' : 'open'">
               <nz-form-item class="order-list-normal-item">
                 <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-                  <input *ngIf="isCreateUser[index]" id="orderAmount" type="text" nz-input
-                    formControlName="orderAmount" />
+                  <input *ngIf="isCreateUser[index]" id="orderAmount" type="text" nz-input formControlName="orderAmount"
+                    [ngModel]="ord.get('orderAmount').value|pricePermissions" />
                   <nz-form-explain *ngIf="ord.get('orderAmount')?.dirty && ord.get('orderAmount')?.errors">
                     请填写合同金额
                   </nz-form-explain>
