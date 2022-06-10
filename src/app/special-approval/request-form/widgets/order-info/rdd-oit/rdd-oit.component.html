@@ -10,14 +10,8 @@
   </header>
 
   <div class="table-container">
-    <nz-table 
-      nzBordered
-      nzSize="small"
-      [nzData]="formValues.value"
-      [nzFrontPagination]="false"
-      [nzScroll]="{ x: '1000px' }"
-      [nzShowPagination]="false"
-    >
+    <nz-table nzBordered nzSize="small" [nzData]="formValues.value" [nzFrontPagination]="false"
+      [nzScroll]="{ x: '1000px' }" [nzShowPagination]="false">
       <thead>
         <tr>
           <th nzWidth="150px">*订单类型</th>
@@ -63,7 +57,8 @@
             <nz-form-item *ngIf="data.isMain">
               <nz-form-control>
                 <nz-select [(ngModel)]="data.orderType" style="width: 100%;" [disabled]="!editable" required>
-                  <nz-option *ngFor="let item of selectOptions.orderTypes" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+                  <nz-option *ngFor="let item of selectOptions.orderTypes" [nzLabel]="item.label"
+                    [nzValue]="item.value"></nz-option>
                 </nz-select>
                 <nz-form-explain class="error-msg" *ngIf="!data.orderType">
                   请选择订单类型
@@ -88,13 +83,14 @@
           <td>
             <nz-form-item *ngIf="data.isMain">
               <nz-form-control>
-                <nz-select style="width: 100%;" [(ngModel)]="data.bmc" (ngModelChange)="onBmcChange(data)" [disabled]="!editable" required>
+                <nz-select style="width: 100%;" [(ngModel)]="data.bmc" (ngModelChange)="onBmcChange(data)"
+                  [disabled]="!editable" required>
                   <nz-option *ngFor="let item of bmcList" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
                 </nz-select>
                 <nz-form-explain class="error-msg" *ngIf="!data.bmc">
                   请选择产品线
                 </nz-form-explain>
-              </nz-form-control>  
+              </nz-form-control>
             </nz-form-item>
           </td>
           <td>
@@ -107,11 +103,14 @@
           <td>
             <nz-form-item *ngIf="data.isMain">
               <nz-form-control>
-                <nz-select style="width: 48%;" [(ngModel)]="data.cycleGroup" (ngModelChange)="onCycleGroupChange(data)" [disabled]="!editable" required>
-                  <nz-option *ngFor="let item of spService.cycleGroups" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+                <nz-select style="width: 48%;" [(ngModel)]="data.cycleGroup" (ngModelChange)="onCycleGroupChange(data)"
+                  [disabled]="!editable" required>
+                  <nz-option *ngFor="let item of spService.cycleGroups" [nzLabel]="item.label" [nzValue]="item.value">
+                  </nz-option>
                 </nz-select>
                 <nz-select style="width: 48%;" [(ngModel)]="data.bigArea" [disabled]="!editable" required>
-                  <nz-option *ngFor="let item of spService.cycleGroupBigAreaMap[data.cycleGroup]" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+                  <nz-option *ngFor="let item of spService.cycleGroupBigAreaMap[data.cycleGroup]" [nzLabel]="item.label"
+                    [nzValue]="item.value"></nz-option>
                 </nz-select>
               </nz-form-control>
             </nz-form-item>
@@ -119,8 +118,10 @@
           <td>
             <nz-form-item *ngIf="data.isMain">
               <nz-form-control>
-                <nz-select style="width: 100%;" [(ngModel)]="data.businessModel" [disabled]="!editable" (ngModelChange)="onBusinessModelChange(data)" required>
-                  <nz-option *ngFor="let item of selectOptions.businessModels" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+                <nz-select style="width: 100%;" [(ngModel)]="data.businessModel" [disabled]="!editable"
+                  (ngModelChange)="onBusinessModelChange(data)" required>
+                  <nz-option *ngFor="let item of selectOptions.businessModels" [nzLabel]="item.label"
+                    [nzValue]="item.value"></nz-option>
                 </nz-select>
                 <nz-form-explain class="error-msg" *ngIf="!data.businessModel">
                   请选择业务模式
@@ -131,28 +132,19 @@
           <td>
             <nz-form-item *ngIf="data.businessModel === BUSINESS_MODEL.DISTRIBUTOR_DEAL && data.isMain">
               <nz-form-control>
-                <nz-input-group 
-                  style="width: 100%"
-                  [nzSuffix]="clearDealerBtn"
-                  [nzAddOnAfter]="selectDealerBtn"
-                >
-                  <input type="text" nz-input [ngModel]="data.dealerName" [placeholder]="editable ? '点击右侧按钮选择经销商' : ''" disabled />
+                <nz-input-group style="width: 100%" [nzSuffix]="clearDealerBtn" [nzAddOnAfter]="selectDealerBtn">
+                  <input type="text" nz-input [ngModel]="data.dealerName" [placeholder]="editable ? '点击右侧按钮选择经销商' : ''"
+                    disabled />
                 </nz-input-group>
                 <ng-template #clearDealerBtn>
-                  <i 
-                    nz-icon
-                    nz-tooltip
-                    class="ant-input-clear-icon"
-                    nzTheme="fill"
-                    nzType="close-circle"
-                    *ngIf="data.dealerName && editable"
-                    (click)="onClearDealer(data)"
-                  ></i>
+                  <i nz-icon nz-tooltip class="ant-input-clear-icon" nzTheme="fill" nzType="close-circle"
+                    *ngIf="data.dealerName && editable" (click)="onClearDealer(data)"></i>
                 </ng-template>
-    
+
                 <ng-template #selectDealerBtn>
                   <i *ngIf="data.dealerLoading" nz-icon nzType="loading" nzTheme="outline"></i>
-                  <button *ngIf="editable" nz-button nzType="primary" class="ml-md" (click)="onShowSelectDealerModal(data)">选择经销商</button>
+                  <button *ngIf="editable" nz-button nzType="primary" class="ml-md"
+                    (click)="onShowSelectDealerModal(data)">选择经销商</button>
                 </ng-template>
                 <nz-form-explain class="error-msg">
                   <ng-container *ngIf="data.dealerError">
@@ -166,14 +158,9 @@
             </nz-form-item>
           </td>
           <td>
-            <nz-form-item *ngIf="data.isMain && data.businessModel === BUSINESS_MODEL.DISTRIBUTOR_DEAL" >
+            <nz-form-item *ngIf="data.isMain && data.businessModel === BUSINESS_MODEL.DISTRIBUTOR_DEAL">
               <nz-form-control>
-                <input
-                  nz-input 
-                  [ngModel]="data.dealerCode" 
-                  disabled
-                  [placeholder]="editable ? '点击左侧按钮选择经销商' : ''"
-                />
+                <input nz-input [ngModel]="data.dealerCode" disabled [placeholder]="editable ? '点击左侧按钮选择经销商' : ''" />
               </nz-form-control>
             </nz-form-item>
           </td>
@@ -181,15 +168,18 @@
             <nz-form-item *ngIf="data.isMain">
               <nz-form-control>
                 <nz-input-group style="width: 100%" [nzSuffix]="clearHospitalBtn" [nzAddOnAfter]="selectHospitalBtn">
-                  <input type="text" nz-input [ngModel]="data.hospitalName" [placeholder]="editable ? '点击右侧按钮选择医院' : ''" disabled />
+                  <input type="text" nz-input [ngModel]="data.hospitalName" [placeholder]="editable ? '点击右侧按钮选择医院' : ''"
+                    disabled />
                 </nz-input-group>
                 <ng-template #clearHospitalBtn>
-                  <i nz-icon nz-tooltip class="ant-input-clear-icon" nzTheme="fill" nzType="close-circle" *ngIf="!data.hospitalLoading && data.hospitalName && editable" (click)="onClearHospital(data)"></i>
+                  <i nz-icon nz-tooltip class="ant-input-clear-icon" nzTheme="fill" nzType="close-circle"
+                    *ngIf="!data.hospitalLoading && data.hospitalName && editable" (click)="onClearHospital(data)"></i>
                 </ng-template>
-    
+
                 <ng-template #selectHospitalBtn>
                   <i *ngIf="data.hospitalLoading" nz-icon nzType="loading" nzTheme="outline"></i>
-                  <button *ngIf="editable && !data.hospitalLoading" nz-button nzType="primary" class="ml-md" (click)="onShowSelectHospitalModal(data)">选择医院</button>
+                  <button *ngIf="editable && !data.hospitalLoading" nz-button nzType="primary" class="ml-md"
+                    (click)="onShowSelectHospitalModal(data)">选择医院</button>
                 </ng-template>
 
                 <nz-form-explain class="error-msg">
@@ -197,7 +187,8 @@
                     医院数据验证失败, 请重新选择
                   </ng-container>
                   <ng-container *ngIf="!data.hospitalError">
-                    <ng-container *ngIf="data.businessModel === BUSINESS_MODEL.DISTRIBUTOR_DEAL && !data.dealerCode && !data.hospitalNo">
+                    <ng-container
+                      *ngIf="data.businessModel === BUSINESS_MODEL.DISTRIBUTOR_DEAL && !data.dealerCode && !data.hospitalNo">
                       请选择医院或者经销商
                     </ng-container>
                     <ng-container *ngIf="data.businessModel !== BUSINESS_MODEL.DISTRIBUTOR_DEAL && !data.hospitalNo">
@@ -238,7 +229,8 @@
           <td>
             <nz-form-item *ngIf="data.isMain">
               <nz-form-control>
-                <nz-input-number [(ngModel)]="data.orderAmount" [nzDisabled]="!editable" required style="width: 100%;" [nzMin]="0"></nz-input-number>
+                <nz-input-number [(ngModel)]="data.orderAmount" [nzDisabled]="!editable" required
+                  [ngModel]="data.orderAmount|pricePermissions" style="width: 100%;" [nzMin]="0"></nz-input-number>
                 <nz-form-explain class="error-msg" *ngIf="data.isMain && !data.orderAmount">
                   请填写合同金额
                 </nz-form-explain>
@@ -249,7 +241,8 @@
             <nz-form-item *ngIf="data.isMain">
               <nz-form-control>
                 <nz-select style="width: 100%;" [(ngModel)]="data.currency" [disabled]="!editable" required>
-                  <nz-option *ngFor="let item of selectOptions.currencies" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+                  <nz-option *ngFor="let item of selectOptions.currencies" [nzLabel]="item.label"
+                    [nzValue]="item.value"></nz-option>
                 </nz-select>
                 <nz-form-explain class="error-msg" *ngIf="data.isMain && !data.currency">
                   请选择币制
@@ -260,39 +253,24 @@
           <td>
             <nz-form-item *ngIf="data.isMain">
               <nz-form-control>
-                <nz-date-picker 
-                  [(ngModel)]="data.expectedSaleDate"
-                  style="width: 100%"
-                  [nzStyle]="{ width: '100%' }"
-                  [disabled]="!editable"
-                  [nzPlaceHolder]="editable ? '请选择日期' : ''"
-                ></nz-date-picker>
+                <nz-date-picker [(ngModel)]="data.expectedSaleDate" style="width: 100%" [nzStyle]="{ width: '100%' }"
+                  [disabled]="!editable" [nzPlaceHolder]="editable ? '请选择日期' : ''"></nz-date-picker>
               </nz-form-control>
             </nz-form-item>
           </td>
           <td>
             <nz-form-item *ngIf="data.isMain">
               <nz-form-control>
-                <nz-date-picker
-                  [(ngModel)]="data.expectedPaymentDate"
-                  style="width: 100%"
-                  [nzStyle]="{ width: '100%' }"
-                  [disabled]="!editable"
-                  [nzPlaceHolder]="editable ? '请选择日期' : ''"
-                ></nz-date-picker>
+                <nz-date-picker [(ngModel)]="data.expectedPaymentDate" style="width: 100%" [nzStyle]="{ width: '100%' }"
+                  [disabled]="!editable" [nzPlaceHolder]="editable ? '请选择日期' : ''"></nz-date-picker>
               </nz-form-control>
             </nz-form-item>
           </td>
           <td>
             <nz-form-item *ngIf="data.isMain">
               <nz-form-control>
-                <nz-date-picker
-                  [(ngModel)]="data.applyArrivalTime"
-                  style="width: 100%"
-                  [nzStyle]="{ width: '100%' }"
-                  [disabled]="!editable"
-                  [nzPlaceHolder]="editable ? '请选择日期' : ''"
-                ></nz-date-picker>
+                <nz-date-picker [(ngModel)]="data.applyArrivalTime" style="width: 100%" [nzStyle]="{ width: '100%' }"
+                  [disabled]="!editable" [nzPlaceHolder]="editable ? '请选择日期' : ''"></nz-date-picker>
               </nz-form-control>
             </nz-form-item>
           </td>
@@ -300,7 +278,8 @@
             <nz-form-item *ngIf="data.isMain">
               <nz-form-control>
                 <nz-select style="width: 100%;" [(ngModel)]="data.om" [disabled]="!editable">
-                  <nz-option *ngFor="let item of selectOptions.oms" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+                  <nz-option *ngFor="let item of selectOptions.oms" [nzLabel]="item.label" [nzValue]="item.value">
+                  </nz-option>
                 </nz-select>
               </nz-form-control>
             </nz-form-item>
@@ -308,8 +287,10 @@
           <td>
             <nz-form-item>
               <nz-form-control>
-                <nz-select style="width: 100%;" [(ngModel)]="data.subProductType" (ngModelChange)="onProductChange(data)" [disabled]="!editable" required>
-                  <nz-option *ngFor="let item of spService.usProductList" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+                <nz-select style="width: 100%;" [(ngModel)]="data.subProductType"
+                  (ngModelChange)="onProductChange(data)" [disabled]="!editable" required>
+                  <nz-option *ngFor="let item of spService.usProductList" [nzLabel]="item.label" [nzValue]="item.value">
+                  </nz-option>
                 </nz-select>
                 <nz-form-explain class="error-msg" *ngIf="!data.subProductType">
                   请选择产品型号
@@ -330,7 +311,8 @@
           <td>
             <nz-form-item>
               <nz-form-control>
-                <nz-date-picker [(ngModel)]="data.orderDate" style="width: 100%" [nzStyle]="{ width: '100%' }" [disabled]="!editable" required></nz-date-picker>
+                <nz-date-picker [(ngModel)]="data.orderDate" style="width: 100%" [nzStyle]="{ width: '100%' }"
+                  [disabled]="!editable" required></nz-date-picker>
                 <nz-form-explain class="error-msg" *ngIf="!data.orderDate">
                   请选择进单日期
                 </nz-form-explain>
@@ -340,7 +322,8 @@
           <td>
             <nz-form-item>
               <nz-form-control>
-                <nz-date-picker [(ngModel)]="data.originalRdd" style="width: 100%" [nzStyle]="{ width: '100%' }" [disabled]="!editable" required></nz-date-picker>
+                <nz-date-picker [(ngModel)]="data.originalRdd" style="width: 100%" [nzStyle]="{ width: '100%' }"
+                  [disabled]="!editable" required></nz-date-picker>
                 <nz-form-explain class="error-msg" *ngIf="!data.originalRdd">
                   请选择原RDD
                 </nz-form-explain>
@@ -360,7 +343,8 @@
           <td>
             <nz-form-item>
               <nz-form-control>
-                <nz-date-picker [(ngModel)]="data.newRdd" style="width: 100%" [nzStyle]="{ width: '100%' }" [disabled]="!editable" required></nz-date-picker>
+                <nz-date-picker [(ngModel)]="data.newRdd" style="width: 100%" [nzStyle]="{ width: '100%' }"
+                  [disabled]="!editable" required></nz-date-picker>
                 <nz-form-explain class="error-msg" *ngIf="!data.newRdd">
                   请选择新RDD
                 </nz-form-explain>
@@ -374,7 +358,8 @@
                   <nz-option nzLabel="是" [nzValue]="1"></nz-option>
                   <nz-option nzLabel="否" [nzValue]="0"></nz-option>
                 </nz-select>
-                <nz-form-explain class="error-msg" *ngIf="data.exchangeableOrder === null || data.exchangeableOrder === undefined">
+                <nz-form-explain class="error-msg"
+                  *ngIf="data.exchangeableOrder === null || data.exchangeableOrder === undefined">
                   请选择是否有可换货期订单
                 </nz-form-explain>
               </nz-form-control>
@@ -390,11 +375,14 @@
           <td>
             <nz-form-item>
               <nz-form-control>
-                <nz-select style="width: 48%;" [(ngModel)]="data.exchangeableOrderSaleCycleGroup" (ngModelChange)="onSaleCycleGroupChange(data)" [disabled]="!editable">
-                  <nz-option *ngFor="let item of spService.cycleGroups" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+                <nz-select style="width: 48%;" [(ngModel)]="data.exchangeableOrderSaleCycleGroup"
+                  (ngModelChange)="onSaleCycleGroupChange(data)" [disabled]="!editable">
+                  <nz-option *ngFor="let item of spService.cycleGroups" [nzLabel]="item.label" [nzValue]="item.value">
+                  </nz-option>
                 </nz-select>
                 <nz-select style="width: 48%;" [(ngModel)]="data.exchangeableOrderSaleBigArea" [disabled]="!editable">
-                  <nz-option *ngFor="let item of spService.cycleGroupBigAreaMap[data.exchangeableOrderSaleCycleGroup]" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+                  <nz-option *ngFor="let item of spService.cycleGroupBigAreaMap[data.exchangeableOrderSaleCycleGroup]"
+                    [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
                 </nz-select>
               </nz-form-control>
             </nz-form-item>
@@ -402,24 +390,21 @@
           <td>
             <nz-form-item>
               <nz-form-control>
-                <nz-input-group style="width: 100%" [nzSuffix]="clearExchangeHospitalBtn" [nzAddOnAfter]="selectExchangeHospitalBtn">
-                  <input type="text" nz-input [(ngModel)]="data.exchangeableHospitalName" [placeholder]="editable ? '点击右侧按钮选择医院' : ''" disabled />
+                <nz-input-group style="width: 100%" [nzSuffix]="clearExchangeHospitalBtn"
+                  [nzAddOnAfter]="selectExchangeHospitalBtn">
+                  <input type="text" nz-input [(ngModel)]="data.exchangeableHospitalName"
+                    [placeholder]="editable ? '点击右侧按钮选择医院' : ''" disabled />
                 </nz-input-group>
                 <ng-template #clearExchangeHospitalBtn>
-                  <i 
-                    nz-icon
-                    nz-tooltip
-                    class="ant-input-clear-icon"
-                    nzTheme="fill"
-                    nzType="close-circle"
+                  <i nz-icon nz-tooltip class="ant-input-clear-icon" nzTheme="fill" nzType="close-circle"
                     *ngIf="!data.exchangeHospitalLoading && data.exchangeableHospitalName && editable"
-                    (click)="onClearHospital(data, true)"
-                  ></i>
+                    (click)="onClearHospital(data, true)"></i>
                 </ng-template>
-    
+
                 <ng-template #selectExchangeHospitalBtn>
                   <i *ngIf="data.exchangeHospitalLoading" nz-icon nzType="loading" nzTheme="outline"></i>
-                  <button *ngIf="editable && !data.exchangeHospitalLoading" nz-button nzType="primary" class="ml-md" (click)="onShowSelectHospitalModal(data, true)">选择医院</button>
+                  <button *ngIf="editable && !data.exchangeHospitalLoading" nz-button nzType="primary" class="ml-md"
+                    (click)="onShowSelectHospitalModal(data, true)">选择医院</button>
                 </ng-template>
 
                 <nz-form-explain class="error-msg">
@@ -433,7 +418,8 @@
           <td>
             <nz-form-item>
               <nz-form-control>
-                <input nz-input [ngModel]="data.exchangeableHospitalNo" disabled [placeholder]="editable ? '点击左侧按钮选择医院' : ''" />
+                <input nz-input [ngModel]="data.exchangeableHospitalNo" disabled
+                  [placeholder]="editable ? '点击左侧按钮选择医院' : ''" />
               </nz-form-control>
             </nz-form-item>
           </td>
@@ -441,7 +427,8 @@
             <nz-form-item>
               <nz-form-control>
                 <nz-select style="width: 100%;" [(ngModel)]="data.exchangeableOrderModel" [disabled]="!editable">
-                  <nz-option *ngFor="let item of spService.usProductList" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+                  <nz-option *ngFor="let item of spService.usProductList" [nzLabel]="item.label" [nzValue]="item.value">
+                  </nz-option>
                 </nz-select>
               </nz-form-control>
             </nz-form-item>
@@ -463,13 +450,9 @@
           <td>
             <nz-form-item>
               <nz-form-control>
-                <nz-date-picker 
-                  [(ngModel)]="data.exchangeableOrderSaleDate"
-                  style="width: 100%"
-                  [nzStyle]="{ width: '100%' }"
-                  [disabled]="!editable"
-                  [nzPlaceHolder]="editable ? '请选择日期' : ''"
-                ></nz-date-picker>
+                <nz-date-picker [(ngModel)]="data.exchangeableOrderSaleDate" style="width: 100%"
+                  [nzStyle]="{ width: '100%' }" [disabled]="!editable" [nzPlaceHolder]="editable ? '请选择日期' : ''">
+                </nz-date-picker>
               </nz-form-control>
             </nz-form-item>
           </td>

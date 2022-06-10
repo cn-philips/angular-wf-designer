@@ -15,7 +15,7 @@ import { DEFAULT_ERROR_MESSAGE, SUCCESS_MESSAGE, ERROR_MESSAGE, APPLY_TYPES, BG_
 })
 export class DraftComponent implements OnInit {
   formValues = this.fb.group({
-    type: [null],
+    applyType: [null],
     orderBg: [null],
     keyword: [null],
     submitDate: [[]]

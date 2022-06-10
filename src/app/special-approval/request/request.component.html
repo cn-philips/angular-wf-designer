@@ -9,7 +9,8 @@
 <div class="bg-white py-2">
   <div nzType="flex" nz-row nzJustify="center" nzAlign="middle" class="mb-2 pt-2">
     <div nz-col [nzSpan]="1" class="text-center">
-      <span class="ant-avatar ant-avatar-lg ant-avatar-circle ant-avatar-icon bg-primary d-flex align-items-center justify-content-center">
+      <span
+        class="ant-avatar ant-avatar-lg ant-avatar-circle ant-avatar-icon bg-primary d-flex align-items-center justify-content-center">
         <i nz-icon nzType="control" nzTheme="outline"></i>
       </span>
     </div>
@@ -59,8 +60,9 @@
         <nz-form-item>
           <nz-form-label [nzSm]="6" [nzXs]="24">申请类型</nz-form-label>
           <nz-form-control [nzSm]="18" [nzXs]="24">
-            <nz-select formControlName="type" nzAllowClear nzPlaceHolder="Select 请选择">
-              <nz-option *ngFor="let type of selectOptions.applyTypes" [nzValue]="type.value" [nzLabel]="type.label"></nz-option>
+            <nz-select formControlName="applyType" nzAllowClear nzPlaceHolder="Select 请选择">
+              <nz-option *ngFor="let type of selectOptions.applyTypes" [nzValue]="type.value" [nzLabel]="type.label">
+              </nz-option>
             </nz-select>
           </nz-form-control>
         </nz-form-item>
@@ -70,7 +72,8 @@
           <nz-form-label [nzSm]="6" [nzXs]="24">申请状态</nz-form-label>
           <nz-form-control [nzSm]="18" [nzXs]="24">
             <nz-select formControlName="processStatus" nzAllowClear nzPlaceHolder="Select 请选择">
-              <nz-option *ngFor="let status of selectOptions.statuses" [nzValue]="status.value" [nzLabel]="status.label"></nz-option>
+              <nz-option *ngFor="let status of selectOptions.statuses" [nzValue]="status.value"
+                [nzLabel]="status.label"></nz-option>
             </nz-select>
           </nz-form-control>
         </nz-form-item>
@@ -99,7 +102,8 @@
         <nz-form-item>
           <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="submitDate">提交时间</nz-form-label>
           <nz-form-control [nzSm]="18" [nzXs]="24">
-            <nz-range-picker nzFormat="yyyy年MM月dd日" style="width: 100%" id="submitDate" formControlName="submitDate"></nz-range-picker>
+            <nz-range-picker nzFormat="yyyy年MM月dd日" style="width: 100%" id="submitDate" formControlName="submitDate">
+            </nz-range-picker>
           </nz-form-control>
         </nz-form-item>
       </div>
@@ -116,17 +120,9 @@
     </div>
   </form>
 
-  <nz-table
-    [nzData]="tableData.list"
-    [nzLoading]="tableData.loading"
-    [nzFrontPagination]="false"
-    [nzTotal]="tableData.count"
-    [nzScroll]="{ x: '1000px' }"
-    [(nzPageIndex)]="searchParams.pageNo"
-    [(nzPageSize)]="searchParams.pageSize"
-    (nzPageIndexChange)="getTableData()"
-    (nzPageSizeChange)="getTableData()"
-  >
+  <nz-table [nzData]="tableData.list" [nzLoading]="tableData.loading" [nzFrontPagination]="false"
+    [nzTotal]="tableData.count" [nzScroll]="{ x: '1000px' }" [(nzPageIndex)]="searchParams.pageNo"
+    [(nzPageSize)]="searchParams.pageSize" (nzPageIndexChange)="getTableData()" (nzPageSizeChange)="getTableData()">
     <thead>
       <tr>
         <th>申请编号</th>
@@ -147,12 +143,18 @@
         <td>{{ data.nodeName }}</td>
         <td>{{ data.createTime }}</td>
         <td nzRight="0px">
-          <button nz-button nzType="primary" nzSize="small" class="bg-success" (click)="onNavigateToRequestDetail(data)">
+          <button nz-button nzType="primary" nzSize="small" class="bg-success"
+            (click)="onNavigateToRequestDetail(data)">
             {{ getEditBtnTitle(data) }}
           </button>
-          <button nz-button nz-popconfirm nzSize="small" nzTitle="确定取消申请?" *ngIf="['REJECTED', 'WITHDRAW'].includes(data.processStatus) && data.status == 1" (nzOnConfirm)="onCancelRequest(data)">取消申请</button>
-          <button nz-button nz-popconfirm nzSize="small" nzTitle="确定撤回申请?" *ngIf="data.processStatus === 'START' && data.nodeAction !== 'feedback'" (nzOnConfirm)="onWithdrawRequest(data)">撤回</button>
-          <button nz-button nz-popconfirm nzSize="small" nzTitle="确定删除草稿?" *ngIf="data.processStatus === 'DRAFT'" (nzOnConfirm)="onDeleteRequest(data)">删除</button>
+          <button nz-button nz-popconfirm nzSize="small" nzTitle="确定取消申请?"
+            *ngIf="['REJECTED', 'WITHDRAW'].includes(data.processStatus) && data.status == 1"
+            (nzOnConfirm)="onCancelRequest(data)">取消申请</button>
+          <button nz-button nz-popconfirm nzSize="small" nzTitle="确定撤回申请?"
+            *ngIf="data.processStatus === 'START' && data.nodeAction !== 'feedback'"
+            (nzOnConfirm)="onWithdrawRequest(data)">撤回</button>
+          <button nz-button nz-popconfirm nzSize="small" nzTitle="确定删除草稿?" *ngIf="data.processStatus === 'DRAFT'"
+            (nzOnConfirm)="onDeleteRequest(data)">删除</button>
         </td>
       </tr>
     </tbody>

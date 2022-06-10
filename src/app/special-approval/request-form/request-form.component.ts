@@ -676,6 +676,13 @@ export class RequestFormComponent implements OnInit {
           this.orderInfo.get('expectedSitePlaceDate').setValidators(Validators.required)
         }
         break
+      case APPLY_TYPE.SPECIAL_DELIVERY:
+        if (item === 'sp_delivery_apply_item_1') {
+          this.orderInfo.get('expectedPaymentDate').setValidators(Validators.required)
+        } else if (item === 'sp_delivery_apply_item_2') {
+          this.orderInfo.get('expectedSitePlaceDate').setValidators(Validators.required)
+        }
+        break
     }
 
     if (bg === 'PD&IGT') {
@@ -883,6 +890,7 @@ export class RequestFormComponent implements OnInit {
             ...orderInfo,
             applyArrivalTime: applyArrivalTime ? moment(applyArrivalTime).format('YYYY-MM-DD') : null,
             expectedPaymentDate: expectedPaymentDate ? moment(expectedPaymentDate).format('YYYY-MM-DD') : null,
+            expectedSitePlaceDate: expectedSitePlaceDate ? moment(expectedSitePlaceDate).format('YYYY-MM-DD') : null,
             expectedSaleDate: expectedSaleDate ? moment(expectedSaleDate).format('YYYY-MM-DD') : null,
             products: products.map(({ productType, wbsNo, itemNo, quantity }) => ({ productType, wbsNo, itemNo, quantity }))
           }
