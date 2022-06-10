@@ -512,150 +512,6 @@
   </nz-card>
 </form>
 <form nz-form [formGroup]="cooInfo">
-  <nz-card class="mtb1rem" nzTitle="COO问卷">
-    <div nz-row>
-      <div nz-col nzXs="24" nzSm="24" nzMd="12">
-        <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6" nzRequired>是否中标</nz-form-label>
-          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <nz-radio-group formControlName="isBid" (ngModelChange)="onIsBidChange($event)" #isBid>
-              <label nz-radio nzValue="1">是</label>
-              <label nz-radio nzValue="0">否</label>
-            </nz-radio-group>
-            <nz-form-explain *ngIf="cooInfo.get('isBid')?.dirty && cooInfo.get('isBid')?.errors">
-              请选择是否中标
-            </nz-form-explain>
-          </nz-form-control>
-        </nz-form-item>
-      </div>
-    </div>
-
-    <ng-container *ngIf="isBid.value === '0'">
-      <div nz-row>
-        <div nz-col nzXs="24" nzSm="24" nzMd="12">
-          <nz-form-item>
-            <nz-form-label nzXl="8" nzXXl="6" nzRequired>目前pending环节</nz-form-label>
-            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-              <input nz-input type="text" formControlName="pending" />
-              <nz-form-explain *ngIf="cooInfo.get('pending')?.dirty && cooInfo.get('pending')?.errors">
-                请填写目前pending环节
-              </nz-form-explain>
-            </nz-form-control>
-          </nz-form-item>
-        </div>
-
-        <div nz-col nzXs="24" nzSm="24" nzMd="12">
-          <nz-form-item>
-            <nz-form-label nzXl="8" nzXXl="6" nzRequired>预计招标月份</nz-form-label>
-            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-              <shared-date-picker mode="month" formControlName="expectedBiddingDate"></shared-date-picker>
-              <nz-form-explain *ngIf="cooInfo.get('expectedBiddingDate')?.dirty && cooInfo.get('expectedBiddingDate')?.errors">
-                请选择预计招标月份
-              </nz-form-explain>
-            </nz-form-control>
-          </nz-form-item>
-        </div>
-      </div>
-      <div nz-row>
-        <div nz-col nzXs="24" nzSm="24" nzMd="12">
-          <nz-form-item>
-            <nz-form-label nzXl="8" nzXXl="6" nzRequired>丢单风险</nz-form-label>
-            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-              <input nz-input type="text" formControlName="losingOrders" />
-              <nz-form-explain *ngIf="cooInfo.get('losingOrders')?.dirty && cooInfo.get('losingOrders')?.errors">
-                请填写丢单风险
-              </nz-form-explain>
-            </nz-form-control>
-          </nz-form-item>
-        </div>
-
-        <div nz-col nzXs="24" nzSm="24" nzMd="12">
-          <nz-form-item>
-            <nz-form-label nzXl="8" nzXXl="6" nzRequired>如丢单，预计寻得新用户月份</nz-form-label>
-            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-              <shared-date-picker mode="month" formControlName="expectedNewUserDate"></shared-date-picker>
-              <nz-form-explain *ngIf="cooInfo.get('expectedNewUserDate')?.dirty && cooInfo.get('expectedNewUserDate')?.errors">
-                请选择预计寻得新用户月份
-              </nz-form-explain>
-            </nz-form-control>
-          </nz-form-item>
-        </div>
-      </div>
-    </ng-container>
-
-    <div nz-row>
-      <div nz-col nzXs="24" nzSm="24" nzMd="12">
-        <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6" nzRequired>场地状态</nz-form-label>
-          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <nz-select formControlName="fieldStatus" nzPlaceHolder="请选择场地状态" (ngModelChange)="onFieldStatusChange($event)" #fieldStatus>
-              <nz-option *ngFor="let status of selectOptions.fieldStatusList" [nzLabel]="status.label" [nzValue]="status.value"></nz-option>
-            </nz-select>
-            <nz-form-explain *ngIf="cooInfo.get('fieldStatus')?.dirty && cooInfo.get('fieldStatus')?.errors">
-              请选择场地状态
-            </nz-form-explain>
-          </nz-form-control>
-        </nz-form-item>
-      </div>
-
-      <div nz-col nzXs="24" nzSm="24" nzMd="12" *ngIf="fieldStatus.value === FIELD_STATUS_OTHER">
-        <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6" nzRequired>场地状态-补充说明</nz-form-label>
-          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <input type="text" nz-input formControlName="fieldStatusExplain" />
-            <nz-form-explain *ngIf="cooInfo.get('fieldStatusExplain')?.dirty && cooInfo.get('fieldStatusExplain')?.errors">
-              请填写场地状态-补充说明
-            </nz-form-explain>
-          </nz-form-control>
-        </nz-form-item>
-      </div>
-    </div>
-
-    <div nz-row>
-      <div nz-col nzXs="24" nzSm="24" nzMd="12">
-        <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6" nzRequired>新建医院还是老医院新院区</nz-form-label>
-          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <nz-radio-group formControlName="newOrOldHospital">
-              <label nz-radio nzValue="新建医院">新建医院</label>
-              <label nz-radio nzValue="老医院新院区">老医院新院区</label>
-            </nz-radio-group>
-            <nz-form-explain *ngIf="cooInfo.get('newOrOldHospital')?.dirty && cooInfo.get('newOrOldHospital')?.errors">
-              请选择新建医院还是老医院新院区
-            </nz-form-explain>
-          </nz-form-control>
-        </nz-form-item>
-      </div>
-    </div>
-
-    <div nz-row>
-      <div nz-col nzXs="24" nzSm="24" nzMd="12">
-        <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6" nzRequired>预计场地就位日期</nz-form-label>
-          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <shared-date-picker formControlName="expectedFieldDate"></shared-date-picker>
-            <nz-form-explain *ngIf="cooInfo.get('expectedFieldDate')?.dirty && cooInfo.get('expectedFieldDate')?.errors">
-              请选择预计场地就位日期
-            </nz-form-explain>
-          </nz-form-control>
-        </nz-form-item>
-      </div>
-
-      <div nz-col nzXs="24" nzSm="24" nzMd="12">
-        <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6" nzRequired>计划ICF时间</nz-form-label>
-          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <shared-date-picker formControlName="planIcfDate"></shared-date-picker>
-            <nz-form-explain *ngIf="cooInfo.get('planIcfDate')?.dirty && cooInfo.get('planIcfDate')?.errors">
-              请选择计划ICF时间
-            </nz-form-explain>
-          </nz-form-control>
-        </nz-form-item>
-      </div>
-    </div>
-
-  </nz-card>
-
   <nz-card class="mtb1rem" nzTitle="COO条件校验">
     <div nz-row>
       <div nz-col nzXs="24" nzSm="24" nzMd="12">
@@ -680,7 +536,7 @@
 
       <div nz-col nzXs="24" nzSm="24" nzMd="12">
         <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6" nzRequired>是否到货>3个月</nz-form-label>
+          <nz-form-label nzXl="8" nzXXl="6" nzRequired>是否到货（GI act）>3个月</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <nz-radio-group formControlName="threeMonthsAfterArrival">
               <label nz-radio nzValue="1">是</label>
@@ -688,10 +544,10 @@
             </nz-radio-group>
             <ng-container *ngIf="cooInfo.get('threeMonthsAfterArrival')?.dirty && cooInfo.get('threeMonthsAfterArrival')?.errors">
               <nz-form-explain *ngIf="cooInfo.get('threeMonthsAfterArrival')?.errors?.required">
-                请选择是否到货>3个月
+                请选择是否到货（GI act）>3个月
               </nz-form-explain>
               <nz-form-explain *ngIf="cooInfo.get('threeMonthsAfterArrival')?.errors?.disableSubmit">
-                是否到货>3个月选择"是"时, 无法提交特批申请
+                是否到货（GI act）>3个月选择"否"时, 无法提交特批申请
               </nz-form-explain>
             </ng-container>
           </nz-form-control>
@@ -701,14 +557,14 @@
     <div nz-row>
       <div nz-col nzXs="24" nzSm="24" nzMd="12">
         <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6" nzRequired>经销商是否为COO签署12个月内未签回ICF</nz-form-label>
+          <nz-form-label nzXl="8" nzXXl="6" nzRequired>经销商是否存在之前签署过COO的订单12个月未签回安装报告的情况</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <nz-radio-group formControlName="cooSignedNotIcf" (ngModelChange)="onCooSignedNotIcf($event)">
               <label nz-radio nzValue="1">是</label>
               <label nz-radio nzValue="0">否</label>
             </nz-radio-group>
             <nz-form-explain *ngIf="cooInfo.get('cooSignedNotIcf')?.dirty && cooInfo.get('cooSignedNotIcf')?.errors">
-              请选择经销商是否为COO签署12个月内未签回ICF
+              请选择经销商是否存在之前签署过COO的订单12个月未签回安装报告的情况
             </nz-form-explain>
           </nz-form-control>
         </nz-form-item>

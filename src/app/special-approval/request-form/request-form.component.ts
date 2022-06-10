@@ -24,6 +24,7 @@ import { DeBookComponent } from './widgets/order-info/de-book/de-book.component'
 import { LastbuyComponent } from './widgets/order-info/lastbuy/lastbuy.component'
 import { CooUsOrderInfoComponent } from './widgets/order-info/coo-us/coo-us.component'
 import { CooPdIgtOrderInfoComponent } from './widgets/order-info/coo-pdigt/coo-pdigt.component'
+import { CooCcOrderInfoComponent } from './widgets/order-info/coo-cc/coo-cc.component'
 
 enum TAB_TYPE {
   BASIC_INFO = 'basic-info',
@@ -53,6 +54,7 @@ export class RequestFormComponent implements OnInit {
   @ViewChild('deBookOrderInfo') public deBookInfo: DeBookComponent;
   @ViewChild('cooUsOrderInfo') public cooUsOrderInfo: CooUsOrderInfoComponent;
   @ViewChild('cooPdIgtOrderInfo') public cooPdIgtOrderInfo: CooPdIgtOrderInfoComponent;
+  @ViewChild('cooCcOrderInfo') public cooCcOrderInfo: CooCcOrderInfoComponent;
 
   @ViewChild('lastBuyOrderInfo') public lastBuyOrderInfo: LastbuyComponent;
 
@@ -946,6 +948,11 @@ export class RequestFormComponent implements OnInit {
         data.cooInfo = cooPdIgtData.cooInfo
         data.orderInfos = cooPdIgtData.orderInfos
         break
+      case APPLY_TYPE.COO_CC:
+        const cooCcData = this.cooCcOrderInfo.getData()
+        data.cooInfo = cooCcData.cooInfo
+        data.orderInfos = cooCcData.orderInfos
+        break
       case APPLY_TYPE.PRE_BOOK_LASTBUY:
         data.orderInfos = []
         let lastBuySaps = []
@@ -1204,6 +1211,10 @@ export class RequestFormComponent implements OnInit {
       case APPLY_TYPE.COO_PDIGT:
         const isCooPdIgtValid = this.cooPdIgtOrderInfo.validate()
         hasError = this.basicInfo.invalid || !isCooPdIgtValid
+        break
+      case APPLY_TYPE.COO_CC:
+        const isCooCcValid = this.cooCcOrderInfo.validate()
+        hasError = this.basicInfo.invalid || !isCooCcValid
         break
       default:
         for (const i in this.orderInfo.controls) {
@@ -1705,6 +1716,13 @@ export class RequestFormComponent implements OnInit {
         const intervalId = setInterval(() => {
           if(this.cooPdIgtOrderInfo) {
             this.cooPdIgtOrderInfo.initData(data)
+            clearInterval(intervalId)
+          }
+        }, 1000)
+      } else if (applyType === APPLY_TYPE.COO_CC) {
+        const intervalId = setInterval(() => {
+          if(this.cooCcOrderInfo) {
+            this.cooCcOrderInfo.initData(data)
             clearInterval(intervalId)
           }
         }, 1000)

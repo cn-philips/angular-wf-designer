@@ -44,6 +44,7 @@ import { SupplementFormComponent } from "./request-form/widgets/supplement-form/
 import { CooUsOrderInfoComponent } from './request-form/widgets/order-info/coo-us/coo-us.component'
 import { LastbuyComponent } from './request-form/widgets/order-info/lastbuy/lastbuy.component';
 import { CooPdIgtOrderInfoComponent } from './request-form/widgets/order-info/coo-pdigt/coo-pdigt.component'
+import { CooCcOrderInfoComponent } from './request-form/widgets/order-info/coo-cc/coo-cc.component'
 
 const COMPONENTS = [
   ApprovedComponent,
@@ -89,6 +90,7 @@ const WIDGETS = [
   CooUsOrderInfoComponent,
   LastbuyComponent,
   CooPdIgtOrderInfoComponent,
+  CooCcOrderInfoComponent,
 ];
 
 export {

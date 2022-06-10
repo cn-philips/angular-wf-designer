@@ -105,7 +105,7 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
     threeMonthsAfterArrival: [null, [Validators.required, disableSubmitValidtor]], // 是否到货>3个月
     cooSignedNotIcf: [null, [Validators.required]], // 经销商是否为COO签署12个月内未签回ICF
     specialApproval: [{ value: null, disabled: true }, [Validators.required]], // 是否需要特批
-    applySignedDate: [null], // 申请签署日期
+    applySignedDate: [null], // 预计签署日期
     cooConfirmationLetterDraft: [null], // COO确认函草稿
     cooConfirmationLetterDealer: [null], // 经销商盖章后的COO确认函
     cooConfirmationLetterSign: [null], // 双签后的COO确认函
@@ -195,6 +195,17 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
         this.showPmFeedbackField = true
         break
       case PROCESS_STATUS.START:
+        if (nodeCode > 'node0') {
+          this.showOmField = true
+        }
+    
+        if (nodeCode > 'node1') {
+          this.showPmField = true
+        }
+    
+        if(nodeCode > 'node5') {
+          this.showPmFeedbackField = true
+        }
         if (isActiveApprover) {
           switch (nodeCode) {
             case 'node1': // OM补充信息
