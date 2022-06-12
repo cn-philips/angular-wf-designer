@@ -320,7 +320,7 @@
     <div nz-row>
       <div nz-col nzXs="24" nzSm="24" nzMd="12">
         <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6">付款方式</nz-form-label>
+          <nz-form-label nzXl="8" nzXXl="6" nzRequired>付款方式</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <nz-select formControlName="paymentMethod" (ngModelChange)="onPaymentMethodChange($event)" #paymentMethod>
               <nz-option *ngFor="let item of selectOptions.paymentMethodList" [nzLabel]="item.label"
@@ -736,11 +736,11 @@
     <div nz-row>
       <div nz-col nzXs="24" nzSm="24" nzMd="12">
         <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6" nzRequired>申请签署日期</nz-form-label>
+          <nz-form-label nzXl="8" nzXXl="6" nzRequired>预计签署日期</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <shared-date-picker formControlName="applySignedDate"></shared-date-picker>
             <nz-form-explain *ngIf="cooInfo.get('applySignedDate')?.dirty && cooInfo.get('applySignedDate')?.errors">
-              请选择申请签署日期
+              请选择预计签署日期
             </nz-form-explain>
           </nz-form-control>
         </nz-form-item>
