@@ -103,7 +103,7 @@
         <th>状态</th>
         <th>当前节点</th>
         <th>操作节点</th>
-        <th>申请时间</th>
+        <th>申请提交时间</th>
         <th nzWidth="100px" nzRight="0px">操作</th>
       </tr>
     </thead>
@@ -115,7 +115,7 @@
         <td>{{ spService.formatRequestStatus(data.processStatus, data.nodeAction, data.status) }}</td>
         <td>{{ data.nodeName }}</td>
         <td>{{ data.spProcNodeName }}</td>
-        <td>{{ data.createTime }}</td>
+        <td>{{ data.submitTime }}</td>
         <td nzRight="0px">
           <button nz-button nzType="primary" nzSize="small" class="bg-success" (click)="onNavigateToRequestDetail(data)">查看</button>
         </td>

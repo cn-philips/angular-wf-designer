@@ -102,7 +102,7 @@
         <th>发起人</th>
         <th>状态</th>
         <th>当前节点</th>
-        <th>申请时间</th>
+        <th>申请提交时间</th>
         <th nzWidth="100px" nzRight="0px">操作</th>
       </tr>
     </thead>
@@ -115,7 +115,7 @@
         <td>{{ data.applicant }}</td>
         <td>{{ spService.formatRequestStatus(data.processStatus, data.nodeAction, data.status) }}</td>
         <td>{{ data.nodeName }}</td>
-        <td>{{ data.createTime }}</td>
+        <td>{{ data.submitTime }}</td>
         <td nzRight="0px">
           <button nz-button nzType="primary" nzSize="small" (click)="onNavigateToRequestDetail(data)">{{ data.nodeAction
             === 'feedback' ? '反馈' : '审批' }}</button>
