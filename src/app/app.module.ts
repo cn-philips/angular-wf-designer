@@ -261,7 +261,6 @@ import { AutoApprovalComponent } from './DIIGT/auto-approval/auto-approval.compo
 
 import { SpecialApprovalModule } from './special-approval/special-approval.module'
 import { SpecialApprovalSettingModule } from './DIIGT/change-scene/special-approval-setting/special-approval-setting.module';
-import { PricePermissionsPipe } from './pipes/price-permissions.pipe';
 import { PermissionsIfDirective } from './directive/permissions-if.directive';
 
 // registerLocaleData(localeCn, localeCnExtra);
@@ -472,7 +471,6 @@ registerLocaleData(zh);
     DistributorListComponent,
     MailApprovalComponent,
     AutoApprovalComponent,
-    PricePermissionsPipe,
     PermissionsIfDirective,
    ],
 

@@ -16,7 +16,7 @@ import { APPROVE_NODE_ACTION } from '../../DIIGT/change-scene/special-approval-s
 })
 export class RequestComponent implements OnInit {
   formValues = this.fb.group({
-    type: [null],
+    applyType: [null],
     processStatus: [null],
     orderBg: [null],
     keyword: [null],

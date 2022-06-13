@@ -6,7 +6,8 @@
           <nz-form-label nzXl="8" nzXXl="6" nzRequired>订单类型</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <nz-select formControlName="orderType" nzPlaceHolder="请选择订单类型">
-              <nz-option *ngFor="let item of selectOptions.orderTypes" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+              <nz-option *ngFor="let item of selectOptions.orderTypes" [nzLabel]="item.label" [nzValue]="item.value">
+              </nz-option>
             </nz-select>
             <nz-form-explain *ngIf="orderInfo.get('orderType')?.dirty && orderInfo.get('orderType')?.errors">
               请选择订单类型
@@ -91,7 +92,7 @@
         <nz-form-item>
           <nz-form-label nzXl="8" nzXXl="6" nzRequired>业务模式</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <nz-select formControlName="businessModel" nzPlaceHolder="请选择业务模式" #businessModel>
+            <nz-select formControlName="businessModel" nzPlaceHolder="请选择业务模式" #businessModel  (ngModelChange)="onClearHospital();onClearDealer()">
               <nz-option *ngFor="let item of selectOptions.businessModels" [nzLabel]="item.label"
                 [nzValue]="item.value"></nz-option>
             </nz-select>
@@ -107,7 +108,8 @@
       <div nz-col nzXs="24" nzSm="24" nzMd="12">
         <nz-form-item>
           <nz-form-label nzXl="8" nzXXl="6">经销商名称</nz-form-label>
-          <nz-form-control nzXs="24" nzSm="24" nzMd="14" [ngClass]="orderInfo.get('dealerName')?.dirty && orderInfo.errors?.hospitalDealerRequired ? 'has-error' : ''">
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14"
+            [ngClass]="orderInfo.get('dealerName')?.dirty && orderInfo.errors?.hospitalDealerRequired ? 'has-error' : ''">
             <nz-input-group style="width: 100%" [nzSuffix]="clearDealerBtn" [nzAddOnAfter]="selectDealerBtn">
               <input type="text" nz-input formControlName="dealerName" [placeholder]="editable ? '点击右侧按钮选择经销商' : ''" />
             </nz-input-group>
@@ -140,8 +142,10 @@
     <div nz-row>
       <div nz-col nzXs="24" nzSm="24" nzMd="12">
         <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6" [nzRequired]="businessModel.value!==BUSINESS_MODEL.DISTRIBUTOR_DEAL">医院名称</nz-form-label>
-          <nz-form-control nzXs="24" nzSm="24" nzMd="14" [ngClass]="orderInfo.get('hospitalName')?.dirty && (orderInfo.errors?.hospitalDealerRequired || orderInfo.errors?.hospitalRequired) ? 'has-error' : ''">
+          <nz-form-label nzXl="8" nzXXl="6" [nzRequired]="businessModel.value!==BUSINESS_MODEL.DISTRIBUTOR_DEAL">医院名称
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14"
+            [ngClass]="orderInfo.get('hospitalName')?.dirty && (orderInfo.errors?.hospitalDealerRequired || orderInfo.errors?.hospitalRequired) ? 'has-error' : ''">
             <nz-input-group style="width: 100%" [nzSuffix]="clearHospitalBtn" [nzAddOnAfter]="selectHospitalBtn">
               <input id="hospitalName" type="text" nz-input formControlName="hospitalName"
                 [placeholder]="editable ? '点击右侧按钮选择医院' : ''" />
@@ -168,7 +172,8 @@
 
       <div nz-col nzXs="24" nzSm="24" nzMd="12">
         <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6" [nzRequired]="businessModel.value!==BUSINESS_MODEL.DISTRIBUTOR_DEAL">医院编号</nz-form-label>
+          <nz-form-label nzXl="8" nzXXl="6" [nzRequired]="businessModel.value!==BUSINESS_MODEL.DISTRIBUTOR_DEAL">医院编号
+          </nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <input id="hospitalNo" nz-input formControlName="hospitalNo" />
           </nz-form-control>
@@ -195,7 +200,8 @@
           </nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <nz-form-control nzXs="24" nzSm="24" nzMd="9">
-              <nz-input-number id="orderAmount" style="width: 100%;" formControlName="orderAmount" [nzMin]="0">
+              <nz-input-number id="orderAmount" style="width: 100%;" formControlName="orderAmount"
+                [ngModel]="orderInfo.get('orderAmount').value|pricePermissions" [nzMin]="0">
               </nz-input-number>
               <nz-form-explain *ngIf="orderInfo.get('orderAmount')?.dirty && orderInfo.get('orderAmount')?.errors">
                 请填写合同金额
@@ -223,7 +229,8 @@
           <nz-form-label nzXl="8" nzXXl="6">外贸公司</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <nz-select formControlName="foreignCompany" nzAllowClear (ngModelChange)="onForeignCompanyChange($event)">
-              <nz-option *ngFor="let item of selectOptions.foreignCompanies" [nzLabel]="item.corporateName" [nzValue]="item.corporateName"></nz-option>
+              <nz-option *ngFor="let item of selectOptions.foreignCompanies" [nzLabel]="item.corporateName"
+                [nzValue]="item.corporateName"></nz-option>
             </nz-select>
           </nz-form-control>
         </nz-form-item>
@@ -313,10 +320,11 @@
     <div nz-row>
       <div nz-col nzXs="24" nzSm="24" nzMd="12">
         <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6">付款方式</nz-form-label>
+          <nz-form-label nzXl="8" nzXXl="6" nzRequired>付款方式</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <nz-select formControlName="paymentMethod" (ngModelChange)="onPaymentMethodChange($event)" #paymentMethod>
-              <nz-option *ngFor="let item of selectOptions.paymentMethodList" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+              <nz-option *ngFor="let item of selectOptions.paymentMethodList" [nzLabel]="item.label"
+                [nzValue]="item.value"></nz-option>
             </nz-select>
             <nz-form-explain *ngIf="orderInfo.get('paymentMethod')?.dirty && orderInfo.get('paymentMethod')?.errors">
               请选择付款方式
@@ -328,8 +336,9 @@
         <nz-form-item>
           <nz-form-label nzXl="8" nzXXl="6" nzRequired>其他付款方式</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <input type="text" nz-input formControlName="paymentMethodOther"/>
-            <nz-form-explain *ngIf="orderInfo.get('paymentMethodOther')?.dirty && orderInfo.get('paymentMethodOther')?.errors">
+            <input type="text" nz-input formControlName="paymentMethodOther" />
+            <nz-form-explain
+              *ngIf="orderInfo.get('paymentMethodOther')?.dirty && orderInfo.get('paymentMethodOther')?.errors">
               请填写其他付款方式
             </nz-form-explain>
           </nz-form-control>
@@ -339,7 +348,8 @@
 
     <nz-form-item>
       <nz-form-control>
-        <nz-table nzSize="small" [nzData]="products.value" [nzShowPagination]="false" nzBordered [nzScroll]="{ x: '1000px' }">
+        <nz-table nzSize="small" [nzData]="products.value" [nzShowPagination]="false" nzBordered
+          [nzScroll]="{ x: '1000px' }">
           <thead>
             <tr>
               <th nzWidth="200px">产品型号</th>
@@ -360,14 +370,16 @@
               <td>
                 <nz-form-item>
                   <nz-form-control>
-                    <input type="text" nz-input formControlName="productType" (ngModelChange)="onCalcOrderProductType($event)" />
+                    <input type="text" nz-input formControlName="productType"
+                      (ngModelChange)="onCalcOrderProductType($event)" />
                   </nz-form-control>
                 </nz-form-item>
               </td>
               <td>
                 <nz-form-item>
                   <nz-form-control>
-                    <nz-input-number style="width:100%" formControlName="quantity" [nzMin]="1" [nzPrecision]="0"></nz-input-number>
+                    <nz-input-number style="width:100%" formControlName="quantity" [nzMin]="1" [nzPrecision]="0">
+                    </nz-input-number>
                     <nz-form-explain *ngIf="product.get('quantity')?.dirty && product.get('quantity')?.errors">
                       请填写数量
                     </nz-form-explain>
@@ -478,7 +490,8 @@
                 <label nz-radio nzValue="1">是</label>
                 <label nz-radio nzValue="0">否</label>
               </nz-radio-group>
-              <nz-form-explain *ngIf="orderInfo.get('paymentReceived')?.dirty && orderInfo.get('paymentReceived')?.errors">
+              <nz-form-explain
+                *ngIf="orderInfo.get('paymentReceived')?.dirty && orderInfo.get('paymentReceived')?.errors">
                 请选择全款是否已经收到
               </nz-form-explain>
             </nz-form-control>
@@ -490,12 +503,14 @@
             <nz-form-label nzXl="8" nzXXl="6" nzRequired nzFor="receivedAmount">已收金额</nz-form-label>
             <nz-form-control nzXs="24" nzSm="24" nzMd="14">
               <nz-input-group style="width: 100%" [nzAddOnAfter]="amountPercentAddOn">
-                <nz-input-number id="receivedAmount" style="width: 100%;" formControlName="receivedAmount" [nzMin]="0"></nz-input-number>
+                <nz-input-number id="receivedAmount" style="width: 100%;" formControlName="receivedAmount" [nzMin]="0">
+                </nz-input-number>
               </nz-input-group>
               <ng-template #amountPercentAddOn>
                 <span style="display:inline-block;width:100px;text-align:left;">占比: {{ amountPercent }}</span>
               </ng-template>
-              <nz-form-explain *ngIf="orderInfo.get('receivedAmount')?.dirty && orderInfo.get('receivedAmount')?.errors">
+              <nz-form-explain
+                *ngIf="orderInfo.get('receivedAmount')?.dirty && orderInfo.get('receivedAmount')?.errors">
                 请填写已收金额
               </nz-form-explain>
             </nz-form-control>
@@ -510,7 +525,8 @@
             <nz-form-label nzXl="8" nzXXl="6" nzRequired>采购订单</nz-form-label>
             <nz-form-control nzXs="24" nzSm="24" nzMd="14">
               <shared-upload-file formControlName="purchaseOrderNo"></shared-upload-file>
-              <nz-form-explain *ngIf="orderInfo.get('purchaseOrderNo')?.dirty && orderInfo.get('purchaseOrderNo')?.errors">
+              <nz-form-explain
+                *ngIf="orderInfo.get('purchaseOrderNo')?.dirty && orderInfo.get('purchaseOrderNo')?.errors">
                 请上传采购订单
               </nz-form-explain>
             </nz-form-control>
@@ -522,7 +538,8 @@
             <nz-form-label nzXl="8" nzXXl="6" [nzRequired]="isPurchaseAgreementRequired">买卖协议</nz-form-label>
             <nz-form-control nzXs="24" nzSm="24" nzMd="14">
               <shared-upload-file formControlName="purchaseAgreement"></shared-upload-file>
-              <nz-form-explain *ngIf="orderInfo.get('purchaseAgreement')?.dirty && orderInfo.get('purchaseAgreement')?.errors">
+              <nz-form-explain
+                *ngIf="orderInfo.get('purchaseAgreement')?.dirty && orderInfo.get('purchaseAgreement')?.errors">
                 请上传买卖协议
               </nz-form-explain>
             </nz-form-control>
@@ -549,7 +566,8 @@
               <nz-form-label nzXl="8" nzXXl="6" nzRequired>POD扫描件, 如为CIP 港口导致没有POD，请提供空运单</nz-form-label>
               <nz-form-control nzXs="24" nzSm="24" nzMd="14">
                 <shared-upload-file formControlName="airTransportNo"></shared-upload-file>
-                <nz-form-explain *ngIf="cooProduct.get('airTransportNo')?.dirty && cooProduct.get('airTransportNo')?.errors">
+                <nz-form-explain
+                  *ngIf="cooProduct.get('airTransportNo')?.dirty && cooProduct.get('airTransportNo')?.errors">
                   请上传POD扫描件/空运单
                 </nz-form-explain>
               </nz-form-control>
@@ -580,7 +598,8 @@
               <nz-form-label nzXl="8" nzXXl="6" nzRequired>货物送达地址中文</nz-form-label>
               <nz-form-control nzXs="24" nzSm="24" nzMd="14">
                 <input type="text" nz-input formControlName="deliveryAddress" />
-                <nz-form-explain *ngIf="cooProduct.get('deliveryAddress')?.dirty && cooProduct.get('deliveryAddress')?.errors">
+                <nz-form-explain
+                  *ngIf="cooProduct.get('deliveryAddress')?.dirty && cooProduct.get('deliveryAddress')?.errors">
                   请填写货物送达地址中文
                 </nz-form-explain>
               </nz-form-control>
@@ -592,7 +611,8 @@
               <nz-form-label nzXl="8" nzXXl="6" nzRequired>货物送达地址英文</nz-form-label>
               <nz-form-control nzXs="24" nzSm="24" nzMd="14">
                 <input type="text" nz-input formControlName="deliveryAddressEn" />
-                <nz-form-explain *ngIf="cooProduct.get('deliveryAddressEn')?.dirty && cooProduct.get('deliveryAddressEn')?.errors">
+                <nz-form-explain
+                  *ngIf="cooProduct.get('deliveryAddressEn')?.dirty && cooProduct.get('deliveryAddressEn')?.errors">
                   请填写货物送达地址英文
                 </nz-form-explain>
               </nz-form-control>
@@ -606,7 +626,8 @@
               <nz-form-label nzXl="8" nzXXl="6" nzRequired>清关口岸中文</nz-form-label>
               <nz-form-control nzXs="24" nzSm="24" nzMd="14">
                 <input type="text" nz-input formControlName="customsClearancePort" />
-                <nz-form-explain *ngIf="cooProduct.get('customsClearancePort')?.dirty && cooProduct.get('customsClearancePort')?.errors">
+                <nz-form-explain
+                  *ngIf="cooProduct.get('customsClearancePort')?.dirty && cooProduct.get('customsClearancePort')?.errors">
                   请填写清关口岸中文
                 </nz-form-explain>
               </nz-form-control>
@@ -618,7 +639,8 @@
               <nz-form-label nzXl="8" nzXXl="6" nzRequired>清关口岸英文</nz-form-label>
               <nz-form-control nzXs="24" nzSm="24" nzMd="14">
                 <input type="text" nz-input formControlName="customsClearancePortEn" />
-                <nz-form-explain *ngIf="cooProduct.get('customsClearancePortEn')?.dirty && cooProduct.get('customsClearancePortEn')?.errors">
+                <nz-form-explain
+                  *ngIf="cooProduct.get('customsClearancePortEn')?.dirty && cooProduct.get('customsClearancePortEn')?.errors">
                   请填写清关口岸英文
                 </nz-form-explain>
               </nz-form-control>
@@ -643,7 +665,8 @@
               <label nz-radio nzValue="1">是</label>
               <label nz-radio nzValue="0">否</label>
             </nz-radio-group>
-            <ng-container *ngIf="cooInfo.get('installationOrDispatch')?.dirty && cooInfo.get('installationOrDispatch')?.errors">
+            <ng-container
+              *ngIf="cooInfo.get('installationOrDispatch')?.dirty && cooInfo.get('installationOrDispatch')?.errors">
               <nz-form-explain *ngIf="cooInfo.get('installationOrDispatch')?.errors?.required">
                 请选择是否已装机或派单
               </nz-form-explain>
@@ -663,7 +686,8 @@
               <label nz-radio nzValue="1">是</label>
               <label nz-radio nzValue="0">否</label>
             </nz-radio-group>
-            <ng-container *ngIf="cooInfo.get('threeMonthsAfterArrival')?.dirty && cooInfo.get('threeMonthsAfterArrival')?.errors">
+            <ng-container
+              *ngIf="cooInfo.get('threeMonthsAfterArrival')?.dirty && cooInfo.get('threeMonthsAfterArrival')?.errors">
               <nz-form-explain *ngIf="cooInfo.get('threeMonthsAfterArrival')?.errors?.required">
                 请选择是否到货>3个月
               </nz-form-explain>
@@ -712,11 +736,11 @@
     <div nz-row>
       <div nz-col nzXs="24" nzSm="24" nzMd="12">
         <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6" nzRequired>申请签署日期</nz-form-label>
+          <nz-form-label nzXl="8" nzXXl="6" nzRequired>预计签署日期</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <shared-date-picker formControlName="applySignedDate"></shared-date-picker>
             <nz-form-explain *ngIf="cooInfo.get('applySignedDate')?.dirty && cooInfo.get('applySignedDate')?.errors">
-              请选择申请签署日期
+              请选择预计签署日期
             </nz-form-explain>
           </nz-form-control>
         </nz-form-item>
@@ -726,7 +750,8 @@
           <nz-form-label nzXl="8" nzXXl="6" nzRequired>COO确认函草稿</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <shared-upload-file formControlName="cooConfirmationLetterDraft"></shared-upload-file>
-            <nz-form-explain *ngIf="cooInfo.get('cooConfirmationLetterDraft')?.dirty && cooInfo.get('cooConfirmationLetterDraft')?.errors">
+            <nz-form-explain
+              *ngIf="cooInfo.get('cooConfirmationLetterDraft')?.dirty && cooInfo.get('cooConfirmationLetterDraft')?.errors">
               请上传COO确认函草稿
             </nz-form-explain>
           </nz-form-control>
@@ -737,7 +762,8 @@
           <nz-form-label nzXl="8" nzXXl="6" nzRequired>经销商盖章后的COO确认函</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <shared-upload-file formControlName="cooConfirmationLetterDealer"></shared-upload-file>
-            <nz-form-explain *ngIf="cooInfo.get('cooConfirmationLetterDealer')?.dirty && cooInfo.get('cooConfirmationLetterDealer')?.errors">
+            <nz-form-explain
+              *ngIf="cooInfo.get('cooConfirmationLetterDealer')?.dirty && cooInfo.get('cooConfirmationLetterDealer')?.errors">
               请上传经销商盖章后的COO确认函
             </nz-form-explain>
           </nz-form-control>
@@ -749,7 +775,8 @@
           <nz-form-label nzXl="8" nzXXl="6" nzRequired>双签后的COO确认函</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <shared-upload-file formControlName="cooConfirmationLetterSign"></shared-upload-file>
-            <nz-form-explain *ngIf="cooInfo.get('cooConfirmationLetterSign')?.dirty && cooInfo.get('cooConfirmationLetterSign')?.errors">
+            <nz-form-explain
+              *ngIf="cooInfo.get('cooConfirmationLetterSign')?.dirty && cooInfo.get('cooConfirmationLetterSign')?.errors">
               请上传双签后的COO确认函
             </nz-form-explain>
           </nz-form-control>

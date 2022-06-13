@@ -10,11 +10,11 @@ const disableSubmitValidtor: ValidatorFn = (control: AbstractControl): Validatio
 }
 
 @Component({
-  selector: 'special-approval-coo-us-order-info',
-  templateUrl: 'coo-us.component.html',
-  styleUrls: ['./cos-us.component.scss']
+  selector: 'special-approval-coo-cc-order-info',
+  templateUrl: 'coo-cc.component.html',
+  styleUrls: ['./cos-cc.component.scss']
 })
-export class CooUsOrderInfoComponent implements OnInit, OnChanges {
+export class CooCcOrderInfoComponent implements OnInit, OnChanges {
 
   originOrderInfo = {}
   originCooInfo = {}
@@ -33,6 +33,23 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
   showSalesFeedbackField = false
   showScPlanningFeedbackField = false
   showSelectDealerBtn = false
+
+  formValues = this.fb.group({
+    orderInfos: this.fb.array([]),
+    cooInfo: this.fb.group({
+      installationOrDispatch: [null, [Validators.required, disableSubmitValidtor]], // 是否已装机或派单
+      threeMonthsAfterArrival: [null, [Validators.required, disableSubmitValidtor]], // 是否到货>3个月
+      cooSignedNotReport: [null, [Validators.required]], // 经销商是否存在之前签署过COO的订单12个月未签回安装报告的情况
+      paymentNinetyPercent: [null, [Validators.required]], // 是否已付90%以上订单金额
+      applySignedDate: [null], // 预计签署日期
+      cooConfirmationLetterDraft: [null], // COO确认函草稿
+      airTransportNoDealer: [null], // 经销商盖章后的空运单
+      cooConfirmationLetterDealer: [null], // 经销商盖章后的COO确认函
+      cooConfirmationLetterSign: [null], // 双签后的COO确认函
+    })
+  })
+
+  
 
   orderInfo = this.fb.group({
     productType: [{ value: null, disabled: true }], // 产品型号
@@ -63,27 +80,56 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
     purchaseOrderNo: [null], // 采购订单
   })
 
-  cooInfo = this.fb.group({
-    isBid: [null, [Validators.required]], // 是否中标
-    pending: [null], // 目前pending环节
-    expectedBiddingDate: [null], // 预计招标月份
-    losingOrders: [null], // 丢单风险
-    expectedNewUserDate: [null], // 如丢单，预计寻得新用户月份
-    fieldStatus: [null, [Validators.required]], // 场地状态
-    fieldStatusExplain: [null], // 场地状态-补充说明
-    newOrOldHospital: [null, [Validators.required]], // 新建医院还是老医院新院区
-    expectedFieldDate: [null, [Validators.required]], // 预计场地就位日期
-    planIcfDate: [null, [Validators.required]], // 计划ICF时间
-    installationOrDispatch: [null, [Validators.required, disableSubmitValidtor]], // 是否已装机或派单
-    threeMonthsAfterArrival: [null, [Validators.required, disableSubmitValidtor]], // 是否到货>3个月
-    cooSignedNotIcf: [null, [Validators.required]], // 经销商是否为COO签署12个月内未签回ICF
-    specialApproval: [{ value: null, disabled: true }, [Validators.required]], // 是否需要特批
-    applySignedDate: [null], // 预计签署日期
-    cooConfirmationLetterDraft: [null], // COO确认函草稿
-    airTransportNoDealer: [null], // 经销商盖章后的空运单
-    cooConfirmationLetterDealer: [null], // 经销商盖章后的COO确认函
-    cooConfirmationLetterSign: [null], // 双签后的COO确认函
-  })
+  createOrderInfo() {
+    return {
+      orderInfo: {
+        bmc: [null, [Validators.required]], // 产品线
+        bg: [{ value: 'US', disabled: true }], // BG
+        cycleGroup: [null], // Cycle Group
+        bigArea: [null], // 大区
+        businessModel: [null, [Validators.required]], // 业务模式
+        dealerName: [{ value: null, disabled: true }], // 经销商名称
+        dealerCode: [{ value: null, disabled: true }], // 经销商编号
+        philipsName: [null, [Validators.required]], // 飞利浦实体名称
+        sapOrderNo: [null, [Validators.required]], // SAP订单号
+        currency: [null, [Validators.required]], // 合同金额-货币
+        om: [null], // OM
+        contractNo: [null, [Validators.required]], // 合同号
+        purchaseOrderNo: [null], // 采购订单
+        shipToName: [null], // ship-to name
+      },
+      product: {
+        productType: [null], // 产品型号
+        quantity: [null, [Validators.required]], // 数量
+        equipmentSn: [null], // 设备SN号
+        orderDate: [null], // 进单日期
+        productionDate: [null], // 出厂日期
+        arrivalDate: [null], // 到货日期
+        goodsDeliveryDate: [null], // 货物送达日期
+        guaranteeMonth: [null], // 保修期
+        cipPort: [null], // 是否为CIP港口
+        airTransportNo: [null], // POD扫描件/空运单
+        addressType: [null], // 送达地址类型
+        deliveryAddress: [null], // 货物送达地址中文
+        deliveryAddressEn: [null], // 货物送达地址英文
+        customsClearancePort: [null], // 清关口岸中文
+        customsClearancePortEn: [null], // 清关口岸英文
+      },
+      cooInfo: {
+        installationOrDispatch: [null, [Validators.required, disableSubmitValidtor]], // 是否已装机或派单
+        threeMonthsAfterArrival: [null, [Validators.required, disableSubmitValidtor]], // 是否到货>3个月
+        cooSignedNotReport: [null, [Validators.required]], // 经销商是否存在之前签署过COO的订单12个月未签回安装报告的情况
+        paymentNinetyPercent: [null, [Validators.required]], // 是否已付90%以上订单金额
+        applySignedDate: [null], // 预计签署日期
+        cooConfirmationLetterDraft: [null], // COO确认函草稿
+        airTransportNoDealer: [null], // 经销商盖章后的空运单
+        cooConfirmationLetterDealer: [null], // 经销商盖章后的COO确认函
+        cooConfirmationLetterSign: [null], // 双签后的COO确认函
+      }
+    }
+  }
+
+  
 
   selectOptions = {
     bgList: BG_LIST,
@@ -92,7 +138,11 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
     currencies: CURRENCIES,
     fieldStatusList: FIELD_STATUS_LIST,
     paymentMethodList: PAYMENT_METHOD_LIST,
-  } 
+  }
+
+  get cooInfo(): FormGroup {
+    return this.formValues.get('cooInfo') as FormGroup
+  }
 
   get products(): FormArray {
     return this.orderInfo.get('products') as FormArray
@@ -116,6 +166,10 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
     return this.spService.bmcList.filter((bmc) => bmc.bg === 'US')
   }
 
+  get orderInfos(): FormArray {
+    return this.formValues.get('orderInfos') as FormArray
+  }
+
   constructor(
     private fb: FormBuilder,
     public spService: SpecialApprovalService
@@ -127,9 +181,8 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (!changes.editable.currentValue) {
-      this.orderInfo.disable()
       this.products.controls.forEach((product: FormGroup) => product.disable())
-      this.cooInfo.disable()
+      this.formValues.disable()
     }
   }
 
@@ -252,14 +305,6 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
     })
   }
 
-  onFieldStatusChange(status) {
-    if(status === FIELD_STATUS_OTHER) {
-      this.cooInfo.get('fieldStatusExplain').setValidators(Validators.required)
-    } else {
-      this.cooInfo.get('fieldStatusExplain').clearValidators()
-    }
-  }
-
   onCipPortChange(cipPort) {
     if (cipPort === '0') {
       this.cooProduct.get('deliveryAddress').setValidators(Validators.required)
@@ -267,15 +312,6 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
     } else {
       this.cooProduct.get('deliveryAddress').clearValidators()
       this.cooProduct.get('deliveryAddressEn').clearValidators()
-    }
-  }
-
-  onIsBidChange(isBid) {
-    const fields = ['pending', 'expectedBiddingDate', 'losingOrders', 'expectedNewUserDate']
-    if (isBid === '0') {
-      fields.forEach((fieldName) => this.cooInfo.get(fieldName).setValidators(Validators.required))
-    } else {
-      fields.forEach((fieldName) => this.cooInfo.get(fieldName).clearValidators())
     }
   }
 
