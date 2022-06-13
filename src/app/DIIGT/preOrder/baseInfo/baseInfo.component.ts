@@ -2292,6 +2292,9 @@ export class PreOrderBaseInfoComponent implements OnInit {
       sofonNo: new FormControl({ value: 'Nancy', disabled: this.disa }, Validators.required),
       switchValid:new FormControl({value:''})
     });
+    if (!this.conTable) {
+      this.validateForm.get('sofonNo')!.clearValidators();
+    }
     //this.dataBase.sameFlag = '0';
     // if (this.dataBase.detail.status === '' || this.showChek === false) {
     this.validateForm.get('paymentProvision')!.clearValidators();
