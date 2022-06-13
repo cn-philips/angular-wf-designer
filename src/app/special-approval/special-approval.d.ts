@@ -10,6 +10,8 @@ interface SearchParams {
   submitStartTime?: string;
   submitEndTime?: string;
   status?: number;
+  createStartTime?: string;
+  createEndTime?: string;
 }
 
 interface RequestItem {
@@ -28,7 +30,7 @@ interface RequestItem {
   applyId: string;
   taskInstId: string;
   procInstId: string;
-  submitTime: string;
+  processInstanceCreateTime: string;
 }
 
 export {
