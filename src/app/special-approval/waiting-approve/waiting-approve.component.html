@@ -115,7 +115,7 @@
         <td>{{ data.applicant }}</td>
         <td>{{ spService.formatRequestStatus(data.processStatus, data.nodeAction, data.status) }}</td>
         <td>{{ data.nodeName }}</td>
-        <td>{{ data.submitTime }}</td>
+        <td>{{ data.processInstanceCreateTime }}</td>
         <td nzRight="0px">
           <button nz-button nzType="primary" nzSize="small" (click)="onNavigateToRequestDetail(data)">{{ data.nodeAction
             === 'feedback' ? '反馈' : '审批' }}</button>

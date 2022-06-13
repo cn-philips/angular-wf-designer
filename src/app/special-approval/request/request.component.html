@@ -141,7 +141,7 @@
         <td>{{ data.applicant }}</td>
         <td>{{ spService.formatRequestStatus(data.processStatus, data.nodeAction, data.status) }}</td>
         <td>{{ data.nodeName }}</td>
-        <td>{{ data.createTime }}</td>
+        <td>{{ data.processInstanceCreateTime }}</td>
         <td nzRight="0px">
           <button nz-button nzType="primary" nzSize="small" class="bg-success"
             (click)="onNavigateToRequestDetail(data)">
