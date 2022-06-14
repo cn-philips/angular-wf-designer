@@ -10,6 +10,8 @@ interface SearchParams {
   submitStartTime?: string;
   submitEndTime?: string;
   status?: number;
+  createStartTime?: string;
+  createEndTime?: string;
 }
 
 interface RequestItem {
@@ -25,9 +27,10 @@ interface RequestItem {
   processStatus: string; // 流程状态
   status: number; // 是否取消
   spProcNodeName; // 当前节点名称
-  applyId: string; 
-  taskInstId: string; 
+  applyId: string;
+  taskInstId: string;
   procInstId: string;
+  processInstanceCreateTime: string;
 }
 
 export {

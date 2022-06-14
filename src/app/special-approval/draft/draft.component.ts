@@ -56,8 +56,8 @@ export class DraftComponent implements OnInit {
       const { applyType, orderBg, keyword, submitDate } = this.formValues.getRawValue()
       if (submitDate.length > 0) {
         const [ startDate, endDate ] = submitDate
-        params.submitStartTime = moment(startDate).format('YYYY-MM-DD')
-        params.submitEndTime = moment(endDate).format('YYYY-MM-DD')
+        params.createStartTime = moment(startDate).format('YYYY-MM-DD')
+        params.createEndTime = moment(endDate).format('YYYY-MM-DD')
       }
       keyword && (params.keyword = keyword)
       applyType && (params.applyType = applyType)
