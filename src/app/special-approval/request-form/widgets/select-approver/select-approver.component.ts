@@ -10,7 +10,7 @@ import {
   APPROVE_NODE_ACTION,
   APPROVE_NODE_MODE,
 } from "../../../../DIIGT/change-scene/special-approval-setting/special-approval-setting.constants";
-import { ERROR_MESSAGE, LOADING_MESSAGE, SUCCESS_MESSAGE } from "../../../special-approval.constants";
+import {APPLY_TYPE, ERROR_MESSAGE, LOADING_MESSAGE, SUCCESS_MESSAGE} from '../../../special-approval.constants';
 
 interface Approver {
   role: string;
@@ -48,6 +48,7 @@ interface User {
 export class SelectApproverComponent implements OnInit {
   @Output() success = new EventEmitter()
 
+  @Input() applyType: string;
   visible = false;
   modalLoading = false;
   submitLoading = false;
@@ -74,7 +75,7 @@ export class SelectApproverComponent implements OnInit {
   ngOnInit() {
     const getUserList = (keyword: string) => {
       if (!keyword) {
-        if (this.activeNodeCode) { 
+        if (this.activeNodeCode) {
           this.customUser[this.activeNodeCode].loading = false
           this.customUser[this.activeNodeCode].userList = []
         }
@@ -165,7 +166,11 @@ export class SelectApproverComponent implements OnInit {
       this.message.success(SUCCESS_MESSAGE.SUBMIT)
       this.success.emit()
     } catch ({ message }) {
-      this.message.error(ERROR_MESSAGE.SUBMIT)
+      if (this.applyType === APPLY_TYPE.MACHINE_EXCHANGE) {
+        this.message.error(`提交失败, ${message}`)
+      } else {
+        this.message.error(ERROR_MESSAGE.SUBMIT)
+      }
       console.error(`提交失败, ${message}`)
     } finally {
       this.submitLoading = false

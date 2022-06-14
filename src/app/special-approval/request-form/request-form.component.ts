@@ -353,6 +353,7 @@ export class RequestFormComponent implements OnInit {
           saleEmail: [null, [Validators.required]], // 销售邮箱
           districtLeader: [{ value: null, disabled: true }], // District Leader邮箱
           salesLeader: [{ value: null, disabled: true }], // sales Leader 邮箱
+          expectedSaleDate: [null, [Validators.required]], // 预计记认销售日期
           products: [[], [Validators.required]],
         })
       ])
@@ -774,18 +775,14 @@ export class RequestFormComponent implements OnInit {
             transferCargo: 'sp_machineexchange_order_type_item_1',
             ...this.requestInfo.orderInfos[0],
             ...changeOrderInfos.orders.at(0),
-            applyArrivalTime: applyArrivalTime ? moment(applyArrivalTime).format('YYYY-MM-DD') : null,
-            expectedPaymentDate: expectedPaymentDate ? moment(expectedPaymentDate).format('YYYY-MM-DD') : null,
-            expectedSaleDate: expectedSaleDate ? moment(expectedSaleDate).format('YYYY-MM-DD') : null,
+            expectedSaleDate: changeOrderInfos.orders.at(0).expectedSaleDate ? moment(changeOrderInfos.orders.at(0).expectedSaleDate).format('YYYY-MM-DD') : null,
             products: changeOrderInfos.orders.at(0).products.map(({ productType, wbsNo, itemNo, quantity, equipmentSn, logisticsStatus }) => ({ productType, wbsNo, itemNo, quantity, equipmentSn, logisticsStatus }))
           },
           {
             transferCargo: 'sp_machineexchange_order_type_item_2',
             ...this.requestInfo.orderInfos[1],
             ...changeOrderInfos.orders.at(1),
-            applyArrivalTime: applyArrivalTime ? moment(applyArrivalTime).format('YYYY-MM-DD') : null,
-            expectedPaymentDate: expectedPaymentDate ? moment(expectedPaymentDate).format('YYYY-MM-DD') : null,
-            expectedSaleDate: expectedSaleDate ? moment(expectedSaleDate).format('YYYY-MM-DD') : null,
+            expectedSaleDate: changeOrderInfos.orders.at(1).expectedSaleDate ? moment(changeOrderInfos.orders.at(1).expectedSaleDate).format('YYYY-MM-DD') : null,
             products: changeOrderInfos.orders.at(1).products.map(({ productType, wbsNo, itemNo, quantity, equipmentSn, logisticsStatus }) => ({ productType, wbsNo, itemNo, quantity, equipmentSn, logisticsStatus }))
           }
         ]
