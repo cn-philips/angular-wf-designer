@@ -27,4 +27,18 @@
     padding-top: 0;
     padding-bottom: 0;
   }
+
+  .btn-wrap  {
+    button {
+      display: inline-flex;
+      align-items: center;
+      padding-left: 0;
+      color: #337fbf;
+    }
+  }
+  .operation-wrap {
+    button {
+      padding-right: 0;
+    }
+  }
 }
