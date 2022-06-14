@@ -61,6 +61,7 @@ export class RequestFormComponent implements OnInit {
   isSupplementNode = false
 
   public pageTitle: string;
+  public processOwnerAdmin: string;
   public requestId;
   public requestInfo = {
     orderInfos: [{} as any]
@@ -496,6 +497,8 @@ export class RequestFormComponent implements OnInit {
 
       this.setPageTitle({ applyType: type, applyItem: item });
 
+      this.setProcessOwnerAdmin({ applyType: type})
+
       if (bg) {
         switch(type) {
           case APPLY_TYPE.MACHINE_EXCHANGE:
@@ -561,6 +564,31 @@ export class RequestFormComponent implements OnInit {
     }
 
     this.pageTitle =  isNew ? `新建特批-${title}` : title
+  }
+
+  public setProcessOwnerAdmin({ applyType = ''}) {
+    let title = ''
+    if (applyType ) {
+      let processOwnerAdmin = this.spService.getProcessOwnerAdmin(applyType);
+      let processOwner = [{name: null, email: null}];
+      let processAdmin = [{name: null, email: null}];
+      processOwner = processOwnerAdmin.processOwner;
+      processAdmin = processOwnerAdmin.processAdmin;
+      if (processAdmin && processAdmin.length > 0) {
+        let adminDesc = "如对流程有疑问请发邮件咨询Process Admin："
+        const emailList = processAdmin.map(({ email }) =>  email );
+        emailList.forEach(item => { adminDesc += item +" " })
+        title += adminDesc +"  "
+      }
+      if (processOwner && processOwner.length > 0) {
+        let expertDesc = "如对流程有疑问请发邮件咨询Process Expert："
+        const emailList = processOwner.map(({ email }) =>  email );
+        emailList.forEach(item => { expertDesc += item +" " })
+        title += expertDesc;
+      }
+    }
+    console.log("title:",title);
+    this.processOwnerAdmin = title;
   }
 
   get orderInfo(): FormGroup {
@@ -1528,6 +1556,7 @@ export class RequestFormComponent implements OnInit {
         bg, cycleGroup, bigArea, smallArea, isDeleted, lastBuyPlan,
       } = data
       this.setPageTitle({ applyType, applyItem }, false)
+      this.setProcessOwnerAdmin({ applyType});
       this.applyItem = applyItem
       this.applyType = applyType
       this.executed = executed

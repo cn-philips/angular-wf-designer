@@ -1,1 +1,11 @@
 @import "../../../theme/common/dashboard.scss";
+
+:host {
+    /deep/ .title_info {
+        top: 70%;
+        position: absolute;
+        font-size: 14px;
+        float: left;
+        word-break: break-all;
+    }
+}
