@@ -109,7 +109,7 @@ public getFormDetails(id) {
               this.isCancelFlag = true;
               this.validateForm.controls.deBookDate.disable();
               this.validateForm.controls.reBookDate.disable();
-              this.validateForm.controls.logistician.disable();
+              // this.validateForm.controls.logistician.disable();
              }
              else
              {
