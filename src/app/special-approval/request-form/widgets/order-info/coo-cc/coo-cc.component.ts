@@ -3,10 +3,84 @@ import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Valida
 import { BG_LIST, BUSINESS_MODEL, BUSINESS_MODEL_LIST, CURRENCIES, FIELD_STATUS_LIST, FIELD_STATUS_OTHER, PAYMENT_METHOD_LIST, PROCESS_STATUS } from '../../../../special-approval.constants'
 import { SpecialApprovalService } from '../../../../special-approval.service'
 import { Dealer, SelectDealerComponent } from '../../select-dealer/select-dealer.component';
+import { NzMessageService, UploadXHRArgs } from 'ng-zorro-antd'
+import { getType } from '../../../../../../assets/js/tools';
+import { environment } from "../../../../../../environments/environment";
+import { read, utils } from "xlsx";
 
+const disableSubmitValidtorFn = (disableValue) => (control: AbstractControl): ValidationErrors | null => {
+  return control.value === disableValue ? { disableSubmit: true } : null
+}
 
-const disableSubmitValidtor: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
-  return control.value === '1' ? { disableSubmit: true } : null
+let loadingId
+
+const excelKeyMap = {
+  产品线: "bmc",
+  "BG(Modality)": "bg",
+  销售区域: "cycleGroup",
+  销售区域_1: "bigArea",
+  业务模式: "businessModel",
+  经销商编号: "dealerCode",
+  经销商名称: "dealerName",
+  飞利浦实体名称: "philipsName",
+  "SAP 订单号（SO#）": "sapOrderNo",
+  币制: "currency",
+  OM: "om",
+  合同号: 'contractNo',
+  'Ship-To Name': 'shipToName',
+  产品型号: 'productType',
+  设备SN号: 'equipmentSn',
+  数量: 'quantity',
+  进单日期: 'orderDate',
+  出厂日期: 'productionDate',
+  到货日期: 'arrivalDate',
+  货物送达日期: 'goodsDeliveryDate',
+  保修期: 'guaranteeMonth',
+  是否为CIP港口: 'cipPort',
+  送达地址类型: 'addressType',
+  货物送达地址CN: 'deliveryAddress',
+  货物送达地址EN: 'deliveryAddressEn',
+  清关口岸CN: 'customsClearancePort',
+  清关口岸EN: 'customsClearancePortEn',
+};
+
+const productInfo = {
+  productId: [null],
+  productType: [null, [Validators.required]], // 产品型号
+  quantity: [null, [Validators.required]], // 数量
+  equipmentSn: [null, [Validators.required]], // 设备SN号
+  orderDate: [null, [Validators.required]], // 进单日期
+  productionDate: [null, [Validators.required]], // 出厂日期
+  arrivalDate: [null, [Validators.required]], // 到货日期
+  goodsDeliveryDate: [null, [Validators.required]], // 货物送达日期
+  guaranteeMonth: [null, [Validators.required]], // 保修期
+  cipPort: [null, [Validators.required]], // 是否为CIP港口
+  airTransportNo: [null, [Validators.required]], // POD扫描件/空运单
+  addressType: [null, [Validators.required]], // 送达地址类型
+  deliveryAddress: [null, [Validators.required]], // 货物送达地址中文
+  deliveryAddressEn: [null, [Validators.required]], // 货物送达地址英文
+  customsClearancePort: [null, [Validators.required]], // 清关口岸中文
+  customsClearancePortEn: [null, [Validators.required]], // 清关口岸英文
+}
+
+const orderInfo = {
+  id: [null],
+  bmc: [null, [Validators.required]], // 产品线
+  bg: [{ value: 'CC', disabled: true }], // BG(Modality)
+  cycleGroup: [null], // 销售区域-Cycle Group
+  bigArea: [null], // 销售区域-Region
+  businessModel: [null, [Validators.required]], // 业务模式
+  dealerName: [null], // 经销商名称
+  dealerCode: [null], // 经销商编号
+  philipsName: [null, [Validators.required]], // 飞利浦实体名称
+  sapOrderNo: [null, [Validators.required]], // SAP订单号(SO#)
+  currency: [null, [Validators.required]], // 币制
+  om: [null], // OM
+  contractNo: [null, [Validators.required]], // 合同号
+  purchaseOrderNo: [null, Validators.required], // 采购订单
+  shipToName: [null, Validators.required], // ship-to name
+  // 产品信息
+  ...productInfo,
 }
 
 @Component({
@@ -16,7 +90,7 @@ const disableSubmitValidtor: ValidatorFn = (control: AbstractControl): Validatio
 })
 export class CooCcOrderInfoComponent implements OnInit, OnChanges {
 
-  originOrderInfo = {}
+  originOrderInfos = {}
   originCooInfo = {}
   
   @ViewChild('selectDealer') selectDealer: SelectDealerComponent
@@ -27,20 +101,25 @@ export class CooCcOrderInfoComponent implements OnInit, OnChanges {
   FIELD_STATUS_OTHER = FIELD_STATUS_OTHER
   BUSINESS_MODEL = BUSINESS_MODEL
 
-  showScPlanningField = false
-  showOmField = false
-  showOaField = false
-  showSalesFeedbackField = false
-  showScPlanningFeedbackField = false
-  showSelectDealerBtn = false
+  showCooFile = false
+  showCooLetter = false
+
+  showUploadFileList = false
+
+  activeOrderIndex = 0
+
+  fileList = []
+  fileIdSet = new Set()
+
+  templateUrl = `${environment.base_href}/assets/template/COO-CC-Template.xlsx`
 
   formValues = this.fb.group({
-    orderInfos: this.fb.array([]),
+    orderInfos: this.fb.array([], [Validators.required]),
     cooInfo: this.fb.group({
-      installationOrDispatch: [null, [Validators.required, disableSubmitValidtor]], // 是否已装机或派单
-      threeMonthsAfterArrival: [null, [Validators.required, disableSubmitValidtor]], // 是否到货>3个月
-      cooSignedNotReport: [null, [Validators.required]], // 经销商是否存在之前签署过COO的订单12个月未签回安装报告的情况
-      paymentNinetyPercent: [null, [Validators.required]], // 是否已付90%以上订单金额
+      installationOrDispatch: [null, [Validators.required, disableSubmitValidtorFn('1')]], // 是否已装机或派单
+      threeMonthsAfterArrival: [null, [Validators.required, disableSubmitValidtorFn('0')]], // 是否到货>3个月
+      cooSignedNotIcf: [null, [Validators.required, disableSubmitValidtorFn('1')]], // 经销商是否存在之前签署过COO的订单12个月未签回安装报告的情况
+      paymentNinetyPercent: [null, [Validators.required, disableSubmitValidtorFn('0')]], // 是否已付90%以上订单金额
       applySignedDate: [null], // 预计签署日期
       cooConfirmationLetterDraft: [null], // COO确认函草稿
       airTransportNoDealer: [null], // 经销商盖章后的空运单
@@ -49,87 +128,56 @@ export class CooCcOrderInfoComponent implements OnInit, OnChanges {
     })
   })
 
-  
-
-  orderInfo = this.fb.group({
-    productType: [{ value: null, disabled: true }], // 产品型号
-    bmc: [null, [Validators.required]], // 产品线
-    bg: [{ value: 'US', disabled: true }], // BG
-    cycleGroup: [null], // Cycle Group
-    bigArea: [null], // 大区
-    businessModel: [null, [Validators.required]], // 业务模式
-    sapOrderNo: [null, [Validators.required]], // SAP订单号
-    om: [null], // OM
-    products: this.fb.array([], [Validators.required]),
-    contractNo: [null], // 合同号
-    currency: [null], // 币制
-    shipToName: [null], // ship-to name
-    paymentMethod: [null], // 付款方式
-    paymentReceived: [null], // 全款是否已经收到
-    cooProduct: this.fb.group({
-      cipPort: [null], // 是否为CIP港口
-      airTransportNo: [null], // POD扫描件/空运单
-      addressType: [null], // 送达地址类型
-      deliveryAddress: [null], // 货物送达地址中文
-      deliveryAddressEn: [null], // 货物送达地址英文
-      customsClearancePort: [null], // 清关口岸中文
-      customsClearancePortEn: [null], // 清关口岸英文
-    }),
-    dealerName: [{ value: null, disabled: true }], // 经销商名称
-    dealerCode: [{ value: null, disabled: true }], // 经销商编号
-    purchaseOrderNo: [null], // 采购订单
-  })
-
-  createOrderInfo() {
-    return {
-      orderInfo: {
-        bmc: [null, [Validators.required]], // 产品线
-        bg: [{ value: 'US', disabled: true }], // BG
-        cycleGroup: [null], // Cycle Group
-        bigArea: [null], // 大区
-        businessModel: [null, [Validators.required]], // 业务模式
-        dealerName: [{ value: null, disabled: true }], // 经销商名称
-        dealerCode: [{ value: null, disabled: true }], // 经销商编号
-        philipsName: [null, [Validators.required]], // 飞利浦实体名称
-        sapOrderNo: [null, [Validators.required]], // SAP订单号
-        currency: [null, [Validators.required]], // 合同金额-货币
-        om: [null], // OM
-        contractNo: [null, [Validators.required]], // 合同号
-        purchaseOrderNo: [null], // 采购订单
-        shipToName: [null], // ship-to name
-      },
-      product: {
-        productType: [null], // 产品型号
-        quantity: [null, [Validators.required]], // 数量
-        equipmentSn: [null], // 设备SN号
-        orderDate: [null], // 进单日期
-        productionDate: [null], // 出厂日期
-        arrivalDate: [null], // 到货日期
-        goodsDeliveryDate: [null], // 货物送达日期
-        guaranteeMonth: [null], // 保修期
-        cipPort: [null], // 是否为CIP港口
-        airTransportNo: [null], // POD扫描件/空运单
-        addressType: [null], // 送达地址类型
-        deliveryAddress: [null], // 货物送达地址中文
-        deliveryAddressEn: [null], // 货物送达地址英文
-        customsClearancePort: [null], // 清关口岸中文
-        customsClearancePortEn: [null], // 清关口岸英文
-      },
-      cooInfo: {
-        installationOrDispatch: [null, [Validators.required, disableSubmitValidtor]], // 是否已装机或派单
-        threeMonthsAfterArrival: [null, [Validators.required, disableSubmitValidtor]], // 是否到货>3个月
-        cooSignedNotReport: [null, [Validators.required]], // 经销商是否存在之前签署过COO的订单12个月未签回安装报告的情况
-        paymentNinetyPercent: [null, [Validators.required]], // 是否已付90%以上订单金额
-        applySignedDate: [null], // 预计签署日期
-        cooConfirmationLetterDraft: [null], // COO确认函草稿
-        airTransportNoDealer: [null], // 经销商盖章后的空运单
-        cooConfirmationLetterDealer: [null], // 经销商盖章后的COO确认函
-        cooConfirmationLetterSign: [null], // 双签后的COO确认函
-      }
-    }
+  createOrder() {
+    return this.fb.group({
+      ...orderInfo,
+      isOrder: [true],
+    })
   }
 
-  
+  onAddProduct(index) {
+    const orderInfosValue = this.orderInfos.getRawValue()
+    let insertedIndex = orderInfosValue.length
+    for(let i = index + 1; i < orderInfosValue.length; i++) {
+      if (orderInfosValue[i].isOrder) {
+        insertedIndex = i
+        break
+      }
+    }
+    this.orderInfos.insert(insertedIndex, this.createProduct())
+  }
+
+  createProduct() {
+    return this.fb.group({
+      ...productInfo,
+      isOrder: [false],
+    })
+  }
+
+  onAddOrder() {
+    const order = this.createOrder()
+    this.orderInfos.push(order)
+  }
+
+  onDeleteOrder(index) {
+    const orderInfo = this.orderInfos.at(index)
+    const orderInfosValue = this.orderInfos.getRawValue()
+    const isOrder = orderInfo.get('isOrder').value
+    if (isOrder) {
+      let lastDeletedOrderIndex = orderInfosValue.length - 1
+      for(let i = index + 1; i < orderInfosValue.length; i++) {
+        if (orderInfosValue[i].isOrder) {
+          lastDeletedOrderIndex = i - 1
+          break
+        }
+      }
+      for(let i = lastDeletedOrderIndex; i >= index; i--) {
+        this.orderInfos.removeAt(i)
+      }
+    } else {
+      this.orderInfos.removeAt(index)
+    }
+  }
 
   selectOptions = {
     bgList: BG_LIST,
@@ -144,26 +192,8 @@ export class CooCcOrderInfoComponent implements OnInit, OnChanges {
     return this.formValues.get('cooInfo') as FormGroup
   }
 
-  get products(): FormArray {
-    return this.orderInfo.get('products') as FormArray
-  }
-
-  get cooProduct(): FormGroup {
-    return this.orderInfo.get('cooProduct') as FormGroup
-  }
-
-  get bigAreas() {
-    const cycleGroup = this.orderInfo.get('cycleGroup') as FormControl
-    const cycleGroupBigAreaMap = this.spService.cycleGroupBigAreaMap
-    if (cycleGroup && cycleGroupBigAreaMap[cycleGroup.value]) {
-      return cycleGroupBigAreaMap[cycleGroup.value]
-    } else {
-      return []
-    }
-  }
-
   get bmcList() {
-    return this.spService.bmcList.filter((bmc) => bmc.bg === 'US')
+    return this.spService.bmcList.filter((bmc) => bmc.bg === 'CC')
   }
 
   get orderInfos(): FormArray {
@@ -172,6 +202,7 @@ export class CooCcOrderInfoComponent implements OnInit, OnChanges {
 
   constructor(
     private fb: FormBuilder,
+    private message: NzMessageService,
     public spService: SpecialApprovalService
   ) { }
 
@@ -181,22 +212,101 @@ export class CooCcOrderInfoComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (!changes.editable.currentValue) {
-      this.products.controls.forEach((product: FormGroup) => product.disable())
-      this.formValues.disable()
+      this.disableForm()
     }
   }
 
-  // node1: SC Planning补充信息
-  // node3: OM 补充信息
-  // node4: OA 补充信息
+  disableForm() {
+    this.orderInfos.controls.forEach((orderInfo: FormGroup) => orderInfo.disable())
+    this.formValues.disable()
+  }
+
+  checkImportOrderData(orderInfos) {
+    let isValid = true
+    let dealerName
+    let philipsName
+    for(let orderInfo of orderInfos) {
+      if (orderInfo.dealerName) {
+        if (dealerName && orderInfo.dealerName !== dealerName) {
+          isValid = false
+          this.message.remove(loadingId)
+          this.message.error('导入失败, 导入的数据需为同一经销商!')
+          break
+        } else {
+          dealerName = orderInfo.dealerName
+        }
+      }
+
+      if (orderInfo.philipsName) {
+        if (philipsName && orderInfo.philipsName !== philipsName) {
+          isValid = false
+          this.message.remove(loadingId)
+          this.message.error('导入失败, 导入的数据需为同一飞利浦实体!')
+          break
+        } else {
+          philipsName = orderInfo.philipsName
+        }
+      }
+    }
+    return isValid
+  }
+
+  onImportOrderInfo = (file) => {
+    loadingId = this.message.loading('正在导入, 请稍候...', { nzDuration: 0 }).messageId
+    const reader = new FileReader();
+    reader.onload = (e: any) => {
+      const workbook = read(e.target.result, { type: "array" });
+      const firstSheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[firstSheetName];
+      const results = utils.sheet_to_json(worksheet);
+      const orderInfoFields = [
+        'bmc', 'bg', 'cycleGroup', 'bigArea', 'businessModel',
+        'dealerName', 'dealerCode', 'philipsName', 'sapOrderNo',
+        'currency', 'om', 'contractNo', 'purchaseOrderNo', 'shipToName'
+      ]
+         
+      const orderInfos = results.map((order, index) => {
+        const orderInfo = Object.keys(order).reduce((calc, cur) => {
+          calc[excelKeyMap[cur.trim()]] = order[cur]
+          return calc
+        }, {}) as any
+        if (orderInfo.businessModel) {
+          const model = BUSINESS_MODEL_LIST.find(({ label }) => label === orderInfo.businessModel)
+          orderInfo.businessModel = model.value
+        }
+        orderInfo.isOrder = false
+        for(let fieldName of orderInfoFields) {
+          if (orderInfo[fieldName] !== undefined) {
+            orderInfo.isOrder = true
+            break
+          }
+        }
+        return orderInfo
+      })
+      const isValidData = this.checkImportOrderData(orderInfos)
+      if (isValidData) {
+        let orderInfoIndex = 0
+        orderInfos.forEach((orderInfo) => {
+          if (orderInfo.isOrder) {
+            this.orderInfos.push(this.createOrder())
+          } else {
+            this.orderInfos.push(this.createProduct())
+          }
+          this.orderInfos.at(orderInfoIndex).patchValue(orderInfo)
+          orderInfoIndex++
+        })
+        this.message.remove(loadingId)
+        this.message.success('导入成功')
+      }
+    };
+    reader.readAsArrayBuffer(file);
+    return false;
+  }
+
+  // node2: 申请人补充信息-经销商已盖章的COO授权函
+  // node6: 申请人补充信息-双签的COO授权函
   setFormValidators({ nodeCode, nodeInfoList, processStatus }) {
     const currentNode = nodeInfoList.find(({ code }) => code === nodeCode)
-    const orderInfoRequiredFields = []
-    const orderInfoEnabledFields = []
-    const productsRequiredFields = []
-    const productsEnabledFields = []
-    const cooProductRequiredFields = []
-    const cooProductEnabledFields = []
     const cooInfoRequiredFields = []
     const cooInfoEnabledFields = []
 
@@ -207,137 +317,47 @@ export class CooCcOrderInfoComponent implements OnInit, OnChanges {
     }
     switch(processStatus) {
       case PROCESS_STATUS.COMPLETED:
-        this.showScPlanningField = true
-        this.showOmField = true
-        this.showOaField = true
-        this.showSalesFeedbackField = true
-        this.showScPlanningFeedbackField = true
+        this.showCooFile = true
+        this.showCooLetter = true
         break
       case PROCESS_STATUS.START:
-        if (nodeCode > 'node0') {
-          this.showScPlanningField = true
+        if (nodeCode > 'node1') {
+          this.showCooFile = true
         }
-    
-        if (nodeCode > 'node2') {
-          this.showOmField = true
+        if(nodeCode > 'node5') {
+          this.showCooLetter = true
         }
-    
-        if(nodeCode > 'node3') {
-          this.showOaField = true
-        }
-    
-        if(nodeCode > 'node6') {
-          this.showSalesFeedbackField = true
-        }
-    
-        if (nodeCode > 'node7') {
-          this.showScPlanningFeedbackField = true
-        }
-
         if (isActiveApprover) {
           switch (nodeCode) {
-            case 'node1': // SC Planning补充信息
-              // orderInfo
-              orderInfoRequiredFields.push('contractNo', 'currency', 'shipToName')
-              orderInfoEnabledFields.push('contractNo', 'currency', 'shipToName')
-              // products
-              productsRequiredFields.push('productType', 'orderDate', 'productionDate', 'arrivalDate')
-              productsEnabledFields.push('productType', 'orderDate', 'productionDate', 'arrivalDate')
-              break
-            case 'node3': // OM补充信息 
-              // orderInfo
-              orderInfoEnabledFields.push('paymentMethod', 'paymentReceived')
-              orderInfoRequiredFields.push('paymentMethod', 'paymentReceived')
-              // products
-              productsRequiredFields.push('goodsDeliveryDate', 'equipmentSn')
-              productsEnabledFields.push('goodsDeliveryDate', 'equipmentSn')
-              // cooProduct
-              cooProductEnabledFields.push(
-                'cipPort', 'airTransportNo', 'addressType',
-                'deliveryAddress', 'deliveryAddressEn',
-                'customsClearancePort', 'customsClearancePortEn'
-              )
-              cooProductRequiredFields.push('airTransportNo', 'addressType', 'customsClearancePort', 'customsClearancePortEn')
-              if (this.cooProduct.get('cipPort').value === '0') {
-                cooProductRequiredFields.push('deliveryAddress', 'deliveryAddressEn')
-              }
-              break
-            case 'node4': // OA补充信息
-              // orderInfo
-              orderInfoRequiredFields.push('purchaseOrderNo')
-              orderInfoEnabledFields.push('purchaseOrderNo')
-              // products
-              productsRequiredFields.push('equipmentDescription', 'equipmentDescriptionEn', 'guaranteeMonth')
-              productsEnabledFields.push('equipmentDescription', 'equipmentDescriptionEn', 'guaranteeMonth')
-              if (this.orderInfo.get('businessModel').value === BUSINESS_MODEL.DISTRIBUTOR_DEAL) {
-                orderInfoRequiredFields.push('dealerName', 'dealerCode')
-                orderInfoEnabledFields.push('dealerName', 'dealerCode')
-                this.showSelectDealerBtn = true
-              }
-              break
-            case 'node7': // 申请人反馈
+            case 'node2': // SC Planning补充信息
               // cooInfo
-              cooInfoRequiredFields.push('applySignedDate', 'cooConfirmationLetterDraft', 'airTransportNoDealer', 'cooConfirmationLetterDealer')
               cooInfoEnabledFields.push('applySignedDate', 'cooConfirmationLetterDraft', 'airTransportNoDealer', 'cooConfirmationLetterDealer')
+              cooInfoRequiredFields.push('applySignedDate', 'cooConfirmationLetterDraft', 'airTransportNoDealer', 'cooConfirmationLetterDealer')
               break
-            case 'node8': // SC Planning反馈
+            case 'node6': // OM补充信息 
               // cooInfo
-              cooInfoRequiredFields.push('cooConfirmationLetterSign')
               cooInfoEnabledFields.push('cooConfirmationLetterSign')
+              cooInfoRequiredFields.push('cooConfirmationLetterSign')
               break
           }
         }
         break
     }
-    orderInfoRequiredFields.forEach((fieldName) => this.orderInfo.get(fieldName).setValidators(Validators.required))
-    orderInfoEnabledFields.forEach((fieldName) => this.orderInfo.get(fieldName).enable())
-    cooProductRequiredFields.forEach((fieldName) => this.cooProduct.get(fieldName).setValidators(Validators.required))
-    cooProductEnabledFields.forEach((fieldName) => this.cooProduct.get(fieldName).enable())
     cooInfoRequiredFields.forEach((fieldName) => this.cooInfo.get(fieldName).setValidators(Validators.required))
     cooInfoEnabledFields.forEach((fieldName) => this.cooInfo.get(fieldName).enable())
-    this.products.controls.forEach((product: FormGroup) => {
-      productsRequiredFields.forEach((fieldName) => {
-        product.get(fieldName).setValidators(Validators.required)
-      })
-      productsEnabledFields.forEach((fieldName) => {
-        product.get(fieldName).enable()
-      })
-    })
-  }
-
-  onCipPortChange(cipPort) {
-    if (cipPort === '0') {
-      this.cooProduct.get('deliveryAddress').setValidators(Validators.required)
-      this.cooProduct.get('deliveryAddressEn').setValidators(Validators.required)
-    } else {
-      this.cooProduct.get('deliveryAddress').clearValidators()
-      this.cooProduct.get('deliveryAddressEn').clearValidators()
-    }
   }
 
   public validate() {
-    // orderInfo
-    const orderInfo = this.orderInfo
-    for(const i in orderInfo.controls) {
-      orderInfo.controls[i].markAsDirty()
-      orderInfo.controls[i].updateValueAndValidity()
-    }
-    const isOrderInfoValid = orderInfo.disabled || orderInfo.valid
-    // cooProduct
-    const cooProduct = this.cooProduct
-    for(const i in cooProduct.controls) {
-      cooProduct.controls[i].markAsDirty()
-      cooProduct.controls[i].updateValueAndValidity()
-    }
-    const isCooProductValid = cooProduct.disabled || cooProduct.valid
-    // products
-    this.products.controls.forEach((product: FormGroup) => {
-      for(const i in product.controls) {
-        product.controls[i].markAsDirty()
-        product.controls[i].updateValueAndValidity()
+    // orderInfos
+    const orderInfos = this.orderInfos
+    orderInfos.controls.forEach((orderInfo: FormGroup) => {
+      for(const i in orderInfo.controls) {
+        orderInfo.controls[i].markAsDirty()
+        orderInfo.controls[i].updateValueAndValidity()
       }
     })
-    const isProductsValid = this.products.disabled || this.products.valid
+    const isOrderInfosValid = orderInfos.disabled || orderInfos.valid
+
     // cooInfo
     const cooInfo = this.cooInfo
     for(const i in cooInfo.controls) {
@@ -345,70 +365,121 @@ export class CooCcOrderInfoComponent implements OnInit, OnChanges {
       cooInfo.controls[i].updateValueAndValidity()
     }
     const isCooInfoValid = cooInfo.disabled || cooInfo.valid
-    return isOrderInfoValid && isCooProductValid && isProductsValid && isCooInfoValid
+    return isOrderInfosValid && isCooInfoValid
   }
 
   public getData() {
-    let orderInfo = {
-      ...this.originOrderInfo,
-      ...this.orderInfo.getRawValue(),
+    const orderInfosValue = this.orderInfos.getRawValue()
+    let products = []
+    let orderInfos = []
+    let activeOrder = null
+    orderInfosValue.forEach((orderInfo) => {
+      const {
+        isOrder,
+        productId,
+        // order info
+        bmc, bg, cycleGroup, bigArea, businessModel, dealerName, dealerCode,
+        philipsName, sapOrderNo, currency, om, contractNo, purchaseOrderNo, shipToName,
+        // product info
+        productType, quantity, equipmentSn, orderDate, productionDate, arrivalDate,
+        goodsDeliveryDate, guaranteeMonth, cipPort, airTransportNo, addressType,
+        deliveryAddress, deliveryAddressEn, customsClearancePort, customsClearancePortEn,
+      } = orderInfo
+      orderInfo.purchaseOrderNo = purchaseOrderNo ? [{ fileId: purchaseOrderNo }] : []
+      const productInfo = {
+        id: productId,
+        productType, quantity, equipmentSn, orderDate, productionDate, arrivalDate,
+        goodsDeliveryDate, guaranteeMonth, cipPort, 
+        airTransportNo: airTransportNo ? [{ fileId: airTransportNo }] : [], 
+        addressType, deliveryAddress, deliveryAddressEn, customsClearancePort, customsClearancePortEn,
+      }
+      delete orderInfo.isOrder
+      if (isOrder) {
+        if (activeOrder) {
+          activeOrder.products = products
+          orderInfos.push(activeOrder)
+        }
+        products = [productInfo]
+        activeOrder = orderInfo
+      } else {
+        products.push(productInfo)
+      }
+    })
+    if (activeOrder) {
+      activeOrder.products = products
+      orderInfos.push(activeOrder)
     }
-    let { products, cooProduct } = orderInfo
-    products = products.map((product, index) => index === 0 ? { ...product, ...cooProduct } : product)
-    orderInfo.products = products
-    delete orderInfo.cooProduct
     const cooInfo = {
       ...this.originCooInfo,
       ...this.cooInfo.getRawValue(),
     }
+    console.log({
+      cooInfo,
+      orderInfos
+    });
+    
     return {
       cooInfo,
-      orderInfos: [orderInfo]
+      orderInfos
     }
   }
 
   public initData(data) {
     const { orderInfos, cooInfo } = data
-    const orderInfo = orderInfos[0]
-    const products = orderInfo.products
-    this.originOrderInfo = orderInfo
+    this.originOrderInfos = orderInfos
     this.originCooInfo = cooInfo
-    this.orderInfo.patchValue({
-      ...orderInfo,
-      products: products ? products : []
-    })
-
-    if (products) {
-      this.cooProduct.patchValue(products[0])
-      // formArray不能直接patchValue
-      products.forEach((product, index) => {
-        const newProduct = this.createProduct()
-        if (!this.editable) {
-          newProduct.disable()
-        }
-        this.products.push(newProduct)
-        this.products.at(index).patchValue(product)
-      })
-    }
     this.cooInfo.patchValue(cooInfo)
+    this.initOrderInfos(orderInfos)
+    if (!this.editable) {
+      this.disableForm()
+    }
     this.setFormValidators(data)
   }
 
-  createProduct() {
-    return this.fb.group({
-      wbsNo: [null, [Validators.required]], // 订单WBS#
-      itemNo: [null, [Validators.required]], // Item#
-      quantity: [null, [Validators.required]], // 数量
-      productType: [null], // 产品型号
-      orderDate: [null], // 进单日期
-      productionDate: [null], // 出厂日期
-      arrivalDate: [null], // 到货日期
-      goodsDeliveryDate: [null], // 货物送达日期
-      equipmentSn: [null], // 设备SN号
-      equipmentDescription: [null], // 设备名称和描述中文
-      equipmentDescriptionEn: [null], // 设备名称和描述英文
-      guaranteeMonth: [null], // 保修期
+  addFileListItem(fileItem) {
+    if (fileItem && !this.fileIdSet.has(fileItem.fileId)) {
+      const { fileId, name } = fileItem
+      const newFile = { fileId, name, status: 'success' }
+      this.fileList = [...this.fileList, newFile]
+      this.fileIdSet.add(fileId)
+    }
+  }
+
+  initOrderInfos(orderInfos) {
+    let index = 0
+    orderInfos.forEach((orderInfo) => {
+      const { products } = orderInfo
+      delete orderInfo.products
+      // 初始化fileList
+      const purchaseOrderNo = orderInfo.purchaseOrderNo[0]
+      this.addFileListItem(purchaseOrderNo)
+      this.orderInfos.push(this.createOrder())
+      this.orderInfos.at(index).patchValue({ 
+        ...orderInfo,
+        purchaseOrderNo: purchaseOrderNo ? purchaseOrderNo.fileId : null,
+      })
+      index++
+      for(let i = 0; i < products.length; i++) {
+        const airTransportNo = products[i].airTransportNo[0]
+        this.addFileListItem(airTransportNo)
+        const productValue = {
+          ...products[i],
+          airTransportNo: airTransportNo ? airTransportNo.fileId : null,
+          productId: products[i].id,
+        }
+        delete productValue.id
+        if (i === 0) {
+          this.orderInfos.at(index - 1).patchValue(productValue)
+        } else {
+          this.orderInfos.push(this.createProduct())
+          this.orderInfos.at(index).patchValue(productValue)
+          index++
+        }
+      }
     })
+
+    console.log('fileList', this.fileList);
+    
   }
 
   onCooSignedNotIcf(cooSignedNotIcf) {
@@ -417,52 +488,96 @@ export class CooCcOrderInfoComponent implements OnInit, OnChanges {
     })
   }
 
-  onCycleGroupChange() {
-    this.orderInfo.patchValue({ bigArea: null })
+  onCycleGroupChange(index) {
+    const orderInfo = this.orderInfos.at(index)
+    orderInfo.patchValue({ bigArea: null })
   }
 
-  onAddProduct() {
-    this.products.push(this.createProduct())
+  getBigAreas(index) {
+    const orderInfo = this.orderInfos.at(index)
+    const cycleGroup = orderInfo.get('cycleGroup').value
+    const cycleGroupBigAreaMap = this.spService.cycleGroupBigAreaMap
+    if (cycleGroup && cycleGroupBigAreaMap[cycleGroup]) {
+      return cycleGroupBigAreaMap[cycleGroup]
+    } else {
+      return []
+    }
   }
 
-  onDeleteProduct(index) {
-    this.products.removeAt(index)
-    this.onCalcOrderProductType()
+  showDealerField(index) {
+    const orderInfo = this.orderInfos.at(index)
+    return orderInfo.get('businessModel').value === BUSINESS_MODEL.DISTRIBUTOR_DEAL
   }
 
   onSelectDealer(dealer: Dealer) {
     const { dealerCode, dealerName } = dealer
-    this.orderInfo.patchValue({
+    const orderInfo = this.orderInfos.at(this.activeOrderIndex)
+    orderInfo.patchValue({
       dealerCode: dealerCode,
       dealerName: dealerName,
     })
   }
 
-  onClearDealer() {
-    this.orderInfo.patchValue({
+  onClearDealer(orderInfo: FormGroup) {
+    orderInfo.patchValue({
       dealerCode: null,
       dealerName: null,
     })
   }
 
-  onShowSelectDealerModal() {
+  onShowSelectDealerModal(index) {
+    this.activeOrderIndex = index
     this.selectDealer.showModal()
   }
 
-  onCalcOrderProductType() {
-    const products = this.products.value as any[]
-    const orderProductType = products
-      .filter(({ productType }) => productType)
-      .map(({ productType }) => productType)
-      .join(';')
-    this.orderInfo.patchValue({
-      productType: orderProductType
-    })
+  onBusinessModelChange(businessModel, index) {
+    const orderInfo = this.orderInfos.at(index) as FormGroup
+    if (businessModel === BUSINESS_MODEL.DISTRIBUTOR_DEAL) {
+      orderInfo.get('dealerName').setValidators(Validators.required)
+      orderInfo.get('dealerCode').setValidators(Validators.required)
+    } else {
+      orderInfo.get('dealerName').clearValidators()
+      orderInfo.get('dealerCode').clearValidators()
+    }
   }
 
   // 初始化OM列表
   async initOMUsers() {
     const users = await this.spService.getOMUsers()
     this.selectOptions.oms = users.map(({ name, email }) => ({ label: name, value: email }))
+  }
+
+  onClearFileList() {
+    this.fileList = []
+  }
+
+  onDeleteFile(targetFile) {
+    this.fileList = this.fileList.filter((file) => targetFile !== file)
+  }
+
+  onUploadFile = (item: UploadXHRArgs) => {
+    const formData = new FormData()
+    const file = item.file as any
+    formData.append('file', file)
+    formData.append('fileType', getType(file))
+    formData.append('filename', file.name)
+    const newFile = { name: file.name, status: 'uploading', fileId: null }
+    this.fileList = [...this.fileList, newFile]
+
+    return this.spService.uploadFile(formData).subscribe(
+      (response) => {
+        const { data, code } = response
+        if ('0000' === code) {
+          newFile.status = 'success'
+          newFile.fileId = data
+          item.onSuccess({ fileId: data }, file, response)
+        } else {
+          item.onError({}, file)
+        }
+      },
+      err => {
+        item.onError!(err, item.file!)
+      }
+    )
   }
 }

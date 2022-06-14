@@ -127,10 +127,14 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (!changes.editable.currentValue) {
-      this.orderInfo.disable()
-      this.products.controls.forEach((product: FormGroup) => product.disable())
-      this.cooInfo.disable()
+      this.disableForm()
     }
+  }
+
+  disableForm() {
+    this.orderInfo.disable()
+    this.products.controls.forEach((product: FormGroup) => product.disable())
+    this.cooInfo.disable()
   }
 
   // node1: SC Planning补充信息
@@ -355,6 +359,9 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
       })
     }
     this.cooInfo.patchValue(cooInfo)
+    if (!this.editable) {
+      this.disableForm()
+    }
     this.setFormValidators(data)
   }
 
