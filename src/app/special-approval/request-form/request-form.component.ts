@@ -1502,6 +1502,9 @@ export class RequestFormComponent implements OnInit {
         case APPLY_TYPE.COO_PDIGT:
           hasError = !this.cooPdIgtOrderInfo.validate()
           break
+        case APPLY_TYPE.COO_CC:
+          hasError = !this.cooCcOrderInfo.validate()
+          break   
         default:
           break
       }

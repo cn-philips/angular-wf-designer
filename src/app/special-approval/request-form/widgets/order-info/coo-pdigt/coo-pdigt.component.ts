@@ -29,8 +29,8 @@ const hospitalDealerValidator: ValidatorFn = (control: AbstractControl): Validat
   return null
 }
 
-const disableSubmitValidtor: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
-  return control.value === '1' ? { disableSubmit: true } : null
+const disableSubmitValidtorFn = (disableValue) => (control: AbstractControl): ValidationErrors | null => {
+  return control.value === disableValue ? { disableSubmit: true } : null
 }
 
 @Component({
@@ -102,8 +102,8 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
   }, { validators: hospitalDealerValidator })
 
   cooInfo = this.fb.group({
-    installationOrDispatch: [null, [Validators.required, disableSubmitValidtor]], // 是否已装机或派单
-    threeMonthsAfterArrival: [null, [Validators.required, disableSubmitValidtor]], // 是否到货>3个月
+    installationOrDispatch: [null, [Validators.required, disableSubmitValidtorFn('1')]], // 是否已装机或派单
+    threeMonthsAfterArrival: [null, [Validators.required, disableSubmitValidtorFn('0')]], // 是否到货>3个月
     cooSignedNotIcf: [null, [Validators.required]], // 经销商是否为COO签署12个月内未签回ICF
     specialApproval: [{ value: null, disabled: true }, [Validators.required]], // 是否需要特批
     applySignedDate: [null], // 预计签署日期
