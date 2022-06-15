@@ -61,6 +61,8 @@ export class RequestFormComponent implements OnInit {
   isSupplementNode = false
 
   public pageTitle: string;
+  public processAdmin: string;
+  public processExpert: string;
   public requestId;
   public requestInfo = {
     orderInfos: [{} as any]
@@ -496,12 +498,14 @@ export class RequestFormComponent implements OnInit {
 
       this.setPageTitle({ applyType: type, applyItem: item });
 
+      this.setProcessOwnerAdmin({ applyType: type})
+
       if (bg) {
         switch(type) {
           case APPLY_TYPE.MACHINE_EXCHANGE:
             let orders = this.changeOrderInfos.get('orders') as FormArray
-            orders.at(0).patchValue({ bg })
-            orders.at(1).patchValue({ bg })
+            orders.at(0).patchValue({ bg: 'US' })
+            orders.at(1).patchValue({ bg: 'US' })
             break
           case APPLY_TYPE.LC_AMENDMENT:
             this.lcAmendmentOrderInfo.patchValue({ bg });
@@ -561,6 +565,28 @@ export class RequestFormComponent implements OnInit {
     }
 
     this.pageTitle =  isNew ? `新建特批-${title}` : title
+  }
+
+  public setProcessOwnerAdmin({ applyType = ''}) {
+    if (applyType ) {
+      let processOwnerAdmin = this.spService.getProcessOwnerAdmin(applyType);
+      let processOwner = [{name: null, email: null}];
+      let processAdmin = [{name: null, email: null}];
+      processOwner = processOwnerAdmin.processOwner;
+      processAdmin = processOwnerAdmin.processAdmin;
+      if (processAdmin && processAdmin.length > 0) {
+        let adminDesc = "";
+        const emailList = processAdmin.map(({ email }) =>  email );
+        emailList.forEach(item => { adminDesc += item +" " })
+        this.processAdmin = adminDesc;
+      }
+      if (processOwner && processOwner.length > 0) {
+        let expertDesc = "";
+        const emailList = processOwner.map(({ email }) =>  email );
+        emailList.forEach(item => { expertDesc += item +" " })
+        this.processExpert = expertDesc;
+      }
+    }
   }
 
   get orderInfo(): FormGroup {
@@ -1441,7 +1467,7 @@ export class RequestFormComponent implements OnInit {
           break
         case APPLY_TYPE.COO_CC:
           hasError = !this.cooCcOrderInfo.validate()
-          break   
+          break
         default:
           break
       }
@@ -1531,6 +1557,7 @@ export class RequestFormComponent implements OnInit {
         bg, cycleGroup, bigArea, smallArea, isDeleted, lastBuyPlan,
       } = data
       this.setPageTitle({ applyType, applyItem }, false)
+      this.setProcessOwnerAdmin({ applyType});
       this.applyItem = applyItem
       this.applyType = applyType
       this.executed = executed

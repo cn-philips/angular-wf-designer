@@ -5,7 +5,14 @@
     </h4>
   </div>
 </nz-card>
-
+<nz-alert nzType="info" [nzMessage]="nzMessage" style="margin-bottom: 1rem !important">
+  <ng-template #nzMessage>
+    <div><span style="font-weight: 600;" nz-tooltip nzTitle="如对流程有疑问请发邮件咨询Process Admin">Process Admin:
+      </span>{{processAdmin}}</div>
+    <div><span style="font-weight: 600;" nz-tooltip nzTitle="如对流程有疑问请发邮件咨询Process Expert">Process Expert:
+      </span>{{processExpert}}</div>
+  </ng-template>
+</nz-alert>
 <div class="tabs-box">
   <div nz-row nzType="flex" nzJustify="end" nzAlign="middle" class="tabs-box-actions">
     <div nz-col nzSpan="24">
@@ -221,4 +228,5 @@
 
 <app-apploading [load]="pageLoading"></app-apploading>
 
-<special-approval-select-approver #selectApprover [applyType]="applyType" (success)="navigateToHomePage()"></special-approval-select-approver>
+<special-approval-select-approver #selectApprover [applyType]="applyType" (success)="navigateToHomePage()">
+</special-approval-select-approver>
