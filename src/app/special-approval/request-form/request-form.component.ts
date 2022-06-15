@@ -500,8 +500,8 @@ export class RequestFormComponent implements OnInit {
         switch(type) {
           case APPLY_TYPE.MACHINE_EXCHANGE:
             let orders = this.changeOrderInfos.get('orders') as FormArray
-            orders.at(0).patchValue({ bg })
-            orders.at(1).patchValue({ bg })
+            orders.at(0).patchValue({ bg: 'US' })
+            orders.at(1).patchValue({ bg: 'US' })
             break
           case APPLY_TYPE.LC_AMENDMENT:
             this.lcAmendmentOrderInfo.patchValue({ bg });
@@ -1441,7 +1441,7 @@ export class RequestFormComponent implements OnInit {
           break
         case APPLY_TYPE.COO_CC:
           hasError = !this.cooCcOrderInfo.validate()
-          break   
+          break
         default:
           break
       }
