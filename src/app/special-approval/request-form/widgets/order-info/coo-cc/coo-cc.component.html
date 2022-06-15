@@ -497,9 +497,6 @@
                 <label nz-radio nzValue="1">是</label>
                 <label nz-radio nzValue="0">否</label>
               </nz-radio-group>
-              <nz-form-explain *ngIf="cooInfo.get('paymentNinetyPercent')?.dirty && cooInfo.get('paymentNinetyPercent')?.errors">
-                请选择是否已付90%以上订单金额
-              </nz-form-explain>
               <ng-container *ngIf="cooInfo.get('paymentNinetyPercent')?.dirty && cooInfo.get('paymentNinetyPercent')?.errors">
                 <nz-form-explain *ngIf="cooInfo.get('paymentNinetyPercent')?.errors?.required">
                   请选择是否已付90%以上订单金额

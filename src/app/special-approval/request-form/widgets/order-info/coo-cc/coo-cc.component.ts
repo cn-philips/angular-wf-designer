@@ -95,6 +95,7 @@ export class CooCcOrderInfoComponent implements OnInit, OnChanges {
   
   @ViewChild('selectDealer') selectDealer: SelectDealerComponent
   @Input() editable = true
+  @Input() fromTask = false
 
   loginUserCode1 = localStorage.getItem('ng_philips_code1')
 
@@ -265,9 +266,17 @@ export class CooCcOrderInfoComponent implements OnInit, OnChanges {
         'currency', 'om', 'contractNo', 'purchaseOrderNo', 'shipToName'
       ]
          
-      const orderInfos = results.map((order, index) => {
+      const orderInfos = results.map((order) => {
         const orderInfo = Object.keys(order).reduce((calc, cur) => {
-          calc[excelKeyMap[cur.trim()]] = order[cur]
+          const key = excelKeyMap[cur.trim()]
+          const value = order[cur]
+          switch(key) {
+            case 'cipPort':
+              calc[key] = value === '是' ? '1' : (value === '否' ? '0' : null)
+              break
+            default:
+              calc[key] = value
+          }
           return calc
         }, {}) as any
         if (orderInfo.businessModel) {
@@ -306,15 +315,9 @@ export class CooCcOrderInfoComponent implements OnInit, OnChanges {
   // node2: 申请人补充信息-经销商已盖章的COO授权函
   // node6: 申请人补充信息-双签的COO授权函
   setFormValidators({ nodeCode, nodeInfoList, processStatus }) {
-    const currentNode = nodeInfoList.find(({ code }) => code === nodeCode)
     const cooInfoRequiredFields = []
     const cooInfoEnabledFields = []
 
-    let isActiveApprover = false
-    if (currentNode) {
-      const { approverList } = currentNode
-      isActiveApprover = approverList.some(({ approved, user }) => !approved && user === this.loginUserCode1)
-    }
     switch(processStatus) {
       case PROCESS_STATUS.COMPLETED:
         this.showCooFile = true
@@ -327,14 +330,14 @@ export class CooCcOrderInfoComponent implements OnInit, OnChanges {
         if(nodeCode > 'node5') {
           this.showCooLetter = true
         }
-        if (isActiveApprover) {
+        if (this.fromTask) {
           switch (nodeCode) {
-            case 'node2': // SC Planning补充信息
+            case 'node2': // 申请人补充信息
               // cooInfo
               cooInfoEnabledFields.push('applySignedDate', 'cooConfirmationLetterDraft', 'airTransportNoDealer', 'cooConfirmationLetterDealer')
               cooInfoRequiredFields.push('applySignedDate', 'cooConfirmationLetterDraft', 'airTransportNoDealer', 'cooConfirmationLetterDealer')
               break
-            case 'node6': // OM补充信息 
+            case 'node6': // 申请人补充信息
               // cooInfo
               cooInfoEnabledFields.push('cooConfirmationLetterSign')
               cooInfoRequiredFields.push('cooConfirmationLetterSign')
@@ -532,6 +535,10 @@ export class CooCcOrderInfoComponent implements OnInit, OnChanges {
 
   onBusinessModelChange(businessModel, index) {
     const orderInfo = this.orderInfos.at(index) as FormGroup
+    orderInfo.patchValue({
+      dealerName: null,
+      dealerCode: null,
+    })
     if (businessModel === BUSINESS_MODEL.DISTRIBUTOR_DEAL) {
       orderInfo.get('dealerName').setValidators(Validators.required)
       orderInfo.get('dealerCode').setValidators(Validators.required)

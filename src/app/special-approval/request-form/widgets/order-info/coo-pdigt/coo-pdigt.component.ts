@@ -29,8 +29,8 @@ const hospitalDealerValidator: ValidatorFn = (control: AbstractControl): Validat
   return null
 }
 
-const disableSubmitValidtor: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
-  return control.value === '1' ? { disableSubmit: true } : null
+const disableSubmitValidtorFn = (disableValue) => (control: AbstractControl): ValidationErrors | null => {
+  return control.value === disableValue ? { disableSubmit: true } : null
 }
 
 @Component({
@@ -47,6 +47,7 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
   @ViewChild('selectDealer') selectDealer: SelectDealerComponent
   @ViewChild('selectReference') selectReference: SelectReferenceComponent
   @Input() editable = true
+  @Input() fromTask = false
 
   loginUserCode1 = localStorage.getItem('ng_philips_code1')
 
@@ -101,8 +102,8 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
   }, { validators: hospitalDealerValidator })
 
   cooInfo = this.fb.group({
-    installationOrDispatch: [null, [Validators.required, disableSubmitValidtor]], // 是否已装机或派单
-    threeMonthsAfterArrival: [null, [Validators.required, disableSubmitValidtor]], // 是否到货>3个月
+    installationOrDispatch: [null, [Validators.required, disableSubmitValidtorFn('1')]], // 是否已装机或派单
+    threeMonthsAfterArrival: [null, [Validators.required, disableSubmitValidtorFn('0')]], // 是否到货>3个月
     cooSignedNotIcf: [null, [Validators.required]], // 经销商是否为COO签署12个月内未签回ICF
     specialApproval: [{ value: null, disabled: true }, [Validators.required]], // 是否需要特批
     applySignedDate: [null], // 预计签署日期
@@ -177,7 +178,6 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
   // node2: 上传经销商盖章后的COO确认函
   // node6: 上传双签后的COO确认函
   setFormValidators({ nodeCode, nodeInfoList, processStatus }) {
-    const currentNode = nodeInfoList.find(({ code }) => code === nodeCode)
     const orderInfoRequiredFields = []
     const orderInfoEnabledFields = []
     const productsRequiredFields = []
@@ -187,11 +187,6 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
     const cooInfoRequiredFields = []
     const cooInfoEnabledFields = []
 
-    let isActiveApprover = false
-    if (currentNode) {
-      const { approverList } = currentNode
-      isActiveApprover = approverList.some(({ approved, user }) => !approved && user === this.loginUserCode1)
-    }
     switch(processStatus) {
       case PROCESS_STATUS.COMPLETED:
         this.showOmField = true
@@ -210,7 +205,7 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
         if(nodeCode > 'node5') {
           this.showPmFeedbackField = true
         }
-        if (isActiveApprover) {
+        if (this.fromTask) {
           switch (nodeCode) {
             case 'node1': // OM补充信息
               // orderInfo
@@ -276,6 +271,7 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
 
   onPaymentMethodChange(method) {
     const paymentMethodOther = this.orderInfo.get('paymentMethodOther')
+    paymentMethodOther.patchValue(null)
     if (method === PAYMENT_METHOD_PDIGT_OTHER) {
       paymentMethodOther.setValidators(Validators.required)
     } else {

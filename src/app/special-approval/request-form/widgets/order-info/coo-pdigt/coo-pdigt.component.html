@@ -318,10 +318,10 @@
     </div>
 
     <div nz-row>
-      <div nz-col nzXs="24" nzSm="24" nzMd="12">
+      <div nz-col nzMd="24">
         <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6" nzRequired>付款方式</nz-form-label>
-          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+          <nz-form-label nzXl="4" nzXXl="3" nzRequired>付款方式</nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="19">
             <nz-select formControlName="paymentMethod" (ngModelChange)="onPaymentMethodChange($event)" #paymentMethod>
               <nz-option *ngFor="let item of selectOptions.paymentMethodList" [nzLabel]="item.label"
                 [nzValue]="item.value"></nz-option>
@@ -551,7 +551,7 @@
         <div nz-row>
           <div nz-col nzXs="24" nzSm="24" nzMd="12">
             <nz-form-item>
-              <nz-form-label nzXl="8" nzXXl="6">是否为CIP港口</nz-form-label>
+              <nz-form-label nzXl="8" nzXXl="6" nzRequired>是否为CIP港口</nz-form-label>
               <nz-form-control nzXs="24" nzSm="24" nzMd="14">
                 <nz-radio-group formControlName="cipPort">
                   <label nz-radio nzValue="1">是</label>
@@ -692,7 +692,7 @@
                 请选择是否到货>3个月
               </nz-form-explain>
               <nz-form-explain *ngIf="cooInfo.get('threeMonthsAfterArrival')?.errors?.disableSubmit">
-                是否到货>3个月选择"是"时, 无法提交特批申请
+                是否到货>3个月选择"否"时, 无法提交特批申请
               </nz-form-explain>
             </ng-container>
           </nz-form-control>

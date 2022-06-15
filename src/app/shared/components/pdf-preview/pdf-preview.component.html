@@ -1,0 +1,14 @@
+<div class="showDiag" *ngIf="visible">
+  <div class="showDiag-box">
+    <div class="showDiag-box-title">
+      <div>View 查看PDF</div>
+      <i nz-icon nzType="close" class="close" (click)="onHide()" nzTheme="outline"></i>
+    </div>
+    <div>
+      <div class="tr mb10">
+        <button nz-button nzType="primary" class="mr10" (click)="onDownLoad()">下载</button>
+      </div>
+      <ngx-extended-pdf-viewer [(src)]="pdfUrl" useBrowserLocale="true" height="600px"></ngx-extended-pdf-viewer>
+    </div>
+  </div>
+</div>

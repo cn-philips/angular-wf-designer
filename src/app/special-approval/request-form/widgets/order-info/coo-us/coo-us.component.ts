@@ -3,10 +3,11 @@ import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Valida
 import { BG_LIST, BUSINESS_MODEL, BUSINESS_MODEL_LIST, CURRENCIES, FIELD_STATUS_LIST, FIELD_STATUS_OTHER, PAYMENT_METHOD_LIST, PROCESS_STATUS } from '../../../../special-approval.constants'
 import { SpecialApprovalService } from '../../../../special-approval.service'
 import { Dealer, SelectDealerComponent } from '../../select-dealer/select-dealer.component';
+import { PdfPreviewComponent } from '../../../../../shared/components'
+import * as moment from 'moment'
 
-
-const disableSubmitValidtor: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
-  return control.value === '1' ? { disableSubmit: true } : null
+const disableSubmitValidtorFn = (disableValue) => (control: AbstractControl): ValidationErrors | null => {
+  return control.value === disableValue ? { disableSubmit: true } : null
 }
 
 @Component({
@@ -20,7 +21,9 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
   originCooInfo = {}
   
   @ViewChild('selectDealer') selectDealer: SelectDealerComponent
+  @ViewChild('appPdfPreview') appPdfPreview: PdfPreviewComponent
   @Input() editable = true
+  @Input() fromTask = false
 
   loginUserCode1 = localStorage.getItem('ng_philips_code1')
 
@@ -74,8 +77,8 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
     newOrOldHospital: [null, [Validators.required]], // 新建医院还是老医院新院区
     expectedFieldDate: [null, [Validators.required]], // 预计场地就位日期
     planIcfDate: [null, [Validators.required]], // 计划ICF时间
-    installationOrDispatch: [null, [Validators.required, disableSubmitValidtor]], // 是否已装机或派单
-    threeMonthsAfterArrival: [null, [Validators.required, disableSubmitValidtor]], // 是否到货>3个月
+    installationOrDispatch: [null, [Validators.required, disableSubmitValidtorFn('1')]], // 是否已装机或派单
+    threeMonthsAfterArrival: [null, [Validators.required, disableSubmitValidtorFn('0')]], // 是否到货>3个月
     cooSignedNotIcf: [null, [Validators.required]], // 经销商是否为COO签署12个月内未签回ICF
     specialApproval: [{ value: null, disabled: true }, [Validators.required]], // 是否需要特批
     applySignedDate: [null], // 预计签署日期
@@ -141,7 +144,6 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
   // node3: OM 补充信息
   // node4: OA 补充信息
   setFormValidators({ nodeCode, nodeInfoList, processStatus }) {
-    const currentNode = nodeInfoList.find(({ code }) => code === nodeCode)
     const orderInfoRequiredFields = []
     const orderInfoEnabledFields = []
     const productsRequiredFields = []
@@ -150,12 +152,6 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
     const cooProductEnabledFields = []
     const cooInfoRequiredFields = []
     const cooInfoEnabledFields = []
-
-    let isActiveApprover = false
-    if (currentNode) {
-      const { approverList } = currentNode
-      isActiveApprover = approverList.some(({ approved, user }) => !approved && user === this.loginUserCode1)
-    }
     switch(processStatus) {
       case PROCESS_STATUS.COMPLETED:
         this.showScPlanningField = true
@@ -185,7 +181,7 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
           this.showScPlanningFeedbackField = true
         }
 
-        if (isActiveApprover) {
+        if (this.fromTask) {
           switch (nodeCode) {
             case 'node1': // SC Planning补充信息
               // orderInfo
@@ -435,5 +431,58 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
   async initOMUsers() {
     const users = await this.spService.getOMUsers()
     this.selectOptions.oms = users.map(({ name, email }) => ({ label: name, value: email }))
+  }
+
+  showTemplate() {
+    // COO US根据币制的不同, 分为2个模板
+    const templateCodeMap = {
+      USD: 'SpUsUSDCoo',
+      CNY: 'SpUsCNYCoo'
+    }
+    // 其他需要的字段
+    const { 
+      contractNo, // 合同号
+      sapOrderNo, // SAP订单号
+      dealerName, // 经销商名称
+      dealerCode, // 经销商编号
+      currency, // 币制
+      products, // 产品列表
+      cooProduct: { 
+        addressType, // 货物送达地址类型
+        deliveryAddress, // 货物送达地址
+        deliveryAddressEn, // 货物送达地址英文
+        customsClearancePort, // 清关口岸
+        customsClearancePortEn, // 清关口岸英文
+      }
+    } = this.orderInfo.getRawValue()
+    const { applySignedDate } = this.cooInfo.getRawValue()
+    // 一台设备：【出厂日期】 +【保修期】-1天，如出厂日期为2022/6/1日，保修期为15个月，则显示“2023/05/30”；
+    // 多台设备按同一日期合并：【设备SN号1】&【设备SN号2】：【出厂日期1】 +【保修期】-1天；【设备SN号3】：【出厂日期3】 +【保修期】-1天；……
+    // 如US1001 & US1002出厂日期为2022/06/01，保修期为27，US1003出厂日期为2022/05/30，保修期为15，则显示为“US1001 & US1002:2024/08/30;US1003:2023/08/29”
+    // 表格字段 tableParamsList
+    // 计算productDateMerge
+    const dateProductMap = {}
+    products.forEach(({ equipmentSn, productionDate, guaranteeMonth }) => {
+      const endDate = moment(productionDate).add(guaranteeMonth, 'months').subtract(1, 'days').format('YYYY-MM-DD')
+      dateProductMap[endDate] = dateProductMap[endDate] ? [...dateProductMap[endDate], equipmentSn] : [equipmentSn]
+    })
+    
+    const params = {
+      templateCode: templateCodeMap[currency],
+      contractNo,
+      sapOrderNo,
+      wbsNo: products.length > 0 ? products.map(({ wbsNo }) => wbsNo).join(',') : null,
+      dealerCode,
+      dealerName,
+      addressType,
+      deliveryAddress,
+      deliveryAddressEn,
+      customsClearancePort,
+      customsClearancePortEn,
+      applySignedDateUpdate: applySignedDate ? moment(applySignedDate).add(1, 'years').endOf('month').format('YYYY-MM-DD') : null,
+      productDateMerge: Object.keys(dateProductMap).map((date) => `${dateProductMap[date].join(' & ')}:${date}`).join(';'),
+      tableParamsList: products.length > 0 ? JSON.stringify(products.map(({ quantity, equipmentDescription, goodsDeliveryDate, equipmentSn }) => ({ quantity: String(quantity), equipmentDescription, goodsDeliveryDate, equipmentSn }))) : null,
+    }
+    this.appPdfPreview.show(params)
   }
 }

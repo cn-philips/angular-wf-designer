@@ -691,7 +691,7 @@
                 请选择是否到货>3个月
               </nz-form-explain>
               <nz-form-explain *ngIf="cooInfo.get('threeMonthsAfterArrival')?.errors?.disableSubmit">
-                是否到货>3个月选择"是"时, 无法提交特批申请
+                是否到货>3个月选择"否"时, 无法提交特批申请
               </nz-form-explain>
             </ng-container>
           </nz-form-control>
@@ -731,7 +731,13 @@
     </div>
   </nz-card>
 
-  <nz-card class="mtb1rem" nzTitle="COO文件" *ngIf="showSalesFeedbackField">
+  <nz-card class="mtb1rem" [nzTitle]="fileCardTitle" *ngIf="showSalesFeedbackField">
+    <ng-template #fileCardTitle>
+      <div>
+        <span>COO文件</span>
+        <a style="margin-left:32px;text-decoration:underline;color:#337fbf" (click)="showTemplate()">COO确认函模板</a>
+      </div>
+    </ng-template>
     <div nz-row>
       <div nz-col nzXs="24" nzSm="24" nzMd="12">
         <nz-form-item>
@@ -793,5 +799,7 @@
     </div>
   </nz-card>
 </form>
+
+<app-pdf-preview #appPdfPreview></app-pdf-preview>
 
 <app-select-dealer #selectDealer (select)="onSelectDealer($event)"></app-select-dealer>
