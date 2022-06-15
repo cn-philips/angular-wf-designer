@@ -61,7 +61,8 @@ export class RequestFormComponent implements OnInit {
   isSupplementNode = false
 
   public pageTitle: string;
-  public processOwnerAdmin: string;
+  public processAdmin: string;
+  public processExpert: string;
   public requestId;
   public requestInfo = {
     orderInfos: [{} as any]
@@ -567,7 +568,6 @@ export class RequestFormComponent implements OnInit {
   }
 
   public setProcessOwnerAdmin({ applyType = ''}) {
-    let title = ''
     if (applyType ) {
       let processOwnerAdmin = this.spService.getProcessOwnerAdmin(applyType);
       let processOwner = [{name: null, email: null}];
@@ -575,20 +575,18 @@ export class RequestFormComponent implements OnInit {
       processOwner = processOwnerAdmin.processOwner;
       processAdmin = processOwnerAdmin.processAdmin;
       if (processAdmin && processAdmin.length > 0) {
-        let adminDesc = "如对流程有疑问请发邮件咨询Process Admin："
+        let adminDesc = "";
         const emailList = processAdmin.map(({ email }) =>  email );
         emailList.forEach(item => { adminDesc += item +" " })
-        title += adminDesc +"  "
+        this.processAdmin = adminDesc;
       }
       if (processOwner && processOwner.length > 0) {
-        let expertDesc = "如对流程有疑问请发邮件咨询Process Expert："
+        let expertDesc = "";
         const emailList = processOwner.map(({ email }) =>  email );
         emailList.forEach(item => { expertDesc += item +" " })
-        title += expertDesc;
+        this.processExpert = expertDesc;
       }
     }
-    console.log("title:",title);
-    this.processOwnerAdmin = title;
   }
 
   get orderInfo(): FormGroup {

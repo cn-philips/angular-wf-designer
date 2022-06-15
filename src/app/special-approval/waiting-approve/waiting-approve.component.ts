@@ -122,7 +122,9 @@ export class WaitingApproveComponent implements OnInit {
   }
 
   showModal(): void {
-    if ( Object.keys(this.mapOfCheckedId).length > 0) {
+    const checkedList = Object.keys(this.mapOfCheckedId);
+    const selectedList=checkedList.filter(value => { return this.mapOfCheckedId[value] == true })
+    if ( selectedList && selectedList.length > 0) {
       this.isVisible = true;
     } else {
       this.message.error('请选择任务');
@@ -160,7 +162,7 @@ export class WaitingApproveComponent implements OnInit {
       return
     }  
     const userLists = await this.spService.getUserByRole(role);
-    this.selectOptions.userList = userLists.map( ({email, name}) => ({ label: name, value: email }));  
+    this.selectOptions.userList = userLists.map( ({email, name}) => ({ label: `${name}(${email})`, value: email }));  
   }
 
   checkModalData() {
@@ -179,7 +181,8 @@ export class WaitingApproveComponent implements OnInit {
   //获取转单数据
   getFormData() {
     //获取选中的任务数据
-    const selectedList = Object.keys(this.mapOfCheckedId);
+    const checkedList = Object.keys(this.mapOfCheckedId);
+    const selectedList=checkedList.filter(value => { return this.mapOfCheckedId[value] == true })
     let dataList = [];
     selectedList.forEach( value => {
       let list = this.tableData.list.filter((item) =>{ return item.applyCode === value }).map(({applyId, taskInstId, procInstId}) => ({applyId, taskInstId,procInstId}));
