@@ -39,9 +39,14 @@ export class SpecialApprovalService {
 
   foreignCompanyList = []
 
+  processOwnerAdminList = [];
+
+  processOwnerAdminMap: { [key: string]: {processOwner: [],processAdmin: []} } = {};
+
   constructor(private http: HttpService, private dictService: DictService) {
     this.initCycleGroupBigArea();
     this.initBmcClusterBg();
+    this.initProcessOwnerAdmin();
   }
 
   initCycleGroupBigArea() {
@@ -91,6 +96,38 @@ export class SpecialApprovalService {
         this.bmcClusterBgs = res.data.rows;
       }
     });
+  }
+
+  public initProcessOwnerAdmin() {
+    let applyType = '';
+    const uri = `/act/spprocesstypeowner/getAdminOwner?applyType=${applyType}`;
+    this.http.get(uri).subscribe((res) => {
+      if ("0000" == res.code) {
+        this.processOwnerAdminList = res.data ;
+      }
+    });
+  }
+
+  getProcessOwnerAdmin(applyType) {
+    let processOwnerAdmin = this.processOwnerAdminMap[applyType];
+    if (processOwnerAdmin && Object.keys(processOwnerAdmin).length > 0) {
+      return processOwnerAdmin;
+    } else {
+      const list = this.processOwnerAdminList.filter( (item) => { return item.applyType === applyType });
+      if(list.length > 0) {
+        processOwnerAdmin =  {
+          processOwner: list[0].owner,
+          processAdmin: list[0].admin
+        }
+        this.processOwnerAdminMap[applyType] = processOwnerAdmin;
+      } else {
+        processOwnerAdmin =  {
+          processOwner: [],
+          processAdmin: []
+        }
+      }
+      return processOwnerAdmin;
+    }
   }
 
   async getForeignCompany() {
