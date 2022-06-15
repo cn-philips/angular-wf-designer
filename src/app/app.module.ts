@@ -39,7 +39,6 @@ import {UploadFileComponent} from './component/upload-file/upload-file.component
 import {SimpleTableComponent} from './component/simple-table/simple-table.component';
 import { DeviceDetectorModule } from 'ngx-device-detector';
 import { UploadProgressbarComponent } from './component/upload-progressbar/upload-progressbar.component';
-import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
 import { SimplePdfViewerComponent } from './component/simple-pdf-viewer/simple-pdf-viewer.component';
 import { SysUserSelectComponent } from './component/sys-user-select/sys-user-select.component';
 import { MultiSimplePdfViewerComponent } from './component/multi-simple-pdf-viewer/multi-simple-pdf-viewer.component';
@@ -486,7 +485,6 @@ registerLocaleData(zh);
     HttpClientModule,
     Ng5SliderModule,
     BrowserAnimationsModule,
-    NgxExtendedPdfViewerModule,
     FormlyBootstrapModule,
     // DynamicFormsCoreModule.forRoot(),
     // DynamicFormsBootstrapUIModule,

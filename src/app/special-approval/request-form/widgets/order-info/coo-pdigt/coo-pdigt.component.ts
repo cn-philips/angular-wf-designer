@@ -47,6 +47,7 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
   @ViewChild('selectDealer') selectDealer: SelectDealerComponent
   @ViewChild('selectReference') selectReference: SelectReferenceComponent
   @Input() editable = true
+  @Input() fromTask = false
 
   loginUserCode1 = localStorage.getItem('ng_philips_code1')
 
@@ -177,7 +178,6 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
   // node2: 上传经销商盖章后的COO确认函
   // node6: 上传双签后的COO确认函
   setFormValidators({ nodeCode, nodeInfoList, processStatus }) {
-    const currentNode = nodeInfoList.find(({ code }) => code === nodeCode)
     const orderInfoRequiredFields = []
     const orderInfoEnabledFields = []
     const productsRequiredFields = []
@@ -187,11 +187,6 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
     const cooInfoRequiredFields = []
     const cooInfoEnabledFields = []
 
-    let isActiveApprover = false
-    if (currentNode) {
-      const { approverList } = currentNode
-      isActiveApprover = approverList.some(({ approved, user }) => !approved && user === this.loginUserCode1)
-    }
     switch(processStatus) {
       case PROCESS_STATUS.COMPLETED:
         this.showOmField = true
@@ -210,7 +205,7 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
         if(nodeCode > 'node5') {
           this.showPmFeedbackField = true
         }
-        if (isActiveApprover) {
+        if (this.fromTask) {
           switch (nodeCode) {
             case 'node1': // OM补充信息
               // orderInfo
@@ -276,6 +271,7 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
 
   onPaymentMethodChange(method) {
     const paymentMethodOther = this.orderInfo.get('paymentMethodOther')
+    paymentMethodOther.patchValue(null)
     if (method === PAYMENT_METHOD_PDIGT_OTHER) {
       paymentMethodOther.setValidators(Validators.required)
     } else {
