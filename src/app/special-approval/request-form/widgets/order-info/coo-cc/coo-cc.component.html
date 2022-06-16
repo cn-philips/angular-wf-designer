@@ -511,7 +511,13 @@
       </div>
     </nz-card>
   
-    <nz-card class="mtb1rem" nzTitle="COO文件" *ngIf="showCooFile">
+    <nz-card class="mtb1rem" [nzTitle]="fileCardTitle" *ngIf="showCooFile">
+      <ng-template #fileCardTitle>
+        <div>
+          <span>COO文件</span>
+          <a style="margin-left:32px;text-decoration:underline;color:#337fbf" (click)="showTemplate()">COO确认函模板</a>
+        </div>
+      </ng-template>
       <div nz-row>
         <div nz-col nzXs="24" nzSm="24" nzMd="12">
           <nz-form-item>
@@ -605,5 +611,7 @@
     </tbody>
   </nz-table>
 </nz-modal>
+
+<app-pdf-preview #appPdfPreview></app-pdf-preview>
 
 <app-select-dealer #selectDealer (select)="onSelectDealer($event)"></app-select-dealer>
