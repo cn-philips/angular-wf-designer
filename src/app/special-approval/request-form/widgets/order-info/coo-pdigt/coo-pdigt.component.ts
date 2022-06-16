@@ -56,16 +56,10 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
   BUSINESS_MODEL = BUSINESS_MODEL
   PAYMENT_METHOD_PDIGT_OTHER = PAYMENT_METHOD_PDIGT_OTHER
 
-  // showOmField = false
-  // showPmField = false
-  // showPmFeedbackField = false
-  // isPurchaseAgreementRequired = false
-  
-  showOmField = true
-  showPmField = true
-  showPmFeedbackField = true
-  isPurchaseAgreementRequired = true
-  
+  showOmField = false
+  showPmField = false
+  showPmFeedbackField = false
+  isPurchaseAgreementRequired = false
 
   orderInfo = this.fb.group({
     orderType: [null, [Validators.required]], // 订单类型
@@ -423,7 +417,7 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
   }
 
   onShowReferenceModal() {
-    this.selectReference.showModal()
+    this.selectReference.showModal(false)
   }
 
   onSelectReference(reference: Reference) {
