@@ -593,6 +593,9 @@
                   <label nz-radio nzValue="1">是</label>
                   <label nz-radio nzValue="0">否</label>
                 </nz-radio-group>
+                <nz-form-explain *ngIf="orderInfo.get('cipPort')?.dirty && orderInfo.get('cipPort')?.errors">
+                  请选择是否为CIP港口
+                </nz-form-explain>
               </nz-form-control>
             </nz-form-item>
           </div>
