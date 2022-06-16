@@ -79,7 +79,7 @@
               <nz-form-control>
                 <nz-select style="width: 100%;" [(ngModel)]="data.bmc" (ngModelChange)="onBmcChange(data)"
                   [disabled]="!editable" required>
-                  <nz-option *ngFor="let item of selectOptions.bmcs[i] ? selectOptions.bmcs[i] : bmcList"
+                  <nz-option *ngFor="let item of selectOptions.bmcs"
                     [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
                 </nz-select>
                 <nz-form-explain class="error-msg" *ngIf="!data.bmc">
@@ -91,7 +91,7 @@
           <td>
             <nz-form-item>
               <nz-form-control>
-                <nz-select [(ngModel)]="data.bg" style="width: 100%;" [disabled]="!editable"
+                <nz-select [(ngModel)]="data.bg" style="width: 100%;" [disabled]="true"
                   (ngModelChange)="onBgChange($event, data,i)" required>
                   <nz-option *ngFor="let item of BG_LIST" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
                 </nz-select>
