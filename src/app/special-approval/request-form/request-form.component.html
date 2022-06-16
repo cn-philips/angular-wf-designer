@@ -114,7 +114,7 @@
         </special-approval-coo-us-order-info>
         <special-approval-coo-pdigt-order-info [fromTask]="!!taskId" [editable]="editable" #cooPdIgtOrderInfo *ngIf="applyType === APPLY_TYPE.COO_PDIGT">
         </special-approval-coo-pdigt-order-info>
-        <special-approval-coo-cc-order-info [fromTask]="!!taskId" [editable]="editable" #cooCcOrderInfo *ngIf="applyType === APPLY_TYPE.COO_CC">
+        <special-approval-coo-cc-order-info [approveHistory]="approveHistory" [fromTask]="!!taskId" [editable]="editable" #cooCcOrderInfo *ngIf="applyType === APPLY_TYPE.COO_CC">
         </special-approval-coo-cc-order-info>
         <special-approval-lastbuy-info #lastBuyOrderInfo *ngIf="applyType === APPLY_TYPE.PRE_BOOK_LASTBUY"
           [editable]="editable" [formValues]="lastBuyInfos" [showFeedbackTab]="showFeedbackTab">

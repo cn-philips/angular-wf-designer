@@ -7,6 +7,8 @@ import { NzMessageService, UploadXHRArgs } from 'ng-zorro-antd'
 import { getType } from '../../../../../../assets/js/tools';
 import { environment } from "../../../../../../environments/environment";
 import { read, utils } from "xlsx";
+import { PdfPreviewComponent } from '../../../../../shared/components'
+import * as moment from 'moment'
 
 const disableSubmitValidtorFn = (disableValue) => (control: AbstractControl): ValidationErrors | null => {
   return control.value === disableValue ? { disableSubmit: true } : null
@@ -94,8 +96,10 @@ export class CooCcOrderInfoComponent implements OnInit, OnChanges {
   originCooInfo = {}
   
   @ViewChild('selectDealer') selectDealer: SelectDealerComponent
+  @ViewChild('appPdfPreview') appPdfPreview: PdfPreviewComponent
   @Input() editable = true
   @Input() fromTask = false
+  @Input() approveHistory = []
 
   loginUserCode1 = localStorage.getItem('ng_philips_code1')
 
@@ -586,5 +590,94 @@ export class CooCcOrderInfoComponent implements OnInit, OnChanges {
         item.onError!(err, item.file!)
       }
     )
+  }
+
+  showTemplate() {
+    const philipsNameMap = {
+      '飞利浦电子香港有限公司': 'Philips Electronics Hong Kong Limited',
+      '飞利浦（中国）投资有限公司': 'Philips (China) Investment Co.,Ltd .'
+    }
+
+    const orderInfos = this.orderInfos.getRawValue()
+    const { applySignedDate } = this.cooInfo.getRawValue()
+    const contractNos = []
+    const sapOrderNos = []
+    const productionDates = []
+
+    const applySignedDateUpdate = applySignedDate ? moment(applySignedDate).add(1, 'years').subtract(1, 'days') : null
+    const params = {
+      templateCode: 'SpAcceptance',
+      contractNo: null,
+      sapOrderNo: null,
+      applySignedDate,
+      applySignedDateUpdate: applySignedDateUpdate ? applySignedDateUpdate.format('YYYY-MM-DD') : null,
+      dealerCode: null,
+      dealerName: null,
+      applySignedDateYear: applySignedDateUpdate ? applySignedDateUpdate.format('YYYY') : null,
+      applySignedDateMonth: applySignedDateUpdate ? applySignedDateUpdate.format('MM') : null,
+      applySignedDateDay: applySignedDateUpdate ? applySignedDateUpdate.format('DD') : null,
+      productionDate: null,
+      philipsName: null,
+      philipsNameEn: null,
+      saleEmail: null,
+      tableParamsList: null,
+    }
+    let activeContractNo
+    let activeSapOrderNo
+
+    orderInfos.forEach(({ 
+      contractNo, sapOrderNo, philipsName, productionDate, dealerName, dealerCode,
+      quantity, goodsDeliveryDate, deliveryAddress, productType, equipmentSn
+    }) => {
+      if (contractNo) {
+        contractNos.push(contractNo)
+        activeContractNo = contractNo
+      }
+      if (sapOrderNo) {
+        sapOrderNos.push(sapOrderNo)
+        activeSapOrderNo = sapOrderNo
+      }
+      if (productionDate) {
+        productionDates.push(productionDate)
+      }
+      if (philipsName) {
+        params.philipsName = philipsName
+        params.philipsNameEn = philipsNameMap[philipsName]
+      }
+      if(dealerName && dealerCode) {
+        params.dealerName = dealerName
+        params.dealerCode = dealerCode
+      }
+      const productInfo = {
+        contractNo: contractNo || activeContractNo,
+        sapOrderNo: sapOrderNo || activeSapOrderNo,
+        quantity: String(quantity || ''),
+        goodsDeliveryDate,
+        deliveryAddress,
+        equipmentDescription: productType,
+        equipmentSn
+      }
+      params.tableParamsList = params.tableParamsList || []
+      params.tableParamsList.push(productInfo)
+    })
+    if (contractNos.length > 0) {
+      params.contractNo = contractNos.join('/')
+    }
+    if (sapOrderNos.length > 0) {
+      params.sapOrderNo = sapOrderNos.join('/')
+    }
+    // 计算最大出厂日期
+    if (productionDates.length > 0) {
+      const sortedProductionDates = productionDates.sort()
+      const maxProductionDate = sortedProductionDates[sortedProductionDates.length - 1]
+      params.productionDate = moment(maxProductionDate).add(15, 'months').subtract(1, 'days').format('YYYY-MM-DD')
+    }
+    // 获取NationSalesLeader的Email
+    const approver = this.approveHistory.find(({ taskName }) => taskName === 'node4')
+    if (approver) {
+      params.saleEmail = approver.owner
+    }
+    params.tableParamsList = JSON.stringify(params.tableParamsList)
+    this.appPdfPreview.show(params)
   }
 }

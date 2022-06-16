@@ -8,6 +8,7 @@ import { Component, OnInit } from "@angular/core";
 export class PdfPreviewComponent implements OnInit {
   visible = false
   pdfBaseUrl = null
+  docBaseUrl = null
   pdfUrl = null
   pdfData = null
   constructor() {}
@@ -21,9 +22,10 @@ export class PdfPreviewComponent implements OnInit {
     const hashIndex = href.indexOf('#')
     const serverPath = href.slice(0, hashIndex)
     this.pdfBaseUrl = `${serverPath}act/template/pdf/preview?`
+    this.docBaseUrl = `${serverPath}act/template/doc/download?`
   }
 
-  calcPdfUrl(data) {
+  calcPdfUrl(data, isDoc = false) {
     const paramsArr = []
     for(let key in data) {
       if (data[key]) {
@@ -32,7 +34,8 @@ export class PdfPreviewComponent implements OnInit {
       }
     }
     const paramsStr = paramsArr.join('&')
-    return this.pdfBaseUrl + paramsStr
+    const baseUrl = isDoc ? this.docBaseUrl : this.pdfBaseUrl
+    return baseUrl + paramsStr
   }
 
   show(data) {
@@ -47,7 +50,7 @@ export class PdfPreviewComponent implements OnInit {
   }
 
   onDownLoad() {
-    const pdfUrl = this.calcPdfUrl(this.pdfData)
-    window.open(pdfUrl, "_blank");
+    const pdfUrl = this.calcPdfUrl(this.pdfData, true)
+    window.open(pdfUrl, "_self");
   }
 }
