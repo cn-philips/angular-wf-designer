@@ -362,6 +362,9 @@
                 <th nzWidth="200px">出厂日期</th>
                 <th nzWidth="200px">到货日期</th>
                 <th nzWidth="200px">货物送达日期</th>
+                <th nzWidth="220px">设备名称和描述中文</th>
+                <th nzWidth="220px">设备名称和描述英文</th>
+                <th nzWidth="120px">保修期(月)</th>
               </ng-container>
             </tr>
           </thead>
@@ -455,6 +458,39 @@
                       <nz-form-explain
                         *ngIf="product.get('goodsDeliveryDate')?.dirty && product.get('goodsDeliveryDate')?.errors">
                         请选择货物送达日期
+                      </nz-form-explain>
+                    </nz-form-control>
+                  </nz-form-item>
+                </td>
+                <td>
+                  <nz-form-item>
+                    <nz-form-control>
+                      <input type="text" nz-input formControlName="equipmentDescription" />
+                      <nz-form-explain
+                        *ngIf="product.get('equipmentDescription')?.dirty && product.get('equipmentDescription')?.errors">
+                        请填写设备名称和描述中文
+                      </nz-form-explain>
+                    </nz-form-control>
+                  </nz-form-item>
+                </td>
+                <td>
+                  <nz-form-item>
+                    <nz-form-control>
+                      <input type="text" nz-input formControlName="equipmentDescriptionEn" />
+                      <nz-form-explain
+                        *ngIf="product.get('equipmentDescriptionEn')?.dirty && product.get('equipmentDescriptionEn')?.errors">
+                        请填写设备名称和描述英文
+                      </nz-form-explain>
+                    </nz-form-control>
+                  </nz-form-item>
+                </td>
+                <td>
+                  <nz-form-item>
+                    <nz-form-control>
+                      <nz-input-number formControlName="guaranteeMonth" [nzMin]="1" [nzPrecision]="0"></nz-input-number>
+                      <nz-form-explain
+                        *ngIf="product.get('guaranteeMonth')?.dirty && product.get('guaranteeMonth')?.errors">
+                        请填写保修期
                       </nz-form-explain>
                     </nz-form-control>
                   </nz-form-item>
@@ -732,7 +768,13 @@
     </div>
   </nz-card>
 
-  <nz-card class="mtb1rem" nzTitle="COO文件" *ngIf="showPmField">
+  <nz-card class="mtb1rem" [nzTitle]="fileCardTitle" *ngIf="showPmField">
+    <ng-template #fileCardTitle>
+      <div>
+        <span>COO文件</span>
+        <a style="margin-left:32px;text-decoration:underline;color:#337fbf" (click)="showTemplate()">COO确认函模板</a>
+      </div>
+    </ng-template>
     <div nz-row>
       <div nz-col nzXs="24" nzSm="24" nzMd="12">
         <nz-form-item>
@@ -785,6 +827,8 @@
     </div>
   </nz-card>
 </form>
+
+<app-pdf-preview #appPdfPreview></app-pdf-preview>
 
 <app-select-hospital #selectHospital (select)="onSelectHospital($event)"></app-select-hospital>
 <app-select-dealer #selectDealer (select)="onSelectDealer($event)"></app-select-dealer>

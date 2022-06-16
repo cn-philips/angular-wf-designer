@@ -13,7 +13,8 @@ import { SpecialApprovalService } from '../../../../special-approval.service'
 import { Dealer, SelectDealerComponent } from '../../select-dealer/select-dealer.component';
 import { Hospital, SelectHospitalComponent } from '../../select-hospital/select-hospital.component';
 import { Reference, SelectReferenceComponent } from '../../select-reference/select-reference.component'
-
+import { PdfPreviewComponent } from '../../../../../shared/components'
+import * as moment from 'moment'
 
 const hospitalDealerValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
   const businessModel = control.get('businessModel').value
@@ -46,6 +47,7 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
   @ViewChild('selectHospital') selectHospital: SelectHospitalComponent
   @ViewChild('selectDealer') selectDealer: SelectDealerComponent
   @ViewChild('selectReference') selectReference: SelectReferenceComponent
+  @ViewChild('appPdfPreview') appPdfPreview: PdfPreviewComponent
   @Input() editable = true
   @Input() fromTask = false
 
@@ -58,7 +60,7 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
   showPmField = false
   showPmFeedbackField = false
   isPurchaseAgreementRequired = false
-  
+
   orderInfo = this.fb.group({
     orderType: [null, [Validators.required]], // 订单类型
     referenceId: [{ value: null, disabled: true }], // Reference Id
@@ -216,8 +218,8 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
                 this.isPurchaseAgreementRequired = true
               }
               // products
-              productsRequiredFields.push('equipmentSn', 'orderDate', 'productionDate', 'arrivalDate', 'goodsDeliveryDate')
-              productsEnabledFields.push('wbsNo', 'itemNo', 'equipmentSn', 'orderDate', 'productionDate', 'arrivalDate', 'goodsDeliveryDate')
+              productsRequiredFields.push('equipmentSn', 'orderDate', 'productionDate', 'arrivalDate', 'goodsDeliveryDate', 'equipmentDescription', 'equipmentDescriptionEn', 'guaranteeMonth')
+              productsEnabledFields.push('wbsNo', 'itemNo', 'equipmentSn', 'orderDate', 'productionDate', 'arrivalDate', 'goodsDeliveryDate', 'equipmentDescription', 'equipmentDescriptionEn', 'guaranteeMonth')
               // cooProduct
               cooProductEnabledFields.push(
                 'cipPort', 'airTransportNo', 'addressType',
@@ -360,6 +362,9 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
       productionDate: [null], // 出厂日期
       arrivalDate: [null], // 到货日期
       goodsDeliveryDate: [null], // 货物送达日期
+      equipmentDescription: [null], // 设备名称和描述中文
+      equipmentDescriptionEn: [null], // 设备名称和描述英文
+      guaranteeMonth: [null], // 保修期
     })
   }
 
@@ -412,7 +417,7 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
   }
 
   onShowReferenceModal() {
-    this.selectReference.showModal()
+    this.selectReference.showModal(false)
   }
 
   onSelectReference(reference: Reference) {
@@ -474,5 +479,50 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
       hospitalNo: null,
       hospitalName: null,
     })
+  }
+  
+  showTemplate() {
+    // COO PD&IGT根据业务模式的不同, 分为2个模板
+    const templateCodeMap = {
+      direct: 'SpDirectCoo',
+      distributor: 'SpDistributorCoo'
+    }
+    const philipsNameMap = {
+      '飞利浦电子香港有限公司': 'Philips Electronics Hong Kong Limited',
+      '飞利浦（中国）投资有限公司': 'Philips (China) Investment Co.,Ltd .'
+    }
+
+    const { 
+      currency, receivedAmount, orderAmount, businessModel,
+      sapOrderNo, contractNo, hospitalNo, hospitalName,
+      philipsName, products,
+    } = this.orderInfo.getRawValue()
+
+    const { applySignedDate } = this.cooInfo.getRawValue()
+    const { guaranteeMonth } = products[0]
+    const { customsClearancePort, customsClearancePortEn, deliveryAddress, deliveryAddressEn } = this.cooProduct.getRawValue()
+    const params = {
+      templateCode: templateCodeMap[businessModel],
+      applySignedDate,
+      applySignedDateUpdate: applySignedDate ? moment(applySignedDate).add(1, 'years').subtract(1, 'days').format('YYYY-MM-DD') : null,
+      currency,
+      receivedAmount,
+      contractAmount: orderAmount,
+      sapOrderNo,
+      contractNo,
+      hospitalNo,
+      hospitalName,
+      philipsName,
+      philipsNameEn: philipsNameMap[philipsName],
+      customsClearancePort,
+      customsClearancePortEn,
+      deliveryAddress,
+      deliveryAddressEn,
+      guaranteeMonth,
+      applySignedDateUpdateAndguaranteeMonth: (applySignedDate && guaranteeMonth) ? moment(applySignedDate).add(1, 'years').subtract(1, 'days').add(guaranteeMonth, 'months').format('YYYY-MM-DD') : null,
+      tableParamsList: JSON.stringify(products.map(({ quantity, equipmentDescription, arrivalDate, equipmentSn }) => ({ quantity: String(quantity), equipmentDescription, arrivalDate, equipmentSn })))
+    }
+
+    this.appPdfPreview.show(params)
   }
 }
