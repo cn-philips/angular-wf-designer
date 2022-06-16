@@ -213,6 +213,16 @@ export class PreOrderComponent implements OnInit {
             }
           }
         }
+
+        //判断产品专家是否为必填项
+        for(let j=0;j<this.dataBase.productList[i].productList.length;j++){
+          let productExpert = this.dataBase.productList[i].productList[j].productExpert;
+          if(productExpert == null || productExpert == "" || productExpert==undefined){
+            this.message.create('error', '请填写产品专家');
+            return;
+          }
+        }
+
         //prebook申请号是否已经填写
         let productList = this.dataBase.productList[i]
         if(productList.isPrebookApply=='1')
@@ -635,7 +645,7 @@ export class PreOrderComponent implements OnInit {
         //判断产品专家是否为必填项
         for(let j=0;j<this.dataBase.productList[i].productList.length;j++){
           let productExpert = this.dataBase.productList[i].productList[j].productExpert;
-          if(productExpert == null || productExpert == ""){
+          if(productExpert == null || productExpert == "" || productExpert==undefined){
             this.message.create('error', '请填写产品专家');
             return;
           }
