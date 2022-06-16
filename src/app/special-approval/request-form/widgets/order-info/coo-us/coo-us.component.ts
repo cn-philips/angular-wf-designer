@@ -466,6 +466,23 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
       const endDate = moment(productionDate).add(guaranteeMonth, 'months').subtract(1, 'days').format('YYYY-MM-DD')
       dateProductMap[endDate] = dateProductMap[endDate] ? [...dateProductMap[endDate], equipmentSn] : [equipmentSn]
     })
+
+    let deliveryAddressEnHospital, customsClearancePortEnHospital, customsClearancePortHospital, deliveryAddressHospital
+    let customsClearancePortEnAgent, deliveryAddressEnAgent, customsClearancePortAgent, deliveryAddressAgent
+
+    if (addressType === '医院地址') {
+      deliveryAddressHospital = deliveryAddress
+      deliveryAddressEnHospital = deliveryAddressEn
+      customsClearancePortHospital = customsClearancePort
+      customsClearancePortEnHospital = customsClearancePortEn
+      customsClearancePortEnAgent = deliveryAddressEnAgent = customsClearancePortAgent = deliveryAddressAgent = '/'
+    } else if (addressType === '代理商仓库地址') {
+      deliveryAddressAgent = deliveryAddress
+      deliveryAddressEnAgent = deliveryAddressEn
+      customsClearancePortAgent = customsClearancePort
+      customsClearancePortEnAgent = customsClearancePortEn
+      deliveryAddressEnHospital = customsClearancePortEnHospital = customsClearancePortHospital = deliveryAddressHospital = '/'
+    }
     
     const params = {
       templateCode: templateCodeMap[currency],
@@ -474,11 +491,8 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
       wbsNo: products.length > 0 ? products.map(({ wbsNo }) => wbsNo).join(',') : null,
       dealerCode,
       dealerName,
-      addressType,
-      deliveryAddress,
-      deliveryAddressEn,
-      customsClearancePort,
-      customsClearancePortEn,
+      deliveryAddressEnHospital, customsClearancePortEnHospital, customsClearancePortHospital, deliveryAddressHospital,
+      customsClearancePortEnAgent, deliveryAddressEnAgent, customsClearancePortAgent, deliveryAddressAgent,
       applySignedDateUpdate: applySignedDate ? moment(applySignedDate).add(1, 'years').endOf('month').format('YYYY-MM-DD') : null,
       productDateMerge: Object.keys(dateProductMap).map((date) => `${dateProductMap[date].join(' & ')}:${date}`).join(';'),
       tableParamsList: products.length > 0 ? JSON.stringify(products.map(({ quantity, equipmentDescription, goodsDeliveryDate, equipmentSn }) => ({ quantity: String(quantity), equipmentDescription, goodsDeliveryDate, equipmentSn }))) : null,
