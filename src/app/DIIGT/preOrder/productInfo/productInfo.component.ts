@@ -596,6 +596,18 @@ export class PreOrderProductInfoComponent implements OnInit {
         })
       }
       this.tranf.init()
+
+      // 添加 productExpert
+      let productExperts = this.dataBase.dataList.map(({productExpert}) => (productExpert));
+      if (productExperts && productExperts.length > 0) {
+        productExperts = Array.from(new Set(productExperts));
+        productExperts.forEach( item => {
+          //不存在
+          if(! this.productExpertList.includes(item)) {
+            this.productExpertList.push(item);
+          }
+        })
+      }
     }
     else {
       this.message.create("warning", "请先查询Deal Form ID")
