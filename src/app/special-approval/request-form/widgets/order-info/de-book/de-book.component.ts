@@ -200,36 +200,45 @@ export class DeBookComponent implements OnInit {
     let hasError = false
     let checkbg = null
     let errorCode = 0
-    this.formValues.value.forEach((order) => {
-      const {
-        productType, bg, bmc, productType1,
-        hospitalName, hospitalNo, sapOrderNo, wbsNo, orderDate, orderAmount, currency, deBookReason, remark
-      } = order
-      if (checkbg) {
-        if (checkbg !== bg){
-         errorCode = 1
-        }
-      } else {
-        checkbg = bg
-      }
-        if (!(bg && bmc &&
-           productType1 && sapOrderNo && wbsNo && orderDate &&
-          orderAmount && currency && hospitalNo && hospitalName && deBookReason && productType
-        )) {
-         errorCode = 2
+
+    this.formValues.value.some((order) => {
+      if (errorCode === 0) {
+        const {
+          productType, bg, bmc, productType1,
+          hospitalName, hospitalNo, sapOrderNo, wbsNo, orderDate, orderAmount, currency, deBookReason, remark
+        } = order
+        if (checkbg) {
+          if (checkbg !== bg){
+            errorCode = 1
+            hasError = true
+            return
+          }
+        } else {
+          checkbg = bg
         }
 
+          if (!(bg && bmc &&
+            productType1 && sapOrderNo && wbsNo && orderDate &&
+            orderAmount && currency && hospitalNo && hospitalName && deBookReason && productType
+          )) {
+            errorCode = 2
+            hasError = true
+            return;
+          }
+      }
+
     })
+
     switch (errorCode) {
       case 1:
         this.message.error('存在BG不一致的记录')
-        break
+        return hasError
       case 2:
         this.message.error('请按要求填写订单信息')
         console.log('order')
-        break
+        return hasError
     }
-    return !hasError
+    return hasError
   }
 
   onProductChange(vals: [], order) {
