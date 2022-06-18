@@ -34,6 +34,16 @@ const disableSubmitValidtorFn = (disableValue) => (control: AbstractControl): Va
   return control.value === disableValue ? { disableSubmit: true } : null
 }
 
+function calcApplySignedDate() {
+  const [year, month, day] = moment().format('YYYY-MM-DD').split('-')
+  if (Number(day) < 25) {
+    return `${year}-${month}-25`
+  } else {
+    const nextMonth = moment().add(1, 'months').format('YYYY-MM')
+    return `${nextMonth}-25`
+  }
+}
+
 @Component({
   selector: 'special-approval-coo-pdigt-order-info',
   templateUrl: 'coo-pdigt.component.html',
@@ -233,9 +243,12 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
               )
               break
             case 'node2': // PM补充信息
+              this.cooInfo.patchValue({
+                applySignedDate: calcApplySignedDate()
+              })
               // cooInfo
-              cooInfoRequiredFields.push('applySignedDate', 'cooConfirmationLetterDraft', 'cooConfirmationLetterDealer')
-              cooInfoEnabledFields.push('applySignedDate', 'cooConfirmationLetterDraft', 'cooConfirmationLetterDealer')
+              cooInfoRequiredFields.push('cooConfirmationLetterDraft', 'cooConfirmationLetterDealer')
+              cooInfoEnabledFields.push('cooConfirmationLetterDraft', 'cooConfirmationLetterDealer')
               break
             case 'node6':
               cooInfoRequiredFields.push('cooConfirmationLetterSign')
