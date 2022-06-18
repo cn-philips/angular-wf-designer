@@ -237,7 +237,7 @@ export class RequestFormComponent implements OnInit {
       lastBuyPlan: [null], // Last Buy计划说明
       reason: [null, [Validators.required]], // 申请原因
       applyFileIds: [[]], // 申请附件
-      systemRegion: [null, [Validators.required]],
+      systemRegion: [{ value: null, disabled: true }, [Validators.required]],
       bg: [null],
       cycleGroup: [null],
       bigArea: [null],
@@ -476,6 +476,7 @@ export class RequestFormComponent implements OnInit {
         applicant: localStorage.getItem('ng_philips_code1'),
         applicantName: localStorage.getItem('ng_philips_username')
       });
+      this.basicInfo.get('systemRegion').enable()
       this.showSubmitBtn = true;
       this.showSaveBtn = true;
       if (!type || !APPLY_TYPE_MAP[type]) {
@@ -1315,6 +1316,11 @@ export class RequestFormComponent implements OnInit {
     try {
       this.submitLoading = true;
       const data = this.getFormData();
+
+      if (!data.systemRegion) {
+        this.message.error('请选择系统区域配置!')
+        return
+      }
       if (this.applyType === APPLY_TYPE.MACHINE_EXCHANGE) {
         if (data.extInfo.exchangeMethod == null || data.extInfo.exchangeMethod == ''){
           this.message.error('请填写换货方式后再保存')

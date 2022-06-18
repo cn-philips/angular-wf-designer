@@ -316,8 +316,8 @@ export class CooCcOrderInfoComponent implements OnInit, OnChanges {
     return false;
   }
 
-  // node2: 申请人补充信息-经销商已盖章的COO授权函
-  // node6: 申请人补充信息-双签的COO授权函
+  // node4: 申请人补充信息-经销商已盖章的COO授权函
+  // node6: 申请人反馈-双签的COO授权函
   setFormValidators({ nodeCode, nodeInfoList, processStatus }) {
     const cooInfoRequiredFields = []
     const cooInfoEnabledFields = []
@@ -328,7 +328,7 @@ export class CooCcOrderInfoComponent implements OnInit, OnChanges {
         this.showCooLetter = true
         break
       case PROCESS_STATUS.START:
-        if (nodeCode > 'node1') {
+        if (nodeCode > 'node3') {
           this.showCooFile = true
         }
         if(nodeCode > 'node5') {
@@ -336,12 +336,12 @@ export class CooCcOrderInfoComponent implements OnInit, OnChanges {
         }
         if (this.fromTask) {
           switch (nodeCode) {
-            case 'node2': // 申请人补充信息
+            case 'node4': // 申请人补充信息
               // cooInfo
               cooInfoEnabledFields.push('applySignedDate', 'cooConfirmationLetterDraft', 'airTransportNoDealer', 'cooConfirmationLetterDealer')
               cooInfoRequiredFields.push('applySignedDate', 'cooConfirmationLetterDraft', 'airTransportNoDealer', 'cooConfirmationLetterDealer')
               break
-            case 'node6': // 申请人补充信息
+            case 'node6': // 申请人反馈
               // cooInfo
               cooInfoEnabledFields.push('cooConfirmationLetterSign')
               cooInfoRequiredFields.push('cooConfirmationLetterSign')
@@ -673,7 +673,7 @@ export class CooCcOrderInfoComponent implements OnInit, OnChanges {
       params.productionDate = moment(maxProductionDate).add(15, 'months').subtract(1, 'days').format('YYYY-MM-DD')
     }
     // 获取NationSalesLeader的Email
-    const approver = this.approveHistory.find(({ taskName }) => taskName === 'node4')
+    const approver = this.approveHistory.find(({ taskName }) => taskName === 'node2')
     if (approver) {
       params.saleEmail = approver.owner
     }

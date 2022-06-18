@@ -253,11 +253,13 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
   }
 
   onFieldStatusChange(status) {
+    const fieldStatusExplain = this.cooInfo.get('fieldStatusExplain')
     if(status === FIELD_STATUS_OTHER) {
-      this.cooInfo.get('fieldStatusExplain').setValidators(Validators.required)
+      fieldStatusExplain.setValidators(Validators.required)
     } else {
-      this.cooInfo.get('fieldStatusExplain').clearValidators()
+      fieldStatusExplain.clearValidators()
     }
+    fieldStatusExplain.patchValue(null)
   }
 
   onCipPortChange(cipPort) {
