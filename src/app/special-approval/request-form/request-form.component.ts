@@ -1178,7 +1178,8 @@ export class RequestFormComponent implements OnInit {
         hasError = this.basicInfo.invalid || formValidError
         break
       case APPLY_TYPE.DE_BOOK:
-        if (!this.deBookInfo.isTableValid()) {
+        hasError = this.deBookInfo.isTableValid();
+        if (hasError) {
           return
         } else {
           hasError = this.basicInfo.invalid
@@ -1536,7 +1537,7 @@ export class RequestFormComponent implements OnInit {
           break
         case APPLY_TYPE.COO_CC:
           hasError = !this.cooCcOrderInfo.validate()
-          break   
+          break
         default:
           break
       }

@@ -82,6 +82,7 @@ export class LastbuyComponent implements OnInit {
       this.createOrder()
     }
     this.initOMUsers()
+    this.selectOptions.bmcs = this.bmcList.filter(val =>  val.bg === 'PD&IGT' )
   }
 
   async initOMUsers() {
@@ -152,7 +153,7 @@ export class LastbuyComponent implements OnInit {
         referenceId: null,
         subProductType: null,
         bmc: null,
-        bg: this.currBg,
+        bg: 'PD&IGT',
         cycleGroup: null,
         bigArea: null,
         businessModel: null,
@@ -177,7 +178,6 @@ export class LastbuyComponent implements OnInit {
         warehouseArrangement: null,
       }
     ])
-    this.selectOptions.bmcs.push(this.bmcList.filter(value => value.bg === this.currBg))
 
   }
 
@@ -291,7 +291,6 @@ export class LastbuyComponent implements OnInit {
         referenceId: referenceId,
         subProductType: productModel,
         bmc: bmc,
-        bg: this.spService.bmcList.find(({ value }) => value === bmc).bg,
         cycleGroup: team,
         bigArea: region,
         businessModel:  businessModel ? businessModel.toLowerCase() : null,
@@ -318,9 +317,6 @@ export class LastbuyComponent implements OnInit {
       return orderInfo
     })
     this.formValues.patchValue(data)
-    for (let i = 0; i < this.selectOptions.bmcs.length; i++) {
-      this.selectOptions.bmcs[i] = this.bmcList
-    }
   }
   onShowReferenceModal(needCreateUser = false) {
     this.selectReference.showModal(needCreateUser)
@@ -331,6 +327,5 @@ export class LastbuyComponent implements OnInit {
 
   onBgChange(val: string, order, index) {
     order.bmc = null
-    this.selectOptions.bmcs[index] = this.bmcList.filter(value => value.bg === val);
   }
 }
