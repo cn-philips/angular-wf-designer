@@ -10,8 +10,11 @@ export class PricePermissionsPipe implements PipeTransform {
   * 没有权限隐藏
   * */
 
-  transform(value: any, args?: any): any {
+  transform(value: any, email: string): any {
     const roles = JSON.parse(localStorage.getItem('roles'));
+    if (email !== null && email !== undefined && email !== '' && email === roles) {
+      return value;
+    }
     const permissions = JSON.parse(localStorage.getItem('permissions'));
     if (roles && permissions && permissions.price) {
       for (let i = 0; i < roles.length; i++) {
