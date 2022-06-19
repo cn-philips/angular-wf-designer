@@ -180,6 +180,7 @@ export class MachineComponent implements OnInit, OnChanges {
   onSelectReference(reference: Reference) {
     const {
       referenceId,
+      cosMainId,
       orderType,
       projectName,
       productModel,
@@ -200,6 +201,7 @@ export class MachineComponent implements OnInit, OnChanges {
     this.orders.at(this.selectIndex).patchValue({
       orderType,
       referenceId,
+      cosMainId,
       projectName,
       productType: productModel,
       sapOrderNo: sap,

@@ -126,6 +126,7 @@ export class RequestFormComponent implements OnInit {
   private transferLibOrderInit = {
     orderType: [null, [Validators.required]], // 订单类型
     referenceId: [{ value: null, disabled: true }], // Reference Id
+    cosMainId:[null], // cosMainId
     productType: [null], // 产品型号
     bmc: [null, [Validators.required]], // 产品线
     bg: [{ value: null, disabled: true }], // BG
@@ -156,6 +157,7 @@ export class RequestFormComponent implements OnInit {
   public cancelOrderInit = {
     orderType: [null, [Validators.required]], // 订单类型
     referenceId: [null], // Reference Id
+    cosMainId:[null], // cosMainId
     productType: [null ], // 产品型号
     bmc: [null, [Validators.required]], // 产品线
     bg: [{ value: null, disabled: true }, [Validators.required]], // BG
@@ -172,7 +174,7 @@ export class RequestFormComponent implements OnInit {
     currency: [null, [Validators.required]], // 合同金额-货币
     om: [null], // OM
     orderDate: [null, [Validators.required]], // 进单日期
-    deBook: ['1', [Validators.required]], // 是否De-book
+    deBook: [null, [Validators.required]], // 是否De-book
     orderInfoStatus: this.fb.group({   // 订单状态信息
       id: [null],
       spApplyOrderId: [{ value: null, disabled: true }], // (关联的字段)
@@ -215,6 +217,7 @@ export class RequestFormComponent implements OnInit {
   orderReplacementInit = {
     orderType: [null, [Validators.required]], // 订单类型
     referenceId: [null], // Reference Id
+    cosMainId:[null], // cosMainId
     bmc: [null, [Validators.required]], // 产品线
     bg: [{ value: null, disabled: true }, [Validators.required]], // BG
     cycleGroup: [null, [Validators.required]], // 产品区域-team
@@ -246,6 +249,7 @@ export class RequestFormComponent implements OnInit {
     orderInfo: this.fb.group({
       orderType: [null, [Validators.required]], // 订单类型
       referenceId: [null], // Reference Id
+      cosMainId:[null], // cosMainId
       productType: [{ value: null, disabled: true }], // 产品型号
       bmc: [null, [Validators.required]], // 产品线
       bg: [{ value: null, disabled: true }, [Validators.required]], // BG
@@ -310,6 +314,7 @@ export class RequestFormComponent implements OnInit {
         this.fb.group({
           orderType: [null, [Validators.required]], // 订单类型
           referenceId: [null], // Reference Id
+          cosMainId:[null], // cosMainId
           productType: [{ value: null, disabled: true }], // 产品型号
           bmc: [null, [Validators.required]], // 产品线
           bg: [{ value: null, disabled: true }, [Validators.required]], // BG
@@ -336,6 +341,7 @@ export class RequestFormComponent implements OnInit {
         this.fb.group({
           orderType: [null, [Validators.required]], // 订单类型
           referenceId: [null], // Reference Id
+          cosMainId:[null], // cosMainId
           productType: [{ value: null, disabled: true }], // 产品型号
           bmc: [null, [Validators.required]], // 产品线
           bg: [{ value: null, disabled: true }, [Validators.required]], // BG
@@ -382,6 +388,7 @@ export class RequestFormComponent implements OnInit {
     noneDirectOrderInfo: this.fb.group({
       orderType: [null, [Validators.required]], // 订单类型
       referenceId: [null], // Reference Id
+      cosMainId:[null], // cosMainId
       productType: [{ value: null, disabled: true }], // 产品型号
       bmc: [null, [Validators.required]], // 产品线
       bg: [{ value: null, disabled: true }, [Validators.required]], // BG

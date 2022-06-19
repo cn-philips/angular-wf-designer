@@ -991,11 +991,42 @@ export class PreOrderProductInfoComponent implements OnInit {
   // }
 
   //查询全部产品专家列表
-  public getproductExpertList()
-  {
+  async getproductExpertList(){
     let url=`/act/preparation/getAllProductExpert`;
-    this.http.get(url).subscribe(rest=>{
-      this.productExpertList=rest.data;
+    await this.http.get(url).subscribe((rest=>{
+      if (rest.code == '0000' && rest.data) {
+        this.productExpertList=rest.data;
+        this.setUndefindProductExpert();
+      }
+    }), (error) => {
+      this.message.create("error", "请求失败!");
     })
+  }
+
+  // 设置未定义的产品专家
+  public setUndefindProductExpert(){
+    if(this.dataBase){
+      if(this.dataBase.productList.length>0){
+        //判断产品专家是否存在
+        let productExperts = [];
+        for (let i = 0; i < this.dataBase.productList.length; i++) {
+          for(let j=0;j<this.dataBase.productList[i].productList.length;j++){
+            let productExpert = this.dataBase.productList[i].productList[j].productExpert;
+            if(productExpert != null && productExpert != "" && productExpert != undefined){
+              productExperts.push(productExpert);
+            }
+          }
+        }
+        if (productExperts && productExperts.length > 0) {
+          productExperts = Array.from(new Set(productExperts));
+          productExperts.forEach( item => {
+            //不存在
+            if(! this.productExpertList.includes(item)) {
+              this.productExpertList.push(item);
+            }
+          })
+        }
+      }
+    }
   }
 }

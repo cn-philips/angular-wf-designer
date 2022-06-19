@@ -69,6 +69,7 @@ export class OrderReplacementComponent implements OnInit, OnChanges {
   onSelectReference(reference: Reference) {
     const {
       referenceId,
+      cosMainId,
       orderType,
       projectName,
       sap,
@@ -80,6 +81,7 @@ export class OrderReplacementComponent implements OnInit, OnChanges {
     this.formValues.patchValue({
       orderType,
       referenceId,
+      cosMainId,
       projectName,
       sapOrderNo: sap,
       cycleGroup: team,

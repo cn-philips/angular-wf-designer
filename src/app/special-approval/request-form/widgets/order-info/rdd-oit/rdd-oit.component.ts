@@ -203,7 +203,7 @@ export class RddOitOrderInfoComponent implements OnInit {
         }, {}) as any
         const { 
           applyArrivalTime, bg, bmc, businessModel, currency, cycleGroup, dealerCode, dealerName, expectedPaymentDate, expectedSaleDate,
-          hospitalName, hospitalNo, om, orderAmount, orderType, productType, projectName, referenceId, sapOrderNo, exchangeableOrder,
+          hospitalName, hospitalNo, om, orderAmount, orderType, productType, projectName, referenceId, cosMainId, sapOrderNo, exchangeableOrder,
           subProductType, exchangeableHospitalName,
         } = orderInfo
         if (bmc) { this.onBmcChange(orderInfo) }

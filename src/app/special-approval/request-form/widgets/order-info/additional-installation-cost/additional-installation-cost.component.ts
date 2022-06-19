@@ -141,6 +141,7 @@ export class AdditionalInstallationCostComponent implements OnInit {
   onSelectReference(reference: Reference) {
     const {
       referenceId,
+      cosMainId,
       orderType,
       projectName,
       productModel,
@@ -161,6 +162,7 @@ export class AdditionalInstallationCostComponent implements OnInit {
     this.formValues.patchValue({
       orderType,
       referenceId,
+      cosMainId,
       projectName,
       productType: productModel,
       sapOrderNo: sap,
