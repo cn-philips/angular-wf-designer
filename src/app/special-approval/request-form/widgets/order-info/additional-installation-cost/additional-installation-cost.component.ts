@@ -33,6 +33,7 @@ export class AdditionalInstallationCostComponent implements OnInit {
   @Input() editable = true
   @Input() applyType: string
   @Input() applyItem: string
+  @Input() applicantEmail
 
   APPLY_TYPE = APPLY_TYPE
 

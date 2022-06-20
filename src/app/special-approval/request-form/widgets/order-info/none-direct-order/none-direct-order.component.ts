@@ -34,6 +34,7 @@ export class NoNedirectOrderInfoComponent implements OnInit, OnChanges {
   @Input() applyItem: string;
   @Input() baseInfo: FormGroup
   @Input() showFeedbackTab = false;
+  @Input() applicantEmail;
 
   APPLY_TYPE = APPLY_TYPE
 

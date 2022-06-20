@@ -29,6 +29,7 @@ export class LastbuyComponent implements OnInit {
   @Input() editable = true
   @Input() formValues: FormGroup;
   @Input() showFeedbackTab: boolean = false;
+  @Input() applicantEmail
 
   BUSINESS_MODEL = BUSINESS_MODEL
 

@@ -39,6 +39,7 @@ export class WarrantyOrderInfoComponent implements OnInit, OnChanges {
   @Input() formValues: FormGroup;
   @Input() editable = true;
   @Input() showFeedbackTab = false;
+  @Input() applicantEmail;
 
   selectOptions = {
     orderTypes: ORDER_TYPES,

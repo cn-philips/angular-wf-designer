@@ -62,6 +62,7 @@ const excelKeyMap = {
 export class RddOitOrderInfoComponent implements OnInit {
   @Input() formValues: FormGroup;
   @Input() editable: boolean
+  @Input() applicantEmail
   @ViewChild('selectHospital') selectHospital: SelectHospitalComponent
   @ViewChild('selectDealer') selectDealer: SelectDealerComponent
 

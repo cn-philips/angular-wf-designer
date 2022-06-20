@@ -33,6 +33,7 @@ export class ProductionOrderInfoComponent implements OnInit, OnChanges {
   @Input() editable = true
   @Input() applyItem: string
   @Input() showFeedbackTab = false;
+  @Input() applicantEmail;
 
   APPLY_TYPE = APPLY_TYPE
 
