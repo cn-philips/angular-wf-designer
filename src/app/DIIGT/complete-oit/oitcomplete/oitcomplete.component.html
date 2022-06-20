@@ -117,7 +117,7 @@
               <button [disabled]="disas" nz-button><i nz-icon nzType="upload"></i><span>Upload 上传附件</span></button>
             </nz-upload>
           </div>
-          <button *ngIf="disas" nz-tooltip [nzTitle]="oitInfor.otherNames" class="down link-tesk" nz-button nzType="link"
+          <button *ngIf="disas&&oitInfor&&oitInfor.other" nz-tooltip [nzTitle]="oitInfor.otherNames" class="down link-tesk" nz-button nzType="link"
           (click)="fileDwon(oitInfor.other)">{{oitInfor.otherNames?oitInfor.otherNames:"文件下载"}}</button>
         </nz-form-control>
       </nz-form-item>
