@@ -15,6 +15,7 @@ export class ReferenceLinkComponent implements OnInit {
 
   constructor() { }
 
+  // rdd  机器互换 转库 debook coo-us/cc last by lc 未加
   ngOnInit() {
   }
 
@@ -23,13 +24,14 @@ export class ReferenceLinkComponent implements OnInit {
   }
 
   // 跳转
-  public gotoLink() {
+  public async gotoLink() {
     if (this.orderTypes && this.orderTypes !== '' && this.orderTypes.toUpperCase() === 'OIT') {
       // 跳转到合同概要表
-      window.open(location.origin + environment.base_href + '/#/' + 'inconmodif?id=' + codeString(this.cosMainId) + '&flag=1');
+      // window.open(location.origin + environment.base_href + '/#/' + 'inconmodif?id=' + codeString(this.cosMainId) + '&flag=1', null, 'noreferrer');
+      window.open(location.origin + environment.base_href + '/#/' + 'completeOit?id=' + codeString(this.cosMainId) + '&flag=1' + '&status=OITEND', null, 'noreferrer');
     } else if (this.orderTypes && this.orderTypes !== '') {
       // 跳转到prebook链接
-      window.open(location.origin + environment.base_href + '/#/' + 'prebookso?id=' + codeString(this.cosMainId) + '&flag=1&status=prebook_end');
+      window.open(location.origin + environment.base_href + '/#/' + 'prebookso?id=' + codeString(this.cosMainId) + '&flag=1&status=prebook_end', null, 'noreferrer');
     }
   }
 
