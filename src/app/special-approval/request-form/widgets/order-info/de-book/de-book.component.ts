@@ -40,6 +40,7 @@ export class DeBookComponent implements OnInit {
 
   @Input() editable = true
   @Input() formValues: FormGroup;
+  @Input() applicantEmail
 
   BUSINESS_MODEL = BUSINESS_MODEL
 

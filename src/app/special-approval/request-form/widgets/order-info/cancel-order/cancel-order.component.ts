@@ -46,6 +46,7 @@ export class CancelOrderComponent implements OnInit, OnChanges {
   @Input() cancelOrderFileList: UploadFile[] = [];
 
   @Input() isSupplementNode = false
+  @Input() applicantEmail
 
   cancelContractLink: any = {};
 

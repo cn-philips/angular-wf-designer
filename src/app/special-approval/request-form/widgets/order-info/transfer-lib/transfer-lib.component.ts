@@ -78,6 +78,7 @@ export class TransferLibComponent implements OnInit, OnChanges {
   @Input() applyItem: string
   @Input() bmcs = []
   @Input() showFeedbackTab = false;
+  @Input() applicantEmail;
 
   APPLY_TYPE = APPLY_TYPE
   searchChange$ = new BehaviorSubject('');

@@ -60,6 +60,7 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
   @ViewChild('appPdfPreview') appPdfPreview: PdfPreviewComponent
   @Input() editable = true
   @Input() fromTask = false
+  @Input() applicantEmail
 
   loginUserCode1 = localStorage.getItem('ng_philips_code1')
 
