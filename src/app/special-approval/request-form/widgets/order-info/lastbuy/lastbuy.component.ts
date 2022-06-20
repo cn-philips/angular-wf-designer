@@ -151,6 +151,7 @@ export class LastbuyComponent implements OnInit {
       {
         orderType: 'Pre-book',
         referenceId: null,
+        cosMainId: null,
         subProductType: null,
         bmc: null,
         bg: 'PD&IGT',
@@ -267,6 +268,7 @@ export class LastbuyComponent implements OnInit {
     const data = references.map(reference => {
       const {
         referenceId,
+        cosMainId,
         orderType,
         projectName,
         productModel,
@@ -289,6 +291,7 @@ export class LastbuyComponent implements OnInit {
       const orderInfo = {
         orderType: orderType,
         referenceId: referenceId,
+        cosMainId: cosMainId,
         subProductType: productModel,
         bmc: bmc,
         cycleGroup: team,

@@ -196,6 +196,7 @@ export class TransferLibComponent implements OnInit, OnChanges {
   onSelectReference(reference: Reference) {
     const {
       referenceId,
+      cosMainId,
       orderType,
       projectName,
       productModel,
@@ -253,6 +254,7 @@ export class TransferLibComponent implements OnInit, OnChanges {
     this.orders.at(this.currentImportIndex).patchValue({
       orderType,
       referenceId,
+      cosMainId,
       projectName,
       productType: productModel,
       sapOrderNo: sap,

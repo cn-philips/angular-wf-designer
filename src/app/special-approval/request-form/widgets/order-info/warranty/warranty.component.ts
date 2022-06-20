@@ -140,6 +140,7 @@ export class WarrantyOrderInfoComponent implements OnInit, OnChanges {
   onSelectReference(reference: Reference) {
     const {
       referenceId,
+      cosMainId,
       orderType,
       projectName,
       productModel,
@@ -160,6 +161,7 @@ export class WarrantyOrderInfoComponent implements OnInit, OnChanges {
     this.formValues.patchValue({
       orderType,
       referenceId,
+      cosMainId,
       projectName,
       productType: productModel,
       sapOrderNo: sap,
