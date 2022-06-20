@@ -1,6 +1,13 @@
 <form nz-form [formGroup]="orderInfo">
   <nz-card class="mtb1rem" nzTitle="订单信息">
     <div nz-row>
+      <div nz-col nzXs="24" nzSm="24" nzMd="24">
+        <nz-form-item>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="3">
+            <app-reference-link [cosMainId]="orderInfo.get('cosMainId')?.value" [orderTypes]="orderInfo.get('orderType')?.value" [label]="orderInfo.get('referenceId')?.value"></app-reference-link>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
       <div nz-col nzXs="24" nzSm="24" nzMd="12">
         <nz-form-item>
           <nz-form-label nzXl="8" nzXXl="6" nzRequired>订单类型</nz-form-label>
