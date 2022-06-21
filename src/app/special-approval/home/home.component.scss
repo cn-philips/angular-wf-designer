@@ -40,6 +40,10 @@
       }
     }
   }
+
+  .filter-wrap {
+    max-width: calc(100% - 200px);
+  }
   
   .template-list {
     margin-top: 8px;
