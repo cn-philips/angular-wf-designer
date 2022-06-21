@@ -123,9 +123,10 @@ export class DeBookComponent implements OnInit {
           orderInfo.orderDate = moment(orderDate).utc().format('YYYY-MM-DD')
         }
 
-      if ( productType1.length > 0) {
+        // fix issue#3295: 【产品类型】一列中输入字母，导入不成功
+      /*if ( productType1.length > 0) {
         orderInfo.productType = productType1.join(';')
-      }
+      }*/
         return orderInfo
       })
 
