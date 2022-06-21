@@ -129,6 +129,7 @@
               </p>
               <p class="ant-upload-text">点击或者拖拽上传</p>
             </nz-upload>
+            <nz-alert *ngIf="editable && applyType === APPLY_TYPE.COO_US" nzType="warning" nzMessage="请上传特批邮件及其它支持文件（如需要）"></nz-alert>
             <app-upload-file-list *ngIf="!editable" [fileList]="supportFileList"></app-upload-file-list>
           </nz-form-control>
         </nz-form-item>

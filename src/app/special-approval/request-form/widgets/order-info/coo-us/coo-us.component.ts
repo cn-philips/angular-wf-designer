@@ -37,6 +37,8 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
   showScPlanningFeedbackField = false
   showSelectDealerBtn = false
 
+  showDeliveryAddress = false
+
   orderInfo = this.fb.group({
     productType: [{ value: null, disabled: true }], // 产品型号
     bmc: [null, [Validators.required]], // 产品线
@@ -49,7 +51,7 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
     products: this.fb.array([], [Validators.required]),
     contractNo: [null], // 合同号
     currency: [null], // 币制
-    shipToName: [null], // ship-to name
+    shipToName: [null, [Validators.required]], // ship-to name
     paymentMethod: [null], // 付款方式
     paymentReceived: [null], // 全款是否已经收到
     cooProduct: this.fb.group({
@@ -76,19 +78,21 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
     fieldStatusExplain: [null], // 场地状态-补充说明
     newOrOldHospital: [null, [Validators.required]], // 新建医院还是老医院新院区
     expectedFieldDate: [null, [Validators.required]], // 预计场地就位日期
-    planIcfDate: [null, [Validators.required]], // 计划ICF时间
+    expectedInstallationDate: [null, [Validators.required]], // 预计装机日期
+    expectedSaleDate: [null, [Validators.required]], // 预计记认销售日期
     installationOrDispatch: [null, [Validators.required, disableSubmitValidtorFn('1')]], // 是否已装机或派单
-    threeMonthsAfterArrival: [null, [Validators.required, disableSubmitValidtorFn('0')]], // 是否到货>3个月
-    cooSignedNotIcf: [null, [Validators.required]], // 经销商是否为COO签署12个月内未签回ICF
-    specialApproval: [{ value: null, disabled: true }, [Validators.required]], // 是否需要特批
+    threeMonthsAfterArrival: [null, [disableSubmitValidtorFn('0')]], // 是否到货>3个月
+    cooSignedNotIcf: [null, [Validators.required]], // 经销商是否存在之前签署过COO的订单12个月内未签回安装报告的情况
+    specialApproval: [{ value: null, disabled: true }], // 是否需要特批
     applySignedDate: [null], // 预计签署日期
-    cooConfirmationLetterDraft: [null], // COO确认函草稿
+    cooConfirmationLetterDraft: [null], // COO确认函草稿（word版）
     airTransportNoDealer: [null], // 经销商盖章后的空运单
     cooConfirmationLetterDealer: [null], // 经销商盖章后的COO确认函
     cooConfirmationLetterSign: [null], // 双签后的COO确认函
   })
 
   selectOptions = {
+    productList: [],
     bgList: BG_LIST,
     businessModels: BUSINESS_MODEL_LIST,
     oms: [],
@@ -126,6 +130,7 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
 
   ngOnInit() {
     this.initOMUsers()
+    this.initPorductList()
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -185,26 +190,26 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
           switch (nodeCode) {
             case 'node1': // SC Planning补充信息
               // orderInfo
-              orderInfoRequiredFields.push('contractNo', 'currency', 'shipToName')
-              orderInfoEnabledFields.push('contractNo', 'currency', 'shipToName')
+              orderInfoRequiredFields.push('contractNo', 'currency')
+              orderInfoEnabledFields.push('contractNo', 'currency')
               // products
-              productsRequiredFields.push('productType', 'orderDate', 'productionDate', 'arrivalDate')
-              productsEnabledFields.push('productType', 'orderDate', 'productionDate', 'arrivalDate')
+              productsRequiredFields.push('productionDate')
+              productsEnabledFields.push('productionDate')
               break
             case 'node3': // OM补充信息 
               // orderInfo
               orderInfoEnabledFields.push('paymentMethod', 'paymentReceived')
               orderInfoRequiredFields.push('paymentMethod', 'paymentReceived')
               // products
-              productsRequiredFields.push('goodsDeliveryDate', 'equipmentSn')
-              productsEnabledFields.push('goodsDeliveryDate', 'equipmentSn')
+              productsRequiredFields.push('equipmentSn')
+              productsEnabledFields.push('equipmentSn', 'goodsDeliveryDate')
               // cooProduct
               cooProductEnabledFields.push(
                 'cipPort', 'airTransportNo', 'addressType',
                 'deliveryAddress', 'deliveryAddressEn',
                 'customsClearancePort', 'customsClearancePortEn'
               )
-              cooProductRequiredFields.push('airTransportNo', 'addressType', 'customsClearancePort', 'customsClearancePortEn')
+              cooProductRequiredFields.push('cipPort', 'airTransportNo', 'addressType', 'customsClearancePort', 'customsClearancePortEn')
               if (this.cooProduct.get('cipPort').value === '0') {
                 cooProductRequiredFields.push('deliveryAddress', 'deliveryAddressEn')
               }
@@ -224,12 +229,22 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
               break
             case 'node7': // 申请人反馈
               // cooInfo
-              cooInfoRequiredFields.push('applySignedDate', 'cooConfirmationLetterDraft', 'airTransportNoDealer', 'cooConfirmationLetterDealer')
-              cooInfoEnabledFields.push('applySignedDate', 'cooConfirmationLetterDraft', 'airTransportNoDealer', 'cooConfirmationLetterDealer')
+              cooInfoRequiredFields.push('applySignedDate', 'cooConfirmationLetterDraft', 'cooConfirmationLetterDealer')
+              cooInfoEnabledFields.push('applySignedDate', 'cooConfirmationLetterDraft', 'cooConfirmationLetterDealer')
+
+              if (this.cooProduct.get('cipPort').value === '1') {
+                cooInfoRequiredFields.push('airTransportNoDealer')
+                cooInfoEnabledFields.push('airTransportNoDealer')
+                productsRequiredFields.push('goodsDeliveryDate')
+                productsEnabledFields.push('goodsDeliveryDate')
+                cooProductRequiredFields.push('deliveryAddress', 'deliveryAddressEn')
+                cooProductEnabledFields.push('deliveryAddress', 'deliveryAddressEn')
+                this.showDeliveryAddress = true
+              }
               break
             case 'node8': // SC Planning反馈
               // cooInfo
-              cooInfoRequiredFields.push('cooConfirmationLetterSign')
+              // cooInfoRequiredFields.push('cooConfirmationLetterSign')
               cooInfoEnabledFields.push('cooConfirmationLetterSign')
               break
           }
@@ -263,22 +278,53 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
   }
 
   onCipPortChange(cipPort) {
+    this.cooProduct.patchValue({
+      deliveryAddress: null,
+      deliveryAddressEn: null,
+    })
     if (cipPort === '0') {
+      this.products.controls.forEach((product) => {
+        product.patchValue({
+          goodsDeliveryDate: null
+        })
+        product.get('goodsDeliveryDate').setValidators(Validators.required)
+      })
       this.cooProduct.get('deliveryAddress').setValidators(Validators.required)
       this.cooProduct.get('deliveryAddressEn').setValidators(Validators.required)
+      this.showDeliveryAddress = true
     } else {
+      this.products.controls.forEach((product) => {
+        product.patchValue({
+          goodsDeliveryDate: null
+        })
+        product.get('goodsDeliveryDate').clearValidators()
+        product.get('goodsDeliveryDate').setErrors(null)
+      })
       this.cooProduct.get('deliveryAddress').clearValidators()
       this.cooProduct.get('deliveryAddressEn').clearValidators()
+      this.showDeliveryAddress = false
     }
   }
 
   onIsBidChange(isBid) {
-    const fields = ['pending', 'expectedBiddingDate', 'losingOrders', 'expectedNewUserDate']
-    if (isBid === '0') {
-      fields.forEach((fieldName) => this.cooInfo.get(fieldName).setValidators(Validators.required))
-    } else {
-      fields.forEach((fieldName) => this.cooInfo.get(fieldName).clearValidators())
+    this.cooInfo.patchValue({
+      pending: null,
+      expectedBiddingDate: null,
+      losingOrders: null,
+      expectedNewUserDate: null,
+    })
+    const allFields = ['pending', 'expectedBiddingDate', 'losingOrders', 'expectedNewUserDate']
+    allFields.forEach((fieldName) => this.cooInfo.get(fieldName).clearValidators())
+    let requiredFields = []
+    switch(isBid) {
+      case '0':
+        requiredFields = ['pending', 'expectedBiddingDate']
+        break
+      case '2':
+        requiredFields = ['losingOrders', 'expectedNewUserDate']
+        break
     }
+    requiredFields.forEach((fieldName) => this.cooInfo.get(fieldName).setValidators(Validators.required))
   }
 
   public validate() {
@@ -315,18 +361,20 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
   }
 
   public getData() {
+    const cooInfo = {
+      ...this.originCooInfo,
+      ...this.cooInfo.getRawValue(),
+    }
     let orderInfo = {
       ...this.originOrderInfo,
       ...this.orderInfo.getRawValue(),
+      expectedSaleDate: cooInfo.expectedSaleDate,
     }
     let { products, cooProduct } = orderInfo
     products = products.map((product, index) => index === 0 ? { ...product, ...cooProduct } : product)
     orderInfo.products = products
     delete orderInfo.cooProduct
-    const cooInfo = {
-      ...this.originCooInfo,
-      ...this.cooInfo.getRawValue(),
-    }
+    delete cooInfo.expectedSaleDate
     return {
       cooInfo,
       orderInfos: [orderInfo]
@@ -356,7 +404,7 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
         this.products.at(index).patchValue(product)
       })
     }
-    this.cooInfo.patchValue(cooInfo)
+    this.cooInfo.patchValue({ ...cooInfo, expectedSaleDate: orderInfo.expectedSaleDate })
     if (!this.editable) {
       this.disableForm()
     }
@@ -367,17 +415,39 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
     return this.fb.group({
       wbsNo: [null, [Validators.required]], // 订单WBS#
       itemNo: [null, [Validators.required]], // Item#
-      quantity: [null, [Validators.required]], // 数量
-      productType: [null], // 产品型号
-      orderDate: [null], // 进单日期
+      quantity: [1, [Validators.required]], // 数量
+      productType: [null, [Validators.required]], // 产品型号
+      orderDate: [null, [Validators.required]], // 进单日期
       productionDate: [null], // 出厂日期
-      arrivalDate: [null], // 到货日期
+      arrivalDate: [null, [Validators.required]], // 到货日期
       goodsDeliveryDate: [null], // 货物送达日期
       equipmentSn: [null], // 设备SN号
       equipmentDescription: [null], // 设备名称和描述中文
       equipmentDescriptionEn: [null], // 设备名称和描述英文
       guaranteeMonth: [null], // 保修期
     })
+  }
+
+  // 计算是否到货>3个月
+  onArrivalDateChange() {
+    const products = this.products.getRawValue()
+    const arrivalDates = products
+      .map(({ arrivalDate }) => arrivalDate)
+      .filter((arrivalDate) => arrivalDate)
+      .sort()
+    let threeMonthsAfterArrival
+    const minArrivalDate = arrivalDates[0]
+    if (minArrivalDate) {
+      const targetDate = moment().add(3, 'months').format('YYYY-MM-DD')
+      if (minArrivalDate > targetDate) {
+        threeMonthsAfterArrival = '1'
+      } else {
+        threeMonthsAfterArrival = '0'
+      }
+    } else {
+      threeMonthsAfterArrival = null
+    }
+    this.cooInfo.patchValue({ threeMonthsAfterArrival })
   }
 
   onCooSignedNotIcf(cooSignedNotIcf) {
@@ -396,7 +466,7 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
 
   onDeleteProduct(index) {
     this.products.removeAt(index)
-    this.onCalcOrderProductType()
+    this.calcOrderProductType()
   }
 
   onSelectDealer(dealer: Dealer) {
@@ -418,11 +488,29 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
     this.selectDealer.showModal()
   }
 
-  onCalcOrderProductType() {
+  onProductTypeChange(productType, product: FormGroup) {
+    const productIns = this.selectOptions.productList.find(({ productModel }) => productModel === productType)
+    if (productIns) {
+      const { equipmentDescription, equipmentDescriptionEn } = productIns
+      product.patchValue({
+        equipmentDescription,
+        equipmentDescriptionEn,
+      })
+    } else {
+      product.patchValue({
+        equipmentDescription: null,
+        equipmentDescriptionEn: null,
+      })
+    }
+    this.calcOrderProductType()
+  }
+
+  calcOrderProductType() {
     const products = this.products.value as any[]
     const orderProductType = products
       .filter(({ productType }) => productType)
       .map(({ productType }) => productType)
+      .filter((productType) => productType)
       .join(';')
     this.orderInfo.patchValue({
       productType: orderProductType
@@ -431,8 +519,7 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
 
   // 初始化OM列表
   async initOMUsers() {
-    const users = await this.spService.getOMUsers()
-    this.selectOptions.oms = users.map(({ name, email }) => ({ label: name, value: email }))
+    this.spService.getOMUsers().then((users) => this.selectOptions.oms = users.map(({ name, email }) => ({ label: name, value: email })))
   }
 
   showTemplate() {
@@ -500,5 +587,11 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
       tableParamsList: products.length > 0 ? JSON.stringify(products.map(({ quantity, equipmentDescription, goodsDeliveryDate, equipmentSn }) => ({ quantity: String(quantity), equipmentDescription, goodsDeliveryDate, equipmentSn }))) : null,
     }
     this.appPdfPreview.show(params)
+  }
+
+  initPorductList() {
+    this.spService.getUSProductDescList().then((data) => {
+      this.selectOptions.productList = data
+    })
   }
 }

@@ -33,7 +33,15 @@ interface RequestItem {
   processInstanceCreateTime: string;
 }
 
+interface USProductDesc {
+  productModel: string; // 机型, 产品型号
+  equipmentDescription: string; // 设备名称和描述中文
+  equipmentDescriptionEn: string; // 设备名称和描述英文
+}
+
+
 export {
   SearchParams,
   RequestItem,
+  USProductDesc,
 }

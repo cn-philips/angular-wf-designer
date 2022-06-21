@@ -4,6 +4,7 @@ import { Subject } from 'rxjs'
 import { APPLY_TYPE_MAP, PROCESS_STATUS, PROCESS_STATUS_MAP, STAND_WARRANTY_MONTH } from './special-approval.constants'
 import { DictService } from '../services/dict.service';
 import { APPROVE_NODE_ACTION } from '../DIIGT/change-scene/special-approval-setting/special-approval-setting.constants'
+import { USProductDesc } from './special-approval.d'
 
 function getLoginUserCode1() {
   return localStorage.getItem("ng_philips_code1");
@@ -42,6 +43,8 @@ export class SpecialApprovalService {
   processOwnerAdminList = [];
 
   processOwnerAdminMap: { [key: string]: {processOwner: [],processAdmin: []} } = {};
+
+  usProductDescList: USProductDesc[] = []
 
   constructor(private http: HttpService, private dictService: DictService) {
     this.initCycleGroupBigArea();
@@ -470,5 +473,17 @@ export class SpecialApprovalService {
     const uri = `act/spTransferOrderRecord/transferOrderRecord`;
     const res = await this.http.post(uri, data).toPromise();
     return formatResponse(res);
+  }
+
+  // 获取US产品型号, 描述列表
+  async getUSProductDescList() {
+    if (this.usProductDescList.length > 0) {
+      return this.usProductDescList
+    }
+    const uri = `act/spapplycoousproduct/findByList`;
+    const res = await this.http.post(uri).toPromise();
+    const data = formatResponse(res);
+    this.usProductDescList = data
+    return data
   }
 }
