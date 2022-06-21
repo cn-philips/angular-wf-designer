@@ -81,7 +81,9 @@ export class DeBookComponent implements OnInit {
     { label: '在建新大楼', value: '在建新大楼' },
     { label: '经销商问题', value: '经销商问题' },
     { label: '项目变更', value: '项目变更' },
-    { label: '招商问题', value: '招商问题' }
+    { label: '招商问题', value: '招商问题' },
+    { label: '其它场地问题', value: '其它场地问题' },
+    { label: '其它', value: '其它' }
    ]
 
   ngOnInit() {
