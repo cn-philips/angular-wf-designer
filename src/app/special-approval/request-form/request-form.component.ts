@@ -61,8 +61,6 @@ export class RequestFormComponent implements OnInit {
   isSupplementNode = false
 
   public pageTitle: string;
-  public processAdmin: string;
-  public processExpert: string;
   public requestId;
   public requestInfo = {
     orderInfos: [{} as any]
@@ -83,6 +81,9 @@ export class RequestFormComponent implements OnInit {
   public showFeedbackTab = false;
   public showWithdrawBtn = false;
   public showCancelBtn = false;
+
+  public processAdminList = [];
+  public processExpertList = [];
 
   public supportFileList = [];
 
@@ -583,16 +584,10 @@ export class RequestFormComponent implements OnInit {
       processOwner = processOwnerAdmin.processOwner;
       processAdmin = processOwnerAdmin.processAdmin;
       if (processAdmin && processAdmin.length > 0) {
-        let adminDesc = "";
-        const emailList = processAdmin.map(({ email }) =>  email );
-        emailList.forEach(item => { adminDesc += item +" " })
-        this.processAdmin = adminDesc;
+        this.processAdminList = processAdmin.map(({ email }) =>  email );
       }
       if (processOwner && processOwner.length > 0) {
-        let expertDesc = "";
-        const emailList = processOwner.map(({ email }) =>  email );
-        emailList.forEach(item => { expertDesc += item +" " })
-        this.processExpert = expertDesc;
+        this.processExpertList = processOwner.map(({ email }) =>  email )
       }
     }
   }

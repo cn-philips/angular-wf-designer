@@ -83,8 +83,8 @@ export class SelectReferenceComponent implements OnInit {
     }
   }
 
-
-  public showModal(needCreateUser = true, moneyHide: boolean = false) {
+  //默认所有导入数据隐藏金额 moneyHide=true（false: 显示）
+  public showModal(needCreateUser = true, moneyHide: boolean = true) {
     this.visible = true
     this.moneyHide = moneyHide
     this.needCreateUser = needCreateUser
