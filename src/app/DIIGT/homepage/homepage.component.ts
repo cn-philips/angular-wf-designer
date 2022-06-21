@@ -37,6 +37,7 @@ export class HomepageComponent implements OnInit {
 
     this.initManuals();
     this.getMessage();
+    this.getMessageModal();
   }
   private async initLinks(){
     this.linkList=[
@@ -251,6 +252,25 @@ initManuals(){
   }
   public closeMessage(msgArr: any, index: any) {
     msgArr.splice(index, 1);
+  }
+
+  public message_modal_show: boolean = false;
+  public message_modal: any = [];
+  public getMessageModal() {
+    const first_popup = sessionStorage.getItem('first_popup');
+    // MESSAGE_MODAL
+    if (first_popup !== 'popup') {
+      this.http.get('/act/ecom/dictData/queryDrop?dictGroup=MESSAGE_MODAL').subscribe(res => {
+        this.message_modal = [...res.data];
+        if (this.message_modal && this.message_modal.length > 0) {
+          this.message_modal_show = true;
+          sessionStorage.setItem('first_popup', 'popup');
+        }
+      });
+    }
+  }
+  public modalCancel() {
+    this.message_modal_show = false;
   }
 
 }
