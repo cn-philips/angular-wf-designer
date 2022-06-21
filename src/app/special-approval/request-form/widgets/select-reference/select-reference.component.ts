@@ -23,6 +23,10 @@ export interface Reference {
   createUser: string; //添加crateuser用于转库判断是否展示金额
   logistician: string; // 对应OM
   marketBundleQuantity: string; // 产品数量
+  deBook: string;
+  reBook: string;
+  logisticsTime: null;
+  cosMainId: string;
 }
 
 const DEFAULT_SEARCH_PARAMS = {
@@ -79,8 +83,8 @@ export class SelectReferenceComponent implements OnInit {
     }
   }
 
-
-  public showModal(needCreateUser = true, moneyHide: boolean = false) {
+  //默认所有导入数据隐藏金额 moneyHide=true（false: 显示）
+  public showModal(needCreateUser = true, moneyHide: boolean = true) {
     this.visible = true
     this.moneyHide = moneyHide
     this.needCreateUser = needCreateUser

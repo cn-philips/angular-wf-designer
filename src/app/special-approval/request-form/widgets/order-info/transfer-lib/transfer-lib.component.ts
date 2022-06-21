@@ -78,6 +78,7 @@ export class TransferLibComponent implements OnInit, OnChanges {
   @Input() applyItem: string
   @Input() bmcs = []
   @Input() showFeedbackTab = false;
+  @Input() applicantEmail;
 
   APPLY_TYPE = APPLY_TYPE
   searchChange$ = new BehaviorSubject('');
@@ -196,6 +197,7 @@ export class TransferLibComponent implements OnInit, OnChanges {
   onSelectReference(reference: Reference) {
     const {
       referenceId,
+      cosMainId,
       orderType,
       projectName,
       productModel,
@@ -253,6 +255,7 @@ export class TransferLibComponent implements OnInit, OnChanges {
     this.orders.at(this.currentImportIndex).patchValue({
       orderType,
       referenceId,
+      cosMainId,
       projectName,
       productType: productModel,
       sapOrderNo: sap,

@@ -7,10 +7,22 @@
 </nz-card>
 <nz-alert nzType="info" [nzMessage]="nzMessage" style="margin-bottom: 1rem !important">
   <ng-template #nzMessage>
-    <div><span style="font-weight: 600;" nz-tooltip nzTitle="如对流程有疑问请发邮件咨询Process Admin">Process Admin:
-      </span>{{processAdmin}}</div>
-    <div><span style="font-weight: 600;" nz-tooltip nzTitle="如对流程有疑问请发邮件咨询Process Expert">Process Expert:
-      </span>{{processExpert}}</div>
+    <ul>
+      <li style="display:inline;list-style:none"><span style="font-weight: 600;" nz-tooltip
+          nzTitle="如对流程有疑问请发邮件咨询Process Admin">Process Admin:
+        </span>
+        <ng-container *ngFor="let item of processAdminList">
+          <a href="mailto:{{item}}">{{item}}</a>
+        </ng-container>
+      </li>
+      <li style="display:inline;list-style:none"><span style="font-weight: 600;" nz-tooltip
+          nzTitle="如对流程有疑问请发邮件咨询Process Expert">Process Expert:
+        </span>
+        <ng-container *ngFor="let item of processExpertList">
+          <a href="mailto:{{item}}">{{item}}</a>
+        </ng-container>
+      </li>
+    </ul>
   </ng-template>
 </nz-alert>
 <div class="tabs-box">
@@ -71,53 +83,61 @@
     <ng-template ngbTabContent>
       <div class="card-body">
         <special-approval-production-order-info *ngIf="applyType === APPLY_TYPE.PRODUCTION" [applyItem]="applyItem"
-          [editable]="editable" [formValues]="orderInfo" [showFeedbackTab]="showFeedbackTab">
+          [editable]="editable" [formValues]="orderInfo" [showFeedbackTab]="showFeedbackTab"
+          [applicantEmail]="applicantEmail">
         </special-approval-production-order-info>
         <special-approval-warranty-order-info *ngIf="applyType === APPLY_TYPE.EXT_WARRANTY" [editable]="editable"
-          [formValues]="orderInfo" [showFeedbackTab]="showFeedbackTab"></special-approval-warranty-order-info>
+          [formValues]="orderInfo" [showFeedbackTab]="showFeedbackTab" [applicantEmail]="applicantEmail">
+        </special-approval-warranty-order-info>
         <!-- <special-approval-order-info [applyItem]="applyItem" [applyType]="applyType" [editable]="editable" [formValues]="orderInfo"></special-approval-order-info> -->
         <special-approval-transportation-order-info *ngIf="applyType === APPLY_TYPE.LOGISTICSCOST" [editable]="editable"
-          [formValues]="orderInfo"></special-approval-transportation-order-info>
+          [formValues]="orderInfo" [applicantEmail]="applicantEmail"></special-approval-transportation-order-info>
         <special-approval-additional-intallation-cost *ngIf="applyType === APPLY_TYPE.EXT_INSTALL_COST"
-          [editable]="editable" [formValues]="orderInfo"></special-approval-additional-intallation-cost>
+          [editable]="editable" [formValues]="orderInfo" [applicantEmail]="applicantEmail">
+        </special-approval-additional-intallation-cost>
         <special-approval-lcamendment-order-info *ngIf="applyType === APPLY_TYPE.LC_AMENDMENT" [editable]="editable"
           [basicInfo]="basicInfo" [formValues]="lcAmendmentOrderInfo"></special-approval-lcamendment-order-info>
         <special-approval-rdd-oit-order-info #rddOitOrderInfo *ngIf="applyType === APPLY_TYPE.RDD_OIT"
-          [formValues]="rddOitOrderInfos" [editable]="editable"></special-approval-rdd-oit-order-info>
+          [formValues]="rddOitOrderInfos" [editable]="editable" [applicantEmail]="applicantEmail">
+        </special-approval-rdd-oit-order-info>
         <special-approval-machineexcange-order-info #machineExchange *ngIf="applyType === APPLY_TYPE.MACHINE_EXCHANGE"
           [editable]="editable" [formValues]="changeOrderInfos" [salesLeaders]="salesLeader"
           [districtLeaders]="districtLeader" [showFeedbackTab]="showFeedbackTab">
         </special-approval-machineexcange-order-info>
         <special-approval-transfer-lib-info *ngIf="applyType === APPLY_TYPE.TRANSFER_LIB" [editable]="editable"
           [baseInfo]="basicInfo" [exchangeInfo]="exchangeInfo" [formValues]="transferLibInfos"
-          [showFeedbackTab]="showFeedbackTab">
+          [showFeedbackTab]="showFeedbackTab" [applicantEmail]="applicantEmail">
         </special-approval-transfer-lib-info>
         <special-approval-debook-info #deBookOrderInfo *ngIf="applyType === APPLY_TYPE.DE_BOOK" [editable]="editable"
-          [formValues]="deBookOrderInfos"></special-approval-debook-info>
+          [formValues]="deBookOrderInfos" [applicantEmail]="applicantEmail"></special-approval-debook-info>
         <special-approval-cancel-order-info *ngIf="applyType === APPLY_TYPE.CANCEL_ORDER" [editable]="editable"
           [baseInfo]="basicInfo" [formValues]="cancelorderInfo" [isSupplementNode]="isSupplementNode"
-          [cancelOrderFileList]="cancelOrderFileList">
+          [cancelOrderFileList]="cancelOrderFileList" [applicantEmail]="applicantEmail">
         </special-approval-cancel-order-info>
         <special-approval-specialdelivery-order-info *ngIf="applyType === APPLY_TYPE.SPECIAL_DELIVERY"
           [editable]="editable" [basicInfo]="basicInfo" [formValues]="orderInfo" [applyItem]="applyItem"
-          [showFeedbackTab]="showFeedbackTab">
+          [showFeedbackTab]="showFeedbackTab" [applicantEmail]="applicantEmail">
         </special-approval-specialdelivery-order-info>
         <special-approval-none-direct-order-info *ngIf="applyType === APPLY_TYPE.NONE_DIRECT_ORDER"
           [editable]="editable" [baseInfo]="basicInfo" [formValues]="noneDirectOrderInfo"
-          [showFeedbackTab]="showFeedbackTab">
+          [showFeedbackTab]="showFeedbackTab" [applicantEmail]="applicantEmail">
         </special-approval-none-direct-order-info>
         <special-approval-order-replacement-info *ngIf="applyType === APPLY_TYPE.ORDER_REPLACEMENT"
           [editable]="editable" [baseInfo]="basicInfo" [formValues]="orderReplacementInfo"
           [showFeedbackTab]="showFeedbackTab">
         </special-approval-order-replacement-info>
-        <special-approval-coo-us-order-info [fromTask]="!!taskId" [editable]="editable" #cooUsOrderInfo *ngIf="applyType === APPLY_TYPE.COO_US">
+        <special-approval-coo-us-order-info [fromTask]="!!taskId" [editable]="editable" #cooUsOrderInfo
+          *ngIf="applyType === APPLY_TYPE.COO_US">
         </special-approval-coo-us-order-info>
-        <special-approval-coo-pdigt-order-info [fromTask]="!!taskId" [editable]="editable" #cooPdIgtOrderInfo *ngIf="applyType === APPLY_TYPE.COO_PDIGT">
+        <special-approval-coo-pdigt-order-info [fromTask]="!!taskId" [editable]="editable" #cooPdIgtOrderInfo
+          *ngIf="applyType === APPLY_TYPE.COO_PDIGT" [applicantEmail]="applicantEmail">
         </special-approval-coo-pdigt-order-info>
-        <special-approval-coo-cc-order-info [approveHistory]="approveHistory" [fromTask]="!!taskId" [editable]="editable" #cooCcOrderInfo *ngIf="applyType === APPLY_TYPE.COO_CC">
+        <special-approval-coo-cc-order-info [approveHistory]="approveHistory" [fromTask]="!!taskId"
+          [editable]="editable" #cooCcOrderInfo *ngIf="applyType === APPLY_TYPE.COO_CC">
         </special-approval-coo-cc-order-info>
         <special-approval-lastbuy-info #lastBuyOrderInfo *ngIf="applyType === APPLY_TYPE.PRE_BOOK_LASTBUY"
-          [editable]="editable" [formValues]="lastBuyInfos" [showFeedbackTab]="showFeedbackTab">
+          [editable]="editable" [formValues]="lastBuyInfos" [showFeedbackTab]="showFeedbackTab"
+          [applicantEmail]="applicantEmail">
         </special-approval-lastbuy-info>
       </div>
     </ng-template>

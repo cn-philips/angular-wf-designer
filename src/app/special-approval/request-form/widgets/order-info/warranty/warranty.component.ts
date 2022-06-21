@@ -39,6 +39,7 @@ export class WarrantyOrderInfoComponent implements OnInit, OnChanges {
   @Input() formValues: FormGroup;
   @Input() editable = true;
   @Input() showFeedbackTab = false;
+  @Input() applicantEmail;
 
   selectOptions = {
     orderTypes: ORDER_TYPES,
@@ -140,6 +141,7 @@ export class WarrantyOrderInfoComponent implements OnInit, OnChanges {
   onSelectReference(reference: Reference) {
     const {
       referenceId,
+      cosMainId,
       orderType,
       projectName,
       productModel,
@@ -160,6 +162,7 @@ export class WarrantyOrderInfoComponent implements OnInit, OnChanges {
     this.formValues.patchValue({
       orderType,
       referenceId,
+      cosMainId,
       projectName,
       productType: productModel,
       sapOrderNo: sap,

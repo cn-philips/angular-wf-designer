@@ -62,6 +62,7 @@ const excelKeyMap = {
 export class RddOitOrderInfoComponent implements OnInit {
   @Input() formValues: FormGroup;
   @Input() editable: boolean
+  @Input() applicantEmail
   @ViewChild('selectHospital') selectHospital: SelectHospitalComponent
   @ViewChild('selectDealer') selectDealer: SelectDealerComponent
 
@@ -203,7 +204,7 @@ export class RddOitOrderInfoComponent implements OnInit {
         }, {}) as any
         const { 
           applyArrivalTime, bg, bmc, businessModel, currency, cycleGroup, dealerCode, dealerName, expectedPaymentDate, expectedSaleDate,
-          hospitalName, hospitalNo, om, orderAmount, orderType, productType, projectName, referenceId, sapOrderNo, exchangeableOrder,
+          hospitalName, hospitalNo, om, orderAmount, orderType, productType, projectName, referenceId, cosMainId, sapOrderNo, exchangeableOrder,
           subProductType, exchangeableHospitalName,
         } = orderInfo
         if (bmc) { this.onBmcChange(orderInfo) }

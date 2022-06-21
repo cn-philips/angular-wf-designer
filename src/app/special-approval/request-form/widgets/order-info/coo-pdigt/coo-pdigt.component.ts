@@ -60,6 +60,7 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
   @ViewChild('appPdfPreview') appPdfPreview: PdfPreviewComponent
   @Input() editable = true
   @Input() fromTask = false
+  @Input() applicantEmail
 
   loginUserCode1 = localStorage.getItem('ng_philips_code1')
 
@@ -74,6 +75,7 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
   orderInfo = this.fb.group({
     orderType: [null, [Validators.required]], // 订单类型
     referenceId: [{ value: null, disabled: true }], // Reference Id
+    cosMainId:[null],
     productType: [{ value: null, disabled: true }], // 产品型号
     bmc: [null, [Validators.required]], // 产品线
     bg: [{ value: 'PD&IGT', disabled: true }], // BG
@@ -436,6 +438,7 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
   onSelectReference(reference: Reference) {
     const {
       referenceId,
+      cosMainId,
       orderType,
       productModel,
       sap,
@@ -454,6 +457,7 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
     } = reference
     this.orderInfo.patchValue({
       referenceId,
+      cosMainId,
       orderType,
       productModel,
       sapOrderNo: sap,

@@ -97,7 +97,7 @@ public getFormDetails(id) {
           if (roleOff) {
             // let user = localStorage.getItem("roleAgents");
             // let owner=listOfData.filter(vals=>user.indexOf(vals.assignee)>-1);
-            this.disas = (this.status!='change_oit_approval'&&this.status!='change_oit') ? false : true;
+            this.disas = (this.status!='change_oit_approval'&&this.status!='change_oit' && (this.flag == 0 || (this.flag == 1 && this.status!='DOITWJSC'))) ? false : true;
           }
 
           if (!this.disas) {

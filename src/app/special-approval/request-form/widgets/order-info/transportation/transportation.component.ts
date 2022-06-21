@@ -32,6 +32,7 @@ export class TransportationOrderInfoComponent implements OnInit {
   @Input() editable = true
   @Input() applyType: string
   @Input() applyItem: string
+  @Input() applicantEmail;
 
   APPLY_TYPE = APPLY_TYPE
 
@@ -141,6 +142,7 @@ export class TransportationOrderInfoComponent implements OnInit {
   onSelectReference(reference: Reference) {
     const {
       referenceId,
+      cosMainId,
       orderType,
       projectName,
       productModel,
@@ -161,6 +163,7 @@ export class TransportationOrderInfoComponent implements OnInit {
     this.formValues.patchValue({
       orderType,
       referenceId,
+      cosMainId,
       projectName,
       productType: productModel,
       sapOrderNo: sap,

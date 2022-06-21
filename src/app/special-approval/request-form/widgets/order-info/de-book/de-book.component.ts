@@ -40,6 +40,7 @@ export class DeBookComponent implements OnInit {
 
   @Input() editable = true
   @Input() formValues: FormGroup;
+  @Input() applicantEmail
 
   BUSINESS_MODEL = BUSINESS_MODEL
 
@@ -80,7 +81,9 @@ export class DeBookComponent implements OnInit {
     { label: '在建新大楼', value: '在建新大楼' },
     { label: '经销商问题', value: '经销商问题' },
     { label: '项目变更', value: '项目变更' },
-    { label: '招商问题', value: '招商问题' }
+    { label: '招商问题', value: '招商问题' },
+    { label: '其它场地问题', value: '其它场地问题' },
+    { label: '其它', value: '其它' }
    ]
 
   ngOnInit() {
@@ -122,9 +125,10 @@ export class DeBookComponent implements OnInit {
           orderInfo.orderDate = moment(orderDate).utc().format('YYYY-MM-DD')
         }
 
-      if ( productType1.length > 0) {
+        // fix issue#3295: 【产品类型】一列中输入字母，导入不成功
+      /*if ( productType1.length > 0) {
         orderInfo.productType = productType1.join(';')
-      }
+      }*/
         return orderInfo
       })
 

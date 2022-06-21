@@ -312,7 +312,7 @@
               <nz-form-item class="order-list-normal-item">
                 <nz-form-control nzXs="24" nzSm="24" nzMd="14">
                   <input *ngIf="isCreateUser[index]" id="orderAmount" type="text" nz-input formControlName="orderAmount"
-                    [ngModel]="ord.get('orderAmount').value|pricePermissions" />
+                    [ngModel]="ord.get('orderAmount').value|pricePermissions:applicantEmail" />
                   <nz-form-explain *ngIf="ord.get('orderAmount')?.dirty && ord.get('orderAmount')?.errors">
                     请填写合同金额
                   </nz-form-explain>

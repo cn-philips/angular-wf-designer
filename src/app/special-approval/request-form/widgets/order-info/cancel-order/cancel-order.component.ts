@@ -46,6 +46,7 @@ export class CancelOrderComponent implements OnInit, OnChanges {
   @Input() cancelOrderFileList: UploadFile[] = [];
 
   @Input() isSupplementNode = false
+  @Input() applicantEmail
 
   cancelContractLink: any = {};
 
@@ -159,6 +160,7 @@ export class CancelOrderComponent implements OnInit, OnChanges {
   onSelectReference(reference: Reference) {
     const {
       referenceId,
+      cosMainId,
       orderType,
       projectName,
       productModel,
@@ -173,11 +175,16 @@ export class CancelOrderComponent implements OnInit, OnChanges {
       endUserId,
       contractPrice,
       invoiceInformation,
-      logistician
+      logistician,
+      deBook,
+      reBook,
+      logisticsTime,
     } = reference;
+    let isDeBook = deBook =='1' && reBook != '1' ? deBook : '0';
     this.formValues.patchValue({
       orderType,
       referenceId,
+      cosMainId,
       projectName,
       productType: productModel,
       sapOrderNo: sap,
@@ -192,6 +199,8 @@ export class CancelOrderComponent implements OnInit, OnChanges {
       orderAmount: contractPrice,
       currency: invoiceInformation,
       om: logistician,
+      orderDate: logisticsTime,
+      deBook: isDeBook,
     });
   }
 

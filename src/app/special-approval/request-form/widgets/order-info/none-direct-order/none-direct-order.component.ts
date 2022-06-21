@@ -34,6 +34,7 @@ export class NoNedirectOrderInfoComponent implements OnInit, OnChanges {
   @Input() applyItem: string;
   @Input() baseInfo: FormGroup
   @Input() showFeedbackTab = false;
+  @Input() applicantEmail;
 
   APPLY_TYPE = APPLY_TYPE
 
@@ -143,6 +144,7 @@ export class NoNedirectOrderInfoComponent implements OnInit, OnChanges {
   onSelectReference(reference: Reference) {
     const {
       referenceId,
+      cosMainId,
       orderType,
       projectName,
       productModel,
@@ -163,6 +165,7 @@ export class NoNedirectOrderInfoComponent implements OnInit, OnChanges {
     this.formValues.patchValue({
       orderType,
       referenceId,
+      cosMainId,
       projectName,
       productType: productModel,
       sapOrderNo: sap,

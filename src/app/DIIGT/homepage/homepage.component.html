@@ -32,6 +32,13 @@
           </nz-alert>
         </div>
       </div>
+      <!--首次打开弹框-->
+      <nz-modal [(nzVisible)]="message_modal_show" nzTitle="提示" (nzOnCancel)="modalCancel()" [nzFooter]="modalFooter">
+        <p *ngFor="let item of message_modal">{{item.label}}</p>
+        <ng-template #modalFooter>
+          <button nz-button nzType="primary" (click)="modalCancel()">OK 确定</button>
+        </ng-template>
+      </nz-modal>
       <div class="">
         <div>
           <div class="float-left carousel-wrapper">

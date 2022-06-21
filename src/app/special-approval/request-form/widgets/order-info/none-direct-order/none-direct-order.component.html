@@ -1,6 +1,13 @@
 <nz-card class="mtb1rem" nzTitle="订单信息">
   <form nz-form [formGroup]="formValues">
     <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="24">
+        <nz-form-item>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="6">
+            <app-reference-link [cosMainId]="formValues.get('cosMainId')?.value" [orderTypes]="formValues.get('orderType')?.value" [label]="formValues.get('referenceId')?.value"></app-reference-link>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
       <div nz-col nzXs="24" nzSm="24" nzMd="12">
         <nz-form-item>
           <nz-form-label nzXl="8" nzXXl="6" nzRequired nzFor="orderType">订单类型</nz-form-label>
@@ -96,7 +103,7 @@
         <nz-form-item>
           <nz-form-label nzXl="8" nzXXl="6" nzRequired>业务模式</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <nz-select formControlName="businessModel" nzPlaceHolder="请选择业务模式"  (ngModelChange)="onClearDealer()">
+            <nz-select formControlName="businessModel" nzPlaceHolder="请选择业务模式" (ngModelChange)="onClearDealer()">
               <nz-option *ngFor="let item of selectOptions.businessModels" [nzLabel]="item.label"
                 [nzValue]="item.value"></nz-option>
             </nz-select>
@@ -209,7 +216,7 @@
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <nz-form-control nzXs="24" nzSm="24" nzMd="9">
               <nz-input-number id="orderAmount" style="width: 100%;" formControlName="orderAmount"
-                [ngModel]="formValues.get('orderAmount').value|pricePermissions" [nzMin]="0">
+                [ngModel]="formValues.get('orderAmount').value|pricePermissions:applicantEmail" [nzMin]="0">
               </nz-input-number>
               <nz-form-explain *ngIf="formValues.get('orderAmount')?.dirty && formValues.get('orderAmount')?.errors">
                 请填写合同金额
