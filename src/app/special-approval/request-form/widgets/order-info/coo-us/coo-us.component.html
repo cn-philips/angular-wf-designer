@@ -186,7 +186,7 @@
                   <nz-form-control>
                     <shared-date-picker formControlName="orderDate"></shared-date-picker>
                     <nz-form-explain *ngIf="product.get('orderDate')?.dirty && product.get('orderDate')?.errors">
-                      请选择进单日期
+                      请选择进单日期OIT Date
                     </nz-form-explain>
                   </nz-form-control>
                 </nz-form-item>
@@ -196,7 +196,7 @@
                   <nz-form-control>
                     <shared-date-picker formControlName="arrivalDate" (ngModelChange)="onArrivalDateChange()"></shared-date-picker>
                     <nz-form-explain *ngIf="product.get('arrivalDate')?.dirty && product.get('arrivalDate')?.errors">
-                      请选择到货日期
+                      请选择到货日期GI Act
                     </nz-form-explain>
                   </nz-form-control>
                 </nz-form-item>
@@ -208,7 +208,7 @@
                     <shared-date-picker formControlName="productionDate"></shared-date-picker>
                     <nz-form-explain
                       *ngIf="product.get('productionDate')?.dirty && product.get('productionDate')?.errors">
-                      请选择出厂日期
+                      请选择出厂日期PMG GL Act
                     </nz-form-explain>
                   </nz-form-control>
                 </nz-form-item>
@@ -773,7 +773,7 @@
         </nz-form-item>
       </div>
 
-      <div nz-col nzXs="24" nzSm="24" nzMd="12">
+      <div nz-col nzXs="24" nzSm="24" nzMd="12" *ngIf="cipPort.value ==='1'">
         <nz-form-item>
           <nz-form-label nzXl="8" nzXXl="6" nzRequired>经销商盖章后的空运单</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
@@ -791,7 +791,7 @@
           <nz-form-label nzXl="8" nzXXl="6" nzRequired>COO确认函草稿（word版）</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <shared-upload-file formControlName="cooConfirmationLetterDraft"></shared-upload-file>
-            <nz-alert *ngIf="!cooInfo.get('cooConfirmationLetterDraft').disabled" nzType="warning" nzMessage="请下载COO确认函，确认无误后上传、保存并联系下一步Owner审阅，下一步Onwer审阅前请勿上传签字盖"></nz-alert>
+            <nz-alert *ngIf="!cooInfo.get('cooConfirmationLetterDraft').disabled" nzType="warning" nzMessage="请下载COO确认函，确认无误后上传、保存并联系下一步Owner审阅，下一步Onwer审阅前请勿上传签字盖章的确认函并提交。"></nz-alert>
             <nz-form-explain *ngIf="cooInfo.get('cooConfirmationLetterDraft')?.dirty && cooInfo.get('cooConfirmationLetterDraft')?.errors">
               请上传COO确认函草稿（word版）
             </nz-form-explain>

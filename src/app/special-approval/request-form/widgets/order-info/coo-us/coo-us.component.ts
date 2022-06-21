@@ -157,6 +157,10 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
     const cooProductEnabledFields = []
     const cooInfoRequiredFields = []
     const cooInfoEnabledFields = []
+    if (this.cooProduct.get('cipPort').value === '0') {
+      this.showDeliveryAddress = true
+    }
+
     switch(processStatus) {
       case PROCESS_STATUS.COMPLETED:
         this.showScPlanningField = true
@@ -164,6 +168,7 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
         this.showOaField = true
         this.showSalesFeedbackField = true
         this.showScPlanningFeedbackField = true
+        this.showDeliveryAddress = true
         break
       case PROCESS_STATUS.START:
         if (nodeCode > 'node0') {
@@ -180,6 +185,7 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
     
         if(nodeCode > 'node6') {
           this.showSalesFeedbackField = true
+          this.showDeliveryAddress = true
         }
     
         if (nodeCode > 'node7') {
@@ -239,7 +245,6 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
                 productsEnabledFields.push('goodsDeliveryDate')
                 cooProductRequiredFields.push('deliveryAddress', 'deliveryAddressEn')
                 cooProductEnabledFields.push('deliveryAddress', 'deliveryAddressEn')
-                this.showDeliveryAddress = true
               }
               break
             case 'node8': // SC Planning反馈
