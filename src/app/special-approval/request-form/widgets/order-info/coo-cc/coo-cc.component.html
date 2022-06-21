@@ -39,13 +39,13 @@
               <th nzWidth="200px">产品型号</th>
               <th nzWidth="200px">数量</th>
               <th nzWidth="200px">设备SN号</th>
-              <th nzWidth="200px">进单日期</th>
-              <th nzWidth="200px">出厂日期</th>
-              <th nzWidth="200px">到货日期</th>
+              <th nzWidth="200px">进单日期<br>OIT Date</th>
+              <th nzWidth="200px">出厂日期<br>PMG GL Act</th>
+              <th nzWidth="200px">到货日期<br>Gl Act</th>
               <th nzWidth="200px">货物送达日期</th>
               <th nzWidth="200px">保修期(月)</th>
               <th nzWidth="200px">是否为CIP港口</th>
-              <th nzWidth="200px">POD扫描件/空运单</th>
+              <th nzWidth="200px">POD扫描件</th>
               <th nzWidth="200px">送达地址类型</th>
               <th nzWidth="200px">货物送达地址中文</th>
               <th nzWidth="200px">货物送达地址英文</th>
@@ -213,7 +213,7 @@
                     </nz-select>
                     <nz-form-explain
                       *ngIf="orderInfo.get('purchaseOrderNo')?.dirty && orderInfo.get('purchaseOrderNo')?.errors">
-                      请选择采购订单
+                      请上传采购订单
                     </nz-form-explain>
                   </nz-form-control>
                 </nz-form-item>
@@ -269,7 +269,7 @@
                   <nz-form-control>
                     <shared-date-picker formControlName="orderDate"></shared-date-picker>
                     <nz-form-explain *ngIf="orderInfo.get('orderDate')?.dirty && orderInfo.get('orderDate')?.errors">
-                      请选择进单日期
+                      请选择进单日期OIT Date
                     </nz-form-explain>
                   </nz-form-control>
                 </nz-form-item>
@@ -281,7 +281,7 @@
                     <shared-date-picker formControlName="productionDate"></shared-date-picker>
                     <nz-form-explain
                       *ngIf="orderInfo.get('productionDate')?.dirty && orderInfo.get('productionDate')?.errors">
-                      请选择出厂日期
+                      请选择出厂日期PMG GL Act
                     </nz-form-explain>
                   </nz-form-control>
                 </nz-form-item>
@@ -291,7 +291,7 @@
                   <nz-form-control>
                     <shared-date-picker formControlName="arrivalDate"></shared-date-picker>
                     <nz-form-explain *ngIf="orderInfo.get('arrivalDate')?.dirty && orderInfo.get('arrivalDate')?.errors">
-                      请选择到货日期
+                      请选择到货日期Gl Act
                     </nz-form-explain>
                   </nz-form-control>
                 </nz-form-item>
@@ -300,7 +300,7 @@
               <td>
                 <nz-form-item>
                   <nz-form-control>
-                    <shared-date-picker formControlName="goodsDeliveryDate"></shared-date-picker>
+                    <shared-date-picker formControlName="goodsDeliveryDate" (ngModelChange)="onGoodsDeliveryDateChange()"></shared-date-picker>
                     <nz-form-explain
                       *ngIf="orderInfo.get('goodsDeliveryDate')?.dirty && orderInfo.get('goodsDeliveryDate')?.errors">
                       请选择货物送达日期
@@ -324,7 +324,7 @@
               <td>
                 <nz-form-item>
                   <nz-form-control>
-                    <nz-radio-group formControlName="cipPort">
+                    <nz-radio-group formControlName="cipPort" #cipPort>
                       <label nz-radio nzValue="1">是</label>
                       <label nz-radio nzValue="0">否</label>
                     </nz-radio-group>
@@ -343,7 +343,9 @@
                       <nz-option *ngFor="let file of fileList" [nzLabel]="file.name" [nzValue]="file.fileId"></nz-option>
                     </nz-select>
                     <nz-form-explain *ngIf="orderInfo.get('airTransportNo')?.dirty && orderInfo.get('airTransportNo')?.errors">
-                      请上传POD扫描件/空运单
+                      <ng-container *ngIf="!cipPort.value">请上传POD扫描件</ng-container>
+                      <ng-container *ngIf="cipPort.value === '1'">请上传空运单</ng-container>
+                      <ng-container *ngIf="cipPort.value === '0'">请上传货物签收单</ng-container>
                     </nz-form-explain>
                   </nz-form-control>
                 </nz-form-item>
@@ -450,20 +452,16 @@
   
         <div nz-col nzXs="24" nzSm="24" nzMd="12">
           <nz-form-item>
-            <nz-form-label nzXl="8" nzXXl="6" nzRequired>是否到货（GI act）>3个月</nz-form-label>
+            <nz-form-label nzXl="8" nzXXl="6">是否到货>3个月</nz-form-label>
             <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-              <nz-radio-group formControlName="threeMonthsAfterArrival">
+              <nz-radio-group formControlName="threeMonthsAfterArrival" nzDisabled>
                 <label nz-radio nzValue="1">是</label>
                 <label nz-radio nzValue="0">否</label>
               </nz-radio-group>
-              <ng-container *ngIf="cooInfo.get('threeMonthsAfterArrival')?.dirty && cooInfo.get('threeMonthsAfterArrival')?.errors">
-                <nz-form-explain *ngIf="cooInfo.get('threeMonthsAfterArrival')?.errors?.required">
-                  请选择是否到货（GI act）>3个月
-                </nz-form-explain>
-                <nz-form-explain *ngIf="cooInfo.get('threeMonthsAfterArrival')?.errors?.disableSubmit">
-                  是否到货（GI act）>3个月选择"否"时, 无法提交特批申请
-                </nz-form-explain>
-              </ng-container>
+              <nz-alert *ngIf="editable" nzType="warning" nzMessage="按货物送达日期计算"></nz-alert>
+              <nz-form-explain style="color:#f5222d" *ngIf="cooInfo.get('threeMonthsAfterArrival')?.errors?.disableSubmit">
+                是否到货>3个月为"否"时, 无法提交特批申请
+              </nz-form-explain>
             </nz-form-control>
           </nz-form-item>
         </div>
@@ -530,22 +528,12 @@
             </nz-form-control>
           </nz-form-item>
         </div>
-        <div nz-col nzXs="24" nzSm="24" nzMd="12">
-          <nz-form-item>
-            <nz-form-label nzXl="8" nzXXl="6" nzRequired>COO确认函草稿</nz-form-label>
-            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-              <shared-upload-file formControlName="cooConfirmationLetterDraft"></shared-upload-file>
-              <nz-form-explain *ngIf="cooInfo.get('cooConfirmationLetterDraft')?.dirty && cooInfo.get('cooConfirmationLetterDraft')?.errors">
-                请上传COO确认函草稿
-              </nz-form-explain>
-            </nz-form-control>
-          </nz-form-item>
-        </div>
-        <div nz-col nzXs="24" nzSm="24" nzMd="12">
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" *ngIf="showAirTransportNoDealer">
           <nz-form-item>
             <nz-form-label nzXl="8" nzXXl="6" nzRequired>经销商盖章后的空运单</nz-form-label>
             <nz-form-control nzXs="24" nzSm="24" nzMd="14">
               <shared-upload-file formControlName="airTransportNoDealer"></shared-upload-file>
+              <nz-alert *ngIf="!cooInfo.get('airTransportNoDealer').disabled" nzType="warning" nzMessage="请上传经销商盖章确认的添加收货地址和入库日期的空运单"></nz-alert>
               <nz-form-explain *ngIf="cooInfo.get('airTransportNoDealer')?.dirty && cooInfo.get('airTransportNoDealer')?.errors">
                 请上传经销商盖章后的空运单
               </nz-form-explain>
@@ -553,6 +541,19 @@
           </nz-form-item>
         </div>
   
+        <div nz-col nzXs="24" nzSm="24" nzMd="12">
+          <nz-form-item>
+            <nz-form-label nzXl="8" nzXXl="6" nzRequired>COO确认函草稿（word版）</nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <shared-upload-file formControlName="cooConfirmationLetterDraft"></shared-upload-file>
+              <nz-alert *ngIf="!cooInfo.get('cooConfirmationLetterDraft').disabled" nzType="warning" nzMessage="请下载COO确认函，确认无误后上传、保存并联系下一步Owner审阅，下一步Onwer审阅前请勿上传签字盖章的确认函并提交。"></nz-alert>
+              <nz-form-explain *ngIf="cooInfo.get('cooConfirmationLetterDraft')?.dirty && cooInfo.get('cooConfirmationLetterDraft')?.errors">
+                请上传COO确认函草稿（word版）
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+       
         <div nz-col nzXs="24" nzSm="24" nzMd="12">
           <nz-form-item>
             <nz-form-label nzXl="8" nzXXl="6" nzRequired>经销商盖章后的COO确认函</nz-form-label>
@@ -567,12 +568,12 @@
   
         <div nz-col nzXs="24" nzSm="24" nzMd="12" *ngIf="showCooLetter">
           <nz-form-item>
-            <nz-form-label nzXl="8" nzXXl="6" nzRequired>双签后的COO确认函</nz-form-label>
+            <nz-form-label nzXl="8" nzXXl="6">双签后的COO确认函</nz-form-label>
             <nz-form-control nzXs="24" nzSm="24" nzMd="14">
               <shared-upload-file formControlName="cooConfirmationLetterSign"></shared-upload-file>
-              <nz-form-explain *ngIf="cooInfo.get('cooConfirmationLetterSign')?.dirty && cooInfo.get('cooConfirmationLetterSign')?.errors">
+              <!-- <nz-form-explain *ngIf="cooInfo.get('cooConfirmationLetterSign')?.dirty && cooInfo.get('cooConfirmationLetterSign')?.errors">
                 请上传双签后的COO确认函
-              </nz-form-explain>
+              </nz-form-explain> -->
             </nz-form-control>
           </nz-form-item>
         </div>

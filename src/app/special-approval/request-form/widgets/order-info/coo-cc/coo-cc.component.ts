@@ -110,6 +110,7 @@ export class CooCcOrderInfoComponent implements OnInit, OnChanges {
   showCooLetter = false
 
   showUploadFileList = false
+  showAirTransportNoDealer = false
 
   activeOrderIndex = 0
 
@@ -122,7 +123,7 @@ export class CooCcOrderInfoComponent implements OnInit, OnChanges {
     orderInfos: this.fb.array([], [Validators.required]),
     cooInfo: this.fb.group({
       installationOrDispatch: [null, [Validators.required, disableSubmitValidtorFn('1')]], // 是否已装机或派单
-      threeMonthsAfterArrival: [null, [Validators.required, disableSubmitValidtorFn('0')]], // 是否到货>3个月
+      threeMonthsAfterArrival: [null, [disableSubmitValidtorFn('0')]], // 是否到货>3个月
       cooSignedNotIcf: [null, [Validators.required, disableSubmitValidtorFn('1')]], // 经销商是否存在之前签署过COO的订单12个月未签回安装报告的情况
       paymentNinetyPercent: [null, [Validators.required, disableSubmitValidtorFn('0')]], // 是否已付90%以上订单金额
       applySignedDate: [null], // 预计签署日期
@@ -256,6 +257,27 @@ export class CooCcOrderInfoComponent implements OnInit, OnChanges {
     return isValid
   }
 
+  onGoodsDeliveryDateChange() {
+    const orderInfos = this.orderInfos.getRawValue()
+    const goodsDeliveryDates = orderInfos
+      .map(({ goodsDeliveryDate }) => goodsDeliveryDate)
+      .filter((goodsDeliveryDate) => goodsDeliveryDate)
+      .sort()
+    let threeMonthsAfterArrival
+    const minDeliveryDate = goodsDeliveryDates[0]
+    if (minDeliveryDate) {
+      const targetDate = moment().add(3, 'months').format('YYYY-MM-DD')
+      if (minDeliveryDate > targetDate) {
+        threeMonthsAfterArrival = '1'
+      } else {
+        threeMonthsAfterArrival = '0'
+      }
+    } else {
+      threeMonthsAfterArrival = null
+    }
+    this.cooInfo.patchValue({ threeMonthsAfterArrival })
+  }
+
   onImportOrderInfo = (file) => {
     loadingId = this.message.loading('正在导入, 请稍候...', { nzDuration: 0 }).messageId
     const reader = new FileReader();
@@ -316,11 +338,27 @@ export class CooCcOrderInfoComponent implements OnInit, OnChanges {
     return false;
   }
 
+  isCipPort() {
+    const orderInfos = this.orderInfos.getRawValue()
+    for(let orderInfo of orderInfos) {
+      const { cipPort } = orderInfo
+      if (cipPort === '1') {
+        return true
+      }
+    }
+    return false
+  }
+
   // node4: 申请人补充信息-经销商已盖章的COO授权函
   // node6: 申请人反馈-双签的COO授权函
   setFormValidators({ nodeCode, nodeInfoList, processStatus }) {
     const cooInfoRequiredFields = []
     const cooInfoEnabledFields = []
+
+    const isCipPort = this.isCipPort()
+    if (isCipPort) {
+      this.showAirTransportNoDealer = true
+    }
 
     switch(processStatus) {
       case PROCESS_STATUS.COMPLETED:
@@ -338,13 +376,17 @@ export class CooCcOrderInfoComponent implements OnInit, OnChanges {
           switch (nodeCode) {
             case 'node4': // 申请人补充信息
               // cooInfo
-              cooInfoEnabledFields.push('applySignedDate', 'cooConfirmationLetterDraft', 'airTransportNoDealer', 'cooConfirmationLetterDealer')
-              cooInfoRequiredFields.push('applySignedDate', 'cooConfirmationLetterDraft', 'airTransportNoDealer', 'cooConfirmationLetterDealer')
+              cooInfoEnabledFields.push('applySignedDate', 'cooConfirmationLetterDraft', 'cooConfirmationLetterDealer')
+              cooInfoRequiredFields.push('applySignedDate', 'cooConfirmationLetterDraft', 'cooConfirmationLetterDealer')
+              if (isCipPort) {
+                cooInfoEnabledFields.push('airTransportNoDealer')
+                cooInfoRequiredFields.push('airTransportNoDealer')
+              }
               break
             case 'node6': // 申请人反馈
               // cooInfo
               cooInfoEnabledFields.push('cooConfirmationLetterSign')
-              cooInfoRequiredFields.push('cooConfirmationLetterSign')
+              // cooInfoRequiredFields.push('cooConfirmationLetterSign')
               break
           }
         }
