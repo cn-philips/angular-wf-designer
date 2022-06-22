@@ -295,6 +295,7 @@ export class LastbuyComponent implements OnInit {
         cosMainId: cosMainId,
         subProductType: productModel,
         bmc: bmc,
+        bg: 'PD&IGT',
         cycleGroup: team,
         bigArea: region,
         businessModel:  businessModel ? businessModel.toLowerCase() : null,
@@ -314,7 +315,7 @@ export class LastbuyComponent implements OnInit {
         applyArrivalTime: null,
         expectedSaleDate: null,
         productType: productModel,
-        quantity: null,
+        quantity: marketBundleQuantity,
         actualOitDate: null,
         warehouseArrangement: null,
       }

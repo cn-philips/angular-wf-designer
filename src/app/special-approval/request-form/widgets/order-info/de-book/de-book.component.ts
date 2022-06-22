@@ -27,7 +27,7 @@ const excelKeyMap = {
   进单日期: "orderDate",
   合同金额: "orderAmount",
   币制: "currency",
-  'De-Book原因': "deBookReason",
+  'De-book原因': "deBookReason",
   'Remark': "remark",
 };
 @Component({
@@ -120,9 +120,12 @@ export class DeBookComponent implements OnInit {
          hospitalName, hospitalNo, sapOrderNo, wbsNo, orderDate, orderAmount, currency, deBookReason, remark
         } = orderInfo
         if (bmc) { this.onBmcChange(orderInfo) }
+        if (hospitalName) {
+          this.checkImportedHospital(orderInfo)
+        }
 
         if (orderDate) {
-          orderInfo.orderDate = moment(orderDate).utc().format('YYYY-MM-DD')
+          orderInfo.orderDate = moment(orderDate).format('YYYY-MM-DD')
         }
 
         // fix issue#3295: 【产品类型】一列中输入字母，导入不成功
@@ -157,6 +160,7 @@ export class DeBookComponent implements OnInit {
 
   onSelectHospital(hospital: Hospital) {
     const { no, customerName } = hospital
+    this.activeOrder.hospitalError = false
     this.activeOrder.hospitalName = customerName
     this.activeOrder.hospitalNo = no
   }
@@ -252,5 +256,47 @@ export class DeBookComponent implements OnInit {
   onBgChange(val: string, order, index) {
     order.bmc = null
     this.selectOptions.bmcs[index] = this.bmcList.filter(value => value.bg === val);
+  }
+
+  checkImportedHospital(order, isExchange = false) {
+    if (isExchange) {
+      order.exchangeHospitalLoading = true
+      order.exchangeHospitalError = false
+    } else {
+      order.hospitalLoading = true
+      order.hospitalError = false
+    }
+    const customerName = isExchange ? order.exchangeableHospitalName : order.hospitalName
+    this.http.post(`/act/preparation/getEndUser`, { customerName })
+      .subscribe(({ code, data }) => {
+        if (code === '0000') {
+          const { rows } = data
+          if (rows.length === 1) {
+            const { customerName, no } = rows[0]
+            if (isExchange) {
+              order.exchangeableHospitalName = customerName
+              order.exchangeableHospitalNo = no
+            } else {
+              order.hospitalName = customerName
+              order.hospitalNo = no
+            }
+          } else {
+            if (isExchange) {
+              order.exchangeHospitalError = true
+              order.exchangeableHospitalNo = ''
+              order.exchangeableHospitalName = ''
+            } else {
+              order.hospitalError = true
+              order.hospitalNo = ''
+              order.hospitalName = ''
+            }
+          }
+        }
+        if (isExchange) {
+          order.exchangeHospitalLoading = false
+        } else {
+          order.hospitalLoading = false
+        }
+      })
   }
 }
