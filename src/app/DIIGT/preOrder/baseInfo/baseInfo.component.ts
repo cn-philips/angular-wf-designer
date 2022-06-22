@@ -2390,6 +2390,7 @@ export class PreOrderBaseInfoComponent implements OnInit {
      // this.validateForm.controls.isPrebookApply.enable();
       this.oaDisa = false;
     }
+    this.updateDisaSofonFile();
   }
 
   // 飞利浦金融方案
@@ -3191,5 +3192,13 @@ export class PreOrderBaseInfoComponent implements OnInit {
       this.message.create('error', '请选择文件！');
     }
 
+  }
+
+  // 单独对sofon字段设置编辑权限
+  // sofon文件禁用  true 禁用
+  public disa_sofon_file: boolean = false;
+  public updateDisaSofonFile() {
+    // 开放编辑条件 flag=0 编辑节点 并且 DOAJDQR 节点
+    this.disa_sofon_file = this.dataBase.detail.flag !== '0' || this.dataBase.detail.status !== 'DOAJDQR';
   }
 }
