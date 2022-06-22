@@ -73,7 +73,7 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
   isPurchaseAgreementRequired = false
 
   orderInfo = this.fb.group({
-    orderType: [null, [Validators.required]], // 订单类型
+    orderType: [{ value: 'OIT', disabled: true }], // 订单类型
     referenceId: [{ value: null, disabled: true }], // Reference Id
     cosMainId:[null],
     productType: [{ value: null, disabled: true }], // 产品型号
@@ -249,8 +249,8 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
                 applySignedDate: calcApplySignedDate()
               })
               // cooInfo
-              cooInfoRequiredFields.push('cooConfirmationLetterDraft', 'cooConfirmationLetterDealer')
-              cooInfoEnabledFields.push('cooConfirmationLetterDraft', 'cooConfirmationLetterDealer')
+              cooInfoRequiredFields.push('applySignedDate', 'cooConfirmationLetterDraft', 'cooConfirmationLetterDealer')
+              cooInfoEnabledFields.push('applySignedDate', 'cooConfirmationLetterDraft', 'cooConfirmationLetterDealer')
               break
             case 'node6':
               cooInfoRequiredFields.push('cooConfirmationLetterSign')

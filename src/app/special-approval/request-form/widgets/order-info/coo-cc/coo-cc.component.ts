@@ -264,10 +264,10 @@ export class CooCcOrderInfoComponent implements OnInit, OnChanges {
       .filter((goodsDeliveryDate) => goodsDeliveryDate)
       .sort()
     let threeMonthsAfterArrival
-    const minDeliveryDate = goodsDeliveryDates[0]
-    if (minDeliveryDate) {
-      const targetDate = moment().add(3, 'months').format('YYYY-MM-DD')
-      if (minDeliveryDate > targetDate) {
+    const maxDeliveryDate = goodsDeliveryDates[goodsDeliveryDates.length - 1]
+    if (maxDeliveryDate) {
+      const targetDate = moment().subtract(3, 'months').format('YYYY-MM-DD')
+      if (targetDate > maxDeliveryDate) {
         threeMonthsAfterArrival = '1'
       } else {
         threeMonthsAfterArrival = '0'

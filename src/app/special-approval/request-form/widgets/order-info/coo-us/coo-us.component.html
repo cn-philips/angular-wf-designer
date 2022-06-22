@@ -388,18 +388,18 @@
             <nz-form-control nzXs="24" nzSm="24" nzMd="14">
               <shared-upload-file formControlName="airTransportNo"></shared-upload-file>
               <nz-alert 
-                *ngIf="!cooProduct.get('airTransportNo').disabled && cipPort.value"
+                *ngIf="!cooProduct.get('airTransportNo').disabled && cipPort?.value"
                 nzType="warning"
-                [nzMessage]="cipPort.value === '1' ? '请上传空运单' : '请上传货物签收单'"
+                [nzMessage]="cipPort?.value === '1' ? '请上传空运单' : '请上传货物签收单'"
               ></nz-alert>
               <nz-form-explain *ngIf="cooProduct.get('airTransportNo')?.dirty && cooProduct.get('airTransportNo')?.errors">
-                <ng-container *ngIf="cipPort.value === '1'">
+                <ng-container *ngIf="cipPort?.value === '1'">
                   请上传空运单
                 </ng-container>
-                <ng-container *ngIf="cipPort.value === '0'">
+                <ng-container *ngIf="cipPort?.value === '0'">
                   请上传货物签收单
                 </ng-container>
-                <ng-container *ngIf="cipPort.value === null">
+                <ng-container *ngIf="cipPort?.value === null">
                   请上传POD扫描件
                 </ng-container>
               </nz-form-explain>
@@ -570,7 +570,7 @@
         </div>
       </div>
     </ng-container>
-    <ng-container *ngIf="isBid.value === '2'">
+    <ng-container *ngIf="isBid.value === '2' || isBid.value === '0'">
       <div nz-row>
         <div nz-col nzXs="24" nzSm="24" nzMd="12">
           <nz-form-item>
@@ -773,7 +773,7 @@
         </nz-form-item>
       </div>
 
-      <div nz-col nzXs="24" nzSm="24" nzMd="12" *ngIf="cipPort.value ==='1'">
+      <div nz-col nzXs="24" nzSm="24" nzMd="12" *ngIf="cipPort?.value ==='1'">
         <nz-form-item>
           <nz-form-label nzXl="8" nzXXl="6" nzRequired>经销商盖章后的空运单</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">

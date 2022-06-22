@@ -323,7 +323,7 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
     let requiredFields = []
     switch(isBid) {
       case '0':
-        requiredFields = ['pending', 'expectedBiddingDate']
+        requiredFields = ['losingOrders', 'expectedNewUserDate', 'pending', 'expectedBiddingDate']
         break
       case '2':
         requiredFields = ['losingOrders', 'expectedNewUserDate']
@@ -420,7 +420,7 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
     return this.fb.group({
       wbsNo: [null, [Validators.required]], // 订单WBS#
       itemNo: [null, [Validators.required]], // Item#
-      quantity: [1, [Validators.required]], // 数量
+      quantity: [{ value: 1, disabled: true }, [Validators.required]], // 数量
       productType: [null, [Validators.required]], // 产品型号
       orderDate: [null, [Validators.required]], // 进单日期
       productionDate: [null], // 出厂日期
@@ -441,10 +441,10 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
       .filter((arrivalDate) => arrivalDate)
       .sort()
     let threeMonthsAfterArrival
-    const minArrivalDate = arrivalDates[0]
-    if (minArrivalDate) {
-      const targetDate = moment().add(3, 'months').format('YYYY-MM-DD')
-      if (minArrivalDate > targetDate) {
+    const maxArrivalDate = arrivalDates[arrivalDates.length - 1]
+    if (maxArrivalDate) {
+      const targetDate = moment().subtract(3, 'months').format('YYYY-MM-DD')
+      if (targetDate > maxArrivalDate) {
         threeMonthsAfterArrival = '1'
       } else {
         threeMonthsAfterArrival = '0'
