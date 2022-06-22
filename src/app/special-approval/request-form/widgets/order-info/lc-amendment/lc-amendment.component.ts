@@ -40,7 +40,7 @@ export class LcAmendmentOrderInfoComponent implements OnInit {
   onCancelReasonChange(reasons: string[]) {
     const cancelReasonDesc = this.lcInfo.get('cancelReasonDesc')
     cancelReasonDesc.clearValidators()
-    if (reasons.includes('sp_lc_other')) {
+    if (reasons.includes('sp_lc_other_cancel')) {
       cancelReasonDesc.setValidators(Validators.required)
     }
   }
@@ -48,7 +48,7 @@ export class LcAmendmentOrderInfoComponent implements OnInit {
   onModifyEntryChange(entries: string[]) {
     const modifyEntryDesc = this.lcInfo.get('modifyEntryDesc')
     modifyEntryDesc.clearValidators()
-    if (entries.includes('sp_lc_other')) {
+    if (entries.includes('sp_lc_other_modify')) {
       modifyEntryDesc.setValidators(Validators.required)
     }
   }
