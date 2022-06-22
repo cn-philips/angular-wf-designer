@@ -1070,14 +1070,14 @@ export class RequestFormComponent implements OnInit {
         break
       case 'sp_lcamendment_apply_item_3':
         lcInfoControls.modifyEntry.setValidators([Validators.required])
-        if (modifyEntry.indexOf('sp_lc_other') > -1) {
+        if (modifyEntry.indexOf('sp_lc_other_modify') > -1) {
           lcInfoControls.modifyEntryDesc.setValidators([Validators.required])
         }
         break
       case 'sp_lcamendment_apply_item_4':
         lcInfoControls.cancelReason.setValidators([Validators.required])
         lcInfoControls.newLcIssued.setValidators([Validators.required])
-        if (cancelReason.indexOf('sp_lc_other') > -1) {
+        if (cancelReason.indexOf('sp_lc_other_cancel') > -1) {
           lcInfoControls.cancelReasonDesc.setValidators([Validators.required])
         }
         break
@@ -1603,10 +1603,10 @@ export class RequestFormComponent implements OnInit {
         const { lcInfo: { cancelReason, modifyEntry } } = orderInfo
         const cancelReasons = cancelReason ? cancelReason.split(',') : null
         const modifyEntries = modifyEntry ? modifyEntry.split(',') : null
-        if (Array.isArray(cancelReasons) && cancelReasons.includes('sp_lc_other')) {
+        if (Array.isArray(cancelReasons) && cancelReasons.includes('sp_lc_other_cancel')) {
           this.lcAmendmentOrderInfo.get('lcInfo').get('cancelReasonDesc').setValidators(Validators.required)
         }
-        if (Array.isArray(modifyEntries) && modifyEntries.includes('sp_lc_other')) {
+        if (Array.isArray(modifyEntries) && modifyEntries.includes('sp_lc_other_modify')) {
           this.lcAmendmentOrderInfo.get('lcInfo').get('modifyEntryDesc').setValidators(Validators.required)
         }
         this.formValues.patchValue({
