@@ -1193,17 +1193,17 @@
         <nz-form-item>
           <nz-form-label nzSm="8" nzXl="8" nzXXl="8">Sofon File<br> Sofon文件</nz-form-label>
           <nz-form-control nzSm="14" nzXl="14" nzXXl="14">
-            <div *ngIf="!disa">
+            <div *ngIf="!disa_sofon_file">
               <nz-switch  [(ngModel)]="switchValid" formControlName="switchValid" (click)="changeupmode(upmode)"></nz-switch><span style="font-size: xx-small;padding-top: 10%">&emsp;Select Sofon File From CP<br> 从CP选择文件</span>
             </div>
             <div *ngIf="upmode">
-              <button nz-button *ngIf="!disa" (click)="showModal()" [disabled]="disa" style="display: inline-block">
+              <button nz-button *ngIf="!disa_sofon_file" (click)="showModal()" [disabled]="disa_sofon_file" style="display: inline-block">
                 <i nz-icon nzType="cloud-upload" nzTheme="outline"></i><span style="font-size: small">Select File 选择Sofon文件</span>
               </button>
             </div>
 
             <div *ngIf="!upmode">
-              <nz-upload *ngIf="!disa" class="uploads" style="display: inline-block" [(nzFileList)]="dataBase.sofonNameFileList" [nzBeforeUpload]="sofonNameBeforeUpload" [nzLimit]="1" [nzPreview]="dwonLoad" [nzRemove]="nzRemovsofonName" [nzDisabled]="disa">
+              <nz-upload *ngIf="!disa_sofon_file" class="uploads" style="display: inline-block" [(nzFileList)]="dataBase.sofonNameFileList" [nzBeforeUpload]="sofonNameBeforeUpload" [nzLimit]="1" [nzPreview]="dwonLoad" [nzRemove]="nzRemovsofonName" [nzDisabled]="disa">
                 <button nz-button>
                   <i nz-icon nzType="upload"></i><span style="font-size: small">Upload 上传本地文件</span>
                 </button>
@@ -1211,7 +1211,7 @@
             </div>
 
 
-            <button *ngIf="dataBase.sofonFileName&&(upmode||disa)" nz-tooltip [nzTitle]="dataBase.sofonFileName" class="down link-tesk" nz-button nzType="link" (click)="fileDwon(dataBase.sofonFile)">
+            <button *ngIf="dataBase.sofonFileName&&(upmode||disa_sofon_file)" nz-tooltip [nzTitle]="dataBase.sofonFileName" class="down link-tesk" nz-button nzType="link" (click)="fileDwon(dataBase.sofonFile)">
               {{dataBase.sofonFileName?dataBase.sofonFileName:"下载文件"}}
             </button>
             <!--sofon文件弹框-->
