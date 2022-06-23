@@ -30,6 +30,22 @@ const hospitalDealerValidator: ValidatorFn = (control: AbstractControl): Validat
   return null
 }
 
+const receivedAmountPercentValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
+  let orderAmount = control.get('orderAmount').value
+  let receivedAmount = control.get('receivedAmount').value
+  if (!receivedAmount) {
+    return null
+  }
+  receivedAmount = Number(receivedAmount || 0)
+  orderAmount = Number(orderAmount)
+  const percent = Number(receivedAmount / orderAmount * 100)
+  
+  if (percent < 90) {
+    return { receivedAmountPercent: true }
+  }
+  return null
+}
+
 const disableSubmitValidtorFn = (disableValue) => (control: AbstractControl): ValidationErrors | null => {
   return control.value === disableValue ? { disableSubmit: true } : null
 }
@@ -72,8 +88,10 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
   showPmFeedbackField = false
   isPurchaseAgreementRequired = false
 
+  showContractBuyerOptions = false
+
   orderInfo = this.fb.group({
-    orderType: [null, [Validators.required]], // 订单类型
+    orderType: [{ value: 'OIT', disabled: true }], // 订单类型
     referenceId: [{ value: null, disabled: true }], // Reference Id
     cosMainId:[null],
     productType: [{ value: null, disabled: true }], // 产品型号
@@ -93,18 +111,17 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
     currency: [null, [Validators.required]], // 合同金额-货币
     om: [null], // OM
     cooSign: [null, [Validators.required]], // COO签署方
-    contractBuyer: [null, [Validators.required]], // 合同买方
-    philipsName: [null, [Validators.required]], // 飞利浦实体名称
+    contractBuyer: [{ value: null, disabled: true }, [Validators.required]], // 合同买方
+    philipsName: [{ value: null, disabled: true }], // 飞利浦实体名称
     contractNo: [null, [Validators.required]], // 合同号
     paymentMethod: [null, [Validators.required]], // 付款方式
     paymentMethodOther: [null], // 付款方式-其他
     products: this.fb.array([this.createProduct()], [Validators.required]), // 产品列表
     cooProduct: this.fb.group({
-      cipPort: [null], // 是否为CIP港口
-      airTransportNo: [null], // POD扫描件
-      addressType: [null], // 送达地址类型
-      deliveryAddress: [null], // 货物送达地址中文
-      deliveryAddressEn: [null], // 货物送达地址英文
+      airTransportNo: [null, [Validators.required]], // POD扫描件
+      addressType: [null, [Validators.required]], // 送达地址类型
+      deliveryAddress: [null, [Validators.required]], // 货物送达地址中文
+      deliveryAddressEn: [null, [Validators.required]], // 货物送达地址英文
       customsClearancePort: [null], // 清关口岸中文
       customsClearancePortEn: [null], // 清关口岸英文
     }),
@@ -118,12 +135,10 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
   cooInfo = this.fb.group({
     installationOrDispatch: [null, [Validators.required, disableSubmitValidtorFn('1')]], // 是否已装机或派单
     threeMonthsAfterArrival: [null, [Validators.required, disableSubmitValidtorFn('0')]], // 是否到货>3个月
-    cooSignedNotIcf: [null, [Validators.required]], // 经销商是否为COO签署12个月内未签回ICF
-    specialApproval: [{ value: null, disabled: true }, [Validators.required]], // 是否需要特批
     applySignedDate: [null], // 预计签署日期
     cooConfirmationLetterDraft: [null], // COO确认函草稿
-    cooConfirmationLetterDealer: [null], // 经销商盖章后的COO确认函
-    cooConfirmationLetterSign: [null], // 双签后的COO确认函
+    cooConfirmationLetterDealer: [null], // 盖章后的COO确认函
+    cooConfirmationLetterSign: [null], // 签署后的COO确认函
   })
 
   selectOptions = {
@@ -132,7 +147,8 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
     oms: [],
     currencies: CURRENCIES,
     paymentMethodList: PAYMENT_METHOD_PDIGT_LIST,
-    foreignCompanies: []
+    foreignCompanies: [],
+    contractBuyers: [],
   } 
 
   // 已收金额/合同金额
@@ -189,8 +205,8 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
   }
 
   // node1: OM 补充信息
-  // node2: 上传经销商盖章后的COO确认函
-  // node6: 上传双签后的COO确认函
+  // node2: 上传盖章后的COO确认函
+  // node6: 上传签署后的COO确认函
   setFormValidators({ nodeCode, nodeInfoList, processStatus }) {
     const orderInfoRequiredFields = []
     const orderInfoEnabledFields = []
@@ -230,30 +246,23 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
                 this.isPurchaseAgreementRequired = true
               }
               // products
-              productsRequiredFields.push('equipmentSn', 'orderDate', 'productionDate', 'arrivalDate', 'goodsDeliveryDate', 'equipmentDescription', 'equipmentDescriptionEn', 'guaranteeMonth')
-              productsEnabledFields.push('wbsNo', 'itemNo', 'equipmentSn', 'orderDate', 'productionDate', 'arrivalDate', 'goodsDeliveryDate', 'equipmentDescription', 'equipmentDescriptionEn', 'guaranteeMonth')
+              productsRequiredFields.push('equipmentSn', 'orderDate', 'productionDate', 'equipmentDescription', 'equipmentDescriptionEn', 'guaranteeMonth')
+              productsEnabledFields.push('wbsNo', 'itemNo', 'equipmentSn', 'orderDate', 'productionDate', 'equipmentDescription', 'equipmentDescriptionEn', 'guaranteeMonth')
               // cooProduct
-              cooProductEnabledFields.push(
-                'cipPort', 'airTransportNo', 'addressType',
-                'deliveryAddress', 'deliveryAddressEn',
-                'customsClearancePort', 'customsClearancePortEn'
-              )
-              cooProductRequiredFields.push(
-                'cipPort', 'airTransportNo', 'addressType',
-                'deliveryAddress', 'deliveryAddressEn',
-                'customsClearancePort', 'customsClearancePortEn'
-              )
+              cooProductEnabledFields.push('customsClearancePort', 'customsClearancePortEn')
+              cooProductRequiredFields.push('customsClearancePort', 'customsClearancePortEn')
+              this.orderInfo.setValidators(receivedAmountPercentValidator)
               break
             case 'node2': // PM补充信息
               this.cooInfo.patchValue({
                 applySignedDate: calcApplySignedDate()
               })
               // cooInfo
-              cooInfoRequiredFields.push('cooConfirmationLetterDraft', 'cooConfirmationLetterDealer')
-              cooInfoEnabledFields.push('cooConfirmationLetterDraft', 'cooConfirmationLetterDealer')
+              cooInfoRequiredFields.push('applySignedDate', 'cooConfirmationLetterDraft', 'cooConfirmationLetterDealer')
+              cooInfoEnabledFields.push('applySignedDate', 'cooConfirmationLetterDraft', 'cooConfirmationLetterDealer')
               break
             case 'node6':
-              cooInfoRequiredFields.push('cooConfirmationLetterSign')
+              // cooInfoRequiredFields.push('cooConfirmationLetterSign')
               cooInfoEnabledFields.push('cooConfirmationLetterSign')
               break
           }
@@ -284,6 +293,80 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
     } else {
       control.setValue(null)
     }
+    this.calcContractBuyer()
+  }
+
+  // 计算合同签署方 
+  /**
+   * 币制=CNY, 业务模式=Direct Deal时, 默认为最终用户, 不可编辑
+   */
+  calcCooSign() {
+    if (this.editable) {
+      const cooSign = this.orderInfo.get('cooSign')
+      const { currency, businessModel } = this.orderInfo.getRawValue()
+      if(currency === 'CNY' && businessModel === 'direct') {
+        cooSign.patchValue('最终用户')
+      }
+    } 
+  }
+
+  // 计算合同买方
+  calcContractBuyer() {
+    const { currency, businessModel, cooSign, hospitalName, dealerName, foreignCompany } = this.orderInfo.getRawValue()
+    const contractBuyer = this.orderInfo.get('contractBuyer')
+    contractBuyer.patchValue(null)
+    contractBuyer.disable()
+    this.showContractBuyerOptions = false
+    if (currency && businessModel && cooSign) {
+      if (cooSign === '最终用户') {
+        contractBuyer.patchValue(hospitalName)
+      } else if (currency === 'CNY') {  // cooSign === '双签', currency === 'CNY', businessModel === 'distributor'
+        contractBuyer.patchValue(dealerName)
+      } else if (businessModel === 'direct') { // cooSign === '双签', currency === 'USD', businessModel === 'direct'
+        contractBuyer.patchValue(foreignCompany)
+      } else { // cooSign === '双签', currency === 'USD', businessModel === 'distributor'
+        this.selectOptions.contractBuyers = []
+        this.showContractBuyerOptions = true
+        contractBuyer.enable()
+        if (dealerName) {
+          this.selectOptions.contractBuyers.push(dealerName)
+        }
+        if (foreignCompany) {
+          this.selectOptions.contractBuyers.push(foreignCompany)
+        }
+      }
+    }
+  }
+
+  onBusinessModelChange() {
+    this.calcCooSign()
+    this.onClearDealer()
+    this.calcContractBuyer()
+  }
+
+  onCooSignChange() {
+    this.calcContractBuyer()
+  }
+
+  onCurrencyChange(currency) {
+    let philipsName = null
+    switch(currency) {
+      case 'USD':
+        philipsName = '飞利浦电子香港有限公司'
+        this.orderInfo.get('foreignCompany').setValidators(Validators.required)
+        break
+      case 'CNY':
+        philipsName = '飞利浦（中国）投资有限公司'
+        this.orderInfo.get('foreignCompany').clearValidators()
+        break
+    } 
+    this.orderInfo.patchValue({
+      philipsName,
+      foreignCompany: null,
+      foreignCompanyNo: null,
+    })
+    this.calcCooSign()
+    this.calcContractBuyer()
   }
 
   onPaymentMethodChange(method) {
@@ -364,6 +447,7 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
     }
     this.cooInfo.patchValue(cooInfo)
     this.setFormValidators(data)
+    this.calcPaymentMethodList(orderInfo.paymentMethod)
   }
 
   createProduct() {
@@ -375,19 +459,19 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
       equipmentSn: [null], // 设备SN号
       orderDate: [null], // 进单日期
       productionDate: [null], // 出厂日期
-      arrivalDate: [null], // 到货日期
-      goodsDeliveryDate: [null], // 货物送达日期
+      // arrivalDate: [null], // 到货日期
+      goodsDeliveryDate: [null, [Validators.required]], // 货物送达日期
       equipmentDescription: [null], // 设备名称和描述中文
       equipmentDescriptionEn: [null], // 设备名称和描述英文
       guaranteeMonth: [null], // 保修期
     })
   }
 
-  onCooSignedNotIcf(cooSignedNotIcf) {
-    this.cooInfo.patchValue({
-      specialApproval: cooSignedNotIcf
-    })
-  }
+  // onCooSignedNotIcf(cooSignedNotIcf) {
+  //   this.cooInfo.patchValue({
+  //     specialApproval: cooSignedNotIcf
+  //   })
+  // }
 
   onCycleGroupChange() {
     this.orderInfo.patchValue({ bigArea: null })
@@ -422,6 +506,7 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
       dealerCode: dealerCode,
       dealerName: dealerName,
     })
+    this.calcContractBuyer()
   }
 
   onClearDealer() {
@@ -429,6 +514,7 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
       dealerCode: null,
       dealerName: null,
     })
+    this.calcContractBuyer()
   }
 
   onShowReferenceModal() {
@@ -451,9 +537,15 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
       endUser,
       endUserId,
       contractPrice,
-      invoiceInformation,
+      invoiceInformation, // 币制
       logistician,
       marketBundleQuantity,
+      importAgreementNo, // 进口协议号
+      purchaseOrderNumber, // 采购订单号
+      salesAgreementNo, // 买卖协议
+      medicalDeviceName, // 设备名称和描述中文
+      paymentProvisionLabel,
+      paymentProvisionRemarks
     } = reference
     this.orderInfo.patchValue({
       referenceId,
@@ -472,11 +564,33 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
       orderAmount: contractPrice,
       currency: invoiceInformation,
       om: logistician,
+      paymentMethod: paymentProvisionLabel,
     })
     this.products.at(0).patchValue({
       productType: productModel,
       quantity: marketBundleQuantity,
+      equipmentDescription: medicalDeviceName,
     })
+    if (paymentProvisionLabel && paymentProvisionLabel.indexOf('其他') > -1) {
+      this.orderInfo.patchValue({ paymentMethodOther: paymentProvisionRemarks })
+    }
+    let contractNo
+    if (invoiceInformation === 'USD') {
+      contractNo = importAgreementNo
+    } else if (businessModel === 'DIRECT') {
+      contractNo = salesAgreementNo
+    } else if (businessModel === 'DISTRIBUTOR') {
+      contractNo = purchaseOrderNumber
+    }
+    this.orderInfo.patchValue({ contractNo })
+  }
+
+  calcPaymentMethodList(method) {
+    if (!method) { return }
+    const inList = this.selectOptions.paymentMethodList.find(({ label }) => label === method)
+    if (!inList) {
+      this.selectOptions.paymentMethodList.push({ label: method, value: method })
+    }
   }
 
   onShowSelectHospitalModal() {
@@ -489,6 +603,7 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
       hospitalNo: no,
       hospitalName: customerName,
     })
+    this.calcContractBuyer()
   }
 
   onClearHospital() {
@@ -496,6 +611,7 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
       hospitalNo: null,
       hospitalName: null,
     })
+    this.calcContractBuyer()
   }
   
   showTemplate() {
@@ -537,7 +653,7 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
       deliveryAddressEn,
       guaranteeMonth,
       applySignedDateUpdateAndguaranteeMonth: (applySignedDate && guaranteeMonth) ? moment(applySignedDate).add(1, 'years').subtract(1, 'days').add(guaranteeMonth, 'months').format('YYYY-MM-DD') : null,
-      tableParamsList: JSON.stringify(products.map(({ quantity, equipmentDescription, arrivalDate, equipmentSn }) => ({ quantity: String(quantity), equipmentDescription, arrivalDate, equipmentSn })))
+      tableParamsList: JSON.stringify(products.map(({ quantity, equipmentDescription, goodsDeliveryDate, equipmentSn }) => ({ quantity: String(quantity), equipmentDescription, arrivalDate: goodsDeliveryDate, equipmentSn })))
     }
 
     this.appPdfPreview.show(params)
