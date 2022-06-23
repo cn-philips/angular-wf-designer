@@ -532,6 +532,18 @@ export class ExamineFormIGTComponent implements OnInit {
       });
     }
 
+    // 进单确认处理信息
+    if (status === 'DOAJDQR') {
+      if (this.dataBase.sofonFile) {
+        params = Object.assign(params, {
+          sofonFile: this.dataBase.sofonFile
+        });
+      } else {
+        this.nzMessageService.warning('请上传sofon文件');
+        return false;
+      }
+    }
+
     const ASYNS = async () => {
 
         if(check==1)

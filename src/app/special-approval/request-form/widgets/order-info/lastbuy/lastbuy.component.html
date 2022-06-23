@@ -40,8 +40,8 @@
           <th nzWidth="200px">*预计记认销售日期</th>
           <th nzWidth="200px">*产品型号</th>
           <th nzWidth="200px">*数量</th>
-          <th nzWidth="200px" *ngIf="showFeedbackTab">仓储安排</th>
-          <th nzWidth="200px" *ngIf="showFeedbackTab">实际OIT日期</th>
+          <th nzWidth="200px">仓储安排</th>
+          <th nzWidth="200px">实际OIT日期</th>
           <th nzWidth="40px" nzRight="0px" *ngIf="editable">操作</th>
         </tr>
       </thead>
@@ -344,7 +344,7 @@
               </nz-form-control>
             </nz-form-item>
           </td>
-          <td *ngIf="showFeedbackTab">
+          <td>
             <nz-form-item>
               <nz-form-control>
                 <nz-select style="width: 100%;" [(ngModel)]="data.warehouseArrangement" [disabled]="!showFeedbackTab"
@@ -355,7 +355,7 @@
               </nz-form-control>
             </nz-form-item>
           </td>
-          <td *ngIf="showFeedbackTab">
+          <td>
             <nz-form-item>
               <nz-form-control>
                 <nz-date-picker [(ngModel)]="data.actualOitDate" style="width: 100%" [nzStyle]="{ width: '100%' }"
