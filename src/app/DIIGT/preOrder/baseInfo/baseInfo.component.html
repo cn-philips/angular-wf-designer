@@ -1182,7 +1182,7 @@
       </div>
       <div nz-col nzXs="24" nzSm="24" nzMd="12">
         <nz-form-item>
-          <nz-form-label nzSm="8" nzXl="8" nzXXl="8" [nzRequired]="disa_sofon_file">Sofon No</nz-form-label>
+          <nz-form-label nzSm="8" nzXl="8" nzXXl="8" [nzRequired]="!disa_sofon_file">Sofon No</nz-form-label>
           <nz-form-control nzSm="14" nzXl="14" nzXXl="14">
             <input type="text" oninput="if(value.length>255)value=value.slice(0,255)" class="form-control" value="" formControlName="sofonNo"
                    [(ngModel)]="dataBase.sofonNo" />
@@ -1191,7 +1191,7 @@
       </div>
       <div nz-col nzXs="24" nzSm="24" nzMd="12" *appPermissionsIf="'sofon_file'">
         <nz-form-item>
-          <nz-form-label nzSm="8" nzXl="8" nzXXl="8">Sofon File<br> Sofon文件</nz-form-label>
+          <nz-form-label nzSm="8" nzXl="8" nzXXl="8" [nzRequired]="!disa_sofon_file">Sofon File<br> Sofon文件</nz-form-label>
           <nz-form-control nzSm="14" nzXl="14" nzXXl="14">
             <div *ngIf="!disa_sofon_file">
               <nz-switch  [(ngModel)]="switchValid" formControlName="switchValid" (click)="changeupmode(upmode)"></nz-switch><span style="font-size: xx-small;padding-top: 10%">&emsp;Select Sofon File From CP<br> 从CP选择文件</span>
@@ -1203,7 +1203,7 @@
             </div>
 
             <div *ngIf="!upmode">
-              <nz-upload *ngIf="!disa_sofon_file" class="uploads" style="display: inline-block" [(nzFileList)]="dataBase.sofonNameFileList" [nzBeforeUpload]="sofonNameBeforeUpload" [nzLimit]="1" [nzPreview]="dwonLoad" [nzRemove]="nzRemovsofonName" [nzDisabled]="disa">
+              <nz-upload *ngIf="!disa_sofon_file" class="uploads" style="display: inline-block" [(nzFileList)]="dataBase.sofonNameFileList" [nzBeforeUpload]="sofonNameBeforeUpload" [nzLimit]="1" [nzPreview]="dwonLoad" [nzRemove]="nzRemovsofonName" [nzDisabled]="disa_sofon_file">
                 <button nz-button>
                   <i nz-icon nzType="upload"></i><span style="font-size: small">Upload 上传本地文件</span>
                 </button>

@@ -766,6 +766,34 @@ export class PreOrderBaseInfoComponent implements OnInit {
       this.message.create("error", "上传失败请重新上传!")
     }));
   }
+  public uploadDataBase(fileList, file, fileId) {
+    this.dataBase[fileList] = [];
+    const type = getType(file);
+    this.dataBase[fileList].push(file);
+    const formData = new FormData();
+    // tslint:disable-next-line:no-shadowed-variable
+    this.dataBase[fileList].forEach((file: any) => {
+      formData.append('file', file);
+      formData.append('fileType', type);
+      formData.append('filename', file.name);
+    });
+    this.load = true;
+    const url = '/act/system/upload';
+    this.http.posts(url, formData).subscribe((res => {
+      if (res.code === '0000') {
+        this.load = false;
+        this.dataBase[fileList][0].fileId = res.data;
+        this.dataBase[fileId] = res.data;
+        this.message.create('success', res.msg);
+      } else {
+        this.message.create('error', res.msg);
+      }
+    }), (error => {
+      this.load = false;
+      this.dataBase[fileList] = [];
+      this.message.create( 'error', '上传失败请重新上传!');
+    }));
+  }
   //表格行
   public setColSpanOfConfirmTable(database?: any): void {
     try {
@@ -3091,8 +3119,8 @@ export class PreOrderBaseInfoComponent implements OnInit {
   public fileChecked: String[]; // 选中的文件数组
   public changeupmode(mode): void {
     this.upmode = !mode;
-    this.dataBase.sofonName = '';
-    this.dataBase.sofonNames = '';
+    this.dataBase.sofonFile = '';
+    this.dataBase.sofonFileName = '';
     this.dataBase.sofonNameFileList = [];
   }
   @ViewChild('tranfSingle')tranfSingle; //调用Sofon
@@ -3130,7 +3158,7 @@ export class PreOrderBaseInfoComponent implements OnInit {
       this.message.create('error', '文件大小不超过100M');
       return false;
     }
-    this.upload('sofonNameFileList', file, 'sofonFile');
+    this.uploadDataBase('sofonNameFileList', file, 'sofonFile');
     return false;
   }
   // 删除sofon文件

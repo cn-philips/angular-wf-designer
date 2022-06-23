@@ -431,6 +431,10 @@ export class ExamineFormIGTComponent implements OnInit {
         this.nzMessageService.warning('请上传sofon文件');
         return false;
       }
+      if (this.dataBase.sofonNo == null || this.dataBase.sofonNo === '') {
+        this.nzMessageService.warning('请填写Sofon No');
+        return false;
+      }
       if (check == 1) {
 
         if(this.dataBase.isPrebookApply=='0')
