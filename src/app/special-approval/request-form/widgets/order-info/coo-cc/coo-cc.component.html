@@ -34,7 +34,7 @@
               <th nzWidth="200px">币制</th>
               <th nzWidth="200px">OM</th>
               <th nzWidth="200px">合同号</th>
-              <th nzWidth="200px">采购订单</th>
+              <th nzWidth="200px">采购订单<br>（PO）</th>
               <th nzWidth="200px">Ship-To Name</th>
               <th nzWidth="200px">产品型号</th>
               <th nzWidth="200px">数量</th>
@@ -213,7 +213,7 @@
                     </nz-select>
                     <nz-form-explain
                       *ngIf="orderInfo.get('purchaseOrderNo')?.dirty && orderInfo.get('purchaseOrderNo')?.errors">
-                      请上传采购订单
+                      请上传采购订单（PO）
                     </nz-form-explain>
                   </nz-form-control>
                 </nz-form-item>

@@ -111,7 +111,7 @@
                   <ng-container *ngIf="data.hospitalError">
                     医院数据验证失败, 请重新选择
                   </ng-container>
-                  <ng-container *ngIf="!data.hospitalError">
+                  <ng-container *ngIf="data.bg === 'CC' ? false : !data.hospitalError">
                     <ng-container
                       *ngIf="data.businessModel === BUSINESS_MODEL.DISTRIBUTOR_DEAL && !data.dealerCode && !data.hospitalNo">
                       请选择医院或者经销商
@@ -179,9 +179,9 @@
           <td>
             <nz-form-item>
               <nz-form-control>
-                <input nz-input [(ngModel)]="data.wbsNo" [disabled]="!editable" required />
+                <input nz-input [(ngModel)]="data.wbsNo" [disabled]="!editable" [required]="data.bg !== 'CC'" />
               </nz-form-control>
-              <nz-form-explain class="error-msg" *ngIf="!data.wbsNo">
+              <nz-form-explain class="error-msg" *ngIf="data.bg === 'CC' ? false : !data.wbsNo">
                 请填写订单WBS#
               </nz-form-explain>
             </nz-form-item>
