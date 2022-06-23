@@ -27,6 +27,14 @@ export interface Reference {
   reBook: string;
   logisticsTime: null;
   cosMainId: string;
+  stockAgreementFile: string;
+  stockAgreementFileName: string;
+  ifcMonth: string;
+  arrivalDate: string;
+  downpaymentDate: string;
+  balancePaymentDate: string;
+  readyTime: string;
+  oitMonthEstimate: string;
 }
 
 const DEFAULT_SEARCH_PARAMS = {

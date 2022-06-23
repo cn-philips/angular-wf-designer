@@ -11,6 +11,7 @@ import {Dealer, SelectDealerComponent} from '../../select-dealer/select-dealer.c
 import {getType} from '../../../../../../assets/js/tools';
 import { saveAs } from 'file-saver';
 import {Reference, SelectReferenceComponent} from '../../select-reference/select-reference.component';
+import {Observable} from 'rxjs';
 
 
 interface CommonResponse {
@@ -240,18 +241,14 @@ export class LastbuyComponent implements OnInit {
       (response: CommonResponse) => {
         const { data, code } = response
         if ('0000' === code) {
-          console.log( this.formValues.value)
-          console.log( this.formValues.value[this.upIndex])
           if (!this.formValues.value[this.upIndex].stockingAgreementFile) {
             this.formValues.value[this.upIndex].stockingAgreementFile = []
           }
           this.formValues.value[this.upIndex].stockingAgreementFile.push({fileId: data})
-          console.log( this.formValues.value[this.upIndex].stockingAgreementFile)
 
           item.onSuccess({ fileId: data }, file, response)
         } else {
           item.onError({}, file)
-          console.log( this.formValues.value[this.upIndex].stockingAgreementFile)
         }
       },
       err => {
@@ -286,8 +283,21 @@ export class LastbuyComponent implements OnInit {
         invoiceInformation,
         createUser,
         logistician,
-        marketBundleQuantity
+        marketBundleQuantity,
+        stockAgreementFile,
+        stockAgreementFileName,
+        ifcMonth,
+        arrivalDate,
+        downpaymentDate,
+        balancePaymentDate,
+        readyTime,
+        oitMonthEstimate,
       } = reference
+
+      const fileList = [{
+        uid: stockAgreementFile,
+        name: stockAgreementFileName,
+        response: { stockAgreementFile }}]
 
       const orderInfo = {
         orderType: orderType,
@@ -308,15 +318,15 @@ export class LastbuyComponent implements OnInit {
         orderAmount: contractPrice,
         currency: invoiceInformation,
         om: logistician,
-        stockingAgreementFile: [],
-        stockingAgreementFileList: [],
-        expectedPaymentDate: null,
-        expectedSitePlaceDate: null,
-        applyArrivalTime: null,
-        expectedSaleDate: null,
+        stockingAgreementFile: [{fileId: stockAgreementFile, name: stockAgreementFileName}],
+        stockingAgreementFileList: fileList,
+        expectedPaymentDate: balancePaymentDate,
+        expectedSitePlaceDate: readyTime,
+        applyArrivalTime: arrivalDate,
+        expectedSaleDate: ifcMonth,
         productType: productModel,
         quantity: marketBundleQuantity,
-        actualOitDate: null,
+        actualOitDate: oitMonthEstimate,
         warehouseArrangement: null,
       }
       return orderInfo
@@ -332,5 +342,10 @@ export class LastbuyComponent implements OnInit {
 
   onBgChange(val: string, order, index) {
     order.bmc = null
+  }
+
+  onDeleteFile = (file): boolean =>  {
+
+    return true
   }
 }
