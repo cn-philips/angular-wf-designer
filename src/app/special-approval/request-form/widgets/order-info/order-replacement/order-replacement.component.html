@@ -4,7 +4,9 @@
       <div nz-col nzXs="24" nzSm="24" nzMd="24">
         <nz-form-item>
           <nz-form-control nzXs="24" nzSm="24" nzMd="6">
-            <app-reference-link [cosMainId]="formValues.get('cosMainId')?.value" [orderTypes]="formValues.get('orderType')?.value" [label]="formValues.get('referenceId')?.value"></app-reference-link>
+            <app-reference-link [cosMainId]="formValues.get('cosMainId')?.value"
+              [orderTypes]="formValues.get('orderType')?.value" [label]="formValues.get('referenceId')?.value">
+            </app-reference-link>
           </nz-form-control>
         </nz-form-item>
       </div>
@@ -146,7 +148,8 @@
     <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
       <div nz-col nzXs="24" nzSm="24" nzMd="12">
         <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6" [nzRequired]="showFeedbackTab" nzFor="newSapOrderNo">新SAP订单号(SO#)
+          <!-- [nzRequired]="showFeedbackTab" -->
+          <nz-form-label nzXl="8" nzXXl="6" nzFor="newSapOrderNo">新SAP订单号(SO#)
           </nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <input id="newSapOrderNo" nz-input formControlName="newSapOrderNo" maxlength="50" />
@@ -158,7 +161,7 @@
       </div>
       <div nz-col nzXs="24" nzSm="24" nzMd="12">
         <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6" [nzRequired]="showFeedbackTab">创建时间</nz-form-label>
+          <nz-form-label nzXl="8" nzXXl="6">创建时间</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <nz-date-picker formControlName="newSapCreateTime" style="width: 100%" [nzStyle]="{ width: '100%' }"
               [nzPlaceHolder]="showFeedbackTab ? '请选择日期':''">
