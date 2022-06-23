@@ -168,7 +168,7 @@ export class SuppfileComponent implements OnInit {
           this.dataBase.dealerCode=param.dealerCode; //经销商code;
           this.dataBase.centralized=param.centralized; //集采
           this.dataBase.actualSales=param.actualSales; //实际销售人
-          this.dataBase.finalSofonQuotation = params.sofonNo //finalSofonQuotation
+          // this.dataBase.finalSofonQuotation = params.sofonNo //finalSofonQuotation
           this.dataBase.tradeList = params.cosOppTradeIns!=null&&params.cosOppTradeIns!=""&&params.cosOppTradeIns.length>0?params.cosOppTradeIns:[{name:"",costs1:""}]; // tradeIn
           this.dataBase.warrantyList =params.cosOppExtendedWarranties!=null&&params.cosOppExtendedWarranties!=""&&params.cosOppExtendedWarranties.length>0?params.cosOppExtendedWarranties:[] // 延长保修
           this.dataBase.otherList=params.otherList!=null&&params.otherList!=""&&params.otherList.length>0?params.otherList:[] //其他预留
@@ -182,10 +182,10 @@ export class SuppfileComponent implements OnInit {
           this.dataBase.contractCancelMainId= param.contractCancelMainId;
           this.dataBase.prebookReferenceId=param.prebookReferenceId; //prebookid
           this.dataBase.prebookProductId=param.prebookProductId; //prebookProductId
-          this.dataBase.prebookMainId=param.prebookMainId; //prebookMainId     
-          this.infor.isPrebookApply=this.infor.isPrebookApply.toString();      
+          this.dataBase.prebookMainId=param.prebookMainId; //prebookMainId
+          this.infor.isPrebookApply=this.infor.isPrebookApply.toString();
           this.dataBase.isPrebookApply=this.infor.isPrebookApply;
-          
+
           if (this.dataBase.productList && this.dataBase.productList.length > 0) {
             this.dataBase.productList.map(res => {
               res.name = res.thirdPartyName;

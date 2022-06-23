@@ -206,7 +206,7 @@ export class CompleteOitComponent implements OnInit {
           this.dataBase.dealerCode=param.dealerCode; //经销商code;
           this.dataBase.centralized = param.centralized; //集采
           this.dataBase.actualSales = param.actualSales; //实际销售人
-          this.dataBase.finalSofonQuotation = params.sofonNo //finalSofonQuotation
+          // this.dataBase.finalSofonQuotation = params.sofonNo //finalSofonQuotation
           this.dataBase.tradeList = params.cosOppTradeIns != null && params.cosOppTradeIns != "" && params.cosOppTradeIns.length > 0 ? params.cosOppTradeIns : [{ name: "", costs1: "" }]; // tradeIn
           this.dataBase.warrantyList = params.cosOppExtendedWarranties != null && params.cosOppExtendedWarranties != "" && params.cosOppExtendedWarranties.length > 0 ? params.cosOppExtendedWarranties:[] // 延长保修
           this.dataBase.otherList=params.otherList!=null&&params.otherList!=""&&params.otherList.length>0?params.otherList:[] //其他预留
