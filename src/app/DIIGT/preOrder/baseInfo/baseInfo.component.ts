@@ -766,6 +766,34 @@ export class PreOrderBaseInfoComponent implements OnInit {
       this.message.create("error", "上传失败请重新上传!")
     }));
   }
+  public uploadDataBase(fileList, file, fileId) {
+    this.dataBase[fileList] = [];
+    const type = getType(file);
+    this.dataBase[fileList].push(file);
+    const formData = new FormData();
+    // tslint:disable-next-line:no-shadowed-variable
+    this.dataBase[fileList].forEach((file: any) => {
+      formData.append('file', file);
+      formData.append('fileType', type);
+      formData.append('filename', file.name);
+    });
+    this.load = true;
+    const url = '/act/system/upload';
+    this.http.posts(url, formData).subscribe((res => {
+      if (res.code === '0000') {
+        this.load = false;
+        this.dataBase[fileList][0].fileId = res.data;
+        this.dataBase[fileId] = res.data;
+        this.message.create('success', res.msg);
+      } else {
+        this.message.create('error', res.msg);
+      }
+    }), (error => {
+      this.load = false;
+      this.dataBase[fileList] = [];
+      this.message.create( 'error', '上传失败请重新上传!');
+    }));
+  }
   //表格行
   public setColSpanOfConfirmTable(database?: any): void {
     try {
@@ -2289,7 +2317,7 @@ export class PreOrderBaseInfoComponent implements OnInit {
       contractSignatory: new FormControl({ value: 'Nancy', disabled: this.disa }, Validators.required), // 合同签署人
       contractSignatoryPost: new FormControl({ value: 'Nancy', disabled: this.disa }, Validators.required), // 合同签署人职务
       marketBundleQuantity: new FormControl({ value: 'Nancy', disabled: true }, null),
-      sofonNo: new FormControl({ value: 'Nancy', disabled: this.disa }, Validators.required),
+      sofonNo: new FormControl({ value: 'Nancy', disabled: true }, Validators.required),
       switchValid:new FormControl({value:''})
     });
     if (!this.conTable) {
@@ -3091,8 +3119,8 @@ export class PreOrderBaseInfoComponent implements OnInit {
   public fileChecked: String[]; // 选中的文件数组
   public changeupmode(mode): void {
     this.upmode = !mode;
-    this.dataBase.sofonName = '';
-    this.dataBase.sofonNames = '';
+    this.dataBase.sofonFile = '';
+    this.dataBase.sofonFileName = '';
     this.dataBase.sofonNameFileList = [];
   }
   @ViewChild('tranfSingle')tranfSingle; //调用Sofon
@@ -3130,7 +3158,7 @@ export class PreOrderBaseInfoComponent implements OnInit {
       this.message.create('error', '文件大小不超过100M');
       return false;
     }
-    this.upload('sofonNameFileList', file, 'sofonFile');
+    this.uploadDataBase('sofonNameFileList', file, 'sofonFile');
     return false;
   }
   // 删除sofon文件
@@ -3198,7 +3226,12 @@ export class PreOrderBaseInfoComponent implements OnInit {
   // sofon文件禁用  true 禁用
   public disa_sofon_file: boolean = false;
   public updateDisaSofonFile() {
-    // 开放编辑条件 flag=0 编辑节点 并且 DOAJDQR 节点
-    this.disa_sofon_file = this.dataBase.detail.flag !== '0' || this.dataBase.detail.status !== 'DOAJDQR';
+    // 开放编辑条件 flag=0 编辑节点 并且 DHTOASH 节点
+    this.disa_sofon_file = this.dataBase.detail.flag !== '0' || this.dataBase.detail.status !== 'DHTOASH';
+
+    // sofon no
+    if (!this.disa_sofon_file) {
+      this.validateForm.controls.sofonNo.enable();
+    }
   }
 }

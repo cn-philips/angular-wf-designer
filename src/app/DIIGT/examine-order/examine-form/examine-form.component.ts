@@ -427,6 +427,14 @@ export class ExamineFormIGTComponent implements OnInit {
     if (status === 'DHTOASH')  //oa审核的时候的提交参数
     {
 
+      if (this.dataBase.sofonFile == null || this.dataBase.sofonFile === '') {
+        this.nzMessageService.warning('请上传sofon文件');
+        return false;
+      }
+      if (this.dataBase.sofonNo == null || this.dataBase.sofonNo === '') {
+        this.nzMessageService.warning('请填写Sofon No');
+        return false;
+      }
       if (check == 1) {
 
         if(this.dataBase.isPrebookApply=='0')
@@ -529,19 +537,9 @@ export class ExamineFormIGTComponent implements OnInit {
         prebookReferenceId:this.dataBase.prebookReferenceId,
         prebookProductId:this.dataBase.prebookProductId,
         prebookMainId:this.dataBase.prebookMainId,
+        sofonNo: this.dataBase.sofonNo,
+        sofonFile: this.dataBase.sofonFile
       });
-    }
-
-    // 进单确认处理信息
-    if (status === 'DOAJDQR') {
-      if (this.dataBase.sofonFile) {
-        params = Object.assign(params, {
-          sofonFile: this.dataBase.sofonFile
-        });
-      } else {
-        this.nzMessageService.warning('请上传sofon文件');
-        return false;
-      }
     }
 
     const ASYNS = async () => {
