@@ -1182,7 +1182,7 @@
       </div>
       <div nz-col nzXs="24" nzSm="24" nzMd="12">
         <nz-form-item>
-          <nz-form-label nzSm="8" nzXl="8" nzXXl="8" [nzRequired]=true>Sofon No</nz-form-label>
+          <nz-form-label nzSm="8" nzXl="8" nzXXl="8" [nzRequired]="disa_sofon_file">Sofon No</nz-form-label>
           <nz-form-control nzSm="14" nzXl="14" nzXXl="14">
             <input type="text" oninput="if(value.length>255)value=value.slice(0,255)" class="form-control" value="" formControlName="sofonNo"
                    [(ngModel)]="dataBase.sofonNo" />
