@@ -263,8 +263,8 @@
           <td>
             <nz-form-item>
               <nz-form-control>
-                <nz-upload nzAction="/act/system/upload" [nzFileList]="data.stockingAgreementFileList"
-                  [nzCustomRequest]="onUploadFile" (click)="uploadIndex(i)" [nzLimit]="1" *ngIf="editable">
+                <nz-upload nzAction="/act/system/upload" [(nzFileList)]="data.stockingAgreementFileList"
+                  [nzCustomRequest]="onUploadFile" (click)="uploadIndex(i)" [nzLimit]="1" [nzRemove]="onDeleteFile" *ngIf="editable" [nzShowUploadList]="editable">
                   <button nz-button><i nz-icon nzType="upload"></i><span>请选择文件</span></button>
                 </nz-upload>
 

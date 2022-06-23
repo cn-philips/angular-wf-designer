@@ -1776,6 +1776,17 @@ export class RequestFormComponent implements OnInit {
       } else if (this.applyType === APPLY_TYPE.PRE_BOOK_LASTBUY) {
         let lastBuys = []
         orderInfos.map( (order) => {
+          if (order.stockingAgreementFile && order.stockingAgreementFile.length > 0) {
+            order.stockingAgreementFileList = order.stockingAgreementFile.map(({ fileId, name, size, type }) => ({
+              uid: fileId,
+              fileId,
+              name,
+              size,
+              type,
+              filename: name,
+              response: { fileId }
+            }))
+          }
           order.products.map( ({ quantity, productType, }) => {
             lastBuys.push({
               ...order,

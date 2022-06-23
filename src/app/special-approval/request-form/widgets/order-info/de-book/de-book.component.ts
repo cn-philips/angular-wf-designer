@@ -226,13 +226,14 @@ export class DeBookComponent implements OnInit {
         }
 
           if (!(bg && bmc &&
-            productType1 && sapOrderNo && wbsNo && orderDate &&
-            orderAmount && currency && hospitalNo && hospitalName && deBookReason && productType
+            productType1 && sapOrderNo && orderDate &&
+            orderAmount && currency && deBookReason && productType && bg === 'CC'? true : (hospitalName && hospitalNo && wbsNo)
           )) {
             errorCode = 2
             hasError = true
             return;
           }
+
       }
 
     })
