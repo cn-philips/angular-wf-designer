@@ -19,8 +19,8 @@ let loadingId
 const excelKeyMap = {
   产品线: "bmc",
   "BG(Modality)": "bg",
-  销售区域: "cycleGroup",
-  销售区域_1: "bigArea",
+  '销售区域-Cycle Group': "cycleGroup",
+  '销售区域-Region': "bigArea",
   业务模式: "businessModel",
   经销商编号: "dealerCode",
   经销商名称: "dealerName",
@@ -183,6 +183,7 @@ export class CooCcOrderInfoComponent implements OnInit, OnChanges {
     } else {
       this.orderInfos.removeAt(index)
     }
+    this.onGoodsDeliveryDateChange()
   }
 
   selectOptions = {
@@ -231,6 +232,7 @@ export class CooCcOrderInfoComponent implements OnInit, OnChanges {
     let isValid = true
     let dealerName
     let philipsName
+    let businessModel
     for(let orderInfo of orderInfos) {
       if (orderInfo.dealerName) {
         if (dealerName && orderInfo.dealerName !== dealerName) {
@@ -251,6 +253,17 @@ export class CooCcOrderInfoComponent implements OnInit, OnChanges {
           break
         } else {
           philipsName = orderInfo.philipsName
+        }
+      }
+
+      if (orderInfo.businessModel) {
+        if (businessModel && orderInfo.businessModel !== businessModel) {
+          isValid = false
+          this.message.remove(loadingId)
+          this.message.error('导入失败, 导入的数据需为同一业务模式!')
+          break
+        } else {
+          businessModel = orderInfo.businessModel
         }
       }
     }
@@ -332,6 +345,7 @@ export class CooCcOrderInfoComponent implements OnInit, OnChanges {
         })
         this.message.remove(loadingId)
         this.message.success('导入成功')
+        this.onGoodsDeliveryDateChange()
       }
     };
     reader.readAsArrayBuffer(file);
