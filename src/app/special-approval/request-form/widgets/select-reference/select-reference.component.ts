@@ -27,6 +27,12 @@ export interface Reference {
   reBook: string;
   logisticsTime: null;
   cosMainId: string;
+  importAgreementNo: string; // 进口协议号
+  purchaseOrderNumber: string; // 采购订单号
+  salesAgreementNo: string; // 买卖协议
+  medicalDeviceName: string; // 设备名称和描述中文
+  paymentProvisionLabel: string; // 付款方式
+  paymentProvisionRemarks: string; // 付款方式备注
 }
 
 const DEFAULT_SEARCH_PARAMS = {

@@ -241,7 +241,6 @@ const PAYMENT_METHOD_PDIGT_LIST = [
   { label: 'DI&IGT-30% TT before OIT, 60% TT before FP, 10% TT against ICF', value: 'DI&IGT-30% TT before OIT, 60% TT before FP, 10% TT against ICF' },
   { label: 'DI&IGT-100% TT before OIT', value: 'DI&IGT-100% TT before OIT' },
   { label: 'DI&IGT-100% LC before OIT', value: 'DI&IGT-100% LC before OIT' },
-  { label: 'DI&IGT-100% TT before OIT', value: 'DI&IGT-100% TT before OIT' },
   { label: 'DI&IGT-30%TT before OIT, 70% TT before FP', value: 'DI&IGT-30%TT before OIT, 70% TT before FP' },
   { label: 'Pulse QFR-100% in 60 days after delivery', value: 'Pulse QFR-100% in 60 days after delivery' },
   { label: '其他', value: PAYMENT_METHOD_PDIGT_OTHER },
