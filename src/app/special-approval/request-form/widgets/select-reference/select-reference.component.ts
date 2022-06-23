@@ -33,6 +33,14 @@ export interface Reference {
   medicalDeviceName: string; // 设备名称和描述中文
   paymentProvisionLabel: string; // 付款方式
   paymentProvisionRemarks: string; // 付款方式备注
+  stockAgreementFile: string;
+  stockAgreementFileName: string;
+  ifcMonth: string;
+  arrivalDate: string;
+  downpaymentDate: string;
+  balancePaymentDate: string;
+  readyTime: string;
+  oitMonthEstimate: string;
 }
 
 const DEFAULT_SEARCH_PARAMS = {
