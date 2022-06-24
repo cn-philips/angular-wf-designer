@@ -38,6 +38,7 @@
           <th nzWidth="220px">*预计场地就位日期</th>
           <th nzWidth="200px">*申请到货日期</th>
           <th nzWidth="200px">*预计记认销售日期</th>
+          <th nzWidth="200px">*预计OIT月份</th>
           <th nzWidth="200px">*产品型号</th>
           <th nzWidth="200px">*数量</th>
           <th nzWidth="200px">仓储安排</th>
@@ -321,6 +322,17 @@
           <td>
             <nz-form-item>
               <nz-form-control>
+                <nz-month-picker [(ngModel)]="data.oitMonthEstimate" style="width: 100%" [nzStyle]="{ width: '100%' }"
+                                [disabled]="!editable" [nzPlaceHolder]="editable ? '请选择日期' : ''"></nz-month-picker>
+                <nz-form-explain class="error-msg" *ngIf="!data.oitMonthEstimate">
+                  请填写预计OIT月份
+                </nz-form-explain>
+              </nz-form-control>
+            </nz-form-item>
+          </td>
+          <td>
+            <nz-form-item>
+              <nz-form-control>
                 <nz-select style="width: 100%;" [(ngModel)]="data.productType" *ngIf="data.bg === 'US'"
                   [disabled]="!editable" required>
                   <nz-option *ngFor="let item of spService.usProductList" [nzLabel]="item.label" [nzValue]="item.value">
@@ -359,7 +371,7 @@
             <nz-form-item>
               <nz-form-control>
                 <nz-date-picker [(ngModel)]="data.actualOitDate" style="width: 100%" [nzStyle]="{ width: '100%' }"
-                  [disabled]="!showFeedbackTab" [nzPlaceHolder]="editable ? '请选择日期' : ''"></nz-date-picker>
+                  [disabled]="!showFeedbackTab" [nzPlaceHolder]="showFeedbackTab ? '请选择日期' : ''"></nz-date-picker>
               </nz-form-control>
             </nz-form-item>
           </td>
