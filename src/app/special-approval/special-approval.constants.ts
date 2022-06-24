@@ -228,8 +228,6 @@ const PAYMENT_METHOD_LIST = [
   { label: '其他', value: '其他' },
 ]
 
-const PAYMENT_METHOD_PDIGT_OTHER = '其他'
-
 const PAYMENT_METHOD_PDIGT_LIST = [
   { label: 'DI&IGT-90% TT before FP, 10% TT against AC', value: 'DI&IGT-90% TT before FP, 10% TT against AC' },
   { label: 'DI&IGT-90% LC before FP, 10% TT against AC', value: 'DI&IGT-90% LC before FP, 10% TT against AC' },
@@ -277,5 +275,4 @@ export {
   FIELD_STATUS_LIST,
   PAYMENT_METHOD_LIST,
   PAYMENT_METHOD_PDIGT_LIST,
-  PAYMENT_METHOD_PDIGT_OTHER,
 };
