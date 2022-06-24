@@ -66,8 +66,6 @@ export class PreproductInfoComponent implements OnInit {
    public priceValueList: any = {
 
    };
-  // 价格查看权限
-  public price_permission: boolean = false;
   ngOnInit()
   {
     this.flag = this.activatedRouter.queryParams['_value'].flag;
@@ -80,10 +78,6 @@ export class PreproductInfoComponent implements OnInit {
       totalContractPrice: new FormControl({ value: '', disabled: false }),
       taxrate: new FormControl({ value: '', disabled: this.disa }),
     });
-    const arr = JSON.parse(localStorage.getItem('permissions'));
-    if (arr) {
-      this.price_permission = haveRolesArr(arr.price);
-    }
   }
   ngOnChanges(changes: SimpleChange): void {
     this.dataBase.detail.status = this.activatedRouter.queryParams['_value'].state ? this.activatedRouter.queryParams['_value'].state : "";
