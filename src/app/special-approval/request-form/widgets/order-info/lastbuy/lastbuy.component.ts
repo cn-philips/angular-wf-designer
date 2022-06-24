@@ -198,7 +198,7 @@ export class LastbuyComponent implements OnInit {
       const {
         orderType, referenceId, subProductType, bg, bmc, cycleGroup, bigArea, businessModel, dealerCode, dealerName,
         hospitalName, hospitalNo, projectName, sapOrderNo,  orderAmount, currency, om, stockingAgreementFileId, expectedPaymentDate,
-        expectedSitePlaceDate, expectedSaleDate, productType, quantity , applyArrivalTime
+        expectedSitePlaceDate, expectedSaleDate, productType, quantity , applyArrivalTime, oitMonthEstimate
       } = order
 
       if (checkbg) {
@@ -212,7 +212,7 @@ export class LastbuyComponent implements OnInit {
       if (!(orderType && bmc &&
         businessModel && projectName && sapOrderNo &&
         orderAmount && currency && (dealerCode || hospitalNo) && expectedPaymentDate && expectedSitePlaceDate
-        && applyArrivalTime && expectedSaleDate
+        && applyArrivalTime && expectedSaleDate && oitMonthEstimate
       )) {
         hasError = true
         errorCode = 2
@@ -291,7 +291,7 @@ export class LastbuyComponent implements OnInit {
         downpaymentDate,
         balancePaymentDate,
         readyTime,
-        oitMonthEstimate,
+        logisticsTime,
       } = reference
 
       const fileList = [{
@@ -326,7 +326,8 @@ export class LastbuyComponent implements OnInit {
         expectedSaleDate: ifcMonth,
         productType: productModel,
         quantity: marketBundleQuantity,
-        actualOitDate: oitMonthEstimate,
+        oitMonthEstimate: logisticsTime,
+        actualOitDate: null,
         warehouseArrangement: null,
       }
       return orderInfo
