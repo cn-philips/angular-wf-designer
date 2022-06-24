@@ -296,7 +296,8 @@ export class CompleteOitComponent implements OnInit {
           !this.oitData.logisticsTime && (this.oitData.logisticsTime = formatDatesNowMth(new Date()))
           this.oitData.specialApprovalSupporting = this.oitData.specialApprovalSupporting != null ? this.oitData.specialApprovalSupporting : "0";
           this.oitData.remark = this.oitData.remark != null ? this.oitData.remark : "";
-          reslove(res.data)
+          this.BringOMLogisticianIsNull();
+          reslove(res.data);
         } else {
           this.message.create('error', res.msg);
         }
@@ -304,19 +305,34 @@ export class CompleteOitComponent implements OnInit {
     })
   }
 
+  // logistician 为空时第一次填写，默认带入节点审批OM
+  public BringOMLogisticianIsNull() {
+    if (this.oitData && this.oitData.logistician != null && this.oitData.logistician !== '') {
+      return;
+    }
+    let marinId = decodeString(this.activatedRouter.queryParams['_value'].id);
+    let url = `/act/preparation/getOitExpert?mainId=${marinId}`;
+    this.http.get(url).subscribe(res => {
+      if (res && res.data && res.data[0]) {
+        this.oitData.logistician = res.data[0].email;
+      }
+    });
+  }
+
   //获取人员下拉列表
   getUser() {
 
     let marinId = decodeString(this.activatedRouter.queryParams['_value'].id);
-    let url = `/act/preparation/getOitExpert?mainId=${marinId}`;
+    // let url = `/act/preparation/getOitExpert?mainId=${marinId}`;
+    let url = '/act/role/getUsersByRole?role=OM';
     return new Promise((reslove, reject) => {
       this.http.get(url).subscribe((res => {
         this.load = false;
         if (res.code == "0000") {
           this.oitData.oMlist = res.data;
-          if (this.oitData.oMlist.length == 1) {
-            this.oitData.logistician = this.oitData.oMlist[0].email;
-          }
+          // if (this.oitData.oMlist.length == 1) {
+          //   this.oitData.logistician = this.oitData.oMlist[0].email;
+          // }
           reslove(res.data)
         }
         else {

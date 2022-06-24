@@ -19,7 +19,7 @@ export class SoformComponent implements OnInit {
   public load=false;
   public nzShowUploadList={
     showPreviewIcon:true,
-    showRemoveIcon:false, 
+    showRemoveIcon:false,
   }
   @Input() disa: any = false;
   public oMlist: any;
@@ -50,7 +50,7 @@ export class SoformComponent implements OnInit {
       remarks: new FormControl({ value:'',disabled:this.disa},null),
       so:new FormControl({ value:'',disabled:this.disa},[Validators.required,this.cheakSo]),
     })
-    this.nzShowUploadList.showRemoveIcon=!this.disa?true:false;    
+    this.nzShowUploadList.showRemoveIcon=!this.disa?true:false;
     let status = this.activatedRouter.queryParams['_value'].status;
     status=='prebook_end'&&this.getBase();
     this.getUser();
@@ -61,10 +61,10 @@ export class SoformComponent implements OnInit {
    //oa文件
    getOafile()
    {
-     
+
      const mainId=decodeString(this.activatedRouter.queryParams['_value'].id);
      let url=`/act/prebook/getExamineByOA?mainId=${mainId}`;
-     this.http.get(url).subscribe(res=>{       
+     this.http.get(url).subscribe(res=>{
         this.param.foreignTradeFile=res.data.foreignTradeFile;
         this.param.stockAgreementDraftFile=res.data.stockAgreementDraftFile;
         this.param.foreignTradeFileName=res.data.foreignTradeFileName;
@@ -77,7 +77,7 @@ export class SoformComponent implements OnInit {
         this.param.sofonFileName=res.data.sofonFileName;
         this.param.stockAgreementFile=res.data.stockAgreementFile;
         this.param.stockAgreementFileName=res.data.stockAgreementFileName;
-        
+
      })
    }
 
@@ -92,7 +92,8 @@ export class SoformComponent implements OnInit {
     //获取人员下拉列表
     getUser() {
       let marinId = decodeString(this.activatedRouter.queryParams['_value'].id);
-      let url = `/act/preparation/getOitExpert?mainId=${marinId}`;
+      // let url = `/act/preparation/getOitExpert?mainId=${marinId}`;
+      let url = '/act/role/getUsersByRole?role=OM';
       return new Promise((reslove, reject) => {
         this.http.get(url).subscribe((res => {
           this.load = false;
@@ -111,24 +112,24 @@ export class SoformComponent implements OnInit {
           this.message.create("error", "请求异常")
         }))
       })
-    }  
+    }
 //取消
 public cancelContract(): void {
   this.router.navigate(['/igt/my-task']);
 }
   getBase()
   {
-    
+
     let mainId = decodeString(this.activatedRouter.queryParams['_value'].id);
     let url=`/act/prebook/getExamineBySo?mainId=${mainId}`;
-    this.http.get(url).subscribe(res => {            
-      if (res.code === '0000' && res.data) {               
+    this.http.get(url).subscribe(res => {
+      if (res.code === '0000' && res.data) {
         if (res.data) {
-          
+
           this.param.remarks = res.data.remarks;
-          this.param.so=res.data.so;          
+          this.param.so=res.data.so;
           this.param.file=res.data.file?res.data.file:"";
-          this.param.fileName=res.data.fileName?res.data.fileName:"";          
+          this.param.fileName=res.data.fileName?res.data.fileName:"";
           this.viewData("file", "fileFileList", this.param.fileName);
         }
       }
@@ -137,7 +138,7 @@ public cancelContract(): void {
       }
     })
   }
-   
+
   cheakSo(control: FormControl) {
     if (control.value) {
       const reg = /^([\d;\s]{0,1000}$)$/;
@@ -157,10 +158,10 @@ public cancelContract(): void {
         this.param.file = "";
         this.fileFileList = [];
       });
-      return false;   
+      return false;
     }
     nzRemoveFile=(file: UploadFile): any => {
-      this.param.file="";      
+      this.param.file="";
       return true;
     }
     // 文件下载
@@ -180,7 +181,7 @@ public cancelContract(): void {
     const serverPath = urlPath.substring(0, index);
     const url = `${serverPath}act/system/download/${file.fileId}`;
     window.open(url, '_blank');
-  } 
+  }
   submit() {
     const mainId = decodeString(this.activatedRouter.queryParams['_value'].id);
     const processInstanceTaskId=this.activatedRouter.queryParams['_value'].processInstanceTaskId;
@@ -201,11 +202,11 @@ public cancelContract(): void {
     if(!this.validateForm.valid)
     {
        return;
-    }     
+    }
     this.http.post(url, param).subscribe(res => {
       if (res.code=="0000") {
         this.message.create('success', res.msg);
-        this.router.navigate(["/igt/my-task"]);        
+        this.router.navigate(["/igt/my-task"]);
       }
       else {
         this.message.create('error', res.msg);
@@ -218,7 +219,7 @@ public cancelContract(): void {
    * @param   fileList 回显数组
    */
    viewData(data, fileList, name?: any) {
-     
+
     const bidWinningNotice = this.param[data];
     if (bidWinningNotice != "" && bidWinningNotice != undefined && bidWinningNotice != null) {
       this[fileList] = [];
@@ -228,6 +229,6 @@ public cancelContract(): void {
       obj.name = name ? name : "下载文件"
       this[fileList].push(obj);
     }
-  } 
+  }
 
 }

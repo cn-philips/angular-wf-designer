@@ -25,7 +25,7 @@ export class SupplyFormComponent implements OnInit {
     private ServesiceService: ServesiceService,) {
 
   }
-  
+
   public fileList: any = []; //附件文件
   public foreignTradeFileList: any = []; //外贸公司出口管制
   public draftFileList: any = []; //备货协议草稿
@@ -54,7 +54,7 @@ export class SupplyFormComponent implements OnInit {
   public upmode=true;
   public switchValid = true;
   public params: any = {
-    foreignTradeFile: "", //外贸公司出口管制 
+    foreignTradeFile: "", //外贸公司出口管制
     stockAgreementDraftFile: "", //备货协议草稿
     stockAgreementFile: "", //备货协议正本
     sofonFile: "", //sofonfile
@@ -71,7 +71,7 @@ export class SupplyFormComponent implements OnInit {
   validateForm: FormGroup;
   ngOnChanges()
   {
-    
+
     if(this.dataBase.hospitalNature)
     {
         if(this.params.sofonNo==""||this.params.sofonNo==null||this.params.sofonNo==undefined)
@@ -101,7 +101,7 @@ export class SupplyFormComponent implements OnInit {
       this.http.get('/act/system/upload/cp/' + this.fileChecked[0]).subscribe((res1 => {
         if (res1.code == '0000') {
           this.params.sofonFileName = res1.data.FileName;
-          this.params.sofonFile = res1.data.FileId;         
+          this.params.sofonFile = res1.data.FileId;
           this.message.create('success', res1.msg);
         }
       }), error => {
@@ -114,7 +114,7 @@ export class SupplyFormComponent implements OnInit {
       this.http.post('/act/system/upload/cp', this.fileChecked).subscribe((res1 => {
         if (res1.code == '0000') {
           this.params.sofonFileName = res1.data.FileName;
-          this.params.sofonFile = res1.data.FileId;         
+          this.params.sofonFile = res1.data.FileId;
           this.message.create('success', res1.msg);
         }
       }), error => {
@@ -144,7 +144,7 @@ export class SupplyFormComponent implements OnInit {
             this.files.thelist[i] = res.data[i];
           }
         }), error => {
-  
+
           });
       } else {
         this.message.create('error', '请先查询dealFormId');
@@ -155,7 +155,7 @@ export class SupplyFormComponent implements OnInit {
     this.params.sofonFile='';
     this.params.sofonFileName='';
     this.sofonFileList=[];
-    this.upmode = !mode;   
+    this.upmode = !mode;
   }
   //查询时间
   getReadyTime() {
@@ -174,11 +174,24 @@ export class SupplyFormComponent implements OnInit {
       this.params.stockAgreementDraftFile = res.data.stockAgreementDraftFile;
       this.params.foreignTradeFileName = res.data.foreignTradeFileName;
       this.params.stockAgreementDraftFileName = res.data.stockAgreementDraftFileName;
-      
+
       this.viewData("foreignTradeFile","foreignTradeFileList",this.params.foreignTradeFileName);
       this.viewData("stockAgreementDraftFile","draftFileList",this.params.stockAgreementDraftFileName);
-
+      this.BringOMLogisticianIsNull();
     })
+  }
+  // logisticsSpecialist 为空时第一次填写，默认带入节点审批OM
+  public BringOMLogisticianIsNull() {
+    if (this.params && this.params.logisticsSpecialist != null && this.params.logisticsSpecialist !== '') {
+      return;
+    }
+    let marinId = decodeString(this.activatedRouter.queryParams['_value'].id);
+    let url = `/act/preparation/getOitExpert?mainId=${marinId}`;
+    this.http.get(url).subscribe(res => {
+      if (res && res.data && res.data[0]) {
+        this.params.logisticsSpecialist = res.data[0].email;
+      }
+    });
   }
 //取消
 public cancelContract(): void {
@@ -191,7 +204,7 @@ public cancelContract(): void {
     viewData(data, fileList, name?: any) {
       const bidWinningNotice = this.params[data];
       if (bidWinningNotice != "" && bidWinningNotice != undefined && bidWinningNotice != null) {
-  
+
         this[fileList] = [];
         let obj = { uid: "", name: "", fileId: "" }
         obj.uid = this.params[data];
@@ -204,15 +217,16 @@ public cancelContract(): void {
       //获取人员下拉列表
   getUser() {
     let marinId = decodeString(this.activatedRouter.queryParams['_value'].id);
-    let url = `/act/preparation/getOitExpert?mainId=${marinId}`;
+    // let url = `/act/preparation/getOitExpert?mainId=${marinId}`;
+    let url = '/act/role/getUsersByRole?role=OM';
     return new Promise((reslove, reject) => {
       this.http.get(url).subscribe((res => {
         this.load = false;
         if (res.code == "0000") {
           this.oMlist = res.data;
-          if (this.oMlist.length == 1) {
-            this.params.logisticsSpecialist = this.oMlist[0].email;
-          }
+          // if (this.oMlist.length == 1) {
+          //   this.params.logisticsSpecialist = this.oMlist[0].email;
+          // }
           reslove(res.data)
         }
         else {
