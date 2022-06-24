@@ -42,6 +42,8 @@ export class LcAmendmentOrderInfoComponent implements OnInit {
     cancelReasonDesc.clearValidators()
     if (reasons.includes('sp_lc_other_cancel')) {
       cancelReasonDesc.setValidators(Validators.required)
+    } else {
+      this.lcInfo.patchValue({cancelReasonDesc: null});
     }
   }
 
@@ -50,6 +52,14 @@ export class LcAmendmentOrderInfoComponent implements OnInit {
     modifyEntryDesc.clearValidators()
     if (entries.includes('sp_lc_other_modify')) {
       modifyEntryDesc.setValidators(Validators.required)
+    } else {
+      this.lcInfo.patchValue({modifyEntryDesc: null});
+    }
+  }
+
+  onAcceptChange(value) {
+    if(value != '1'){
+      this.lcInfo.patchValue({lcDiscrepancyPaymentMethod:null});
     }
   }
 

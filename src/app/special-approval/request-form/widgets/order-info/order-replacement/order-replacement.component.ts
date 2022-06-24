@@ -96,12 +96,13 @@ export class OrderReplacementComponent implements OnInit, OnChanges {
 
   //监测 @Input值的变化
   ngOnChanges(changes: SimpleChanges): void {
-    //是否是反馈信息节点, 必填字段暂时取消
-    // if (changes.showFeedbackTab && changes.showFeedbackTab.currentValue) {
-    //   let clearedFields = ['newSapOrderNo', 'newSapCreateTime'];
-    //   clearedFields.forEach((fieldName) => this.formValues.controls[fieldName].enable());
-    //   clearedFields.forEach((fieldName) => this.formValues.controls[fieldName].setValidators([Validators.required]));
-    // }
+    //是否是反馈信息节点
+    if (changes.showFeedbackTab && changes.showFeedbackTab.currentValue) {
+      let clearedFields = ['newSapOrderNo', 'newSapCreateTime'];
+      clearedFields.forEach((fieldName) => this.formValues.controls[fieldName].enable());
+      //必填暂时取消
+      // clearedFields.forEach((fieldName) => this.formValues.controls[fieldName].setValidators([Validators.required]));
+    }
   }
 
    // 初始化OM列表
