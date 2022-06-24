@@ -228,8 +228,6 @@ const PAYMENT_METHOD_LIST = [
   { label: '其他', value: '其他' },
 ]
 
-const PAYMENT_METHOD_PDIGT_OTHER = '其他'
-
 const PAYMENT_METHOD_PDIGT_LIST = [
   { label: 'DI&IGT-90% TT before FP, 10% TT against AC', value: 'DI&IGT-90% TT before FP, 10% TT against AC' },
   { label: 'DI&IGT-90% LC before FP, 10% TT against AC', value: 'DI&IGT-90% LC before FP, 10% TT against AC' },
@@ -243,7 +241,9 @@ const PAYMENT_METHOD_PDIGT_LIST = [
   { label: 'DI&IGT-100% LC before OIT', value: 'DI&IGT-100% LC before OIT' },
   { label: 'DI&IGT-30%TT before OIT, 70% TT before FP', value: 'DI&IGT-30%TT before OIT, 70% TT before FP' },
   { label: 'Pulse QFR-100% in 60 days after delivery', value: 'Pulse QFR-100% in 60 days after delivery' },
-  { label: '其他', value: PAYMENT_METHOD_PDIGT_OTHER },
+  { label: '优于标准付款方式（请在备注处描述实际付款方式）', value: '优于标准付款方式（请在备注处描述实际付款方式）' },
+  { label: '远期信用证（请在备注处描述信用证期限及开证行）', value: '远期信用证（请在备注处描述信用证期限及开证行）' },
+  { label: '其他（将触发非标付款方式审批流）', value: '其他（将触发非标付款方式审批流）' },
 ]
 
 export {
@@ -275,5 +275,4 @@ export {
   FIELD_STATUS_LIST,
   PAYMENT_METHOD_LIST,
   PAYMENT_METHOD_PDIGT_LIST,
-  PAYMENT_METHOD_PDIGT_OTHER,
 };

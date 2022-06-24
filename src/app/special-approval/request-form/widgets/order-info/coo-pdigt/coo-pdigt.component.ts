@@ -6,7 +6,6 @@ import {
   BUSINESS_MODEL_LIST,
   CURRENCIES,
   PAYMENT_METHOD_PDIGT_LIST,
-  PAYMENT_METHOD_PDIGT_OTHER,
   PROCESS_STATUS,
 } from '../../../../special-approval.constants'
 import { SpecialApprovalService } from '../../../../special-approval.service'
@@ -81,7 +80,6 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
   loginUserCode1 = localStorage.getItem('ng_philips_code1')
 
   BUSINESS_MODEL = BUSINESS_MODEL
-  PAYMENT_METHOD_PDIGT_OTHER = PAYMENT_METHOD_PDIGT_OTHER
 
   showOmField = false
   showPmField = false
@@ -372,7 +370,7 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
   onPaymentMethodChange(method) {
     const paymentMethodOther = this.orderInfo.get('paymentMethodOther')
     paymentMethodOther.patchValue(null)
-    if (method === PAYMENT_METHOD_PDIGT_OTHER) {
+    if (method && method.indexOf('其他') > -1) {
       paymentMethodOther.setValidators(Validators.required)
     } else {
       paymentMethodOther.clearValidators()
