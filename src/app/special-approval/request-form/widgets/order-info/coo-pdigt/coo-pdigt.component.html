@@ -329,6 +329,11 @@
           <nz-form-label nzXl="8" nzXXl="6" nzRequired nzFor="contractNo">合同号</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <input id="contractNo" type="text" nz-input formControlName="contractNo" />
+            <nz-alert nzType="warning" [nzMessage]="contractNoHint" nzShowIcon>
+              <ng-template #contractNoHint>
+                <div>人民币订单请填写采购订单号（业务模式=“Distributor Deal”）或买卖协议号（业务模式=“Direct Deal”），美金订单请填写进口协议号</div>
+              </ng-template>
+            </nz-alert>
             <nz-form-explain *ngIf="orderInfo.get('contractNo')?.dirty && orderInfo.get('contractNo')?.errors">
               请填写合同号
             </nz-form-explain>
@@ -795,7 +800,7 @@
 
       <div nz-col nzXs="24" nzSm="24" nzMd="12" *ngIf="showPmFeedbackField">
         <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6" nzRequired>签署后的COO确认函</nz-form-label>
+          <nz-form-label nzXl="8" nzXXl="6">签署后的COO确认函</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <shared-upload-file formControlName="cooConfirmationLetterSign"></shared-upload-file>
             <nz-form-explain
@@ -813,4 +818,4 @@
 
 <app-select-hospital #selectHospital (select)="onSelectHospital($event)"></app-select-hospital>
 <app-select-dealer #selectDealer (select)="onSelectDealer($event)"></app-select-dealer>
-<app-select-reference #selectReference (select)="onSelectReference($event)"></app-select-reference>
+<app-select-reference defaultOrderType="OIT" [orderTypeDisabled]="true" #selectReference (select)="onSelectReference($event)"></app-select-reference>

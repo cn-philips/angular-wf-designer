@@ -224,21 +224,37 @@
                   </div>
                 </div>
                 <ng-container *ngIf="!subList.custom">
-                  <div
-                    *ngFor="let item of subList.approverList"
-                    class="approve-item"
-                  >
-                    <div class="approve-avatar">
-                      <i
-                        nz-icon
-                        nzType="user"
-                        nzTheme="outline"
-                        style="font-size: 36px"
-                      ></i>
-                      <div class="approver">{{ item.role || item.user }}</div>
+                  <ng-container *ngIf="subList.approverList.length > 0">
+                    <div
+                      *ngFor="let item of subList.approverList"
+                      class="approve-item"
+                    >
+                      <div class="approve-avatar">
+                        <i
+                          nz-icon
+                          nzType="user"
+                          nzTheme="outline"
+                          style="font-size: 36px"
+                        ></i>
+                        <div class="approver">{{ item.role || item.user }}</div>
+                      </div>
+                      <div class="vertical-line"></div>
                     </div>
-                    <div class="vertical-line"></div>
-                  </div>
+                  </ng-container>
+                  <ng-container *ngIf="subList.approverList.length === 0">
+                    <div class="approve-item">
+                      <div class="approve-avatar">
+                        <i
+                          nz-icon
+                          nzType="user"
+                          nzTheme="outline"
+                          style="font-size: 36px"
+                        ></i>
+                        <div class="approver">申请人</div>
+                      </div>
+                      <div class="vertical-line"></div>
+                    </div>
+                  </ng-container>
                 </ng-container>
               </div>
               <div class="horizontal-line"></div>

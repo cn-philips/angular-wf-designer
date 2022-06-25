@@ -1,6 +1,5 @@
 /deep/ {
   .preview-container {
-    padding: 0 24px 24px 24px;
     border-radius: 12px;
     color: #337fbf;
     border: 1px solid #337fbf;
@@ -13,6 +12,8 @@
     .approve-diagram {
       display: flex;
       justify-content: center;
+      padding: 0 24px 24px 24px;
+      justify-content: flex-start;
       align-items: center;
       text-align: center;
       overflow: auto;
