@@ -79,6 +79,8 @@ export class SelectReferenceComponent implements OnInit {
   @Input() defaultOrderType: string;
   @Output() selectMultiple: EventEmitter<Reference[]> = new EventEmitter()
 
+  @Input() orderTypeDisabled = false
+
   selectReferenceList: Reference[] = [];
 
   constructor(private spService: SpecialApprovalService, private message: NzMessageService) { }

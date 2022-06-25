@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, ViewChild, OnChanges, SimpleChanges } from '@angular/core';
-import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms'
+import { AbstractControl, AsyncValidatorFn, FormArray, FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms'
 import { BG_LIST, BUSINESS_MODEL, BUSINESS_MODEL_LIST, CURRENCIES, FIELD_STATUS_LIST, FIELD_STATUS_OTHER, PAYMENT_METHOD_LIST, PROCESS_STATUS } from '../../../../special-approval.constants'
 import { SpecialApprovalService } from '../../../../special-approval.service'
 import { Dealer, SelectDealerComponent } from '../../select-dealer/select-dealer.component';
@@ -9,9 +9,51 @@ import { environment } from "../../../../../../environments/environment";
 import { read, utils } from "xlsx";
 import { PdfPreviewComponent } from '../../../../../shared/components'
 import * as moment from 'moment'
+import { saveAs } from 'file-saver';
+
+import { HttpService } from '../../../../../services';
 
 const disableSubmitValidtorFn = (disableValue) => (control: AbstractControl): ValidationErrors | null => {
   return control.value === disableValue ? { disableSubmit: true } : null
+}
+
+// 订单列表里的业务模式, 经销商, 飞利浦实体名称需要保持一致
+const orderInfosValidator = (control: FormArray): ValidationErrors | null => {
+  const orderInfos = control.getRawValue()
+  let dealerName
+  let philipsName
+  let businessModel
+  const error = {
+    dealerNameDiff: false,
+    philipsNameDiff: false,
+    businessModelDiff: false,
+  }
+  for(let orderInfo of orderInfos) {
+    if (orderInfo.dealerName) {
+      if (dealerName && orderInfo.dealerName !== dealerName) {
+        error.dealerNameDiff = true
+      } else {
+        dealerName = orderInfo.dealerName
+      }
+    }
+
+    if (orderInfo.philipsName) {
+      if (philipsName && orderInfo.philipsName !== philipsName) {
+        error.philipsNameDiff = true
+      } else {
+        philipsName = orderInfo.philipsName
+      }
+    }
+
+    if (orderInfo.businessModel) {
+      if (businessModel && orderInfo.businessModel !== businessModel) {
+        error.businessModelDiff = true
+      } else {
+        businessModel = orderInfo.businessModel
+      }
+    }
+  }
+  return (error.dealerNameDiff || error.philipsNameDiff || error.businessModelDiff) ? error : null
 }
 
 let loadingId
@@ -35,9 +77,8 @@ const excelKeyMap = {
   数量: 'quantity',
   进单日期: 'orderDate',
   出厂日期: 'productionDate',
-  到货日期: 'arrivalDate',
   货物送达日期: 'goodsDeliveryDate',
-  保修期: 'guaranteeMonth',
+  '保修期（月）': 'guaranteeMonth',
   是否为CIP港口: 'cipPort',
   送达地址类型: 'addressType',
   货物送达地址CN: 'deliveryAddress',
@@ -53,11 +94,10 @@ const productInfo = {
   equipmentSn: [null, [Validators.required]], // 设备SN号
   orderDate: [null, [Validators.required]], // 进单日期
   productionDate: [null, [Validators.required]], // 出厂日期
-  arrivalDate: [null, [Validators.required]], // 到货日期
   goodsDeliveryDate: [null, [Validators.required]], // 货物送达日期
   guaranteeMonth: [null, [Validators.required]], // 保修期
   cipPort: [null, [Validators.required]], // 是否为CIP港口
-  airTransportNo: [null, [Validators.required]], // POD扫描件/空运单
+  airTransportNo: [null], // POD扫描件/空运单
   addressType: [null, [Validators.required]], // 送达地址类型
   deliveryAddress: [null, [Validators.required]], // 货物送达地址中文
   deliveryAddressEn: [null, [Validators.required]], // 货物送达地址英文
@@ -79,7 +119,7 @@ const orderInfo = {
   currency: [null, [Validators.required]], // 币制
   om: [null], // OM
   contractNo: [null, [Validators.required]], // 合同号
-  purchaseOrderNo: [null, Validators.required], // 采购订单
+  purchaseOrderNo: [null], // 采购订单
   shipToName: [null, Validators.required], // ship-to name
   // 产品信息
   ...productInfo,
@@ -120,11 +160,10 @@ export class CooCcOrderInfoComponent implements OnInit, OnChanges {
   templateUrl = `${environment.base_href}/assets/template/COO-CC-Template.xlsx`
 
   formValues = this.fb.group({
-    orderInfos: this.fb.array([], [Validators.required]),
+    orderInfos: this.fb.array([], [Validators.required, orderInfosValidator]),
     cooInfo: this.fb.group({
       installationOrDispatch: [null, [Validators.required, disableSubmitValidtorFn('1')]], // 是否已装机或派单
       threeMonthsAfterArrival: [null, [disableSubmitValidtorFn('0')]], // 是否到货>3个月
-      cooSignedNotIcf: [null, [Validators.required, disableSubmitValidtorFn('1')]], // 经销商是否存在之前签署过COO的订单12个月未签回安装报告的情况
       paymentNinetyPercent: [null, [Validators.required, disableSubmitValidtorFn('0')]], // 是否已付90%以上订单金额
       applySignedDate: [null], // 预计签署日期
       cooConfirmationLetterDraft: [null], // COO确认函草稿
@@ -210,7 +249,8 @@ export class CooCcOrderInfoComponent implements OnInit, OnChanges {
   constructor(
     private fb: FormBuilder,
     private message: NzMessageService,
-    public spService: SpecialApprovalService
+    public spService: SpecialApprovalService,
+    private http: HttpService,
   ) { }
 
   ngOnInit() {
@@ -291,8 +331,15 @@ export class CooCcOrderInfoComponent implements OnInit, OnChanges {
     this.cooInfo.patchValue({ threeMonthsAfterArrival })
   }
 
+  resetOrderInfos() {
+    while(this.orderInfos.length !== 0) {
+      this.orderInfos.removeAt(0)
+    }
+  }
+
   onImportOrderInfo = (file) => {
     loadingId = this.message.loading('正在导入, 请稍候...', { nzDuration: 0 }).messageId
+    this.resetOrderInfos()
     const reader = new FileReader();
     reader.onload = (e: any) => {
       const workbook = read(e.target.result, { type: "array" });
@@ -301,11 +348,11 @@ export class CooCcOrderInfoComponent implements OnInit, OnChanges {
       const results = utils.sheet_to_json(worksheet);
       const orderInfoFields = [
         'bmc', 'bg', 'cycleGroup', 'bigArea', 'businessModel',
-        'dealerName', 'dealerCode', 'philipsName', 'sapOrderNo',
-        'currency', 'om', 'contractNo', 'purchaseOrderNo', 'shipToName'
+        'dealerName', 'philipsName', 'sapOrderNo',
+        'currency', 'om', 'contractNo', 'shipToName'
       ]
          
-      const orderInfos = results.map((order) => {
+      const orderInfos = results.map((order, index) => {
         const orderInfo = Object.keys(order).reduce((calc, cur) => {
           const key = excelKeyMap[cur.trim()]
           const value = order[cur]
@@ -323,10 +370,14 @@ export class CooCcOrderInfoComponent implements OnInit, OnChanges {
           orderInfo.businessModel = model.value
         }
         orderInfo.isOrder = false
-        for(let fieldName of orderInfoFields) {
-          if (orderInfo[fieldName] !== undefined) {
-            orderInfo.isOrder = true
-            break
+        if (index === 0) {
+          orderInfo.isOrder = true
+        } else {
+          for(let fieldName of orderInfoFields) {
+            if (orderInfo[fieldName] !== undefined) {
+              orderInfo.isOrder = true
+              break
+            }
           }
         }
         return orderInfo
@@ -341,6 +392,10 @@ export class CooCcOrderInfoComponent implements OnInit, OnChanges {
             this.orderInfos.push(this.createProduct())
           }
           this.orderInfos.at(orderInfoIndex).patchValue(orderInfo)
+          if (orderInfo.businessModel) {
+            this.onBusinessModelChange(orderInfo.businessModel, orderInfoIndex)
+          }
+          this.checkDealerName(this.orderInfos.at(orderInfoIndex) as FormGroup)
           orderInfoIndex++
         })
         this.message.remove(loadingId)
@@ -350,6 +405,29 @@ export class CooCcOrderInfoComponent implements OnInit, OnChanges {
     };
     reader.readAsArrayBuffer(file);
     return false;
+  }
+
+  checkDealerName(orderInfo: FormGroup) {
+    const dealerName = orderInfo.get('dealerName')
+    if (dealerName) {
+      const resetDealer = () => {
+        orderInfo.patchValue({ dealerName: null, dealerCode: null })
+      }
+      this.http.post(`/act/preparation/getDealersOnlyWithRegFlag`, { dealerName: dealerName.value })
+      .subscribe(({ code, data }) => {
+        if (code === '0000') {
+          const { rows } = data
+          if (rows.length === 1) {
+            const { dealerName, dealerCode } = rows[0]
+            orderInfo.patchValue({ dealerName, dealerCode })
+          } else {
+            resetDealer()
+          }
+        } else {
+          resetDealer()
+        }
+      }, () => resetDealer())
+    }
   }
 
   isCipPort() {
@@ -415,8 +493,10 @@ export class CooCcOrderInfoComponent implements OnInit, OnChanges {
     const orderInfos = this.orderInfos
     orderInfos.controls.forEach((orderInfo: FormGroup) => {
       for(const i in orderInfo.controls) {
-        orderInfo.controls[i].markAsDirty()
-        orderInfo.controls[i].updateValueAndValidity()
+        if ((i === 'dealerName' && !orderInfo.controls[i].value) || i !== 'dealerName') {
+          orderInfo.controls[i].markAsDirty()
+          orderInfo.controls[i].updateValueAndValidity()
+        }
       }
     })
     const isOrderInfosValid = orderInfos.disabled || orderInfos.valid
@@ -444,14 +524,14 @@ export class CooCcOrderInfoComponent implements OnInit, OnChanges {
         bmc, bg, cycleGroup, bigArea, businessModel, dealerName, dealerCode,
         philipsName, sapOrderNo, currency, om, contractNo, purchaseOrderNo, shipToName,
         // product info
-        productType, quantity, equipmentSn, orderDate, productionDate, arrivalDate,
+        productType, quantity, equipmentSn, orderDate, productionDate,
         goodsDeliveryDate, guaranteeMonth, cipPort, airTransportNo, addressType,
         deliveryAddress, deliveryAddressEn, customsClearancePort, customsClearancePortEn,
       } = orderInfo
       orderInfo.purchaseOrderNo = purchaseOrderNo ? [{ fileId: purchaseOrderNo }] : []
       const productInfo = {
         id: productId,
-        productType, quantity, equipmentSn, orderDate, productionDate, arrivalDate,
+        productType, quantity, equipmentSn, orderDate, productionDate,
         goodsDeliveryDate, guaranteeMonth, cipPort, 
         airTransportNo: airTransportNo ? [{ fileId: airTransportNo }] : [], 
         addressType, deliveryAddress, deliveryAddressEn, customsClearancePort, customsClearancePortEn,
@@ -514,16 +594,19 @@ export class CooCcOrderInfoComponent implements OnInit, OnChanges {
       const { products } = orderInfo
       delete orderInfo.products
       // 初始化fileList
-      const purchaseOrderNo = orderInfo.purchaseOrderNo[0]
+      const purchaseOrderNo = orderInfo.purchaseOrderNo ? orderInfo.purchaseOrderNo[0] : null
       this.addFileListItem(purchaseOrderNo)
       this.orderInfos.push(this.createOrder())
+      if (orderInfo.businessModel) {
+        this.onBusinessModelChange(orderInfo.businessModel, index)
+      }
       this.orderInfos.at(index).patchValue({ 
         ...orderInfo,
         purchaseOrderNo: purchaseOrderNo ? purchaseOrderNo.fileId : null,
       })
       index++
       for(let i = 0; i < products.length; i++) {
-        const airTransportNo = products[i].airTransportNo[0]
+        const airTransportNo = products[i].airTransportNo ? products[i].airTransportNo[0] : null
         this.addFileListItem(airTransportNo)
         const productValue = {
           ...products[i],
@@ -543,12 +626,6 @@ export class CooCcOrderInfoComponent implements OnInit, OnChanges {
 
     console.log('fileList', this.fileList);
     
-  }
-
-  onCooSignedNotIcf(cooSignedNotIcf) {
-    this.cooInfo.patchValue({
-      specialApproval: cooSignedNotIcf
-    })
   }
 
   onCycleGroupChange(index) {
@@ -576,8 +653,8 @@ export class CooCcOrderInfoComponent implements OnInit, OnChanges {
     const { dealerCode, dealerName } = dealer
     const orderInfo = this.orderInfos.at(this.activeOrderIndex)
     orderInfo.patchValue({
-      dealerCode: dealerCode,
-      dealerName: dealerName,
+      dealerCode,
+      dealerName,
     })
   }
 
@@ -646,6 +723,22 @@ export class CooCcOrderInfoComponent implements OnInit, OnChanges {
         item.onError!(err, item.file!)
       }
     )
+  }
+
+  onDownloadFile(orderInfo: FormGroup) {
+    const { purchaseOrderNo } = orderInfo.getRawValue()
+    const file = this.fileList.find(({ fileId }) => fileId === purchaseOrderNo)
+    if (file) {
+      const id = this.message.loading('正在下载..', { nzDuration: 0 }).messageId
+      const { name, fileId } = file
+      let uri = `/act/system/download/${fileId}`
+      this.http.get(uri, {
+        responseType: 'blob'
+      }).subscribe(data => {
+        saveAs(data, name)
+        this.message.remove(id)
+      })
+    }
   }
 
   showTemplate() {

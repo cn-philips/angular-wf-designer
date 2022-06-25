@@ -296,6 +296,7 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
       this.showDeliveryAddress = true
     } else {
       this.products.controls.forEach((product) => {
+        product.patchValue({ goodsDeliveryDate: null })
         product.get('goodsDeliveryDate').clearValidators()
         product.get('goodsDeliveryDate').setErrors(null)
       })
