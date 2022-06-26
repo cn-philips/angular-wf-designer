@@ -54,7 +54,7 @@ export class UploadFileComponent implements OnInit, ControlValueAccessor {
       (response: CommonResponse) => {
         const { data, code } = response;
         if ("0000" === code) {
-          const newFile = { fileId: data }
+          const newFile = { ...file, fileId: data }
           this._value.push(newFile)
           this.onChange(this._value)
           item.onSuccess(newFile, file, response);
@@ -107,7 +107,7 @@ export class UploadFileComponent implements OnInit, ControlValueAccessor {
         nzTitle: `确定移除文件${file.name}?`,
         nzOnOk: () => {
           const fileList = this._value.filter(
-            ({ fileId }) => fileId !== file.uid
+            ({ fileId, uid }) => fileId !== file.uid && uid !== file.uid
           );
           this.onChange(fileList);
           observer.next(true);
