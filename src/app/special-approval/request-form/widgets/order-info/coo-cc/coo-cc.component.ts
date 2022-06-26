@@ -391,10 +391,10 @@ export class CooCcOrderInfoComponent implements OnInit, OnChanges {
           } else {
             this.orderInfos.push(this.createProduct())
           }
-          this.orderInfos.at(orderInfoIndex).patchValue(orderInfo)
           if (orderInfo.businessModel) {
             this.onBusinessModelChange(orderInfo.businessModel, orderInfoIndex)
           }
+          this.orderInfos.at(orderInfoIndex).patchValue(orderInfo)
           this.checkDealerName(this.orderInfos.at(orderInfoIndex) as FormGroup)
           orderInfoIndex++
         })
