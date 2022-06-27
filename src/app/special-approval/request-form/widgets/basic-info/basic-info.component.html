@@ -14,9 +14,9 @@
     <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
       <div nz-col nzXs="24" nzSm="24" nzMd="12">
         <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6" nzFor="applicantName">申请人</nz-form-label>
+          <nz-form-label nzXl="8" nzXXl="6" nzFor="applicant">申请人</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <input nz-input formControlName="applicantName" id="applicantName" [disabled]="true" />
+            <input nz-input formControlName="applicant" id="applicant" [disabled]="true" />
           </nz-form-control>
         </nz-form-item>
       </div>
@@ -113,24 +113,11 @@
         <nz-form-item>
           <nz-form-label nzFor="reason" nzXl="8" nzXXl="6" class="upload-file-label">申请附件</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <nz-upload
-              nzType="drag"
-              nzAction="/act/system/upload"
-              [nzMultiple]="true"
-              [nzFileList]="supportFileList"
-              [nzBeforeUpload]="onBeforeUpload"
-              [nzCustomRequest]="onUploadFile"
-              [nzRemove]="onRemoveFile"
-              [nzDisabled]="!editable"
-              [nzShowUploadList]="editable"
+            <shared-upload-file 
+              [hint]="(editable && applyType === APPLY_TYPE.COO_US) ? '请上传特批邮件及其它支持文件（如需要）' : ''"
+              formControlName="applyFileIds"
             >
-              <p class="ant-upload-drag-icon">
-                <i nz-icon nzType="inbox"></i>
-              </p>
-              <p class="ant-upload-text">点击或者拖拽上传</p>
-            </nz-upload>
-            <nz-alert *ngIf="editable && applyType === APPLY_TYPE.COO_US" nzType="warning" nzMessage="请上传特批邮件及其它支持文件（如需要）"></nz-alert>
-            <app-upload-file-list *ngIf="!editable" [fileList]="supportFileList"></app-upload-file-list>
+            </shared-upload-file>
           </nz-form-control>
         </nz-form-item>
       </div>

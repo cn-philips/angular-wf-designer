@@ -543,7 +543,9 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
       salesAgreementNo, // 买卖协议
       medicalDeviceName, // 设备名称和描述中文
       paymentProvisionLabel,
-      paymentProvisionRemarks
+      paymentProvisionRemarks,
+      foreignTradeCompany,
+      serialNumber,
     } = reference
     this.orderInfo.patchValue({
       referenceId,
@@ -575,6 +577,10 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
     let contractNo
     if (invoiceInformation === 'USD') {
       contractNo = importAgreementNo
+      this.orderInfo.patchValue({
+        foreignCompany: foreignTradeCompany,
+        foreignCompanyNo: serialNumber,
+      })
     } else if (businessModel === 'DIRECT') {
       contractNo = salesAgreementNo
     } else if (businessModel === 'DISTRIBUTOR') {

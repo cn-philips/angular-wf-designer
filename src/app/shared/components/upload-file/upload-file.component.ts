@@ -1,7 +1,6 @@
-import { Component, forwardRef, OnInit, Input } from "@angular/core";
+import { Component, forwardRef, OnInit, Input, TemplateRef } from "@angular/core";
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
-import { UploadFile, UploadXHRArgs, NzModalService } from "ng-zorro-antd";
-import { Observable, Observer } from "rxjs";
+import { UploadXHRArgs, NzModalService } from "ng-zorro-antd";
 import { HttpService } from "../../../services/http.service";
 import { getType } from "../../../../assets/js/tools";
 import { saveAs } from 'file-saver';
@@ -26,12 +25,12 @@ interface CommonResponse {
 })
 export class UploadFileComponent implements OnInit, ControlValueAccessor {
   @Input() limit = 5;
+  @Input() hint: string; // 提示信息
+  @Input() type: string | null = 'drag'
 
   disabled = false
 
   fileList = []; // 文件列表
-
-  _value = []; // model值
 
   onBeforeUpload = (file) => {
     console.log("before upload", file);
@@ -49,14 +48,26 @@ export class UploadFileComponent implements OnInit, ControlValueAccessor {
     formData.append("file", file);
     formData.append("fileType", getType(file));
     formData.append("filename", file.name);
+    const newFile = {
+      status: 'uploading',
+      name: file.name,
+      fileId: Date.now(),
+    }
+    this.fileList = [...this.fileList, newFile]
 
     return this.uploadFile(formData).subscribe(
       (response: CommonResponse) => {
         const { data, code } = response;
         if ("0000" === code) {
-          const newFile = { ...file, fileId: data }
-          this._value.push(newFile)
-          this.onChange(this._value)
+          this.fileList = this.fileList
+            .map((file) => 
+              file.fileId === newFile.fileId ? {
+                ...file,
+                fileId: data,
+                status: 'success',
+              } : file
+            )
+          this.onChange(this.fileList)
           item.onSuccess(newFile, file, response);
         } else {
           item.onError({}, file);
@@ -72,11 +83,9 @@ export class UploadFileComponent implements OnInit, ControlValueAccessor {
     if (obj) {
       this.fileList = obj.map((file) => ({
         ...file,
-        uid: file.fileId,
         name: file.name,
         filename: file.name,
       }));
-      this._value = obj;
     }
   }
 
@@ -99,23 +108,13 @@ export class UploadFileComponent implements OnInit, ControlValueAccessor {
 
   ngOnInit() {}
 
-  onRemoveFile = (file: UploadFile) => {
-    console.log('removed file', file);
-    
-    return new Observable((observer: Observer<boolean>) => {
-      this.modal.confirm({
-        nzTitle: `确定移除文件${file.name}?`,
-        nzOnOk: () => {
-          const fileList = this._value.filter(
-            ({ fileId, uid }) => fileId !== file.uid && uid !== file.uid
-          );
-          this.onChange(fileList);
-          observer.next(true);
-        },
-        nzOnCancel: () => {
-          observer.next(false);
-        },
-      });
+  onRemoveFile = (file) => {
+    this.modal.confirm({
+      nzTitle: `确定移除文件${file.name}?`,
+      nzOnOk: () => {
+        this.fileList = this.fileList.filter(({ fileId }) => fileId !== file.fileId);
+        this.onChange(this.fileList);
+      },
     });
   };
 

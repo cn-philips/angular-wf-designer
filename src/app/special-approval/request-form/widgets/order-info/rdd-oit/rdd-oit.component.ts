@@ -163,7 +163,8 @@ export class RddOitOrderInfoComponent implements OnInit {
         dealerCode, hospitalNo,
         projectName, sapOrderNo, orderAmount, currency,
         subProductType, wbsNo, orderDate, originalRdd, deliveryDelayReason, newRdd,
-        exchangeableOrder
+        exchangeableOrder, exchangeableOrderSale, exchangeableOrderSaleCycleGroup, exchangeableOrderSaleBigArea,
+        exchangeableHospitalName, exchangeableHospitalNo, exchangeableOrderModel, exchangeableSoNo, exchangeableWbsNo, exchangeableOrderSaleDate,
       } = order
       if (isMain) {
         if (!(orderType && bmc &&
@@ -177,6 +178,14 @@ export class RddOitOrderInfoComponent implements OnInit {
         subProductType && wbsNo && orderDate && originalRdd &&
         deliveryDelayReason && newRdd &&
         exchangeableOrder !== null && exchangeableOrder !== undefined
+      )) {
+        hasError = true
+      }
+
+      if (exchangeableOrder == 1 && (
+        !exchangeableOrderSale || !exchangeableOrderSaleCycleGroup || !exchangeableOrderSaleBigArea ||
+        !exchangeableHospitalName || !exchangeableHospitalNo || !exchangeableOrderModel ||
+        !exchangeableSoNo || !exchangeableWbsNo || !exchangeableOrderSaleDate
       )) {
         hasError = true
       }
@@ -275,6 +284,20 @@ export class RddOitOrderInfoComponent implements OnInit {
     const bmc = this.spService.bmcList.find(({ value }) => value === order.bmc);
     if (bmc) {
       order.bg = bmc.bg;
+    }
+  }
+
+  onExchangeableOrderChange(order) {
+    if (order.exchangeableOrder == 0) {
+      order.exchangeableOrderSale = null
+      order.exchangeableOrderSaleCycleGroup = null
+      order.exchangeableOrderSaleBigArea = null
+      order.exchangeableHospitalName = null
+      order.exchangeableHospitalNo = null
+      order.exchangeableOrderModel = null
+      order.exchangeableSoNo = null
+      order.exchangeableWbsNo = null
+      order.exchangeableOrderSaleDate = null
     }
   }
 

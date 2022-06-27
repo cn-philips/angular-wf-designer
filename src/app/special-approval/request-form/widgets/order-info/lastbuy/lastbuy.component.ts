@@ -170,7 +170,6 @@ export class LastbuyComponent implements OnInit {
         currency: null,
         om: null,
         stockingAgreementFile: [],
-        stockingAgreementFileList: [],
         expectedPaymentDate: null,
         expectedSitePlaceDate: null,
         applyArrivalTime: null,
@@ -229,38 +228,6 @@ export class LastbuyComponent implements OnInit {
     return hasError
   }
 
-
-  onUploadFile = (item: UploadXHRArgs) => {
-    const formData = new FormData()
-    const file = item.file as any
-    formData.append('file', file)
-    formData.append('fileType', getType(file))
-    formData.append('filename', file.name)
-
-    return this.spService.uploadFile(formData).subscribe(
-      (response: CommonResponse) => {
-        const { data, code } = response
-        if ('0000' === code) {
-          if (!this.formValues.value[this.upIndex].stockingAgreementFile) {
-            this.formValues.value[this.upIndex].stockingAgreementFile = []
-          }
-          this.formValues.value[this.upIndex].stockingAgreementFile.push({fileId: data})
-
-          item.onSuccess({ fileId: data }, file, response)
-        } else {
-          item.onError({}, file)
-        }
-      },
-      err => {
-        item.onError!(err, item.file!)
-      }
-    )
-  }
-
-  uploadIndex(i: number) {
-    this.upIndex = i
-  }
-
   onSelectMultipleReference(references: Reference[]) {
 
     const data = references.map(reference => {
@@ -294,11 +261,6 @@ export class LastbuyComponent implements OnInit {
         logisticsTime,
       } = reference
 
-      const fileList = [{
-        uid: stockAgreementFile,
-        name: stockAgreementFileName,
-        response: { stockAgreementFile }}]
-
       const orderInfo = {
         orderType: orderType,
         referenceId: referenceId,
@@ -318,8 +280,7 @@ export class LastbuyComponent implements OnInit {
         orderAmount: contractPrice,
         currency: invoiceInformation,
         om: logistician,
-        stockingAgreementFile: [{fileId: stockAgreementFile, name: stockAgreementFileName}],
-        stockingAgreementFileList: fileList,
+        stockingAgreementFile: [{ fileId: stockAgreementFile, name: stockAgreementFileName }],
         expectedPaymentDate: balancePaymentDate,
         expectedSitePlaceDate: readyTime,
         applyArrivalTime: arrivalDate,
@@ -343,10 +304,5 @@ export class LastbuyComponent implements OnInit {
 
   onBgChange(val: string, order, index) {
     order.bmc = null
-  }
-
-  onDeleteFile = (file): boolean =>  {
-
-    return true
   }
 }

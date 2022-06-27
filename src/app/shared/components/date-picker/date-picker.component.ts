@@ -24,7 +24,6 @@ export class DatePickerComponent implements OnInit, ControlValueAccessor {
   @Input() mode = 'date'
 
   _value = null // model值
-  date = null // 组件值
 
   disabled = false
 
@@ -36,15 +35,32 @@ export class DatePickerComponent implements OnInit, ControlValueAccessor {
 
   ngOnInit() { }
 
-  onChange: any = () => {};
+  onChange: any = () => {
+    console.log('change');
+  };
   onTouch: any = () => {};
 
   writeValue(obj: any): void {
-    this.date = obj
+    if (obj) {
+      this.modelValue = obj
+    }
+  }
+
+  get modelValue() {
+    return this._value
+  }
+
+  set modelValue(value) {
+    const formatStr = this.format || DEFAULT_FORMAT[this.mode]
+    this._value = value ? moment(value).format(formatStr) : null
+    this.onChange(this._value)
   }
 
   registerOnChange(fn: any): void {
     this.onChange = fn;
+    if (this._value) {
+      this.onChange(this._value)
+    }
   }
 
   registerOnTouched(fn: any): void {
@@ -53,13 +69,5 @@ export class DatePickerComponent implements OnInit, ControlValueAccessor {
 
   setDisabledState(isDisabled: boolean): void {
     this.disabled = isDisabled
-  }
-
-  onDateChange(date) {
-    const formatStr = this.format || DEFAULT_FORMAT[this.mode]
-    const _value = date ? moment(date).format(formatStr) : null
-    console.log(_value);
-    
-    this.onChange(_value)
   }
 }
