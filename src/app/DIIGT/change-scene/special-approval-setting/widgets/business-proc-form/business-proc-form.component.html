@@ -224,7 +224,7 @@
                   </div>
                 </div>
                 <ng-container *ngIf="!subList.custom">
-                  <ng-container *ngIf="subList.approverList.length > 0">
+                  <ng-container *ngIf="!subList.initiator && subList.approverList.length > 0">
                     <div
                       *ngFor="let item of subList.approverList"
                       class="approve-item"
