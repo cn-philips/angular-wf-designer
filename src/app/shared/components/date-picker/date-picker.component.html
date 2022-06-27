@@ -1,18 +1,16 @@
 <nz-date-picker 
   *ngIf="mode==='date'"
-  [(ngModel)]="date"
+  [(ngModel)]="modelValue"
   style="width: 100%"
   [nzStyle]="{ width: '100%' }"
   [nzPlaceHolder]="nzPlaceHolder"
   [nzDisabled]="disabled"
-  (ngModelChange)="onDateChange($event)"
 ></nz-date-picker>
 <nz-month-picker
   *ngIf="mode==='month'"
-  [(ngModel)]="date"
+  [(ngModel)]="modelValue"
   style="width: 100%"
   [nzStyle]="{ width: '100%' }"
   [nzPlaceHolder]="nzPlaceHolder"
   [nzDisabled]="disabled"
-  (ngModelChange)="onDateChange($event)"
 ></nz-month-picker>

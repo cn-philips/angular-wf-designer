@@ -122,7 +122,7 @@
               <th nzWidth="200px">产品型号</th>
               <th nzWidth="200px">进单日期<br>OIT Date</th>
               <th nzWidth="200px">到货日期<br>GI Act</th>
-              <th *ngIf="showScPlanningField" nzWidth="200px">出厂日期<br>PMG GL Act</th>
+              <th *ngIf="showScPlanningField" nzWidth="200px">出厂日期<br>PMG GI Act</th>
               <ng-container *ngIf="showOmField">
                 <th nzWidth="200px">货物送达日期</th>
                 <th nzWidth="200px">设备SN号</th>
@@ -208,7 +208,7 @@
                     <shared-date-picker formControlName="productionDate"></shared-date-picker>
                     <nz-form-explain
                       *ngIf="product.get('productionDate')?.dirty && product.get('productionDate')?.errors">
-                      请选择出厂日期PMG GL Act
+                      请选择出厂日期PMG GI Act
                     </nz-form-explain>
                   </nz-form-control>
                 </nz-form-item>

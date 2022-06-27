@@ -41,6 +41,8 @@ export interface Reference {
   balancePaymentDate: string;
   readyTime: string;
   oitMonthEstimate: string;
+  foreignTradeCompany: string; // 外贸公司名称
+  serialNumber: string; // 外贸公司编号
 }
 
 const DEFAULT_SEARCH_PARAMS = {

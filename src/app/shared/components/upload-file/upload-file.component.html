@@ -1,22 +1,33 @@
 <nz-upload
-  nzType="drag"
+  [nzType]="type"
   [nzMultiple]="true"
   [nzLimit]="limit"
   [nzCustomRequest]="onUploadFile"
-  [(nzFileList)]="fileList"
-  [nzRemove]="onRemoveFile"
   [nzBeforeUpload]="onBeforeUpload"
   [nzDisabled]="disabled"
-  [nzShowUploadList]="!disabled"
+  [nzShowUploadList]="false"
 >
-  <p class="ant-upload-drag-icon">
-    <i nz-icon nzType="inbox"></i>
-  </p>
-  <p class="ant-upload-text">点击或者拖拽上传</p>
+  <ng-container *ngIf="type === 'drag'">
+    <p class="ant-upload-drag-icon">
+      <i nz-icon nzType="inbox"></i>
+    </p>
+    <p class="ant-upload-text">点击或者拖拽上传</p>
+  </ng-container>
+  <ng-container *ngIf="type !== 'drag'">
+    <button nz-button><i nz-icon nzType="upload"></i><span>请选择文件</span></button>
+  </ng-container>
 </nz-upload>
+<nz-alert *ngIf="hint" nzType="warning" [nzMessage]="hint"></nz-alert>
 
-<div class="upload-file-list" *ngIf="disabled">
-  <div *ngFor="let file of fileList" class="file-item" (click)="onDownloadFile(file)" [title]="file.name">
-    {{ file.name }}
+<div class="upload-file-list">
+  <div *ngFor="let file of fileList" class="file-item">
+    <span class="file-name" [title]="file.name">
+      <i nz-icon [nzType]="file.status === 'uploading' ? 'loading' : 'paper-clip'"></i>
+      {{ file.name }}
+    </span>
+    <span class="file-btn">
+      <i nz-icon nzType="download" nzTheme="outline" (click)="onDownloadFile(file)"></i>
+      <i nz-icon *ngIf="!disabled" style="margin-left:8px" nzType="close" (click)="onRemoveFile(file)"></i>
+    </span>
   </div>
 </div>

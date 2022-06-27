@@ -233,8 +233,7 @@ export class RequestFormComponent implements OnInit {
   public formValues = this.fb.group({
     basicInfo: this.fb.group({
       applyCode: [null],
-      applicant: [null], // 申请人邮箱
-      applicantName: [{ value: null, disabled: true }, [Validators.required]], // 申请人
+      applicant: [{ value: null, disabled: true }], // 申请人邮箱
       applyType: [null, [Validators.required]], // 申请类型
       applyItem: [{ value: null, disabled: true }, [Validators.required]], // 申请原因
       applyItemDesc: [null], // 其他原因说明
@@ -482,7 +481,6 @@ export class RequestFormComponent implements OnInit {
       // new page
       this.basicInfo.patchValue({
         applicant: localStorage.getItem('ng_philips_code1'),
-        applicantName: localStorage.getItem('ng_philips_username')
       });
       this.basicInfo.get('systemRegion').enable()
       this.showSubmitBtn = true;
@@ -734,6 +732,7 @@ export class RequestFormComponent implements OnInit {
     const data = {
       ...this.requestInfo,
       ...basicInfo,
+      applyFileIds: basicInfo.applyFileIds.map(({ fileId }) => fileId),
       ...ccInfo,
       ccPerson: ccInfo.ccPerson.join(','),
       extInfo,
@@ -1557,7 +1556,7 @@ export class RequestFormComponent implements OnInit {
       const data = await this.spService.getRequestDetail(requestId)
       this.requestInfo = data
       const {
-        createUser, applicant, applicantName,
+        createUser, applicant,
         status, applyCode, applyType, applyItem,
         applyItemDesc, executed, processStatus,
         reason, ccType, ccPerson, orderInfos, attachments,
@@ -1574,14 +1573,13 @@ export class RequestFormComponent implements OnInit {
         basicInfo: {
           applyCode,
           applicant,
-          applicantName: applicantName || applicant,
           applyType,
           applyItem,
           applyItemDesc,
           systemRegion: (bg && cycleGroup) ? [bg, cycleGroup, bigArea, smallArea].filter((str) => str && str.trim()).join('-') : null,
           bg, cycleGroup, bigArea, smallArea,
           reason,
-          applyFileIds: attachments.map(({ fileId }) => fileId),
+          applyFileIds: attachments,
           lastBuyPlan
         },
         ccInfo: {
@@ -1985,7 +1983,14 @@ export class RequestFormComponent implements OnInit {
   // 校验产品列表
   // 特批开始生产、飞利浦承担额外清关、仓储、物流费用、特批发货、用户自定义审批  验证产品列表不能为空
   public verifyProduct() {
-    if (this.applyType === APPLY_TYPE.PRODUCTION || this.applyType === APPLY_TYPE.EXT_INSTALL_COST || this.applyType === APPLY_TYPE.LOGISTICSCOST || this.applyType === APPLY_TYPE.SPECIAL_DELIVERY) {
+    if (
+      this.applyType === APPLY_TYPE.PRODUCTION ||
+      this.applyType === APPLY_TYPE.EXT_INSTALL_COST ||
+      this.applyType === APPLY_TYPE.LOGISTICSCOST ||
+      this.applyType === APPLY_TYPE.SPECIAL_DELIVERY ||
+      this.applyType === APPLY_TYPE.EXT_WARRANTY
+    ) {
+      const errorMsg = this.applyType === APPLY_TYPE.EXT_WARRANTY ? '请完善延保信息' : '请完善产品列表信息'
       const orderInfo = this.formValues.getRawValue().orderInfo;
       if (orderInfo && orderInfo.bg && orderInfo.bg.toLowerCase() === 'cc') {
         return true;
@@ -1993,15 +1998,15 @@ export class RequestFormComponent implements OnInit {
       if (orderInfo && orderInfo.products && orderInfo.products.length > 0) {
         for (let i = 0; i < orderInfo.products.length; i++) {
           if (this.isEmpty(orderInfo.products[i].productType) || this.isEmpty(orderInfo.products[i].wbsNo) || this.isEmpty(orderInfo.products[i].itemNo) || this.isEmpty(orderInfo.products[i].quantity)) {
-            this.message.error('请完善产品列表信息');
+            this.message.error(errorMsg);
             return false;
           }
         }
       } else {
-        this.message.error('请完善产品列表信息');
+        this.message.error(errorMsg);
         return false;
       }
-    }else if (this.applyType === APPLY_TYPE.NONE_DIRECT_ORDER){    //非直销订单 验证产品列表不能为空
+    } else if (this.applyType === APPLY_TYPE.NONE_DIRECT_ORDER){    //非直销订单 验证产品列表不能为空
       const orderInfo = this.formValues.getRawValue().noneDirectOrderInfo;
       if (orderInfo && orderInfo.bg && orderInfo.bg.toLowerCase() === 'cc') {
         return true;

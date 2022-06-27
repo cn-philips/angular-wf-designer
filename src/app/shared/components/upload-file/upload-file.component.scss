@@ -5,6 +5,9 @@
 }
 
 :host /deep/ .file-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-bottom: 4px;
   color: #00CC66;
   cursor: pointer;
@@ -12,6 +15,17 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+
+  .file-name {
+    margin-right: 16px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .file-btn, .file-name {
+    display: flex;
+    align-items: center;
+  }
 
   
   &:last-child {

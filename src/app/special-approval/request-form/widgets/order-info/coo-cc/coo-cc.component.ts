@@ -60,11 +60,9 @@ let loadingId
 
 const excelKeyMap = {
   产品线: "bmc",
-  "BG(Modality)": "bg",
   '销售区域-Cycle Group': "cycleGroup",
   '销售区域-Region': "bigArea",
   业务模式: "businessModel",
-  经销商编号: "dealerCode",
   经销商名称: "dealerName",
   飞利浦实体名称: "philipsName",
   "SAP 订单号（SO#）": "sapOrderNo",
@@ -347,7 +345,7 @@ export class CooCcOrderInfoComponent implements OnInit, OnChanges {
       const worksheet = workbook.Sheets[firstSheetName];
       const results = utils.sheet_to_json(worksheet);
       const orderInfoFields = [
-        'bmc', 'bg', 'cycleGroup', 'bigArea', 'businessModel',
+        'bmc', 'cycleGroup', 'bigArea', 'businessModel',
         'dealerName', 'philipsName', 'sapOrderNo',
         'currency', 'om', 'contractNo', 'shipToName'
       ]
