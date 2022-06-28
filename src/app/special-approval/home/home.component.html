@@ -73,8 +73,8 @@
               <strong class="font-weight-semibold">{{ request.applyCode }}</strong>
             </div>
             <div class="request-list__footer">
-              <span>{{ formatApplyTypeItem(request) }}</span>
-              <small>{{ request.createTime | date: "yyyy-MM-dd" }}</small>
+              <span class="apply-item">{{ formatApplyTypeItem(request) }}</span>
+              <small class="request-date">{{ request.createTime | date: "yyyy-MM-dd" }}</small>
             </div>
           </div>
         </ng-container>

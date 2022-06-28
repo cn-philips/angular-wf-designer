@@ -723,9 +723,9 @@ export class CooCcOrderInfoComponent implements OnInit, OnChanges {
     )
   }
 
-  onDownloadFile(orderInfo: FormGroup) {
-    const { purchaseOrderNo } = orderInfo.getRawValue()
-    const file = this.fileList.find(({ fileId }) => fileId === purchaseOrderNo)
+  onDownloadFile(fileId) {
+    if (!fileId) { return }
+    const file = this.fileList.find((file) => file.fileId === fileId)
     if (file) {
       const id = this.message.loading('正在下载..', { nzDuration: 0 }).messageId
       const { name, fileId } = file

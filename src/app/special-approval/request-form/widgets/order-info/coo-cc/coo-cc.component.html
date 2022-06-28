@@ -220,7 +220,7 @@
                       <nz-select formControlName="purchaseOrderNo">
                         <nz-option *ngFor="let file of fileList" [nzLabel]="file.name" [nzValue]="file.fileId"></nz-option>
                       </nz-select>
-                      <span class="download-btn" *ngIf="orderInfo.get('purchaseOrderNo')?.disabled && orderInfo.get('purchaseOrderNo')?.value" (click)="onDownloadFile(orderInfo)">下载</span>
+                      <span class="download-btn" *ngIf="orderInfo.get('purchaseOrderNo')?.disabled && orderInfo.get('purchaseOrderNo')?.value" (click)="onDownloadFile(orderInfo.get('purchaseOrderNo')?.value)">下载</span>
                     </div>
                   </nz-form-control>
                 </nz-form-item>
@@ -339,7 +339,7 @@
                       <nz-select formControlName="airTransportNo">
                         <nz-option *ngFor="let file of fileList" [nzLabel]="file.name" [nzValue]="file.fileId"></nz-option>
                       </nz-select>
-                      <span class="download-btn" *ngIf="orderInfo.get('airTransportNo')?.disabled && orderInfo.get('airTransportNo')?.value" (click)="onDownloadFile(orderInfo)">下载</span>
+                      <span class="download-btn" *ngIf="orderInfo.get('airTransportNo')?.disabled && orderInfo.get('airTransportNo')?.value" (click)="onDownloadFile(orderInfo.get('airTransportNo')?.value)">下载</span>
                     </div>
                     <!-- <nz-form-explain *ngIf="orderInfo.get('airTransportNo')?.dirty && orderInfo.get('airTransportNo')?.errors">
                       <ng-container *ngIf="!cipPort.value">请上传POD扫描件</ng-container>
@@ -574,7 +574,7 @@
     <thead>
       <tr>
         <th nzAlign="center">文件名</th>                     
-        <th nzWidth="80px" nzAlign="center">操作</th>
+        <th nzWidth="100px" nzAlign="center">操作</th>
       </tr>
     </thead>
     <tbody>
@@ -586,6 +586,7 @@
         </td>
         <td nzAlign="center">
           <button nz-button nzSize="small" nzType="link" (click)="onDeleteFile(file)"><i nz-icon nzType="delete" nzTheme="outline"></i></button>
+          <button nz-button nzSize="small" nzType="link" (click)="onDownloadFile(file.fileId)"><i nz-icon nzType="download" nzTheme="outline"></i></button>
         </td>
       </tr>
     </tbody>
