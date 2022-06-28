@@ -629,10 +629,10 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
       '飞利浦（中国）投资有限公司': 'Philips (China) Investment Co.,Ltd .'
     }
 
-    const { 
+    const {
       currency, receivedAmount, orderAmount, businessModel,
       sapOrderNo, contractNo, hospitalNo, hospitalName,
-      philipsName, products,
+      philipsName, products, dealerName, dealerCode, foreignCompany, cooSign, contractBuyer,
     } = this.orderInfo.getRawValue()
 
     const { applySignedDate } = this.cooInfo.getRawValue()
@@ -656,6 +656,11 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
       deliveryAddress,
       deliveryAddressEn,
       guaranteeMonth,
+      dealerName,
+      dealerCode,
+      foreignCompany,
+      cooSign,
+      contractBuyer,
       applySignedDateUpdateAndguaranteeMonth: (applySignedDate && guaranteeMonth) ? moment(applySignedDate).add(1, 'years').subtract(1, 'days').add(guaranteeMonth, 'months').format('YYYY-MM-DD') : null,
       tableParamsList: JSON.stringify(products.map(({ quantity, equipmentDescription, goodsDeliveryDate, equipmentSn }) => ({ quantity: String(quantity), equipmentDescription, arrivalDate: goodsDeliveryDate, equipmentSn })))
     }
