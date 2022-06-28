@@ -264,7 +264,7 @@
           <td>
             <nz-form-item>
               <nz-form-control>
-                <shared-upload-file [type]="null" [(ngModel)]="data.stockingAgreementFile"></shared-upload-file>
+                <shared-upload-file [disabled]="!editable" [type]="null" [(ngModel)]="data.stockingAgreementFile"></shared-upload-file>
               </nz-form-control>
             </nz-form-item>
           </td>
