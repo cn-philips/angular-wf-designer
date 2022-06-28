@@ -454,6 +454,7 @@ export class PrebaseInfoComponent implements OnInit {
     this.dataBase.dealerCode = arr[0].dealerCode;
     this.distributorLoad(this.dataBase.distributor)
     // this.ServesiceService.dealerCode.emit(this.dataBase.dealerCode);
+    this.dealerCodeList();
   }
   public supportFileBeforeUpload = (file: UploadFile): boolean => {
     const upLoadFileNews = upLoadFileNew.bind(this);
