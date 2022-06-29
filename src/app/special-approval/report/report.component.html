@@ -47,7 +47,7 @@
             <nz-card nz-row nzFlex [nzBodyStyle]="{ padding: 0 }" style="border: none; background-color: rgb(223,223,223);margin: 10px" nzHoverable (click)="onExport(card.type, card.value)">
               <div class="export-content bg-gray">
                 <div class="export-img-wrap" nz-col>
-                  <img src="../../../../assets/image/excel.svg" alt="" />
+                  <i nz-icon nzType="file-excel" nzTheme="twotone" style="font-size: 50px"></i>
                 </div>
                 <span>{{ card.value }}</span>
               </div>
@@ -57,7 +57,7 @@
             <nz-card nz-row nzFlex [nzBodyStyle]="{ padding: 0 }" style="border: none;background-color:  rgba(0%);margin: 10px" >
               <div class="export-content bg-gray">
                 <div class="export-img-wrap" nz-col>
-                  <img src="../../../../assets/image/excel.svg" alt="" />
+                  <i nz-icon nzType="file-excel" nzTheme="twotone" nzTwotoneColor="#808080" style="font-size: 50px"></i>
                 </div>
                 <span>{{ card.value }}</span>
               </div>
