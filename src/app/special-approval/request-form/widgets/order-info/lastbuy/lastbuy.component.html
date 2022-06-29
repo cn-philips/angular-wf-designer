@@ -229,9 +229,8 @@
           <td>
             <nz-form-item>
               <nz-form-control>
-                <nz-input-number [(ngModel)]="data.orderAmount"
-                  [ngModel]="data.orderAmount|pricePermissions:applicantEmail" [nzDisabled]="!editable" required
-                  style="width: 100%;" [nzMin]="0"></nz-input-number>
+                <nz-input-number [ngModel]="data.orderAmount|pricePermissions:applicantEmail" [nzDisabled]="!editable"
+                  required style="width: 100%;" [nzMin]="0"></nz-input-number>
                 <nz-form-explain class="error-msg" *ngIf="!data.orderAmount">
                   请填写合同金额
                 </nz-form-explain>
@@ -264,7 +263,8 @@
           <td>
             <nz-form-item>
               <nz-form-control>
-                <shared-upload-file [disabled]="!editable" [type]="null" [(ngModel)]="data.stockingAgreementFile"></shared-upload-file>
+                <shared-upload-file [disabled]="!editable" [type]="null" [(ngModel)]="data.stockingAgreementFile">
+                </shared-upload-file>
               </nz-form-control>
             </nz-form-item>
           </td>
@@ -318,7 +318,7 @@
             <nz-form-item>
               <nz-form-control>
                 <nz-month-picker [(ngModel)]="data.oitMonthEstimate" style="width: 100%" [nzStyle]="{ width: '100%' }"
-                                [disabled]="!editable" [nzPlaceHolder]="editable ? '请选择月份' : ''"></nz-month-picker>
+                  [disabled]="!editable" [nzPlaceHolder]="editable ? '请选择月份' : ''"></nz-month-picker>
                 <nz-form-explain class="error-msg" *ngIf="!data.oitMonthEstimate">
                   请填写预计OIT月份
                 </nz-form-explain>
