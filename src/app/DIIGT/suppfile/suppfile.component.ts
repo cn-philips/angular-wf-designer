@@ -271,7 +271,7 @@ export class SuppfileComponent implements OnInit {
     {
         let marinId = decodeString(this.activatedRouter.queryParams['_value'].id);
         // let url=`/act/preparation/getOitExpert?mainId=${marinId}`;
-        let url = '/act/role/getUsersByRole?role=OM';
+        let url = '/act/role/getUsersByRole?role=OM&modality=PD&IGT';
         return new Promise((reslove, reject) => {
           this.http.get(url).subscribe((res=>{
             if(res.code=="0000")

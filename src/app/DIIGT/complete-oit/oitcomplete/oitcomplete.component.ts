@@ -476,4 +476,16 @@ public getFormDetails(id) {
     }
     return false;
   }
+
+  // 判断字段是否存在数组内
+  public arrIndexOfStr(arr: [], key: string, value: string) {
+    if (arr) {
+      for (let i = 0; i < arr.length; i++) {
+        if (arr[i][key] === value) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
 }
