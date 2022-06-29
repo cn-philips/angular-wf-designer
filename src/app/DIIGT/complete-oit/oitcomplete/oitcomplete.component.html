@@ -51,6 +51,9 @@
         <nz-form-control [nzSm]="7" [nzXs]="24">
           <nz-select formControlName="logistician" [(ngModel)]="oitInfor.logistician" nzAllowClear
             nzPlaceHolder="Select Personnel 请选择人员">
+            <ng-container *ngIf="!arrIndexOfStr(oitInfor.oMlist, 'email', oitInfor.logistician)">
+              <nz-option [nzValue]="oitInfor.logistician" [nzLabel]="oitInfor.logisticianName"></nz-option>
+            </ng-container>
             <nz-option *ngFor="let item of oitInfor.oMlist" [nzValue]="item.email" [nzLabel]="item.name"></nz-option>
           </nz-select>
           <nz-form-explain *ngIf="

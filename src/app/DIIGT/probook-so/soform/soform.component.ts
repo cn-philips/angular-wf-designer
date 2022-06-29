@@ -33,6 +33,7 @@ export class SoformComponent implements OnInit {
   readyTime:"",
   sofonNo:"",
   logisticsSpecialist:"",
+  logisticsSpecialistName: '',
   foreignTradeFile:"",  //出口管制
   stockAgreementDraftFile:"", //备货协议草稿
   stockAgreementFile:"", //备货协议正本
@@ -70,6 +71,7 @@ export class SoformComponent implements OnInit {
         this.param.foreignTradeFileName=res.data.foreignTradeFileName;
         this.param.stockAgreementDraftFileName=res.data.stockAgreementDraftFileName;
         this.param.logisticsSpecialist=res.data.logisticsSpecialist;
+        this.param.logisticsSpecialistName = res.data.logisticsSpecialistName;
         this.param.sofonNo=res.data.sofonNo;
         this.param.paymentVoucherFile=res.data.paymentVoucherFile;
         this.param.paymentVoucherFileName=res.data.paymentVoucherFileName;
@@ -93,7 +95,7 @@ export class SoformComponent implements OnInit {
     getUser() {
       let marinId = decodeString(this.activatedRouter.queryParams['_value'].id);
       // let url = `/act/preparation/getOitExpert?mainId=${marinId}`;
-      let url = '/act/role/getUsersByRole?role=OM';
+      let url = '/act/role/getUsersByRole?role=OM&modality=PD&IGT';
       return new Promise((reslove, reject) => {
         this.http.get(url).subscribe((res => {
           this.load = false;
@@ -229,6 +231,18 @@ public cancelContract(): void {
       obj.name = name ? name : "下载文件"
       this[fileList].push(obj);
     }
+  }
+
+  // 判断字段是否存在数组内
+  public arrIndexOfStr(arr: [], key: string, value: string) {
+    if (arr) {
+      for (let i = 0; i < arr.length; i++) {
+        if (arr[i][key] === value) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
 }

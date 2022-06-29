@@ -63,6 +63,7 @@ export class SupplyFormComponent implements OnInit {
     remarks: "",
     file:"",
     logisticsSpecialist:"",//物流专员信息logisticsSpecialist
+    logisticsSpecialistName: '',
     sofonNo:"", //sofonNo
   }
   public files: any = {
@@ -190,6 +191,7 @@ export class SupplyFormComponent implements OnInit {
     this.http.get(url).subscribe(res => {
       if (res && res.data && res.data[0]) {
         this.params.logisticsSpecialist = res.data[0].email;
+        this.params.logisticsSpecialistName = res.data[0].name;
       }
     });
   }
@@ -218,7 +220,7 @@ public cancelContract(): void {
   getUser() {
     let marinId = decodeString(this.activatedRouter.queryParams['_value'].id);
     // let url = `/act/preparation/getOitExpert?mainId=${marinId}`;
-    let url = '/act/role/getUsersByRole?role=OM';
+    let url = '/act/role/getUsersByRole?role=OM&modality=PD&IGT';
     return new Promise((reslove, reject) => {
       this.http.get(url).subscribe((res => {
         this.load = false;
@@ -441,6 +443,18 @@ public cancelContract(): void {
   nzRemovePaymentFile = (file: UploadFile): any => {
     this.params.paymentVoucherFile = "";
     return true;
+  }
+
+  // 判断字段是否存在数组内
+  public arrIndexOfStr(arr: [], key: string, value: string) {
+    if (arr) {
+      for (let i = 0; i < arr.length; i++) {
+        if (arr[i][key] === value) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
 }
