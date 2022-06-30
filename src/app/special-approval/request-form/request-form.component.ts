@@ -485,6 +485,7 @@ export class RequestFormComponent implements OnInit {
       this.basicInfo.get('systemRegion').enable()
       this.showSubmitBtn = true;
       this.showSaveBtn = true;
+      this.applicantEmail = localStorage.getItem('ng_philips_code1');
       if (!type || !APPLY_TYPE_MAP[type]) {
         this.navigateToHomePage();
         return;

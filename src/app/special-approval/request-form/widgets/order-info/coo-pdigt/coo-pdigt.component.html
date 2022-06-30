@@ -4,7 +4,9 @@
       <div nz-col nzXs="24" nzSm="24" nzMd="24">
         <nz-form-item>
           <nz-form-control nzXs="24" nzSm="24" nzMd="6">
-            <app-reference-link [cosMainId]="orderInfo.get('cosMainId')?.value" [orderTypes]="orderInfo.get('orderType')?.value" [label]="orderInfo.get('referenceId')?.value"></app-reference-link>
+            <app-reference-link [cosMainId]="orderInfo.get('cosMainId')?.value"
+              [orderTypes]="orderInfo.get('orderType')?.value" [label]="orderInfo.get('referenceId')?.value">
+            </app-reference-link>
           </nz-form-control>
         </nz-form-item>
       </div>
@@ -218,7 +220,8 @@
 
             <nz-form-label nzXs="24" nzSm="24" nzMd="6" nzRequired>币制</nz-form-label>
             <nz-form-control nzXs="24" nzSm="24" nzMd="9">
-              <nz-select formControlName="currency" nzPlaceHolder="Select 请选择币制" (ngModelChange)="onCurrencyChange($event)" #currency>
+              <nz-select formControlName="currency" nzPlaceHolder="Select 请选择币制"
+                (ngModelChange)="onCurrencyChange($event)" #currency>
                 <nz-option *ngFor="let item of selectOptions.currencies" [nzLabel]="item.label" [nzValue]="item.value">
                 </nz-option>
               </nz-select>
@@ -273,11 +276,9 @@
         <nz-form-item>
           <nz-form-label nzXl="8" nzXXl="6" nzRequired>COO签署方</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <nz-radio-group 
-              formControlName="cooSign"
+            <nz-radio-group formControlName="cooSign"
               [nzDisabled]="currency.value === 'CNY' && businessModel.value === 'direct'"
-              (ngModelChange)="onCooSignChange()"
-            >
+              (ngModelChange)="onCooSignChange()">
               <label nz-radio nzValue="最终用户">最终用户</label>
               <label nz-radio nzValue="双签">双签</label>
             </nz-radio-group>
@@ -294,15 +295,13 @@
         <nz-form-item>
           <nz-form-label nzXl="8" nzXXl="6" nzRequired>合同买方</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <nz-select *ngIf="showContractBuyerOptions && editable" formControlName="contractBuyer" [nzPlaceHolder]="selectOptions.contractBuyers.length === 0 ? '请先选择外贸公司和经销商' : ''">
-              <nz-option *ngFor="let buyer of selectOptions.contractBuyers" [nzLabel]="buyer" [nzValue]="buyer"></nz-option>
+            <nz-select *ngIf="showContractBuyerOptions && editable" formControlName="contractBuyer"
+              [nzPlaceHolder]="selectOptions.contractBuyers.length === 0 ? '请先选择外贸公司和经销商' : ''">
+              <nz-option *ngFor="let buyer of selectOptions.contractBuyers" [nzLabel]="buyer" [nzValue]="buyer">
+              </nz-option>
             </nz-select>
-            <input
-              *ngIf="!editable || !showContractBuyerOptions"
-              type="text"
-              nz-input
-              formControlName="contractBuyer"
-            />
+            <input *ngIf="!editable || !showContractBuyerOptions" type="text" nz-input
+              formControlName="contractBuyer" />
             <nz-form-explain *ngIf="orderInfo.get('contractBuyer')?.dirty && orderInfo.get('contractBuyer')?.errors">
               请选择合同买方
             </nz-form-explain>
@@ -386,7 +385,7 @@
                 <th nzWidth="200px">进单日期</th>
                 <th nzWidth="200px">出厂日期</th>
               </ng-container>
-                <!-- <th nzWidth="200px">到货日期</th> -->
+              <!-- <th nzWidth="200px">到货日期</th> -->
               <th nzWidth="200px">货物送达日期</th>
               <ng-container *ngIf="showOmField">
                 <th nzWidth="220px">设备名称和描述中文</th>
@@ -562,7 +561,7 @@
             </nz-form-control>
           </nz-form-item>
         </div>
-  
+
         <div nz-col nzXs="24" nzSm="24" nzMd="12">
           <nz-form-item>
             <nz-form-label nzXl="8" nzXXl="6" nzRequired>货物送达地址英文</nz-form-label>
@@ -652,10 +651,11 @@
           </nz-form-item>
         </div>
 
-        <div nz-col nzXs="24" nzSm="24" nzMd="12">
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" *ngIf="orderInfo.get('orderAmount').value">
           <nz-form-item>
             <nz-form-label nzXl="8" nzXXl="6" nzRequired nzFor="receivedAmount">已收金额</nz-form-label>
-            <nz-form-control nzXs="24" nzSm="24" nzMd="14" [ngClass]="orderInfo.get('receivedAmount')?.dirty && orderInfo.errors?.receivedAmountPercent ? 'has-error' : ''">
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14"
+              [ngClass]="orderInfo.get('receivedAmount')?.dirty && orderInfo.errors?.receivedAmountPercent ? 'has-error' : ''">
               <nz-input-group style="width: 100%" [nzAddOnAfter]="amountPercentAddOn">
                 <nz-input-number id="receivedAmount" style="width: 100%;" formControlName="receivedAmount" [nzMin]="0">
                 </nz-input-number>
@@ -818,4 +818,5 @@
 
 <app-select-hospital #selectHospital (select)="onSelectHospital($event)"></app-select-hospital>
 <app-select-dealer #selectDealer (select)="onSelectDealer($event)"></app-select-dealer>
-<app-select-reference defaultOrderType="OIT" [orderTypeDisabled]="true" #selectReference (select)="onSelectReference($event)"></app-select-reference>
+<app-select-reference defaultOrderType="OIT" [orderTypeDisabled]="true" #selectReference
+  (select)="onSelectReference($event)"></app-select-reference>
