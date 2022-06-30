@@ -229,7 +229,7 @@
           <td>
             <nz-form-item *ngIf="data.isMain">
               <nz-form-control>
-                <nz-input-number [(ngModel)]="data.orderAmount" [nzDisabled]="!editable" required
+                <nz-input-number [nzDisabled]="!editable" required
                   [ngModel]="data.orderAmount|pricePermissions:applicantEmail" style="width: 100%;" [nzMin]="0">
                 </nz-input-number>
                 <nz-form-explain class="error-msg" *ngIf="data.isMain && !data.orderAmount">
@@ -355,7 +355,8 @@
           <td>
             <nz-form-item>
               <nz-form-control>
-                <nz-select style="width: 100%;" [(ngModel)]="data.exchangeableOrder" [disabled]="!editable" required (ngModelChange)="onExchangeableOrderChange(data)">
+                <nz-select style="width: 100%;" [(ngModel)]="data.exchangeableOrder" [disabled]="!editable" required
+                  (ngModelChange)="onExchangeableOrderChange(data)">
                   <nz-option nzLabel="是" [nzValue]="1"></nz-option>
                   <nz-option nzLabel="否" [nzValue]="0"></nz-option>
                 </nz-select>
@@ -369,9 +370,9 @@
           <td>
             <nz-form-item>
               <nz-form-control>
-                <input nz-input [(ngModel)]="data.exchangeableOrderSale" [disabled]="!editable || data.exchangeableOrder == 0" />
-                <nz-form-explain class="error-msg"
-                  *ngIf="!data.exchangeableOrderSale && data.exchangeableOrder == 1">
+                <input nz-input [(ngModel)]="data.exchangeableOrderSale"
+                  [disabled]="!editable || data.exchangeableOrder == 0" />
+                <nz-form-explain class="error-msg" *ngIf="!data.exchangeableOrderSale && data.exchangeableOrder == 1">
                   请填写可换货期订单销售
                 </nz-form-explain>
               </nz-form-control>
@@ -385,7 +386,8 @@
                   <nz-option *ngFor="let item of spService.cycleGroups" [nzLabel]="item.label" [nzValue]="item.value">
                   </nz-option>
                 </nz-select>
-                <nz-select style="width: 48%;" [(ngModel)]="data.exchangeableOrderSaleBigArea" [disabled]="!editable || data.exchangeableOrder == 0">
+                <nz-select style="width: 48%;" [(ngModel)]="data.exchangeableOrderSaleBigArea"
+                  [disabled]="!editable || data.exchangeableOrder == 0">
                   <nz-option *ngFor="let item of spService.cycleGroupBigAreaMap[data.exchangeableOrderSaleCycleGroup]"
                     [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
                 </nz-select>
@@ -413,7 +415,8 @@
                 <ng-template #selectExchangeHospitalBtn>
                   <i *ngIf="data.exchangeHospitalLoading" nz-icon nzType="loading" nzTheme="outline"></i>
                   <button *ngIf="editable && !data.exchangeHospitalLoading" nz-button nzType="primary" class="ml-md"
-                    (click)="onShowSelectHospitalModal(data, true)" [disabled]="data.exchangeableOrder == 0">选择医院</button>
+                    (click)="onShowSelectHospitalModal(data, true)"
+                    [disabled]="data.exchangeableOrder == 0">选择医院</button>
                 </ng-template>
 
                 <nz-form-explain class="error-msg">
@@ -438,12 +441,12 @@
           <td>
             <nz-form-item>
               <nz-form-control>
-                <nz-select style="width: 100%;" [(ngModel)]="data.exchangeableOrderModel" [disabled]="!editable || data.exchangeableOrder == 0">
+                <nz-select style="width: 100%;" [(ngModel)]="data.exchangeableOrderModel"
+                  [disabled]="!editable || data.exchangeableOrder == 0">
                   <nz-option *ngFor="let item of spService.usProductList" [nzLabel]="item.label" [nzValue]="item.value">
                   </nz-option>
                 </nz-select>
-                <nz-form-explain class="error-msg"
-                  *ngIf="!data.exchangeableOrderModel && data.exchangeableOrder == 1">
+                <nz-form-explain class="error-msg" *ngIf="!data.exchangeableOrderModel && data.exchangeableOrder == 1">
                   请选择可换货期订单型号
                 </nz-form-explain>
               </nz-form-control>
@@ -452,9 +455,9 @@
           <td>
             <nz-form-item>
               <nz-form-control>
-                <input nz-input [(ngModel)]="data.exchangeableSoNo" [disabled]="!editable || data.exchangeableOrder == 0" />
-                <nz-form-explain class="error-msg"
-                *ngIf="!data.exchangeableSoNo && data.exchangeableOrder == 1">
+                <input nz-input [(ngModel)]="data.exchangeableSoNo"
+                  [disabled]="!editable || data.exchangeableOrder == 0" />
+                <nz-form-explain class="error-msg" *ngIf="!data.exchangeableSoNo && data.exchangeableOrder == 1">
                   请填写可换货期订单SO#
                 </nz-form-explain>
               </nz-form-control>
@@ -463,9 +466,9 @@
           <td>
             <nz-form-item>
               <nz-form-control>
-                <input nz-input [(ngModel)]="data.exchangeableWbsNo" [disabled]="!editable || data.exchangeableOrder == 0" />
-                <nz-form-explain class="error-msg"
-                  *ngIf="!data.exchangeableWbsNo && data.exchangeableOrder == 1">
+                <input nz-input [(ngModel)]="data.exchangeableWbsNo"
+                  [disabled]="!editable || data.exchangeableOrder == 0" />
+                <nz-form-explain class="error-msg" *ngIf="!data.exchangeableWbsNo && data.exchangeableOrder == 1">
                   请填写可换货期订单WBS#
                 </nz-form-explain>
               </nz-form-control>
@@ -475,7 +478,8 @@
             <nz-form-item>
               <nz-form-control>
                 <nz-date-picker [(ngModel)]="data.exchangeableOrderSaleDate" style="width: 100%"
-                  [nzStyle]="{ width: '100%' }" [disabled]="!editable || data.exchangeableOrder == 0" [nzPlaceHolder]="(editable && data.exchangeableOrder != 0) ? '请选择日期' : ''">
+                  [nzStyle]="{ width: '100%' }" [disabled]="!editable || data.exchangeableOrder == 0"
+                  [nzPlaceHolder]="(editable && data.exchangeableOrder != 0) ? '请选择日期' : ''">
                 </nz-date-picker>
                 <nz-form-explain class="error-msg"
                   *ngIf="!data.exchangeableOrderSaleDate && data.exchangeableOrder == 1">

@@ -11,10 +11,12 @@ export class PricePermissionsPipe implements PipeTransform {
   * */
 
   transform(value: any, email: string): any {
-    const ng_philips_code1 = localStorage.getItem('ng_philips_code1');
-    if (email !== null && email !== undefined && email !== '' && email === ng_philips_code1) {
+    const loginUserEmail = localStorage.getItem('ng_philips_code1');
+    // value null undefined ''直接return
+    if (email === loginUserEmail || [null, undefined, ''].includes(value)) {
       return value;
     }
+    
     const roles = JSON.parse(localStorage.getItem('roles'));
     const permissions = JSON.parse(localStorage.getItem('permissions'));
     if (roles && permissions && permissions.price) {
