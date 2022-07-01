@@ -229,7 +229,10 @@
           <td>
             <nz-form-item *ngIf="data.isMain">
               <nz-form-control>
-                <nz-input-number [nzDisabled]="!editable" required
+                <nz-input-number *ngIf="editable" required [(ngModel)]="data.orderAmount" style="width: 100%;"
+                  [nzMin]="0">
+                </nz-input-number>
+                <nz-input-number *ngIf="!editable" required disabled
                   [ngModel]="data.orderAmount|pricePermissions:applicantEmail" style="width: 100%;" [nzMin]="0">
                 </nz-input-number>
                 <nz-form-explain class="error-msg" *ngIf="data.isMain && !data.orderAmount">
