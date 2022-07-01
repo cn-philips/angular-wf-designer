@@ -128,8 +128,10 @@
           <td>
             <nz-form-item>
               <nz-form-control>
-                <input nz-input type="number" [ngModel]="data.orderAmount|pricePermissions:applicantEmail"
-                  [disabled]="!editable" required />
+                <nz-input-number *ngIf="editable" required [(ngModel)]="data.orderAmount" [nzMin]="0">
+                </nz-input-number>
+                <input disabled *ngIf="!editable" nz-input type="number"
+                  [ngModel]="data.orderAmount|pricePermissions:applicantEmail" required />
               </nz-form-control>
               <nz-form-explain class="error-msg" *ngIf="!data.orderAmount">
                 请填写合同金额
