@@ -1,0 +1,51 @@
+<nz-modal 
+  [(nzVisible)]="visible" 
+  nzWidth="1000px" 
+  nzTitle="选择外贸公司" 
+  [nzFooter]="null"
+  (nzOnCancel)="onHideModal()"
+>
+  <div nz-row class="search-form">
+    <nz-form-item>
+      <nz-form-label [nzSpan]="5" nzFor="email">公司名称</nz-form-label>
+      <nz-form-control [nzSpan]="12">
+        <input nz-input [(ngModel)]="companyName">
+      </nz-form-control>
+      <nz-form-control [nzSpan]="3">
+        <button nz-button class="ml10" nzType="primary" (click)="onSearch()" [nzSize]="6">搜索</button>
+      </nz-form-control>
+    </nz-form-item>
+  </div>
+
+  <div class="table-container">
+    <nz-table 
+      [nzData]="foreignCompanies"
+      [nzShowTotal]="totalTemplate"
+      [nzTotal]="foreignCompanies.length"
+      [nzLoading]="tableLoading"
+      [nzShowPagination]="false"
+      [nzScroll]="{ y: '400px' }"
+    >
+      <thead>
+        <tr>
+          <th nzWidth="300px" nzAlign="left">外贸公司中文名</th>                     
+          <th nzWidth="120px" nzAlign="left">外贸公司编号</th>
+          <th nzAlign="left">外贸公司地址</th>
+          <th nzWidth="60px">操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let company of foreignCompanies">
+          <td nzAlign="left">{{ company.corporateName }}</td>
+          <td nzAlign="left">{{ company.serialNumber }}</td>
+          <td nzAlign="left">{{ company.corporateAddress }}</td>
+          <td nzAlign="left">
+            <button nz-button nzSize="small" nzType="primary" (click)="onSelectCompany(company)">选择</button>
+          </td>
+        </tr>
+      </tbody>
+    </nz-table>
+
+    <ng-template #totalTemplate let-total> 数据总条数 {{ foreignCompanies.length }} </ng-template>
+  </div>
+</nz-modal>
