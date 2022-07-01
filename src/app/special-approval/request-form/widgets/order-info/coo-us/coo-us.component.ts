@@ -5,6 +5,7 @@ import { SpecialApprovalService } from '../../../../special-approval.service'
 import { Dealer, SelectDealerComponent } from '../../select-dealer/select-dealer.component';
 import { PdfPreviewComponent } from '../../../../../shared/components'
 import * as moment from 'moment'
+import {now} from 'moment';
 
 const disableSubmitValidtorFn = (disableValue) => (control: AbstractControl): ValidationErrors | null => {
   return control.value === disableValue ? { disableSubmit: true } : null
@@ -19,7 +20,7 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
 
   originOrderInfo = {}
   originCooInfo = {}
-  
+
   @ViewChild('selectDealer') selectDealer: SelectDealerComponent
   @ViewChild('appPdfPreview') appPdfPreview: PdfPreviewComponent
   @Input() editable = true
@@ -38,6 +39,7 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
   showSelectDealerBtn = false
 
   showDeliveryAddress = false
+  showExpectedFieldDate = true
 
   orderInfo = this.fb.group({
     productType: [{ value: null, disabled: true }], // 产品型号
@@ -76,8 +78,7 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
     expectedNewUserDate: [null], // 如丢单，预计寻得新用户月份
     fieldStatus: [null, [Validators.required]], // 场地状态
     fieldStatusExplain: [null], // 场地状态-补充说明
-    newOrOldHospital: [null, [Validators.required]], // 新建医院还是老医院新院区
-    expectedFieldDate: [null, [Validators.required]], // 预计场地就位日期
+    expectedFieldDate: [null], // 预计场地就位日期
     expectedInstallationDate: [null, [Validators.required]], // 预计装机日期
     expectedSaleDate: [null, [Validators.required]], // 预计记认销售日期
     installationOrDispatch: [null, [Validators.required, disableSubmitValidtorFn('1')]], // 是否已装机或派单
@@ -99,7 +100,7 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
     currencies: CURRENCIES,
     fieldStatusList: FIELD_STATUS_LIST,
     paymentMethodList: PAYMENT_METHOD_LIST,
-  } 
+  }
 
   get products(): FormArray {
     return this.orderInfo.get('products') as FormArray
@@ -174,20 +175,20 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
         if (nodeCode > 'node0') {
           this.showScPlanningField = true
         }
-    
+
         if (nodeCode > 'node2') {
           this.showOmField = true
         }
-    
+
         if(nodeCode > 'node3') {
           this.showOaField = true
         }
-    
+
         if(nodeCode > 'node6') {
           this.showSalesFeedbackField = true
           this.showDeliveryAddress = true
         }
-    
+
         if (nodeCode > 'node7') {
           this.showScPlanningFeedbackField = true
         }
@@ -202,7 +203,7 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
               productsRequiredFields.push('productionDate')
               productsEnabledFields.push('productionDate')
               break
-            case 'node3': // OM补充信息 
+            case 'node3': // OM补充信息
               // orderInfo
               orderInfoEnabledFields.push('paymentMethod', 'paymentReceived')
               orderInfoRequiredFields.push('paymentMethod', 'paymentReceived')
@@ -215,9 +216,9 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
                 'deliveryAddress', 'deliveryAddressEn',
                 'customsClearancePort', 'customsClearancePortEn'
               )
-              cooProductRequiredFields.push('cipPort', 'airTransportNo', 'addressType', 'customsClearancePort', 'customsClearancePortEn')
+              cooProductRequiredFields.push('cipPort', 'airTransportNo', 'customsClearancePort', 'customsClearancePortEn')
               if (this.cooProduct.get('cipPort').value === '0') {
-                cooProductRequiredFields.push('deliveryAddress', 'deliveryAddressEn')
+                cooProductRequiredFields.push('deliveryAddress', 'deliveryAddressEn', 'addressType')
               }
               break
             case 'node4': // OA补充信息
@@ -243,8 +244,8 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
                 cooInfoEnabledFields.push('airTransportNoDealer')
                 productsRequiredFields.push('goodsDeliveryDate')
                 productsEnabledFields.push('goodsDeliveryDate')
-                cooProductRequiredFields.push('deliveryAddress', 'deliveryAddressEn')
-                cooProductEnabledFields.push('deliveryAddress', 'deliveryAddressEn')
+                cooProductRequiredFields.push('deliveryAddress', 'deliveryAddressEn', 'addressType')
+                cooProductEnabledFields.push('deliveryAddress', 'deliveryAddressEn', 'addressType')
               }
               break
             case 'node8': // SC Planning反馈
@@ -274,9 +275,20 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
 
   onFieldStatusChange(status) {
     const fieldStatusExplain = this.cooInfo.get('fieldStatusExplain')
+    const expectedFieldDate = this.cooInfo.get('expectedFieldDate')
+    this.showExpectedFieldDate = true;
     if(status === FIELD_STATUS_OTHER) {
       fieldStatusExplain.setValidators(Validators.required)
+      expectedFieldDate.setValidators(Validators.required)
+    } else if(status === '场地OK') {
+      expectedFieldDate.clearValidators()
+      fieldStatusExplain.clearValidators()
+      this.cooInfo.patchValue({
+        expectedFieldDate: null
+      })
+      this.showExpectedFieldDate = false;
     } else {
+      expectedFieldDate.setValidators(Validators.required)
       fieldStatusExplain.clearValidators()
     }
     fieldStatusExplain.patchValue(null)
@@ -286,6 +298,7 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
     this.cooProduct.patchValue({
       deliveryAddress: null,
       deliveryAddressEn: null,
+      addressType: null
     })
     if (cipPort === '0') {
       this.products.controls.forEach((product) => {
@@ -293,6 +306,7 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
       })
       this.cooProduct.get('deliveryAddress').setValidators(Validators.required)
       this.cooProduct.get('deliveryAddressEn').setValidators(Validators.required)
+      this.cooProduct.get('addressType').setValidators(Validators.required)
       this.showDeliveryAddress = true
     } else {
       this.products.controls.forEach((product) => {
@@ -302,6 +316,7 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
       })
       this.cooProduct.get('deliveryAddress').clearValidators()
       this.cooProduct.get('deliveryAddressEn').clearValidators()
+      this.cooProduct.get('addressType').clearValidators()
       this.showDeliveryAddress = false
     }
   }
@@ -349,6 +364,18 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
         product.controls[i].updateValueAndValidity()
       }
     })
+
+    let goodsDeliveryDateValid = true // 销售反馈节点验证
+    if(this.showSalesFeedbackField){
+      const today = new Date().getTime()
+      this.products.value.every(prod => {
+        goodsDeliveryDateValid = (today - new Date(prod.goodsDeliveryDate).getTime())/(1000 * 3600 * 24) > 90
+        if (!goodsDeliveryDateValid) {
+          return
+        }
+      })
+    }
+
     const isProductsValid = this.products.disabled || this.products.valid
     // cooInfo
     const cooInfo = this.cooInfo
@@ -357,7 +384,7 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
       cooInfo.controls[i].updateValueAndValidity()
     }
     const isCooInfoValid = cooInfo.disabled || cooInfo.valid
-    return isOrderInfoValid && isCooProductValid && isProductsValid && isCooInfoValid
+    return isOrderInfoValid && isCooProductValid && isProductsValid && isCooInfoValid && goodsDeliveryDateValid
   }
 
   public getData() {
@@ -529,14 +556,14 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
       CNY: 'SpUsCNYCoo'
     }
     // 其他需要的字段
-    const { 
+    const {
       contractNo, // 合同号
       sapOrderNo, // SAP订单号
       dealerName, // 经销商名称
       dealerCode, // 经销商编号
       currency, // 币制
       products, // 产品列表
-      cooProduct: { 
+      cooProduct: {
         addressType, // 货物送达地址类型
         deliveryAddress, // 货物送达地址
         deliveryAddressEn, // 货物送达地址英文
@@ -572,7 +599,7 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
       customsClearancePortEnAgent = customsClearancePortEn
       deliveryAddressEnHospital = customsClearancePortEnHospital = customsClearancePortHospital = deliveryAddressHospital = '/'
     }
-    
+
     const params = {
       templateCode: templateCodeMap[currency],
       contractNo,
