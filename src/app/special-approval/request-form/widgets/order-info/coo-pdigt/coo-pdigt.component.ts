@@ -84,9 +84,13 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
   showOmField = false
   showPmField = false
   showPmFeedbackField = false
+  showScPlanningFeedbackField = false
   isPurchaseAgreementRequired = false
 
   showContractBuyerOptions = false
+  showForeignCompanyDialog = false
+
+  contractBuyer = null
 
   orderInfo = this.fb.group({
     orderType: [{ value: 'OIT', disabled: true }], // 订单类型
@@ -109,7 +113,8 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
     currency: [null, [Validators.required]], // 合同金额-货币
     om: [null], // OM
     cooSign: [null, [Validators.required]], // COO签署方
-    contractBuyer: [{ value: null, disabled: true }, [Validators.required]], // 合同买方
+    contractBuyer: [null, [Validators.required]], // 合同买方
+    contractBuyer1: [null, [Validators.required]], // 合同买方
     philipsName: [{ value: null, disabled: true }], // 飞利浦实体名称
     contractNo: [null, [Validators.required]], // 合同号
     paymentMethod: [null, [Validators.required]], // 付款方式
@@ -145,7 +150,6 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
     oms: [],
     currencies: CURRENCIES,
     paymentMethodList: PAYMENT_METHOD_PDIGT_LIST,
-    foreignCompanies: [],
     contractBuyers: [],
   } 
 
@@ -192,7 +196,6 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
 
   ngOnInit() {
     this.initOMUsers()
-    this.initForeignCompanies()
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -225,6 +228,7 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
         this.showOmField = true
         this.showPmField = true
         this.showPmFeedbackField = true
+        this.showScPlanningFeedbackField = true
         break
       case PROCESS_STATUS.START:
         if (nodeCode > 'node0') {
@@ -237,6 +241,10 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
     
         if(nodeCode > 'node5') {
           this.showPmFeedbackField = true
+        }
+
+        if(nodeCode > 'node6') {
+          this.showScPlanningFeedbackField = true
         }
         if (this.fromTask) {
           switch (nodeCode) {
@@ -261,10 +269,14 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
                 applySignedDate: calcApplySignedDate()
               })
               // cooInfo
-              cooInfoRequiredFields.push('applySignedDate', 'cooConfirmationLetterDraft', 'cooConfirmationLetterDealer')
-              cooInfoEnabledFields.push('applySignedDate', 'cooConfirmationLetterDraft', 'cooConfirmationLetterDealer')
+              cooInfoRequiredFields.push('applySignedDate', 'cooConfirmationLetterDraft')
+              cooInfoEnabledFields.push('applySignedDate', 'cooConfirmationLetterDraft')
               break
             case 'node6':
+              // cooInfoRequiredFields.push('cooConfirmationLetterSign')
+              cooInfoEnabledFields.push('cooConfirmationLetterDealer')
+              break
+            case 'node7':
               // cooInfoRequiredFields.push('cooConfirmationLetterSign')
               cooInfoEnabledFields.push('cooConfirmationLetterSign')
               break
@@ -288,17 +300,6 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
     })
   }
 
-  onForeignCompanyChange(companyName) {
-    const control = this.orderInfo.get('foreignCompanyNo')
-    if (companyName) {
-      const company = this.selectOptions.foreignCompanies.find(({ corporateName }) => corporateName === companyName)
-      control.setValue(company.serialNumber)
-    } else {
-      control.setValue(null)
-    }
-    this.calcContractBuyer()
-  }
-
   // 计算合同签署方 
   /**
    * 币制=CNY, 业务模式=Direct Deal时, 默认为最终用户, 不可编辑
@@ -317,8 +318,6 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
   calcContractBuyer() {
     const { currency, businessModel, cooSign, hospitalName, dealerName, foreignCompany } = this.orderInfo.getRawValue()
     const contractBuyer = this.orderInfo.get('contractBuyer')
-    contractBuyer.patchValue(null)
-    contractBuyer.disable()
     this.showContractBuyerOptions = false
     if (currency && businessModel && cooSign) {
       if (cooSign === '最终用户') {
@@ -330,7 +329,6 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
       } else { // cooSign === '双签', currency === 'USD', businessModel === 'distributor'
         this.selectOptions.contractBuyers = []
         this.showContractBuyerOptions = true
-        contractBuyer.enable()
         if (dealerName) {
           this.selectOptions.contractBuyers.push(dealerName)
         }
@@ -441,7 +439,11 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
     this.originOrderInfo = orderInfo
     this.originCooInfo = cooInfo
     this.orderInfo.patchValue(orderInfo)
-
+    if (orderInfo.contractBuyer) {
+      this.orderInfo.patchValue({
+        contractBuyer1: orderInfo.contractBuyer
+      })
+    }
     this.cooProduct.patchValue(product)
     const productGroup = this.products.at(0)
     productGroup.patchValue(product)
@@ -451,6 +453,7 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
     this.cooInfo.patchValue(cooInfo)
     this.setFormValidators(data)
     this.calcPaymentMethodList(orderInfo.paymentMethod)
+    this.calcContractBuyer()
   }
 
   createProduct() {
@@ -490,12 +493,6 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
   async initOMUsers() {
     this.spService.getOMUsers().then((users) => {
       this.selectOptions.oms = users.map(({ name, email }) => ({ label: name, value: email }))
-    })
-  }
-
-  async initForeignCompanies() {
-    this.spService.getForeignCompany().then((foreignCompanies) => {
-      this.selectOptions.foreignCompanies = foreignCompanies
     })
   }
 
@@ -602,6 +599,20 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
     }
   }
 
+  onContractBuyerChange(contractBuyer) {
+    if (contractBuyer) {
+      this.orderInfo.patchValue({
+        contractBuyer
+      })
+    }
+  }
+
+  onContractBuyerInputChange() {
+    this.orderInfo.patchValue({
+      contractBuyer1: null
+    })
+  }
+
   onShowSelectHospitalModal() {
     this.selectHospital.showModal()
   }
@@ -621,6 +632,21 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
       hospitalName: null,
     })
     this.calcContractBuyer()
+  }
+
+  onSelectForeignCompany({ corporateName, serialNumber }) {
+    this.orderInfo.patchValue({
+      foreignCompany: corporateName,
+      foreignCompanyNo: serialNumber,
+    })
+    this.showForeignCompanyDialog = false
+  }
+
+  onClearForeignCompany() {
+    this.orderInfo.patchValue({
+      foreignCompany: null,
+      foreignCompanyNo: null,
+    })
   }
   
   showTemplate() {

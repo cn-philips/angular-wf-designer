@@ -239,12 +239,22 @@
         <nz-form-item>
           <nz-form-label nzXl="8" nzXXl="6" nzRequired>外贸公司</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <nz-select formControlName="foreignCompany" nzAllowClear (ngModelChange)="onForeignCompanyChange($event)">
-              <nz-option *ngFor="let item of selectOptions.foreignCompanies" [nzLabel]="item.corporateName"
-                [nzValue]="item.corporateName"></nz-option>
-            </nz-select>
+            <nz-input-group style="width: 100%" [nzSuffix]="clearCompanyBtn" [nzAddOnAfter]="selectCompanyBtn">
+              <input type="text" nz-input formControlName="foreignCompany" (change)="onClearForeignCompany()">
+            </nz-input-group>
+
+            <ng-template #clearCompanyBtn>
+              <i nz-icon nz-tooltip class="ant-input-clear-icon" nzTheme="fill" nzType="close-circle"
+                *ngIf="orderInfo.get('foreignCompanyNo').value && editable" (click)="onClearForeignCompany()"></i>
+            </ng-template>
+
+            <ng-template #selectCompanyBtn>
+              <button *ngIf="editable" nz-button nzType="primary" class="ml-md"
+                (click)="showForeignCompanyDialog=true">选择外贸公司</button>
+            </ng-template>
+
             <nz-form-explain *ngIf="orderInfo.get('foreignCompany')?.dirty && orderInfo.get('foreignCompany')?.errors">
-              请选择外贸公司
+              请选择或填写外贸公司
             </nz-form-explain>
           </nz-form-control>
         </nz-form-item>
@@ -291,19 +301,47 @@
     </div>
 
     <div nz-row>
+      <div nz-col nzMd="24">
+        <nz-form-item>
+          <nz-form-label nzXl="8" nzXXl="3" nzRequired>合同买方</nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="21">
+            <ng-container *ngIf="editable">
+              <div>
+                <input style="width:33%" type="text" nz-input formControlName="contractBuyer" (change)="onContractBuyerInputChange()" />
+                <nz-select style="width:33%"
+                  *ngIf="showContractBuyerOptions"
+                  formControlName="contractBuyer1"
+                  [nzPlaceHolder]="selectOptions.contractBuyers.length === 0 ? '请先选择外贸公司和经销商' : ''"
+                  (ngModelChange)="onContractBuyerChange($event)"
+                >
+                  <nz-option *ngFor="let buyer of selectOptions.contractBuyers" [nzLabel]="buyer" [nzValue]="buyer"></nz-option>
+                </nz-select>
+              </div>
+              <nz-form-explain *ngIf="orderInfo.get('contractBuyer')?.dirty && orderInfo.get('contractBuyer')?.errors">
+                请选择合同买方
+              </nz-form-explain>
+            </ng-container>
+            <ng-container *ngIf="!editable">
+              <input style="width:33%" type="text" nz-input formControlName="contractBuyer" />
+            </ng-container>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <div nz-row>
       <div nz-col nzXs="24" nzSm="24" nzMd="12">
         <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6" nzRequired>合同买方</nz-form-label>
+          <nz-form-label nzXl="8" nzXXl="6" nzRequired nzFor="contractNo">合同号</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <nz-select *ngIf="showContractBuyerOptions && editable" formControlName="contractBuyer"
-              [nzPlaceHolder]="selectOptions.contractBuyers.length === 0 ? '请先选择外贸公司和经销商' : ''">
-              <nz-option *ngFor="let buyer of selectOptions.contractBuyers" [nzLabel]="buyer" [nzValue]="buyer">
-              </nz-option>
-            </nz-select>
-            <input *ngIf="!editable || !showContractBuyerOptions" type="text" nz-input
-              formControlName="contractBuyer" />
-            <nz-form-explain *ngIf="orderInfo.get('contractBuyer')?.dirty && orderInfo.get('contractBuyer')?.errors">
-              请选择合同买方
+            <input id="contractNo" type="text" nz-input formControlName="contractNo" />
+            <nz-alert *ngIf="editable" nzType="warning" [nzMessage]="contractNoHint" nzShowIcon>
+              <ng-template #contractNoHint>
+                <div>人民币订单请填写采购订单号（业务模式=“Distributor Deal”）或买卖协议号（业务模式=“Direct Deal”），美金订单请填写进口协议号</div>
+              </ng-template>
+            </nz-alert>
+            <nz-form-explain *ngIf="orderInfo.get('contractNo')?.dirty && orderInfo.get('contractNo')?.errors">
+              请填写合同号
             </nz-form-explain>
           </nz-form-control>
         </nz-form-item>
@@ -317,25 +355,6 @@
               <nz-option nzLabel="飞利浦电子香港有限公司" nzValue="飞利浦电子香港有限公司"></nz-option>
               <nz-option nzLabel="飞利浦（中国）投资有限公司" nzValue="飞利浦（中国）投资有限公司"></nz-option>
             </nz-select>
-          </nz-form-control>
-        </nz-form-item>
-      </div>
-    </div>
-
-    <div nz-row>
-      <div nz-col nzXs="24" nzSm="24" nzMd="12">
-        <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6" nzRequired nzFor="contractNo">合同号</nz-form-label>
-          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <input id="contractNo" type="text" nz-input formControlName="contractNo" />
-            <nz-alert nzType="warning" [nzMessage]="contractNoHint" nzShowIcon>
-              <ng-template #contractNoHint>
-                <div>人民币订单请填写采购订单号（业务模式=“Distributor Deal”）或买卖协议号（业务模式=“Direct Deal”），美金订单请填写进口协议号</div>
-              </ng-template>
-            </nz-alert>
-            <nz-form-explain *ngIf="orderInfo.get('contractNo')?.dirty && orderInfo.get('contractNo')?.errors">
-              请填写合同号
-            </nz-form-explain>
           </nz-form-control>
         </nz-form-item>
       </div>
@@ -786,9 +805,9 @@
           </nz-form-control>
         </nz-form-item>
       </div>
-      <div nz-col nzXs="24" nzSm="24" nzMd="12">
+      <div nz-col nzXs="24" nzSm="24" nzMd="12" *ngIf="showPmFeedbackField">
         <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6" nzRequired>盖章后的COO确认函</nz-form-label>
+          <nz-form-label nzXl="8" nzXXl="6">盖章后的COO确认函</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <shared-upload-file formControlName="cooConfirmationLetterDealer"></shared-upload-file>
             <nz-form-explain
@@ -799,7 +818,7 @@
         </nz-form-item>
       </div>
 
-      <div nz-col nzXs="24" nzSm="24" nzMd="12" *ngIf="showPmFeedbackField">
+      <div nz-col nzXs="24" nzSm="24" nzMd="12" *ngIf="showScPlanningFeedbackField">
         <nz-form-item>
           <nz-form-label nzXl="8" nzXXl="6">签署后的COO确认函</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
@@ -821,3 +840,4 @@
 <app-select-dealer #selectDealer (select)="onSelectDealer($event)"></app-select-dealer>
 <app-select-reference defaultOrderType="OIT" [orderTypeDisabled]="true" #selectReference
   (select)="onSelectReference($event)"></app-select-reference>
+<app-select-foreign-company [visible]="showForeignCompanyDialog" (select)="onSelectForeignCompany($event)"></app-select-foreign-company>
