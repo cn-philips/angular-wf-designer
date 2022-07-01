@@ -335,7 +335,7 @@
           <nz-form-label nzXl="8" nzXXl="6" nzRequired>付款方式</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <nz-select formControlName="paymentMethod" nzPlaceHolder="Select 请选择">
-              <nz-option 
+              <nz-option
                 *ngFor="let method of selectOptions.paymentMethodList"
                 [nzLabel]="method.label"
                 [nzValue]="method.value"
@@ -387,7 +387,7 @@
             <nz-form-label nzXl="8" nzXXl="6" nzRequired>POD扫描件</nz-form-label>
             <nz-form-control nzXs="24" nzSm="24" nzMd="14">
               <shared-upload-file formControlName="airTransportNo"></shared-upload-file>
-              <nz-alert 
+              <nz-alert
                 *ngIf="!cooProduct.get('airTransportNo').disabled && cipPort?.value"
                 nzType="warning"
                 [nzMessage]="cipPort?.value === '1' ? '请上传空运单' : '请上传货物签收单'"
@@ -407,7 +407,7 @@
           </nz-form-item>
         </div>
 
-        <div nz-col nzXs="24" nzSm="24" nzMd="12">
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" *ngIf="showDeliveryAddress">
           <nz-form-item>
             <nz-form-label nzXl="8" nzXXl="6" nzRequired>送达地址类型</nz-form-label>
             <nz-form-control nzXs="24" nzSm="24" nzMd="14">
@@ -627,24 +627,7 @@
     </div>
 
     <div nz-row>
-      <div nz-col nzXs="24" nzSm="24" nzMd="12">
-        <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6" nzRequired>新建医院还是老医院新院区</nz-form-label>
-          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <nz-radio-group formControlName="newOrOldHospital">
-              <label nz-radio nzValue="新建医院">新建医院</label>
-              <label nz-radio nzValue="老医院新院区">老医院新院区</label>
-            </nz-radio-group>
-            <nz-form-explain *ngIf="cooInfo.get('newOrOldHospital')?.dirty && cooInfo.get('newOrOldHospital')?.errors">
-              请选择新建医院还是老医院新院区
-            </nz-form-explain>
-          </nz-form-control>
-        </nz-form-item>
-      </div>
-    </div>
-
-    <div nz-row>
-      <div nz-col nzXs="24" nzSm="24" nzMd="12">
+      <div nz-col nzXs="24" nzSm="24" nzMd="12"  *ngIf="showExpectedFieldDate">
         <nz-form-item>
           <nz-form-label nzXl="8" nzXXl="6" nzRequired>预计场地就位日期</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
@@ -714,7 +697,7 @@
               <label nz-radio nzValue="1">是</label>
               <label nz-radio nzValue="0">否</label>
             </nz-radio-group>
-            <nz-alert *ngIf="editable" nzType="warning" nzMessage="按到货日期Gl Act计算"></nz-alert>
+            <nz-alert *ngIf="editable" nzType="warning" nzMessage="按到货日期Gl Act预估计算"></nz-alert>
             <nz-form-explain style="color:#f5222d" *ngIf="cooInfo.get('threeMonthsAfterArrival')?.errors?.disableSubmit">
               是否到货>3个月为"否"时, 无法提交特批申请
             </nz-form-explain>
@@ -763,11 +746,13 @@
     <div nz-row>
       <div nz-col nzXs="24" nzSm="24" nzMd="12">
         <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6" nzRequired>预计签署日期</nz-form-label>
+          <nz-form-label nzXl="8" nzXXl="6" nzRequired>预计签署COO日期</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <shared-date-picker formControlName="applySignedDate"></shared-date-picker>
+            <nz-alert nzType="warning" nzMessage="请先填写此处后才可点击“COO确认函模板”处下载系统自动生成的信息完整的确认函，否则信息缺失"></nz-alert>
+
             <nz-form-explain *ngIf="cooInfo.get('applySignedDate')?.dirty && cooInfo.get('applySignedDate')?.errors">
-              请选择预计签署日期
+              请选择预计签署COO日期
             </nz-form-explain>
           </nz-form-control>
         </nz-form-item>
