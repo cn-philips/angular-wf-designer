@@ -5,7 +5,6 @@ import { SpecialApprovalService } from '../../../../special-approval.service'
 import { Dealer, SelectDealerComponent } from '../../select-dealer/select-dealer.component';
 import { PdfPreviewComponent } from '../../../../../shared/components'
 import * as moment from 'moment'
-import {now} from 'moment';
 
 const disableSubmitValidtorFn = (disableValue) => (control: AbstractControl): ValidationErrors | null => {
   return control.value === disableValue ? { disableSubmit: true } : null
