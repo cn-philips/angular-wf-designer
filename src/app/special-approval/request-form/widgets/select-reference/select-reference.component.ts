@@ -110,6 +110,7 @@ export class SelectReferenceComponent implements OnInit {
   }
 
   async getReferenceList(resetPageNo = false) {
+    this.selectReferenceList = [];// 搜索时清空已选择的数据
     if (resetPageNo) { this.searchParams.pageNo = 1 }
     this.tableLoading = true
     try {
