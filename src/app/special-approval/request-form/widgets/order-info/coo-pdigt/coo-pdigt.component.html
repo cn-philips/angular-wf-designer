@@ -651,13 +651,14 @@
           </nz-form-item>
         </div>
 
-        <div nz-col nzXs="24" nzSm="24" nzMd="12" *ngIf="orderInfo.get('orderAmount').value">
+        <div nz-col nzXs="24" nzSm="24" nzMd="12">
           <nz-form-item>
             <nz-form-label nzXl="8" nzXXl="6" nzRequired nzFor="receivedAmount">已收金额</nz-form-label>
             <nz-form-control nzXs="24" nzSm="24" nzMd="14"
               [ngClass]="orderInfo.get('receivedAmount')?.dirty && orderInfo.errors?.receivedAmountPercent ? 'has-error' : ''">
               <nz-input-group style="width: 100%" [nzAddOnAfter]="amountPercentAddOn">
-                <nz-input-number id="receivedAmount" style="width: 100%;" formControlName="receivedAmount" [nzMin]="0">
+                <nz-input-number id="receivedAmount" style="width: 100%;" formControlName="receivedAmount"
+                  [ngModel]="orderInfo.get('receivedAmount').value|pricePermissions:applicantEmail" [nzMin]="0">
                 </nz-input-number>
               </nz-input-group>
               <ng-template #amountPercentAddOn>

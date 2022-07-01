@@ -154,7 +154,12 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
     let { orderAmount, receivedAmount } = this.orderInfo.getRawValue()
     receivedAmount = Number(receivedAmount || 0)
     orderAmount = Number(orderAmount)
-    const percent = Number(receivedAmount / orderAmount * 100).toFixed(2)
+    let percent;
+    if([0,"",null,undefined].includes(orderAmount)){
+      percent = "";
+    } else {
+      percent = Number(receivedAmount / orderAmount * 100).toFixed(2)
+    }
     return `${percent}%`
   }
 
