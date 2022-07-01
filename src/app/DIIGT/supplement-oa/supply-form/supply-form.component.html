@@ -145,7 +145,7 @@
                 nzPlaceHolder="Select Personnel 请选择人员">
                 <nz-option *ngFor="let item of oMlist" [nzValue]="item.email" [nzLabel]="item.name"></nz-option>
                 <ng-container *ngIf="!arrIndexOfStr(oMlist, 'email', params.logisticsSpecialist)">
-                  <nz-option [nzValue]="params.logisticsSpecialist" [nzLabel]="params.logisticsSpecialistName"></nz-option>
+                  <nz-option [nzValue]="params.logisticsSpecialist" [nzLabel]="params.logisticsSpecialist"></nz-option>
                 </ng-container>
               </nz-select>
               <nz-form-explain *ngIf="validateForm.get('logisticsSpecialist')?.dirty && validateForm.get('logisticsSpecialist')?.errors">
