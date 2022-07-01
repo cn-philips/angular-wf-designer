@@ -214,6 +214,7 @@ const FIELD_STATUS_LIST = [
   { label: '场地OK', value: '场地OK'},
   { label: '老医院新大楼在建', value: '老医院新大楼在建'},
   { label: '新医院/新院区在建', value: '新医院/新院区在建'},
+  { label: '丢标/丢单', value: '丢标/丢单'},
   { label: FIELD_STATUS_OTHER, value: FIELD_STATUS_OTHER},
 ]
 
