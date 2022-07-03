@@ -40,6 +40,9 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
   showDeliveryAddress = false
   showExpectedFieldDate = true
 
+  isShowOmField: boolean = false;
+  isShowSalesFeedbackField: boolean = false;
+
   orderInfo = this.fb.group({
     productType: [{ value: null, disabled: true }], // 产品型号
     bmc: [null, [Validators.required]], // 产品线
@@ -219,6 +222,7 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
               if (this.cooProduct.get('cipPort').value === '0') {
                 cooProductRequiredFields.push('deliveryAddress', 'deliveryAddressEn', 'addressType')
               }
+              this.isShowOmField = true
               break
             case 'node4': // OA补充信息
               // orderInfo
@@ -246,6 +250,7 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
                 cooProductRequiredFields.push('deliveryAddress', 'deliveryAddressEn', 'addressType')
                 cooProductEnabledFields.push('deliveryAddress', 'deliveryAddressEn', 'addressType')
               }
+              this.isShowSalesFeedbackField = true
               break
             case 'node8': // SC Planning反馈
               // cooInfo
@@ -364,15 +369,18 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
       }
     })
 
-    let goodsDeliveryDateValid = true // 销售反馈节点验证
-    if(this.showSalesFeedbackField){
-      const today = new Date().getTime()
-      this.products.value.every(prod => {
-        goodsDeliveryDateValid = (today - new Date(prod.goodsDeliveryDate).getTime())/(1000 * 3600 * 24) > 90
-        if (!goodsDeliveryDateValid) {
-          return
+    let goodsDeliveryDateValid = true // OM和销售反馈节点验证
+    if(this.isShowSalesFeedbackField || this.isShowOmField){
+     const goodsDeliveryDates = this.products.value.map(({ goodsDeliveryDate }) => goodsDeliveryDate)
+        .filter((goodsDeliveryDate) => goodsDeliveryDate)
+        .sort()
+      const maxGoodsDeliveryDateDate = goodsDeliveryDates[goodsDeliveryDates.length - 1]
+      if (maxGoodsDeliveryDateDate) {
+        const targetDate = moment().subtract(3, 'months').format('YYYY-MM-DD')
+        if (targetDate <= maxGoodsDeliveryDateDate) {
+          goodsDeliveryDateValid = false
         }
-      })
+      }
     }
 
     const isProductsValid = this.products.disabled || this.products.valid
