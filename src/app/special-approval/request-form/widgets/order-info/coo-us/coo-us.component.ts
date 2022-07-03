@@ -10,6 +10,25 @@ const disableSubmitValidtorFn = (disableValue) => (control: AbstractControl): Va
   return control.value === disableValue ? { disableSubmit: true } : null
 }
 
+const productsValidator = (control: AbstractControl): ValidationErrors | null => {
+  // today - max(最大货物送达日期) > 3个月
+  const products = control.value || []
+  if (products.length > 0) {
+    const goodsDeliveryDates = products
+      .map(({ goodsDeliveryDate }) => goodsDeliveryDate)
+      .filter((goodsDeliveryDate) => goodsDeliveryDate)
+      .sort()
+    const maxGoodsDeliveryDate = goodsDeliveryDates[goodsDeliveryDates.length - 1]
+    const targetDate = moment().subtract(3, 'months').format('YYYY-MM-DD')
+    if (maxGoodsDeliveryDate && targetDate <= maxGoodsDeliveryDate) {
+      return { goodsDelivery: true }
+    } else {
+      return null
+    }
+  }
+  return null
+}
+
 @Component({
   selector: 'special-approval-coo-us-order-info',
   templateUrl: 'coo-us.component.html',
@@ -49,7 +68,7 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
     businessModel: [null, [Validators.required]], // 业务模式
     sapOrderNo: [null, [Validators.required]], // SAP订单号
     om: [null], // OM
-    products: this.fb.array([], [Validators.required]),
+    products: this.fb.array([], [Validators.required, productsValidator]),
     contractNo: [null], // 合同号
     currency: [null], // 币制
     shipToName: [null, [Validators.required]], // ship-to name
@@ -148,7 +167,7 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
   // node1: SC Planning补充信息
   // node3: OM 补充信息
   // node4: OA 补充信息
-  setFormValidators({ nodeCode, nodeInfoList, processStatus }) {
+  setFormValidators({ nodeCode, processStatus }) {
     const orderInfoRequiredFields = []
     const orderInfoEnabledFields = []
     const productsRequiredFields = []
@@ -364,17 +383,6 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
       }
     })
 
-    let goodsDeliveryDateValid = true // 销售反馈节点验证
-    if(this.showSalesFeedbackField){
-      const today = new Date().getTime()
-      this.products.value.every(prod => {
-        goodsDeliveryDateValid = (today - new Date(prod.goodsDeliveryDate).getTime())/(1000 * 3600 * 24) > 90
-        if (!goodsDeliveryDateValid) {
-          return
-        }
-      })
-    }
-
     const isProductsValid = this.products.disabled || this.products.valid
     // cooInfo
     const cooInfo = this.cooInfo
@@ -383,7 +391,7 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
       cooInfo.controls[i].updateValueAndValidity()
     }
     const isCooInfoValid = cooInfo.disabled || cooInfo.valid
-    return isOrderInfoValid && isCooProductValid && isProductsValid && isCooInfoValid && goodsDeliveryDateValid
+    return isOrderInfoValid && isCooProductValid && isProductsValid && isCooInfoValid
   }
 
   public getData() {

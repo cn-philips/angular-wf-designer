@@ -124,7 +124,7 @@
               <th nzWidth="200px">到货日期<br>GI Act</th>
               <th *ngIf="showScPlanningField" nzWidth="200px">出厂日期<br>PMG GI Act</th>
               <ng-container *ngIf="showOmField">
-                <th nzWidth="200px">货物送达日期</th>
+                <th nzWidth="300px">货物送达日期</th>
                 <th nzWidth="200px">设备SN号</th>
               </ng-container>
               <ng-container *ngIf="showOaField">
@@ -217,11 +217,15 @@
               <ng-container *ngIf="showOmField">
                 <td>
                   <nz-form-item>
-                    <nz-form-control>
+                    <nz-form-control [ngClass]="products?.errors?.goodsDelivery ? 'has-error' : ''">
                       <shared-date-picker formControlName="goodsDeliveryDate"></shared-date-picker>
                       <nz-form-explain
                         *ngIf="product.get('goodsDeliveryDate')?.dirty && product.get('goodsDeliveryDate')?.errors">
                         请选择货物送达日期
+                      </nz-form-explain>
+                      <nz-form-explain
+                        *ngIf="products?.dirty && products?.errors?.goodsDelivery">
+                        最大货物送达日期需要比当前日期早三个月
                       </nz-form-explain>
                     </nz-form-control>
                   </nz-form-item>
@@ -289,7 +293,7 @@
             </button>
           </ng-template>
         </nz-table>
-        <nz-form-explain style="color:#f5222d" *ngIf="products.dirty && products.errors">
+        <nz-form-explain style="color:#f5222d" *ngIf="products.dirty && products?.errors?.required">
           请至少添加一条产品信息
         </nz-form-explain>
       </nz-form-control>
