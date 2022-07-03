@@ -35,14 +35,14 @@ export class DatePickerComponent implements OnInit, ControlValueAccessor {
 
   ngOnInit() { }
 
-  onChange: any = () => {
-    console.log('change');
-  };
+  onChange: any = () => {};
   onTouch: any = () => {};
 
   writeValue(obj: any): void {
     if (obj) {
       this.modelValue = obj
+    } else {
+      this.modelValue = null
     }
   }
 
