@@ -1416,7 +1416,7 @@ export class RequestFormComponent implements OnInit {
   //反馈节点审批
   public async onFeedBackSubmit(action: number) {
     //数据校验,检查反馈节点信息必填字段
-    let hasError  = this.checkRequiredFormValidators();
+    let hasError  = this.checkRequiredFormValidators(action);
     if(!hasError) {
       try {
         const { remark, attachments, notify, notifier } = this.feedBackFormValues.getRawValue();
@@ -1448,7 +1448,7 @@ export class RequestFormComponent implements OnInit {
   }
 
   //验证补充信息、反馈 等节点提交时的必填字段
-  public checkRequiredFormValidators(){
+  public checkRequiredFormValidators(feedbackAction = null){
     let hasError = false;
     if (this.isSupplementNode) { //补充信息
       switch(this.applyType) {
@@ -1532,7 +1532,7 @@ export class RequestFormComponent implements OnInit {
           hasError =  this.orderReplacementInfo.invalid;
           break
         case APPLY_TYPE.COO_US:
-          hasError = !this.cooUsOrderInfo.validate()
+          hasError = !this.cooUsOrderInfo.validate(feedbackAction)
           break
         case APPLY_TYPE.COO_PDIGT:
           hasError = !this.cooPdIgtOrderInfo.validate()
