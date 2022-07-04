@@ -357,6 +357,9 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
   }
 
   onCooSignChange() {
+    this.orderInfo.patchValue({
+      contractBuyer: null
+    })
     this.calcContractBuyer()
   }
 
