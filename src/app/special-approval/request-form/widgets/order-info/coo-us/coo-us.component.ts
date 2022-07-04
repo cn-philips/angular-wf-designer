@@ -5,6 +5,7 @@ import { SpecialApprovalService } from '../../../../special-approval.service'
 import { Dealer, SelectDealerComponent } from '../../select-dealer/select-dealer.component';
 import { PdfPreviewComponent } from '../../../../../shared/components'
 import * as moment from 'moment'
+import { NzMessageService } from 'ng-zorro-antd'
 
 const disableSubmitValidtorFn = (disableValue) => (control: AbstractControl): ValidationErrors | null => {
   return control.value === disableValue ? { disableSubmit: true } : null
@@ -144,7 +145,8 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
 
   constructor(
     private fb: FormBuilder,
-    public spService: SpecialApprovalService
+    public spService: SpecialApprovalService,
+    private message: NzMessageService,
   ) { }
 
   ngOnInit() {
@@ -258,6 +260,7 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
               cooInfoEnabledFields.push('applySignedDate', 'cooConfirmationLetterDraft', 'cooConfirmationLetterDealer')
 
               if (this.cooProduct.get('cipPort').value === '1') {
+                this.products.clearValidators()
                 cooInfoRequiredFields.push('airTransportNoDealer')
                 cooInfoEnabledFields.push('airTransportNoDealer')
                 productsRequiredFields.push('goodsDeliveryDate')
@@ -360,7 +363,13 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
     requiredFields.forEach((fieldName) => this.cooInfo.get(fieldName).setValidators(Validators.required))
   }
 
-  public validate() {
+  public validate(feedbackAction = null) {
+    // 未按审批结果执行, 不需要校验货物送达日期
+    if (feedbackAction === 0) {
+      this.products.clearValidators()
+    } else if (feedbackAction === 1) {
+      this.products.setValidators(productsValidator)
+    }
     // orderInfo
     const orderInfo = this.orderInfo
     for(const i in orderInfo.controls) {
@@ -557,6 +566,11 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
   }
 
   showTemplate() {
+    const isValid = this.validate()
+    if (!isValid) {
+      this.message.warning('请先补充表单信息')
+      return
+    }
     // COO US根据币制的不同, 分为2个模板
     const templateCodeMap = {
       USD: 'SpUsUSDCoo',
@@ -590,6 +604,11 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
       dateProductMap[endDate] = dateProductMap[endDate] ? [...dateProductMap[endDate], equipmentSn] : [equipmentSn]
     })
 
+    const docNameMap = {
+      USD: `[US]USD COO  indirect deal_${sapOrderNo}.doc`,
+      CNY: `[US]CNY COO  indirect deal_${sapOrderNo}.doc`
+    }
+
     let deliveryAddressEnHospital, customsClearancePortEnHospital, customsClearancePortHospital, deliveryAddressHospital
     let customsClearancePortEnAgent, deliveryAddressEnAgent, customsClearancePortAgent, deliveryAddressAgent
 
@@ -608,6 +627,7 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
     }
 
     const params = {
+      docName: docNameMap[currency],
       templateCode: templateCodeMap[currency],
       contractNo,
       sapOrderNo,

@@ -840,4 +840,4 @@
 <app-select-dealer #selectDealer (select)="onSelectDealer($event)"></app-select-dealer>
 <app-select-reference defaultOrderType="OIT" [orderTypeDisabled]="true" #selectReference
   (select)="onSelectReference($event)"></app-select-reference>
-<app-select-foreign-company [visible]="showForeignCompanyDialog" (select)="onSelectForeignCompany($event)"></app-select-foreign-company>
+<app-select-foreign-company [visible]="showForeignCompanyDialog" (hide)="showForeignCompanyDialog=false" (select)="onSelectForeignCompany($event)"></app-select-foreign-company>

@@ -342,7 +342,9 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
       } else if (businessModel === 'direct') { // cooSign === '双签', currency === 'USD', businessModel === 'direct'
         contractBuyer.patchValue(foreignCompany)
       } else { // cooSign === '双签', currency === 'USD', businessModel === 'distributor'
-        contractBuyer.patchValue(null)
+        this.orderInfo.patchValue({
+          contractBuyer1: null
+        })
         this.showContractBuyerOptions = true
       }
     }
