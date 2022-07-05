@@ -5,9 +5,29 @@ import { SpecialApprovalService } from '../../../../special-approval.service'
 import { Dealer, SelectDealerComponent } from '../../select-dealer/select-dealer.component';
 import { PdfPreviewComponent } from '../../../../../shared/components'
 import * as moment from 'moment'
+import { NzMessageService } from 'ng-zorro-antd'
 
 const disableSubmitValidtorFn = (disableValue) => (control: AbstractControl): ValidationErrors | null => {
   return control.value === disableValue ? { disableSubmit: true } : null
+}
+
+const productsValidator = (control: AbstractControl): ValidationErrors | null => {
+  // today - max(最大货物送达日期) > 3个月
+  const products = control.value || []
+  if (products.length > 0) {
+    const goodsDeliveryDates = products
+      .map(({ goodsDeliveryDate }) => goodsDeliveryDate)
+      .filter((goodsDeliveryDate) => goodsDeliveryDate)
+      .sort()
+    const maxGoodsDeliveryDate = goodsDeliveryDates[goodsDeliveryDates.length - 1]
+    const targetDate = moment().subtract(3, 'months').format('YYYY-MM-DD')
+    if (maxGoodsDeliveryDate && targetDate <= maxGoodsDeliveryDate) {
+      return { goodsDelivery: true }
+    } else {
+      return null
+    }
+  }
+  return null
 }
 
 @Component({
@@ -40,9 +60,6 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
   showDeliveryAddress = false
   showExpectedFieldDate = true
 
-  isShowOmField: boolean = false;
-  isShowSalesFeedbackField: boolean = false;
-
   orderInfo = this.fb.group({
     productType: [{ value: null, disabled: true }], // 产品型号
     bmc: [null, [Validators.required]], // 产品线
@@ -52,7 +69,7 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
     businessModel: [null, [Validators.required]], // 业务模式
     sapOrderNo: [null, [Validators.required]], // SAP订单号
     om: [null], // OM
-    products: this.fb.array([], [Validators.required]),
+    products: this.fb.array([], [Validators.required, productsValidator]),
     contractNo: [null], // 合同号
     currency: [null], // 币制
     shipToName: [null, [Validators.required]], // ship-to name
@@ -128,7 +145,8 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
 
   constructor(
     private fb: FormBuilder,
-    public spService: SpecialApprovalService
+    public spService: SpecialApprovalService,
+    private message: NzMessageService,
   ) { }
 
   ngOnInit() {
@@ -151,7 +169,7 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
   // node1: SC Planning补充信息
   // node3: OM 补充信息
   // node4: OA 补充信息
-  setFormValidators({ nodeCode, nodeInfoList, processStatus }) {
+  setFormValidators({ nodeCode, processStatus }) {
     const orderInfoRequiredFields = []
     const orderInfoEnabledFields = []
     const productsRequiredFields = []
@@ -222,7 +240,6 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
               if (this.cooProduct.get('cipPort').value === '0') {
                 cooProductRequiredFields.push('deliveryAddress', 'deliveryAddressEn', 'addressType')
               }
-              this.isShowOmField = true
               break
             case 'node4': // OA补充信息
               // orderInfo
@@ -243,6 +260,7 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
               cooInfoEnabledFields.push('applySignedDate', 'cooConfirmationLetterDraft', 'cooConfirmationLetterDealer')
 
               if (this.cooProduct.get('cipPort').value === '1') {
+                this.products.clearValidators()
                 cooInfoRequiredFields.push('airTransportNoDealer')
                 cooInfoEnabledFields.push('airTransportNoDealer')
                 productsRequiredFields.push('goodsDeliveryDate')
@@ -250,7 +268,6 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
                 cooProductRequiredFields.push('deliveryAddress', 'deliveryAddressEn', 'addressType')
                 cooProductEnabledFields.push('deliveryAddress', 'deliveryAddressEn', 'addressType')
               }
-              this.isShowSalesFeedbackField = true
               break
             case 'node8': // SC Planning反馈
               // cooInfo
@@ -346,7 +363,13 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
     requiredFields.forEach((fieldName) => this.cooInfo.get(fieldName).setValidators(Validators.required))
   }
 
-  public validate() {
+  public validate(feedbackAction = null) {
+    // 未按审批结果执行, 不需要校验货物送达日期
+    if (feedbackAction === 0) {
+      this.products.clearValidators()
+    } else if (feedbackAction === 1) {
+      this.products.setValidators(productsValidator)
+    }
     // orderInfo
     const orderInfo = this.orderInfo
     for(const i in orderInfo.controls) {
@@ -369,20 +392,6 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
       }
     })
 
-    let goodsDeliveryDateValid = true // OM和销售反馈节点验证
-    if(this.isShowSalesFeedbackField || this.isShowOmField){
-     const goodsDeliveryDates = this.products.value.map(({ goodsDeliveryDate }) => goodsDeliveryDate)
-        .filter((goodsDeliveryDate) => goodsDeliveryDate)
-        .sort()
-      const maxGoodsDeliveryDateDate = goodsDeliveryDates[goodsDeliveryDates.length - 1]
-      if (maxGoodsDeliveryDateDate) {
-        const targetDate = moment().subtract(3, 'months').format('YYYY-MM-DD')
-        if (targetDate <= maxGoodsDeliveryDateDate) {
-          goodsDeliveryDateValid = false
-        }
-      }
-    }
-
     const isProductsValid = this.products.disabled || this.products.valid
     // cooInfo
     const cooInfo = this.cooInfo
@@ -391,7 +400,7 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
       cooInfo.controls[i].updateValueAndValidity()
     }
     const isCooInfoValid = cooInfo.disabled || cooInfo.valid
-    return isOrderInfoValid && isCooProductValid && isProductsValid && isCooInfoValid && goodsDeliveryDateValid
+    return isOrderInfoValid && isCooProductValid && isProductsValid && isCooInfoValid
   }
 
   public getData() {
@@ -557,6 +566,11 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
   }
 
   showTemplate() {
+    const isValid = this.validate()
+    if (!isValid) {
+      this.message.warning('请先补充表单信息')
+      return
+    }
     // COO US根据币制的不同, 分为2个模板
     const templateCodeMap = {
       USD: 'SpUsUSDCoo',
@@ -590,6 +604,11 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
       dateProductMap[endDate] = dateProductMap[endDate] ? [...dateProductMap[endDate], equipmentSn] : [equipmentSn]
     })
 
+    const docNameMap = {
+      USD: `[US]USD COO  indirect deal_${sapOrderNo}.doc`,
+      CNY: `[US]CNY COO  indirect deal_${sapOrderNo}.doc`
+    }
+
     let deliveryAddressEnHospital, customsClearancePortEnHospital, customsClearancePortHospital, deliveryAddressHospital
     let customsClearancePortEnAgent, deliveryAddressEnAgent, customsClearancePortAgent, deliveryAddressAgent
 
@@ -608,6 +627,7 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
     }
 
     const params = {
+      docName: docNameMap[currency],
       templateCode: templateCodeMap[currency],
       contractNo,
       sapOrderNo,

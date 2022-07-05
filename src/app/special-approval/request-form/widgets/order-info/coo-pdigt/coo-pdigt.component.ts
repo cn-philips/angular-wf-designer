@@ -114,7 +114,7 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
     om: [null], // OM
     cooSign: [null, [Validators.required]], // COO签署方
     contractBuyer: [null, [Validators.required]], // 合同买方
-    contractBuyer1: [null, [Validators.required]], // 合同买方
+    contractBuyer1: [null], // 合同买方
     philipsName: [{ value: null, disabled: true }], // 飞利浦实体名称
     contractNo: [null, [Validators.required]], // 合同号
     paymentMethod: [null, [Validators.required]], // 付款方式
@@ -150,7 +150,6 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
     oms: [],
     currencies: CURRENCIES,
     paymentMethodList: PAYMENT_METHOD_PDIGT_LIST,
-    contractBuyers: [],
   } 
 
   // 已收金额/合同金额
@@ -314,6 +313,22 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
     } 
   }
 
+  get contractBuyers() {
+    const { currency, businessModel, cooSign, dealerName, foreignCompany } = this.orderInfo.getRawValue()
+    if (cooSign === '双签' && currency === 'USD' && businessModel === 'distributor') {
+      const set = new Set()
+      if (dealerName) {
+        set.add(dealerName)
+      }
+      if (foreignCompany) {
+        set.add(foreignCompany)
+      }
+      return Array.from(set)
+    } else {
+      return []
+    }
+  }
+
   // 计算合同买方
   calcContractBuyer() {
     const { currency, businessModel, cooSign, hospitalName, dealerName, foreignCompany } = this.orderInfo.getRawValue()
@@ -327,14 +342,10 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
       } else if (businessModel === 'direct') { // cooSign === '双签', currency === 'USD', businessModel === 'direct'
         contractBuyer.patchValue(foreignCompany)
       } else { // cooSign === '双签', currency === 'USD', businessModel === 'distributor'
-        this.selectOptions.contractBuyers = []
+        this.orderInfo.patchValue({
+          contractBuyer1: null
+        })
         this.showContractBuyerOptions = true
-        if (dealerName) {
-          this.selectOptions.contractBuyers.push(dealerName)
-        }
-        if (foreignCompany) {
-          this.selectOptions.contractBuyers.push(foreignCompany)
-        }
       }
     }
   }
@@ -346,6 +357,9 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
   }
 
   onCooSignChange() {
+    this.orderInfo.patchValue({
+      contractBuyer: null
+    })
     this.calcContractBuyer()
   }
 
@@ -642,11 +656,15 @@ export class CooPdIgtOrderInfoComponent implements OnInit, OnChanges {
     this.showForeignCompanyDialog = false
   }
 
-  onClearForeignCompany() {
+  onClearForeignCompany(clearName) {
     this.orderInfo.patchValue({
-      foreignCompany: null,
       foreignCompanyNo: null,
     })
+    if (clearName) {
+      this.orderInfo.patchValue({
+        foreignCompany: null,
+      })
+    }
   }
   
   showTemplate() {

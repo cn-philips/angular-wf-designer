@@ -19,6 +19,7 @@ export class SelectForeignCompanyComponent implements OnInit {
 
   @Input() visible = false
   @Output() select: EventEmitter<null> = new EventEmitter()
+  @Output() hide: EventEmitter<null> = new EventEmitter()
 
   ngOnInit() {
     this.initForeignCompanies()
@@ -41,7 +42,7 @@ export class SelectForeignCompanyComponent implements OnInit {
   }
 
   onHideModal() {
-    this.visible = false
+    this.hide.emit()
   }
 
   onSelectCompany(company) {

@@ -245,7 +245,7 @@
 
             <ng-template #clearCompanyBtn>
               <i nz-icon nz-tooltip class="ant-input-clear-icon" nzTheme="fill" nzType="close-circle"
-                *ngIf="orderInfo.get('foreignCompanyNo').value && editable" (click)="onClearForeignCompany()"></i>
+                *ngIf="orderInfo.get('foreignCompany').value && editable" (click)="onClearForeignCompany(true)"></i>
             </ng-template>
 
             <ng-template #selectCompanyBtn>
@@ -311,10 +311,10 @@
                 <nz-select style="width:33%"
                   *ngIf="showContractBuyerOptions"
                   formControlName="contractBuyer1"
-                  [nzPlaceHolder]="selectOptions.contractBuyers.length === 0 ? '请先选择外贸公司和经销商' : ''"
+                  [nzPlaceHolder]="contractBuyers.length === 0 ? '请先选择外贸公司和经销商' : ''"
                   (ngModelChange)="onContractBuyerChange($event)"
                 >
-                  <nz-option *ngFor="let buyer of selectOptions.contractBuyers" [nzLabel]="buyer" [nzValue]="buyer"></nz-option>
+                  <nz-option *ngFor="let buyer of contractBuyers" [nzLabel]="buyer" [nzValue]="buyer"></nz-option>
                 </nz-select>
               </div>
               <nz-form-explain *ngIf="orderInfo.get('contractBuyer')?.dirty && orderInfo.get('contractBuyer')?.errors">
@@ -840,4 +840,4 @@
 <app-select-dealer #selectDealer (select)="onSelectDealer($event)"></app-select-dealer>
 <app-select-reference defaultOrderType="OIT" [orderTypeDisabled]="true" #selectReference
   (select)="onSelectReference($event)"></app-select-reference>
-<app-select-foreign-company [visible]="showForeignCompanyDialog" (select)="onSelectForeignCompany($event)"></app-select-foreign-company>
+<app-select-foreign-company [visible]="showForeignCompanyDialog" (hide)="showForeignCompanyDialog=false" (select)="onSelectForeignCompany($event)"></app-select-foreign-company>

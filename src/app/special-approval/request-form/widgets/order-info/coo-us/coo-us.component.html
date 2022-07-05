@@ -124,7 +124,7 @@
               <th nzWidth="200px">到货日期<br>GI Act</th>
               <th *ngIf="showScPlanningField" nzWidth="200px">出厂日期<br>PMG GI Act</th>
               <ng-container *ngIf="showOmField">
-                <th nzWidth="200px">货物送达日期</th>
+                <th nzWidth="300px">货物送达日期</th>
                 <th nzWidth="200px">设备SN号</th>
               </ng-container>
               <ng-container *ngIf="showOaField">
@@ -217,11 +217,15 @@
               <ng-container *ngIf="showOmField">
                 <td>
                   <nz-form-item>
-                    <nz-form-control>
+                    <nz-form-control [ngClass]="products?.errors?.goodsDelivery ? 'has-error' : ''">
                       <shared-date-picker formControlName="goodsDeliveryDate"></shared-date-picker>
                       <nz-form-explain
                         *ngIf="product.get('goodsDeliveryDate')?.dirty && product.get('goodsDeliveryDate')?.errors">
                         请选择货物送达日期
+                      </nz-form-explain>
+                      <nz-form-explain
+                        *ngIf="products?.dirty && products?.errors?.goodsDelivery">
+                        最大货物送达日期需要比当前日期早三个月
                       </nz-form-explain>
                     </nz-form-control>
                   </nz-form-item>
@@ -289,7 +293,7 @@
             </button>
           </ng-template>
         </nz-table>
-        <nz-form-explain style="color:#f5222d" *ngIf="products.dirty && products.errors">
+        <nz-form-explain style="color:#f5222d" *ngIf="products.dirty && products?.errors?.required">
           请至少添加一条产品信息
         </nz-form-explain>
       </nz-form-control>
@@ -749,8 +753,7 @@
           <nz-form-label nzXl="8" nzXXl="6" nzRequired>预计签署COO日期</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <shared-date-picker formControlName="applySignedDate"></shared-date-picker>
-            <nz-alert nzType="warning" nzMessage="请先填写此处后才可点击“COO确认函模板”处下载系统自动生成的信息完整的确认函，否则信息缺失"></nz-alert>
-
+            <nz-alert *ngIf="cooInfo.get('applySignedDate')?.enabled" nzType="warning" nzMessage="请先填写此处后才可点击“COO确认函模板”处下载系统自动生成的信息完整的确认函，否则信息缺失"></nz-alert>
             <nz-form-explain *ngIf="cooInfo.get('applySignedDate')?.dirty && cooInfo.get('applySignedDate')?.errors">
               请选择预计签署COO日期
             </nz-form-explain>
