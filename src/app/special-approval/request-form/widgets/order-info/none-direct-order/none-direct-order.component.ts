@@ -12,6 +12,7 @@ import {
   CURRENCIES,
   ORDER_TYPES,
 } from '../../../../special-approval.constants';
+import * as moment from 'moment';
 
 @Component({
   selector: 'special-approval-none-direct-order-info',
@@ -35,6 +36,8 @@ export class NoNedirectOrderInfoComponent implements OnInit, OnChanges {
   @Input() baseInfo: FormGroup
   @Input() showFeedbackTab = false;
   @Input() applicantEmail;
+  @Input() nodeCode;
+  @Input() isComplete;
 
   APPLY_TYPE = APPLY_TYPE
 
@@ -92,6 +95,42 @@ export class NoNedirectOrderInfoComponent implements OnInit, OnChanges {
     this.formValues.patchValue({
       projectName: res.join('-')
     })
+  }
+
+  onCalcExpectedSignAcDate() {
+    const { expectedSignAcDate, expectedSaleDate } = this.formValues.getRawValue()
+    if (expectedSignAcDate && expectedSaleDate) {
+      const saleDate = moment(expectedSaleDate);
+      const saleDateMon = Number(saleDate.format('MM'))
+      const saleDateYear = Number(saleDate.format('YYYY'))
+      const signAcDate = moment(expectedSignAcDate);
+      const signAcDateMon = Number(signAcDate.format('MM'))
+      const signAcDateYear = Number(signAcDate.format('YYYY'))
+      const years = signAcDateYear - saleDateYear;
+      const months = signAcDateMon - saleDateMon;
+      // 整数部分
+      const integerPart = years * 12 + months;
+      // 小数部分
+      const saleDateDay = Number(saleDate.format("DD"));
+      const saleDateMonthDays = Number(saleDate.endOf("month").format("DD"));
+      const isStartDateLastDay = saleDateDay === saleDateMonthDays;
+      const signAcDateDay = Number(signAcDate.format("DD"));
+      const signAcDateMonthDays = Number(signAcDate.endOf("month").format("DD"));
+      const decimalPart = Number(
+        (signAcDateDay -
+          (isStartDateLastDay || saleDateDay > signAcDateMonthDays
+            ? signAcDateMonthDays
+            : saleDateDay)) /
+        signAcDateMonthDays
+      ).toFixed(1);
+      this.formValues.patchValue({
+        recordSalesMonth: Number(integerPart + parseFloat(decimalPart)).toFixed(1)
+      })
+    } else {
+      this.formValues.patchValue({
+        recordSalesMonth: null
+      })
+    }
   }
 
   onCycleGroupChange() {
@@ -202,9 +241,31 @@ export class NoNedirectOrderInfoComponent implements OnInit, OnChanges {
       this.formValues.get('productType').valueChanges.subscribe(() => {
         this.onCalcProjectName()
       })
+
+      this.formValues.get('expectedSignAcDate').valueChanges.subscribe(() => {
+        this.onCalcExpectedSignAcDate()
+      })
+
+      this.formValues.get('expectedSaleDate').valueChanges.subscribe(res => {
+        if (res !== this.formValues.value.expectedSaleDate) {
+          this.onCalcExpectedSaleDate()
+        }
+      })
+      this.formValues.get('actualSaleDate').valueChanges.subscribe(res => {
+        if (res !== this.formValues.value.actualSaleDate) {
+          this.onCalcActualSaleDate()
+        }
+      })
     }
     if (this.formValues.get('bg').value === 'PD&IGT'){
       this.formValues.get('referenceId').disable();
+    }
+
+    //是否IB反馈节点
+    if (!this.isComplete && this.nodeCode === 'node6') {
+      let clearedFields = ['actuallySignAcDate'];
+      clearedFields.forEach((fieldName) => this.formValues.controls[fieldName].enable());
+      clearedFields.forEach((fieldName) => this.formValues.controls[fieldName].setValidators([Validators.required]));
     }
   }
 
@@ -224,10 +285,41 @@ export class NoNedirectOrderInfoComponent implements OnInit, OnChanges {
    //监测 @Input值的变化
   ngOnChanges(changes: SimpleChanges): void {
     //是否是反馈信息节点
-    if (changes.showFeedbackTab && changes.showFeedbackTab.currentValue) {
+    if (changes.showFeedbackTab && changes.showFeedbackTab.currentValue && this.nodeCode < 'node6') {
       let clearedFields = ['actualSaleDate'];
       clearedFields.forEach((fieldName) => this.formValues.controls[fieldName].enable());
       clearedFields.forEach((fieldName) => this.formValues.controls[fieldName].setValidators([Validators.required]));
     }
+
   }
+
+  disabledExpectedSignAcDate = (current: Date): boolean => {
+     const expectedSaleDate = new Date(this.formValues.get('expectedSaleDate').value)
+    if (expectedSaleDate) {
+      return current.getTime() <= expectedSaleDate.getTime();
+    }
+    return false
+  };
+
+  disabledActuallySignAcDate = (current: Date): boolean => {
+    const actualSaleDate = new Date(this.formValues.get('actualSaleDate').value)
+    if (actualSaleDate) {
+      return current.getTime() <= actualSaleDate.getTime();
+    }
+    return false
+  };
+
+  private onCalcExpectedSaleDate() {
+    this.formValues.patchValue({
+      expectedSignAcDate: null,
+      recordSalesMonth: null,
+    })
+  }
+
+  private onCalcActualSaleDate() {
+    this.formValues.patchValue({
+      actuallySignAcDate: null,
+    })
+  }
+
 }
