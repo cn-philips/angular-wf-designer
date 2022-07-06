@@ -403,7 +403,10 @@ export class RequestFormComponent implements OnInit {
       sapOrderNo: [null, [Validators.required]], // SAP订单号
       orderAmount: [null, [Validators.required]], // 合同金额-数额
       currency: [null, [Validators.required]], // 合同金额-货币
-      expectedSaleDate: [null,[Validators.required]], // 预计记认销售日期
+      expectedSaleDate: [null, [Validators.required]], // 预计记认销售日期
+      expectedSignAcDate: [null, [Validators.required]], // 预计签署AC日期
+      actuallySignAcDate: [{value: null, disabled: true}], // 实际签署AC日期
+      recordSalesMonth: [null], // 距预计记认销售约N月
       om: [null], // OM
       exchangeRole: [null], // 换货角色
       exchangeProcessing: [null], // 换货方式
@@ -928,6 +931,7 @@ export class RequestFormComponent implements OnInit {
             ...this.requestInfo.orderInfos[0],
             ...noneDirectOrderInfo,
             expectedSaleDate: noneDirectOrderInfo.expectedSaleDate ? moment(noneDirectOrderInfo.expectedSaleDate).format('YYYY-MM-DD') : null,
+            expectedSignAcDate: noneDirectOrderInfo.expectedSignAcDate ? moment(noneDirectOrderInfo.expectedSignAcDate).format('YYYY-MM-DD') : null,
             products: noneDirectOrderInfo.products.map(({ productType, wbsNo, itemNo, equipmentSn, quantity }) => ({ productType, wbsNo, itemNo, equipmentSn, quantity }))
           }]
         ;
