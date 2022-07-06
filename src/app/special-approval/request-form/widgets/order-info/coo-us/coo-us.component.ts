@@ -565,8 +565,23 @@ export class CooUsOrderInfoComponent implements OnInit, OnChanges {
     this.spService.getOMUsers().then((users) => this.selectOptions.oms = users.map(({ name, email }) => ({ label: name, value: email })))
   }
 
+  removeFileFieldsValidators() {
+    this.cooInfo.get('cooConfirmationLetterDraft').clearValidators()
+    this.cooInfo.get('airTransportNoDealer').clearValidators()
+    this.cooInfo.get('cooConfirmationLetterDealer').clearValidators()
+  }
+
+  addFileFieldsValidators() {
+    this.cooInfo.get('cooConfirmationLetterDraft').setValidators(Validators.required)
+    this.cooInfo.get('airTransportNoDealer').setValidators(Validators.required)
+    this.cooInfo.get('cooConfirmationLetterDealer').setValidators(Validators.required)
+  }
+
   showTemplate() {
+    // 暂时移除 "COO确认函草稿（word版）", "经销商盖章后的空运单", "经销商盖章后的COO确认函" 的必填校验
+    this.removeFileFieldsValidators()
     const isValid = this.validate()
+    this.addFileFieldsValidators()
     if (!isValid) {
       this.message.warning('请先补充表单信息')
       return
