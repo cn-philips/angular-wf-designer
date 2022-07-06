@@ -25,7 +25,6 @@ import { LastbuyComponent } from './widgets/order-info/lastbuy/lastbuy.component
 import { CooUsOrderInfoComponent } from './widgets/order-info/coo-us/coo-us.component'
 import { CooPdIgtOrderInfoComponent } from './widgets/order-info/coo-pdigt/coo-pdigt.component'
 import { CooCcOrderInfoComponent } from './widgets/order-info/coo-cc/coo-cc.component'
-import {NoNedirectOrderInfoComponent} from './widgets/order-info/none-direct-order/none-direct-order.component';
 
 enum TAB_TYPE {
   BASIC_INFO = 'basic-info',
@@ -56,7 +55,6 @@ export class RequestFormComponent implements OnInit {
   @ViewChild('cooUsOrderInfo') public cooUsOrderInfo: CooUsOrderInfoComponent;
   @ViewChild('cooPdIgtOrderInfo') public cooPdIgtOrderInfo: CooPdIgtOrderInfoComponent;
   @ViewChild('cooCcOrderInfo') public cooCcOrderInfo: CooCcOrderInfoComponent;
-  @ViewChild('noneDirectOrder') public noneDirectOrder: NoNedirectOrderInfoComponent;
 
   @ViewChild('lastBuyOrderInfo') public lastBuyOrderInfo: LastbuyComponent;
 
