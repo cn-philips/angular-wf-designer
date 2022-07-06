@@ -100,13 +100,16 @@ export class RequestFormComponent implements OnInit {
 
   public pageLoading = true;
 
-  isApplicant = false
+  public nodeCode: string
 
+  public isComplete: boolean = false;
+
+  isApplicant = false
   districtLeader: string[] = []
+
   salesLeader: string[] = []
 
   saleRegions = []
-
   public processUsers: string[] = []; // 流程中所有的人
   public applicantEmail: string;
   constructor(
@@ -1574,6 +1577,7 @@ export class RequestFormComponent implements OnInit {
       this.applyItem = applyItem
       this.applyType = applyType
       this.executed = executed
+      this.nodeCode = nodeCode
       this.formValues.patchValue({
         basicInfo: {
           applyCode,
@@ -1804,13 +1808,15 @@ export class RequestFormComponent implements OnInit {
           ]
         })
       }else if(this.applyType === APPLY_TYPE.NONE_DIRECT_ORDER){
+        if (processStatus === PROCESS_STATUS.COMPLETED) {
+          this.isComplete = true
+        }
         this.formValues.patchValue({
           noneDirectOrderInfo: {
             ...orderInfos[0],
             products: orderInfos[0].products || []
           }
         })
-
       }
 
       const userSet = new Set<string>();

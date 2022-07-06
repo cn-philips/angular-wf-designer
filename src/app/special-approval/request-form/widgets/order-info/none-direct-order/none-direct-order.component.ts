@@ -36,6 +36,8 @@ export class NoNedirectOrderInfoComponent implements OnInit, OnChanges {
   @Input() baseInfo: FormGroup
   @Input() showFeedbackTab = false;
   @Input() applicantEmail;
+  @Input() nodeCode;
+  @Input() isComplete;
 
   APPLY_TYPE = APPLY_TYPE
 
@@ -244,15 +246,26 @@ export class NoNedirectOrderInfoComponent implements OnInit, OnChanges {
         this.onCalcExpectedSignAcDate()
       })
 
-      this.formValues.get('expectedSaleDate').valueChanges.subscribe(() => {
-        this.onCalcExpectedSaleDate()
+      this.formValues.get('expectedSaleDate').valueChanges.subscribe(res => {
+        if (res !== this.formValues.value.expectedSaleDate) {
+          this.onCalcExpectedSaleDate()
+        }
       })
-      this.formValues.get('actualSaleDate').valueChanges.subscribe(() => {
-        this.onCalcActualSaleDate()
+      this.formValues.get('actualSaleDate').valueChanges.subscribe(res => {
+        if (res !== this.formValues.value.actualSaleDate) {
+          this.onCalcActualSaleDate()
+        }
       })
     }
     if (this.formValues.get('bg').value === 'PD&IGT'){
       this.formValues.get('referenceId').disable();
+    }
+
+    //是否IB反馈节点
+    if (!this.isComplete && this.nodeCode === 'node6') {
+      let clearedFields = ['actuallySignAcDate'];
+      clearedFields.forEach((fieldName) => this.formValues.controls[fieldName].enable());
+      clearedFields.forEach((fieldName) => this.formValues.controls[fieldName].setValidators([Validators.required]));
     }
   }
 
@@ -272,11 +285,12 @@ export class NoNedirectOrderInfoComponent implements OnInit, OnChanges {
    //监测 @Input值的变化
   ngOnChanges(changes: SimpleChanges): void {
     //是否是反馈信息节点
-    if (changes.showFeedbackTab && changes.showFeedbackTab.currentValue) {
-      let clearedFields = ['actualSaleDate', 'actuallySignAcDate'];
+    if (changes.showFeedbackTab && changes.showFeedbackTab.currentValue && this.nodeCode < 'node6') {
+      let clearedFields = ['actualSaleDate'];
       clearedFields.forEach((fieldName) => this.formValues.controls[fieldName].enable());
       clearedFields.forEach((fieldName) => this.formValues.controls[fieldName].setValidators([Validators.required]));
     }
+
   }
 
   disabledExpectedSignAcDate = (current: Date): boolean => {
@@ -307,4 +321,5 @@ export class NoNedirectOrderInfoComponent implements OnInit, OnChanges {
       actuallySignAcDate: null,
     })
   }
+
 }
