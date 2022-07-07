@@ -291,7 +291,7 @@
           <nz-form-label nzXl="8" nzXXl="6">实际签署AC日期</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <nz-date-picker formControlName="actuallySignAcDate" style="width: 100%" [nzDisabledDate]="disabledActuallySignAcDate" [nzStyle]="{ width: '100%' }"
-                            [nzPlaceHolder]="showFeedbackTab ? '请选择日期':''">
+                            [nzPlaceHolder]="nodeCode === 'node6' ? '请选择日期':''">
             </nz-date-picker>
           </nz-form-control>
         </nz-form-item>
