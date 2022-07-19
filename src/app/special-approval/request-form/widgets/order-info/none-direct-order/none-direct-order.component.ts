@@ -265,7 +265,6 @@ export class NoNedirectOrderInfoComponent implements OnInit, OnChanges {
     if (!this.isComplete && this.nodeCode === 'node6') {
       let clearedFields = ['actuallySignAcDate'];
       clearedFields.forEach((fieldName) => this.formValues.controls[fieldName].enable());
-      clearedFields.forEach((fieldName) => this.formValues.controls[fieldName].setValidators([Validators.required]));
     }
   }
 

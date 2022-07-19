@@ -277,7 +277,7 @@
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <nz-date-picker formControlName="expectedSignAcDate" style="width: 100%" [nzDisabledDate]="disabledExpectedSignAcDate" [nzStyle]="{ width: '100%' }">
             </nz-date-picker>
-            <nz-alert *ngIf="formValues.get('recordSalesMonth').value" nzType="warning" [nzMessage]="'距预计记认销售日期'+formValues.get('recordSalesMonth').value+'月'"></nz-alert>
+            <nz-alert *ngIf="formValues.get('recordSalesMonth').value" nzType="warning" [nzMessage]="'距预计记认销售日期约'+formValues.get('recordSalesMonth').value+'个月'"></nz-alert>
             <nz-form-explain
               *ngIf="formValues.get('expectedSignAcDate')?.dirty && formValues.get('expectedSignAcDate')?.errors">
               请选择预计签署AC日期
@@ -288,10 +288,10 @@
 
       <div nz-col nzXs="24" nzSm="24" nzMd="12">
         <nz-form-item>
-          <nz-form-label nzXl="8" nzXXl="6" [nzRequired]="nodeCode === 'node6' && !isComplete">实际签署AC日期</nz-form-label>
+          <nz-form-label nzXl="8" nzXXl="6">实际签署AC日期</nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <nz-date-picker formControlName="actuallySignAcDate" style="width: 100%" [nzDisabledDate]="disabledActuallySignAcDate" [nzStyle]="{ width: '100%' }"
-                            [nzPlaceHolder]="showFeedbackTab ? '请选择日期':''">
+                            [nzPlaceHolder]="nodeCode === 'node6' ? '请选择日期':''">
             </nz-date-picker>
           </nz-form-control>
         </nz-form-item>

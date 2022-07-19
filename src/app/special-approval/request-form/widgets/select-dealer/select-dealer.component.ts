@@ -12,7 +12,8 @@ export interface Dealer {
 const DEFAULT_SEARCH_PARAMS = {
   pageNo: 1,
   pageSize: 5,
-  dealerName: null
+  dealerName: null,
+  skipVerification: true
 }
 
 const DEFAULT_TABLE_DATA = {
@@ -49,7 +50,7 @@ export class SelectDealerComponent implements OnInit {
     this.message.create("error", errMsg)
     this.tableLoading = false
   }
-  
+
   getPagedDealerList() {
     const { pageNo, pageSize } = this.searchParams
     const start = (pageNo - 1) * pageSize
