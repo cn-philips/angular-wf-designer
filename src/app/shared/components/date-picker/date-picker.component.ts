@@ -51,9 +51,18 @@ export class DatePickerComponent implements OnInit, ControlValueAccessor {
   }
 
   set modelValue(value) {
-    const formatStr = this.format || DEFAULT_FORMAT[this.mode]
-    this._value = value ? moment(value).format(formatStr) : null
+    this._value = this.formatDate(value)
     this.onChange(this._value)
+  }
+
+  formatDate(date) {
+    const isOADate = new RegExp(/^[0-9]*$/).test(date)
+    if (isOADate) {
+      const ms = (Number.parseInt(date) - 25569) * 86400000
+      date = new Date(ms);
+    }
+    const formatStr = this.format || DEFAULT_FORMAT[this.mode]
+    return date ? moment(date).format(formatStr) : null
   }
 
   registerOnChange(fn: any): void {
