@@ -7,7 +7,7 @@
     "build": "ng build --extract-css",
     "build-prod": "node --max_old_space_size=8000 ./node_modules/@angular/cli/bin/ng build --prod --configuration=production",
     "build-uat": "node --max_old_space_size=8000 ./node_modules/@angular/cli/bin/ng build --prod --configuration=uat",
-    "build-devpackage":"node --max_old_space_size=8000 ./node_modules/@angular/cli/bin/ng build --prod --configuration=devpackage",
+    "build-devpackage": "node --max_old_space_size=8000 ./node_modules/@angular/cli/bin/ng build --prod --configuration=devpackage",
     "serve": "node --max_old_space_size=8000 ./node_modules/@angular/cli/bin/ng serve --host 0.0.0.0 --proxy-config  proxy.conf.json --disable-host-check -o"
   },
   "dependencies": {
