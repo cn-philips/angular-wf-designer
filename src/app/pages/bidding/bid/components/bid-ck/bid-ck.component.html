@@ -1,0 +1,119 @@
+<nz-card class="mtb1rem" nzTitle="Contains non-standard terms 包含非标准条款" *ngIf="infor && infor.businessType != 'DISTRIBUTOR'">
+  <app-app-terms></app-app-terms>
+</nz-card>
+<nz-card class="mtb1rem" nzTitle="Bidding Award Registration 中标备案">
+  <div class="flex">
+    <nz-radio-group [nzDisabled]="flag" [(ngModel)]="data.process" (ngModelChange)="change()">
+      <label nz-radio  nzValue="approved">Win 已中标</label>
+      <label nz-radio nzValue="rejected">Lose 未中标</label>
+      <label nz-radio nzValue="secbidding">Bid Re-Open 二次开标</label>
+    </nz-radio-group>
+    <button
+      *ngIf="data.process=='secbidding' && !flag"
+      style="display: inline-block;margin-left: 1rem;"
+      nz-button
+      nzSize="small"
+      nzType="default"
+      nz-popconfirm
+      nzTitle="你确定要执行二次开标的操作?"
+      (nzOnConfirm)="confirmSecondBid('', 'secbidding')"
+      (nzOnCancel)="cancelSecondBid()"
+    >Bid Re-Open 二次开标</button>
+  </div>
+  <div *ngIf="isVisibleDate" nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+    <div nz-col nzSpan="24">
+      <nz-form-item>
+        <nz-form-label [nzSpan]="6" [nzNoColon]="true"  nzFor="email"></nz-form-label>
+        <nz-form-control [nzSpan]="14" nz-tooltip [nzTitle]="remark">
+          <div class="tips" style="margin: 2% 0 -2% -43%;">
+            <div>提示:</div>
+            注意：经销商DDP 有效期为{{this.contractEndDate}}，当前已过期!
+          </div>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+  <div nz-row nzGutter="24" nzType="flex" nzJustify="start" nzAlign="top">
+    <div nz-col *ngIf="data.process=='approved'" nzSpan="24">
+      <nz-card  class="mtb1rem" nzTitle="Win 已中标">
+        <app-bidinfor [isDisable]="1" [data]="data" [infor]="infor" [flag]="flag" #bidinfor></app-bidinfor>
+      </nz-card>
+    </div>
+    <div *ngIf="data.process=='rejected'"nz-col nzSpan="24">
+      <nz-card class="mtb1rem" nzTitle="Bidding Failure 未中标">
+        <div nz-row nzType="flex" nzJustify="start" nzAlign="middle" [formGroup]="validateForm">
+<!--          <div nz-col nzSpan="24">-->
+<!--            <nz-form-item>-->
+<!--              <nz-form-label [nzSm]="10" [nzXs]="24">上传场地勘验报告</nz-form-label>-->
+<!--              <nz-form-control [nzSm]="14" [nzXs]="24">-->
+<!--                <a href="javascript:">附件</a>-->
+<!--              </nz-form-control>-->
+<!--            </nz-form-item>-->
+<!--          </div>-->
+          <div nz-col nzSpan="24">
+            <nz-form-item>
+              <nz-form-label [nzSm]="3" [nzXs]="24" nzRequired>Bidding Award Price<br>中标价格</nz-form-label>
+              <nz-form-control [nzSm]="4" [nzXs]="24">
+                <input nz-input #price1 *ngIf="!flag"  [(ngModel)]="data.biddingPrice" formControlName='price' style="width: 100%" (ngModelChange)="toNumber($event)" />
+                <!--不可编辑-->
+                <input nz-input *ngIf="flag" [disabled]="true" [(ngModel)]="data.biddingPrice" [ngModelOptions]="{standalone:true}"  style="width: 100%" />
+                <nz-form-explain
+                  *ngIf="validateForm.get('price')?.dirty && validateForm.get('price')?.errors">
+                  此选项必填字段
+                </nz-form-explain>
+              </nz-form-control>
+              <nz-form-control [nzSm]="2" [nzXs]="24" style="padding-left:4px">
+                <nz-select *ngIf="!flag" style="width:100%;" [(ngModel)]="data.isUsdOrRmb" formControlName='pricetype' nzAllowClear nzPlaceHolder="请选择币制">
+                  <nz-option nzValue="USD" nzLabel="USD"></nz-option>
+                  <nz-option nzValue="RMB" nzLabel="RMB"></nz-option>
+                </nz-select>
+                <!--不可编辑-->
+                <nz-select *ngIf="flag" disabled style="width:100%;" [(ngModel)]="data.isUsdOrRmb" [ngModelOptions]="{standalone:true}" nzAllowClear nzPlaceHolder="请选择币制" style="width: 120px;margin-left:4px">
+                  <nz-option nzValue="USD" nzLabel="USD"></nz-option>
+                  <nz-option nzValue="RMB" nzLabel="RMB"></nz-option>
+                </nz-select>
+                <nz-form-explain
+                  *ngIf="validateForm.get('pricetype')?.dirty && validateForm.get('pricetype')?.errors">
+                  此选项必填字段
+                </nz-form-explain>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          <div nz-col nzSpan="24">
+            <nz-form-item>
+              <nz-form-label [nzSm]="3" [nzXs]="24" nzRequired>Awarded To<br> 中标公司</nz-form-label>
+              <nz-form-control [nzSm]="6" [nzXs]="24">
+                <input *ngIf="!flag" nz-input name="email" type="email" [(ngModel)]="data.winningCompany" formControlName='comp'>
+                <!--不可编辑-->
+                <input *ngIf="flag" disabled nz-input name="email" type="email" [(ngModel)]="data.winningCompany" [ngModelOptions]="{standalone:true}">
+                <nz-form-explain
+                  *ngIf="validateForm.get('comp')?.dirty && validateForm.get('comp')?.errors">
+                  此选项必填字段
+                </nz-form-explain>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          <div nz-col nzSpan="24">
+            <nz-form-item>
+              <nz-form-label [nzSm]="3" [nzXs]="24"><span>Remarks</span><br>备注</nz-form-label>
+              <nz-form-control [nzSm]="6" [nzXs]="24">
+<!--                <input nz-input name="email" type="email" [(ngModel)]="data.remarks" [ngModelOptions]="{standalone:true}" [disabled]="flag">-->
+                <textarea nz-input oninput="if(value.length>255)value=value.slice(0,255)" placeholder="" [nzAutosize]="{ minRows: 1, maxRows: 6 }"
+                          [(ngModel)]="data.remarks" [ngModelOptions]="{standalone:true}" [disabled]="flag"></textarea>
+                <ng-container *ngIf="data && data.remarks">
+                  <div>还可以输入:{{data.remarks.length}}/{{textLen}}</div>
+                </ng-container>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        </div>
+      </nz-card>
+    </div>
+
+  </div>
+</nz-card>
+<app-emp-emp-app [data]="infor"></app-emp-emp-app>
+<nz-card class="mtb1rem" nzTitle="Approved History 审批记录">
+  <!--   <app-bid-record></app-bid-record>-->
+  <app-emp-acc></app-emp-acc>
+</nz-card>

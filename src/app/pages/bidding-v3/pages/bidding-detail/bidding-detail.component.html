@@ -1,0 +1,249 @@
+<div class="demo-vertical-spacing">
+  <app-apploading [load]="pageLoading"></app-apploading>
+  <nz-card class="title_warpper mtb1rem">
+    <app-approval-progress></app-approval-progress>
+  </nz-card>
+  <form nz-form [formGroup]="biddingForm">
+    <div class="tabs-box">
+      <app-tabs #tabs>
+        <app-tab id="basic-info" [title]="'biddingv3.pages.bidding-detail.general' | translate">
+          <div class="card-body">
+            <bidding-v3-basic-info
+              [disabled]="disabled"
+              [biddingForm]="biddingForm"
+              [applyDetail]="originData"
+              [showReopenButton]="showReopenButton"
+              (showImportOpp)="showImportOppDialog()"
+              (calcPaymentTerms)="onCalcPaymentTerms()"
+              (calcAuthRequired)="onCalcAuthorizationRequired()"
+              (reopenForm)="onReopenForm()"
+            ></bidding-v3-basic-info>
+          </div>
+        </app-tab>
+
+        <app-tab id="product-info" [title]="'biddingv3.pages.bidding-detail.product' | translate">
+          <div class="card-body">
+            <bidding-v3-product-info
+              [disabled]="disabled"
+              [biddingForm]="biddingForm"
+              [showReopenButton]="showReopenButton"
+              [editable]="productEditable"
+              [subTierSubject]="subTierSubject"
+              (showImportOpp)="showImportOppDialog()"
+              (agreementChange)="calcDistributorAgreement()"
+              (reopenForm)="onReopenForm()"
+            ></bidding-v3-product-info>
+          </div>
+        </app-tab>
+        <app-tab id="supplement-info" [title]="'biddingv3.pages.bidding-detail.supplement' | translate">
+          <div class="card-body">
+            <bidding-v3-supplement-info
+              [paymentTerms]="paymentTerms"
+              [agreementList]="agreementList"
+              [disabled]="disabled"
+              [biddingForm]="biddingForm"
+              [fromTask]="fromTask"
+              [taskStatus]="taskStatus"
+              [showReopenButton]="showReopenButton"
+              [subTierSubject]="subTierSubject"
+              (calcPaymentTerms)="onCalcPaymentTerms()"
+              (dealerChange)="getAgreementList($event)"
+              (reopenForm)="onReopenForm()"
+            ></bidding-v3-supplement-info>
+          </div>
+        </app-tab>
+        <app-tab id="bidding-approval" *ngIf="showBiddingApprovalTab"
+          [title]="'biddingv3.pages.bidding-detail.non' | translate">
+          <div class="card-body">
+            <bidding-v3-bidding-approval
+              [disabled]="true"
+              [biddingApprovalInfo]="biddingApprovalInfo"
+              [biddingForm]="biddingForm"
+              [applyDetail]="originData"
+            ></bidding-v3-bidding-approval>
+          </div>
+        </app-tab>
+        <app-tab id="auth-approval" *ngIf="showAuthApprovalTab"
+          [title]="'biddingv3.pages.bidding-detail.auth' | translate">
+          <div class="card-body">
+            <bidding-v3-auth-approval
+              [disabled]="true"
+              [biddingForm]="biddingForm"
+              [grantAuthApprovalInfo]="grantAuthApprovalInfo"
+              [applyDetail]="originData"
+            ></bidding-v3-auth-approval>
+          </div>
+        </app-tab>
+        <app-tab id="bidding-filling" *ngIf="showBidFillingTab"
+          [title]="'biddingv3.pages.bidding-detail.bid-award' | translate">
+          <div class="card-body">
+            <bidding-v3-bidding-record
+              [disabled]="true"
+              [biddingFilling]="biddingFilling"
+              [applyDetail]="originData"
+            >
+            </bidding-v3-bidding-record>
+          </div>
+        </app-tab>
+        <app-tab id="bidding-confirm" *ngIf="showBidConfirmTab"
+          [title]="'biddingv3.pages.bidding-detail.bid-confirm' | translate">
+          <div class="card-body">
+            <bidding-v3-bidding-confirm
+              [taskId]="taskId"
+              [disabled]="true"
+              [fromSupplement]="fromSupplement"
+              [biddingConfirm]="biddingConfirm"
+              [applyDetail]="originData"
+              [processStatus]="processStatus"
+            >
+            </bidding-v3-bidding-confirm>
+          </div>
+        </app-tab>
+        <app-tab id="approval-history" [title]="'biddingv3.pages.bidding-detail.history' | translate">
+          <div class="card-body">
+            <shared-approval-history [procInstId]="procInstId"></shared-approval-history>
+          </div>
+        </app-tab>
+        <app-tab id="approval" *ngIf="(fromTask && !isResubmit) || fromSupplement" [title]="approveTabTitle">
+          <div class="card-body" formGroupName="approvalInfo">
+            <nz-form-item *ngIf="ddpDateExpiredVisible">
+              <nz-form-label [nzSpan]="isCommomApproval ? 3 : 4" [nzNoColon]="true"></nz-form-label>
+              <nz-form-control [nzSpan]="10">
+                <div class="tips">
+                  <div>提示:</div>
+                  注意：经销商DDP 有效期为{{ originData.distributorDdpDate }}，当前已过有效期，请考虑是否审批通过
+                </div>
+              </nz-form-control>
+            </nz-form-item>
+
+            <ng-container *ngIf="processStatus === 'ecos_bid_bidding_approval'">
+              <bidding-v3-bidding-approval
+                [taskId]="taskId"
+                [biddingApprovalInfo]="biddingApprovalInfo"
+                [applyDetail]="originData"
+                [biddingForm]="biddingForm"
+                [ddpDateExpired]="ddpDateExpiredVisible"
+                (activeTab)="handleActiveTab($event)"
+              ></bidding-v3-bidding-approval>
+            </ng-container>
+
+            <ng-container *ngIf="processStatus === 'ecos_bid_auth'">
+              <bidding-v3-auth-approval
+                [taskId]="taskId"
+                [grantAuthApprovalInfo]="grantAuthApprovalInfo"
+                [applyDetail]="originData"
+                [ddpDateExpired]="ddpDateExpiredVisible"
+                [biddingForm]="biddingForm"
+                (activeTab)="handleActiveTab($event)"
+              ></bidding-v3-auth-approval>
+            </ng-container>
+
+            <ng-container *ngIf="processStatus === 'ecos_bid_filing'">
+              <bidding-v3-bidding-record
+                [taskId]="taskId"
+                [biddingFilling]="biddingFilling"
+                [applyDetail]="originData"
+                [biddingForm]="biddingForm"
+                [ddpDateExpired]="ddpDateExpiredVisible"
+                (activeTab)="handleActiveTab($event)"
+              >
+              </bidding-v3-bidding-record>
+            </ng-container>
+
+            <ng-container *ngIf="processStatus === 'ecos_bid_confirm' || processStatus === 'ecos_bid_confirm2'">
+              <bidding-v3-bidding-confirm
+                [taskId]="taskId"
+                [biddingConfirm]="biddingConfirm"
+                [applyDetail]="originData"
+                [biddingForm]="biddingForm"
+                [ddpDateExpired]="ddpDateExpiredVisible"
+                [processStatus]="processStatus"
+                (activeTab)="handleActiveTab($event)"
+              ></bidding-v3-bidding-confirm>
+            </ng-container>
+
+            <ng-container formGroupName="commonInfo" *ngIf="isCommomApproval">
+              <nz-form-item>
+                <nz-form-label [nzSpan]="3">{{"biddingv3.pages.bidding-detail.remark" | translate}}</nz-form-label>
+                <nz-form-control [nzSpan]="10">
+                  <textarea #processComments [nzAutosize]="{ minRows: 4, maxRows: 6 }" nz-input style="width: 100%"
+                    formControlName="processComments" (ngModelChange)="remarkMsgVisible=false"></textarea>
+                  <a *ngIf="remarkMsgVisible" style="color: #f5222d">请填写拒绝理由</a>
+                </nz-form-control>
+              </nz-form-item>
+
+              <nz-form-item *ngIf="processStatus !== 'ecos_bid_auth'">
+                <nz-form-label [nzSpan]="3">{{"biddingv3.pages.bidding-detail.sup-file" | translate}}</nz-form-label>
+                <nz-form-control [nzSpan]="10">
+                  <shared-upload-file formControlName="processAttachmentIds"></shared-upload-file>
+                </nz-form-control>
+              </nz-form-item>
+            </ng-container>
+
+            <ng-container *ngIf="fromSupplement">
+              <bidding-v3-supplement-file [disabled]="isHandle" [supplementFile]="supplementFile"
+                [applyDetail]="originData">
+              </bidding-v3-supplement-file>
+            </ng-container>
+
+            <footer *ngIf="fromTask && !isResubmit && isCommomApproval">
+              <button nz-button (click)="biddingV3Service.goTodoPage()">
+                {{"biddingv3.pages.bidding-detail.return" | translate}}
+              </button>
+              <button nz-button nzType="primary" nz-popconfirm nzTitle="你确定要执行批准的操作?"
+                (nzOnConfirm)="handleAction('approved')">
+                {{"biddingv3.pages.bidding-detail.approved" | translate}}
+              </button>
+              <button nz-button nzType="primary" nz-popconfirm nzTitle="你确定要执行拒绝的操作?"
+                (nzOnConfirm)="handleAction('rejected')">
+                {{"biddingv3.pages.bidding-detail.refuse" | translate}}
+              </button>
+            </footer>
+          </div>
+        </app-tab>
+      </app-tabs>
+    </div>
+  </form>
+
+  <footer *ngIf="!fromTask && !isResubmit && !fromSupplement">
+    <button nz-button nzType="primary" (click)="goBack()">
+      {{"biddingv3.pages.bidding-detail.return" | translate}}
+    </button>
+    <button *ngIf="cancelFlag" nz-button nzType="default" (click)="openCancel('done')">
+      {{"biddingv3.pages.bidding-detail.cancel" | translate}}
+    </button>
+  </footer>
+
+  <footer *ngIf="isResubmit">
+    <button nz-button (click)="biddingV3Service.goTodoPage()">
+      {{"biddingv3.pages.bidding-detail.return" | translate}}</button>
+    <button nz-button nzType="default" (click)="openCancel('isResubmit')">
+      {{"biddingv3.pages.bidding-detail.cancel" | translate}}
+    </button>
+    <button nz-button nzType="primary" nz-popconfirm nzTitle="你确定要执行提交的操作?" (nzOnConfirm)="handleResubmit()">
+      {{"biddingv3.pages.bidding-detail.submit" | translate}}
+    </button>
+  </footer>
+</div>
+
+<bidding-v3-import-opp #importOpp (select)="onSelectOpp($event)"></bidding-v3-import-opp>
+
+<nz-modal [(nzVisible)]="showoff" nzWidth="600px" [nzTitle]="'biddingv3.pages.bidding-detail.cancel-title' | translate"
+  (nzOnCancel)="handleCancel()" (nzOnOk)="biddingCancel()" nzOkText="确定取消">
+  <ng-container>
+    <div>
+      <nz-form-item>
+        <nz-form-label [nzSm]="4" [nzXs]="24" [nzRequired]="true" style="min-width: 160px !important;">
+          {{"biddingv3.pages.bidding-detail.cancel-reason" | translate}}
+        </nz-form-label>
+        <nz-form-control [nzSm]="14" [nzXs]="24">
+          <textarea nz-input oninput="if(value.length>255)value=value.slice(0,255)" nz-input placeholder=""
+            [nzAutosize]="{ minRows: 2, maxRows: 6 }" [(ngModel)]="remarks"></textarea>
+          <div *ngIf="rem_mess">
+            <a style="color: #f5222d">{{"biddingv3.pages.bidding-detail.tips" | translate}}</a>
+          </div>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </ng-container>
+</nz-modal>

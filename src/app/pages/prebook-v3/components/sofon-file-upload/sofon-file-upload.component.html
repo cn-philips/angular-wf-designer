@@ -1,0 +1,32 @@
+<button nz-button *ngIf="!disabled" nzType="default" (click)="selectSofon()">
+  <i nz-icon nzType="upload"></i>
+  <span>{{"orderv3.components.sofon-show-diog.upload" | translate}}</span>
+</button>
+<div class="upload-file-list" *ngIf="fileList.length > 0">
+  <div *ngFor="let file of fileList" class="file-item">
+    <span class="file-name" [title]="file.name">
+      <i nz-icon [nzType]="file.status === 'uploading' ? 'loading' : 'paper-clip'"></i>
+      {{ file.name }}
+    </span>
+    <span class="file-btn">
+      <i nz-icon nzType="download" nzTheme="outline" (click)="onDownloadFile(file)"></i>
+      <i nz-icon *ngIf="!disabled" style="margin-left:8px" nzType="close" (click)="onRemoveFile(file)"></i>
+    </span>
+  </div>
+</div>
+<nz-modal [(nzVisible)]="isAgres" nzWidth="450px" nzTitle="Sofon文件" [nzFooter]="modalFooter"
+  (nzOnCancel)="isAgreCancels()">
+  <nz-spin nzTip="Loading..." [nzSpinning]="sofonLoad">
+  <div *ngFor="let item of sofonList">
+    <label nz-checkbox [(ngModel)]="item.checked">{{item.name}}</label>
+  </div>
+  <ng-template #modalFooter>
+    <button nz-button nzType="default" (click)="isAgreCancels()">
+      {{"orderv3.components.sofon-show-diog.cancel" | translate}}
+    </button>
+    <button nz-button nzType="primary" [nzLoading]="sofonLoad"
+      (click)="isAgregentOk()">{{"orderv3.components.sofon-show-diog.confirm" | translate}}
+    </button>
+  </ng-template>
+</nz-spin>
+</nz-modal>

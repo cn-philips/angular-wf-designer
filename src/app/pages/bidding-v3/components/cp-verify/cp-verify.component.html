@@ -1,0 +1,77 @@
+<nz-modal [(nzVisible)]="visible" [nzOkDisabled]="okBtnDisabled()" [nzTitle]="'biddingv3.components.cp-verify.title' | translate"
+  nzOkText="授权发放" nzCancelText="取消" nzWidth="1200" (nzOnCancel)="visible = false" (nzOnOk)="onVerify()">
+  <nz-table nzBordered [nzData]="tableData" [nzFrontPagination]="false" [nzScroll]="{ x:'1000px' , y:'500px' }"
+    [nzLoading]="tableLoading" [nzShowPagination]="false">
+    <thead>
+      <tr>
+        <th nzWidth="200px" nzLeft="0px">Opportunity</th>
+        <th nzWidth="250px" nzLeft="200px">Market Bundle</th>
+        <th nzWidth="200px">{{"biddingv3.components.cp-verify.type" | translate}}</th>
+        <th nzWidth="200px">{{"biddingv3.components.cp-verify.customer-bid" | translate}}</th>
+        <th nzWidth="200px">{{"biddingv3.components.cp-verify.customer-cp" | translate}}</th>
+        <th nzWidth="250px">{{"biddingv3.components.cp-verify.app-bid" | translate}}</th>
+        <th nzWidth="250px">{{"biddingv3.components.cp-verify.app-cp" | translate}}</th>
+        <th nzWidth="850px">{{"biddingv3.components.cp-verify.search-result" | translate}}</th>
+        <th nzWidth="150px">{{"biddingv3.components.cp-verify.check-result" | translate}}</th>
+        <th nzWidth="150px">{{"biddingv3.components.cp-verify.reason" | translate}}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of tableData; index as i">
+        <td nzWidth="200px" nzLeft="0px">{{ item.opportunityId }}</td>
+        <td nzWidth="250px" nzLeft="200px">{{ item.marketBundleName }}</td>
+        <td>{{ item.productModel }}</td>
+        <td>{{ hospitalName }}</td>
+        <td>{{ item.orderByCustomerNameCp }}</td>
+        <td>{{ applicant }}</td>
+        <td>{{ item.winPerson }}</td>
+        <td>
+          <nz-radio-group [(ngModel)]="item.select" (ngModelChange)="onSelectChange(i)">
+            <div class="mkbox">
+              <div *ngFor="let result of item.cpVerifyResults; index as j;" style="display:flex;">
+                <div style="flex: 2;display: flex;align-items: center;justify-content: flex-start;">
+                  <label nz-radio [nzValue]="result.marketBundleId" [nzDisabled]="result.isDisable">
+                    <span
+                      nz-tooltip
+                      [nzTitle]=" 'Simulation ID:'+item.simulationId +';'+ 'Deal Form ID:' +result.dealFormId +';'+'MarketBundle Id:'+result.marketBundleId+';'+result.marketBundleName"
+                      class="win-check-link down"
+                    >
+                      {{ 
+                        'Simulation ID:' + item.simulationId + ';'
+                        +
+                        'Deal Form ID:' + result.dealFormId + ';'
+                        +
+                        'MarketBundle Id:' + result.marketBundleId + ';'
+                        +
+                        item.marketBundleName
+                      }}
+                      {{ resultSet.has(result.marketBundleId) ? '(已使用)' : "(未使用)" }}
+                      <i class="check" *ngIf="result.temUser==true">(已选中)</i>
+                    </span>
+                  </label>
+                </div>
+                <div *ngIf="(item.select == result.marketBundleId || result.temUser)"
+                  style="flex: 1;display: flex;align-items: center;justify-content: center">
+                  <button *ngIf="result.temUser != true" nz-button nzSize="small" nzType="primary"
+                    (click)="onVerifyItem(item, result, i,j)">
+                    {{"biddingv3.components.cp-verify.on-verify" | translate}}
+                  </button>
+                  <button *ngIf="result.temUser == true" nz-button nzSize="small" nzType="primary"
+                    (click)="onCancelVerifyItem(item, result, i,j)">
+                    {{"biddingv3.components.cp-verify.on-cancel" | translate}}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </nz-radio-group>
+        </td>
+        <td>
+          <div *ngIf="item.checkResult !== ''" [ngClass]="item.checkResult ? 'green':'red'">
+            {{ item.checkResult ? "成功":"失败" }}
+          </div>
+        </td>
+        <td>{{ item.checkResultReasons }}</td>
+      </tr>
+    </tbody>
+  </nz-table>
+</nz-modal>

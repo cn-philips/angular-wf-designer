@@ -1,0 +1,28 @@
+<nz-upload [nzType]="type" [nzMultiple]="true" [nzLimit]="limit" [nzCustomRequest]="onUploadFile"
+  [nzBeforeUpload]="onBeforeUpload" [nzDisabled]="disabled" [nzShowUploadList]="false">
+  <ng-container *ngIf="type === 'drag'">
+    <p class="ant-upload-drag-icon">
+      <i nz-icon nzType="inbox"></i>
+    </p>
+    <p class="ant-upload-text">{{"components.upload-file.text" | translate}}</p>
+  </ng-container>
+  <ng-container *ngIf="type !== 'drag'">
+    <button nz-button><i nz-icon nzType="upload"></i><span>{{title || "components.upload-file.title" | translate
+        }}</span></button>
+  </ng-container>
+</nz-upload>
+<nz-alert *ngIf="hint" nzType="warning" [nzMessage]="hint"></nz-alert>
+
+<div class="upload-file-list" *ngIf="fileList.length > 0">
+  <div *ngFor="let file of fileList" class="file-item">
+    <span class="file-name" [title]="file.name">
+      <i nz-icon [nzType]="file.status === 'uploading' ? 'loading' : 'paper-clip'"></i>
+      {{ file.name }}
+    </span>
+    <span class="file-btn">
+      <i nz-icon nzType="download" nzTheme="outline" (click)="onDownloadFile(file)" title="下载附件"></i>
+      <i nz-icon *ngIf="!disabled" style="margin-left:8px" nzType="close" (click)="onRemoveFile(file)" title="删除附件"></i>
+    </span>
+  </div>
+</div>
+<app-apploading [load]="load"></app-apploading>

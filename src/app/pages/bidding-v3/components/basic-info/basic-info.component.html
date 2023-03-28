@@ -1,0 +1,351 @@
+<div class="import-btn-wrap" *ngIf="!disabled || showReopenButton">
+  <button *ngIf="!disabled" nz-button [disabled]="dataSource" nzType="primary" [nzSize]="6"
+    (click)="showImportOppDialog()">
+    {{"biddingv3.components.basic-info.import" | translate}}
+  </button>
+
+  <span class="data-source red" *ngIf="!disabled && dataSource">
+    <span>{{"biddingv3.components.basic-info.data-source" | translate}}</span>
+    <span>{{ dataSource }}</span>
+  </span>
+
+  <button *ngIf="showReopenButton" nz-button class="edit-btn" nz-popconfirm nzTitle="你确定要再次编辑表单信息, 确定后将重新审批所有非标条款?"
+    (nzOnConfirm)="onReopenForm()">
+    {{"biddingv3.components.basic-info.reopen" | translate}}
+  </button>
+</div>
+
+<form nz-form [formGroup]="basicInfo">
+  <div class="selection-wrap" formGroupName="baseInfo">
+    <app-form-section [title]="'biddingv3.components.basic-info.basic.title' | translate" [form]="baseInfo">
+      <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXl="8" nzXXl="6">Reference ID</nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <input nz-input formControlName="referenceId" placeholder="申请提交后系统自动生成" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+      <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXl="8" nzXXl="6" nzRequired>
+              {{"biddingv3.components.basic-info.basic.bidding-model" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <nz-select placeholder="请选择" formControlName="biddingModel"
+                (ngModelChange)="handleBiddingModelChange($event)">
+                <nz-option *ngFor="let item of selectOption.biddingModel" [nzLabel]="item.label" [nzValue]="item.value">
+                </nz-option>
+              </nz-select>
+              <nz-form-explain *ngIf="baseInfo.get('biddingModel')?.dirty && baseInfo.get('biddingModel')?.errors">
+                {{"biddingv3.components.basic-info.required" | translate}}
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzXl="8" nzXXl="6" nzRequired nzFor="biddingProgramName">
+              {{"biddingv3.components.basic-info.basic.program-name" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <input nz-input id="biddingProgramName" formControlName="biddingProgramName" maxlength="255" />
+              <nz-form-explain
+                *ngIf="baseInfo.get('biddingProgramName')?.dirty && baseInfo.get('biddingProgramName')?.errors">
+                {{"biddingv3.components.basic-info.required" | translate}}
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzXl="8" nzXXl="6">
+              {{"biddingv3.components.basic-info.basic.business-model" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="16">
+              <input
+                nz-input
+                disabled
+                [ngModelOptions]="{standalone: true}"
+                [ngModel]="baseInfo.get('businessModel').value | BusinessModelPipe"
+              />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="8">
+          <nz-form-item>
+            <nz-form-label nzXl="8" nzXXl="6" nzRequired>
+              {{"biddingv3.components.basic-info.basic.bidding-type" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <shared-select formControlName="biddingType" placeholder="请选择" [options]="selectOption.biddingType"
+                (ngModelChange)="handleBiddingTypeChange($event)"></shared-select>
+              <nz-form-explain *ngIf="baseInfo.get('biddingType')?.dirty && baseInfo.get('biddingType')?.errors">
+                {{"biddingv3.components.basic-info.required" | translate}}
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzXl="8" nzXXl="6" nzRequired nzFor="biddingNumber">
+              {{"biddingv3.components.basic-info.basic.bidding-number" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <input nz-input id="biddingNumber" formControlName="biddingNumber" maxlength="255" />
+              <nz-form-explain *ngIf="baseInfo.get('biddingNumber')?.dirty && baseInfo.get('biddingNumber')?.errors">
+                {{"biddingv3.components.basic-info.required" | translate}}
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzXl="8" nzXXl="6" nzRequired nzFor="biddingOrgName">
+              {{"biddingv3.components.basic-info.basic.org-name" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="16">
+              <input nz-input id="biddingOrgName" formControlName="biddingOrgName" maxlength="255" />
+              <nz-form-explain *ngIf="baseInfo.get('biddingOrgName')?.dirty && baseInfo.get('biddingOrgName')?.errors">
+                {{"biddingv3.components.basic-info.required" | translate}}
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzXl="8" nzXXl="6" nzRequired>
+              {{"biddingv3.components.basic-info.basic.open-date" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <shared-date-picker formControlName="biddingOpenDate"></shared-date-picker>
+              <nz-form-explain
+                *ngIf="baseInfo.get('biddingOpenDate')?.dirty && baseInfo.get('biddingOpenDate')?.errors">
+                {{"biddingv3.components.basic-info.required" | translate}}
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzXl="8" nzXXl="6" nzRequired nzFor="biddingValidDate">
+              {{"biddingv3.components.basic-info.basic.valid-date" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <nz-input-number style="width:100%" formControlName="biddingValidDate" [nzMin]="0" [nzPrecision]="0">
+              </nz-input-number>
+              <nz-form-explain
+                *ngIf="baseInfo.get('biddingValidDate')?.dirty && baseInfo.get('biddingValidDate')?.errors">
+                {{"biddingv3.components.basic-info.required" | translate}}
+                <!-- __TODO__ 数字校验 -->
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+      <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+        <bidding-v3-oit-related-link [applyDetail]="applyDetail"></bidding-v3-oit-related-link>
+      </div>
+    </app-form-section>
+  </div>
+
+  <div class="selection-wrap" formGroupName="finalUser">
+    <app-form-section [title]="'biddingv3.components.basic-info.final-user.title' | translate" [form]="finalUser">
+      <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+        <div nz-col nzXs="24" nzSm="24" nzMd="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzXl="8" nzXXl="6" nzRequired nzFor="hospitalName">
+              {{"biddingv3.components.basic-info.final-user.hospital-name" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14"
+              [ngClass]="finalUser.get('hospitalName')?.dirty && !finalUser.get('hospitalName')?.value ? 'has-error' : ''">
+              <nz-input-group style="width: 100%" [nzAddOnAfter]="disabled ? null : selectHospitalBtn">
+                <input id="hospitalName" nz-input formControlName="hospitalName" readonly />
+              </nz-input-group>
+              <ng-template #selectHospitalBtn>
+                <button nz-button nzSize="middle" nzType="primary" [disabled]="hospitalSelectBtnDisabled"
+                  (click)="showSelectHospitalDialog()">{{"biddingv3.components.basic-info.select" | translate}}</button>
+              </ng-template>
+              <nz-form-explain *ngIf="finalUser.get('hospitalName')?.dirty && !finalUser.get('hospitalName')?.value">
+                {{"biddingv3.components.basic-info.required" | translate}}
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzXl="8" nzXXl="6">
+              {{"biddingv3.components.basic-info.final-user.customer-code" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <input nz-input formControlName="customerCode" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzXl="8" nzXXl="6">
+              {{"biddingv3.components.basic-info.final-user.customer-type" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="16">
+              <input nz-input formControlName="customerType" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzXl="8" nzXXl="6">
+              {{"biddingv3.components.basic-info.final-user.company-name" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <input nz-input formControlName="groupPurchaseCompany" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzXl="8" nzXXl="6">
+              {{"biddingv3.components.basic-info.final-user.cus-category" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <input nz-input formControlName="customerCategory" />
+              <nz-form-explain style="color: #f5222d" *ngIf="finalUser?.errors?.segmentError">
+                请确认CD中的Segment信息是否缺失
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzXl="8" nzXXl="6">
+              {{"biddingv3.components.basic-info.final-user.province" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="16">
+              <input nz-input formControlName="customerProvince" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="8" class="group-purchase">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzXl="8" nzXXl="6" nzNoColon></nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <label nz-checkbox formControlName="groupPurchase">
+                {{"biddingv3.components.basic-info.final-user.purchase" | translate}}
+              </label>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+    </app-form-section>
+  </div>
+
+  <div class="selection-wrap" formGroupName="applicant">
+    <app-form-section [title]="'biddingv3.components.basic-info.applicant.title' | translate" [form]="applicant">
+      <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+        <div nz-col nzXs="24" nzSm="24" nzMd="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzXl="8" nzXXl="6">
+              {{"biddingv3.components.basic-info.applicant.requestor" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <input nz-input disabled [ngModelOptions]="{standalone: true}" [ngModel]="requestor" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzXl="8" nzXXl="6">
+              {{"biddingv3.components.basic-info.applicant.owner-position" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <input nz-input formControlName="biddingOwnerPosition" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzXl="8" nzXXl="6" nzRequired>
+              {{"biddingv3.components.basic-info.applicant.region" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="16">
+              <shared-select formControlName="systemRegion" placeholder="请选择" [options]="selectOption.systemRegion"
+                (ngModelChange)="handleSystemRegionChange($event)"></shared-select>
+              <nz-form-explain *ngIf="applicant.get('systemRegion')?.dirty && applicant.get('systemRegion')?.errors">
+                {{"biddingv3.components.basic-info.required" | translate}}
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzXl="8" nzXXl="6">Team</nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <input nz-input formControlName="team" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzXl="8" nzXXl="6">Modality</nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <input nz-input formControlName="modality" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzXl="8" nzXXl="6">Cycle Group</nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="16">
+              <input nz-input formControlName="cycleGroup" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzXl="8" nzXXl="6">
+              {{"biddingv3.components.basic-info.applicant.big-area" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <input nz-input formControlName="bigArea" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzXl="8" nzXXl="6">
+              {{"biddingv3.components.basic-info.applicant.small-area" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <input nz-input formControlName="smallArea" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+    </app-form-section>
+  </div>
+</form>
+
+<shared-select-hospital [modality]="modalityList" #selectHospital (select)="onSelectHospital($event)"></shared-select-hospital>

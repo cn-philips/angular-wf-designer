@@ -1,0 +1,40 @@
+ <app-tabs>
+  <app-tab [title]="'标准配置'">
+    <nz-table class="mt10" #baseTable [nzData]="productInfo" nzTableLayout="fixed" [nzScroll]="{ x:'800px'}"
+      [nzShowPagination]="true" nzFrontPagination="true" nzBordered>
+      <thead>
+        <tr>
+          <th nzLeft="0px" style="width:200px" nzAlign="center">{{"orderv3.components.standard-table.product-Name"| translate}}</th> 
+          <th  nzAlign="center" style="width:100px">Aticle No.</th>
+          <th nzAlign="center" nzWidth="200px">Article Description CN</th>
+          <th nzAlign="center" nzWidth="200px">Article Description EN</th>
+          <th nzAlign="center" nzWidth="200px">{{"orderv3.components.standard-table.material-no" | translate}}</th>
+          <th nzAlign="center" nzWidth="100px">{{"orderv3.components.standard-table.qty"| translate}}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let data of baseTable.data;index as j;">
+          <td nzLeft="0px" nzAlign="center">
+            {{data.productName}}
+          </td>
+          <td  nzAlign="center">
+            {{data.materialNo}}
+          </td>
+          <td nzAlign="center">
+            {{data.articleCnDes}}
+          </td>
+          <td nzAlign="center">
+            {{data.articleEnDes}}
+          </td>
+          <td nzAlign="center">
+            {{data.articleNum}}
+          </td>
+          <td nzAlign="center">
+            {{data.quantity}}
+          </td>          
+        </tr>
+      </tbody>
+    </nz-table>
+ </app-tab>
+</app-tabs>
+

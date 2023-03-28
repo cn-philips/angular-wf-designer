@@ -1,6 +1,0 @@
-@import '../../vendor/libs/ngx-contextmenu/ngx-contextmenu.scss'; 
-@import '../../vendor/libs/angular2-ladda/angular2-ladda.scss';
-
-::ng-deep .cdk-overlay-container { //for nz componont overlay can dispaly within modal
-  z-index: 999999 !important;
-}

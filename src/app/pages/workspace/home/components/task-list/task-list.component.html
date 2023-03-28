@@ -1,0 +1,54 @@
+<div class="boxArea">
+  <nz-spin nzTip="Loading..." [nzSpinning]="spin" [nzDelay]="500">
+    <div class="list-card-title-line">
+      <div class="title">
+        {{ listTitle }}
+      </div>
+      <div>
+        <a (click)="handleShowMore(listTitle)">{{"common.more"|translate}}</a>
+      </div>
+    </div>
+    <div *ngIf="!isLoading" class="list-card-wrapper">
+      <div
+        *ngFor="let item of list; let i = index"
+        class="listcard"
+        [@openClose]="isIn ? currentAnimate(i) : 'out'"
+        (click)="viewItem($event, item)"
+      >
+        <div class="listcard-content">
+          <!-- <div class="tasktype">
+            {{ item.name }}
+          </div> -->
+          <div class="taskid">
+            {{ item.referenceId||item.applyCode }}
+          </div>
+        </div>
+        <div class="listcard-footer">
+          <nz-tag [nzColor]="item.color+'1a'" class="logo"><span [ngStyle]="{color:item.color}">{{ getType(item)  }}</span></nz-tag>
+          <div class="date">
+            {{ item.date }}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="isLoading" class="list-card-wrapper">
+      <div
+        *ngFor="let item of [1, 2, 3]; let i = index"
+        [@openClose]="isIn ? currentAnimate(i) : 'out'"
+        class="listcard"
+      >
+        <div class="listcard-content">
+          <nz-skeleton
+            [nzActive]="true"
+            [nzTitle]="true"
+            [nzParagraph]="{ rows: 1 }"
+          ></nz-skeleton>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="!isLoading && list.length === 0" style="margin-bottom: 10px">
+      <nz-empty></nz-empty>
+    </div>
+  </nz-spin>
+</div>

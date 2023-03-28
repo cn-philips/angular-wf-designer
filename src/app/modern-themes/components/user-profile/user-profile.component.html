@@ -1,0 +1,76 @@
+<form
+  nz-form
+  [formGroup]="profileForm"
+  [nzLayout]="'horizontal'"
+  [nzNoColon]="true"
+>
+  <div style="margin: 10px 0" nz-row>
+    <div nz-col nzSpan="24">
+      <nz-form-item>
+        <nz-form-label [nzSpan]="4">{{
+          "user-profile.user-name" | translate
+        }}</nz-form-label>
+        <nz-form-control [nzSpan]="18">
+          <nz-input-group>
+            <input
+              type="text"
+              style="width: 200px"
+              nz-input
+              formControlName="userName"
+            />
+          </nz-input-group>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label [nzSpan]="4">{{
+          "user-profile.user-email" | translate
+        }}</nz-form-label>
+        <nz-form-control [nzSpan]="18">
+          <nz-input-group>
+            <input
+              type="text"
+              style="width: 200px"
+              nz-input
+              formControlName="userEmail"
+            />
+          </nz-input-group>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label [nzSpan]="4">{{
+          "user-profile.user-roles" | translate
+        }}</nz-form-label>
+        <nz-form-control
+          style="
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            max-height: 250px;
+          "
+          [nzSpan]="18"
+        >
+          <div>
+            <div *ngFor="let roleKey of objectKeys(roles)">
+              <nz-divider [nzText]="roleKey" nzOrientation="left"></nz-divider>
+              <nz-tag
+                *ngFor="let role of roles[roleKey]"
+                [nzColor]="'#108ee9'"
+                nz-tooltip
+                [nzTitle]="titleTemplate"
+                >{{ role.label }}
+                <ng-template #titleTemplate>
+                  <div>Team: {{ role.team }}</div>
+                  <div *ngIf="role.serveTeam">Serve Team: {{ role.serveTeam }}</div>
+                  <div>Modality: {{ role.modality }}</div>
+                  <div>Cycle Group: {{ role.cycleGroup }}</div>
+                  <div>Big Area: {{ role.bigArea }}</div>
+                  <div>Small Area: {{ role.smallArea }}</div>
+                </ng-template>
+              </nz-tag>
+            </div>
+          </div>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+</form>

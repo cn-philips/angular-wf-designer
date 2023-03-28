@@ -1,0 +1,59 @@
+<nz-modal 
+  [(nzVisible)]="visible" 
+  nzWidth="1000px" 
+  nzTitle="选择医院" 
+  [nzFooter]="null"
+  (nzOnCancel)="onHideModal()"
+>
+  <div nz-row class="search-form">
+    <nz-form-item>
+      <nz-form-label [nzSpan]="5" nzFor="email">医院名称</nz-form-label>
+      <nz-form-control [nzSpan]="12">
+        <input nz-input [(ngModel)]="searchParams.customerName">
+      </nz-form-control>
+      <nz-form-control [nzSpan]="3">
+        <button nz-button class="ml10" nzType="primary" (click)="getHospitalList(true)" [nzSize]="6">搜索</button>
+      </nz-form-control>
+    </nz-form-item>
+  </div>
+
+  <div class="table-container">
+    <nz-table 
+      [nzData]="tableData.list"
+      [nzShowTotal]="totalTemplate"
+      [nzTotal]="tableData.totalCount"
+      [nzLoading]="tableLoading"
+      [nzPageSizeOptions]="[5, 10, 20, 30, 40, 50 ]"
+      [nzShowQuickJumper]="true"
+      [nzShowSizeChanger]="true"
+      [nzFrontPagination]="false"
+      [(nzPageIndex)]="searchParams.pageNo"
+      [(nzPageSize)]="searchParams.pageSize"
+      (nzPageIndexChange)="getHospitalList()"
+      (nzPageSizeChange)="getHospitalList()"
+    >
+      <thead>
+        <tr>
+          <th nzWidth="100px" nzAlign="left">医院编号</th>                     
+          <th nzWidth="180px" nzAlign="left">医院名称</th> 
+          <th nzWidth="100px" nzAlign="left">医院性质</th>
+          <th nzWidth="180px" nzAlign="left">医院地址</th>
+          <th nzWidth="40px">操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let hospital of tableData.list">
+          <td nzAlign="left">{{ hospital.no }}</td>
+          <td nzAlign="left">{{ hospital.customerName }}</td>
+          <td nzAlign="left">{{ hospital.customerType }}</td>
+          <td nzAlign="left">{{ hospital.address }}</td>
+          <td nzAlign="left">
+            <button nz-button nzSize="small" nzType="primary" (click)="onSelectHospital(hospital)">选择</button>
+          </td>
+        </tr>
+      </tbody>
+    </nz-table>
+
+    <ng-template #totalTemplate let-total> 数据总条数 {{ tableData.totalCount }} </ng-template>
+  </div>
+</nz-modal>

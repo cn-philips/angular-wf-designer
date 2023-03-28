@@ -1,0 +1,42 @@
+<app-form-section [form]="remarkFrom" class="mtb1rem" [title]="'orderv3.components.pre-order-remarks.title' | translate">
+  <form nz-form [formGroup]="remarkFrom" [nzNoColon]="true">
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzRequired]="isNzRequired">
+            {{"orderv3.components.pre-order-remarks.remarks" | translate}}
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+            <textarea nz-input oninput="if(value.length>255)value=value.slice(0,255)" placeholder=""
+              nzPlacement="topLeft" [nzAutosize]="{ minRows: 1, maxRows: 6 }" formControlName="comments"></textarea>
+            <nz-form-explain *ngIf="remarkFrom.get('comments')?.dirty && remarkFrom.get('comments')?.errors">
+              {{(status=="ecos_oit_deal_resubmit"?"orderv3.components.pre-order-remarks.required":"orderv3.components.pre-order-remarks.reasons") | translate}}
+            </nz-form-explain>
+            <ng-container *ngIf="remarkFrom.getRawValue().comments">
+              <div>{{"orderv3.components.pre-order-remarks.enter-len" |
+                translate}}:{{remarkFrom.getRawValue().comments.length}}/255</div>
+            </ng-container>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">        
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="6">
+            {{"orderv3.components.pre-order-remarks.attachment" | translate}}
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+            <nz-alert *ngIf="isDealerDdpStatus()" nzType="warning" [nzMessage]="dealDDpstatusTitle" nzShowIcon></nz-alert>
+            <nz-alert *ngIf="isforeignDdpStatus()" nzType="warning" [nzMessage]="foreignFromDDpstatusTitle" nzShowIcon></nz-alert>
+            <shared-upload-file formControlName="attachmentIds"></shared-upload-file>          
+            <nz-form-explain *ngIf="remarkFrom.get('attachmentIds')?.dirty &&remarkFrom.get('attachmentIds')?.errors">
+               <ng-container *ngIf="remarkFrom.get('attachmentIds')?.hasError('required') ">此选项必填字段</ng-container>
+               <ng-container *ngIf="remarkFrom.get('attachmentIds')?.hasError('fileform')">文件未上传完成!</ng-container>
+           </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+  </form>
+</app-form-section>

@@ -1,0 +1,39 @@
+<div class="carousel_container">
+  <app-pagination-button
+    (click)="carousel.pre()"
+    direction="previous"
+  ></app-pagination-button>
+  <app-pagination-button
+    (click)="carousel.next()"
+    direction="next"
+  ></app-pagination-button>
+  <nz-carousel
+    nzEffect="scrollx"
+    [nzAutoPlay]="true"
+    [nzAutoPlaySpeed]="5000000"
+    #carousel
+  >
+    <!-- 入口 -->
+    <div
+      (click)="handleClick(item.link)"
+      nz-carousel-content
+      *ngFor="let item of items"
+    >
+      <div class="card carousel_item">
+        <img [src]="item.img" />
+        <div class="carousel_item_shadow"></div>
+        <div class="card-body d-flex flex-column carousel_item_content">
+          <div class="carousel_item_title">
+            <i nz-icon *ngIf="item.icon" [type]="item.icon"></i>
+            {{ item.title }}
+          </div>
+          <div
+            class="carousel_item_body"
+            [innerHTML]="item.content | html"
+            (click)="handleContentClick($event)"
+          ></div>
+        </div>
+      </div>
+    </div>
+  </nz-carousel>
+</div>

@@ -1,0 +1,1 @@
+export { SupportFileUpComponent } from './support-file-up.component'

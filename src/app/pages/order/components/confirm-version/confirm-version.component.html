@@ -1,0 +1,92 @@
+<app-apploading [load]="load"></app-apploading>
+ <form  nz-form [formGroup]="validateForm">
+  <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+    <div nz-col nzXs="24" nzSm="24" nzMd="24">
+      <nz-form-item style="margin-bottom: 6px">
+        <nz-form-label nzSm="6" nzXl="6" nzXXl="6"  nzRequired><span>Reason of Change</span><br>改单原因</nz-form-label>
+        <nz-form-control nzSm="14" nzXl="14" nzXXl="14">
+          <nz-select style="width: 100%"  nzShowSearch nzAllowClear (ngModelChange)="refuseReasonChang($event)" [(ngModel)]="infor.refuseReason"
+            nzPlaceHolder="" nzSize="large" formControlName="refuseReason">
+            <nz-option nzCustomContent *ngFor="let item of reasonList"  [nzValue]="item.id" [nzLabel]="item.orderChange">
+              <div nz-tooltip class="options" tooltip [nzTitle]="item.orderChange">{{item.orderChange}}</div>
+            </nz-option>
+          </nz-select>
+          <nz-form-explain *ngIf="
+          validateForm.get('refuseReason')?.dirty &&
+          validateForm.get('refuseReason')?.errors
+        ">
+          <ng-container *ngIf="validateForm.get('refuseReason')?.hasError('required')">
+            此选项必填字段</ng-container>
+        </nz-form-explain>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+  <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+    <div nz-col nzXs="24" nzSm="24" nzMd="24">
+      <nz-form-item style="margin-bottom: 6px">
+        <nz-form-label nzSm="6" nzXl="6" nzXXl="6" nzRequired><span>Remarks</span><br>补充说明</nz-form-label>
+        <nz-form-control nzSm="14" nzXl="14" nzXXl="14">
+          <textarea nz-input oninput="if(value.length>255)value=value.slice(0,255)" nz-input placeholder=""
+            formControlName="remarks" [(ngModel)]="infor.remarks" [nzAutosize]="{ minRows: 1, maxRows: 6 }"></textarea>
+          <ng-container *ngIf="infor.remarks">
+            <div>还可以输入:{{infor.remarks.length}}/{{textLen}}</div>
+          </ng-container>
+          <nz-form-explain *ngIf="
+          validateForm.get('remarks')?.dirty &&
+          validateForm.get('remarks')?.errors
+        ">
+          <ng-container *ngIf="validateForm.get('remarks')?.hasError('required')">
+            此选项必填字段</ng-container>
+        </nz-form-explain>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+  <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+    <div nz-col nzXs="24" nzSm="24" nzMd="24">
+      <nz-form-item style="margin-bottom: 6px">
+        <nz-form-label nzSm="6" nzXl="6" nzXXl="6">Supporting Document<br>文件支持</nz-form-label>
+        <nz-form-control nzSm="14" nzXl="14" nzXXl="14">
+          <div class="maxuploadto">
+            <nz-upload [(nzFileList)]="fileFileList" [nzBeforeUpload]="fileBeforeUpload" [nzLimit]="1" [nzRemove]="nzRemovmr"
+              [nzPreview]="dwonLoad">
+              <button nz-button><i nz-icon
+                  nzType="upload"></i><span>Upload 文件上传</span></button>
+            </nz-upload>
+            </div>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+  <div nz-row nzType="flex" *ngIf="dealFormOff" nzJustify="start" nzAlign="middle">
+    <div nz-col nzXs="24" nzSm="24" nzMd="24">
+      <nz-form-item style="margin-bottom: 6px">
+        <nz-form-label nzSm="6" nzXl="6" nzXXl="6" nzNoColon="true"></nz-form-label>
+        <nz-form-control nzSm="18" nzXl="18" nzXXl="18">
+          <nz-form-control nzSm="24" nzXl="24" nzXXl="24">
+            <label nz-checkbox formControlName="changeDealForm"  [(ngModel)]="infor.changeDealForm">Require Update Deal Form 需要更改Deal Form进单</label>
+          </nz-form-control>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+  <div nz-row nzType="flex"  nzJustify="start" nzAlign="middle">
+    <div nz-col nzXs="24" nzSm="24" nzMd="24">
+      <nz-form-item style="margin-bottom: 6px">
+        <nz-form-label nzSm="6" nzXl="6" nzXXl="6" nzNoColon="true"></nz-form-label>
+        <nz-form-control nzSm="14" nzXl="14" nzXXl="14">
+          <div *ngIf="distributorOff||foreignTradeOff"  class="warning nohide">
+              注意：<ng-container *ngIf="distributorOff" >经销商 DDP 有效期为{{contractEndDate}},当前已过有效期;</ng-container>
+              <ng-container *ngIf="foreignTradeOff" >  外贸公司 DDP 有效期为{{poolEndDate}},当前已过有效期</ng-container>
+              如为以下改单原因，请勿发起改单：
+              <div *ngFor="let item of messageGroup;index as j;">
+               {{j+1}}.{{item.label}}
+              </div>
+          </div>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+</form>
+

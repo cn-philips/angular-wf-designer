@@ -1,0 +1,16 @@
+<nz-date-picker 
+  *ngIf="mode==='date'"
+  [(ngModel)]="modelValue"
+  style="width: 100%"
+  [nzStyle]="{ width: '100%' }"
+  [nzPlaceHolder]="nzPlaceHolder"
+  [nzDisabled]="disabled"
+></nz-date-picker>
+<nz-month-picker
+  *ngIf="mode==='month'"
+  [(ngModel)]="modelValue"
+  style="width: 100%"
+  [nzStyle]="{ width: '100%' }"
+  [nzPlaceHolder]="nzPlaceHolder"
+  [nzDisabled]="disabled"
+></nz-month-picker>

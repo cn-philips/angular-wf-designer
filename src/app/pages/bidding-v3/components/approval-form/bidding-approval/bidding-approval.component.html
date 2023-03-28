@@ -1,0 +1,142 @@
+<!-- 商务专员审核表单 -->
+<form nz-form [formGroup]="biddingApprovalInfo">
+  <nz-form-item *ngIf="applyDetail.businessModel === BUSINESS_MODEL_DIRECT">
+    <nz-form-label [nzSpan]="4" nzNoColon></nz-form-label>
+    <nz-form-control [nzSpan]="10">
+      <div class="term-selection">
+        <div class="switch">
+          <label nz-checkbox formControlName="isNonStandard">
+            <span class="no-wrap">
+              {{"biddingv3.components.approval-form.bidding-approval.standard" | translate}}
+            </span>
+          </label>
+        </div>
+        <div class="selection-list" *ngIf="biddingApprovalInfo.get('isNonStandard').value">
+          <div>
+            <label nz-checkbox formControlName="logisticTermsApproval">
+              {{"biddingv3.components.approval-form.bidding-approval.logistic" | translate}}
+            </label>
+          </div>
+          <div>
+            <label nz-checkbox formControlName="afterSaleTermsApproval">
+              {{"biddingv3.components.approval-form.bidding-approval.after" | translate}}
+            </label>
+          </div>
+          <div>
+            <label nz-checkbox formControlName="bondAmountTermsApproval">
+              {{"biddingv3.components.approval-form.bidding-approval.bond-amount" | translate}}
+            </label>
+            <div *ngIf="biddingApprovalInfo.get('bondAmountTermsApproval').value" formArrayName="depositApprovers"
+              class="approver-list">
+              <div class="approver-item" *ngFor="let approver of depositApprovers.controls;let depositApprover"
+                [formGroup]="depositApprover">
+                <nz-form-item nz-row nzType="flex" nzJustify="start">
+                  <nz-form-label nzNoColon>
+                    <span class="no-wrap">{{ depositApprover.get("bmc").value }} Cluster BP</span>
+                  </nz-form-label>
+                  <nz-form-control>
+                    <nz-select
+                      *ngIf="!biddingApprovalInfo.disabled"
+                      formControlName="email"
+                      style="min-width:150px"
+                      nzPlaceHolder="请选择审批人"
+                      (ngModelChange)="onApproverChange('bondAmount', depositApprover.get('bmc').value, approver, $event)"
+                    >
+                      <nz-option *ngFor="let item of bondAmountApprovers[depositApprover.get('bmc').value]"
+                        [nzLabel]="item.approverName" [nzValue]="item.approverEmail"></nz-option>
+                    </nz-select>
+                    <nz-form-explain *ngIf="depositApprover.get('email')?.dirty && depositApprover.get('email')?.errors">
+                      {{"biddingv3.components.basic-info.required" | translate}}
+                    </nz-form-explain>
+                  </nz-form-control>
+                </nz-form-item>
+                
+                <input *ngIf="biddingApprovalInfo.disabled" nz-input formControlName="name" />
+              </div>
+            </div>
+          </div>
+          <div>
+            <label nz-checkbox formControlName="paymentTermsApproval">
+              {{"biddingv3.components.approval-form.bidding-approval.payment" | translate}}
+            </label>
+          </div>
+          <div>
+            <label nz-checkbox formControlName="specificationTermsApproval">
+              {{"biddingv3.components.approval-form.bidding-approval.specification" | translate}}
+            </label>
+            <div *ngIf="biddingApprovalInfo.get('specificationTermsApproval').value" formArrayName="technicalApprovers"
+              class="approver-list">
+              <div class="approver-item" *ngFor="let approver of technicalApprovers.controls;let technicalApprover"
+                [formGroup]="technicalApprover">
+                <nz-form-item nz-row nzType="flex" nzJustify="start">
+                  <nz-form-label nzNoColon>
+                    <span class="no-wrap">{{ technicalApprover.get("bmc").value }} {{ bmcRoleMap.get(technicalApprover.get("bmc").value) }}</span>
+                  </nz-form-label>
+                  <nz-form-control>
+                    <nz-select
+                      style="min-width:150px"
+                      *ngIf="!biddingApprovalInfo.disabled"
+                      formControlName="email"
+                      nzPlaceHolder="请选择审批人"
+                      [nzAllowClear]="true"
+                      (ngModelChange)="onApproverChange('specTerm', technicalApprover.get('bmc').value, approver, $event)"
+                    >
+                      <nz-option *ngFor="let item of specTermApprovers[technicalApprover.get('bmc').value]"
+                        [nzLabel]="item.approverName" [nzValue]="item.approverEmail"></nz-option>
+                    </nz-select>
+                    <nz-form-explain *ngIf="technicalApprover.get('email')?.dirty && technicalApprover.get('email')?.errors">
+                      {{"biddingv3.components.basic-info.required" | translate}}
+                    </nz-form-explain>
+                  </nz-form-control>
+                </nz-form-item>
+                <input *ngIf="biddingApprovalInfo.disabled" nz-input formControlName="name" />
+              </div>
+            </div>
+          </div>
+          <div>
+            <label
+              nz-checkbox
+              [nzDisabled]="true"
+              [ngModel]="legalTermsApproval"
+              [ngModelOptions]="{ standalone: true }"
+            >
+              {{"biddingv3.components.approval-form.bidding-approval.legal" | translate}}
+            </label>
+          </div>
+        </div>
+      </div>
+    </nz-form-control>
+  </nz-form-item>
+
+  <nz-form-item *ngIf="!disabled">
+    <nz-form-label [nzSpan]="4">
+      {{"biddingv3.components.approval-form.bidding-approval.remark" | translate}}
+    </nz-form-label>
+    <nz-form-control [nzSpan]="10">
+      <textarea #processComments [nzAutosize]="{ minRows: 4, maxRows: 6 }" nz-input style="width: 100%"
+        formControlName="processComments" (ngModelChange)="remarkMsgVisible=false"></textarea>
+      <a *ngIf="remarkMsgVisible" style="color: #f5222d">请填写拒绝理由</a>
+    </nz-form-control>
+  </nz-form-item>
+
+  <nz-form-item *ngIf="!disabled">
+    <nz-form-label [nzSpan]="4">
+      {{"biddingv3.components.approval-form.bidding-approval.process-file" | translate}}
+    </nz-form-label>
+    <nz-form-control [nzSpan]="10">
+      <shared-upload-file formControlName="processAttachmentIds"></shared-upload-file>
+    </nz-form-control>
+  </nz-form-item>
+</form>
+
+<footer *ngIf="!disabled">
+  <button nz-button (click)="biddingV3Service.goTodoPage()">
+    {{"biddingv3.components.approval-form.bidding-approval.return" | translate}}
+  </button>
+  <button nz-button nzType="primary" nz-popconfirm nzTitle="你确定要执行批准的操作?" (nzOnConfirm)="handleAction('approved')">
+    {{"biddingv3.components.approval-form.bidding-approval.approve" | translate}}
+  </button>
+  <button nz-button nzType="primary" nz-popconfirm nzTitle="你确定要执行拒绝的操作?" (nzOnConfirm)="handleAction('rejected')">
+    {{"biddingv3.components.approval-form.bidding-approval.reject" | translate}}
+  </button>
+</footer>

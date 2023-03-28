@@ -1,0 +1,32 @@
+.tableData {
+    word-break:break-all;
+    height: 80px;
+  }
+  :root /deep/ .ant-table-body {
+    &::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+  
+    &::-webkit-scrollbar {
+      background-color: #f5f5f5;
+      border-radius: 4px;
+      width:2px;
+      height: 2px;
+    }
+  
+    &::-webkit-scrollbar-thumb {
+      border-radius: 4px;
+      background-color:red;
+      // background-image: -webkit-gradient(
+      //   linear,
+      //   0 0,
+      //   0 100%,
+      //   color-stop(0.5, rgba(255, 255, 255, 0.2)),
+      //   color-stop(0.5, transparent),
+      //   to(transparent)
+      // );
+      // &:hover {
+      //   background-color: #3798db;
+      // }
+    }
+  }

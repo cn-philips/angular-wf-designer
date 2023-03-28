@@ -1,0 +1,216 @@
+<form nz-form [formGroup]="biddingForm">
+  <div class="data-source" *ngIf="!disabled || showReopenButton">
+    <span *ngIf="!disabled" style="margin-right:16px;">
+      <span>{{ "biddingv3.components.product-info.title" | translate }}</span>
+      <a class="black" *ngIf="dataSource">{{ dataSource }}</a>
+    </span>
+
+    <button style="margin-right:16px;" *ngIf="(!disabled && dataSource)" nz-button nzType="primary"
+      (click)="showImportOppDialog()">
+      {{"biddingv3.components.product-info.add" | translate}}-{{ dataSource === 'CP Deal Form' ? 'Deal Form' :
+      'Simulation' }}
+    </button>
+
+    <button *ngIf="showReopenButton" nz-button class="edit-btn" nz-popconfirm nzTitle="你确定要再次编辑表单信息, 确定后将重新审批所有非标条款?"
+      (nzOnConfirm)="onReopenForm()">
+      {{ "biddingv3.components.product-info.re-edit" | translate }}
+    </button>
+  </div>
+
+  <div formArrayName="marketBundles">
+    <div *ngFor="let item of marketBundles.controls;let index=index" [formGroup]="item" style="margin-bottom:16px">
+      <app-form-section [form]="item">
+        <ng-container name="title">
+          <span
+            style="margin-right: 16px;display: inline-flex;align-items: center;"
+            title="click to copy"
+            (click)="onCopyText($event, item.get('opportunityId').value)"
+          >
+            <span>Opportunity ID : {{item.get('opportunityId').value || '无商机Opportunity'}}</span>
+            <i nz-icon nzType="copy" nzTheme="outline" title="copy"></i>
+          </span>
+          <span
+            style="display: inline-flex;align-items: center;"
+            *ngIf="dataSource == 'CP Deal Form'"
+            title="click to copy"
+            (click)="onCopyText($event, item.get('dealFormId').value)"
+          >
+            <span>Deal Form ID : {{ item.get('dealFormId').value }}</span>
+            <i nz-icon nzType="copy" nzTheme="outline" title="copy"></i>
+          </span>
+        </ng-container>
+        <div nz-row nzType="flex" nzJustify="space-between" nzAlign="middle">
+          <div nz-row nzType="flex" nzAlign="middle" style="margin-bottom: 4px;">
+            <nz-form-item style="margin-bottom: 0;">
+              <div class="opera-oppo-input-group">
+                <nz-form-label>{{"biddingv3.components.product-info.link" | translate}}</nz-form-label>
+                <nz-form-control>
+                  <input formControlName="opportunityHierachyLink" nz-input type="text" />
+                </nz-form-control>
+              </div>
+            </nz-form-item>
+          </div>
+
+          <div *ngIf="!disabled">
+            <button style="margin-right:8px;" nz-button nzType="primary" (click)="onShowAddProduct(item)">添加/移除产品信息</button>
+            <button nz-button nzType="default" (click)="onDeleteOpportunity(index, item)">
+              {{"biddingv3.components.product-info.delete" | translate}}-{{ dataSource === 'CP Deal Form' ? 'Deal Form' :
+              'Simulation' }}
+            </button>
+          </div>
+        </div>
+
+        <div *ngIf="dataSource === 'CP Simulation'" class="commercial-product-name">
+          <span class="title">该Opportunity ID所包含的Commercial Product Name:</span>
+          <span>{{ item.get('commercialProductName').value }}</span>
+        </div>
+
+        <div formArrayName="products">
+          <nz-table
+            nzSize="small"
+            [nzData]="item.get('products').controls"
+            nzBordered
+            nzTableLayout="fixed"
+            [nzShowPagination]="false"
+            [nzScroll]="{ x: '2300px' }"
+          >
+            <thead>
+              <tr>
+                <th nzAlign="center" style="width: 200px;">Modality</th>
+                <th nzAlign="center" style="width: 200px;">{{"biddingv3.components.product-info.bmc" | translate}}</th>
+                <th nzAlign="center" style="width: 400px;">
+                  <span class="red">*</span>
+                  {{"biddingv3.components.product-info.product-model" | translate}}</th>
+                <th nzAlign="center" style="width: 400px;">
+                  <span class="red">*</span>
+                  {{"biddingv3.components.product-info.medical-name" | translate}}</th>
+                <th nzAlign="center" style="width: 380px;">
+                  {{"biddingv3.components.product-info.bundle-name" | translate}}
+                </th>
+                <th nzAlign="center" style="width: 90px;">{{"biddingv3.components.product-info.qty" | translate}}</th>
+                <th nzAlign="center" style="width: 200px;">
+                  {{"biddingv3.components.product-info.agreement" | translate}}
+                </th>
+                <th nzAlign="center" style="width: 200px;" *ngIf="businessModel!==BUSINESS_MODEL_DIRECT">
+                  {{"biddingv3.components.product-info.new-agreement" | translate}}
+                </th>
+                <th nzAlign="center" style="width: 100px;">Option</th>
+                <th nzAlign="center" nzRight="0px" style="width: 90px;" *ngIf="!disabled">
+                  {{"biddingv3.components.product-info.action" | translate}}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let product of item.get('products').controls;let productIndex=index" [formGroup]="product">
+                <td nzAlign="center">{{ product.get('modality').value }}</td>
+                <td nzAlign="center">{{ product.get('bmc').value }}</td>
+                <td nzAlign="center">
+                  <span *ngIf="!editable">{{ product.get('productModel').value }}</span>
+                  <nz-form-control *ngIf="editable">
+                    <input nz-input formControlName="productModel" />
+                    <nz-form-explain *ngIf="product.get('productModel')?.dirty && product.get('productModel')?.errors">
+                      {{"biddingv3.components.basic-info.required" | translate}}
+                    </nz-form-explain>
+                  </nz-form-control>
+                </td>
+                <td nzAlign="center">
+                  <span *ngIf="!editable">{{ product.get('medicalDeviceName').value }}</span>
+                  <nz-form-control *ngIf="editable">
+                    <input nz-input formControlName="medicalDeviceName" />
+                    <nz-form-explain *ngIf="product.get('medicalDeviceName')?.dirty && product.get('medicalDeviceName')?.errors">
+                      {{"biddingv3.components.basic-info.required" | translate}}
+                    </nz-form-explain>
+                  </nz-form-control>
+                </td>
+                <td
+                  nzAlign="center"
+                  nz-tooltip
+                  [nzOverlayStyle]="{maxWidth:'1000px', whiteSpace: 'pre'}"
+                  [nzTitle]="'Simulation ID: ' + product.get('simulationId').value + '\n' + 'Config Name: ' + product.get('configName').value"
+                >
+                  {{ product.get('marketBundleName').value }}
+                </td>
+                <td nzAlign="center">{{ product.get('quantity').value }}</td>
+                <td nzAlign="center">{{ product.get('dtcDealerAgreement').value }}</td>
+                <td nzAlign="center" *ngIf="businessModel!==BUSINESS_MODEL_DIRECT">
+                  <div nz-tooltip [nzTitle]="product.get('latestDealerAgreement').value ? titleTemplateDis : null"
+                    nzOverlayClassName="tooltip-pree" nzPlacement="left" nzMouseLeaveDelay="0.2">
+                    <shared-select
+                    [nzDropdownMatchSelectWidth]="false"
+                    formControlName="latestDealerAgreement" placeholder="请选择" [options]="latestAgreementList"
+                      (ngModelChange)="onDealerAgreementChange(product, $event)">
+                    </shared-select>
+                  </div>
+                  <ng-template #titleTemplateDis>
+                    <div class="agreement-info">
+                      <div>{{ product.get('latestDealerAgreement').value }}</div>
+                      <div>{{'授权产品：' + product.get('authorizedProduct').value }}</div>
+                      <div>{{'授权区域：' + product.get('authorizedArea').value }}</div>
+                    </div>
+                  </ng-template>
+                </td>
+                <td nzAlign="center">
+                  <a *ngIf="
+                      product.get('options').value &&
+                      product.get('options').value.length > 0
+                    " style="color:#337fbf" (click)="showCcOptions(product)">
+                    {{"biddingv3.components.product-info.show" | translate}}
+                  </a>
+                </td>
+                <td nzAlign="center" nzRight="0px" *ngIf="!disabled">
+                  <a href="javascript:" (click)="onDeleteProduct(item, index, productIndex)">
+                    {{"biddingv3.components.product-info.remove" | translate}}
+                  </a>
+                </td>
+              </tr>
+            </tbody>
+          </nz-table>
+        </div>
+      </app-form-section>
+    </div>  
+  </div>
+</form>
+
+<nz-modal [(nzVisible)]="optionVisible" [nzTitle]="'biddingv3.components.product-info.view' | translate" nzCentered
+  nzWidth="80%" [nzFooter]="null" (nzOnCancel)="optionVisible = false">
+  <app-tabs *ngIf="activeProduct">
+    <app-tab *ngFor="let item of activeProduct.get('options').value" [title]="item.productName || '暂无产品名称'"
+      (select)="onToggleCcOptionTab(item)">
+      <nz-table nzSize="small" nzBordered [nzData]="ccOptions.data" [nzLoading]="ccOptions.loading"
+        nzTableLayout="fixed" [nzShowPagination]="false" [nzScroll]="{ x: '1100px' }">
+        <thead>
+          <tr>
+            <th nzAlign="center" style="width: 200px;">No</th>
+            <th nzAlign="center" style="width: 200px;">MAG</th>
+            <th nzAlign="center" style="width: 250px;">Option Name</th>
+            <th nzAlign="center" style="width: 100px;">{{"biddingv3.components.product-info.quantity" | translate}}</th>
+            <th nzAlign="center" style="width: 200px;">Option Description</th>
+            <th nzAlign="center" style="width: 200px;">
+              {{"biddingv3.components.product-info.price-cny-net" | translate}}
+            </th>
+            <th nzAlign="center" style="width: 200px;">
+              {{"biddingv3.components.product-info.price-cny" | translate}}
+            </th>
+            <th nzAlign="center" style="width: 200px;">
+              {{"biddingv3.components.product-info.price-usd" | translate}}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of ccOptions.data">
+            <td nzAlign="center">{{ item.no }}</td>
+            <td nzAlign="center">{{ item.mag }}</td>
+            <td nzAlign="center">{{ item.optionName }}</td>
+            <td nzAlign="center">{{ item.quantity }}</td>
+            <td nzAlign="center">{{ item.optionDescription }}</td>
+            <td nzAlign="center">{{ item.priceCnyNet }}</td>
+            <td nzAlign="center">{{ item.priceCny }}</td>
+            <td nzAlign="center">{{ item.priceUsd }}</td>
+          </tr>
+        </tbody>
+      </nz-table>
+    </app-tab>
+  </app-tabs>
+</nz-modal>
+
+<bidding-v3-add-product #addProduct></bidding-v3-add-product>

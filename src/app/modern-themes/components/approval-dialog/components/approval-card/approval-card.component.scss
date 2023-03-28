@@ -1,0 +1,69 @@
+.approval-card-wrapper {
+  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  height: 100%;
+  // height: 184px;
+  width: 100%;
+  color: #323233;
+  overflow: hidden;
+  padding: 12px;
+  box-shadow: 0 2px 24px 0 rgba(200, 201, 204, 0.5);
+  position: relative;
+  user-select: none;
+  cursor: pointer;
+  &.active {
+    color: #fff;
+    .corner-image {
+      background-color: #fff !important;
+    }
+  }
+  &.disabled {
+    cursor: not-allowed;
+  }
+  .approval-card-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: space-between;
+    position: relative;
+    z-index: 2;
+    .approval-card-title {
+      font-size: 16px;
+      line-height: 24px;
+      font-weight: bold;
+    }
+    .approval-card-content {
+      font-size: 12px;
+      line-height: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      flex-grow: 1;
+    }
+  }
+  //
+  .corner-image {
+    width: 0px;
+    height: 0px;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    &::before,
+    &::after {
+      background-color: inherit;
+      position: absolute;
+      content: "";
+      display: block;
+      width: 200px;
+      height: 200px;
+      border-radius: 100%;
+      opacity: 0.09;
+      pointer-events: none;
+    }
+    &::before {
+      transform: translateX(-13%) translateY(-83%);
+    }
+    &::after {
+      transform: translateY(-50%) translateX(-50%);
+    }
+  }
+}

@@ -18,13 +18,19 @@
       },
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-builders/custom-webpack:browser",
           "options": {
-            "outputPath": "../ecom/src/main/ui",
+            "outputPath": "../dist/ui",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "src/tsconfig.app.json",
+            "customWebpackConfig": {
+              "path": "./extra-webpack.config.js",
+              "mergeStrategies": {
+                "loaders": "append"
+              }
+            },
             "assets": [
               "src/favicon.ico",
               "src/assets",
@@ -37,7 +43,8 @@
                 "glob": "**/*",
                 "input": "node_modules/ngx-extended-pdf-viewer/assets/locale",
                 "output": "/assets/locale/"
-              }, {
+              },
+              {
                 "glob": "**/*",
                 "input": "node_modules/ngx-extended-pdf-viewer/assets/images",
                 "output": "/assets/images/"
@@ -50,20 +57,32 @@
               "src/vendor/styles/theme-air.scss",
               "src/vendor/styles/colors.scss",
               "src/vendor/styles/uikit.scss",
-              "node_modules/ng-zorro-antd/ng-zorro-antd.min.css",
               "node_modules/ng-zorro-antd-mobile/src/ng-zorro-antd-mobile.min.css",
-              "src/theme/index.scss"
+              "src/theme/index.scss",
+              "src/theme/theme.less",
+              "src/app/modern-themes/style/index.scss",
+              "node_modules/driver.js/dist/driver.min.css",
+              "node_modules/quill/dist/quill.core.css",
+              "node_modules/quill/dist/quill.bubble.css",
+              "node_modules/quill/dist/quill.snow.css"
             ],
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "src/assets",
+                "src/theme"
+              ]
+            },
             "scripts": [
               "./src/assets/echarts/echarts.min.js",
               "node_modules/ngx-extended-pdf-viewer/assets/pdf-es5.js",
               "node_modules/ngx-extended-pdf-viewer/assets/pdf.worker-es5.js",
-              "node_modules/ngx-extended-pdf-viewer/assets/viewer-es5.js"
+              "node_modules/ngx-extended-pdf-viewer/assets/viewer-es5.js",
+              "node_modules/quill/dist/quill.min.js"
             ]
           },
           "configurations": {
             "production": {
-              "outputPath": "../ecom/src/main/ui",
+              "outputPath": "../dist/ui",
               "baseHref": "/ecomdiigt/",
               "fileReplacements": [
                 {
@@ -82,7 +101,7 @@
               "buildOptimizer": true
             },
             "devpackage": {
-              "outputPath": "../ecom/src/main/ui",
+              "outputPath": "../dist/ui",
               "baseHref": "/",
               "fileReplacements": [
                 {
@@ -101,7 +120,7 @@
               "buildOptimizer": true
             },
             "uat": {
-              "outputPath": "../ecom/src/main/ui",
+              "outputPath": "../dist/ui",
               "baseHref": "/ecomdiigtuat/",
               "fileReplacements": [
                 {

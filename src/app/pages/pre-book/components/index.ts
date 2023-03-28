@@ -1,0 +1,6 @@
+export * from './oareview-form/oareview-form.component'
+export * from './prebase-info/prebase-info.component'
+export * from './preproduct-info/preproduct-info.component'
+export * from './reivew-form/reivew-form.component'
+export * from './soform/soform.component'
+export * from './supply-form/supply-form.component'

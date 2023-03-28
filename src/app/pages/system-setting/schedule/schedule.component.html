@@ -1,0 +1,22 @@
+<nz-card class="title_warpper">
+    <div>
+        <h4 class="font-weight-bold">
+            <span>{{ "system-settings.schedule.title" | translate }}</span>
+        </h4>
+    </div>
+</nz-card>
+
+<nz-card style="margin-top: 1em;">
+    <div style="width: 100%; background-color: #ffffff;">
+        <schedule-search [loading]="loading" [formData]="formValues" (search)="updateParams($event)"
+            (setLoading)="getLoading($event)">
+        </schedule-search>
+        <nav style="margin-top: 1em;">
+            <button nz-button nzType="primary" routerLink="/system-setting/schedule-task" [queryParams]="{flag:0}">
+                {{ "system-settings.schedule.add" | translate }}</button>
+        </nav>
+        <schedule-list [loading]="loading" [tableData]="tableData" [total]="total" (refresh)="updateParams($event)"
+            (setLoading)="getLoading($event)">
+        </schedule-list>
+    </div>
+</nz-card>

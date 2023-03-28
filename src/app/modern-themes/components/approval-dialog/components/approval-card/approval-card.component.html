@@ -1,0 +1,25 @@
+<div
+  (mouseenter)="handleHover()"
+  (mouseleave)="handleBlur()"
+  (click)="handleClick()"
+  [ngClass]="className"
+  [ngStyle]="{ backgroundColor: bgColor }"
+>
+  <div class="approval-card-container">
+    <div class="approval-card-title">
+      <ng-content select="[title]"></ng-content>
+    </div>
+    <div class="approval-card-content">
+      <div>
+        <ng-content select="[content]"></ng-content>
+      </div>
+      <div class="approval-card-content-desc">
+        <ng-content select="[desc]"></ng-content>
+      </div>
+    </div>
+  </div>
+  <div
+    class="corner-image"
+    [ngStyle]="{ backgroundColor: backgroundColor }"
+  ></div>
+</div>

@@ -1,0 +1,209 @@
+<div>
+  <div class="table-operations">
+    <button nz-button nzType="primary" (click)="handleShowAddForm()">
+      New 新增
+    </button>
+  </div>
+
+  <nz-table
+    #roleTable
+    [nzData]="tableData.list"
+    [nzFrontPagination]="false"
+    [nzPageIndex]="queryParams.pageNo"
+    [nzPageSize]="queryParams.pageSize"
+    [nzShowTotal]="totalTemplate"
+    [nzLoading]="tableData.loading"
+    [nzShowSizeChanger]="true"
+    [nzPageSizeOptions]="[10, 20, 50, 100]"
+    (nzPageIndexChange)="handlePageIndexChange($event)"
+    (nzPageSizeChange)="handlePageSizeChange($event)"
+  >
+    <ng-template #totalTemplate let-range="range" let-total>
+      数据总条数{{ tableData.total }}
+    </ng-template>
+    <thead>
+      <tr>
+        <th nzAlign="center">
+          <span>Approval Item Name</span><br />特批事项名称
+        </th>
+        <th nzAlign="center">
+          <span>Approval Item Description</span><br />特批事项描述
+        </th>
+        <th nzAlign="center">
+          <span>Approver Role</span><br />会签审批角色
+        </th>
+        <th width="200" nzAlign="center"><span>Enable/Disable</span><br />是否启用</th>
+        <th width="200" nzAlign="center"><span>Creator</span><br />创建人</th>
+        <th width="200" nzAlign="center">
+          <span>Create Date</span><br />创建时间
+        </th>
+        <th nzAlign="center" nzWidth="150px"><span>Action</span><br />操作</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let data of tableData.list">
+        <td style="word-break: break-word" nzAlign="center">
+          <div nz-tooltip [nzTitle]="data.name" class="innerboxs">
+            {{ data.name }}
+          </div>
+        </td>
+        <td nzAlign="center" style="word-break: break-word">
+          <div nz-tooltip [nzTitle]="data.description" class="innerboxs">
+            {{ data.description }}
+          </div>
+        </td>
+        <td nzAlign="center">
+          <div
+            nz-tooltip
+            [nzTitle]="data.roleList"
+            class="innerboxs"
+          >
+            {{ data.roleList }}
+          </div>
+        </td>
+        <td nzAlign="center">
+          <nz-switch
+            [(ngModel)]="data.enabled"
+            (click)="handleToggleItemStatus(data)"
+          ></nz-switch>
+        </td>
+        <td nzAlign="center">{{ data.createUser }}</td>
+        <td nzAlign="center">{{ data.createTime | TimeFormatePipeNow }}</td>
+        <td nzAlign="center">
+          <a
+            nz-icon
+            type="edit"
+            title="编辑"
+            (click)="handleShowEditForm(data)"
+          ></a>
+          <nz-divider nzType="vertical"></nz-divider>
+          <a
+            nz-icon
+            type="delete"
+            title="移除"
+            nz-popconfirm
+            nzTitle="确定删除?"
+            (nzOnConfirm)="handleDeleteItem(data)"
+          ></a>
+        </td>
+      </tr>
+    </tbody>
+  </nz-table>
+</div>
+
+<nz-modal
+  nzWidth="600px"
+  [(nzVisible)]="formVisible"
+  [nzTitle]="formType === FORM_TYPE.NEW ? '新增配置项' : '修改配置项'"
+  [nzFooter]="modalFooter"
+  (nzOnCancel)="formVisible = false"
+>
+  <form nz-form [formGroup]="formValues">
+    <div nz-row>
+      <div nz-col [nzSpan]="24">
+        <nz-form-item>
+          <nz-form-label [nzSm]="6" [nzXs]="24" [nzRequired]="true"
+            >特批事项名称</nz-form-label
+          >
+          <nz-form-control [nzSm]="18" [nzXs]="24">
+            <input nz-input formControlName="name" />
+            <nz-form-explain *ngIf="formValues.get('name')?.dirty && formValues.get('name')?.errors">
+              请填写特批事项名称
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col [nzSpan]="24">
+        <nz-form-item>
+          <nz-form-label [nzSm]="6" [nzXs]="24" [nzRequired]="true">特批事项描述</nz-form-label>
+          <nz-form-control [nzSm]="18" [nzXs]="24">
+            <textarea
+              [nzAutosize]="{ minRows: 4, maxRows: 6 }"
+              nz-input
+              style="width: 100%"
+              formControlName="description"
+            ></textarea>
+            <nz-form-explain *ngIf="formValues.get('description')?.dirty && formValues.get('description')?.errors">
+              请填写特批事项描述
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col [nzSpan]="24">
+        <nz-form-item>
+          <nz-form-label [nzSm]="6" [nzXs]="24" [nzRequired]="true">会签审批角色</nz-form-label>
+          <nz-form-control [nzSm]="18" [nzXs]="24">
+            <nz-select
+              style="width: 100%;"
+              nzMode="multiple"
+              nzShowSearch
+              formControlName="roleList"
+              nzPlaceHolder="请选择"
+            >
+              <nz-option *ngFor="let item of selectOptions.roleList" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+            </nz-select>
+            <nz-form-explain *ngIf="formValues.get('roleList')?.dirty && formValues.get('roleList')?.errors">
+              请选择会签审批角色
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col [nzSpan]="24">
+        <nz-form-item>
+          <nz-form-label
+            style="white-space: initial;line-height:initial"
+            [nzSm]="6"
+            [nzXs]="24"
+          >
+            Sales选择本特批事项后，则“Sales中标备案界面”的下列字段为“非必填项”
+          </nz-form-label>
+          <nz-form-control [nzSm]="18" [nzXs]="24">
+            <nz-checkbox-wrapper style="width: 100%;" (nzOnChange)="handleSpItemsChange($event)">
+              <div nz-col nzSpan="24" *ngFor="let item of spItems">
+                <label nz-checkbox [nzValue]="item.value" [ngModelOptions]="{ standalone: true }" [ngModel]="spItemsChecked(item.value)">{{ item.label }}</label>
+              </div>
+            </nz-checkbox-wrapper>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col [nzSpan]="24">
+        <nz-form-item>
+          <nz-form-label
+            style="white-space: initial;line-height:initial"
+            [nzSm]="6"
+            [nzXs]="24"
+          >
+            Sales选择本特批事项并审批通过后，则“WinConfirm的中标确认界面”的下列字段为“非必填项”
+          </nz-form-label>
+          <nz-form-control [nzSm]="18" [nzXs]="24">
+            <label
+              nz-checkbox
+              nzValue="winningNoticeFiles"
+              [ngModelOptions]="{ standalone: true }"
+              [ngModel]="spItemsChecked('winningNoticeFiles')"
+              (ngModelChange)="handleWinningNoticeFilesChange($event)"
+            >
+              中标公告
+            </label>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col [nzSpan]="24">
+        <nz-form-item>
+          <nz-form-label [nzSm]="6" [nzXs]="24">是否启用</nz-form-label>
+          <nz-form-control [nzSm]="18" [nzXs]="24">
+            <nz-switch formControlName="enabled"></nz-switch>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+  </form>
+  <ng-template #modalFooter>
+    <button nz-button nzType="default" (click)="formVisible = false">
+      取消
+    </button>
+    <button nz-button nzType="primary" [nzLoading]="submitBtnLoading" (click)="handleSubmitForm()">
+      确定
+    </button>
+  </ng-template>
+</nz-modal>

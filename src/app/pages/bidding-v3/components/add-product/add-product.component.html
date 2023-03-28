@@ -1,0 +1,71 @@
+<nz-modal
+  [(nzVisible)]="visible"
+  nzWidth="1200px"
+  nzTitle="添加/移除产品信息"
+  [nzFooter]="null"
+  (nzOnCancel)="onHide()"
+>
+  <ng-container>
+    <div>
+      <nz-table
+        nzBordered
+        [nzData]="tableData"
+        [nzFrontPagination]="false"
+        [nzScroll]="{ x:'1000px' }"
+        [nzLoading]="tableLoading"
+        [nzShowPagination]="false"
+      >
+        <thead>
+          <tr>
+            <th nzAlign="center" nzWidth="150px">Opportunity ID</th>
+            <th nzAlign="center" nzWidth="150px">Deal Form ID</th>
+            <th nzAlign="center" nzWidth="150px">Simulation ID</th>
+            <th nzAlign="center" nzWidth="200px">Market Bundle Name</th>
+            <th nzAlign="center" nzWidth="150px">{{"biddingv3.components.import-opp.type" | translate}}</th>
+            <th nzAlign="center" nzWidth="300px">Opportunity Name</th>
+            <th nzAlign="center" nzWidth="150px">{{"biddingv3.components.import-opp.hospital-name" | translate}}
+            </th>
+            <th nzAlign="center" nzWidth="200px">{{"biddingv3.components.import-opp.open-date" | translate}}</th>
+            <th nzAlign="center" nzWidth="200px">
+              <div>Created Date</div>
+            </th>
+            <th nzAlign="center" nzWidth="215px">{{"biddingv3.components.import-opp.link" | translate}}</th>
+            <th nzRight="0px" nzAlign="center" nzWidth="100px">操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let data of tableData">
+            <td nzAlign="center">{{ data.opportunityId }}</td>
+            <td nzAlign="center">{{ data.dealFormId }}</td>
+            <td nzAlign="center">{{ data.simulationId }}</td>
+            <td nzAlign="center" class="overflow">
+              {{ data.marketBundleName }}
+            </td>
+            <td nzAlign="center" class="overflow">
+              {{ data.productModel }}
+            </td>
+            <td nzAlign="center" class="overflow">
+              {{ data.opportunityName }}
+            </td>
+            <td nzAlign="center" class="overflow">
+              {{ data.accountName }}
+            </td>
+            <td nzAlign="center">
+              {{ data.bidDate }}
+            </td>
+            <td nzAlign="center">
+              {{ data.createdDate }}
+            </td>
+            <td nzAlign="center">
+              {{ data.opportunityHierarchyLink }}
+            </td>
+            <td nzRight="0px" nzAlign="center">
+              <button nzType="link" *ngIf="marketBundleIdSet.has(data.marketBundleId)" nz-button (click)="onDeleteProduct(data)">移除</button>
+              <button nzType="link" *ngIf="!marketBundleIdSet.has(data.marketBundleId)" nz-button (click)="onAddProduct(data)">添加</button>
+            </td>
+          </tr>
+        </tbody>
+      </nz-table>
+    </div>
+  </ng-container>
+</nz-modal>

@@ -1,0 +1,595 @@
+<form nz-form [formGroup]="formValues">
+  <nz-card class="mtb1rem" nzTitle="订单信息">
+    <header class="btn-wrap" *ngIf="editable">
+      <button nz-button nzType="link" (click)="onAddOrder()">
+        <i nz-icon nzType="plus-circle" nzTheme="outline"></i>
+        添加订单信息
+      </button>
+      <nz-upload nzAction="" [nzShowUploadList]="false" [nzBeforeUpload]="onImportOrderInfo">
+        <button nz-button nzType="link">
+          <i nz-icon nzType="import" nzTheme="outline"></i>
+          批量导入
+        </button>
+      </nz-upload>
+      <button nz-button nzType="link" (click)="showUploadFileList=true">
+        <i nz-icon nzType="file" nzTheme="outline"></i>
+        文件列表
+      </button>
+      <a [href]="templateUrl" download="COO-CC信息导入模板.xlsx">COO-CC信息导入模板.xlsx</a>
+    </header>
+    <nz-form-item>
+      <nz-form-control>
+        <nz-table nzSize="small" [nzData]="orderInfos.value" [nzShowPagination]="false" nzBordered [nzScroll]="{ x: '1000px' }">
+          <thead>
+            <tr>
+              <th nzWidth="200px">产品线</th>
+              <th nzWidth="200px">BG(Modality)</th>
+              <th nzWidth="200px">销售区域-Cycle Group</th>
+              <th nzWidth="200px">销售区域-Region</th>
+              <th nzWidth="220px">业务模式</th>
+              <th nzWidth="400px">经销商名称</th>
+              <th nzWidth="300px">经销商编号</th>
+              <th nzWidth="250px">飞利浦实体名称</th>
+              <th nzWidth="200px">SAP订单号(SO#)</th>
+              <th nzWidth="200px">币制</th>
+              <th nzWidth="200px">OM</th>
+              <th nzWidth="200px">合同号</th>
+              <th nzWidth="200px">采购订单<br>（PO）</th>
+              <th nzWidth="200px">Ship-To Name</th>
+              <th nzWidth="200px">产品型号</th>
+              <th nzWidth="200px">数量</th>
+              <th nzWidth="200px">设备SN号</th>
+              <th nzWidth="200px">进单日期<br>OIT Date</th>
+              <th nzWidth="200px">出厂日期</th>
+              <th nzWidth="200px">货物送达日期</th>
+              <th nzWidth="200px">保修期（月）</th>
+              <th nzWidth="200px">是否为CIP港口</th>
+              <th nzWidth="200px">POD扫描件</th>
+              <th nzWidth="200px">送达地址类型</th>
+              <th nzWidth="200px">货物送达地址中文</th>
+              <th nzWidth="200px">货物送达地址英文</th>
+              <th nzWidth="200px">清关口岸中文</th>
+              <th nzWidth="200px">清关口岸英文</th>
+              <th nzWidth="150px" nzRight="0px" *ngIf="editable">操作</th>
+            </tr>
+          </thead>
+          <tbody formArrayName="orderInfos">
+            <tr nz-form *ngFor="let orderInfo of orderInfos.controls;let i=index" [formGroupName]="i">
+              <td style="display: none">
+                <nz-radio-group formControlName="isOrder" #isOrder>
+                  <label nz-radio [nzValue]="true">是</label>
+                  <label nz-radio [nzValue]="false">否</label>
+                </nz-radio-group>
+              </td>
+              <td>
+                <nz-form-item *ngIf="isOrder.value">
+                  <nz-form-control>
+                    <nz-select formControlName="bmc" nzPlaceHolder="请选择产品线">
+                      <nz-option *ngFor="let item of bmcList" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+                    </nz-select>
+                    <nz-form-explain *ngIf="orderInfo.get('bmc')?.dirty && orderInfo.get('bmc')?.errors">
+                      请选择产品线
+                    </nz-form-explain>
+                  </nz-form-control>
+                </nz-form-item>
+              </td>
+              <td>
+                <nz-form-item *ngIf="isOrder.value">
+                  <nz-form-control>
+                    <input type="text" nz-input formControlName="bg" />
+                  </nz-form-control>
+                </nz-form-item>
+              </td>
+              <td>
+                <nz-form-item *ngIf="isOrder.value">
+                  <nz-form-control>
+                    <nz-select formControlName="cycleGroup" [nzPlaceHolder]="editable ? 'Team/Cycle Group' : ''" (ngModelChange)="onCycleGroupChange(i)">
+                      <nz-option *ngFor="let item of spService.cycleGroups" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+                    </nz-select>
+                  </nz-form-control>
+                </nz-form-item>
+              </td>
+              <td>
+                <nz-form-item *ngIf="isOrder.value">
+                  <nz-form-control>
+                    <nz-select formControlName="bigArea" [nzPlaceHolder]="editable ? 'Region' : ''">
+                      <nz-option *ngFor="let item of getBigAreas(i)" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+                      <nz-option *ngIf="getBigAreas(i).length === 0" nzLabel="请先选择Team/Cycle Group" [nzDisabled]="true"></nz-option>
+                    </nz-select>
+                  </nz-form-control>
+                </nz-form-item>
+              </td>
+              <td>
+                <nz-form-item *ngIf="isOrder.value">
+                  <nz-form-control [ngClass]="orderInfos?.dirty && orderInfos?.errors?.businessModelDiff ? 'has-error' : ''">
+                    <nz-select formControlName="businessModel" nzPlaceHolder="请选择业务模式" (ngModelChange)="onBusinessModelChange($event, i)">
+                      <nz-option *ngFor="let item of selectOptions.businessModels" [nzLabel]="item.label"
+                        [nzValue]="item.value"></nz-option>
+                    </nz-select>
+                    <nz-form-explain *ngIf="orderInfo.get('businessModel')?.dirty && orderInfo.get('businessModel')?.errors">
+                      请选择业务模式
+                    </nz-form-explain>
+                    <nz-form-explain *ngIf="orderInfos?.dirty && orderInfos?.errors?.businessModelDiff">
+                      订单中的业务模式需要保持一致
+                    </nz-form-explain>
+                  </nz-form-control>
+                </nz-form-item>
+              </td>
+              <td>
+                <nz-form-item *ngIf="isOrder.value && showDealerField(i)">
+                  <nz-form-control [ngClass]="orderInfos?.dirty && orderInfos?.errors?.dealerNameDiff ? 'has-error' : ''">
+                    <nz-input-group style="width: 100%" [nzSuffix]="clearDealerBtn" [nzAddOnAfter]="selectDealerBtn">
+                      <input type="text" nz-input formControlName="dealerName"
+                        [placeholder]="editable ? '点击右侧按钮选择经销商' : ''" #dealerName disabled />
+                    </nz-input-group>
+                    <ng-template #clearDealerBtn>
+                      <i nz-icon nz-tooltip class="ant-input-clear-icon" nzTheme="fill" nzType="close-circle"
+                        *ngIf="dealerName.value && editable" (click)="onClearDealer(orderInfo)"></i>
+                    </ng-template>
+        
+                    <ng-template #selectDealerBtn>
+                      <button *ngIf="editable" nz-button nzType="primary" class="ml-md"
+                        (click)="onShowSelectDealerModal(i)">选择经销商</button>
+                    </ng-template>
+                    <nz-form-explain *ngIf="orderInfo.get('dealerName')?.dirty && orderInfo.get('dealerName')?.errors">
+                      请选择经销商
+                    </nz-form-explain>
+                    <nz-form-explain *ngIf="orderInfos?.dirty && orderInfos?.errors?.dealerNameDiff">
+                      订单中的经销商需要保持一致
+                    </nz-form-explain>
+                  </nz-form-control>
+                </nz-form-item>
+              </td>
+
+              <td>
+                <nz-form-item *ngIf="isOrder.value && showDealerField(i)">
+                  <nz-form-control>
+                    <input nz-input formControlName="dealerCode" disabled />
+                  </nz-form-control>
+                </nz-form-item>
+              </td>
+
+              <td>
+                <nz-form-item *ngIf="isOrder.value">
+                  <nz-form-control [ngClass]="orderInfos?.dirty && orderInfos?.errors?.philipsNameDiff ? 'has-error' : ''">
+                    <nz-select formControlName="philipsName">
+                      <nz-option nzLabel="飞利浦电子香港有限公司" nzValue="飞利浦电子香港有限公司"></nz-option>
+                      <nz-option nzLabel="飞利浦（中国）投资有限公司" nzValue="飞利浦（中国）投资有限公司"></nz-option>
+                    </nz-select>
+                    <nz-form-explain *ngIf="orderInfo.get('philipsName')?.dirty && orderInfo.get('philipsName')?.errors">
+                      请选择飞利浦实体名称
+                    </nz-form-explain>
+                    <nz-form-explain *ngIf="orderInfos?.dirty && orderInfos?.errors?.philipsNameDiff">
+                      订单中的飞利浦实体需要保持一致
+                    </nz-form-explain>
+                  </nz-form-control>
+                </nz-form-item>
+              </td>
+
+              <td>
+                <nz-form-item *ngIf="isOrder.value">
+                  <nz-form-control>
+                    <input nz-input formControlName="sapOrderNo" maxlength="50" />
+                    <nz-form-explain *ngIf="orderInfo.get('sapOrderNo')?.dirty && orderInfo.get('sapOrderNo')?.errors">
+                      请填写SAP订单号(SO#)
+                    </nz-form-explain>
+                  </nz-form-control>
+                </nz-form-item>
+              </td>
+
+              <td>
+                <nz-form-item *ngIf="isOrder.value">
+                  <nz-form-control>
+                    <nz-select formControlName="currency" nzPlaceHolder="Select 请选择币制">
+                      <nz-option *ngFor="let item of selectOptions.currencies" [nzLabel]="item.label" [nzValue]="item.value">
+                      </nz-option>
+                    </nz-select>
+                    <nz-form-explain *ngIf="orderInfo.get('currency')?.dirty && orderInfo.get('currency')?.errors">
+                      请选择币制
+                    </nz-form-explain>
+                  </nz-form-control>
+                </nz-form-item>
+              </td>
+
+              <td>
+                <nz-form-item *ngIf="isOrder.value">
+                  <nz-form-control>
+                    <shared-select formControlName="om" [placeholder]="editable ? '请选择OM' : ''" [options]="omList"></shared-select>
+                  </nz-form-control>
+                </nz-form-item>
+              </td>
+
+              <td>
+                <nz-form-item *ngIf="isOrder.value">
+                  <nz-form-control>
+                    <input type="text" nz-input formControlName="contractNo" />
+                    <nz-form-explain *ngIf="orderInfo.get('contractNo')?.dirty && orderInfo.get('contractNo')?.errors">
+                      请填写合同号
+                    </nz-form-explain>
+                  </nz-form-control>
+                </nz-form-item>
+              </td>
+
+              <td>
+                <nz-form-item *ngIf="isOrder.value">
+                  <nz-form-control>
+                    <div class="download-file-wrap">
+                      <nz-select formControlName="purchaseOrderNo">
+                        <nz-option *ngFor="let file of fileList" [nzLabel]="file.name" [nzValue]="file.fileId"></nz-option>
+                      </nz-select>
+                      <span class="download-btn" *ngIf="orderInfo.get('purchaseOrderNo')?.disabled && orderInfo.get('purchaseOrderNo')?.value" (click)="onDownloadFile(orderInfo.get('purchaseOrderNo')?.value)">下载</span>
+                    </div>
+                  </nz-form-control>
+                </nz-form-item>
+              </td>
+
+              <td>
+                <nz-form-item *ngIf="isOrder.value">
+                  <nz-form-control>
+                    <input type="text" nz-input formControlName="shipToName" />
+                    <nz-form-explain *ngIf="orderInfo.get('shipToName')?.dirty && orderInfo.get('shipToName')?.errors">
+                      请填写Ship-to Name
+                    </nz-form-explain>
+                  </nz-form-control>
+                </nz-form-item>
+              </td>
+
+              <!-- 产品信息 -->
+              <td>
+                <nz-form-item>
+                  <nz-form-control>
+                    <input type="text" nz-input formControlName="productType" />
+                    <nz-form-explain *ngIf="orderInfo.get('productType')?.dirty && orderInfo.get('productType')?.errors">
+                      请填写产品型号
+                    </nz-form-explain>
+                  </nz-form-control>
+                </nz-form-item>
+              </td>
+
+              <td>
+                <nz-form-item>
+                  <nz-form-control>
+                    <nz-input-number style="width:100%" formControlName="quantity" [nzMin]="1" [nzPrecision]="0"></nz-input-number>
+                    <nz-form-explain *ngIf="orderInfo.get('quantity')?.dirty && orderInfo.get('quantity')?.errors">
+                      请填写数量
+                    </nz-form-explain>
+                  </nz-form-control>
+                </nz-form-item>
+              </td>
+
+              <td>
+                <nz-form-item>
+                  <nz-form-control>
+                    <input type="text" nz-input formControlName="equipmentSn" />
+                    <nz-form-explain *ngIf="orderInfo.get('equipmentSn')?.dirty && orderInfo.get('equipmentSn')?.errors">
+                      请填写设备SN号
+                    </nz-form-explain>
+                  </nz-form-control>
+                </nz-form-item>
+              </td>
+
+              <td>
+                <nz-form-item>
+                  <nz-form-control>
+                    <shared-date-picker formControlName="orderDate"></shared-date-picker>
+                    <nz-form-explain *ngIf="orderInfo.get('orderDate')?.dirty && orderInfo.get('orderDate')?.errors">
+                      请选择进单日期OIT Date
+                    </nz-form-explain>
+                  </nz-form-control>
+                </nz-form-item>
+              </td>
+
+              <td>
+                <nz-form-item>
+                  <nz-form-control>
+                    <shared-date-picker formControlName="productionDate"></shared-date-picker>
+                    <nz-form-explain
+                      *ngIf="orderInfo.get('productionDate')?.dirty && orderInfo.get('productionDate')?.errors">
+                      请选择出厂日期
+                    </nz-form-explain>
+                  </nz-form-control>
+                </nz-form-item>
+              </td>
+              <td>
+                <nz-form-item>
+                  <nz-form-control>
+                    <shared-date-picker formControlName="goodsDeliveryDate" (ngModelChange)="onGoodsDeliveryDateChange()"></shared-date-picker>
+                    <nz-form-explain
+                      *ngIf="orderInfo.get('goodsDeliveryDate')?.dirty && orderInfo.get('goodsDeliveryDate')?.errors">
+                      请选择货物送达日期
+                    </nz-form-explain>
+                  </nz-form-control>
+                </nz-form-item>
+              </td>
+
+              <td>
+                <nz-form-item>
+                  <nz-form-control>
+                    <nz-input-number style="width:100%" formControlName="guaranteeMonth" [nzMin]="1" [nzPrecision]="0"></nz-input-number>
+                    <nz-form-explain
+                      *ngIf="orderInfo.get('guaranteeMonth')?.dirty && orderInfo.get('guaranteeMonth')?.errors">
+                      请填写保修期
+                    </nz-form-explain>
+                  </nz-form-control>
+                </nz-form-item>
+              </td>
+
+              <td>
+                <nz-form-item>
+                  <nz-form-control>
+                    <nz-radio-group formControlName="cipPort" #cipPort>
+                      <label nz-radio nzValue="1">是</label>
+                      <label nz-radio nzValue="0">否</label>
+                    </nz-radio-group>
+                    <nz-form-explain
+                      *ngIf="orderInfo.get('cipPort')?.dirty && orderInfo.get('cipPort')?.errors">
+                      请选择是否为CIP港口
+                    </nz-form-explain>
+                  </nz-form-control>
+                </nz-form-item>
+              </td>
+
+              <td>
+                <nz-form-item>
+                  <nz-form-control>
+                    <div class="download-file-wrap">
+                      <nz-select formControlName="airTransportNo">
+                        <nz-option *ngFor="let file of fileList" [nzLabel]="file.name" [nzValue]="file.fileId"></nz-option>
+                      </nz-select>
+                      <span class="download-btn" *ngIf="orderInfo.get('airTransportNo')?.disabled && orderInfo.get('airTransportNo')?.value" (click)="onDownloadFile(orderInfo.get('airTransportNo')?.value)">下载</span>
+                    </div>
+                    <!-- <nz-form-explain *ngIf="orderInfo.get('airTransportNo')?.dirty && orderInfo.get('airTransportNo')?.errors">
+                      <ng-container *ngIf="!cipPort.value">请上传POD扫描件</ng-container>
+                      <ng-container *ngIf="cipPort.value === '1'">请上传空运单</ng-container>
+                      <ng-container *ngIf="cipPort.value === '0'">请上传货物签收单</ng-container>
+                    </nz-form-explain> -->
+                  </nz-form-control>
+                </nz-form-item>
+              </td>
+
+              <td>
+                <nz-form-item>
+                  <nz-form-control>
+                    <nz-select formControlName="addressType" nzPlaceHolder="Select 请选择">
+                      <nz-option nzLabel="医院地址" nzValue="医院地址"></nz-option>
+                      <nz-option nzLabel="代理商仓库地址" nzValue="代理商仓库地址"></nz-option>
+                    </nz-select>
+                    <nz-form-explain *ngIf="orderInfo.get('addressType')?.dirty && orderInfo.get('addressType')?.errors">
+                      请选择送达地址类型
+                    </nz-form-explain>
+                  </nz-form-control>
+                </nz-form-item>
+              </td>
+
+              <td>
+                <nz-form-item>
+                  <nz-form-control>
+                    <input type="text" nz-input formControlName="deliveryAddress" />
+                    <nz-form-explain *ngIf="orderInfo.get('deliveryAddress')?.dirty && orderInfo.get('deliveryAddress')?.errors">
+                      请填写货物送达地址中文
+                    </nz-form-explain>
+                  </nz-form-control>
+                </nz-form-item>
+              </td>
+
+              <td>
+                <nz-form-item>
+                  <nz-form-control>
+                    <input type="text" nz-input formControlName="deliveryAddressEn" />
+                    <nz-form-explain *ngIf="orderInfo.get('deliveryAddressEn')?.dirty && orderInfo.get('deliveryAddressEn')?.errors">
+                      请填写货物送达地址英文
+                    </nz-form-explain>
+                  </nz-form-control>
+                </nz-form-item>
+              </td>
+
+              <td>
+                <nz-form-item>
+                  <nz-form-control>
+                    <input type="text" nz-input formControlName="customsClearancePort" />
+                    <nz-form-explain *ngIf="orderInfo.get('customsClearancePort')?.dirty && orderInfo.get('customsClearancePort')?.errors">
+                      请填写清关口岸中文
+                    </nz-form-explain>
+                  </nz-form-control>
+                </nz-form-item>
+              </td>
+
+              <td>
+                <nz-form-item>
+                  <nz-form-control>
+                    <input type="text" nz-input formControlName="customsClearancePortEn" />
+                    <nz-form-explain *ngIf="orderInfo.get('customsClearancePortEn')?.dirty && orderInfo.get('customsClearancePortEn')?.errors">
+                      请填写清关口岸英文
+                    </nz-form-explain>
+                  </nz-form-control>
+                </nz-form-item>
+              </td>
+
+              <td nzRight="0px" *ngIf="editable" class="operation-wrap">
+                <button nz-popconfirm nz-button nzType="link" [nzTitle]="isOrder.value ? '确定删除该订单?' : '确定删除该产品?'" (nzOnConfirm)="onDeleteOrder(i)">
+                  删除
+                </button>
+                <button nz-button nzType="link" *ngIf="isOrder.value" (click)="onAddProduct(i)">
+                  添加产品
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </nz-table>
+        <nz-form-explain style="color:#f5222d" *ngIf="orderInfos?.dirty && orderInfos?.errors?.required">
+          请至少添加一条订单信息
+        </nz-form-explain>
+      </nz-form-control>
+    </nz-form-item>
+  </nz-card>
+
+  <form nz-form [formGroup]="cooInfo">
+    <nz-card class="mtb1rem" nzTitle="COO条件校验">
+      <div nz-row>
+        <div nz-col nzXs="24" nzSm="24" nzMd="12">
+          <nz-form-item>
+            <nz-form-label nzXl="8" nzXXl="6" nzRequired>是否已装机或派单</nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <nz-radio-group formControlName="installationOrDispatch">
+                <label nz-radio nzValue="1">是</label>
+                <label nz-radio nzValue="0">否</label>
+              </nz-radio-group>
+              <ng-container *ngIf="cooInfo.get('installationOrDispatch')?.dirty && cooInfo.get('installationOrDispatch')?.errors">
+                <nz-form-explain *ngIf="cooInfo.get('installationOrDispatch')?.errors?.required">
+                  请选择是否已装机或派单
+                </nz-form-explain>
+                <nz-form-explain *ngIf="cooInfo.get('installationOrDispatch')?.errors?.disableSubmit">
+                  是否已装机或派单选择"是"时, 无法提交特批申请
+                </nz-form-explain>
+              </ng-container>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+  
+        <div nz-col nzXs="24" nzSm="24" nzMd="12">
+          <nz-form-item>
+            <nz-form-label nzXl="8" nzXXl="6">是否到货>3个月</nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <nz-radio-group formControlName="threeMonthsAfterArrival" nzDisabled>
+                <label nz-radio nzValue="1">是</label>
+                <label nz-radio nzValue="0">否</label>
+              </nz-radio-group>
+              <nz-alert *ngIf="editable" nzType="warning" nzMessage="按货物送达日期计算"></nz-alert>
+              <nz-form-explain style="color:#f5222d" *ngIf="cooInfo.get('threeMonthsAfterArrival')?.errors?.disableSubmit">
+                是否到货>3个月为"否"时, 无法提交特批申请
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+      <div nz-row>
+        <div nz-col nzXs="24" nzSm="24" nzMd="12">
+          <nz-form-item>
+            <nz-form-label nzXl="8" nzXXl="6" nzRequired>是否已付90%以上订单金额</nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <nz-radio-group formControlName="paymentNinetyPercent">
+                <label nz-radio nzValue="1">是</label>
+                <label nz-radio nzValue="0">否</label>
+              </nz-radio-group>
+              <ng-container *ngIf="cooInfo.get('paymentNinetyPercent')?.dirty && cooInfo.get('paymentNinetyPercent')?.errors">
+                <nz-form-explain *ngIf="cooInfo.get('paymentNinetyPercent')?.errors?.required">
+                  请选择是否已付90%以上订单金额
+                </nz-form-explain>
+                <nz-form-explain *ngIf="cooInfo.get('paymentNinetyPercent')?.errors?.disableSubmit">
+                  是否已付90%以上订单金额选择"否"时, 无法提交特批申请
+                </nz-form-explain>
+              </ng-container>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+    </nz-card>
+  
+    <nz-card class="mtb1rem" [nzTitle]="fileCardTitle" *ngIf="showCooFile">
+      <ng-template #fileCardTitle>
+        <div>
+          <span>COO文件</span>
+          <a style="margin-left:32px;text-decoration:underline;color:#337fbf" (click)="showTemplate()">COO确认函模板</a>
+        </div>
+      </ng-template>
+      <div nz-row>
+        <div nz-col nzXs="24" nzSm="24" nzMd="12">
+          <nz-form-item>
+            <nz-form-label nzXl="8" nzXXl="6" nzRequired>预计签署日期</nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <shared-date-picker formControlName="applySignedDate"></shared-date-picker>
+              <nz-form-explain *ngIf="cooInfo.get('applySignedDate')?.dirty && cooInfo.get('applySignedDate')?.errors">
+                请选择预计签署日期
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" *ngIf="showAirTransportNoDealer">
+          <nz-form-item>
+            <nz-form-label nzXl="8" nzXXl="6" nzRequired>经销商盖章后的空运单</nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <shared-upload-file formControlName="airTransportNoDealer"></shared-upload-file>
+              <nz-alert *ngIf="!cooInfo.get('airTransportNoDealer').disabled" nzType="warning" nzMessage="请上传经销商盖章确认的添加收货地址和入库日期的空运单"></nz-alert>
+              <nz-form-explain *ngIf="cooInfo.get('airTransportNoDealer')?.dirty && cooInfo.get('airTransportNoDealer')?.errors">
+                请上传经销商盖章后的空运单
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+  
+        <div nz-col nzXs="24" nzSm="24" nzMd="12">
+          <nz-form-item>
+            <nz-form-label nzXl="8" nzXXl="6" nzRequired>COO确认函草稿（word版）</nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <shared-upload-file formControlName="cooConfirmationLetterDraft"></shared-upload-file>
+              <nz-alert *ngIf="!cooInfo.get('cooConfirmationLetterDraft').disabled" nzType="warning" nzMessage="请下载COO确认函，确认无误后上传、保存并联系下一步Owner审阅，下一步Onwer审阅前请勿上传签字盖章的确认函并提交。"></nz-alert>
+              <nz-form-explain *ngIf="cooInfo.get('cooConfirmationLetterDraft')?.dirty && cooInfo.get('cooConfirmationLetterDraft')?.errors">
+                请上传COO确认函草稿（word版）
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+       
+        <div nz-col nzXs="24" nzSm="24" nzMd="12">
+          <nz-form-item>
+            <nz-form-label nzXl="8" nzXXl="6" nzRequired>经销商盖章后的COO确认函</nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <shared-upload-file formControlName="cooConfirmationLetterDealer"></shared-upload-file>
+              <nz-form-explain *ngIf="cooInfo.get('cooConfirmationLetterDealer')?.dirty && cooInfo.get('cooConfirmationLetterDealer')?.errors">
+                请上传经销商盖章后的COO确认函
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+  
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" *ngIf="showCooLetter">
+          <nz-form-item>
+            <nz-form-label nzXl="8" nzXXl="6">双签后的COO确认函</nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <shared-upload-file formControlName="cooConfirmationLetterSign"></shared-upload-file>
+              <!-- <nz-form-explain *ngIf="cooInfo.get('cooConfirmationLetterSign')?.dirty && cooInfo.get('cooConfirmationLetterSign')?.errors">
+                请上传双签后的COO确认函
+              </nz-form-explain> -->
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+    </nz-card>
+  </form>
+</form>
+
+<!-- 文件列表 -->
+<nz-modal nzWidth="1000px" [(nzVisible)]="showUploadFileList" nzTitle="文件列表" [nzCancelText]="null" (nzOnOk)="showUploadFileList=false" (nzOnCancel)="showUploadFileList=false">
+  <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+    <nz-upload [nzShowUploadList]="false" [nzCustomRequest]="onUploadFile" [nzMultiple]="true">
+      <button nz-button nzType="primary">添加文件</button>
+    </nz-upload>
+    <button nz-button nzType="danger" (click)="onClearFileList()">删除全部</button>
+  </div>
+
+  <nz-table #fileListTable nzSize="small" [nzData]="fileList" [nzShowPagination]="false" nzBordered>
+    <thead>
+      <tr>
+        <th nzAlign="center">文件名</th>                     
+        <th nzWidth="100px" nzAlign="center">操作</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let file of fileListTable.data">
+        <td nzAlign="center">
+          <i *ngIf="file.status === 'uploading'" nz-icon nzType="loading" nzTheme="outline"></i>
+          <i *ngIf="file.status === 'success'" nz-icon nzType="check" nzTheme="outline"></i>
+          {{ file.name }}
+        </td>
+        <td nzAlign="center">
+          <button nz-button nzSize="small" nzType="link" (click)="onDeleteFile(file)"><i nz-icon nzType="delete" nzTheme="outline"></i></button>
+          <button nz-button nzSize="small" nzType="link" (click)="onDownloadFile(file.fileId)"><i nz-icon nzType="download" nzTheme="outline"></i></button>
+        </td>
+      </tr>
+    </tbody>
+  </nz-table>
+</nz-modal>
+
+<app-pdf-preview #appPdfPreview></app-pdf-preview>
+
+<app-select-dealer #selectDealer (select)="onSelectDealer($event)"></app-select-dealer>

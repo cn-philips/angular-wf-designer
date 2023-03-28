@@ -1,0 +1,122 @@
+<app-apploading [load]="pageLoading"></app-apploading>
+<nz-card class="title_warpper mtb1rem" *ngIf="status != undefined && status != null">
+  <app-approval-progress></app-approval-progress>
+</nz-card>
+<div class="tabs-box">
+  <app-tabs (select)="tabclick($event)" #tabs>
+    <app-tab [title]="'orderv3.pages.pre-order.general' | translate" id="pending-tab">
+      <div class="card-body">
+        <pre-base-info-from
+          #baseInfoFromChild
+          [formValue]="formValue"
+          [editable]="editBase"
+          [subTierSubject]="subTierSubject"
+          (addProduct)="addProduct($event)">
+        </pre-base-info-from>
+        <pre-base-info-table #baseInfoTableChild [formValue]="formValue"></pre-base-info-table>
+      </div>
+    </app-tab>
+    <app-tab [title]="'orderv3.pages.pre-order.product' | translate" id="complete-tab">
+      <div class="card-body">
+        <pre-product #productChild [formValue]="formValue" [editable]="editable" [editPreTable]="editPreTable">
+        </pre-product>
+      </div>
+    </app-tab>
+    <app-tab [title]="'orderv3.pages.pre-order.history' | translate" id="approval-record" *ngIf="isRecend()">
+      <div class="card-body">
+        <app-form-section class="mtb1rem" [title]="'orderv3.pages.pre-order.history' | translate">
+          <app-form-section class="mtb1rem" [title]="'orderv3.pages.pre-order.history-order' | translate">
+              <shared-approval-history [procInstId]="procInstId"></shared-approval-history>
+          </app-form-section>
+          <approval-history-oit [applyId]="applyId">
+          </approval-history-oit>
+        </app-form-section>
+      </div>
+    </app-tab>
+    <app-tab [title]="'orderv3.pages.pre-order-oa.remark' | translate" id="approval-remarks" *ngIf="status=='ecos_oit_deal_resubmit'">
+      <div class="card-body">
+          <pre-order-remarks
+            [remarkFrom]="remarkFromData"
+            [formValue]="formValue"
+            #remarkFromChild></pre-order-remarks>
+      </div>
+    </app-tab>
+  </app-tabs>
+  <div *ngIf="flag != 1" class="fixed-btn-group" nz-row nzType="flex" nzJustify="center" nzAlign="middle">
+    <div nz-col nzSpan="24">
+      <nz-form-item>
+        <nz-form-control [nzSm]="24" [nzXs]="24" style="text-align: center">
+          <button [disabled]="tabIndex==0" nz-button nzType="default" (click)="goPreStep()">
+            {{"orderv3.pages.pre-order.pre-step" | translate}}
+          </button>
+          <button [disabled]="tabIndex==(tabList.length-1)" nz-button nzType="default" (click)="goNextStep()">
+            {{"orderv3.pages.pre-order.next-step" | translate}}
+          </button>
+          <button nz-button nzType="default" (click)="handleCancel()">
+            {{"orderv3.pages.pre-order.cancel" | translate}}
+          </button>
+          <button nz-button nzType="default" (click)="preSubmit('apply_save')">
+            {{"orderv3.pages.pre-order.save" | translate}}
+          </button>
+          <button *ngIf="
+                !(
+                  baseInfoFromData.getRawValue().oitMode == 'BIDDING' &&
+                  baseInfoFromData.getRawValue().dealFormSalesModality ==
+                    'PD&IGT'
+                )
+              " nz-button nzType="primary" nz-popconfirm nzTitle="你确定要执行提交的操作?"
+            (nzOnConfirm)="preSubmit(submitStatus)">
+            {{"orderv3.pages.pre-order.submit-apply" | translate}}
+          </button>
+          <button *ngIf="
+                baseInfoFromData.getRawValue().oitMode == 'BIDDING' &&
+                baseInfoFromData.getRawValue().dealFormSalesModality == 'PD&IGT'
+              " nz-button nzType="primary" (click)="preSubmit(submitStatus)">
+            {{"orderv3.pages.pre-order.check-submit" | translate}}
+          </button>
+          <nz-dropdown *ngIf="status=='ecos_oit_deal_resubmit'" [nzPlacement]="'bottomRight'">
+            <button nz-button nz-dropdown><i class="tranf90" nz-icon nzType="more" nzTheme="outline"></i></button>
+            <ul nz-menu>
+              <li nz-menu-item>
+                <a href="javascript:" (click)="preSubmit('cancel_deal')">{{"orderv3.pages.pre-order.cancel-order" | translate}}</a>
+              </li>
+            </ul>
+          </nz-dropdown>
+          <nz-dropdown *ngIf="status=='ecos_status_draft'" [nzPlacement]="'bottomRight'">
+            <button nz-button nz-dropdown><i class="tranf90" nz-icon nzType="more" nzTheme="outline"></i></button>
+            <ul nz-menu>
+              <li nz-menu-item>
+                <a href="javascript:" (click)="deleteOrder()">{{"orderv3.pages.pre-order.del-order" | translate}}</a>
+              </li>
+            </ul>
+          </nz-dropdown>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+  <div *ngIf="flag==1" class="fixed-btn-group" nz-row nzType="flex" nzJustify="center" nzAlign="middle">
+    <div nz-col nzSpan="24">
+      <nz-form-item>
+        <nz-form-control [nzSm]="24" [nzXs]="24" style="text-align: center">
+          <button [disabled]="tabIndex==0" nz-button nzType="default" (click)="goPreStep()">
+            {{"orderv3.pages.pre-order.pre-step" | translate}}
+          </button>
+          <button [disabled]="tabIndex==(tabList.length-1)" nz-button nzType="default" (click)="goNextStep()">
+            {{"orderv3.pages.pre-order.next-step" | translate}}
+          </button>
+          <button nz-button nzType="default" (click)="handleCancel()">
+            {{"orderv3.pages.pre-order.cancel" | translate}}
+          </button>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+</div>
+<nz-modal [(nzVisible)]="isVisibleWinCheck" [nzOkDisabled]="verifiOff"
+  [nzTitle]="'orderv3.pages.pre-order.m-title' | translate " nzOkText="提交进单准备表" nzCancelText="取消" nzCentered
+  nzWidth="1600" (nzOnCancel)="handleCancelWinCheck()" (nzOnOk)="handleOkWinCheck(submitStatus)">
+  <ng-container>
+    <preOrder-WinCheckTable (myVerifi)="myVerifi($event)" [bidData]="bidData" [dataBase]="dataBase"
+      [tableLoad]="tableLoad"></preOrder-WinCheckTable>
+  </ng-container>
+</nz-modal>

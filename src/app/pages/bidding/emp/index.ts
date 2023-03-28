@@ -1,0 +1,1 @@
+export { EmpComponent } from './emp.component'

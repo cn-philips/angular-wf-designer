@@ -1,0 +1,18 @@
+.role-management-draw {
+  /deep/.ant-drawer-body {
+    position: relative;
+  }
+}
+
+/deep/.ant-drawer-content-wrapper {
+  transition: width 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+    transform 0.5s ease-in-out;
+}
+
+.draw-size-btn {
+  position: absolute;
+  cursor: pointer;
+  top: 1.75rem;
+  right: 4rem;
+  transform: translateY(-50%);
+}

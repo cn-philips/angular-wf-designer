@@ -1,0 +1,42 @@
+<div nz-row>
+  <div nz-col>
+    <nz-table [(nzPageSize)]="userInfoPage.pageSize" [(nzPageIndex)]="userInfoPage.pageNo"
+      [nzTotal]="userInfoPage.total" [nzShowQuickJumper]="true" [nzShowSizeChanger]="true" [nzFrontPagination]="false"
+      [nzHideOnSinglePage]="false" (nzPageIndexChange)="changePageIndexOnwer($event)"
+      (nzPageSizeChange)="changePageSizeOnwer($event)" [nzData]="dataSource" nzTableLayout="fixed" nzSize="small"
+      [nzScroll]="{ x: '300px' }" [nzLoading]="isloading">
+      <thead>
+        <tr>
+          <th *ngFor="let column of tableHeader" [nzWidth]="column.width">
+            {{ column.name }}
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let data of dataSource">
+          <td>{{ data.dataSource }}</td>
+          <td>{{ data.role }}</td>
+          <td>{{ data.team }}</td>
+
+          <td *ngIf="data.funcTeamType == 1" style="color: green">是</td>
+          <td *ngIf="data.funcTeamType == 0" style="color: red">否</td>
+          <td *ngIf="(data.funcTeamType != 0) && (data.funcTeamType != 1)"> </td>
+          <td>{{ data.serveTeam }}</td>
+
+          <td *ngIf="data.ifApply == 1" style="color: green">是</td>
+          <td *ngIf="data.ifApply == 0" style="color: red">否</td>
+          <td *ngIf="(data.ifApply != 0) && (data.ifApply != 1)"> </td>
+
+          <td *ngIf="data.ifReview == 1" style="color: green">是</td>
+          <td *ngIf="data.ifReview == 0" style="color: red">否</td>
+          <td *ngIf="(data.ifReview != 0) && (data.ifReview != 1)"> </td>
+
+          <td>{{ data.modality }}</td>
+          <td>{{ data.bmcMag }}</td>
+          <td [innerHTML]="replaceArea(data.area)"></td>
+
+        </tr>
+      </tbody>
+    </nz-table>
+  </div>
+</div>

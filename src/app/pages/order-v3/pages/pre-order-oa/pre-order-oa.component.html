@@ -1,0 +1,100 @@
+<app-apploading [load]="pageLoading"></app-apploading>
+<nz-card class="title_warpper mtb1rem">
+  <app-approval-progress></app-approval-progress>
+</nz-card>
+<div class="tabs-box">
+  <app-tabs (select)="tabclick($event)" #tabs>
+    <app-tab [title]="'orderv3.pages.pre-order-oa.general' | translate" id="pending-tab">
+      <div class="card-body">
+        <pre-base-info-from
+          #baseInfoFromChild
+          [formValue]="formValue"
+          [editable]="editBase"
+          [subTierSubject]="subTierSubject"
+          (addProduct)="addProduct($event)">
+        </pre-base-info-from>
+        <pre-base-info-table #baseInfoTableChild [formValue]="formValue"></pre-base-info-table>
+      </div>
+    </app-tab>
+    <app-tab [title]="'orderv3.pages.pre-order-oa.product'|translate" id="complete-tab">
+      <div class="card-body">
+        <pre-product #productChild [formValue]="formValue" [editable]="editable" [editPreTable]="editPreTable">
+        </pre-product>
+      </div>
+    </app-tab>
+    <app-tab [title]="'orderv3.pages.pre-order-oa.remark' | translate" id="approval-remarks">
+      <div class="card-body">
+        <pre-order-remarks [remarkFrom]="remarkFromData" [formValue]="formValue" #remarkFromChild></pre-order-remarks>
+      </div>
+    </app-tab>
+    <app-tab [title]="'orderv3.pages.pre-order-oa.history' | translate" id="approval-record">
+      <div class="card-body">
+        <app-form-section class="mtb1rem" [title]="'orderv3.pages.pre-order-examine.history' | translate">
+          <app-form-section class="mtb1rem" [title]="'orderv3.pages.pre-order.history-order' | translate">
+            <shared-approval-history [procInstId]="procInstId"></shared-approval-history>
+          </app-form-section>
+          <approval-history-oit [applyId]="applyId">
+          </approval-history-oit>
+        </app-form-section>
+      </div>
+    </app-tab>
+  </app-tabs>
+  <div *ngIf="flag != 1" nz-row nzType="flex" class="fixed-btn-group" nzJustify="center" nzAlign="middle">
+    <div nz-col nzSpan="24">
+      <nz-form-item>
+        <nz-form-control [nzSm]="24" [nzXs]="24" style="text-align: center">
+          <button [disabled]="tabIndex==0" nz-button nzType="default" (click)="goPreStep()">
+            {{"orderv3.pages.pre-order-oa.pre-step" | translate}}
+          </button>
+          <button [disabled]="tabIndex==(tabList.length-1)" nz-button nzType="default" (click)="goNextStep()">
+            {{"orderv3.pages.pre-order-oa.next-step" | translate}}
+          </button>
+          <button nz-button nzType="default" (click)="handleCancel()">
+            {{"orderv3.pages.pre-order-oa.cancel" | translate}}
+          </button>
+          <button nz-button nzType="default" (click)="preSubmit('apply_save')">
+            {{"orderv3.pages.pre-order.save" | translate}}
+          </button>
+          <button nz-button nzType="primary" nz-popconfirm nzTitle="你确定要执行批准的操作?" (nzOnConfirm)="preSubmit('approved')">
+            {{"orderv3.pages.pre-order-oa.approved" | translate}}
+          </button>
+          <button nz-button nzType="primary" nz-popconfirm nzTitle="你确定要执行'仅退回至本Order负责人'的操作?"
+            (nzOnConfirm)="preSubmit('rejected')" *ngIf="restSend">
+            {{"orderv3.pages.pre-order-oa.refuse" | translate}}
+          </button>
+          <button nz-button nzType="primary" nz-popconfirm nzTitle="你确定要退回至进单发起人?"
+            (nzOnConfirm)="preSubmit('rejected_resubmit')">
+            {{"orderv3.pages.pre-order-oa.resubmit" | translate}}
+          </button>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+  <div *ngIf="flag==1" nz-row nzType="flex" class="fixed-btn-group" nzJustify="center" nzAlign="middle">
+    <div nz-col nzSpan="24">
+      <nz-form-item>
+        <nz-form-control [nzSm]="24" [nzXs]="24" style="text-align: center">
+          <button [disabled]="tabIndex==0" nz-button nzType="default" (click)="goPreStep()">
+            {{"orderv3.pages.pre-order-oa.pre-step" | translate}}
+          </button>
+          <button [disabled]="tabIndex==(tabList.length-1)" nz-button nzType="default" (click)="goNextStep()">
+            {{"orderv3.pages.pre-order-oa.next-step" | translate}}
+          </button>
+          <button nz-button nzType="default" (click)="handleCancel()">
+            {{"orderv3.pages.pre-order-oa.cancel" | translate}}
+          </button>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+  <nz-modal [(nzVisible)]="isOtherPayment" nzWidth="650px" nzTitle="提示" [nzFooter]="modalFooter"
+    (nzOnCancel)="paymentCancels()">
+    <ng-container>
+      <nz-alert nzType="warning"
+        nzMessage="各Order层级的“远期信用证利息”或“其他付款方式费用”之和，与DealForm的“其他付款方式金额”，偏差超过1元，请确保偏差金额不影响价格审批结果"></nz-alert>
+    </ng-container>
+    <ng-template #modalFooter>
+      <button nz-button nzType="default" (click)="paymentCancels()">取消提交</button>
+      <button nz-button nzType="primary" (click)="paymentConfirm()">继续提交</button>
+    </ng-template>
+  </nz-modal>

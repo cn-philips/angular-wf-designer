@@ -1,0 +1,8 @@
+<div style="width: 100%; background-color: #ffffff; padding: 15px">
+  <signature-search-item #searchItem [loading]="loading" [formData]="formValues"  [totalOne]="totalOne" [totalTwo]="totalTwo" [totalThree]="totalThree" [totalFour]="totalFour"
+  [zslSignSupplement]="zslSignSupplement"  (search)="updateParams($event)" (setLoading)="getLoading($event)">
+  </signature-search-item>
+  <signature-list #table [loading]="loading" [formData]="formValues" [tableData]="tableData" [total]="total" [type]="type"
+    (pageChange)="updateDataList($event)" (setAuthorizationMail)="setAuthorizationMail($event)" (setWatermark)="loadWatermark($event)" (setLoading)="getLoading($event)" [flag]="0">
+  </signature-list>
+</div>

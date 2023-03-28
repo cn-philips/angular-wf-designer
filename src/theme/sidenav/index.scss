@@ -1,6 +1,6 @@
 $BORDER_WIDTH: 0.25rem;
 $BORDER_WIDTH_EXTRA: 0.125rem;
-$BORDER_THEME_COLOR: #337fbf;
+$BORDER_THEME_COLOR: #3798db;
 $BORDER_THEME_SECOND_COLOR: #20bdff;
 $BORDER_ACTIVE_LEFT: inset $BORDER_WIDTH 0rem 0rem 0 $BORDER_THEME_COLOR;
 $BORDER_INACTIVE_LEFT: inset $BORDER_WIDTH 0rem 0rem 0 #c4c4c4;
@@ -13,17 +13,19 @@ $TOP_LAYER_SHADOW: 0rem 0.5rem 0.5rem 0rem rgba(149, 149, 149, 0.25);
 
 .layout-sidenav {
   // 侧边栏阴影
-  box-shadow: 0.25rem 0rem 0.625rem 0rem #3333332d;
+  // box-shadow: 0.25rem 0rem 0.625rem 0rem #3333332d;
+  box-shadow: 2px 0 6px 0 rgba(18, 32, 56, 0.04);
   .sidenav.sidenav-vertical.bg-sidenav-theme {
     // 侧边栏背景色
-    background-color: #f0f0f0 !important;
+    background-color: #ffffff !important;
     .sidenav-inner {
       padding: 0 !important;
       // 通用
       .sidenav-item {
         &.active {
           & > .sidenav-link:not(.sidenav-toggle) {
-            background-color: #f7f7f7;
+            color: #3798db !important;
+            background-color: #ebf0ff;
             box-shadow: $BORDER_ACTIVE_LEFT, $BORDER_TRANSACTION_EXTRA;
           }
         }
@@ -38,6 +40,7 @@ $TOP_LAYER_SHADOW: 0rem 0.5rem 0.5rem 0rem rgba(149, 149, 149, 0.25);
           }
         }
         .sidenav-link {
+          color: #323233;
           transition: all 0.8s cubic-bezier(0.165, 0.84, 0.44, 1);
         }
         .sidenav-menu {
@@ -49,9 +52,9 @@ $TOP_LAYER_SHADOW: 0rem 0.5rem 0.5rem 0rem rgba(149, 149, 149, 0.25);
         margin: 0 !important;
         &.open {
           & > .sidenav-link {
-            background-color: #fdfdfd;
-            box-shadow: $BORDER_ACTIVE_LEFT, $BORDER_TRANSACTION_EXTRA,
-              $TOP_LAYER_SHADOW;
+            color: #3798db !important;
+            background-color: #ffffff;
+            box-shadow: $BORDER_ACTIVE_LEFT, $BORDER_TRANSACTION_EXTRA;
           }
         }
         // 子层

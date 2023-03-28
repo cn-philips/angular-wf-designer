@@ -1,0 +1,430 @@
+<!-- 中标备案表单 -->
+<form nz-form [formGroup]="biddingFilling">
+  <nz-form-item>
+    <nz-form-label [nzSpan]="4" nzNoColon></nz-form-label>
+    <nz-form-control>
+      <nz-radio-group formControlName="action" #action>
+        <label nz-radio nzValue="approved">
+          {{"biddingv3.components.approval-form.bidding-record.approved" | translate}}
+        </label>
+        <label nz-radio nzValue="failure">
+          {{"biddingv3.components.approval-form.bidding-record.failure" | translate}}
+        </label>
+        <label nz-radio nzValue="2bid">
+          {{"biddingv3.components.approval-form.bidding-record.2bid" | translate}}
+        </label>
+      </nz-radio-group>
+      <nz-form-explain *ngIf="biddingFilling.get('action')?.dirty && biddingFilling.get('action')?.errors">
+        此选项必填字段
+      </nz-form-explain>
+    </nz-form-control>
+  </nz-form-item>
+
+  <ng-container *ngIf="action.value === 'approved'" formGroupName="approvedForm">
+    <!-- <nz-alert nzType="warning" nzMessage="注意：经销商DDP 有效期为2022/2/21，当前已过期!" nzShowIcon></nz-alert> -->
+    <nz-form-item *ngIf="spItemsVisible">
+      <nz-form-label [nzSpan]="4">需特批会签事项</nz-form-label>
+      <nz-form-control [nzSpan]="20">
+        <div class="sp-item-list" formArrayName="specialApprovalItems">
+          <div class="sp-item" *ngFor="let item of specialApprovalItems.controls" [formGroup]="item">
+            <shared-checkbox
+              formControlName="status"
+              [trueValue]="1"
+              [falseValue]="0"
+              [label]="item.get('name').value"
+              (ngModelChange)="handleSpItemStatusChange(item)"
+            ></shared-checkbox>
+
+            <span nz-popover class="view-detail" [nzContent]="spDetailContent">查看特批详情</span>
+            <ng-template #spDetailContent>
+              <div style="width: 400px">
+                <nz-form-item>
+                  <nz-form-label [nzSpan]="6">特批事项名称</nz-form-label>
+                  <nz-form-control [nzSpan]="18">{{ item.get('name').value }}</nz-form-control>
+                </nz-form-item>
+                <nz-form-item>
+                  <nz-form-label [nzSpan]="6">特批事项描述</nz-form-label>
+                  <nz-form-control [nzSpan]="18">{{ item.get('description').value }}</nz-form-control>
+                </nz-form-item>
+                <nz-form-item>
+                  <nz-form-label [nzSpan]="6">会签审批角色</nz-form-label>
+                  <nz-form-control [nzSpan]="18">{{ item.get('roleList').value }}</nz-form-control>
+                </nz-form-item>
+              </div>
+            </ng-template>
+            <ng-container *ngIf="item.get('status')?.value === 1 || item.get('removed')?.value">
+              <input
+                class="comment-input"
+                nz-input
+                formControlName="comment"
+                [placeholder]="item.get('comment')?.disabled ? '' : '请填写备注信息'"
+              />
+              <shared-upload-file type="button" formControlName="attachments"></shared-upload-file>
+            </ng-container>
+          </div>
+        </div>
+      </nz-form-control>
+    </nz-form-item>
+    <!-- 最终用户合同/中标通知书 -->
+    <nz-form-item>
+      <nz-form-label [nzSpan]="4" [nzRequired]="endUserContractFilesRequired">{{ endUserContractFilesLabel }}</nz-form-label>
+      <nz-form-control [nzSpan]="10">
+        <shared-upload-file type="button"
+          [title]="'biddingv3.components.approval-form.bidding-record.upload' | translate"
+          formControlName="endUserContractFiles"></shared-upload-file>
+        <nz-form-explain
+          *ngIf="approvedForm.get('endUserContractFiles')?.dirty && approvedForm.get('endUserContractFiles')?.errors">
+          此选项必填字段
+        </nz-form-explain>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item *ngIf="winningNoticeFilesVisible">
+      <nz-form-label [nzSpan]="4">
+        {{"biddingv3.components.approval-form.bidding-record.winning" | translate}}
+      </nz-form-label>
+      <nz-form-control [nzSpan]="10">
+        <shared-upload-file type="button"
+          [title]="'biddingv3.components.approval-form.bidding-record.upload' | translate"
+          formControlName="winningNoticeFiles"></shared-upload-file>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item *ngIf="applyDetail.businessModel === BUSINESS_MODEL_DIRECT">
+      <nz-form-label [nzSpan]="4">
+        {{"biddingv3.components.approval-form.bidding-record.tender" | translate}}
+      </nz-form-label>
+      <nz-form-control [nzSpan]="10">
+        <shared-upload-file type="button"
+          [title]="'biddingv3.components.approval-form.bidding-record.upload' | translate"
+          formControlName="tenderAndOtherCommitmentFiles">
+        </shared-upload-file>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item *ngIf="applyDetail.businessModel === BUSINESS_MODEL_DIRECT">
+      <nz-form-label [nzSpan]="4" [nzRequired]="participationTenderLetterFilesRequired">
+        {{"biddingv3.components.approval-form.bidding-record.participation" | translate}}
+      </nz-form-label>
+      <nz-form-control [nzSpan]="10">
+        <shared-upload-file type="button"
+          [title]="'biddingv3.components.approval-form.bidding-record.upload' | translate"
+          formControlName="participationTenderLetterFiles">
+        </shared-upload-file>
+        <nz-form-explain
+          *ngIf="approvedForm.get('participationTenderLetterFiles')?.dirty && approvedForm.get('participationTenderLetterFiles')?.errors">
+          此选项必填字段
+        </nz-form-explain>
+      </nz-form-control>
+    </nz-form-item>
+
+    <!-- 场地勘验报告/要货函 -->
+    <nz-form-item>
+      <nz-form-label [nzSpan]="4" [nzRequired]="siteSurveyReportFilesRequired">{{ siteSurveyReportFilesLabel }}</nz-form-label>
+      <nz-form-control [nzSpan]="10">
+        <shared-upload-file type="button"
+          [title]="'biddingv3.components.approval-form.bidding-record.upload' | translate"
+          formControlName="siteSurveyReportFiles"></shared-upload-file>
+        <nz-form-explain
+          *ngIf="approvedForm.get('siteSurveyReportFiles')?.dirty && approvedForm.get('siteSurveyReportFiles')?.errors">
+          此选项必填字段
+        </nz-form-explain>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzSpan]="4">
+        {{"biddingv3.components.approval-form.bidding-record.solution" | translate}}
+      </nz-form-label>
+      <nz-form-control [nzSpan]="10">
+        <shared-upload-file type="button"
+          [title]="'biddingv3.components.approval-form.bidding-record.upload' | translate"
+          formControlName="projectSolutionSupportReportFiles">
+        </shared-upload-file>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item *ngIf="applyDetail.businessModel === BUSINESS_MODEL_DIRECT">
+      <nz-form-label [nzSpan]="4" [nzRequired]="fullDocumentFieldsRequired">
+        全套投标文件
+      </nz-form-label>
+      <nz-form-control [nzSpan]="10">
+        <shared-upload-file
+          type="button"
+          [title]="'biddingv3.components.approval-form.bidding-record.upload' | translate"
+          formControlName="fullDocumentFields"
+        >
+        </shared-upload-file>
+        <nz-form-explain
+          *ngIf="approvedForm.get('fullDocumentFields')?.dirty && approvedForm.get('fullDocumentFields')?.errors">
+          此选项必填字段
+        </nz-form-explain>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzSpan]="4" nzRequired>
+        {{"biddingv3.components.approval-form.bidding-record.award-price" | translate}}
+      </nz-form-label>
+      <nz-form-control [nzSpan]="4" [ngClass]="approvedForm?.errors?.biddingAmountError ? 'has-error' : ''">
+        <nz-input-number style="width: 100%;" formControlName="biddingAwardPrice" [nzMin]="0" [nzPrecision]="2">
+        </nz-input-number>
+        <ng-container *ngIf="approvedForm.get('biddingAwardPrice')?.dirty">
+          <nz-form-explain *ngIf="approvedForm.get('biddingAwardPrice')?.errors?.required">
+            此选项必填字段
+          </nz-form-explain>
+          <nz-form-explain *ngIf="approvedForm?.errors?.biddingAmountError">
+            中标价格不能低于产品中标价格总和
+          </nz-form-explain>
+        </ng-container>
+      </nz-form-control>
+      <nz-form-control style="margin:0 8px;width:120px;float:left">
+        <shared-select formControlName="biddingAwardCurrency" placeholder="请选择币制" [options]="selectOption.currency">
+        </shared-select>
+        <nz-form-explain
+          *ngIf="approvedForm.get('biddingAwardCurrency')?.dirty && approvedForm.get('biddingAwardCurrency')?.errors">
+          此选项必填字段
+        </nz-form-explain>
+      </nz-form-control>
+      <nz-form-control style="float:left;">
+        {{"biddingv3.components.approval-form.bidding-record.make-sure" | translate}}
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzSpan]="4" nzRequired>
+        {{"biddingv3.components.approval-form.bidding-record.award-date" | translate}}
+      </nz-form-label>
+      <nz-form-control [nzSpan]="4">
+        <shared-date-picker formControlName="biddingAwardDate"></shared-date-picker>
+        <nz-form-explain
+          *ngIf="approvedForm.get('biddingAwardDate')?.dirty && approvedForm.get('biddingAwardDate')?.errors">
+          此选项必填字段
+        </nz-form-explain>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzSpan]="4">
+        {{"biddingv3.components.approval-form.bidding-record.desc" | translate}}
+      </nz-form-label>
+      <nz-form-control [nzSpan]="10">
+        <textarea [nzAutosize]="{ minRows: 4, maxRows: 6 }" nz-input style="width: 100%"
+          formControlName="lackingInfo"></textarea>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzSpan]="4" nzRequired>
+        {{"biddingv3.components.approval-form.bidding-record.project" | translate}}
+      </nz-form-label>
+      <nz-form-control [nzSpan]="10">
+        <nz-radio-group formControlName="specialProject">
+          <label nz-radio [nzValue]="1">是</label>
+          <label nz-radio [nzValue]="0">否</label>
+        </nz-radio-group>
+        <nz-form-explain
+          *ngIf="approvedForm.get('specialProject')?.dirty && approvedForm.get('specialProject')?.errors">
+          此选项必填字段
+        </nz-form-explain>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzSpan]="4">
+        {{"biddingv3.components.approval-form.bidding-record.product-info" | translate}}
+      </nz-form-label>
+      <nz-form-control [nzSpan]="20">
+        <div class="market-bundles" formArrayName="marketBundles">
+          <div class="market-bundle" *ngFor="
+              let item of marketBundles.controls;
+              let bundle
+            " [formGroup]="bundle">
+            <div class="opportunity-id">
+              <span>Opportunity : {{ bundle.get("opportunityId").value || '无商机Opportunity' }}</span>
+              <span *ngIf="applyDetail.dataSource === 'CP Deal Form'" style="margin-left: 8px;">Deal Form ID : {{
+                bundle.get("dealFormId").value }}</span>
+
+
+            </div>
+            <div class="product-info">
+              <nz-table style="width: 100%;overflow-x:auto" [nzShowPagination]="false"
+                [nzData]="bundle.get('products').controls">
+                <thead>
+                  <tr>
+                    <th nzWidth="20px" nzLeft="0px">
+                    </th>
+                    <th nzWidth="100px">Modality</th>
+                    <th nzWidth="100px">
+                      {{"biddingv3.components.approval-form.bidding-record.bmc" | translate}}
+                    </th>
+                    <th nzWidth="100px">
+                      {{"biddingv3.components.approval-form.bidding-record.product-model" | translate}}
+                    </th>
+                    <th nzWidth="350px">
+                      {{"biddingv3.components.approval-form.bidding-record.medical-name" | translate}}
+                    </th>
+                    <th nzWidth="350px">
+                      {{"biddingv3.components.approval-form.bidding-record.bundle-name" | translate}}
+                    </th>
+                    <th nzWidth="100px">
+                      {{"biddingv3.components.approval-form.bidding-record.qty" | translate}}
+                    </th>
+                    <th nzWidth="170px">
+                      {{"biddingv3.components.approval-form.bidding-record.create-date" | translate}}
+                    </th>
+                    <th nzWidth="170px">
+                      {{"biddingv3.components.approval-form.bidding-record.creator" | translate}}
+                    </th>
+                    <th nzWidth="220px" nzRight="150px">
+                      {{"biddingv3.components.approval-form.bidding-record.award-price" | translate}}
+                    </th>
+                    <th nzWidth="150px" nzRight="0px">
+                      {{"biddingv3.components.approval-form.bidding-record.award-currency" | translate}}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody formArrayName="products">
+                  <tr *ngFor="let product of bundle.get('products').controls;let i=index" [formGroupName]="i">
+                    <td nzLeft="0px">
+                      <label nz-checkbox formControlName="awardOrNot"
+                        (ngModelChange)="onToggleProduct(product, $event)"></label>
+                    </td>
+                    <td>{{ product.get('modality').value }}</td>
+                    <td>{{ product.get('bmc').value }}</td>
+                    <td>{{ product.get('productModel').value }}</td>
+                    <td>{{ product.get('medicalDeviceName').value }}</td>
+                    <td
+                      nz-tooltip
+                      [nzOverlayStyle]="{maxWidth:'1000px'}"
+                      [nzTitle]="'Simulation ID: ' + product.get('simulationId').value"
+                    >{{ product.get('marketBundleName').value }}</td>
+                    <td>{{ product.get('quantity').value }}</td>
+                    <td>{{ product.get('createTime').value }}</td>
+                    <td>{{ product.get('createUser').value }}</td>
+                    <td nzRight="150px">
+                      <nz-form-control
+                        [ngClass]="approvedForm?.errors?.biddingAmountError && product.get('awardPrice')?.value ? 'has-error' : ''">
+                        <nz-input-number style="width: 100%;" formControlName="awardPrice" [nzMin]="0"
+                          [nzPrecision]="2"></nz-input-number>
+                        <ng-container *ngIf="product.get('awardPrice')?.dirty">
+                          <nz-form-explain
+                            *ngIf="approvedForm?.errors?.biddingAmountError && product.get('awardPrice')?.value">
+                            产品中标价格总和不能高于中标价格
+                          </nz-form-explain>
+                        </ng-container>
+                      </nz-form-control>
+                    </td>
+                    <td nzRight="0px">
+                      <nz-form-control>
+                        <shared-select formControlName="awardCurrency" placeholder="请选择币制" [options]="selectOption.currency">
+                        </shared-select>
+                      </nz-form-control>
+                    </td>
+                  </tr>
+                </tbody>
+              </nz-table>
+            </div>
+            <!-- <div class="product-info" *ngFor="let item of bundle.get('products').controls;let product" [formGroup]="product">
+              <div>
+                <label style="white-space:nowrap" nz-checkbox formControlName="awardOrNot" (ngModelChange)="onToggleProduct(product, $event)">
+                  {{ product.get("marketBundleName").value }}
+                </label>
+              </div>
+              <div class="bidding-price">
+                <nz-form-item>
+                  <nz-form-label [nzNoColon]="true">
+                    中标价格
+                  </nz-form-label>
+                  <nz-form-control [ngClass]="approvedForm?.errors?.biddingAmountError && product.get('awardPrice')?.value ? 'has-error' : ''">
+                    <nz-input-number style="width: 100%;" formControlName="awardPrice" [nzMin]="0"></nz-input-number>
+                    <ng-container *ngIf="product.get('awardPrice')?.dirty">
+                      <nz-form-explain *ngIf="product.get('awardPrice')?.errors?.required">
+                        此选项必填字段
+                      </nz-form-explain>
+                      <nz-form-explain *ngIf="approvedForm?.errors?.biddingAmountError && product.get('awardPrice')?.value">
+                        产品中标价格总和不能高于中标价格
+                      </nz-form-explain>
+                    </ng-container>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+            </div> -->
+          </div>
+          <span style="color:#f5222d;" *ngIf="marketBundles?.dirty && marketBundles?.errors?.awardOrNotError">
+            请至少选择一个中标产品
+          </span>
+        </div>
+      </nz-form-control>
+    </nz-form-item>
+  </ng-container>
+
+  <ng-container *ngIf="action.value === 'failure'" formGroupName="failureForm">
+    <nz-form-item>
+      <nz-form-label [nzSpan]="4" nzRequired>
+        {{"biddingv3.components.approval-form.bidding-record.award-price" | translate}}
+      </nz-form-label>
+      <nz-form-control [nzSpan]="3">
+        <nz-input-number style="width: 100%;" formControlName="biddingAwardPrice" [nzMin]="0" [nzPrecision]="2">
+        </nz-input-number>
+        <nz-form-explain
+          *ngIf="failureForm.get('biddingAwardPrice')?.dirty && failureForm.get('biddingAwardPrice')?.errors">
+          此选项必填字段
+        </nz-form-explain>
+      </nz-form-control>
+      <nz-form-control style="margin-left:8px;width:120px;float:left">
+        <shared-select formControlName="biddingAwardCurrency" placeholder="请选择币制" [options]="selectOption.currency">
+        </shared-select>
+        <nz-form-explain
+          *ngIf="failureForm.get('biddingAwardCurrency')?.dirty && failureForm.get('biddingAwardCurrency')?.errors">
+          此选项必填字段
+        </nz-form-explain>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzSpan]="4" nzRequired>
+        {{"biddingv3.components.approval-form.bidding-record.award-company" | translate}}
+      </nz-form-label>
+      <nz-form-control [nzSpan]="3">
+        <input nz-input formControlName="biddingAwardCompany" />
+        <nz-form-explain
+          *ngIf="failureForm.get('biddingAwardCompany')?.dirty && failureForm.get('biddingAwardCompany')?.errors">
+          此选项必填字段
+        </nz-form-explain>
+      </nz-form-control>
+    </nz-form-item>
+  </ng-container>
+
+  <nz-form-item *ngIf="!disabled">
+    <nz-form-label [nzSpan]="4">
+      {{"biddingv3.components.approval-form.bidding-record.remark" | translate}}
+    </nz-form-label>
+    <nz-form-control [nzSpan]="10">
+      <textarea
+        [nzAutosize]="{ minRows: 4, maxRows: 6 }"
+        nz-input
+        style="width: 100%"
+        formControlName="processComments"
+        (ngModelChange)="remarkMsgVisible=false"
+      >
+      </textarea>
+      <nz-form-explain *ngIf="remarkMsgVisible">
+        <a  style="color: #f5222d">请填写退回理由</a>
+      </nz-form-explain>
+    </nz-form-control>
+  </nz-form-item>
+</form>
+
+<footer *ngIf="!disabled">
+  <button nz-button (click)="biddingV3Service.goTodoPage()">
+    {{"biddingv3.components.approval-form.bidding-record.return" | translate}}
+  </button>
+  <button *ngIf="applyDetail.authorizationRequired==0" nz-button nzType="default" nz-popconfirm nzTitle="你确定要执行退回的操作?"
+    (nzOnConfirm)="onReject('rejected')">
+    {{"biddingv3.components.approval-form.bidding-confirm.rejected" | translate}}
+  </button>
+  <button nz-button nzType="primary" nz-popconfirm nzTitle="你确定要执行提交的操作?" (nzOnConfirm)="handleSubmitBiddingInfo()">
+    {{"biddingv3.components.approval-form.bidding-record.submit" | translate}}
+  </button>
+</footer>

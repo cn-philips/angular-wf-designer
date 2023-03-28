@@ -1,9 +1,6 @@
 {
   "/act/*": {
-    "dev": "http://13.67.94.5:8098",
-    "target": "http://13.67.94.5:8098",
-    "secure": false,
-    "test": "http://localhost:8082"
+    "target": "http://localhost:9091/"
   }
 }
 

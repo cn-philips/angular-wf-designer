@@ -4,6 +4,7 @@ import { Component, Input, HostBinding } from '@angular/core';
   selector: 'sidenav-router-link', // tslint:disable-line
   template: `
 <a
+  (click)="clearSearchConditions()"
   [routerLink]="route"
   [queryParams]="queryParams"
   [fragment]="fragment"
@@ -37,4 +38,9 @@ export class SidenavRouterLinkComponent {
   @Input() preserveFragment: boolean;
   @Input() skipLocationChange: boolean;
   @Input() replaceUrl: boolean;
+
+  clearSearchConditions() {
+    localStorage.removeItem('searchConditions');
+    localStorage.removeItem('currentTab');
+  }
 }

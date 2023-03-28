@@ -1,0 +1,79 @@
+<nz-modal [(nzVisible)]="visible" nzWidth="1000px" [nzTitle]="'orderv3.components.order-select-user.title' | translate"
+  [nzFooter]="null" (nzOnCancel)="onHide()">
+  <div nz-row [nzGutter]="24">
+    <div nz-col [nzSpan]="8">
+      <nz-form-item>
+        <nz-form-label [nzSpan]="5">{{"orderv3.components.order-select-user.user-name" | translate}}</nz-form-label>
+        <nz-form-control [nzSpan]="18">
+          <input nz-input [(ngModel)]="searchParams.name" placeholder="请输入用户名">
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+
+    <div nz-col [nzSpan]="8">
+      <nz-form-item>
+        <nz-form-label [nzSpan]="6">{{"orderv3.components.order-select-user.user-email" | translate}}</nz-form-label>
+        <nz-form-control [nzSpan]="18">
+          <input nz-input [(ngModel)]="searchParams.email" placeholder="请输入邮箱">
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+
+    <div nz-col [nzSpan]="8" style="text-align: right;">
+      <nz-form-item>
+        <nz-form-control>
+          <button nz-button class="ml10" nzType="primary" (click)="getTableData(true)" [nzSize]="6">
+            {{"orderv3.components.order-select-user.search" | translate}}
+          </button>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+
+  <div class="table-container">
+    <nz-table nzSize="middle" [nzData]="tableData.rows" [nzShowTotal]="totalTemplate" [nzTotal]="tableData.total"
+      [nzLoading]="tableData.loading" [nzPageSizeOptions]="[5, 10, 20, 30, 40, 50 ]" [nzShowQuickJumper]="true"
+      [nzShowSizeChanger]="true" [nzFrontPagination]="false" [nzScroll]="{x: '1000px'}"
+      [(nzPageIndex)]="searchParams.pageNo" [(nzPageSize)]="searchParams.pageSize" (nzPageIndexChange)="getTableData()"
+      (nzPageSizeChange)="getTableData()">
+      <thead>
+        <tr>
+          <th style="width:100px" nzLeft="0px" nzAlign="left">{{"orderv3.components.order-select-user.name" |
+            translate}}</th>
+          <th style="width:180px" nzAlign="left">{{"orderv3.components.order-select-user.email" | translate}}</th>
+          <th style="width:80px" nzAlign="left">{{"orderv3.components.order-select-user.serve-team" | translate}}</th>
+          <th style="width:80px" nzAlign="left">{{"orderv3.components.order-select-user.team" | translate}}</th>
+          <th style="width:80px" nzAlign="left">{{"orderv3.components.order-select-user.bigArea" | translate}}</th>
+          <th style="width:80px" nzAlign="left">{{"orderv3.components.order-select-user.smallArea" | translate}}</th>          
+          <th style="width:80px" nzAlign="left">province</th>
+          <th style="width:80px" nzAlign="left">{{"orderv3.components.order-select-user.modality" | translate}}</th>
+          <th style="width:50px" nzAlign="left" nzRight="0px">
+            {{"orderv3.components.order-select-user.action" | translate}}
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of tableData.rows">
+          <td style="width:102px" nzLeft="0px" nzAlign="left">{{item.name}}</td>
+          <td style="width:185px;word-break: break-all;" nzAlign="left">
+            {{item.email}}
+          </td>
+          <td style="width:82px" nzAlign="left">{{item.serveTeam}}</td>
+          <td style="width:82px" nzAlign="left">{{item.team}}</td>
+          <td style="width:82px" nzAlign="left">{{item.bigArea}}</td>
+          <td style="width:82px" nzAlign="left">{{item.smallArea}}</td>          
+          <td style="width:82px" nzAlign="left">{{item.province}}</td>
+          <td style="width:82px" nzAlign="left">{{item.modality}}</td>
+          <td style="width:50px" nzAlign="left" nzRight="0px">
+            <button nz-button nzSize="small" nzType="primary" (click)="onSelect(item)">
+              {{"orderv3.components.order-select-user.select" | translate}}
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </nz-table>
+    <ng-template #totalTemplate let-total>
+      {{"orderv3.components.order-select-user.total" | translate: { total : tableData.total } }}
+    </ng-template>
+  </div>
+</nz-modal>

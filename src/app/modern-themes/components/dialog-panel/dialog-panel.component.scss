@@ -1,0 +1,22 @@
+.dialog-panel-wrapper {
+  ::ng-deep .ant-modal-body {
+    padding: 0;
+  }
+  ::ng-deep .ant-tabs-content {
+    &.ant-tabs-left-content {
+      padding: 0;
+    }
+  }
+  ::ng-deep .ant-tabs-tab {
+    margin: 0 !important;
+    padding: 12px 24px !important;
+    &.ant-tabs-tab-active {
+      background-color: #ebf0ff;
+    }
+  }
+  ::ng-deep .ant-modal {
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transform: translateY(-50%);
+    top: 50% !important;
+  }
+}

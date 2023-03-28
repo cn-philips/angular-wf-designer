@@ -1,0 +1,23 @@
+:host /deep/ .file-item {
+  margin-bottom: 4px;
+  color: #00CC66;
+  cursor: pointer;
+  line-height: normal;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+  
+}
+.attachment-list{
+  max-width: 200px;
+  margin:0 auto;
+  
+}
+.tc{
+  text-align: center;
+}

@@ -1,0 +1,478 @@
+<form nz-form [formGroup]="formValue" [nzLayout]="'horizontal'" [nzNoColon]="true">
+  <app-form-section *ngIf="!signaturePageOff" class="mtb1rem" [form]="contractSignForm"
+    [title]="'orderv3.components.contract-sign.title' | translate">
+    <form nz-form [formGroup]="contractSignForm" [nzNoColon]="true">
+      <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+        <div nz-col nzXs="24" nzSm="24" nzMd="8" *ngIf="baseInfoFromData.getRawValue().businessModel === 'DIRECT'">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true" nzRequired>
+              {{"orderv3.components.contract-sign.sales-no" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+              <input nz-input formControlName="salesAgreementNo" maxlength="255" />
+              <nz-form-explain
+                *ngIf="contractSignForm.get('salesAgreementNo')?.dirty && contractSignForm.get('salesAgreementNo')?.errors">
+                此选项必填字段
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div nz-col nzXs="24" nzSm="24" nzMd="8"
+          *ngIf="baseInfoFromData.getRawValue().businessModel === 'DISTRIBUTOR'">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true" nzRequired>
+              {{"orderv3.components.contract-sign.order-number" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+              <input nz-input formControlName="purchaseOrderNumber" maxlength="255" />
+              <nz-form-explain
+                *ngIf="contractSignForm.get('purchaseOrderNumber')?.dirty && contractSignForm.get('purchaseOrderNumber')?.errors">
+                此选项必填字段
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div nz-col nzXs="24" nzSm="24" nzMd="8" *ngIf="priceApprovalData.getRawValue().currencySystem === 'USD'">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true" nzRequired>
+              {{"orderv3.components.contract-sign.import-no" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+              <input nz-input formControlName="importAgreementNo" maxlength="255" />
+              <nz-form-explain
+                *ngIf="contractSignForm.get('importAgreementNo')?.dirty && contractSignForm.get('importAgreementNo')?.errors">
+                此选项必填字段
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+      <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+        <div nz-col nzXs="24" nzSm="24" nzMd="8"
+          *ngIf="baseInfoFromData.getRawValue().businessModel === 'DISTRIBUTOR'">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true">
+              {{"orderv3.components.contract-sign.signatory" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+              <input nz-input formControlName="purchaseOrderSignatory" maxlength="255" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div nz-col nzXs="24" nzSm="24" nzMd="8"
+          *ngIf="baseInfoFromData.getRawValue().businessModel === 'DISTRIBUTOR'">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" [nzNoColon]="true">
+              {{"orderv3.components.contract-sign.sign-pos" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="16">
+              <input nz-input formControlName="purchaseOrderSignatoryPosition" maxlength="255" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div nz-col nzXs="24" nzSm="24" nzMd="8" *ngIf="baseInfoFromData.getRawValue().businessModel === 'DIRECT'">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true">
+              {{"orderv3.components.contract-sign.buyer-sign" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+              <input nz-input formControlName="contractBuyerSignatory" maxlength="255" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+      <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+        <div nz-col nzXs="24" nzSm="24" nzMd="8" *ngIf="baseInfoFromData.getRawValue().businessModel === 'DIRECT'">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" [nzNoColon]="true">
+              {{"orderv3.components.contract-sign.buyer-sign-pos" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="16">
+              <input nz-input formControlName="contractBuyerSignatoryPosition" maxlength="255" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div nz-col nzXs="24" nzSm="24" nzMd="8" *ngIf="priceApprovalData.getRawValue().currencySystem === 'USD'">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true">
+              {{"orderv3.components.contract-sign.import-no-sign" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+              <input nz-input formControlName="importAgreementSignName" maxlength="255" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div nz-col nzXs="24" nzSm="24" nzMd="8" *ngIf="priceApprovalData.getRawValue().currencySystem === 'USD'">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" [nzNoColon]="true">
+              {{"orderv3.components.contract-sign.import-no-sign-pos" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="16">
+              <input nz-input formControlName="importAgreementSignPosition" maxlength="255" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+
+      <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+        <div nz-col nzXs="24" nzSm="24" nzMd="8" *ngIf="priceApprovalData.getRawValue().currencySystem === 'USD'">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="6" nzRequired [nzNoColon]="true">
+              {{"orderv3.components.contract-sign.port-ch" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+              <input nz-input formControlName="portDestination" maxlength="255" />
+              <nz-form-explain
+                *ngIf="contractSignForm.get('portDestination')?.dirty && contractSignForm.get('portDestination')?.errors">
+                此选项必填字段
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div nz-col nzXs="24" nzSm="24" nzMd="8" *ngIf="priceApprovalData.getRawValue().currencySystem === 'USD'">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="6" nzRequired [nzNoColon]="true">
+              {{"orderv3.components.contract-sign.port-en" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+              <input nz-input formControlName="portDestinationEn" maxlength="255" />
+              <nz-form-explain
+                *ngIf="contractSignForm.get('portDestinationEn')?.dirty && contractSignForm.get('portDestinationEn')?.errors">
+                此选项必填字段
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div nz-col nzXs="24" nzSm="24" nzMd="8" *ngIf="priceApprovalData.getRawValue().currencySystem === 'USD'">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="6" nzRequired [nzNoColon]="true">
+              {{"orderv3.components.contract-sign.transport" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+              <nz-select formControlName="transportMode">
+                <nz-option *ngFor="let item of transportModeList" [nzValue]="item.label" [nzLabel]="item.label">
+                </nz-option>
+              </nz-select>
+              <nz-form-explain
+                *ngIf="contractSignForm.get('transportMode')?.dirty && contractSignForm.get('transportMode')?.errors">
+                此选项必填字段
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+      <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+        <div nz-col nzXs="24" nzSm="24" nzMd="8" *ngIf="priceApprovalData.getRawValue().currencySystem === 'USD'">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="6" nzRequired [nzNoColon]="true">
+              {{"orderv3.components.contract-sign.price-terms" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+              <input nz-input formControlName="priceTerms" maxlength="255" />
+              <nz-form-explain
+                *ngIf="contractSignForm.get('priceTerms')?.dirty && contractSignForm.get('priceTerms')?.errors">
+                此选项必填字段
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+      <div nz-row nzType="flex" nzJustify="start" *ngIf="priceApprovalData.getRawValue().currencySystem === 'CNY'" nzAlign="middle">
+        <div nz-col nzXs="24" nzSm="24" nzMd="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true">
+              {{"orderv3.components.contract-sign.accountName" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+              <input nz-input formControlName="accountName" maxlength="255" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div nz-col nzXs="24" nzSm="24" nzMd="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true">
+              {{"orderv3.components.contract-sign.bankName" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+              <input nz-input formControlName="bankName" maxlength="255" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div nz-col nzXs="24" nzSm="24" nzMd="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true">
+              {{"orderv3.components.contract-sign.accountNo" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+              <input nz-input formControlName="accountNo" maxlength="255" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+      <div nz-row nzType="flex" nzJustify="start" nzAlign="middle" *ngIf="priceApprovalData.getRawValue().currencySystem === 'CNY'">
+        <div nz-col nzXs="24" nzSm="24" nzMd="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true">
+              {{"orderv3.components.contract-sign.registrationAddress" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+              <input nz-input formControlName="registrationAddress" maxlength="255" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div nz-col nzXs="24" nzSm="24" nzMd="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true">
+              {{"orderv3.components.contract-sign.accountPhoneFax" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+              <input nz-input formControlName="accountPhoneFax" maxlength="255" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div nz-col nzXs="24" nzSm="24" nzMd="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true">
+              {{"orderv3.components.contract-sign.taxNum" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+              <input nz-input formControlName="taxNum" maxlength="255" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+      <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+        <div nz-col nzXs="24" nzSm="24" nzMd="8" *ngIf="priceApprovalData.getRawValue().currencySystem === 'CNY'">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true">
+              {{"orderv3.components.contract-sign.invoice" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+              <input nz-input formControlName="invoiceMailingInformation" maxlength="255" />
+              <nz-form-explain
+                *ngIf="contractSignForm.get('invoiceMailingInformation')?.dirty && contractSignForm.get('invoiceMailingInformation')?.errors">
+                此选项必填字段
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div nz-col nzXs="24" nzSm="24" nzMd="8" *ngIf="priceApprovalData.getRawValue().currencySystem === 'CNY'">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true">
+              {{"orderv3.components.contract-sign.addressee" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+              <input nz-input formControlName="addressee" maxlength="255" />
+              <nz-form-explain
+                *ngIf="contractSignForm.get('addressee')?.dirty && contractSignForm.get('addressee')?.errors">
+                此选项必填字段
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+      <!--    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">-->
+      <!--      <div nz-col nzXs="24" nzSm="24" nzMd="16">-->
+      <!--        <nz-form-item>-->
+      <!--          <nz-form-label nzXs="24" nzSm="24" nzMd="3"  nzRequired>-->
+      <!--            发票邮寄地址-->
+      <!--          </nz-form-label>-->
+      <!--          <nz-form-control nzXs="24" nzSm="24" nzMd="21">-->
+      <!--            <input-->
+      <!--              nz-input-->
+      <!--              -->
+      <!--              formControlName="invoiceMailingInformation"-->
+      <!--              maxlength="255" />-->
+      <!--          </nz-form-control>-->
+      <!--        </nz-form-item>-->
+      <!--      </div>-->
+      <!--    </div>-->
+      <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+        <div nz-col nzXs="24" nzSm="24" nzMd="8" *ngIf="priceApprovalData.getRawValue().currencySystem === 'CNY'">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true">
+              {{"orderv3.components.contract-sign.addressee-tel" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+              <input nz-input formControlName="addresseeTel" maxlength="255" />
+              <nz-form-explain
+                *ngIf="contractSignForm.get('addresseeTel')?.dirty && contractSignForm.get('addresseeTel')?.errors">
+                此选项必填字段
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+    </form>
+  </app-form-section>
+  <app-form-section class="mtb1rem" [form]="signFileForm"
+    [title]="'orderv3.components.contract-sign.title2' | translate">
+    <form nz-form [formGroup]="signFileForm">
+      <div *ngIf="!signaturePageOff" nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="8" *ngIf="bg === 'PD&IGT'">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true">
+              {{"orderv3.components.contract-sign.zsl-not-file" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+              <shared-upload-file [type]="null" [title]="'上传'" formControlName="zslNotSignedFile">
+              </shared-upload-file>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div nz-col nzXs="24" nzSm="24" nzMd="8" *ngIf="bg === 'PD&IGT'">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true">
+              {{"orderv3.components.contract-sign.zsl-file" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+              <!-- <shared-upload-file [type]="null" [title]="'上传'" formControlName="zslSignedFile">
+              </shared-upload-file> -->
+              <esign-button></esign-button>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div nz-col nzXs="24" nzSm="24" nzMd="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="6" nzRequired [nzNoColon]="true">
+              {{"orderv3.components.contract-sign.confirmed-date" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+              <nz-date-picker formControlName="contractConfirmedDate"></nz-date-picker>
+              <nz-form-explain
+                *ngIf="signFileForm.get('contractConfirmedDate')?.dirty && signFileForm.get('contractConfirmedDate')?.errors">
+                此选项必填字段
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div nz-col nzXs="24" nzSm="24" nzMd="8" *appPermissionsIf="'contract_file'">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="6" nzRequired [nzNoColon]="true">
+              {{"orderv3.components.contract-sign.contract-file" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+              <shared-upload-file [type]="null"
+                [title]="formValue.getRawValue().processStatus === 'ecos_oit_order_sign'?'上传合同文件':'更新合同文件'"
+                formControlName="contractFile">
+              </shared-upload-file>
+              <nz-form-explain *ngIf="signFileForm.get('contractFile')?.dirty &&signFileForm.get('contractFile')?.errors">
+                <ng-container *ngIf="signFileForm.get('contractFile')?.hasError('required') ">此选项必填字段</ng-container>
+                <ng-container *ngIf="signFileForm.get('contractFile')?.hasError('contractFileform')">文件未上传完成!</ng-container>
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+
+      <div *ngIf="!signaturePageOff" nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+        <div nz-col nzXs="24" nzSm="24" nzMd="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="6" nzRequired>
+              {{"orderv3.components.contract-sign.uploaded" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+              <nz-radio-group formControlName="contractUploaded">
+                <label nz-radio nzValue="1">是</label>
+                <label nz-radio nzValue="0">否</label>
+              </nz-radio-group>
+              <nz-form-explain
+                *ngIf="signFileForm.get('contractUploaded')?.dirty && signFileForm.get('contractUploaded')?.errors">
+                此选项必填字段
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div nz-col nzXs="24" nzSm="24" nzMd="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true">
+              {{"orderv3.components.contract-sign.support-file" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+              <shared-upload-file [type]="null" [title]="'上传'" formControlName="supportFile">
+              </shared-upload-file>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div nz-col nzXs="24" nzSm="24" nzMd="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true"> {{"orderv3.components.contract-sign.remark" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+              <textarea nz-input oninput="if(value.length>255)value=value.slice(0,255)" placeholder=""
+                nzPlacement="topLeft" [nzAutosize]="{ minRows: 1, maxRows: 6 }" formControlName="remark"></textarea>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+      <div nz-row nzType="flex" nzJustify="start" nzAlign="top">
+        <div nz-col nzXs="24" nzSm="24" nzMd="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzRequired]="applySignatureBtn" [nzNoColon]="true">
+              {{"orderv3.components.contract-sign.zslNot-signedFile" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+              <signature-upload
+                formControlName="zslNotSignedFile"
+                [type]="null"
+                [title]="'上传'"
+                (fileDeleted)="handleSourceFileDeleted($event)"
+              >
+              </signature-upload>
+              <nz-form-explain style="color:red"
+                *ngIf="signFileForm.get('zslNotSignedFile')?.dirty && signFileForm.get('zslNotSignedFile')?.errors">
+                此选项必填字段
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div nz-col nzXs="24" nzSm="24" nzMd="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzRequired]="approvalSigatureBtn" [nzNoColon]="true">
+              {{"orderv3.components.contract-sign.zsl-SignedFile" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+              <esign-button
+                formControlName="zslSignedFile"
+                [signFileForm]="signFileForm"
+                (fileSigned)="handleFileSigned($event)"
+                (fileDeleted)="handleFileDeleted($event)"
+              ></esign-button>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+      <div nz-row nzType="flex" nzJustify="start" nzAlign="middle" *appPermissionsIf="'contract_template'">
+        <div nz-col nzXs="24" nzSm="24" nzMd="24">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="2" [nzNoColon]="true">
+              {{"orderv3.components.contract-sign.contract-temp" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="21">
+              <ng-container>
+                <div *ngFor="let item of baseInfoFromData.getRawValue().templateList">
+                  <button class="down"
+                    nz-button nzType="link"
+                    (click)="contractTemplate(item)">
+                    {{item.templateName}}
+                  </button>
+                </div>
+              </ng-container>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+    </form>
+  </app-form-section>
+</form>
+<!-- 合同模板控件-->
+<div class="showDiag" *ngIf="isPdf">
+  <div class="showDiag-box">
+    <div class="showDiag-box-title">
+      <div>查看{{title}}</div>
+      <i nz-icon nzType="close" class="close" (click)="isPdfCancel()" nzTheme="outline"></i>
+    </div>
+    <app-pdfpreview [padData]="pdfSRC"></app-pdfpreview>
+  </div>
+</div>

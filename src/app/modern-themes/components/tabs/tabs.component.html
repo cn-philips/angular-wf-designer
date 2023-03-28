@@ -1,0 +1,53 @@
+<div class="tab-wrapper">
+  <div
+    [ngClass]="{ 'tab-scroll-btn': true, 'left-scroll-btn': true }"
+    (click)="scrollPre()"
+    *ngIf="this.hasScroll"
+  >
+    <i nz-icon nzType="left" nzTheme="outline"></i>
+  </div>
+  <div [ngClass]="{ 'tab-scroll-wrapper': true, hasScroll: this.hasScroll }">
+    <div
+      [ngClass]="{
+        'tab-scroll-inner-wrapper': true
+      }"
+      [ngStyle]="{ left: -this.left + 'px' }"
+      #tabInnerWrapper
+    >
+      <div
+        *ngFor="let tab of tabs; let index = index"
+        [ngClass]="{
+          active: this.activeIndex === index,
+          tab: true,
+          'p-border-list-item': true
+        }"
+        (click)="active(index, $event)"
+      >
+        <span>{{ tab.title }} <span *ngIf="tab.count>0">({{tab.count}})</span></span>
+      </div>
+    </div>
+  </div>
+  <div
+    [ngClass]="{ 'tab-scroll-btn': true, 'right-scroll-btn': true }"
+    (click)="scrollNext()"
+    *ngIf="this.hasScroll"
+  >
+    <i nz-icon nzType="right" nzTheme="outline"></i>
+  </div>
+</div>
+<div class="tab-content-wrapper">
+  <div
+    *ngFor="let tab of tabs; let index = index"
+    [ngClass]="{
+      'tab-content': true,
+      active: this.activeIndex === index,
+      fromRight: this.activeIndex === index && this.previousIndex < index,
+      fromLeft: this.activeIndex === index && this.previousIndex > index,
+      leaving: this.leavingIndex === index,
+      toLeft: this.leavingIndex >= 0 && this.previousIndex > index,
+      toRight: this.leavingIndex >= 0 && this.previousIndex < index
+    }"
+  >
+    <ng-template *ngTemplateOutlet="tab.tpl"> </ng-template>
+  </div>
+</div>

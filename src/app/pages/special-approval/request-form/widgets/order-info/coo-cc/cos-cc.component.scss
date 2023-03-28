@@ -1,0 +1,57 @@
+:host /deep/ {
+  .ant-table-footer {
+    border: none!important;
+    padding: 0;
+  }
+  .ant-input-number-handler-wrap {
+    display: none;
+  }
+  .ant-input-group-addon {
+    border: none;
+    padding-right: 0;
+    background-color: #fff;
+  }
+  .ant-input-number {
+    border: none;
+    box-shadow: none!important;
+  }
+  .ant-input-number-input:disabled {
+    border-bottom: 0.125rem #d4dbdf solid;
+  }
+
+  .ant-form-item-label {
+    white-space: normal;
+  }
+
+  .ant-table-row td {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  .btn-wrap  {
+    button {
+      display: inline-flex;
+      align-items: center;
+      padding-left: 0;
+      color: #337fbf;
+    }
+  }
+  .operation-wrap {
+    z-index: 100;
+    button {
+      padding-right: 0;
+    }
+  }
+
+  .download-file-wrap {
+    display: flex;
+    align-items: center;
+  }
+
+  .download-btn {
+    cursor: pointer;
+    margin-left: 4px;
+    color: #00CC66;
+    white-space: nowrap;
+  }
+}

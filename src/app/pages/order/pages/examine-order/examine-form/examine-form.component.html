@@ -1,0 +1,154 @@
+<form nz-form [formGroup]="validateForm">
+  <app-apploading [load]="load"></app-apploading>
+  <div *ngIf="isshowOrder()" nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+    <div nz-col nzSpan="24">
+      <nz-form-item>
+        <nz-form-label [nzSpan]="3" [nzNoColon]="true"  nzFor="email"></nz-form-label>
+        <nz-form-control [nzSpan]="14">
+          <div class="tips">
+              <div>提示:</div>
+              -此进单已有合同概要表，不能取消!
+          </div>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+  <div *ngIf="isVisibleDate" nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+    <div nz-col nzSpan="24">
+      <nz-form-item>
+        <nz-form-label [nzSpan]="3" [nzNoColon]="true"  nzFor="email"></nz-form-label>
+        <nz-form-control [nzSpan]="14" nz-tooltip [nzTitle]="remark">
+          <div class="tips">
+              <div>提示:</div>
+              注意：经销商DDP 有效期为{{this.dataBase.contractEndDate}}，当前已过有效期，请考虑是否审批通过
+          </div>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+  <div  *ngIf="isVisibleDateIepool" nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzSpan="24">
+        <nz-form-item>
+          <nz-form-label [nzSpan]="3" [nzNoColon]="true"  nzFor="email"></nz-form-label>
+          <nz-form-control [nzSpan]="14" nz-tooltip [nzTitle]="remark">
+            <div class="tips">
+                <div>提示:</div>
+                注意：外贸公司DDP 有效期为{{this.dataBase.poolEndDate}}，当前已过有效期，请考虑是否审批通过
+            </div>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+  </div>
+  <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+    <div nz-col nzSpan="24">
+      <nz-form-item>
+        <nz-form-label [nzSm]="5" [nzXs]="24" style="min-width: 160px"><span>Remarks</span><br>备注</nz-form-label>
+        <nz-form-control [nzSm]="8" [nzXs]="24">
+          <textarea nz-input oninput="if(value.length>255)value=value.slice(0,255)" nz-input placeholder=""
+            formControlName="remark" [(ngModel)]="params.remark" [nzAutosize]="{ minRows: 3, maxRows: 6 }"></textarea>
+          <div>还可以输入:{{params.remark.length}}/{{textLen}}</div>
+          <nz-form-explain *ngIf="validateForm.get('remark')?.dirty && validateForm.get('remark')?.errors">
+           {{this.cannel?'请填写取消理由':'请填写拒绝理由'}}
+          </nz-form-explain>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+  <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+    <div nz-col nzSpan="24">
+      <nz-form-item>
+        <nz-form-label [nzSm]="5" [nzXs]="24">Review Supporting Documents<br>审核支持文件</nz-form-label>
+        <nz-form-control [nzSm]="14" [nzXs]="24">
+          <div class="maxuploadto">
+          <nz-upload [(nzFileList)]="fileFileList" [nzBeforeUpload]="fileBeforeUpload" [nzLimit]="1"
+            [nzPreview]="dwonLoad">
+            <button [disabled]="dataBase.detail.flag == 1" nz-button style="margin-top:20px"><i nz-icon
+                nzType="upload"></i><span>Upload 上传附件</span></button>
+          </nz-upload>
+          </div>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+  <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+    <div
+      *ngIf="dataBase.detail.status === 'DFBSH' && dataBase.detail.taskID === 'paymentProvision'&&roleCode==='C&C Leader'"
+      nz-col nzSpan="24">
+      <nz-form-item>
+        <nz-form-label [nzSm]="4" [nzXs]="24" nzRequired nzFor="paymentProvisionRadio">是否需要下一级审核</nz-form-label>
+        <nz-form-control [nzSm]="14" [nzXs]="24">
+          <nz-radio-group formControlName="paymentProvisionRadio" [(ngModel)]="params.paymentProvisionRadio">
+            <label nz-radio nzValue="1">Y 是</label>
+            <label nz-radio nzValue="0">N 否</label>
+          </nz-radio-group>
+          <nz-form-explain
+            *ngIf="validateForm.get('paymentProvisionRadio')?.dirty && validateForm.get('paymentProvisionRadio')?.errors">
+            请选择是否需要下一级审核
+          </nz-form-explain>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+  <!-- <div *ngIf="dataBase.detail.status === 'DFBSH'" nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+    <div nz-col nzSpan="12">
+      <nz-form-item>
+        <nz-form-label [nzSm]="6" [nzXs]="24">当前审核操作</nz-form-label>
+        <nz-form-control [nzSm]="14" [nzXs]="24">
+          <input type="text" class="form-control" disabled value="" formControlName="taskID"
+            [(ngModel)]="DfbshObj[params.taskID]">
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div> -->
+  <div nz-row nzType="flex" nzJustify="end" nzAlign="middle">
+    <div nz-col nzXs="24" nzSm="24" nzMd="16">
+      <nz-form-item style="text-align: right;">
+        <!-- <button *ngIf="dataBase.detail.flag==0&&withdraw&&dataBase.detail.status=='DHTOASH'" nz-button [nzType]="'primary'" style="margin-left: 10px;" nz-popconfirm
+          nzTitle="你确定要执行取消进单的操作?" (nzOnConfirm)="sumbitBack(1)">取消进单</button> -->
+
+          <button [disabled]="(dataBase.detail.status=='cancel_oa_leader_approval'||dataBase.detail.status=='cancel_sales_approval')&&!withdraw" *ngIf="dataBase.detail.flag==0" nz-button [nzType]="'primary'" style="margin-left: 10px;" nz-popconfirm
+          [nzTitle]="dataBase.detail.status=='DOAJDQR'?'你确定要执行确认的操作?':'你确定要执行通过的操作?'" (nzOnConfirm)="confirmApproval(validateForm.value, 1)"
+          (nzOnCancel)="cancelAction()">{{this.dataBase.detail.status=="DOAJDQR"?"Order Confirm 进单确认":"Approve 审核通过"}}</button>
+        <button *ngIf="dataBase.detail.flag==0&&dataBase.detail.status!='DOAJDQR'" nz-button [nzType]="'primary'" style="margin-left: 10px;" nz-popconfirm
+          nzTitle="你确定要执行拒绝的操作?" (nzOnConfirm)="confirmApproval(validateForm.value, 0)"
+          (nzOnCancel)="cancelAction()">Refuse 拒绝</button>
+          <nz-dropdown [nzPlacement]="'bottomRight'" *ngIf="dataBase.detail.flag==0&&dataBase.detail.status=='DHTOASH'&&!dataBase.hsId">
+            <button nz-button nz-dropdown><i class="tranf90" nz-icon nzType="more" nzTheme="outline"></i></button>
+            <ul nz-menu>
+              <li *ngIf="withdraw" nz-menu-item>
+                <a href="javascript:" (click)="backOrder()">Return to Order Preparation Form 退回到进单准备表</a>
+              </li>
+              <li nz-menu-item>
+                <a href="javascript:" (click)="closeContract()">Close Contract Summary 关闭合同概要表</a>
+              </li>
+            </ul>
+            </nz-dropdown>
+            <nz-dropdown [nzPlacement]="'bottomRight'" *ngIf="dataBase.detail.flag==0&&dataBase.detail.status=='DOAJDQR'">
+              <button nz-button nz-dropdown><i class="tranf90" nz-icon nzType="more" nzTheme="outline"></i></button>
+              <ul nz-menu>
+                <li nz-menu-item>
+                  <a href="javascript:" (click)="backContract()">Return to Contract Summary 退回到合同概要表</a>
+                </li>
+              </ul>
+            </nz-dropdown>
+      </nz-form-item>
+    </div>
+  </div>
+</form>
+<nz-modal [(nzVisible)]="isAgres" nzWidth="650px" nzTitle="Remind 提示" (nzOnOk)="isAgregentOk()" (nzOnCancel)="isAgreCancels()"[nzFooter]="modalFooter_Remind" >
+  <app-confirm #child [infor]="showData" ></app-confirm>
+  <ng-template #modalFooter_Remind>
+    <button nz-button nzType="default" (click)="isAgreCancels()">Cancel 取消</button>
+    <button nz-button nzType="primary" (click)="isAgregentOk()">OK 确定</button>
+  </ng-template>
+</nz-modal>
+<nz-modal [(nzVisible)]="isShowDate" nzWidth="650px" nzTitle="Remind 提醒" [nzFooter]="null" (nzOnCancel)="isshowDateCancel()">
+  <div>
+    经销商DDP有效期为{{this.dataBase.contractEndDate}}日，当前已过有效期，请退回
+  </div>
+</nz-modal>
+<nz-modal [(nzVisible)]="isShowDates" nzWidth="650px" nzTitle="提醒" [nzFooter]="null" (nzOnCancel)="isshowDateCancels()">
+  <div>
+    外贸公司DDP有效期为{{dataBase.poolEndDate}}日，当前已过有效期，请退回
+  </div>
+</nz-modal>

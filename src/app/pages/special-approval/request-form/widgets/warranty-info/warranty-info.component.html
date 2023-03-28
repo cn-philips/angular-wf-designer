@@ -1,0 +1,20 @@
+<nz-alert
+  nzType="info"
+  [nzMessage]="startDateMessage" 
+  nzShowIcon
+></nz-alert>
+<ng-template #startDateMessage>
+  <div>预计保修开始日期填写参考：</div>
+  <div style="margin-left: 16px;">Direct order：参考第一例病人可临床使用日期;</div>
+  <div style="margin-left: 16px;">Indirect order：</div>
+  <div style="margin-left: 32px;">Philips installation：</div>
+  <div style="margin-left: 48px;">PD&IGT/CC：参考第一例病人可临床使用日期;</div>
+  <div style="margin-left: 48px;">US: 参考工厂发货时间;</div>
+  <div style="margin-left: 32px;">Distributor installation：</div>
+  <div style="margin-left: 48px;">BV: 参考第一例病人可临床使用日期；</div>
+  <div style="margin-left: 48px;">DXR new sales mode：进口参考到港日期，国产参考发货时间；</div>
+  <div style="margin-left: 48px;">US/CC：参考开票时间;</div>
+</ng-template>
+<nz-card class="mtb1rem" nzTitle="延保信息">
+  <special-approval-product-list [isWarranty]="true" [orderInfo]="orderInfo" [editable]="editable"></special-approval-product-list>
+</nz-card>

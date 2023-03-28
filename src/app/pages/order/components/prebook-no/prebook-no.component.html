@@ -1,0 +1,124 @@
+<div>
+  <ng-container>
+      <div>
+        <div nz-row class="seachs">
+            <div nz-row>
+                <div nz-col nzSpan="24">
+                    <nz-form-item>
+                        <nz-form-label [nzSpan]="4" nzFor="email">Deal From ID</nz-form-label>
+                        <nz-form-control [nzSpan]="7">                          
+                            <input nz-input [disabled]="pageParam.dealformOff" nz-tooltip [(ngModel)]="pageParam.dealFormId" type="text" class="form-control"> 
+                        </nz-form-control> 
+                      <nz-form-label [nzSpan]="4" nzFor="email">End User Name</nz-form-label>
+                      <nz-form-control [nzSpan]="7">
+                            <input nz-input disabled="true" [(ngModel)]="pageParam.endUserName" nz-tooltip type="text" class="form-control">
+                      </nz-form-control>
+                  </nz-form-item>
+                </div>
+            </div>
+            <div nz-row>
+              <div nz-col nzSpan="24">
+                  <nz-form-item>
+                      <nz-form-label [nzSpan]="4" nzFor="email">经销商名称</nz-form-label>
+                      <nz-form-control [nzSpan]="7">
+                          <input nz-input nz-tooltip type="text" nzAllowClear [(ngModel)]="pageParam.distributor" class="form-control">
+                      </nz-form-control>
+                    <nz-form-label [nzSpan]="4" nzFor="email">Market Bundle Name</nz-form-label>
+                    <nz-form-control [nzSpan]="7">
+                          <input nz-input disabled="true" nz-tooltip [(ngModel)]="pageParam.marketBundleName"   type="text" class="form-control">
+                    </nz-form-control>
+                </nz-form-item>
+              </div>
+            </div>
+            <div nz-row>
+              <div nz-col nzSpan="24">
+                  <nz-form-item>
+                      <nz-form-label [nzSpan]="4" nzFor="email">外贸公司</nz-form-label>
+                      <nz-form-control [nzSpan]="7">
+                          <input nz-input nz-tooltip nzAllowClear type="text" [(ngModel)]="pageParam.foreignTradeCompany" class="form-control">
+                      </nz-form-control>
+                </nz-form-item>
+              </div>
+            </div>
+          <div nz-row nzSpan="24" nzType="flex" nzJustify="center" nzAlign="middle">
+            <button  class="ml10 mb10" [nzLoading]="nzLoading" nz-button nzType="primary" (click)="agentInit()" [nzSize]="6">查询</button>
+         </div>
+        </div>
+        <div class="tabbox">
+            <nz-table #basicTabled [nzData]="agentDatas"
+            [nzShowTotal]="totalTemplate"
+            [nzPageSizeOptions]="[5, 10, 20, 30, 40, 50 ]"
+            [nzShowQuickJumper]="true"
+            [nzShowSizeChanger]="true" [nzScroll]="{ x: '1500px' }" [nzFrontPagination]="false" [nzTotal]="pageParam.total" (nzPageIndexChange)="changePageIndex($event)"
+            (nzPageSizeChange)="changePageSize($event)" [nzPageIndex]="pageParam.pageNo" [nzPageSize]="pageParam.pageSize">
+                <thead>
+                    <tr>
+                        <th nzWidth="40px" nzLeft="0px" nzAlign="left">&nbsp;</th>
+                        <th nzWidth="180px" nzAlign="center">Pre-book ID</th>
+                        <th nzWidth="180px" nzAlign="center">业务模式</th>
+                        <th nzWidth="180px" nzAlign="center">Deal From ID</th>
+                        <th nzWidth="100px" nzAlign="center">Simulation ID</th>
+                        <th nzWidth="250px" nzAlign="center">Market Bundle Name</th>
+                        <th nzWidth="250px" nzAlign="center">产品型号</th>
+                        <th nzWidth="250px" nzAlign="center">
+                          <div class="tc">End User Name</div>
+                          <div class="tc">医院名称</div>
+                        </th>
+                        <th nzWidth="180px" nzAlign="center">
+                          <div class="tc">Dealer Name</div>
+                          <div class="tc">经销商名称</div>
+                        </th>
+                        <th nzWidth="180px" nzAlign="center">
+                          <div class="tc">I/E Company</div>
+                          <div class="tc">外贸公司</div>
+                        </th>
+                        <th nzWidth="180px" nzAlign="center">
+                          <div class="tc">Created Date</div>
+                          <div class="tc">创建日期</div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let data of basicTabled.data let m=index">
+                        <td nzLeft="0px" nzAlign="left">
+                            <label nz-radio [ngModel]="data.radio" [disabled]="data.disa" (ngModelChange)="agentChange(m)"></label>
+                        </td>
+                        <td  nzWidth="200px" nzAlign="center" style="word-break: break-all;">
+                         <div>
+                          {{data.referenceId}}
+                         </div>
+                        </td>
+                        <td nzWidth="100px" nzAlign="center">{{data.businessModel|ProcessModel}}</td>
+                        <td nzWidth="250px" nzAlign="center">
+                          <div>{{data.dealFormId}}</div>
+                        </td>
+                        <td nzWidth="100px" nzAlign="center">
+                          {{data.simulationId}}
+                        </td>
+                        <td nzWidth="100px" nzAlign="center">
+                          {{data.marketBundleName}}
+                        </td>
+                        <td nzWidth="100px" nzAlign="center">
+                          {{data.modelNumber}}
+                        </td>
+                        <td nzWidth="100px" nzAlign="center">
+                          {{data.endUserName}}
+                        </td>
+                        <td nzWidth="100px" nzAlign="center">
+                          {{data.distributor}}
+                        </td>
+                        <td nzWidth="100px" nzAlign="center">
+                          {{data.foreignTradeCompany}}
+                        </td>
+                        <td nzWidth="100px" nzAlign="center">
+                          {{data.createDate|TimeFormatePipeNow}}
+                        </td>
+                    </tr>
+                </tbody>
+            </nz-table>
+            <ng-template #totalTemplate let-total> 数据总条数 {{ total }} </ng-template>
+         </div>
+      </div>
+    </ng-container>
+  </div>
+

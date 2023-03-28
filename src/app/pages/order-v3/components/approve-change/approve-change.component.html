@@ -1,0 +1,167 @@
+<app-form-section  title="{{'orderv3.components.approve-change.changeInfo.title' | translate}}">
+  <nz-spin nzTip="Loading..." [nzSpinning]="load">
+    <form nz-form [formGroup]="changOrderFrom" [nzNoColon]="true">
+      <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+        <div nz-col nzXs="24" nzSm="24" nzMd="8">
+          <nz-form-item style="margin-bottom: 6px">
+            <nz-form-label nzXs="24" nzSm="24" nzMd="6" nzRequired>{{'orderv3.components.approve-change.changeInfo.changeReason' | translate}}</nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+              <nz-select *ngIf="!changOrderFrom.get('reason').disabled" #ref style="width: 100%" (ngModelChange)="refuseReasonChang($event)" nzShowSearch
+                nzPlaceHolder="" formControlName="reason">
+                <nz-option nzCustomContent *ngFor="let item of reasonList" nz-tooltip [nzTitle]="item.orderChange" [nzValue]="item.orderChange" [nzLabel]="item.orderChange">
+                  <div nz-tooltip class="options" tooltip [nzTitle]="item.orderChange">{{item.orderChange}}</div>
+                </nz-option>
+              </nz-select>
+              <input *ngIf="changOrderFrom.get('reason').disabled" nz-input formControlName="reason" maxlength="255" />
+              <nz-form-explain *ngIf="changOrderFrom.get('reason')?.dirty &&changOrderFrom.get('reason')?.errors">
+                <ng-container *ngIf="changOrderFrom.get('reason')?.hasError('required')">
+                  此选项必填字段</ng-container>
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+      <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+        <div nz-col nzXs="24" nzSm="24" nzMd="8">
+          <nz-form-item style="margin-bottom: 6px">
+            <nz-form-label nzXs="24" nzSm="24" nzMd="6">{{'orderv3.components.change-order-popup.describes' | translate}}</nz-form-label>
+            <nz-form-control nz-tooltip   [nzTitle]="changOrderFrom.getRawValue().describes" nzXs="24" nzSm="24" nzMd="18">
+              <textarea nz-input oninput="if(value.length>255)value=value.slice(0,255)" placeholder=""               
+                formControlName="describes"></textarea>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+      <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+        <div nz-col nzXs="24" nzSm="24" nzMd="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="6">{{'orderv3.components.approve-change.changeInfo.suppleInstruct' | translate}}</nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+              <textarea nz-input oninput="if(value.length>255)value=value.slice(0,255)" nz-input placeholder=""
+                formControlName="supportRemark" [nzAutosize]="{ minRows: 1, maxRows: 6 }"></textarea>
+              <ng-container *ngIf="changOrderFrom.getRawValue().supportRemark">
+                <div>还可以输入:{{changOrderFrom.getRawValue().supportRemark.length}}/255</div>
+              </ng-container>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+      <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+        <div nz-col nzXs="24" nzSm="24" nzMd="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="6">{{'orderv3.components.approve-change.changeInfo.fileSupport' | translate}}</nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+              <div class="maxuploadto">
+                <shared-upload-file
+                  [title]="'上传附件'"
+                  [type]="null"
+                  formControlName="changeOrderFile">
+                </shared-upload-file>
+              </div>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+      <!-- <div *ngIf="changOrderFrom.getRawValue().changeDealForm!=null" nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+        <div nz-col nzXs="24" nzSm="24" nzMd="8">
+          <nz-form-item style="margin-bottom: 6px">
+            <nz-form-label nzXs="24" nzSm="24" nzMd="6" nzNoColon="true"></nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+              <nz-form-control nzSm="24" nzXl="24" nzXXl="24">
+                <label nz-checkbox formControlName="changeDealForm">{{'orderv3.components.approve-change.changeInfo.changeDealForm' | translate}}</label>
+              </nz-form-control>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div> -->
+    </form>
+  </nz-spin>
+</app-form-section>
+<app-form-section class="mtb1rem" *ngIf="status=='ecos_oit_order_change_approval'||status == 'ecos_oit_order_change_first_approval'
+||status == 'ecos_oit_order_change_second_approval'"  title="{{'orderv3.components.approve-change.changeApproval.title' | translate}}">
+  <form nz-form [formGroup]="examineFrom" [nzNoColon]="true">
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+        <nz-form-item style="margin-bottom: 6px">
+          <nz-form-label nzXs="24" nzSm="24" nzMd="6">{{'orderv3.components.approve-change.changeApproval.comments' | translate}}</nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+            <textarea nz-input oninput="if(value.length>255)value=value.slice(0,255)" nz-input placeholder=""
+              formControlName="comments" [nzAutosize]="{ minRows: 1, maxRows: 6 }"></textarea>
+
+            <ng-container *ngIf="examineFrom.getRawValue().comments">
+              <div>还可以输入:{{examineFrom.getRawValue().comments.length}}/255</div>
+            </ng-container>
+            <nz-form-explain
+                *ngIf="
+                examineFrom.get('comments')?.dirty &&
+                examineFrom.get('comments')?.errors
+                "
+              >
+                请填写拒绝理由
+              </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="6">{{'orderv3.components.approve-change.changeApproval.attachment' | translate}}</nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+            <div class="maxuploadto">
+              <shared-upload-file
+                [title]="'上传附件'"
+                [type]="null"
+                formControlName="attachmentIds">
+              </shared-upload-file>
+            </div>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+  </form>
+</app-form-section>
+<app-form-section class="mtb1rem"  title="{{'orderv3.components.approve-change.changeRecord.title' | translate}}">
+  <nz-table #fixedTable [nzData]="recordData" [nzFrontPagination]="false" [nzShowPagination]="false"
+  [nzScroll]="{x:'1150px'}">
+  <thead>
+    <tr>
+      <th nzWidth="100px" nzLeft="0px" [nzAlign]="nzAlign">{{'orderv3.components.approve-change.changeRecord.version' | translate}}</th>
+      <th nzWidth="200px" [nzAlign]="nzAlign">{{'orderv3.components.approve-change.changeRecord.referenceId' | translate}}</th>
+      <th nzWidth="200px" [nzAlign]="nzAlign">{{'orderv3.components.approve-change.changeRecord.reason' | translate}}</th>
+      <th nzWidth="200px" [nzAlign]="nzAlign">{{'orderv3.components.approve-change.changeRecord.supportRemark' | translate}}</th>
+      <th nzWidth="250px" [nzAlign]="nzAlign">{{'orderv3.components.approve-change.changeRecord.changeOrderFile' | translate}}</th>
+      <!-- <th nzWidth="300px" [nzAlign]="nzAlign">{{'orderv3.components.approve-change.changeRecord.changeDealForm' | translate}}</th> -->
+      <th nzWidth="100px" [nzAlign]="nzAlign">{{'orderv3.components.approve-change.changeRecord.status' | translate}}</th>
+      <th nzWidth="200px" [nzAlign]="nzAlign">{{'orderv3.components.approve-change.changeRecord.createTime' | translate}}</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr *ngFor="let data of fixedTable.data;let i=index" >
+        <ng-container>
+        <td nzWidth="100px" nzLeft="0px"  style="word-break: break-word" [nzAlign]="nzAlign">
+          <button class="down" nz-tooltip  nz-button nzType="link" (click)="gotoOit(data)">
+             V{{i}}
+          </button>
+        </td>
+        <td nzWidth="200px" [nzAlign]="nzAlign">{{data.referenceId}}</td>
+        <td nzWidth="200px" [nzAlign]="nzAlign">{{data.reason}}</td>
+        <td nzWidth="200px" [nzAlign]="nzAlign">{{data.supportRemark}}</td>
+        <td nzWidth="250px" style="word-break: break-all" [nzAlign]="nzAlign">
+          <div class="attachment-list" *ngIf="data.changeOrderFile && data.changeOrderFile.length > 0">
+            <div *ngFor="let file of data.changeOrderFile" class="file-item" (click)="onDownloadFile(file)" [title]="file.fileName">
+              {{ file.fileName }}
+            </div>
+          </div>
+        </td>
+        <!-- <td nzWidth="300px" [nzAlign]="nzAlign">{{data.changeDealForm!=null?(data.changeDealForm==true?'是':'否'):""}}</td> -->
+        <td nzWidth="100px" [nzAlign]="nzAlign">{{data.done|StatusProject}}</td>
+        <td nzWidth="200px"  [nzAlign]="nzAlign">{{data.createTime?(data.createTime|TimeFormatePipeNow:true):""}}</td>
+      </ng-container>
+      </tr>
+  </tbody>
+  </nz-table>
+</app-form-section>
+<app-form-section class="mtb1rem" title="{{'orderv3.components.approve-change.approveHistory.title' | translate}}">
+  <shared-approval-history [procInstId]="procInstId"></shared-approval-history>
+</app-form-section>

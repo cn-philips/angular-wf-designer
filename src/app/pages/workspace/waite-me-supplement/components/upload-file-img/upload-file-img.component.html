@@ -1,0 +1,18 @@
+<nz-upload [nzType]="type" [nzMultiple]="true" [nzLimit]="limit" [nzCustomRequest]="onUploadFile"
+  [nzBeforeUpload]="onBeforeUpload" [(nzFileList)]="fileList"  [nzDisabled]="disabled" [nzRemove]="onRemoveFile" nzListType="picture-card" [nzShowUploadList]="true" [nzPreview]="handlePreview">
+  <div>
+    <span nz-icon nzType="plus"></span>
+    <div style="margin-top: 8px">Upload</div>
+  </div>
+</nz-upload>
+<nz-modal
+  [nzVisible]="previewVisible"
+  [nzContent]="modalContent"
+  [nzFooter]="null"
+  (nzOnCancel)="previewVisible = false"
+ >
+  <ng-template #modalContent>
+    <img [src]="previewImage" [ngStyle]="{ width: '100%' }" />
+  </ng-template>
+</nz-modal>
+<app-apploading [load]="load"></app-apploading>

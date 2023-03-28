@@ -1,0 +1,35 @@
+/deep/ footer {
+  position: fixed;
+  bottom: 0;
+  left: 250px;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 4rem;
+  background-color: #fff;
+  z-index: 100;
+  button {
+    margin: 0 8px;
+  }
+}
+
+/deep/ .edit-btn {
+  background-color: red;
+  color: #fff;
+  border: none;
+  &.absolute {
+    position: absolute;
+    top: 2px;
+  }
+} 
+
+/deep/ input[readonly] {
+  &.ant-calendar-picker-input {
+    cursor: pointer;
+  }
+}
+
+/deep/ .card-body {
+  background-color: #fff;
+}

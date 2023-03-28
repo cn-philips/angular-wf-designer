@@ -1,0 +1,48 @@
+<nz-modal
+  [(nzVisible)]="visible"
+  nzWidth="1000px"
+  nzTitle="选择需关联的OIT Order"
+  [nzFooter]="null"
+  (nzOnCancel)="onHide()"
+>
+  <div class="table-container">
+    <nz-table
+      [nzData]="tableData.rows"
+      [nzLoading]="tableData.loading"
+      [nzFrontPagination]="false"
+      [nzShowPagination]="false"
+      [nzScroll]="{ x: '1500px' }"
+    >
+      <thead>
+        <tr>
+          <th nzAlign="left">Deal Form ID</th>
+          <th nzAlign="left">Opportunity ID</th>
+          <th nzAlign="left">MarketBundle Name</th>
+          <th nzAlign="left">MarketBundle数量</th>
+          <th nzAlign="left">Reference Id</th>
+          <th nzAlign="left">OIT Order状态</th>
+          <th nzAlign="left">OIT Order SO#</th>
+          <th nzRight="0px" nzWidth="100px">操作</th>
+          
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let item of tableData.rows">
+          <td nzAlign="left">{{ item.dealFormId }}</td>
+          <td nzAlign="left">{{ searchParams.opportunityId }}</td>
+          <td nzAlign="left">{{ item.marketBundleName }}</td>
+          <td nzAlign="left">{{ item.marketBundleAmount }}</td>
+          <td nzAlign="left">{{ item.referenceId }}</td>
+          <td nzAlign="left">{{ item.orderProcessStatus | ProcessTaskStatusPipe | async }}</td>
+          <td nzAlign="left">{{ item.orderSo }}</td>
+          <td nzRight="0px" nzAlign="left">
+            <button nz-button nzSize="small" nzType="primary" (click)="onSelect(item)">
+              {{"orderv3.components.select-deal.select" | translate}}
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </nz-table>
+  </div>
+</nz-modal>

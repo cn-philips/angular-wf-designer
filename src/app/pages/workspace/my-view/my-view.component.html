@@ -1,0 +1,42 @@
+<nz-card>
+  <app-tabs>
+    <app-tab title="Bidding/OIT/Pre-book">
+      <div style="width: 100%; background-color: #ffffff; padding: 15px 0 15px 0">
+        <cos-my-view-search-item [loading]="loading" [formData]="formValues" (search)="updateParams($event)"
+          (setLoading)="getLoading($event)" (subSearch)="updateSubParams($event)" (reset)="reset($event)"
+          (exportEvent)="exportData()" (projectReportEvent)="projectReport($event)"
+          (projectUSReportEvent)="projectReportUs($event)" (projectCCHpmReportEvent)="projectReportCcHpm($event)"
+          (projectCCHrcReportEvent)="projectReportCcHrc($event)" (biddingReportEvent)="biddingReport()"
+          (POSReportEvent)="POSReport()" (opportunityReportEvent)="opportunityReportEvent($event)"
+          (BundleReportEvent)="BundleReportEvent()" (prebookReportEvent)="preBookReport()"
+          (financePlanReportEvent)="financePlanReport($event)" (orderChangeReportEvent)="orderChangeReport($event)"
+          [loadingButton]="loadingButton" [isFirstLoad]="isFirstLoad">
+        </cos-my-view-search-item>
+        <br>
+        <div>
+          <app-tabs>
+            <app-tab title="投标申请表/Pre-book申请表/进单准备表层级">
+              <cos-my-view-list #table [loading]="loading" [tableData]="tableData" [total]="total" [flag]="1"
+                (pageChange)="updateDataList($event)" (setLoading)="getLoading($event)" [isFirstLoad]="isFirstLoad">
+              </cos-my-view-list>
+            </app-tab>
+
+            <app-tab title="合同概要表层级">
+              <cos-my-view-sub-list #subTable [loading]="loading" [tableData]="subTableData" [total]="subTotal"
+                [subOitTotal]="subOitTotal" [flag]="1" (pageChange)="updateSubDataList($event)"
+                (setLoading)="getLoading($event)" [isFirstLoad]="isFirstLoad">
+              </cos-my-view-sub-list>
+            </app-tab>
+          </app-tabs>
+        </div>
+
+      </div>
+    </app-tab>
+
+    <app-tab title="Special Approval">
+      <div style="width: 100%; background-color: #ffffff; padding: 15px 0 15px 0">
+        <special-approval-view></special-approval-view>
+      </div>
+    </app-tab>
+  </app-tabs>
+</nz-card>

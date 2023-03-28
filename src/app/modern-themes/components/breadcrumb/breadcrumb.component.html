@@ -1,0 +1,20 @@
+<div *ngIf="this.breadcrumbs.length > 0" class="breadcrumb-wrapper">
+  <div class="breadcrumb-container">
+    <div></div>
+    <div
+      [ngClass]="{
+        'breadcrumb-item': true,
+        active: this.breadcrumbs.length - 1 === index
+      }"
+      *ngFor="let breadcrumb of this.breadcrumbs; let index = index"
+    >
+      <div *ngIf="this.breadcrumbs.length - 1 !== index">
+        <a *ngIf="!breadcrumb.isDisabled" routerLink="{{ breadcrumb.url }}"> {{ breadcrumb.label }}</a>
+        <span *ngIf="breadcrumb.isDisabled"> {{ breadcrumb.label }}</span>
+      </div>
+      <div *ngIf="this.breadcrumbs.length - 1 === index">
+        {{ breadcrumb.label }}
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,39 @@
+<nz-upload [nzType]="type" [nzMultiple]="true" [nzLimit]="limit" [nzCustomRequest]="onUploadFile"
+  [nzBeforeUpload]="onBeforeUpload" [nzDisabled]="disabled" [nzShowUploadList]="false">
+  <ng-container *ngIf="type === 'drag'">
+    <p class="ant-upload-drag-icon">
+      <i nz-icon nzType="inbox"></i>
+    </p>
+    <p class="ant-upload-text">{{"components.upload-file.text" | translate}}</p>
+  </ng-container>
+  <ng-container *ngIf="type !== 'drag'">
+    <button nz-button><i nz-icon nzType="upload"></i><span>{{title || "components.upload-file.title" | translate
+        }}</span></button>
+  </ng-container>
+</nz-upload>
+<nz-alert *ngIf="hint" nzType="warning" [nzMessage]="hint"></nz-alert>
+<form nz-form [formGroup]="fileFormGroup">
+ <div formArrayName="fileListFormGroup">
+  <div class="upload-file-list">
+    <div *ngFor="let item of fileListFormGroup.controls;let index=index" [formGroup]="item" class="file-item">
+      <span class="file-name" [title]="item.getRawValue().name">
+        <i nz-icon [nzType]=" item.getRawValue().status === 'uploading' ? 'loading' : 'paper-clip'"></i>
+        <div class="file-name-title">{{item.getRawValue().name }}</div> 
+        <nz-form-control nz-tooltip  [nzTitle]="item.controls.attachmentComment.disabled?'':'可输入需签章页码、用逗号分隔开'">          
+          <input (blur)="inputBlur($event)" oninput ="if(!/^[0-9,]+$/.test(value)) value=value.replace(/[^0-9,]/g,'');if(value.length>255)value=value.slice(0,255)" nz-input formControlName="attachmentComment" [placeholder]="item.controls.attachmentComment.disabled?'':'可输入需签章页码、用逗号分隔开'"  maxlength="255" />
+          <nz-form-explain *ngIf="item.get('attachmentComment')?.dirty &&item.get('attachmentComment')?.errors">          
+            <ng-container *ngIf="item.get('attachmentComment')?.hasError('soform')">可输入需签章页码、用逗号分隔开</ng-container>
+          </nz-form-explain>
+       </nz-form-control>
+      </span>
+      <span class="file-btn">
+        <i nz-icon nzType="download" nzTheme="outline" (click)="onDownloadFile(item.getRawValue())" title="下载附件"></i>
+        <i nz-icon *ngIf="!disabled" style="margin-left:8px" nzType="close" (click)="onRemoveFile(item.getRawValue())" title="删除附件"></i>
+      </span>
+    </div>
+  </div>
+</div>
+</form>
+
+
+<app-apploading [load]="load"></app-apploading>

@@ -1,0 +1,156 @@
+<div *ngIf="roleBatch&&formData.zslSignSupplement==2" style="line-height: 40px;margin-top: 16px;">
+  <!-- <label style="margin: 0 2px 0 0">{{"list-pages.transfer.batchbtn" | translate}}</label> -->
+  <!-- <nz-switch [(ngModel)]="openCheckbox" style="margin: 0 10px 0 0"></nz-switch> -->
+  <button *ngIf="roleBatch&&openCheckbox&&formData.zslSignSupplement==2" nz-button [nzLoading]="loading"
+    [nzType]="'primary'" (click)="openSelectUser()">
+    <!-- {{"list-pages.transfer.batchbtn" | translate}} -->
+    同意签署并批量转派至授权助理操作
+  </button>
+</div>
+<nz-table nzVirtualScroll [nzData]="tableData" [nzVirtualItemSize]="10" nzFrontPagination="false"
+  [nzPageIndex]="pageParams.pageNo" [nzPageSize]="pageParams.pageSize" [nzTotal]="total" [nzLoading]="loading"
+  [nzScroll]="{ x: '2200px', y: '600px' }" (nzPageIndexChange)="changePageIndex($event)" [nzShowTotal]="totalTemplate"
+  (nzPageSizeChange)="changePageSize($event)" style="margin-top: 16px">
+  <thead>
+    <tr>
+      <th nzWidth="50px" *ngIf="roleBatch&&openCheckbox&&formData.zslSignSupplement==2">
+        <label [nzChecked]="AllCheck()" (nzCheckedChange)="CheckAll($event)" nz-checkbox style="display: inline-block;">
+        </label>
+      </th>
+      <th class="tableHead" nzAlign="center" style="width: 220px">
+        {{"list-pages.table-header.ref-no" | translate}}
+      </th>
+      <th class="tableHead" nzAlign="center" style="width: 200px">
+        {{"list-pages.table-header.task-status" | translate}}
+      </th>
+      <th class="tableHead" nzAlign="center" style="width: 220px">
+        {{"list-pages.table-header.applicant" | translate}}
+      </th>
+      <th class="tableHead" nzAlign="center" style="width: 240px">
+        {{"list-pages.table-header.hospital-name" | translate}}
+      </th>
+      <th class="tableHead" nzAlign="center" style="width: 240px">
+        {{"list-pages.table-header.dealer-name" | translate}}
+      </th>
+      <th class="tableHead" nzAlign="center" style="width: 100px">
+        {{"list-pages.table-header.business-model" | translate}}
+      </th>
+      <th class="tableHead" nzAlign="center" style="width: 100px">
+        {{"list-pages.table-header.oit-mode" | translate}}
+      </th>
+      <th class="tableHead" nzAlign="center" style="width: 200px">
+        {{"list-pages.table-header.so" | translate}}
+      </th>
+      <th class="tableHead" nzAlign="center" style="width: 200px">
+        {{"list-pages.table-header.bidding-number" | translate}}
+      </th>
+      <th class="tableHead" nzAlign="center" style="width: 200px">
+        {{"list-pages.table-header.market-bundle-name" | translate}}
+      </th>
+      <th class="tableHead" nzAlign="center" style="width: 200px">
+        {{"list-pages.table-header.bidder-name" | translate}}
+      </th>
+      <th class="tableHead" nzAlign="center" style="width: 200px">
+        {{"list-pages.table-header.third-check" | translate}}
+      </th>
+      <th class="tableHead" nzAlign="center" nzRight="0px" style="width: 200px">
+        {{"list-pages.table-header.action" | translate}}
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <ng-template nz-virtual-scroll let-data let-index="index">
+      <tr>
+        <td nzWidth="50px" *ngIf="roleBatch&&openCheckbox&&formData.zslSignSupplement==2"><label nz-checkbox
+            [(ngModel)]="mapOfCheckedId[data.id]"></label></td>
+        <td class="tableData" style="width: 220px;" nzAlign="center">{{ data.referenceId }}</td>
+        <td *ngIf="data.procPhase === 'p3'" class="tableData" style="width: 200px;" nzAlign="center">{{ data.taskStatus
+          | ProcessTaskStatusPipe | async}}</td>
+        <td *ngIf="data.procPhase != 'p3'" class="tableData" style="width: 200px;" nzAlign="center">{{ data.taskStatus |
+          ProcessStatusPipe}}</td>
+        <td class="tableData" style="width: 220px;" nzAlign="center">{{ data.applicant }}</td>
+        <td class="tableData" style="width: 240px;" nzAlign="center">{{ data.hospitalName }}</td>
+        <td class="tableData" style="width: 240px;" nzAlign="center">{{ data.dealerName }}</td>
+        <td class="tableData" style="width: 100px;" nzAlign="center">{{ data.businessModel | ProcessModel}}</td>
+        <td class="tableData" style="width: 100px;" nzAlign="center">{{ ProOitModeType(data.oitMode?data.oitMode:'' )}}
+        </td>
+        <td class="tableData" style="width: 200px;" nzAlign="center">{{ data.so }}</td>
+        <td class="tableData" style="width: 200px;" nzAlign="center">{{ data.biddingNumber }}</td>
+        <td class="tableData" style="width: 200px;" nzAlign="center">{{ data.marketBundleName }}</td>
+        <td class="tableData" style="width: 200px;" nzAlign="center">{{ data.bidderName }}</td>
+        <td class="tableData" style="width: 200px;" nzAlign="center">{{ data.productVerificationInformation }}</td>
+        <td class="tableData" style="width: 180px" nzAlign="center" nzRight="0px">
+          <!-- 三期操作 -->
+          <a *ngIf="data.procPhase === 'p3'" style="display: block; color: #337FBF;" (click)="operate(data)">
+            <!-- {{ (formData.zslSignSupplement==1||formData.zslSignSupplement==2||formData.zslSignSupplement==3)?formData.zslSignSupplement==1?'添加电子水印签名':'添加水印':'处理'}} -->
+            {{ (roleList.includes('OA')&&formData.zslSignSupplement==1)
+            ||(roleList.includes('OA')&&formData.zslSignSupplement==4)
+            ||(roleList.includes('Contract Signatory')&&formData.zslSignSupplement==2)
+            ||((roleList.includes('Sales Support') || roleList.includes('COP Operation'))
+            &&formData.zslSignSupplement==3)?
+            (roleList.includes('OA')&&formData.zslSignSupplement==1)
+            ||(roleList.includes('OA')&&formData.zslSignSupplement==4)?(roleList.includes('OA')&&formData.zslSignSupplement==1)?'提交PDF电子合同':'处理':'添加水印':'查看'}}
+          </a>
+        </td>
+      </tr>
+    </ng-template>
+
+  </tbody>
+
+</nz-table>
+<ng-template #totalTemplate let-total> {{"list-pages.list-total" | translate: { total: total} }} </ng-template>
+<nz-modal [(nzVisible)]="batchShow" nzWidth="650px" nzTitle="同意签署并批量转派至授权助理操作" [nzFooter]="modalFooterMail"
+  (nzOnCancel)="batchCancels()">
+  <nz-spin nzTip="Loading..." [nzSpinning]="batchload">
+    <form nz-form [formGroup]="batchCanForm">
+      <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+        <div nz-col nzXs="24" nzSm="24" nzMd="24">
+          <nz-form-item>
+            <nz-form-label nzXs="8" nzSm="8" nzMd="8" nzXl="8" nzXXl="6" nzRequired>
+              接收人
+            </nz-form-label>
+            <nz-form-control nzXs="14" nzSm="14" nzMd="14">
+              <nz-select style="width:100%" nzPlaceHolder="请选择" formControlName="zslAdminEmail">
+                <nz-option *ngFor="let option of userList" [nzLabel]="option" [nzValue]="option"></nz-option>
+              </nz-select>
+              <nz-form-explain
+                *ngIf="batchCanForm.get('zslAdminEmail')?.dirty &&batchCanForm.get('zslAdminEmail')?.errors">
+                {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+    </form>
+  </nz-spin>
+  <ng-template #modalFooterMail>
+    <button nz-button nzType="default" (click)="batchCancels()">{{'orderv3.components.change-order-popup.cancel' |
+      translate}}</button>
+    <button nz-button nzType="primary" [nzLoading]="batchload"
+      (click)="batchOk()">{{'orderv3.components.change-order-popup.ok' | translate}}</button>
+  </ng-template>
+</nz-modal>
+
+<nz-modal [(nzVisible)]="saleLeadShow" nzWidth="650px" nzTitle="提示" [nzFooter]="modalFooterSaleLe"
+  (nzOnCancel)="tipsCancels()">
+  电子签名水印未维护,请先维护您的电子签名水印
+  <ng-template #modalFooterSaleLe>
+    <button nz-button nzType="default" (click)="tipsCancels()">{{'orderv3.components.change-order-popup.cancel' |
+      translate}}</button>
+    <button nz-button nzType="primary" (click)="tipsOk()">{{'orderv3.components.change-order-popup.ok' |
+      translate}}</button>
+  </ng-template>
+</nz-modal>
+
+<nz-modal [(nzVisible)]="saleSupportShow" nzWidth="650px" nzTitle="提示" [nzFooter]="null"
+  (nzOnCancel)="supportCancels()">
+  电子签名水印未维护，请通知对应的合同签署人,维护电子签名水印
+</nz-modal>
+<nz-modal [(nzVisible)]="adminMailShow" nzWidth="650px" nzTitle="提示" [nzFooter]="modalFooterTitle"
+  (nzOnCancel)="adminMailCancels()">
+  请您先到列表页，维护"授权助理邮箱"
+  <ng-template #modalFooterTitle>
+    <button nz-button nzType="primary" (click)="adminMailOk()">{{'orderv3.components.change-order-popup.ok' |
+      translate}}</button>
+  </ng-template>
+</nz-modal>

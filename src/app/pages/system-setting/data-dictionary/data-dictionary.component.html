@@ -1,0 +1,33 @@
+<nz-card class="title_warpper">
+  <div>
+    <h4 class="font-weight-bold">
+      <span>Data Dictionary 数据字典</span>
+    </h4>
+  </div>
+</nz-card>
+<div class="card-container">
+  <nz-card [ngClass]="{ 'mtb1rem': true }">
+    <data-dictionary-form
+      (passFormValues)="updateParams($event)"
+      (passModelSwitch)="controlModel($event)"
+      (passIsCreate)="updateIsCreate($event)"
+    ></data-dictionary-form>
+    <data-dictionary-table
+      (updateTable)="updateDataList($event)"
+      (setLoading)="getLoading($event)"
+      (passModelSwitch)="controlModel($event)"
+      (passItem)="updateFormData($event)"
+      (passIsCreate)="updateIsCreate($event)"
+      [listOfMapData]="listOfMapData"
+      [total]="total"
+      [loading]="loading"
+    ></data-dictionary-table>
+    <data-dictionary-modal
+      [isVisible]="isVisible"
+      [formData]="formData"
+      [isCreate]="isCreate"
+      (passModelSwitch)="controlModel($event)"
+      (reloadTable)="reloadTable($event)"
+    ></data-dictionary-modal>
+  </nz-card>
+</div>

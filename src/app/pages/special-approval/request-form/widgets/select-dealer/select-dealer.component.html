@@ -1,0 +1,57 @@
+<nz-modal 
+  [(nzVisible)]="visible" 
+  nzWidth="1000px" 
+  nzTitle="选择经销商" 
+  [nzFooter]="null"
+  (nzOnCancel)="onHideModal()"
+>
+  <div nz-row class="search-form">
+    <nz-form-item>
+      <nz-form-label [nzSpan]="5" nzFor="email">经销商名称</nz-form-label>
+      <nz-form-control [nzSpan]="12">
+        <input nz-input [(ngModel)]="searchParams.dealerName">
+      </nz-form-control>
+      <nz-form-control [nzSpan]="3">
+        <button nz-button class="ml10" nzType="primary" (click)="getDealerList(true)" [nzSize]="6">搜索</button>
+      </nz-form-control>
+    </nz-form-item>
+  </div>
+
+  <div class="table-container">
+    <nz-table 
+      [nzData]="tableData.list"
+      [nzShowTotal]="totalTemplate"
+      [nzTotal]="tableData.totalCount"
+      [nzLoading]="tableLoading"
+      [nzPageSizeOptions]="[5, 10, 20, 30, 40, 50 ]"
+      [nzShowQuickJumper]="true"
+      [nzShowSizeChanger]="true"
+      [nzFrontPagination]="false"
+      [(nzPageIndex)]="searchParams.pageNo"
+      [(nzPageSize)]="searchParams.pageSize"
+      (nzPageIndexChange)="getDealerList()"
+      (nzPageSizeChange)="getDealerList()"
+    >
+      <thead>
+        <tr>
+          <th nzWidth="100px" nzAlign="left">经销商编号</th>                     
+          <th nzWidth="180px" nzAlign="left">经销商名称</th> 
+          <th nzWidth="180px" nzAlign="left">经销商地址</th>
+          <th nzWidth="40px">操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let dealer of tableData.list">
+          <td nzAlign="left">{{ dealer.dealerCode }}</td>
+          <td nzAlign="left">{{ dealer.dealerName }}</td>
+          <td nzAlign="left">{{ dealer.registeredAddress }}</td>
+          <td nzAlign="left">
+            <button nz-button nzSize="small" nzType="primary" (click)="onSelectDealer(dealer)">选择</button>
+          </td>
+        </tr>
+      </tbody>
+    </nz-table>
+
+    <ng-template #totalTemplate let-total> 数据总条数 {{ tableData.totalCount }} </ng-template>
+  </div>
+</nz-modal>

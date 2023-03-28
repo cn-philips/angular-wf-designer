@@ -1,0 +1,26 @@
+.breadcrumb-wrapper {
+  height: 54px;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  @media (min-width: 992px) {
+    padding-right: 2rem;
+    padding-left: 2rem;
+  }
+  .breadcrumb-container {
+    display: flex;
+    flex-direction: row;
+    .breadcrumb-item {
+      & * {
+        font-size: 14px;
+        color: #767d8a;
+      }
+      display: flex;
+      align-items: center;
+      &.active {
+        font-weight: bold;
+        color: #323233;
+      }
+    }
+  }
+}

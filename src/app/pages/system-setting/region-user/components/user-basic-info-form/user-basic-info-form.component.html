@@ -1,0 +1,59 @@
+<form nz-form [formGroup]="validateForm">
+  <div nz-row>
+    <div nz-col nzSpan="12">
+      <nz-form-item>
+        <nz-form-label [nzRequired]="!islook && !readonly" [nzSpan]="7">Email</nz-form-label>
+        <nz-form-control [nzSpan]="17">
+          <input
+            style="text-transform: lowercase"
+            nzSize="small"
+            [readonly]="readonly"
+            formControlName="email"
+            nz-input
+            (focusout)="checkuser()"
+          /> <nz-spin nzSimple [nzSpinning]="spin"></nz-spin>
+          <nz-form-explain *ngIf="validateForm.get('email')?.dirty && validateForm.get('email')?.errors">
+            请输入正确的Philips邮箱
+          </nz-form-explain>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzSpan="12">
+      <nz-form-item>
+        <nz-form-label [nzRequired]="!islook"  [nzSpan]="7">Name</nz-form-label>
+        <nz-form-control [nzSpan]="17">
+          <input nzSize="small" formControlName="name" nz-input />
+          <nz-form-explain *ngIf="validateForm.get('name')?.dirty && validateForm.get('name')?.errors">
+            请输入Name
+          </nz-form-explain>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+  <div nz-row>
+    <div nz-col nzSpan="12">
+      <nz-form-item>
+        <nz-form-label [nzSpan]="7">ID</nz-form-label>
+        <nz-form-control [nzSpan]="17">
+          <input nzSize="small" formControlName="id" nz-input />
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzSpan="12">
+      <nz-form-item>
+        <nz-form-label [nzSpan]="7">Line Manager</nz-form-label>
+        <nz-form-control [nzSpan]="17">
+          <input
+            nzSize="small"
+            formControlName="lineManager"
+            nz-input
+            style="text-transform: lowercase"
+          />
+          <nz-form-explain *ngIf="validateForm.get('lineManager')?.dirty && validateForm.get('lineManager')?.errors">
+            请输入正确的Philips邮箱
+          </nz-form-explain>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+</form>

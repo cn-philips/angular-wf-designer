@@ -1,0 +1,143 @@
+<app-apploading [load]="load"></app-apploading>
+<nz-card class="title_warpper">
+  <div>
+    <h4 class="font-weight-bold">
+      <span>New Order Preparation Form 修改进单准备表</span>
+    </h4>
+  </div>
+</nz-card>
+
+<igt-approval-flowline></igt-approval-flowline>
+<hr class="border-light container-m--x mt-0 mb-4" />
+
+<div class="tabs-box">
+  <app-apploading [load]="load"></app-apploading>
+  <div nz-row nzType="flex" nzJustify="end" nzAlign="middle" class="tabs-box-actions">
+    <div nz-col nzSpan="24">
+      <nz-form-item>
+        <nz-form-control [nzSm]="24" [nzXs]="24" style="text-align: right">
+          <button *ngIf="dataBase.detail.flag != '0'" nz-button nzType="default" (click)="toReturn()"
+            style="margin-right: 10px">
+            Return 返回
+          </button>
+          <button *ngIf="dataBase.detail.flag != '1'" nz-button nzType="default" (click)="cancelContract()"
+            style="margin-right: 10px">
+            Cancel 取消
+          </button>
+          <button *ngIf="dataBase.detail.flag != '1'" nz-button nzType="default" (click)="saveContract()"
+            style="margin-right: 10px">
+            Save 保存
+          </button>
+          <button *ngIf="
+              dataBase.entryMode === 'BIDDING' && dataBase.detail.flag != '1'
+            " nz-button nzType="primary" (click)="winningBid()">
+            Submit 校验中标结果并提交
+          </button>
+          <button *ngIf="
+              dataBase.entryMode !== 'BIDDING' && dataBase.detail.flag != '1'
+            " nz-button [nzLoading]="nzLoading" nzType="primary" (click)="handleOkWinCheck()">
+            Submit 提交进单准备表
+          </button>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+  <ngb-tabset type="tabs" [destroyOnHide]="false" (tabChange)="tabclick($event)" [activeId]="activedId"
+    class="nav-tabs-top nav-responsive-xl">
+    <ngb-tab id="pending-tab">
+      <ng-template ngbTabTitle><span class="tab-title"><strong>General Information<br> 基础信息</strong></span>
+      </ng-template>
+      <ng-template ngbTabContent>
+        <div class="card-body">
+          <div class="demo-vertical-spacing">
+            <form>
+              <app-preOrderBaseInfo #childbase [disa]="disa" [edit]="edit" [dataBase]="dataBase"
+                (updateData)="updateData($event)" (myEvent)="myskip($event)">
+              </app-preOrderBaseInfo>
+            </form>
+          </div>
+        </div>
+        <div class="tr mb10 mr10">
+          <button nz-button [nzType]="'primary'" (click)="myskip('complete-tab')">
+            Next 下一步
+          </button>
+        </div>
+      </ng-template>
+    </ngb-tab>
+    <ngb-tab id="complete-tab">
+      <ng-template ngbTabTitle><span class="tab-title"><strong>Product Details<br>产品信息</strong></span></ng-template>
+      <ng-template ngbTabContent>
+        <div class="card-body">
+          <app-preOrderProductInfo [edit]="edit" [disa]="disa" [completed]="completed" [dataBase]="dataBase"
+            (myEvent)="myskip($event)" [disaend]="true"></app-preOrderProductInfo>
+        </div>
+        <div class="tr mb10 mr10">
+          <button nz-button [nzType]="'primary'" (click)="myskip('pending-tab')">
+            Back 上一步
+          </button>
+          <button *ngIf="completed" nz-button [nzType]="'primary'" (click)="myskip('complete-record')">
+            Next 下一步
+          </button>
+        </div>
+      </ng-template>
+    </ngb-tab>
+    <ngb-tab *ngIf="completed" id="complete-record">
+      <ng-template ngbTabTitle><span class="tab-title"><strong>Approval<br> 审批</strong></span></ng-template>
+      <ng-template ngbTabContent>
+        <div class="card-body">
+          <nz-card class="mtb1rem" nzTitle="Approved History 审批记录">
+            <app-emp-acc></app-emp-acc>
+            <div class="pr tr mt10">
+              <button nz-button class="nextbtn ml6" nzType="primary" (click)="myskip('complete-tab')">
+                Back 上一步
+              </button>
+              <button nz-button class="nextbtn ml6" nzType="primary" (click)="myskip('complete-remarks')">
+                Next 下一步
+              </button>
+            </div>
+          </nz-card>
+        </div>
+      </ng-template>
+    </ngb-tab>
+    <ngb-tab *ngIf="completed" id="complete-remarks">
+      <ng-template ngbTabTitle><span class="tab-title"><strong>Alter Remark<br> 修改备注</strong></span></ng-template>
+      <ng-template ngbTabContent>
+        <div class="card-body">
+          <app-apply-remarks #remarks [dataBase]="dataBase" (myEvent)="myskip($event)"></app-apply-remarks>
+        </div>
+        <div class="tr mb10 mr10">
+          <button nz-button class="nextbtn ml6" nzType="primary" (click)="myskip('complete-record')">
+            Back 上一步
+          </button>
+        </div>
+      </ng-template>
+    </ngb-tab>
+  </ngb-tabset>
+  <!-- <button nz-button nzType="primary" class="save" (click)="cancelContract()">取消</button> -->
+  <!-- <button nz-button nzType="primary" class="save" (click)="saveContract()">保存</button>
+  <button *ngIf="dataBase.entryMode !== 'stock'" class="save" nz-button nzType="primary" (click)="winningBid()">校验中标结果并提交</button>
+  <button *ngIf="dataBase.entryMode === 'stock'" class="submit" nz-button nzType="primary" (click)="handleOkWinCheck()">提交进单准备表</button> -->
+  <nz-modal [(nzVisible)]="isVisiblePrebook" nzTitle="正在流转中的Pre-book" (nzOnCancel)="handleCancelPrebook()"
+    (nzOnOk)="handleApply()">
+    <p>
+      提交进单后将中止Pre-book申请，是否确认提交？
+    </p>
+  </nz-modal>
+  <nz-modal [(nzVisible)]="isVisibleWinCheck" [nzOkDisabled]="verifiOff" nzTitle="中标确认校验结果" nzOkText="提交进单准备表"
+    nzCancelText="取消" nzCentered nzWidth="1600" (nzOnCancel)="handleCancelWinCheck()" (nzOnOk)="handleOkWinCheck()">
+    <ng-container>
+      <app-preOrderWinCheckTable (myVerifi)="myVerifi($event)" [bidData]="bidData" [dataBase]="dataBase"
+        [tableLoad]="tableLoad"></app-preOrderWinCheckTable>
+    </ng-container>
+  </nz-modal>
+</div>
+<nz-modal [(nzVisible)]="isShowDate" nzWidth="650px" nzTitle="提醒" [nzFooter]="null" (nzOnCancel)="isshowDateCancel()">
+  <div>
+    经销商DDP有效期为{{dataBase.contractEndDate}}日，当前已过有效期，请重新选经销商
+  </div>
+</nz-modal>
+<nz-modal [(nzVisible)]="isShowDates" nzWidth="650px" nzTitle="提醒" [nzFooter]="null" (nzOnCancel)="isshowDateCancels()">
+  <div>
+    外贸公司DDP有效期为{{dataBase.poolEndDate}}日，当前已过有效期，请重新选外贸公司
+  </div>
+</nz-modal>

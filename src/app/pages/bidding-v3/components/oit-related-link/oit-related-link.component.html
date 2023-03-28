@@ -1,0 +1,16 @@
+<div nz-col nzSpan="24" *ngIf="visible">
+  <nz-form-item>
+    <nz-form-label nzXs="24" nzSm="24" nzMd="3" nzXl="3" nzXXl="2">
+      {{"biddingv3.components.basic-info.basic.oitRelatedLink" | translate}}
+    </nz-form-label>
+    <nz-form-control nzXs="24" nzSm="24" nzMd="21" nzXl="3" nzXXl="22">
+      <a 
+        *ngFor="let item of oitLinks"
+        class="a-url"
+        (click)="goOitPage(item)"
+      >
+        {{ item.referenceId }}
+      </a>
+    </nz-form-control>
+  </nz-form-item>
+</div>

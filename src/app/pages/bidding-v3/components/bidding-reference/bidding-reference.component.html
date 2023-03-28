@@ -1,0 +1,17 @@
+<div class="warning inline warning-wrap">
+  <span>此投标申请所涉及的“招标编号”，已经在其他投标申请中使用，请关注！</span>
+  <a
+    class="view-detail"
+    nz-popover
+    nzTrigger="click"
+    [nzContent]="contentTemplate"
+  >
+    <span>点击查看链接</span>
+  </a>
+  <ng-template #contentTemplate>
+    <div class="order-row" *ngFor="let item of data">
+      <span>{{ item.referenceId }}</span>
+      <a (click)="goBiddingPage(item)">查看</a>
+    </div>
+  </ng-template>
+</div>

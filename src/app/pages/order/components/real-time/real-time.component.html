@@ -1,0 +1,76 @@
+<form nz-form [formGroup]="validateForm">
+  <app-apploading [load]="load"></app-apploading>
+  <div nz-row>
+    <div nz-col nzSpan="13">
+      <nz-form-item>
+        <nz-form-label [nzSpan]="6" nzFor="email"><span>Remarks</span><br>备注</nz-form-label>
+        <nz-form-control [nzSpan]="16" nz-tooltip  [nzTitle]="param.remark">
+          <input oninput="if(value.length>255)value=value.slice(0,255)" nz-input [(ngModel)]="param.remark" [ngModelOptions]="{standalone: true}" placeholder="请输入" nzSize="default" />
+
+          <div>还可以输入:{{param.remark.length}}/{{textLens}}</div>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+   <div nz-row>
+      <div nz-col nzSpan="13">
+        <nz-form-item>
+          <nz-form-label nzRequired [nzSpan]="6" nzFor="email">SO#</nz-form-label>
+          <nz-form-control [nzSpan]="16" nz-tooltip  [nzTitle]="param.spa">
+              <div nz-col nzSpan="12">
+                  <input nz-input oninput="if(value.length>100)value=value.slice(0,100)"  formControlName="spa"  [(ngModel)]="param.spa" placeholder="请输入" nzSize="default" />
+                  <div>还可以输入:{{param.spa.length}}/{{textLen}}</div>
+                  <nz-form-explain *ngIf="
+                    validateForm.get('spa')?.dirty &&
+                    validateForm.get('spa')?.errors
+                  ">
+                  <ng-container *ngIf="
+                    validateForm.get('spa')?.hasError('required')
+                  ">此选项必填字段</ng-container>
+                    <ng-container *ngIf="
+                    validateForm
+                      .get('spa')
+                      ?.hasError('soform')
+                  ">只能输入数字和分号</ng-container>
+                </nz-form-explain>
+            </div>
+            <div nz-col nzSpan="12">
+              <div nz-tooltip
+              [nzTitle]="soNo"
+              *ngIf="dataBase.isPrebookApply=='1'" class="warning space" nzFor="email">
+                  此订单存在关联Pre-book申请，SO#{{soNo}}
+              </div>
+            </div>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+    <div nz-row>
+      <div nz-col nzSpan="13">
+        <nz-form-item>
+          <nz-form-label [nzSpan]="6" nzFor="email">Attachment<br>附件</nz-form-label>
+          <nz-form-control [nzSpan]="14">
+            <nz-upload
+            [(nzFileList)]="fileFileList"
+            [nzBeforeUpload]="fileBeforeUpload"
+            [nzLimit]="1"
+            [nzRemove]="nzRemoveFile"
+            [nzPreview]="dwonLoad"
+          >
+            <button  nz-button><i nz-icon nzType="upload"></i><span>Upload 上传附件</span></button>
+          </nz-upload>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+   <div nz-row>
+     <div nz-col nzSpan="13">
+       <nz-form-item>
+         <nz-form-label [nzNoColon]="true" [nzSpan]="6" nzFor="email"></nz-form-label>
+         <nz-form-control [nzSpan]="14">
+           <button nz-button class="ml6" nzType="primary" (click)="submit()">Submit提交</button>
+         </nz-form-control>
+       </nz-form-item>
+     </div>
+   </div>
+ </form>

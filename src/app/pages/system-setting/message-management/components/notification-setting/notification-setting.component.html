@@ -1,0 +1,93 @@
+<div style="display: flex; justify-content: end; flex-direction: row">
+  <button (click)="dialog.showModal()" nz-button nzType="primary">
+    {{
+      "common._add"
+        | translate
+          : {
+              name:
+                "system-settings.message-management.notification.title"
+                | translate
+            }
+    }}
+  </button>
+</div>
+<nz-table
+  (nzPageIndexChange)="searchData()"
+  (nzPageSizeChange)="searchData(true)"
+  [(nzPageIndex)]="pageIndex"
+  [(nzPageSize)]="pageSize"
+  [nzData]="data"
+>
+  <thead>
+    <tr>
+      <th nzWidth="250px">
+        {{ "system-settings.message-management.common.title" | translate }}
+      </th>
+      <th>
+        {{ "system-settings.message-management.notification.type" | translate }}
+      </th>
+      <th nzWidth="450px">
+        {{ "system-settings.message-management.common.content" | translate }}
+      </th>
+      <th>
+        {{ "system-settings.message-management.common.enabled" | translate }}
+      </th>
+      <th>
+        {{ "system-settings.message-management.common.start-date" | translate }}
+      </th>
+      <th>
+        {{ "system-settings.message-management.common.end-date" | translate }}
+      </th>
+      <th>
+        {{ "common.action" | translate }}
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let item of data">
+      <td nzWidth="250px">{{ item.title }}</td>
+      <td>{{ item.type }}</td>
+      <td nzWidth="450px" [innerHtml]="item.content | html"></td>
+      <td>
+        <nz-switch
+          [ngModel]="item.isEnable"
+          (ngModelChange)="toggleEnable(item)"
+          [nzCheckedChildren]="checkedTemplate"
+          [nzUnCheckedChildren]="unCheckedTemplate"
+        ></nz-switch>
+        <ng-template #checkedTemplate><i nz-icon type="check"></i></ng-template>
+        <ng-template #unCheckedTemplate
+          ><i nz-icon type="close"></i
+        ></ng-template>
+      </td>
+      <td>{{ item.startDate | TimeFormatePipeNow }}</td>
+      <td>{{ item.endDate | TimeFormatePipeNow }}</td>
+      <td>
+        <button (click)="dialog.showEditModal(item)" nz-button nzType="default">
+          {{ "system-settings.message-management.common.update" | translate }}
+        </button>
+        <button
+          nz-popconfirm
+          [nzTitle]="
+            'common._delete_confirm'
+              | translate
+                : {
+                    name:
+                      'system-settings.message-management.notification.title'
+                      | translate
+                  }
+          "
+          (nzOnConfirm)="handleDelete(item)"
+          nzPlacement="top"
+          nz-button
+        >
+          {{ "system-settings.message-management.common.delete" | translate }}
+        </button>
+      </td>
+    </tr>
+  </tbody>
+</nz-table>
+<app-notification-form-dialog
+  (submit)="searchData(true)"
+  #dialog
+></app-notification-form-dialog>

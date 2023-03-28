@@ -1,9 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 
+import { DictService } from '@core/services/dict.service'
+
 @Injectable()
 export class AppService {
-  constructor(private titleService: Title) {}
+  constructor(private titleService: Title, private dictService: DictService) {
+    this.dictService.initDictList()
+  }
 
   // Set page title
   set pageTitle(value: string) {

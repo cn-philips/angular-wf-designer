@@ -1,0 +1,102 @@
+<!-- <ng-container *ngIf="historyChild&&historyChild.length>0"> -->
+<app-form-section dynamic="true"  *ngFor="let item of historyChild" [title]="item.title">
+  <div class="table-wrap">
+    <nz-table #fixedTable [nzData]="item.taskHistory" [nzFrontPagination]="false" [nzShowPagination]="false"
+      [nzScroll]="{ x: '1600px' }" [nzLoading]="tableLoading">
+      <thead>
+        <tr>
+          <th nzWidth="200px" nzLeft="0px" [nzAlign]="nzAlign">{{"components.approval-history.step" | translate}}</th>
+          <th nzWidth="200px" [nzAlign]="nzAlign">{{"components.approval-history.executor" | translate}}</th>
+          <th nzWidth="200px" [nzAlign]="nzAlign">{{"components.approval-history.status" | translate}}</th>
+          <th nzWidth="200px" [nzAlign]="nzAlign">{{"components.approval-history.remarks" | translate}}</th>
+          <th nzWidth="150px" [nzAlign]="nzAlign">{{"components.approval-history.attachment" | translate}}</th>
+          <th nzWidth="200px" [nzAlign]="nzAlign">{{"components.approval-history.date" | translate}}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let data of fixedTable.data">
+          <ng-container>
+            <td nzWidth="200px" style="word-break: break-word" nzLeft="0px" [nzAlign]="nzAlign">
+              <div *ngIf="!data.taskName">{{ data.taskDefKey | ProcessTaskStatusPipe | async }}</div>
+              <div *ngIf="data.taskName">{{ data.taskName }}</div>
+            </td>
+            <td nzWidth="200px" [nzAlign]="nzAlign">{{ data.taskAssign }}</td>
+            <td nzWidth="200px" [nzAlign]="nzAlign">
+              {{ data.taskResult | TaskNamePipe | async }}
+            </td>
+            <td nzWidth="200px" style="word-break: break-all" [nzAlign]="nzAlign" nowrap>
+              <span *ngIf="data.taskComments !== null && data.taskComments !== ''" style="white-space:pre-line">{{
+                data.taskComments }}</span>
+            </td>
+            <td nzWidth="200px" style="word-break: break-all" [nzAlign]="nzAlign">
+              <!-- <button *ngIf="data.attachFile !== null" class="down innerbox" nz-button nzType="link" (click)="fileDwon(data.attachFile)">
+              {{data.taskAttachments}}
+            </button> -->
+              <!-- {{data.taskAttachments}} -->
+              <div class="attachment-list" *ngIf="data.taskAttachments && data.taskAttachments.length > 0">
+                <div *ngFor="let file of data.taskAttachments" class="file-item" (click)="onDownloadFile(file)"
+                  [title]="file.taskAttachmentName">
+                  {{ file.taskAttachmentName }}
+                </div>
+              </div>
+
+            </td>
+            <td nzWidth="200px" [nzAlign]="nzAlign">{{ data.taskEndTime }}</td>
+          </ng-container>
+        </tr>
+      </tbody>
+    </nz-table>
+  </div>
+</app-form-section>
+<!-- </ng-container> -->
+<!-- <ng-container *ngIf="historyParent&&historyParent.length>0"> -->
+  <app-form-section dynamic="true"  *ngFor="let item of historyParent" [title]="item.title">
+    <div class="table-wrap">
+      <nz-table #fixedTable [nzData]="item.taskHistory" [nzFrontPagination]="false" [nzShowPagination]="false"
+        [nzScroll]="{ x: '1600px' }" [nzLoading]="tableLoading">
+        <thead>
+          <tr>
+            <th nzWidth="200px" nzLeft="0px" [nzAlign]="nzAlign">{{"components.approval-history.step" | translate}}</th>
+            <th nzWidth="200px" [nzAlign]="nzAlign">{{"components.approval-history.executor" | translate}}</th>
+            <th nzWidth="200px" [nzAlign]="nzAlign">{{"components.approval-history.status" | translate}}</th>
+            <th nzWidth="200px" [nzAlign]="nzAlign">{{"components.approval-history.remarks" | translate}}</th>
+            <th nzWidth="150px" [nzAlign]="nzAlign">{{"components.approval-history.attachment" | translate}}</th>
+            <th nzWidth="200px" [nzAlign]="nzAlign">{{"components.approval-history.date" | translate}}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let data of fixedTable.data">
+            <ng-container>
+              <td nzWidth="200px" style="word-break: break-word" nzLeft="0px" [nzAlign]="nzAlign">
+                <div *ngIf="!data.taskName">{{ data.taskDefKey | ProcessTaskStatusPipe | async }}</div>
+                <div *ngIf="data.taskName">{{ data.taskName }}</div>
+              </td>
+              <td nzWidth="200px" [nzAlign]="nzAlign">{{ data.taskAssign }}</td>
+              <td nzWidth="200px" [nzAlign]="nzAlign">
+                {{ data.taskResult | TaskNamePipe | async }}
+              </td>
+              <td nzWidth="200px" style="word-break: break-all" [nzAlign]="nzAlign" nowrap>
+                <span *ngIf="data.taskComments !== null && data.taskComments !== ''" style="white-space:pre-line">{{
+                  data.taskComments }}</span>
+              </td>
+              <td nzWidth="200px" style="word-break: break-all" [nzAlign]="nzAlign">
+                <!-- <button *ngIf="data.attachFile !== null" class="down innerbox" nz-button nzType="link" (click)="fileDwon(data.attachFile)">
+                {{data.taskAttachments}}
+              </button> -->
+                <!-- {{data.taskAttachments}} -->
+                <div class="attachment-list" *ngIf="data.taskAttachments && data.taskAttachments.length > 0">
+                  <div *ngFor="let file of data.taskAttachments" class="file-item" (click)="onDownloadFile(file)"
+                    [title]="file.taskAttachmentName">
+                    {{ file.taskAttachmentName }}
+                  </div>
+                </div>
+  
+              </td>
+              <td nzWidth="200px" [nzAlign]="nzAlign">{{ data.taskEndTime }}</td>
+            </ng-container>
+          </tr>
+        </tbody>
+      </nz-table>
+    </div>
+  </app-form-section>
+  <!-- </ng-container> -->

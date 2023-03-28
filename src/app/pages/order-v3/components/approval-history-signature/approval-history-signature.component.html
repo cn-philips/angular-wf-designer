@@ -1,0 +1,32 @@
+<div class="table-wrap">
+  <nz-table #fixedTable [nzData]="tableData" [nzFrontPagination]="false" [nzShowPagination]="false"
+    [nzScroll]="{ x: '1600px' }" [nzLoading]="tableLoading">
+    <thead>
+      <tr>
+        <th nzWidth="200px" nzLeft="0px" [nzAlign]="nzAlign">{{"components.approval-history.step" | translate}}</th>
+        <th nzWidth="200px" [nzAlign]="nzAlign" nzLeft="0px">{{"components.approval-history.executor" | translate}}</th>
+        <!-- <th nzWidth="200px" [nzAlign]="nzAlign">{{"components.approval-history.status" | translate}}</th> -->
+        <th nzWidth="200px" [nzAlign]="nzAlign">{{"components.approval-history.remarks" | translate}}</th>        
+        <th nzWidth="200px" [nzAlign]="nzAlign">{{"components.approval-history.date" | translate}}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let data of fixedTable.data">
+        <ng-container>
+          <td nzWidth="200px" style="word-break: break-word" nzLeft="0px" [nzAlign]="nzAlign">
+            <div>{{ data.signStatusName}}</div>            
+          </td>
+          <td nzWidth="200px" style="word-break: break-word" nzLeft="0px" [nzAlign]="nzAlign">
+            <div>{{ data.assignee }}</div>            
+          </td>          
+          <!-- <td nzWidth="200px" [nzAlign]="nzAlign">{{ data.taskAssign }}</td>        -->
+          <td nzWidth="200px" style="word-break: break-all" [nzAlign]="nzAlign" nowrap>
+            <span *ngIf="data.remark !== null && data.remark !== ''" style="white-space:pre-line">{{
+              data.remark }}</span>
+          </td>          
+          <td nzWidth="200px" [nzAlign]="nzAlign">{{ data.endTime}}</td>
+        </ng-container>
+      </tr>
+    </tbody>
+  </nz-table>
+</div>

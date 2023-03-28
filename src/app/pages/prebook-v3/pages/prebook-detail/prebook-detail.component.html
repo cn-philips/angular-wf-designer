@@ -1,0 +1,138 @@
+<div class="demo-vertical-spacing">
+  <app-apploading [load]="pageLoading"></app-apploading>
+  <nz-card class="title_warpper mtb1rem">
+    <app-approval-progress></app-approval-progress>
+  </nz-card>
+
+  <form nz-form [formGroup]="prebookForm">
+    <div class="tabs-box">
+      <app-tabs #tabs>
+        <app-tab id="basic-info" [title]="'biddingv3.pages.bidding-detail.general' | translate">
+          <div class="card-body">
+            <prebook-v3-basic-info
+              [importBtnVisible]="false"
+              [disabled]="disabled"
+              [prebookForm]="prebookForm"
+              [subTierSubject]="subTierSubject"
+            ></prebook-v3-basic-info>
+          </div>
+        </app-tab>
+
+        <app-tab id="product-info" [title]="'biddingv3.pages.bidding-detail.product' | translate">
+          <div class="card-body">
+            <prebook-v3-product-info
+              [showSOField]="processStatus === 'ecos_prebook_done'"
+              [showLinkBtn]="showLinkBtn"
+              [isOAPorcessNode]="isOAPorcessNode"
+              [prebookForm]="prebookForm"></prebook-v3-product-info>
+          </div>
+        </app-tab>
+
+        <app-tab [title]="'prebookv3.pages.prebook-detail.zpm-approval' | translate" *ngIf="showZpmApprovalTab">
+          <div class="card-body">
+            <prebook-v3-zpm-approval [zpmApproval]="zpmApproval"></prebook-v3-zpm-approval>
+          </div>
+        </app-tab>
+
+        <app-tab [title]="'prebookv3.pages.prebook-detail.oa-approval' | translate" *ngIf="showOaApprovalTab">
+          <div class="card-body">
+            <prebook-v3-oa-approval [oaApproval]="oaApproval"></prebook-v3-oa-approval>
+          </div>
+        </app-tab>
+
+        <app-tab [title]="'prebookv3.pages.prebook-detail.oa-supplement' | translate" *ngIf="showOaSupplementTab">
+          <div class="card-body">
+            <prebook-v3-oa-supplement [oaSupplement]="oaSupplement" [disabled]="true"></prebook-v3-oa-supplement>
+          </div>
+        </app-tab>
+
+        <app-tab [title]="'biddingv3.pages.bidding-detail.history' | translate">
+          <div class="card-body">
+            <shared-approval-history [procInstId]="processInstanceId"></shared-approval-history>
+          </div>
+        </app-tab>
+
+        <app-tab id="approval" [title]="approvalTitle" *ngIf="fromTask || fromSupplement">
+          <div class="card-body">
+            <prebook-v3-zpm-approval *ngIf="processStatus == 'ecos_prebook_zpm'" [zpmApproval]="zpmApproval">
+            </prebook-v3-zpm-approval>
+            <prebook-v3-oa-approval *ngIf="processStatus == 'ecos_prebook_oa'" [oaApproval]="oaApproval">
+            </prebook-v3-oa-approval>
+            <prebook-v3-oa-supplement *ngIf="processStatus == 'ecos_prebook_oa_supplemental'"
+              [oaSupplement]="oaSupplement" [applyDetail]="originData"></prebook-v3-oa-supplement>
+
+            <prebook-v3-product-info *ngIf="processStatus === 'ecos_prebook_om'" [showSOField]="true"
+              [showLinkBtn]="showLinkBtn" [prebookForm]="prebookForm"></prebook-v3-product-info>
+            <!-- 审批通用字段 -->
+            <form nz-form [formGroup]="commonApproval" *ngIf="processStatus !== 'ecos_prebook_om'">
+              <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+                <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+                  <nz-form-item>
+                    <nz-form-label nzXs="24" nzSm="24" nzMd="8"
+                      [nzRequired]="processStatus === 'ecos_prebook_resubmit'">
+                      {{"prebookv3.pages.prebook-detail.remarks" | translate}}
+                    </nz-form-label>
+                    <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                      <textarea [nzAutosize]="{ minRows: 4, maxRows: 6 }" nz-input style="width: 100%"
+                        formControlName="comments" (ngModelChange)="resetRemarkMsg()"></textarea>
+                      <nz-form-explain *ngIf="remarkMsgVisible">
+                        <a style="color: #f5222d">请填写拒绝理由</a>
+                      </nz-form-explain>
+                      <nz-form-explain *ngIf="cancelMsgVisible">
+                        <a style="color: #f5222d">请填写取消原因</a>
+                      </nz-form-explain>
+                      <nz-form-explain
+                        *ngIf="commonApproval.get('comments')?.dirty && commonApproval.get('comments')?.errors">
+                        {{ "biddingv3.components.basic-info.required" | translate }}
+                      </nz-form-explain>
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+              </div>
+
+              <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+                <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+                  <nz-form-item>
+                    <nz-form-label nzXs="24" nzSm="24" nzMd="8">
+                      {{"prebookv3.pages.prebook-detail.upload" | translate}}
+                    </nz-form-label>
+                    <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                      <shared-upload-file type="button" [title]="'prebookv3.pages.prebook-detail.upload' | translate"
+                        formControlName="attachmentIds">
+                      </shared-upload-file>
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+              </div>
+            </form>
+          </div>
+        </app-tab>
+      </app-tabs>
+    </div>
+  </form>
+</div>
+
+<footer>
+  <button nz-button (click)="goBack()">
+    {{"biddingv3.pages.bidding-detail.return" | translate}}
+  </button>
+
+  <ng-container *ngIf="fromTask || fromSupplement">
+    <button *ngIf="fromTask || fromSupplement" nz-button nzType="primary" nz-popconfirm [nzTitle]="popconfirmTitle"
+      (nzOnConfirm)="handleAction('approved')">
+      <ng-container *ngIf="!showSubmitBtn">{{"biddingv3.pages.bidding-detail.approved" | translate}}</ng-container>
+      <ng-container *ngIf="showSubmitBtn">{{"biddingv3.pages.bidding-detail.submit" | translate}}</ng-container>
+    </button>
+
+    <button *ngIf="fromTask && !showSubmitBtn" nz-button nzType="primary" nz-popconfirm nzTitle="你确定要执行拒绝的操作?"
+      (nzOnConfirm)="handleAction('rejected')">
+      {{"biddingv3.pages.bidding-detail.refuse" | translate}}
+    </button>
+    <button *ngIf="fromTask && processStatus === 'ecos_prebook_resubmit'" nz-button nzType="primary" nz-popconfirm
+      nzTitle="你确定要执行取消的操作?" (nzOnConfirm)="handleAction('rejected')">
+      {{"prebookv3.pages.prebook-detail.cancel" | translate}}
+    </button>
+  </ng-container>
+
+
+</footer>

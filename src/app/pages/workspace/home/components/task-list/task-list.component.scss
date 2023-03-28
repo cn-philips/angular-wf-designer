@@ -1,0 +1,114 @@
+@import "styles/media_query.scss";
+.boxArea {
+  // margin-top: 100px;
+  border-color: #f8f8f8;
+  background-color: #ffffff;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.list-card-title-line {
+  display: flex;
+  justify-content: space-between;
+  padding: 16px;
+}
+.list-card-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+
+  .listcard {
+    &::before {
+      width: 2px;
+      height: 100%;
+      position: absolute;
+      left: 0;
+      top: 0;
+      content: "";
+      background-image: linear-gradient(180deg, #3798db 0%, #6bc3ff 100%);
+    }
+    position: relative;
+    background: #f8f8f8;
+    box-shadow: 0 2px 24px 0 rgba(200, 201, 204, 0.6);
+    flex-basis: 30%;
+    @media screen and (max-width: $screen-md-max) {
+      flex-basis: calc(100% - 32px);
+    }
+    flex-grow: 1;
+    height: 112px;
+    opacity: 100%;
+    border-radius: 4px;
+    overflow: hidden;
+    // border-left: solid 4px #3798db;
+    // margin: 16px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex: 0 0 calc(33.3333% - 32px);
+    margin: 16px;
+
+    transition: all 0.1s cubic-bezier(0.95, 0.05, 0.795, 0.035);
+    .listcard-content {
+    }
+    .listcard-footer {
+    }
+    &:hover {
+      .logo {
+        background-color: #fff !important;
+      }
+    }
+  }
+
+  .listcard:hover {
+    cursor: pointer;
+    background-image: linear-gradient(135deg, #3da6ee 0%, #2a8ccf 100%);
+    // background: #2d91d4;
+    .taskid {
+      color: #ffffff;
+    }
+    .tasktype {
+      color: #ffffff;
+    }
+    .date {
+      color: #ffffff;
+    }
+  }
+
+  .taskid {
+    font-size: 14px;
+    color: #323233;
+    text-align: left;
+    line-height: 20px;
+    transition: all 0.1s cubic-bezier(0.95, 0.05, 0.795, 0.035);
+  }
+  .tasktype {
+    font-size: 14px;
+    color: #323233;
+    text-align: left;
+    line-height: 20px;
+    transition: all 0.1s cubic-bezier(0.95, 0.05, 0.795, 0.035);
+  }
+
+  .logo {
+    text-align: center;
+    font-size: 12px;
+    float: left;
+    transition: all 0.3s ease-in-out;
+  }
+
+  .date {
+    font-size: 14px;
+    color: #8c8c8c;
+    text-align: right;
+    line-height: 20px;
+    float: right;
+    transition: all 0.1s cubic-bezier(0.95, 0.05, 0.795, 0.035);
+  }
+
+  .title {
+    float: left;
+    margin-left: 16px;
+    font-size: 16px;
+    color: #323233;
+    line-height: 24px;
+  }
+}

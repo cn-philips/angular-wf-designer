@@ -1,0 +1,74 @@
+<app-apploading [load]="load"></app-apploading>
+<nz-card class="title_warpper mb10">
+  <div>
+    <h4 class="font-weight-bold">
+      <span>Mail Approval 邮件审批</span>
+    </h4>
+  </div>
+</nz-card>
+<div class="tabs-box" *ngIf="!successOff && !lossOff">
+  <form nz-form [formGroup]="validateForm">
+    <nz-card class="pr">
+      <div nz-col nzXs="24" nzSm="24" nzMd="12">
+        <nz-form-item style="margin-bottom: 6px">
+          <nz-form-label nzSm="8" nzXl="8" nzXXl="8" nzRequired
+            ><span>Remarks</span><br />备注</nz-form-label
+          >
+          <nz-form-control nzSm="14" nzXl="14" nzXXl="14">
+            <textarea
+              nz-input
+              oninput="if(value.length>255)value=value.slice(0,255)"
+              placeholder=""
+              nzPlacement="topLeft"
+              [(ngModel)]="param.approvalComments"
+              [nzAutosize]="{ minRows: 1, maxRows: 6 }"
+              formControlName="approvalComments"
+            ></textarea>
+            <nz-form-explain
+              *ngIf="
+                validateForm.get('approvalComments')?.dirty &&
+                validateForm.get('approvalComments')?.errors
+              "
+            >
+              此选项必填字段
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzXs="24" nzSm="24" nzMd="24">
+        <nz-form-item>
+          <nz-form-label
+            nzSm="4"
+            nzXl="4"
+            nzXXl="4"
+            [nzNoColon]="true"
+          ></nz-form-label>
+          <nz-form-control nzSm="7" nzXl="7" nzXXl="7">
+            <button
+              nzType="primary"
+              nz-button
+              [nzLoading]="nzLoading"
+              (click)="handleOkWinCheck()"
+            >
+              Reject 拒绝
+            </button>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </nz-card>
+  </form>
+</div>
+<div class="iconflex" *ngIf="successOff">
+  <div>
+    <i nz-icon class="success" nzType="check-circle" nzTheme="outline"></i>
+    <p>请求成功!</p>
+    <a href="javascript:" class="mt10 goHome" (click)="goHome()">返回到首页</a>
+  </div>
+</div>
+<div class="iconflex" *ngIf="lossOff">
+  <div>
+    <i nz-icon class="loss" nzType="close-circle" nzTheme="outline"></i>
+    <p>请求失败!</p>
+    <a href="javascript:" class="mt10 goHome" (click)="goHome()">返回到首页</a>
+  </div>
+</div>

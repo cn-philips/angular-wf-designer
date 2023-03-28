@@ -1,0 +1,167 @@
+<button nz-button (click)="show()" *ngIf="!disabled">添加水印</button>
+<div class="upload-file-list" *ngIf="signedFileList.length > 0">
+  <div *ngFor="let file of signedFileList" class="file-item">
+    <span class="file-name" [title]="file.fileName">
+      <i nz-icon nzType="paper-clip"></i>
+      {{ file.fileName }}
+    </span>
+    <span class="file-btn">
+      <i
+        nz-icon
+        nzType="download"
+        nzTheme="outline"
+        (click)="handleDownloadSignedFile(file)"
+        title="下载附件"
+      ></i>
+      <i
+        nz-icon
+        *ngIf="!disabled"
+        style="margin-left: 8px"
+        nzType="close"
+        (click)="handleRemoveSignedFile(file)"
+        title="删除附件"
+      ></i>
+    </span>
+  </div>
+</div>
+
+<nz-modal
+  [(nzVisible)]="visible"
+  [nzTitle]="null"
+  [nzFooter]="null"
+  [nzCancelText]="null"
+  [nzMask]="false"
+  [nzClosable]="false"
+  [nzStyle]="{ top: 0, padding: 0, margin: 0, maxWidth: '100vw' }"
+  [nzBodyStyle]="{ padding: 0 }"
+  nzClassName="esign"
+  nzWrapClassName="esign-wrap"
+  nzWidth="100%"
+>
+  <div class="esign-panel">
+    <header class="esign-header">
+      <div>{{ activeFile.fileName }}</div>
+      <div *ngIf="activeFile.attachmentComment" class="sign-positions">
+        <span class="position-label">签章位置:</span>
+        <span
+          *ngFor="let item of activeFile.attachmentComment?.split(',')"
+          class="sign-position"
+          (click)="handleTogglePage(item)"
+        >
+          第{{ item }}页
+        </span>
+      </div>
+    </header>
+    <main class="esign-body">
+      <aside class="esign-sidebar">
+        <div class="sidebar-toggler">
+          <div
+            [ngClass]="{ 'toggler-item': true, active: activeTab === 'file' }"
+            (click)="handleToggleTab('file')"
+          >
+            待签章文件
+          </div>
+          <div
+            [ngClass]="{ 'toggler-item': true, active: activeTab === 'seal' }"
+            (click)="handleToggleTab('seal')"
+          >
+            电子签名
+          </div>
+        </div>
+        <div [ngClass]="{'sidebar-right': true, 'hidden': !sideContentVisible}">
+          <div class="file-list" [hidden]="activeTab === 'seal'">
+            <div
+              *ngFor="let item of sourceFileList"
+              [ngClass]="{
+                'file-item': true,
+                active: activeFile.fileId === item.fileId
+              }"
+              (click)="handleToggleFile(item)"
+            >
+              <div
+                class="status-bar loading"
+                *ngIf="item.status === ESIGN_STATUS.LOADING"
+              >
+                <span>正在盖章</span>
+                <i nz-icon nzType="loading" nzTheme="outline"></i>
+              </div>
+              <div
+                class="status-bar success"
+                *ngIf="item.status === ESIGN_STATUS.SUCCESS"
+              >
+                <span>盖章成功</span>
+                <i nz-icon nzType="check-circle" nzTheme="outline"></i>
+              </div>
+              <div
+                class="status-bar error"
+                *ngIf="item.status === ESIGN_STATUS.FAILURE"
+              >
+                <span>盖章失败</span>
+                <i nz-icon nzType="close-circle" nzTheme="outline"></i>
+              </div>
+              <img class="file-img" src="assets/image/pdf.png" />
+              <span
+                style="font-weight: bold; color: #515151; font-size: 12px"
+                >{{ item.fileName }}</span
+              >
+            </div>
+          </div>
+
+          <div class="seal-list" [hidden]="activeTab === 'file'">
+            <div
+              *ngFor="let item of sealList"
+              [ngClass]="{
+                'seal-item': true,
+                active: activeSeal.sealId === item.sealId
+              }"
+              (click)="handleToggleSeal(item)"
+            >
+              <img [src]="item.imgSrc" />
+              <span
+                style="font-weight: bold; color: #515151; font-size: 12px"
+                >{{ item.sealName }}</span
+              >
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <section class="esign-content">
+        <app-apploading [load]="loading" [isInner]="true"></app-apploading>
+        <div [ngClass]="{ 'pdf-container': true, 'dragging': isDragging }"></div>
+      </section>
+    </main>
+
+    <footer class="esign-footer" *ngIf="activeFile.fileId">
+      <div class="toggle-icon" (click)="handleToggleSidebar()">
+        <i [hidden]="!sideContentVisible" nz-icon nzType="menu-fold" nzTheme="outline"></i>
+        <i [hidden]="sideContentVisible" nz-icon nzType="menu-unfold" nzTheme="outline"></i>
+      </div>
+      <div class="btn-wrap">
+        <button nz-button nzType="primary" (click)="handleHideDialog()">
+          关闭
+        </button>
+        <button
+          nz-button
+          nzType="primary"
+          *ngIf="activeFile.status === ESIGN_STATUS.SUCCESS"
+          (click)="handleReset()"
+        >
+          重新盖章
+        </button>
+        <button
+          nz-button
+          nzType="primary"
+          *ngIf="activeFile.status !== ESIGN_STATUS.SUCCESS"
+          [disabled]="
+            !positionMap[activeFile.fileId] ||
+            positionMap[activeFile.fileId].length === 0
+          "
+          (click)="handleSubmit()"
+        >
+          签章完成
+        </button>
+      </div>
+    </footer>
+  </div>
+</nz-modal>

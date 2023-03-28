@@ -1,0 +1,1151 @@
+<div class="import-btn-wrap" *ngIf="importBtnVisible">
+  <button nz-button nzType="primary" (click)="onShowSelectDealForm()">
+    {{ 'orderv3.components.pre-base-info-form.importDealForm' | translate }}
+  </button>
+</div>
+<form nz-form [formGroup]="basicInfo">
+  <!-- 基本信息 -->
+  <div class="selection-wrap" formGroupName="baseInfo">
+    <app-form-section [title]="'prebookv3.components.basic-info.title1' | translate" [form]="baseInfo">
+      <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8">Deal Form ID</nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <input nz-input formControlName="dealFormId" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8">Reference ID</nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <input nz-input formControlName="referenceId" placeholder="申请提交后系统自动生成" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8">
+              {{"prebookv3.components.basic-info.modality" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="16">
+              <input nz-input formControlName="dealFormModality" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8">
+              {{"prebookv3.components.basic-info.business-model" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <input nz-input disabled [ngModelOptions]="{standalone: true}"
+                [ngModel]="baseInfo.get('businessModel').value | BusinessModelPipe" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzReqiured>
+              {{"prebookv3.components.basic-info.approve-area" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <shared-select formControlName="approvalAreaConfiguration" placeholder="请选择"
+                [options]="selectOption.systemRegion" (ngModelChange)="handleSystemRegionChange($event)">
+              </shared-select>
+              <nz-form-explain
+                *ngIf="baseInfo.get('approvalAreaConfiguration')?.dirty && baseInfo.get('approvalAreaConfiguration')?.errors">
+                {{"biddingv3.components.basic-info.required" | translate}}
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8">
+              {{"prebookv3.components.basic-info.purchasing" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="16">
+              <nz-radio-group formControlName="centralizedPurchasing">
+                <label nz-radio nzValue="1">{{ 'orderv3.components.pre-base-info-form.commons.radioYes' | translate
+                  }}</label>
+                <label nz-radio nzValue="0">{{ 'orderv3.components.pre-base-info-form.commons.radioNo' | translate
+                  }}</label>
+              </nz-radio-group>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8">
+              {{"prebookv3.components.basic-info.dealer-sales" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <input nz-input disabled [ngModelOptions]="{ standalone: true }" [ngModel]="dealerSales" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8">
+              {{"prebookv3.components.basic-info.team" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <input nz-input formControlName="team" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8">
+              {{"prebookv3.components.basic-info.moda" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="16">
+              <input nz-input formControlName="modality" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <!-- <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8">创建人Cycle Group</nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <input nz-input formControlName="dealFormSalesCycleGroup" />
+            </nz-form-control>
+          </nz-form-item>
+        </div> -->
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8">
+              {{"prebookv3.components.basic-info.big-area" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <input nz-input formControlName="bigArea" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8">
+              {{"prebookv3.components.basic-info.small-area" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <input nz-input formControlName="smallArea" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8">
+              {{"prebookv3.components.basic-info.province" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="16">
+              <shared-select formControlName="dealFormSalesProvince" placeholder="请选择" [nzShowSearch]="true"
+                [options]="selectOption.customerProvince"></shared-select>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+    </app-form-section>
+  </div>
+
+  <!-- 经销商 -->
+  <div class="selection-wrap dealer-info" formGroupName="dealerInfo" *ngIf="businessModel != BUSINESS_MODEL_DIRECT">
+    <app-form-section [title]="'prebookv3.components.basic-info.title2' | translate" [form]="dealerInfo">
+      <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired>
+              {{ 'orderv3.components.pre-base-info-form.dealerInfo.dealerName' | translate }}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <nz-input-group style="width: 100%" [nzSuffix]="clearDealerBtn" [nzAddOnAfter]="selectDealerBtn">
+                <input nz-input formControlName="dealerName" readonly />
+              </nz-input-group>
+              <ng-template #selectDealerBtn>
+                <button nz-button *ngIf="!disabled" nzType="primary" class="ml-md" (click)="onShowSelectDealerModal()">
+                  {{"prebookv3.components.basic-info.deal" | translate}}
+                </button>
+              </ng-template>
+              <nz-form-explain *ngIf="dealerInfo.get('dealerName')?.dirty && dealerInfo.get('dealerName')?.errors">
+                {{"biddingv3.components.basic-info.required" | translate}}
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8">
+              {{"prebookv3.components.basic-info.sap" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <input nz-input formControlName="dealerSapCode" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired>
+              {{"prebookv3.components.basic-info.taxnum" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="16">
+              <input nz-input formControlName="dealerTaxNum" />
+              <nz-form-explain *ngIf="dealerInfo.get('dealerTaxNum')?.dirty && dealerInfo.get('dealerTaxNum')?.errors">
+                {{"biddingv3.components.basic-info.required" | translate}}
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8">DDP Status</nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <input nz-input formControlName="dealerDdpStatus" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8">
+              {{"prebookv3.components.basic-info.ddp-date" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <input nz-input formControlName="dealerDdpValidityDate" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired>
+              {{"prebookv3.components.basic-info.address" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="16">
+              <input nz-input formControlName="dealerAddress" />
+              <nz-form-explain
+                *ngIf="dealerInfo.get('dealerAddress')?.dirty && dealerInfo.get('dealerAddress')?.errors">
+                {{"biddingv3.components.basic-info.required" | translate}}
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired>
+              {{"prebookv3.components.basic-info.phone" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <input nz-input formControlName="dealerPhone" />
+              <nz-form-explain *ngIf="dealerInfo.get('dealerPhone')?.dirty && dealerInfo.get('dealerPhone')?.errors">
+                {{"biddingv3.components.basic-info.required" | translate}}
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired>
+              {{"prebookv3.components.basic-info.email" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <input nz-input formControlName="dealerEmail" />
+              <nz-form-explain *ngIf="dealerInfo.get('dealerEmail')?.dirty && dealerInfo.get('dealerEmail')?.errors">
+                {{"biddingv3.components.basic-info.required" | translate}}
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired>
+              {{"prebookv3.components.basic-info.contact" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="16">
+              <input nz-input formControlName="dealerContact" />
+              <nz-form-explain
+                *ngIf="dealerInfo.get('dealerContact')?.dirty && dealerInfo.get('dealerContact')?.errors">
+                {{"biddingv3.components.basic-info.required" | translate}}
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired>
+              {{"prebookv3.components.basic-info.purchase" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <input nz-input formControlName="purchaseOrderSignatory" />
+              <nz-form-explain
+                *ngIf="dealerInfo.get('purchaseOrderSignatory')?.dirty && dealerInfo.get('purchaseOrderSignatory')?.errors">
+                {{"biddingv3.components.basic-info.required" | translate}}
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired>
+              {{"prebookv3.components.basic-info.position" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <input nz-input formControlName="purchaseOrderSignatoryPosition" />
+              <nz-form-explain
+                *ngIf="dealerInfo.get('purchaseOrderSignatoryPosition')?.dirty && dealerInfo.get('purchaseOrderSignatoryPosition')?.errors">
+                {{"biddingv3.components.basic-info.required" | translate}}
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+
+      <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+        <div nz-col nzSpan="24">
+          <shared-dealer-table
+            [subTierSubject]="subTierSubject"
+            [formGroup]="dealerInfo"
+            arrayName="subTierInfo"
+          ></shared-dealer-table>
+        </div>
+      </div>
+    </app-form-section>
+  </div>
+
+  <!-- 合同买方 -->
+  <div class="selection-wrap" formGroupName="contractBuyer" *ngIf="businessModel == BUSINESS_MODEL_DIRECT">
+    <app-form-section [title]="'prebookv3.components.basic-info.title3' | translate" [form]="contractBuyer">
+      <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired>
+              {{"prebookv3.components.basic-info.title3" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <input nz-input formControlName="contractBuyer" />
+              <nz-form-explain
+                *ngIf="contractBuyer.get('contractBuyer')?.dirty && contractBuyer.get('contractBuyer')?.errors">
+                {{"biddingv3.components.basic-info.required" | translate}}
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired>
+              {{"prebookv3.components.basic-info.sap-code" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <input nz-input formControlName="contractBuyerSapCode" />
+              <nz-form-explain
+                *ngIf="contractBuyer.get('contractBuyerSapCode')?.dirty && contractBuyer.get('contractBuyerSapCode')?.errors">
+                {{"biddingv3.components.basic-info.required" | translate}}
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired>
+              {{"prebookv3.components.basic-info.buyer-tax" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="16">
+              <input nz-input formControlName="contractBuyerTaxNum" />
+              <nz-form-explain
+                *ngIf="contractBuyer.get('contractBuyerTaxNum')?.dirty && contractBuyer.get('contractBuyerTaxNum')?.errors">
+                {{"biddingv3.components.basic-info.required" | translate}}
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired>
+              {{"prebookv3.components.basic-info.buyer-address" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <input nz-input formControlName="contractBuyerAddress" />
+              <nz-form-explain
+                *ngIf="contractBuyer.get('contractBuyerAddress')?.dirty && contractBuyer.get('contractBuyerAddress')?.errors">
+                {{"biddingv3.components.basic-info.required" | translate}}
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired>
+              {{"prebookv3.components.basic-info.buyer-phone" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <input nz-input formControlName="contractBuyerPhone" />
+              <nz-form-explain
+                *ngIf="contractBuyer.get('contractBuyerPhone')?.dirty && contractBuyer.get('contractBuyerPhone')?.errors">
+                {{"biddingv3.components.basic-info.required" | translate}}
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired>
+              {{"prebookv3.components.basic-info.buyer-contact" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="16">
+              <input nz-input formControlName="contractBuyerContact" />
+              <nz-form-explain
+                *ngIf="contractBuyer.get('contractBuyerContact')?.dirty && contractBuyer.get('contractBuyerContact')?.errors">
+                {{"biddingv3.components.basic-info.required" | translate}}
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired>
+              {{"prebookv3.components.basic-info.buyer-email" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <input nz-input formControlName="contractBuyerEmail" />
+              <nz-form-explain
+                *ngIf="contractBuyer.get('contractBuyerEmail')?.dirty && contractBuyer.get('contractBuyerEmail')?.errors">
+                {{"biddingv3.components.basic-info.required" | translate}}
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired>
+              {{"prebookv3.components.basic-info.signatory" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <input nz-input formControlName="contractBuyerSignatory" />
+              <nz-form-explain
+                *ngIf="contractBuyer.get('contractBuyerSignatory')?.dirty && contractBuyer.get('contractBuyerSignatory')?.errors">
+                {{"biddingv3.components.basic-info.required" | translate}}
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired>
+              {{"prebookv3.components.basic-info.buyer-position" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="16">
+              <input nz-input formControlName="contractBuyerSignatoryPosition" />
+              <nz-form-explain
+                *ngIf="contractBuyer.get('contractBuyerSignatoryPosition')?.dirty && contractBuyer.get('contractBuyerSignatoryPosition')?.errors">
+                {{"biddingv3.components.basic-info.required" | translate}}
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+    </app-form-section>
+  </div>
+
+  <!-- 外贸公司 -->
+  <div class="selection-wrap" formGroupName="foreignCompany" *ngIf="currencySystem == 'USD'">
+    <app-form-section [title]="'prebookv3.components.basic-info.title4' | translate" [form]="foreignCompany">
+      <div nz-row nzType="flex" nzJustify="start" nzAlign="middle" *ngIf="businessModel != BUSINESS_MODEL_DIRECT">
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" [nzNoColon]="true"></nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <shared-checkbox formControlName="foreignTradeCorpSameDealer" [trueValue]="1" [falseValue]="0"
+                [label]="'orderv3.components.pre-base-info-form.foreignCompany.foreignTradeCorpSameDealer' | translate"
+                (ngModelChange)="syncForeignCompanyWithDealer($event)">
+              </shared-checkbox>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+
+      <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired>
+            {{ 'orderv3.components.pre-base-info-form.foreignCompany.foreignTradeCorpName' | translate }}
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <nz-input-group style="width: 100%" [nzSuffix]="clearCompanyBtn" [nzAddOnAfter]="selectCompanyBtn">
+              <input type="text" nz-input formControlName="foreignTradeCorpName"
+                (blur)="onForeignCompanyBlur($event)" />
+            </nz-input-group>
+            <ng-template #clearCompanyBtn>
+              <i nz-icon nz-tooltip class="ant-input-clear-icon" nzTheme="fill" nzType="close-circle"
+                *ngIf="!disabled && foreignCompany.get('foreignTradeCorpName').value"
+                (click)="onClearForeignCompany(i)"></i>
+            </ng-template>
+            <ng-template #selectCompanyBtn>
+              <button *ngIf="!disabled" nz-button nzType="primary" class="ml-md" (click)="onShowIEPool()">
+                {{"prebookv3.components.basic-info.ie-pool" | translate}}
+              </button>
+            </ng-template>
+            <nz-form-explain
+              *ngIf="foreignCompany.get('foreignTradeCorpName')?.dirty && foreignCompany.get('foreignTradeCorpName')?.errors">
+              {{"biddingv3.components.basic-info.required" | translate}}
+            </nz-form-explain>
+          </nz-form-control>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-label nzXs="24" nzSm="24" nzMd="8" [nzNoColon]="true"></nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <shared-checkbox formControlName="companyNotInIePool" [trueValue]="1" [falseValue]="0"
+              [label]="'orderv3.components.pre-base-info-form.foreignCompany.companyNotInIePool' | translate">
+            </shared-checkbox>
+          </nz-form-control>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired>{{
+              'orderv3.components.pre-base-info-form.foreignCompany.foreignTradeCorpSapCode' | translate }}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="16">
+              <input nz-input formControlName="foreignTradeCorpSapCode" />
+              <nz-form-explain
+                *ngIf="foreignCompany.get('foreignTradeCorpSapCode')?.dirty && foreignCompany.get('foreignTradeCorpSapCode')?.errors">
+                {{"biddingv3.components.basic-info.required" | translate}}
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8">
+              {{ 'orderv3.components.pre-base-info-form.foreignCompany.foreignTradeCorpDdpStatus' | translate }}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <input nz-input formControlName="foreignTradeCorpDdpStatus" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8">
+              {{ 'orderv3.components.pre-base-info-form.foreignCompany.foreignTradeCorpDdpValidityDate' | translate }}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <shared-date-picker formControlName="foreignTradeCorpDdpValidityDate"></shared-date-picker>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired>
+              {{ 'orderv3.components.pre-base-info-form.foreignCompany.foreignTradeCorpTaxNum' | translate }}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="16">
+              <input nz-input formControlName="foreignTradeCorpTaxNum" />
+              <nz-form-explain
+                *ngIf="foreignCompany.get('foreignTradeCorpTaxNum')?.dirty && foreignCompany.get('foreignTradeCorpTaxNum')?.errors">
+                {{"biddingv3.components.basic-info.required" | translate}}
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired>
+              {{ 'orderv3.components.pre-base-info-form.foreignCompany.foreignTradeCorpAddress' | translate }}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <input nz-input formControlName="foreignTradeCorpAddress" />
+              <nz-form-explain
+                *ngIf="foreignCompany.get('foreignTradeCorpAddress')?.dirty && foreignCompany.get('foreignTradeCorpAddress')?.errors">
+                {{"biddingv3.components.basic-info.required" | translate}}
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired>
+              {{ 'orderv3.components.pre-base-info-form.foreignCompany.foreignTradeCorpPhone' | translate }}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <input nz-input formControlName="foreignTradeCorpPhone" />
+              <nz-form-explain
+                *ngIf="foreignCompany.get('foreignTradeCorpPhone')?.dirty && foreignCompany.get('foreignTradeCorpPhone')?.errors">
+                {{"biddingv3.components.basic-info.required" | translate}}
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired>
+              {{ 'orderv3.components.pre-base-info-form.foreignCompany.foreignTradeCorpContact' | translate }}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="16">
+              <input nz-input formControlName="foreignTradeCorpContact" />
+              <nz-form-explain
+                *ngIf="foreignCompany.get('foreignTradeCorpContact')?.dirty && foreignCompany.get('foreignTradeCorpContact')?.errors">
+                {{"biddingv3.components.basic-info.required" | translate}}
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired>
+              {{ 'orderv3.components.pre-base-info-form.foreignCompany.foreignTradeCorpEmail' | translate }}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <input nz-input formControlName="foreignTradeCorpEmail" />
+              <nz-form-explain
+                *ngIf="foreignCompany.get('foreignTradeCorpEmail')?.dirty && foreignCompany.get('foreignTradeCorpEmail')?.errors">
+                {{"biddingv3.components.basic-info.required" | translate}}
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired>
+              {{ 'orderv3.components.pre-base-info-form.foreignCompany.importAgreementSignName' | translate }}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <input nz-input formControlName="importAgreementSignName" />
+              <nz-form-explain
+                *ngIf="foreignCompany.get('importAgreementSignName')?.dirty && foreignCompany.get('importAgreementSignName')?.errors">
+                {{"biddingv3.components.basic-info.required" | translate}}
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired>
+              {{ 'orderv3.components.pre-base-info-form.foreignCompany.importAgreementSignPosition' | translate }}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="16">
+              <input nz-input formControlName="importAgreementSignPosition" />
+              <nz-form-explain
+                *ngIf="foreignCompany.get('importAgreementSignPosition')?.dirty && foreignCompany.get('importAgreementSignPosition')?.errors">
+                {{"biddingv3.components.basic-info.required" | translate}}
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+
+      <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+        <div nz-col nzXs="24" nzSm="24" nzMd="24">
+          <div class="warning inline warning-wrap">
+            <div>注意：</div>
+            <div>若正式OIT时更改外贸，则无法保留Pre-book的生产期；</div>
+            <div>若正式OIT时更改外贸，发现外贸不符合外贸公司选择的条件，则无法保留Pre-book的生产期</div>
+          </div>
+        </div>
+      </div>
+    </app-form-section>
+  </div>
+
+  <div class="selection-wrap" formGroupName="finalUser">
+    <app-form-section [title]="'prebookv3.components.basic-info.title5' | translate" [form]="finalUser">
+      <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired>
+              {{ 'orderv3.components.pre-base-info-form.endUser.endUser' | translate }}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <nz-input-group style="width: 100%" [nzAddOnAfter]="selectHospitalBtn">
+                <input nz-input readonly formControlName="endUser" />
+              </nz-input-group>
+              <ng-template #selectHospitalBtn>
+                <button *ngIf="!disabled" nz-button nzType="primary" class="ml-md"
+                  (click)="onShowSelectHospitalModal()">
+                  {{"prebookv3.components.basic-info.hospital" | translate}}
+                </button>
+              </ng-template>
+              <nz-form-explain *ngIf="finalUser.get('endUser')?.dirty && finalUser.get('endUser')?.errors">
+                {{"biddingv3.components.basic-info.required" | translate}}
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8">
+              {{"prebookv3.components.basic-info.end-user" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <input nz-input formControlName="endUserId" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8">
+              {{"prebookv3.components.basic-info.user-sap" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="16">
+              <input nz-input formControlName="endUserSapCode" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired>
+              {{"prebookv3.components.basic-info.user-taxnum" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <input nz-input formControlName="endUserTaxNum" />
+              <nz-form-explain *ngIf="finalUser.get('endUserTaxNum')?.dirty && finalUser.get('endUserTaxNum')?.errors">
+                {{"biddingv3.components.basic-info.required" | translate}}
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8">
+              {{"prebookv3.components.basic-info.hospital-type" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <input nz-input formControlName="hospitalType" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8">Segment</nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="16">
+              <input nz-input formControlName="segment" />
+              <nz-form-explain style="color: #f5222d" *ngIf="finalUser?.errors?.segmentError">
+                请确认CD中的Segment信息是否缺失
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired>
+              {{"prebookv3.components.basic-info.user-address" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <input nz-input formControlName="endUserAddress" />
+              <nz-form-explain
+                *ngIf="finalUser.get('endUserAddress')?.dirty && finalUser.get('endUserAddress')?.errors">
+                {{"biddingv3.components.basic-info.required" | translate}}
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired>
+              {{"prebookv3.components.basic-info.user-phone" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <input nz-input formControlName="endUserPhone" />
+              <nz-form-explain *ngIf="finalUser.get('endUserPhone')?.dirty && finalUser.get('endUserPhone')?.errors">
+                {{"biddingv3.components.basic-info.required" | translate}}
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired>
+              {{"prebookv3.components.basic-info.user-email" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="16">
+              <input nz-input formControlName="endUserEmail" />
+              <nz-form-explain *ngIf="finalUser.get('endUserEmail')?.dirty && finalUser.get('endUserEmail')?.errors">
+                {{"biddingv3.components.basic-info.required" | translate}}
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired>
+              {{"prebookv3.components.basic-info.user-contact" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <input nz-input formControlName="endUserContact" />
+              <nz-form-explain
+                *ngIf="finalUser.get('endUserContact')?.dirty && finalUser.get('endUserContact')?.errors">
+                {{"biddingv3.components.basic-info.required" | translate}}
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+    </app-form-section>
+  </div>
+
+  <div class="selection-wrap" formGroupName="priceApprovaInfo">
+    <app-form-section [title]="'prebookv3.components.basic-info.title6' | translate" [form]="priceApprovaInfo">
+      <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8">
+              {{"prebookv3.components.basic-info.currency" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <input nz-input formControlName="currencySystem" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8">
+              {{"prebookv3.components.basic-info.vat" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <input nz-input formControlName="vatRate" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <!-- Deal Form总价 -->
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8">
+              {{"prebookv3.components.basic-info.price" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="16">
+              <input
+                *ngIf="currencySystem == 'USD'"
+                nz-input
+                disabled
+                [ngModelOptions]="{standalone: true}"
+                [ngModel]="priceApprovaInfo.getRawValue().dealPriceUsd|number:'0.2-2'|priceAuthority: 'deal': baseInfo.getRawValue().modality"
+              />
+              <input
+                *ngIf="currencySystem != 'USD'"
+                nz-input
+                disabled
+                [ngModelOptions]="{standalone: true}"
+                [ngModel]="priceApprovaInfo.getRawValue().dealPriceCny|number:'0.2-2'|priceAuthority: 'deal': baseInfo.getRawValue().modality"
+              />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8">
+              {{"prebookv3.components.basic-info.solution" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <input nz-input formControlName="financialSolutionName" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8">
+              {{"prebookv3.components.basic-info.cny" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <input
+                *ngIf="currencySystem == 'USD'"
+                nz-input
+                disabled
+                [ngModelOptions]="{standalone: true}"
+                [ngModel]="priceApprovaInfo.getRawValue().financialSolutionUsd|number:'0.2-2'|priceAuthority:'details': null"
+              />
+              <input
+                *ngIf="currencySystem != 'USD'"
+                nz-input
+                disabled
+                [ngModelOptions]="{standalone: true}"
+                [ngModel]="priceApprovaInfo.getRawValue().financialSolutionCny|number:'0.2-2'|priceAuthority:'details': null"
+              />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+
+      <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8">
+              {{"prebookv3.components.basic-info.total" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <input
+                nz-input
+                disabled
+                [ngModelOptions]="{standalone: true}"
+                [ngModel]="priceApprovaInfo.getRawValue().tradeInTotal|number:'0.2-2'|priceAuthority:'details': null"
+              />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8">
+              {{"prebookv3.components.basic-info.rebate" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <input
+                nz-input
+                disabled
+                [ngModelOptions]="{standalone: true}"
+                [ngModel]="priceApprovaInfo.getRawValue().rebateTotal|number:'0.2-2'|priceAuthority:'details': null"
+              />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8">
+              {{"prebookv3.components.basic-info.sample-check" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="16">
+              <nz-radio-group formControlName="sampleCheck">
+                <label nz-radio nzValue="1">{{ 'orderv3.components.pre-base-info-form.commons.radioYes' | translate
+                  }}</label>
+                <label nz-radio nzValue="0">{{ 'orderv3.components.pre-base-info-form.commons.radioNo' | translate
+                  }}</label>
+              </nz-radio-group>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <!-- <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8">本次申请的产品、数量、价格</nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <input nz-input disabled placeholder="请查看产品tab信息" />
+            </nz-form-control>
+          </nz-form-item>
+        </div> -->
+      </div>
+
+      <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+        <div nz-col nzXXl="24" nzXl="24" nzSm="24" nzMd="24">
+          <div class="warning inline warning-wrap">
+            <p>
+              注意：
+            </p>
+            <p>
+              若正式OIT时更配置，则无法保留Pre-book的生产期
+            </p>
+          </div>
+        </div>
+      </div>
+    </app-form-section>
+  </div>
+
+  <div class="selection-wrap" formGroupName="prebookInfo">
+    <app-form-section [title]="'prebookv3.components.basic-info.title7' | translate" [form]="prebookInfo">
+      <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired>
+              {{"prebookv3.components.basic-info.reason" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <shared-select formControlName="prebookReason" placeholder="请选择" [options]="selectOption.prebookReason">
+              </shared-select>
+              <nz-form-explain
+                *ngIf="prebookInfo.get('prebookReason')?.dirty && prebookInfo.get('prebookReason')?.errors">
+                {{"biddingv3.components.basic-info.required" | translate}}
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+      <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+        <div nz-col nzXs="24" nzSm="24" nzMd="16">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="4">
+              {{"prebookv3.components.basic-info.remark" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="19">
+              <textarea [nzAutosize]="{ minRows: 4, maxRows: 6 }" nz-input style="width: 100%"
+                formControlName="prebookRemark"></textarea>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+
+      <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired>
+              {{"prebookv3.components.basic-info.oit-month" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <shared-date-picker format="YYYY-MM" mode="month" formControlName="expectedOitMonth"></shared-date-picker>
+              <nz-form-explain
+                *ngIf="prebookInfo.get('expectedOitMonth')?.dirty && prebookInfo.get('expectedOitMonth')?.errors">
+                {{"biddingv3.components.basic-info.required" | translate}}
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired>
+              {{"prebookv3.components.basic-info.transport" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <shared-select formControlName="transportationMode" placeholder="请选择"
+                [options]="selectOption.transportationMode"></shared-select>
+              <nz-form-explain
+                *ngIf="prebookInfo.get('transportationMode')?.dirty && prebookInfo.get('transportationMode')?.errors">
+                {{"biddingv3.components.basic-info.required" | translate}}
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8">
+              {{"prebookv3.components.basic-info.arrival" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="16">
+              <shared-date-picker formControlName="requestedArrivalDate"></shared-date-picker>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired>
+              {{"prebookv3.components.basic-info.icf" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <shared-date-picker format="YYYY-MM" mode="month" formControlName="expectedIcfMonth"></shared-date-picker>
+              <nz-form-explain
+                *ngIf="prebookInfo.get('expectedIcfMonth')?.dirty && prebookInfo.get('expectedIcfMonth')?.errors">
+                {{"biddingv3.components.basic-info.required" | translate}}
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired>
+              {{"prebookv3.components.basic-info.payment-date" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <shared-date-picker formControlName="downpaymentDate"></shared-date-picker>
+              <nz-form-explain
+                *ngIf="prebookInfo.get('downpaymentDate')?.dirty && prebookInfo.get('downpaymentDate')?.errors">
+                {{"biddingv3.components.basic-info.required" | translate}}
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired>
+              {{"prebookv3.components.basic-info.final-date" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="16">
+              <shared-date-picker formControlName="finalPaymentDate"></shared-date-picker>
+              <nz-form-explain
+                *ngIf="prebookInfo.get('finalPaymentDate')?.dirty && prebookInfo.get('finalPaymentDate')?.errors">
+                {{"biddingv3.components.basic-info.required" | translate}}
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+
+      <div nz-row nzType="flex" nzJustify="start" nzAlign="middle" *ngIf="businessModel === BUSINESS_MODEL_DIRECT">
+        <div nz-col nzXs="24" nzSm="24" nzMd="16">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="4" nzRequired>
+              {{"prebookv3.components.basic-info.fines" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="19">
+              <textarea [nzAutosize]="{ minRows: 4, maxRows: 6 }" nz-input style="width: 100%"
+                formControlName="latePaymentFines"></textarea>
+              <nz-form-explain
+                *ngIf="prebookInfo.get('latePaymentFines')?.dirty && prebookInfo.get('latePaymentFines')?.errors">
+                {{ "biddingv3.components.basic-info.required" | translate }}
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+
+      <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8">
+              {{"prebookv3.components.basic-info.support" | translate}}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <shared-upload-file type="button" [title]="'prebookv3.components.basic-info.upload' | translate"
+                formControlName="supportFiles"></shared-upload-file>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+    </app-form-section>
+  </div>
+</form>
+
+<prebook-v3-select-deal-form #selectDeal (select)="onSelectDealForm($event)"></prebook-v3-select-deal-form>
+<shared-select-dealer #selectDealer (select)="onSelectDealer($event)"></shared-select-dealer>
+<shared-select-hospital [modality]="modalityList" #selectHospital (select)="onSelectHospital($event)"></shared-select-hospital>
+<shared-select-foreign-company #selectForeignCompany (select)="onSelectForeignCompany($event)">
+</shared-select-foreign-company>

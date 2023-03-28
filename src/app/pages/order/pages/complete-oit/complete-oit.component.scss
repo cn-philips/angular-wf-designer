@@ -1,0 +1,24 @@
+.pr {
+    position: relative;
+
+    .cancel,
+    .submit,
+    .save {
+        position: absolute;
+        right: 10px;
+        top: 0px;
+        z-index: 999;
+    }
+
+    .cancel {
+        right: 200px;
+    }
+
+    .submit {
+        right: 10px
+    }
+
+    .save {
+        right: 100px;
+    }
+}

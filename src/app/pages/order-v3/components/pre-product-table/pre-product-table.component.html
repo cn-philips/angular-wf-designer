@@ -1,0 +1,478 @@
+<form nz-form [formGroup]="productGroup" [nzNoColon]="true">
+  <ng-template [ngIf]="productGroup.getRawValue().marketBundleInfo.length>0">
+    <nz-table [nzData]="productGroup.getRawValue().marketBundleInfo" nzTableLayout="fixed" [nzScroll]="{ x:'4660px'}"
+      [nzShowPagination]="false" nzBordered>
+      <thead>
+        <tr>
+          <th nzLeft="0px" nzAlign="center" nzWidth="100px">
+            {{'orderv3.components.pre-product-table.primaryOpportunity' | translate}}</th>
+          <th nzAlign="center" nzWidth="180px" nzLeft="100px">
+            {{'orderv3.components.pre-product-table.marketBundleName' | translate}}</th>
+          <th nzAlign="center" style="width:200px">
+            <nz-form-label [nzRequired]="orderBaseinfo.getRawValue().isRequired" [nzNoColon]="true">
+              {{'orderv3.components.pre-product-table.productModel' | translate}}
+            </nz-form-label>
+          </th>
+          <th nzAlign="center" nzWidth="80px">{{'orderv3.components.pre-product-table.marketBundleAmount' | translate}}
+          </th>
+          <th nzAlign="center" nzWidth="180px" *ngIf="orderBaseinfo.getRawValue().orderModality=='CC'">
+            {{'orderv3.components.pre-product-table.standardConfiguration' | translate}}</th>
+          <th nzAlign="center" nzWidth="180px" *ngIf="orderBaseinfo.getRawValue().orderModality=='CC'">
+            {{'orderv3.components.pre-product-table.option' | translate}}</th>
+          <th nzAlign="center" nzWidth="180px" *ngIf="orderBaseinfo.getRawValue().orderModality=='US'">
+            {{'orderv3.components.pre-product-table.wbsNo' | translate}}</th>
+          <th nzAlign="center" nzWidth="180px"
+            *ngIf="baseInfoFromData.getRawValue().businessModel=='DISTRIBUTOR'">
+            {{'orderv3.components.pre-product-table.dtcDealerAgreementNo' | translate}}</th>
+          <th nzAlign="center" style="width:280px"
+            *ngIf="baseInfoFromData.getRawValue().businessModel=='DISTRIBUTOR'">
+            {{'orderv3.components.pre-product-table.newDealerAgreementNo' | translate}}</th>
+          <th nzAlign="center" nzWidth="200px" *ngIf="orderBaseinfo.getRawValue().orderModality=='PD&IGT'">
+            {{'orderv3.components.pre-product-table.PSM' | translate}}</th>
+          <th nzAlign="center" nzWidth="180px" *ngIf="orderBaseinfo.getRawValue().orderModality=='US'">
+            {{'orderv3.components.pre-product-table.clinicalClassification' | translate}}</th>
+          <th nzAlign="center" nzWidth="180px" *ngIf="orderBaseinfo.getRawValue().orderModality=='US'">
+            <nz-form-label  nzRequired="true" [nzNoColon]="true">{{'orderv3.components.pre-product-table.firstLevelDepartment' | translate}}
+            </nz-form-label>
+          </th>
+          <th nzAlign="center" nzWidth="200px" *ngIf="orderBaseinfo.getRawValue().orderModality=='US'">
+            <nz-form-label  nzRequired="true" [nzNoColon]="true">{{'orderv3.components.pre-product-table.secondaryDepartment' | translate}}
+            </nz-form-label>
+          </th>
+          <th nzAlign="center" nzWidth="200px">{{'orderv3.components.pre-product-table.productConfig' | translate}}</th>
+          <th nzAlign="center" nzWidth="200px">{{'orderv3.components.pre-product-table.marketBundleBmc' | translate}}
+          </th>
+          <th nzAlign="center" nzWidth="200px">
+            <nz-form-label  [nzRequired]="orderBaseinfo.getRawValue().isRequired" [nzNoColon]="true">
+              {{'orderv3.components.pre-product-table.medicalDeviceName' | translate}}
+            </nz-form-label>
+          </th>
+          <th nzAlign="center" nzWidth="240px">
+            <nz-form-label  [nzRequired]="orderBaseinfo.getRawValue().isRequired" [nzNoColon]="true">
+              {{'orderv3.components.pre-product-table.nmpaNum' | translate}}
+            </nz-form-label>
+          </th>
+          <th nzAlign="center" nzWidth="200px">
+            <nz-form-label  [nzRequired]="orderBaseinfo.getRawValue().isRequired" [nzNoColon]="true">
+              {{'orderv3.components.pre-product-table.nmpaValidityDate' | translate}}
+            </nz-form-label>
+          </th>
+          <th nzAlign="center" nzWidth="200px">{{'orderv3.components.pre-product-table.simulationId' | translate}}</th>
+          <th nzAlign="center" nzWidth="200px">{{'orderv3.components.pre-product-table.marketBundleId' | translate}}
+          </th>
+          <th nzAlign="center" nzWidth="200px">{{'orderv3.components.pre-product-table.opportunityId' | translate}}</th>
+          <th nzAlign="center" nzWidth="200px">
+            <nz-form-label  [nzRequired]="orderBaseinfo.getRawValue().businessOpportunityRequired" [nzNoColon]="true">
+              {{'orderv3.components.pre-product-table.businessOpportunityHierarchyLink' | translate}}
+            </nz-form-label>
+          </th>
+          <th nzAlign="center" nzWidth="200px">{{'orderv3.components.pre-product-table.netPrice' | translate}}</th>
+          <th nzAlign="center" nzWidth="200px">{{'orderv3.components.pre-product-table.promotions' | translate}}</th>
+          <th nzAlign="center" nzWidth="200px">{{'orderv3.components.pre-product-table.rebate' | translate}}</th>
+          <th nzAlign="center" nzWidth="200px">{{'orderv3.components.pre-product-table.tradeIn' | translate}}</th>
+          <th *appPermissionsIf="'config_file'" nzAlign="center" nzWidth="200px" style="width:200px;word-break: break-word">
+            {{orderBaseinfo.getRawValue().orderModality=='PD&IGT'?('orderv3.components.pre-product-table.configFileWord' | translate):('orderv3.components.pre-product-table.configFile' | translate)}}
+          </th>
+        </tr>
+      </thead>
+      <tbody formArrayName="marketBundleInfo">
+        <ng-container *ngFor="let orderInfo of marketBundleInfo.controls;let i=index;" [formGroupName]="i">
+          <tr>
+            <td nzAlign="center" nzLeft="0px">
+              <div *ngIf="btnshow()" (click)="hostName(i)" class="selectbox">
+                <span class="select"
+                  [ngClass]="{'curr':orderInfo.getRawValue().primaryOpportunity=='true','disa':orderInfo.get('primaryOpportunity').disabled}">
+                  <span *ngIf="orderInfo.getRawValue().primaryOpportunity=='true'" class="radio"></span>
+                </span>
+                <span>{{'orderv3.components.pre-product-table.primaryOpportunity' | translate}}</span>
+              </div>
+              <div *ngIf="!btnshow()">
+                <label nz-checkbox
+                  formControlName="primaryOpportunity">{{'orderv3.components.pre-product-table.primaryOpportunity' | translate}}</label>
+              </div>
+            </td>
+            <td nzAlign="center" nzLeft="100px">
+              <nz-form-item class="margin0">
+                <nz-form-control>
+                  {{orderInfo.getRawValue().marketBundleName}}
+                </nz-form-control>
+              </nz-form-item>
+            </td>
+            <td nzAlign="center">
+              <nz-form-item class="margin0">
+                <nz-form-control>
+                  <input
+                    nz-input
+                    formControlName="productModel"
+                    maxlength="255" />
+                  <nz-form-explain
+                    *ngIf="
+                      orderInfo.get('productModel')?.dirty &&
+                      orderInfo.get('productModel')?.errors
+                    ">
+                    此选项必填字段
+                  </nz-form-explain>                  
+                </nz-form-control>
+              </nz-form-item>
+            </td>
+            <td nzAlign="center">
+              <nz-form-item class="margin0">
+                <nz-form-control>
+                  {{orderInfo.getRawValue().marketBundleAmount}}
+                </nz-form-control>
+              </nz-form-item>
+            </td>
+            <td nzAlign="center" *ngIf="orderBaseinfo.getRawValue().orderModality=='CC'">
+              <nz-form-item class="margin0">
+                <nz-form-control>
+                  <ng-container
+                    *ngIf="orderInfo.getRawValue().productInfo&&orderInfo.getRawValue().productInfo.length>0">
+                    <a href="javascript:" (click)="cheakProudOption(i)">点击查看</a>
+                  </ng-container>
+                </nz-form-control>
+              </nz-form-item>
+            </td>
+            <td nzAlign="center" *ngIf="orderBaseinfo.getRawValue().orderModality=='CC'">
+              <nz-form-item class="margin0">
+                <nz-form-control>
+                  <ng-container *ngIf="orderInfo.getRawValue().optionInfo&&orderInfo.getRawValue().optionInfo.length>0">
+                    <a href="javascript:" (click)="cheakOption(i)">点击查看</a>
+                  </ng-container>
+                </nz-form-control>
+              </nz-form-item>
+            </td>
+            <td nzAlign="center" *ngIf="orderBaseinfo.getRawValue().orderModality=='US'">
+              <nz-form-item class="margin0">
+                <nz-form-control>
+                  {{orderInfo.getRawValue().wbsNo}}
+                </nz-form-control>
+              </nz-form-item>
+            </td>
+            <td nzAlign="center"
+              *ngIf="baseInfoFromData.getRawValue().businessModel=='DISTRIBUTOR'">
+              <nz-form-item class="margin0">
+                <nz-form-control>
+                  {{orderInfo.getRawValue().dtcDealerAgreementNo}}
+                </nz-form-control>
+              </nz-form-item>
+            </td>
+            <td
+              *ngIf="baseInfoFromData.getRawValue().businessModel=='DISTRIBUTOR'"
+              nzAlign="center">
+              <nz-form-item class="margin0">
+                <nz-form-control>                  
+                  <div nz-tooltip [nzTitle]="orderInfo.get('newDealerAgreementNo').value ? titleTemplateDis : null"
+                    nzOverlayClassName="tooltip-pree" nzPlacement="left" nzMouseLeaveDelay="0.2">
+                    <shared-select
+                      [nzDropdownMatchSelectWidth]="false"
+                      formControlName="newDealerAgreementNo"
+                      placeholder="请选择"
+                      [allowClear]="true"
+                      [options]="orderInfo.getRawValue().dealerCodeList"
+                      (ngModelChange)="onDealerAgreementChange(orderInfo, $event)">
+                    </shared-select>
+                  </div>
+                  <ng-template #titleTemplateDis>
+                    <div class="agreement-info">
+                      <div>{{ orderInfo.getRawValue().newDealerAgreementNo }}</div>
+                      <div>{{'授权产品：' + orderInfo.getRawValue().authorizedProduct }}</div>
+                      <div>{{'授权区域：' + orderInfo.getRawValue().authorizedArea }}</div>
+                    </div>
+                  </ng-template>                 
+                </nz-form-control>
+              </nz-form-item>
+            </td>
+            <td *ngIf="orderBaseinfo.getRawValue().orderModality=='PD&IGT'" nzAlign="center">
+              <nz-form-item class="margin0">
+                <nz-form-control>
+                  {{orderInfo.getRawValue().psm}}
+                </nz-form-control>
+              </nz-form-item>
+            </td>
+
+            <td nzAlign="center" *ngIf="orderBaseinfo.getRawValue().orderModality=='US'">
+              <nz-form-item class="margin0">
+                <nz-form-control>
+                  {{orderInfo.getRawValue().clinicalClassification}}
+                </nz-form-control>
+              </nz-form-item>
+            </td>
+            <td nzAlign="center" *ngIf="orderBaseinfo.getRawValue().orderModality=='US'">
+              <nz-form-item class="margin0">
+                <nz-form-control>
+                  <nz-select *ngIf="!orderInfo.get('firstLevelDepartment').disabled&&flag!='1'"
+                    formControlName="firstLevelDepartment"
+                    (ngModelChange)="departFirstChange($event,i)">
+                    <nz-option *ngFor="let item of orderInfo.getRawValue().departmentListFirst"
+                      [nzLabel]="item.department"
+                      [nzValue]="item.department"></nz-option>
+                  </nz-select>
+                  <nz-form-explain
+                  style="color:red"
+                    *ngIf="
+                  orderInfo.get('firstLevelDepartment')?.dirty &&
+                  orderInfo.get('firstLevelDepartment')?.errors
+                ">
+                    此选项必填字段
+                  </nz-form-explain>
+                  <input
+                    *ngIf="orderInfo.get('firstLevelDepartment').disabled||flag=='1'"
+                    nz-input
+                    [ngModelOptions]="{standalone: true}"
+                    disabled
+                    [ngModel]="orderInfo.getRawValue().firstLevelDepartment"
+                    maxlength="255" />
+                </nz-form-control>
+              </nz-form-item>
+            </td>
+            <td nzAlign="center" *ngIf="orderBaseinfo.getRawValue().orderModality=='US'">
+              <nz-form-item class="margin0">
+                <nz-form-control>
+                  <nz-select *ngIf="!orderInfo.get('secondaryDepartment').disabled&&flag!='1'"
+                    formControlName="secondaryDepartment">
+                    <nz-option *ngFor="let item of orderInfo.getRawValue().departmentListSecond"
+                      [nzLabel]="item.department" [nzValue]="item.department"></nz-option>
+                  </nz-select>
+                  <nz-form-explain
+                    style="color:red"
+                    *ngIf="
+                  orderInfo.get('secondaryDepartment')?.dirty &&
+                  orderInfo.get('secondaryDepartment')?.errors
+                ">
+                    此选项必填字段
+                  </nz-form-explain>
+                  <input
+                    *ngIf="orderInfo.get('secondaryDepartment').disabled||flag=='1'"
+                    nz-input
+                    [ngModelOptions]="{standalone: true}"
+                    disabled
+                    [ngModel]="orderInfo.getRawValue().secondaryDepartment"
+                    maxlength="255" />
+                </nz-form-control>
+              </nz-form-item>
+            </td>
+            <td nzAlign="center">
+              <nz-form-item class="margin0">
+                <nz-form-control>
+                  {{orderInfo.getRawValue().productConfig}}
+                </nz-form-control>
+              </nz-form-item>
+            </td>
+            <td nzAlign="center">
+              <nz-form-item class="margin0">
+                <nz-form-control>
+                  {{orderInfo.getRawValue().marketBundleBmc}}
+                </nz-form-control>
+              </nz-form-item>
+            </td>
+            <td nzAlign="center">
+              <nz-form-item class="margin0">
+                <nz-form-control>
+                  <input
+                    nz-input
+                    formControlName="medicalDeviceName"
+                    maxlength="255" />
+                  <nz-form-explain
+                    *ngIf="
+                      orderInfo.get('medicalDeviceName')?.dirty &&
+                      orderInfo.get('medicalDeviceName')?.errors
+                    ">
+                    此选项必填字段
+                  </nz-form-explain>
+                </nz-form-control>
+              </nz-form-item>
+            </td>
+            <td nzAlign="center">
+              <nz-form-item class="margin0">
+                <nz-form-control>
+                  
+                  <nz-input-group
+                    style="width: 100%"
+                    [nzSuffix]="clearNmpaBtn"
+                    [nzAddOnAfter]="selectNpmaBtn">
+                    <input
+                      type="text"
+                      nz-tooltip
+                      [nzTitle]="orderInfo.getRawValue().nmpaNum"
+                      nz-input
+                      maxlength="255"
+                      formControlName="nmpaNum"
+                      [placeholder]="editable ? '点击右侧按钮选择NMPA证号' : ''" />
+                  </nz-input-group>
+                  <ng-template #clearNmpaBtn>
+                  
+                  </ng-template>
+                  <ng-template #selectNpmaBtn>
+                    <button
+                      nz-button
+                      nzType="primary"
+                      class="ml-md"
+                      [disabled]="orderInfo.get('nmpaNum').disabled"
+                      (click)="onShowSelectNmpaModal(i)">
+                      更新
+                    </button>
+                  </ng-template>
+                  <nz-form-explain
+                  style="margin-left:-70px"
+                    *ngIf="
+                      orderInfo.get('nmpaNum')?.dirty &&
+                      orderInfo.get('nmpaNum')?.errors
+                    ">
+                    此选项必填字段
+                  </nz-form-explain>
+                </nz-form-control>
+              </nz-form-item>
+            </td>
+            <td nzAlign="center">
+              <nz-form-item class="margin0">
+                <nz-form-control>
+                  <textarea
+                    nz-input
+                    oninput="if(value.length>255)value=value.slice(0,255)"
+                    placeholder=""
+                    nzPlacement="topLeft"
+                    [nzAutosize]="{ minRows: 1, maxRows: 6 }"
+                    formControlName="nmpaValidityDate"></textarea>
+                  <nz-form-explain
+                    *ngIf="
+                      orderInfo.get('nmpaValidityDate')?.dirty &&
+                      orderInfo.get('nmpaValidityDate')?.errors
+                    ">
+                    此选项必填字段
+                  </nz-form-explain>
+                 
+                </nz-form-control>
+              </nz-form-item>
+            </td>
+
+            <td nzAlign="center">
+              <nz-form-item class="margin0">
+                <nz-form-control>
+                  {{orderInfo.getRawValue().simulationId}}
+                </nz-form-control>
+              </nz-form-item>
+            </td>
+            <td nzAlign="center">
+              <nz-form-item class="margin0">
+                <nz-form-control>
+                  {{orderInfo.getRawValue().marketBundleId}}
+                </nz-form-control>
+              </nz-form-item>
+            </td>
+            <td nzAlign="center">
+              <nz-form-item class="margin0">
+                <nz-form-control>
+                  {{orderInfo.getRawValue().opportunityId}}
+                </nz-form-control>
+              </nz-form-item>
+            </td>
+            <td nzAlign="center">
+              <nz-form-item class="margin0">
+                <nz-form-control>
+                  <input
+                    nz-input
+                    formControlName="businessOpportunityHierarchyLink"
+                    [placeholder]="orderInfo.getRawValue().businessOpportunityHierarchyTitle"
+                    maxlength="255" />
+                  <nz-form-explain
+                    *ngIf="
+                        orderInfo.get('businessOpportunityHierarchyLink')?.dirty &&
+                        orderInfo.get('businessOpportunityHierarchyLink')?.errors
+                      ">
+                    此选项必填字段
+                  </nz-form-explain>
+                </nz-form-control>
+              </nz-form-item>
+            </td>
+
+            <td nzAlign="center">
+              <nz-form-item class="margin0">
+                <nz-form-control>
+                  {{orderInfo.getRawValue().netPrice|number:'0.2-2'|priceAuthority: 'details'}}
+                </nz-form-control>
+              </nz-form-item>
+            </td>
+            <td nzAlign="center">
+              <nz-form-item class="margin0">
+                <nz-form-control>
+                  {{orderInfo.getRawValue().promotions|priceAuthority: 'details'}}
+                </nz-form-control>
+              </nz-form-item>
+            </td>
+            <td nzAlign="center">
+              <nz-form-item class="margin0">
+                <nz-form-control>
+                  {{orderInfo.getRawValue().rebate|number:'0.2-2'|priceAuthority: 'details'}}
+                </nz-form-control>
+              </nz-form-item>
+            </td>
+            <td nzAlign="center">
+              <nz-form-item class="margin0">
+                <nz-form-control>
+                  {{orderInfo.getRawValue().tradeIn|number:'0.2-2'|priceAuthority: 'details'}}
+                </nz-form-control>
+              </nz-form-item>
+            </td>
+            <td *appPermissionsIf="'config_file'" nzAlign="center">              
+                  <ng-container *ngIf="orderInfo.getRawValue().configFile&&orderInfo.getRawValue().configFile.length>0">                   
+                    <div *ngFor="let item of orderInfo.getRawValue().configFile">
+                      <div href="javascript:" class="down lineCut"                        
+                        (click)="fileDown(item)">
+                        {{item.fileName}}                        
+                       </div>
+                    </div>
+                  </ng-container>              
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </nz-table>
+  </ng-template>
+  <ng-container *ngIf="orderBaseinfo.getRawValue().orderModality=='CC'">
+    <form nz-form [nzNoColon]="true" [formGroup]="productGroup.controls.productModelInfo">
+      <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+          <nz-form-item>
+            <nz-form-label
+              nzXs="24"
+              nzSm="24"
+              nzMd="10"
+              nzXl="8"
+              nzXXl="6"
+              [nzNoColon]="true"
+              >
+              PRODUCT_MODEL
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <input
+                nz-input
+                formControlName="orderProductModel"
+                maxlength="255" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+    </form>
+  </ng-container>
+</form>
+<nz-modal
+  [(nzVisible)]="isVisib"
+  nzTitle="查看Option"
+  nzCentered
+  nzWidth="80%"
+  [nzFooter]="null"
+  (nzOnCancel)="onHide()">
+  <option-table [optionInfo]="optionInfo" [orderBaseinfo]="orderBaseinfo">
+  </option-table>
+</nz-modal>
+<nz-modal
+  [(nzVisible)]="isStandard"
+  nzTitle="查看标准配置"
+  nzCentered
+  nzWidth="80%"
+  [nzFooter]="null"
+  (nzOnCancel)="onStandardHide()">
+  <standards-table [productInfo]="productInfo">
+  </standards-table>
+</nz-modal>
+<order-select-nmpa #selectNmpa (select)="onNmpaFormSelect($event)"></order-select-nmpa>

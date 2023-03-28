@@ -25,9 +25,9 @@
 ::ng-deep .ant-tabs-bar {
   margin: 0 !important;
   .ant-tabs-tab {
-    border-left: 0.25rem solid #c4c4c4 !important;
+    border-left: 3px solid #c4c4c4 !important;
     &.ant-tabs-tab-active {
-      border-left: 0.25rem solid #337fbf !important;
+      border-left: 3px solid #3798db !important;
     }
   }
 }

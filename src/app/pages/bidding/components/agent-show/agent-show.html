@@ -1,0 +1,76 @@
+<div>
+    <ng-container>
+        <div>
+            <div nz-row class="seachs">
+                <div nz-col nzSpan="16">
+                    <div nz-row>
+                        <div nz-col nzSpan="24">
+                            <nz-form-item>
+                                <nz-form-label [nzSpan]="5" nzFor="email">Distributor Name<br>经销商名称</nz-form-label>
+                                <nz-form-control [nzSpan]="10">
+                                    <input nz-input nz-tooltip [nzTitle]="params.dealerName" name="email"
+                                        [(ngModel)]="params.dealerName">
+                                </nz-form-control>
+                                <nz-form-control [nzSpan]="5" style="padding: 0 10px;width: auto !important;">
+                                    <button nz-button class="ml10" nzType="primary" (click)="searchClick()" [nzSize]="6"
+                                        [nzLoading]="loading">Search 搜索 </button>
+                                </nz-form-control>
+                                <nz-form-control [nzSpan]="3">
+                                    <button nz-button nzType="default" (click)="clearAll()" [nzSize]="6">Clear 清空
+                                    </button>
+                                </nz-form-control>
+                            </nz-form-item>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tabbox">
+                <nz-table #basicTabled [nzData]="agentDatas" [nzScroll]="{ x: '1900px' }" [nzFrontPagination]="false"
+                    [nzTotal]="params.total" (nzPageIndexChange)="changePageIndex($event)"
+                    (nzPageSizeChange)="changePageSize($event)" [nzPageIndex]="params.pageNo"
+                    [nzPageSize]="params.pageSize" [nzLoading]="loading">
+                    <thead>
+                        <tr>
+                            <th nzWidth="40px" nzLeft="0px" nzAlign="center">&nbsp;</th>
+                            <th nzWidth="250px" nzAlign="center">English Name<br> 英文名称</th>
+                            <th nzWidth="250px" nzAlign="center">Chinese Name<br>中文名称</th>
+                            <th nzWidth="250px" nzAlign="center">Distributor Address <br>地址</th>
+                            <th nzWidth="200px" nzAlign="center">Distributor ID<br>经销商编号</th>
+                            <!--                          <th nzWidth="350px" nzAlign="center">Distributor Agreement No.<br> 经销商协议号</th>-->
+                            <!--                            <th nzWidth="250px" nzAlign="center">-->
+                            <!--                              Authorization Site<br> 授权地址-->
+                            <!--                            </th>-->
+                            <!--                            <th nzWidth="350px" nzAlign="center">-->
+                            <!--                              Authorization Licensed Product<br>  授权产品-->
+                            <!--                            </th>-->
+                            <!--                            <th nzWidth="250px" nzAlign="center">-->
+                            <!--                              Authorization Start Time<br> 授权开始时间-->
+                            <!--                            </th>-->
+                            <!--                            <th nzWidth="250px" nzAlign="center">-->
+                            <!--                              Authorization End Time<br> 授权结束时间-->
+                            <!--                            </th>-->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let data of basicTabled.data let m=index">
+                            <td nzLeft="0px">
+                                <label nz-radio [ngModel]="data.radio" (ngModelChange)="agentChange(m)"></label>
+                            </td>
+                            <td nzAlign="center">{{data.dealerNameEn}}</td>
+                            <td nzAlign="center">{{data.dealerName}}</td>
+                            <td nzAlign="center">{{data.registeredAddress}}</td>
+
+                            <td nzAlign="center">{{data.dealerCode}}</td>
+                            <!--                          <td nzAlign="center">{{data.agreementNo}}</td>-->
+
+                            <!--                            <td nzAlign="center"><div class="cc" nz-tooltip [nzTitle]="data.authorizedArea">{{data.authorizedArea}}</div></td>-->
+                            <!--                            <td nzAlign="center"><div class="cc" nz-tooltip [nzTitle]="data.authorizedProduct">{{data.authorizedProduct}}</div></td>-->
+                            <!--                            <td nzAlign="center">{{data.authorizedStartTime | TimeFormatePipeNow}}</td>-->
+                            <!--                            <td nzAlign="center">{{data.authorizedEndTime | TimeFormatePipeNow}}</td>-->
+                        </tr>
+                    </tbody>
+                </nz-table>
+            </div>
+        </div>
+    </ng-container>
+</div>

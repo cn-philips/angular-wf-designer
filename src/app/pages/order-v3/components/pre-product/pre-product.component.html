@@ -1,0 +1,2559 @@
+<div>
+  <nz-empty *ngIf="orderInfo.controls.length == 0"></nz-empty>
+  <ng-container *ngFor="let item of orderInfo.controls; let i = index;">
+    <app-form-section class="mtb1rem" [isFold]="item.controls.orderBaseinfo.getRawValue().isFold"
+      [title]="
+        '进单单位' +
+        (i + 1) +
+        '-' +
+        item.controls.orderBaseinfo.getRawValue().orderModality+'-'+item.controls.orderBaseinfo.getRawValue().orderName">
+      <form nz-form [formGroup]="item" [nzNoColon]="true">
+        <app-form-section class="mtb1rem" [form]="item.controls.marketBundleInfo"
+          title="{{'orderv3.components.pre-product.orderProductInfo.title' | translate}}">
+          <pre-product-table [productGroup]="item" [baseInform]="formValue" [index]="i" [editPreTable]="editPreTable"
+            (selecthost)="selecthost($event)"></pre-product-table>
+        </app-form-section>
+
+        <app-form-section [form]="item.controls.orderSalesinfo" class="mtb1rem"
+          title="{{'orderv3.components.pre-product.orderSalesInfo.title' | translate}}">
+          <form nz-form [formGroup]="item.controls.orderSalesinfo" [nzNoColon]="true">
+            <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+              <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+                <nz-form-item>
+                  <nz-form-label nzXs="24" nzSm="24" nzMd="10" nzXl="8" nzXXl="6" [nzNoColon]="true"
+                    [nzRequired]="!item.controls.orderSalesinfo.getRawValue().orderDisbled">
+                    {{'orderv3.components.pre-product.orderSalesInfo.orderSales' | translate}}
+                  </nz-form-label>
+                  <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                    <nz-input-group style="width: 100%" [nzSuffix]="clearOrderSalesBtn"
+                      [nzAddOnAfter]="selectPersonBtn">
+                      <input type="text" readonly #orderSales nz-input class="readonly"
+                        [ngModelOptions]="{standalone: true}"
+                        [ngModel]="item.controls.orderSalesinfo.getRawValue().orderSalesModel"
+                        [placeholder]="editable ? '点击右侧按钮选择人员' : ''" />
+                    </nz-input-group>
+                    <ng-template #clearOrderSalesBtn>
+                      <i *ngIf="
+                          orderSales.value &&
+                          editPreTable &&
+                          !item.controls.orderSalesinfo.getRawValue()
+                            .orderDisbled
+                        " nz-icon nz-tooltip class="ant-input-clear-icon" nzTheme="fill" nzType="close-circle"
+                        (click)="onClearOrder(i)"></i>
+                    </ng-template>
+                    <nz-form-explain *ngIf="
+                        item.controls.orderSalesinfo.get('orderSales')?.dirty &&
+                        item.controls.orderSalesinfo.get('orderSales')?.errors
+                      ">
+                      {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                    </nz-form-explain>
+                    <ng-template #selectPersonBtn>
+                      <button nz-button [disabled]="
+                          !editable ||
+                          !editPreTable ||
+                          item.controls.orderSalesinfo.getRawValue()
+                            .orderDisbled
+                        " nzType="primary" class="ml-md" (click)="onShowSelectPersonModal(i)">
+                        {{'orderv3.components.pre-product.common.select' | translate}}
+                      </button>
+                    </ng-template>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+              <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+                <nz-form-item>
+                  <nz-form-label nzXs="24" nzSm="24" nzMd="10" nzXl="8" nzXXl="6" [nzNoColon]="true">
+                    {{'orderv3.components.pre-product.orderSalesInfo.orderSalesModality' | translate}}
+                  </nz-form-label>
+                  <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                    <input nz-input formControlName="orderSalesModality" maxlength="255" />
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+              <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+                <nz-form-item>
+                  <nz-form-label nzXs="24" nzSm="24" nzMd="10" nzXl="8" nzXXl="6" [nzNoColon]="true">
+                    {{'orderv3.components.pre-product.orderSalesInfo.orderSalesTeam' | translate}}
+                  </nz-form-label>
+                  <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                    <input nz-input formControlName="orderSalesTeam" maxlength="255" />
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+            </div>
+            <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+              <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+                <nz-form-item>
+                  <nz-form-label nzXs="24" nzSm="24" nzMd="10" nzXl="8" nzXXl="6" [nzNoColon]="true">
+                    {{'orderv3.components.pre-product.orderSalesInfo.orderSalesBigArea' | translate}}
+                  </nz-form-label>
+                  <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                    <input nz-input formControlName="orderSalesBigArea" maxlength="255" />
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+              <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+                <nz-form-item>
+                  <nz-form-label nzXs="24" nzSm="24" nzMd="10" nzXl="8" nzXXl="6" [nzNoColon]="true">
+                    {{'orderv3.components.pre-product.orderSalesInfo.orderSalesSmallArea' | translate}}
+                  </nz-form-label>
+                  <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                    <input nz-input formControlName="orderSalesSmallArea" maxlength="255" />
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+              <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+                <nz-form-item>
+                  <nz-form-label nzXs="24" nzSm="24" nzMd="10" nzXl="8" nzXXl="6" [nzNoColon]="true">
+                    {{'orderv3.components.pre-product.orderSalesInfo.orderSalesCycleGroup' | translate}}
+                  </nz-form-label>
+                  <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                    <input nz-input formControlName="orderSalesCycleGroup" maxlength="255" />
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+            </div>
+            <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+              <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+                <nz-form-item>
+                  <nz-form-label nzXs="24" nzSm="24" nzMd="10" nzXl="8" nzXXl="6" [nzNoColon]="true"
+                    [nzRequired]="!item.controls.orderSalesinfo.get('orderApprovalAreaConfiguration').disabled">
+                    {{'orderv3.components.pre-product.orderSalesInfo.orderApprovalAreaConfiguration' | translate}}
+                  </nz-form-label>
+                  <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                    <ng-container *ngIf="
+                        !item.controls.orderSalesinfo.getRawValue().isDisabled
+                      ">
+                      <shared-select (ngModelChange)="selectConfig($event, i)" placeholder="请选择" [options]="saleRegions"
+                        formControlName="orderApprovalAreaConfiguration">
+                      </shared-select>
+                      <nz-form-explain *ngIf="
+                          item.controls.orderSalesinfo.get(
+                            'orderApprovalAreaConfiguration'
+                          )?.dirty &&
+                          item.controls.orderSalesinfo.get(
+                            'orderApprovalAreaConfiguration'
+                          )?.errors
+                        ">
+                        {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                      </nz-form-explain>
+                    </ng-container>
+                    <ng-container *ngIf="
+                        item.controls.orderSalesinfo.getRawValue().isDisabled
+                      ">
+                      <input nz-input formControlName="orderApprovalAreaConfiguration" maxlength="255" />
+                    </ng-container>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+              <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+                <nz-form-item>
+                  <nz-form-label nzXs="24" nzSm="24" nzMd="10" nzXl="8" nzXXl="6" [nzNoColon]="true">
+                    {{'orderv3.components.pre-product.orderSalesInfo.orderSalesProvince' | translate}}
+                  </nz-form-label>
+                  <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                    <ng-container *ngIf="
+                        !item.controls.orderSalesinfo.get('orderSalesProvince')
+                          .disabled
+                      ">
+                      <nz-select nzShowSearch formControlName="orderSalesProvince"
+                        (nzOpenChange)="selectCity($event, i)">
+                        <nz-option *ngFor="let item of service.provinceLists" [nzValue]="item.value"
+                          [nzLabel]="item.value"></nz-option>
+                      </nz-select>
+                    </ng-container>
+                    <ng-container *ngIf="
+                        item.controls.orderSalesinfo.get('orderSalesProvince')
+                          .disabled
+                      ">
+                      <input nz-input formControlName="orderSalesProvince" maxlength="255" />
+                    </ng-container>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+              <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+                <nz-form-item>
+                  <nz-form-label nzXs="24" nzSm="24" nzMd="10" nzXl="8" nzXXl="6" [nzNoColon]="true">
+                    {{'orderv3.components.pre-product.orderSalesInfo.orderSalesCity' | translate}}
+                  </nz-form-label>
+                  <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                    <ng-container *ngIf="
+                        !item.controls.orderSalesinfo.get('orderSalesCity')
+                          .disabled
+                      ">
+                      <nz-select nzShowSearch formControlName="orderSalesCity">
+                        <nz-option *ngFor="let ite of item.controls.orderSalesinfo.getRawValue().cityList"
+                          [nzValue]="ite.value" [nzLabel]="ite.value"></nz-option>
+                      </nz-select>
+                    </ng-container>
+                    <ng-container *ngIf="
+                        item.controls.orderSalesinfo.get('orderSalesCity')
+                          .disabled
+                      ">
+                      <input nz-input formControlName="orderSalesCity" maxlength="255" />
+                    </ng-container>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+            </div>
+            <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+              <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+                <nz-form-item>
+                  <nz-form-label nzXs="24" nzSm="24" nzMd="10" nzXl="8" nzXXl="6"
+                    [nzRequired]="isRequireorderSalesPerformanceProvince(i)" [nzNoColon]="true">
+                    {{'orderv3.components.pre-product.orderSalesInfo.orderSalesPerformanceProvince' | translate}}
+                  </nz-form-label>
+                  <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                    <ng-container *ngIf="
+                        !item.controls.orderSalesinfo.get(
+                          'orderSalesPerformanceProvince'
+                        ).disabled
+                      ">
+                      <nz-select nzShowSearch formControlName="orderSalesPerformanceProvince">
+                        <nz-option *ngFor="let item of service.provinceLists" [nzValue]="item.value"
+                          [nzLabel]="item.value"></nz-option>
+                      </nz-select>
+                    </ng-container>
+                    <ng-container *ngIf="
+                        item.controls.orderSalesinfo.get(
+                          'orderSalesPerformanceProvince'
+                        ).disabled
+                      ">
+                      <input nz-input formControlName="orderSalesPerformanceProvince" maxlength="255" />
+                    </ng-container>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+              <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+                <nz-form-item>
+                  <nz-form-label nzXs="24" nzSm="24" nzMd="10" nzXl="8" nzXXl="6"
+                    [nzRequired]="item.controls.orderSalesinfo.getRawValue().orderSalesSapCodeRequired"
+                    [nzNoColon]="true">
+                    {{'orderv3.components.pre-product.orderSalesInfo.orderSalesSapCode' | translate}}
+                  </nz-form-label>
+                  <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                    <input nz-input formControlName="orderSalesSapCode" maxlength="255" />
+                    <nz-form-explain *ngIf="
+                        item.controls.orderSalesinfo.get('orderSalesSapCode')
+                          ?.dirty &&
+                        item.controls.orderSalesinfo.get('orderSalesSapCode')
+                          ?.errors
+                      ">
+                      {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                    </nz-form-explain>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+              <div *ngIf="isshowActualSalesName(i)" nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+                <nz-form-item>
+                  <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true"
+                    [nzRequired]="isshowActualSalesName(i)">
+                    {{'orderv3.components.pre-product.orderSalesInfo.actualSalesEmail' | translate}}
+                  </nz-form-label>
+                  <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                    <nz-input-group style="width: 100%" [nzSuffix]="clearActualSalesBtn"
+                      [nzAddOnAfter]="actualSelectPersonBtn">
+                      <input type="text" #actualSalesEmail readonly [ngModelOptions]="{standalone: true}" nz-input
+                        [ngModel]="item.controls.orderSalesinfo.getRawValue().actualSalesNameModel"
+                        [placeholder]="editable ? '点击右侧按钮选择人员' : ''" />
+                    </nz-input-group>
+                    <ng-template #clearActualSalesBtn>
+                      <i *ngIf="item.controls.orderSalesinfo.getRawValue().actualSalesEmail&&editable&&!item.controls.orderSalesinfo.getRawValue().isDisabled"
+                        nz-icon nz-tooltip class="ant-input-clear-icon" nzTheme="fill" nzType="close-circle"
+                        (click)="onClearActualOrder(i)"></i>
+                    </ng-template>
+                    <nz-form-explain style="color:red" *ngIf="
+                        item.controls.orderSalesinfo.get('actualSalesEmail')
+                          ?.dirty &&
+                        item.controls.orderSalesinfo.get('actualSalesEmail')
+                          ?.errors
+                      ">
+                      {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                    </nz-form-explain>
+                    <ng-template #actualSelectPersonBtn>
+                      <button nz-button [disabled]="
+                          item.controls.orderSalesinfo.getRawValue()
+                            .isDisabled || !editable
+                        " nzType="primary" class="ml-md" (click)="onShowSelectActualModal(i)">
+                        {{'orderv3.components.pre-product.common.select' | translate}}
+                      </button>
+                    </ng-template>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+            </div>
+            <div *ngIf="item.controls.orderBaseinfo.getRawValue().orderModality=='CC'" nz-row nzType="flex"
+              nzJustify="start" nzAlign="middle">
+              <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+                <nz-form-item>
+                  <nz-form-label nzXs="24" nzSm="24" nzMd="10" nzXl="8" nzXXl="6" [nzNoColon]="true">
+                    KA
+                  </nz-form-label>
+                  <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                    <input nz-input formControlName="ka" maxlength="255" />
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+            </div>
+          </form>
+        </app-form-section>
+        <app-form-section [form]="item.controls.orderBaseinfo" class="mtb1rem"
+          title="{{'orderv3.components.pre-product.orderBaseInfo.title' | translate}}">
+          <form nz-form [formGroup]="item.controls.orderBaseinfo" [nzNoColon]="true">
+            <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+              <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8" *ngIf="
+                  item.controls.orderBaseinfo.getRawValue().orderModality=='PD&IGT'
+                  ||
+                  item.controls.orderBaseinfo.getRawValue().orderModality=='US'
+                  ||
+                  item.controls.orderBaseinfo.getRawValue().orderModality=='CC'
+                  ">
+                <nz-form-item>
+                  <nz-form-label nzXs="24" nzSm="24" nzMd="10" nzXl="8" nzXXl="6" [nzNoColon]="true">
+                    <div>{{'orderv3.components.pre-product.orderBaseInfo.totalContractPrice' | translate}}</div>
+                    <div *ngIf="item.controls.orderBaseinfo.getRawValue().currencySystem=='CNY'">
+                      {{'orderv3.components.pre-product.orderBaseInfo.includingTax' | translate}}</div>
+                  </nz-form-label>
+                  <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                    <input nz-input [ngModelOptions]="{standalone: true}" [ngModel]="
+                          item.controls.orderBaseinfo.getRawValue()
+                            .totalContractPrice|number:'0.2-2'|priceAuthority: 'contract':item.controls.orderBaseinfo.getRawValue().orderModality
+                        " disabled maxlength="255" />
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+
+              <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+                <nz-form-item>
+                  <nz-form-label nzXs="24" nzSm="24" nzMd="10" nzXl="8" nzXXl="6" [nzNoColon]="true">
+                    {{'orderv3.components.pre-product.orderBaseInfo.financialSolutionName' | translate}}
+                  </nz-form-label>
+                  <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                    <input nz-input [ngModelOptions]="{standalone: true}" disabled [ngModel]="
+                          item.controls.orderBaseinfo.getRawValue()
+                            .financialSolutionNameModel
+                        " maxlength="255" />
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+              <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+                <nz-form-item>
+                  <nz-form-label nzXs="24" nzSm="24" nzMd="10" nzXl="8" nzXXl="6" [nzNoColon]="true"
+                    [nzRequired]="!item.controls.orderBaseinfo.getRawValue().financialSolutionDisabled">
+                    {{'orderv3.components.pre-product.orderBaseInfo.financialSolutionPrice' | translate}}
+                  </nz-form-label>
+                  <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                    <nz-input-number [nzMin]="0" [nzPrecision]="2" (nzBlur)="orderPriceCountCny(i)"
+                      style="width: 100%;border-bottom: 0.125rem #112b40 solid;"
+                      *ngIf="item.controls.orderBaseinfo.getRawValue().currencySystem=='CNY'&&!item.controls.orderBaseinfo.getRawValue().financialSolutionDisabled"
+                      formControlName="financialSolutionCnyNet" maxlength="255"> </nz-input-number>
+                    <nz-input-number [nzMin]="0" [nzPrecision]="2" (nzBlur)="orderPriceCountCny(i)"
+                      style="width: 100%;border-bottom: 0.125rem #112b40 solid;"
+                      *ngIf="item.controls.orderBaseinfo.getRawValue().currencySystem=='USD'&&!item.controls.orderBaseinfo.getRawValue().financialSolutionDisabled"
+                      formControlName="financialSolutionUsd" maxlength="255"> </nz-input-number>
+                    <!-- <div>原始价:{{item.controls.orderBaseinfo.getRawValue().financialSolutionCnyNetCp}}</div>                    -->
+                    <input nz-input
+                      *ngIf="item.controls.orderBaseinfo.getRawValue().currencySystem=='CNY'&&item.controls.orderBaseinfo.getRawValue().financialSolutionDisabled"
+                      disabled [ngModelOptions]="{ standalone: true }"
+                      [ngModel]="item.controls.orderBaseinfo.getRawValue().financialSolutionCnyNet|number:'0.2-2'| priceAuthority: 'details': item.controls.orderBaseinfo.getRawValue().orderModality"
+                      maxlength="255" />
+                    <input nz-input
+                      *ngIf="item.controls.orderBaseinfo.getRawValue().currencySystem=='USD'&&item.controls.orderBaseinfo.getRawValue().financialSolutionDisabled"
+                      disabled [ngModelOptions]="{ standalone: true }"
+                      [ngModel]="item.controls.orderBaseinfo.getRawValue().financialSolutionUsd|number:'0.2-2'| priceAuthority: 'details': item.controls.orderBaseinfo.getRawValue().orderModality"
+                      maxlength="255" />
+                    <nz-form-explain
+                      *ngIf="item.controls.orderBaseinfo.get('financialSolutionUsd')?.dirty &&item.controls.orderBaseinfo.get('financialSolutionUsd')?.errors">
+                      <ng-container
+                        *ngIf="item.controls.orderBaseinfo.get('financialSolutionUsd')?.hasError('required') ">
+                        {{'orderv3.components.pre-product.common.requiredTerms' | translate}}</ng-container>
+                    </nz-form-explain>
+                    <nz-form-explain
+                      *ngIf="item.controls.orderBaseinfo.get('financialSolutionCnyNet')?.dirty &&item.controls.orderBaseinfo.get('financialSolutionCnyNet')?.errors">
+                      <ng-container
+                        *ngIf="item.controls.orderBaseinfo.get('financialSolutionCnyNet')?.hasError('required') ">
+                        {{'orderv3.components.pre-product.common.requiredTerms' | translate}}</ng-container>
+                    </nz-form-explain>
+                    <nz-form-explain *ngIf="financialError" style="color:#f5222d;line-height:20px;">
+                      <ng-container>
+                        Order层级金融方案金额之和与DealForm金融方案金额偏差值大于1
+                      </ng-container>
+                    </nz-form-explain>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+            </div>
+            <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+              <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8" *ngIf="creditShow(i)">
+                <nz-form-item>
+                  <nz-form-label nzXs="24" nzSm="24" nzMd="10" nzXl="8" nzXXl="6"
+                    [nzRequired]="!item.controls.orderBaseinfo.getRawValue().paymentDisabled" [nzNoColon]="true">
+                    {{
+                    "orderv3.components.pre-base-info-form.priceApproval.forward-credit"
+                    | translate
+                    }}
+                  </nz-form-label>
+                  <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                    <nz-input-number [nzMin]="0" [nzPrecision]="2" (nzBlur)="orderPriceCountCnyOther(i)"
+                      style="width: 100%;border-bottom: 0.125rem #112b40 solid;"
+                      *ngIf="item.controls.orderBaseinfo.getRawValue().currencySystem=='CNY'&&!item.controls.orderBaseinfo.getRawValue().paymentDisabled"
+                      formControlName="creditCnyNet" maxlength="255"></nz-input-number>
+                    <input nz-input
+                      *ngIf="item.controls.orderBaseinfo.getRawValue().currencySystem=='CNY'&&item.controls.orderBaseinfo.getRawValue().paymentDisabled"
+                      disabled [ngModelOptions]="{ standalone: true }"
+                      [ngModel]="item.controls.orderBaseinfo.getRawValue().creditCnyNet|number:'0.2-2'| priceAuthority: 'details': item.controls.orderBaseinfo.getRawValue().orderModality"
+                      maxlength="255" />
+                    <nz-input-number [nzMin]="0" [nzPrecision]="2" (nzBlur)="orderPriceCountCnyOther(i)"
+                      style="width: 100%;border-bottom: 0.125rem #112b40 solid;"
+                      *ngIf="item.controls.orderBaseinfo.getRawValue().currencySystem=='USD'&&!item.controls.orderBaseinfo.getRawValue().paymentDisabled"
+                      formControlName="creditUsd" maxlength="255"></nz-input-number>
+                    <input nz-input
+                      *ngIf="item.controls.orderBaseinfo.getRawValue().currencySystem=='USD'&&item.controls.orderBaseinfo.getRawValue().paymentDisabled"
+                      disabled [ngModelOptions]="{ standalone: true }"
+                      [ngModel]="item.controls.orderBaseinfo.getRawValue().creditUsd|number:'0.2-2'| priceAuthority: 'details': item.controls.orderBaseinfo.getRawValue().orderModality"
+                      maxlength="255" />
+                    <nz-form-explain
+                      *ngIf="item.controls.orderBaseinfo.get('creditCnyNet')?.dirty &&item.controls.orderBaseinfo.get('creditCnyNet')?.errors">
+                      <ng-container *ngIf="item.controls.orderBaseinfo.get('creditCnyNet')?.hasError('required') ">
+                        {{'orderv3.components.pre-product.common.requiredTerms' | translate}}</ng-container>
+                    </nz-form-explain>
+                    <nz-form-explain
+                      *ngIf="item.controls.orderBaseinfo.get('creditUsd')?.dirty &&item.controls.orderBaseinfo.get('creditUsd')?.errors">
+                      <ng-container *ngIf="item.controls.orderBaseinfo.get('creditUsd')?.hasError('required') ">
+                        {{'orderv3.components.pre-product.common.requiredTerms' | translate}}</ng-container>
+                    </nz-form-explain>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+              <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8" *ngIf="paymentShow(i)">
+                <nz-form-item>
+                  <nz-form-label nzXs="24" nzSm="24" nzMd="10" nzXl="8" nzXXl="6"
+                    [nzRequired]="!item.controls.orderBaseinfo.getRawValue().paymentDisabled" [nzNoColon]="true">
+                    {{"orderv3.components.pre-base-info-form.priceApproval.otherPayment"| translate}}
+                  </nz-form-label>
+                  <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                    <nz-input-number [nzMin]="0" [nzPrecision]="2"
+                      style="width: 100%;border-bottom: 0.125rem #112b40 solid;"
+                      *ngIf="item.controls.orderBaseinfo.getRawValue().currencySystem=='CNY'&&!item.controls.orderBaseinfo.getRawValue().paymentDisabled"
+                      (nzBlur)="orderPriceCountCnyOther(i)" formControlName="paymentNetCny" maxlength="255">
+                    </nz-input-number>
+                    <input nz-input
+                      *ngIf="item.controls.orderBaseinfo.getRawValue().currencySystem=='CNY'&&item.controls.orderBaseinfo.getRawValue().paymentDisabled"
+                      disabled [ngModelOptions]="{ standalone: true }"
+                      [ngModel]="item.controls.orderBaseinfo.getRawValue().paymentNetCny|number:'0.2-2'| priceAuthority: 'details': item.controls.orderBaseinfo.getRawValue().orderModality"
+                      maxlength="255" />
+                    <nz-input-number [nzMin]="0" [nzPrecision]="2" (nzBlur)="orderPriceCountCnyOther(i)"
+                      style="width: 100%;border-bottom: 0.125rem #112b40 solid;"
+                      *ngIf="item.controls.orderBaseinfo.getRawValue().currencySystem=='USD'&&!item.controls.orderBaseinfo.getRawValue().paymentDisabled"
+                      formControlName="paymentUsd" maxlength="255"></nz-input-number>
+                    <input nz-input
+                      *ngIf="item.controls.orderBaseinfo.getRawValue().currencySystem=='USD'&&item.controls.orderBaseinfo.getRawValue().paymentDisabled"
+                      disabled [ngModelOptions]="{ standalone: true }"
+                      [ngModel]="item.controls.orderBaseinfo.getRawValue().paymentUsd|number:'0.2-2'| priceAuthority: 'details': item.controls.orderBaseinfo.getRawValue().orderModality"
+                      maxlength="255" />
+                    <nz-form-explain
+                      *ngIf="item.controls.orderBaseinfo.get('paymentNetCny')?.dirty &&item.controls.orderBaseinfo.get('paymentNetCny')?.errors">
+                      <ng-container *ngIf="item.controls.orderBaseinfo.get('paymentNetCny')?.hasError('required') ">
+                        {{'orderv3.components.pre-product.common.requiredTerms' | translate}}</ng-container>
+                    </nz-form-explain>
+                    <nz-form-explain
+                      *ngIf="item.controls.orderBaseinfo.get('paymentUsd')?.dirty &&item.controls.orderBaseinfo.get('paymentUsd')?.errors">
+                      <ng-container *ngIf="item.controls.orderBaseinfo.get('paymentUsd')?.hasError('required') ">
+                        {{'orderv3.components.pre-product.common.requiredTerms' | translate}}</ng-container>
+                    </nz-form-explain>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+              <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+                <nz-form-item>
+                  <nz-form-label nzXs="24" nzSm="24" nzMd="10" nzXl="8" nzXXl="6"
+                    [nzRequired]="item.controls.orderBaseinfo.getRawValue().sofonNumRequired" [nzNoColon]="true">
+                    {{'orderv3.components.pre-product.orderBaseInfo.sofonNum' | translate}}
+                  </nz-form-label>
+                  <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                    <input nz-input formControlName="sofonNum" maxlength="255" />
+                    <nz-form-explain *ngIf="
+                        item.controls.orderBaseinfo.get('sofonNum')?.dirty &&
+                        item.controls.orderBaseinfo.get('sofonNum')?.errors
+                      ">
+                      {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                    </nz-form-explain>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+              <div *appPermissionsIf="'sofon_file'" nz-col nzXs="24" nzSm="24" nzMd="8">
+                <nz-form-item>
+                  <nz-form-label nzXs="24" nzSm="24" nzMd="10" nzXl="8" nzXXl="6" nzRequired [nzNoColon]="true">
+                    {{'orderv3.components.pre-product.orderBaseInfo.sofonFileLabel' | translate}}
+                  </nz-form-label>
+                  <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                    <div *ngIf="flag==0">
+                      <nz-switch [(ngModel)]="switchValid"
+                        [disabled]="item.controls.orderBaseinfo.getRawValue().switchValid"
+                        [ngModelOptions]="{standalone: true}"></nz-switch><span
+                        style="font-size: xx-small;padding-top: 10%">{{'orderv3.components.pre-product.orderBaseInfo.selectFileFromCP'
+                        | translate}}</span>
+                    </div>
+                    <ng-container *ngIf="switchValid">
+                      <nz-form-control>
+                        <sofon-upload-file
+                          [title]="'orderv3.components.pre-product.orderBaseInfo.sofonFile' | translate" [type]="null"
+                          [index]="i" [orderInfo]="orderInfo" formControlName="sofonFile">
+                        </sofon-upload-file>
+                        <nz-form-explain *ngIf="
+                        item.controls.orderBaseinfo.get('sofonFile')?.dirty &&
+                        item.controls.orderBaseinfo.get('sofonFile')?.errors
+                      ">
+                          {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                        </nz-form-explain>
+                      </nz-form-control>
+                    </ng-container>
+                    <ng-container *ngIf="!switchValid">
+                      <nz-form-control>
+                        <shared-upload-file
+                          [title]="'orderv3.components.pre-product.orderBaseInfo.sofonFile' | translate" [type]="null"
+                          formControlName="sofonFile">
+                        </shared-upload-file>
+                        <nz-form-explain
+                          *ngIf="item.controls.orderBaseinfo.get('sofonFile')?.dirty &&item.controls.orderBaseinfo.get('sofonFile')?.errors">
+                          <ng-container *ngIf="item.controls.orderBaseinfo.get('sofonFile')?.hasError('required') ">
+                            {{'orderv3.components.pre-product.common.requiredTerms' | translate}}</ng-container>
+                        </nz-form-explain>
+                      </nz-form-control>
+                    </ng-container>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+            </div>
+            <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+              <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+                <nz-form-item>
+                  <nz-form-label nzXs="24" nzSm="24" nzMd="10" nzXl="8" nzXXl="6" [nzNoColon]="true">
+                    {{'orderv3.components.pre-product.orderBaseInfo.currencySystem' | translate}}
+                  </nz-form-label>
+                  <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                    <input nz-input formControlName="currencySystem" maxlength="255" />
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+              <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+                <nz-form-item>
+                  <nz-form-label nzXs="24" nzSm="24" nzMd="10" nzXl="8" nzXXl="6" [nzNoColon]="true">
+                    {{'orderv3.components.pre-product.orderBaseInfo.centralizedPurchasing' | translate}}
+                  </nz-form-label>
+                  <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                    <nz-radio-group [nzDisabled]="true" (ngModelChange)="centralizedPurchasingChange($event, i)"
+                      formControlName="centralizedPurchasing">
+                      <label nz-radio nzValue="1">{{'orderv3.components.pre-product.common.radioOk' |
+                        translate}}</label>
+                      <label nz-radio nzValue="0">{{'orderv3.components.pre-product.common.radioCancel' |
+                        translate}}</label>
+                    </nz-radio-group>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+              <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+                <nz-form-item>
+                  <nz-form-label nzXs="24" nzSm="24" nzMd="10" nzXl="8" nzXXl="6" [nzNoColon]="true">
+                    {{'orderv3.components.pre-product.orderBaseInfo.contractCancelReferenceId' | translate}}
+                  </nz-form-label>
+                  <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                    <nz-input-group style="width: 100%" [nzSuffix]="clearDealerBtn" [nzAddOnAfter]="selectDealerBtn">
+                      <input type="text" readonly nz-input formControlName="contractCancelReferenceId" [placeholder]="
+                          editable ? '点击右侧按钮选择Reference No' : ''
+                        " />
+                    </nz-input-group>
+                    <ng-template #selectDealerBtn>
+                      <button [disabled]="item.controls.orderBaseinfo.getRawValue().contractCancelDisabled" nz-button
+                        nzType="primary" class="ml-md" (click)="onShowSelectRefModal(i)">
+                        {{'orderv3.components.pre-product.common.select' | translate}}
+                      </button>
+                    </ng-template>
+                    <div *ngIf="item.controls.orderBaseinfo.get('contractCancelReferenceId').value" class="lintesting">
+                      此单为“改单项目”，原合同概要表SO#={{ item.controls.orderBaseinfo.get('contractCancelSoNo').value }}
+                    </div>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+            </div>
+            <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+              <div nz-col *ngIf="baseInfoFrom.getRawValue().businessModel == 'DISTRIBUTOR'" nzXs="24" nzSm="24"
+                nzMd="12" nzLg="8">
+                <nz-form-item>
+                  <nz-form-label nzXs="24" nzSm="24" nzMd="10" nzXl="8" nzXXl="6"
+                    [nzRequired]="item.controls.orderBaseinfo.getRawValue().dealerSapCodeRequired" [nzNoColon]="true">
+                    {{'orderv3.components.pre-product.orderBaseInfo.dealerSapCode' | translate}}
+                  </nz-form-label>
+                  <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                    <input nz-input formControlName="dealerSapCode" maxlength="255" />
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+
+              <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8" *ngIf="isSolutionSale(i)">
+                <nz-form-item>
+                  <nz-form-label nzXs="24" nzSm="24" nzMd="10" nzXl="8" nzXXl="6" [nzNoColon]="true">
+                    {{'orderv3.components.pre-product.orderBaseInfo.solutionSalesEmail' | translate}}
+                  </nz-form-label>
+                  <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                    <nz-input-group style="width: 100%" [nzSuffix]="clearSoluSalesBtn"
+                      [nzAddOnAfter]="soluSelectPersonBtn">
+                      <input type="text" readonly [ngModelOptions]="{standalone: true}" #solutionSalesEmail nz-input
+                        [ngModel]="item.controls.orderBaseinfo.getRawValue().solutionSalesNameModel"
+                        [placeholder]="editable ? '点击右侧按钮选择人员' : ''" />
+                    </nz-input-group>
+                    <ng-template #clearSoluSalesBtn>
+                      <i *ngIf="solutionSalesEmail.value && editable" nz-icon nz-tooltip class="ant-input-clear-icon"
+                        nzTheme="fill" nzType="close-circle" (click)="onClearsoluOrder(i)"></i>
+                    </ng-template>
+                    <nz-form-explain *ngIf="
+                        item.controls.orderBaseinfo.get('solutionSalesEmail')
+                          ?.dirty &&
+                        item.controls.orderBaseinfo.get('solutionSalesEmail')
+                          ?.errors
+                      ">
+                      {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                    </nz-form-explain>
+                    <ng-template #soluSelectPersonBtn>
+                      <button [disabled]="
+                          item.controls.orderSalesinfo.getRawValue()
+                            .isDisabled || !editable
+                        " nz-button nzType="primary" class="ml-md" (click)="onShowSoluActualModal(i)">
+                        {{'orderv3.components.pre-product.common.select' | translate}}
+                      </button>
+                    </ng-template>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+              <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8" *ngIf="isSolution(i)">
+                <nz-form-item>
+                  <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true" [nzRequired]="isSolution(i)">
+                    {{'orderv3.components.pre-product.orderBaseInfo.includeSolution' | translate}}
+                  </nz-form-label>
+                  <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                    <Label-popup [width]="'200px'">
+                      <nz-select (ngModelChange)="includeSolutionChange($event,i)" nzShowSearch
+                        formControlName="includeSolution">
+                        <nz-option nzLabel="是" nzValue="1"></nz-option>
+                        <nz-option nzLabel="否" nzValue="0"></nz-option>
+                      </nz-select>
+                      <ng-template labelPopupContent>
+                        如配置中包含 TOMTEC、脱机 QLAB、实时远程、ISCV 星影、脱机 AI 辅助筛查、专业服务等，请勾选“是”
+                        <a href="javascript:" (click)="openGuidanceDocument()">判断指南</a>
+                      </ng-template>
+                    </Label-popup>
+                    <nz-form-explain *ngIf="
+                        item.controls.orderBaseinfo.get('includeSolution')
+                          ?.dirty &&
+                        item.controls.orderBaseinfo.get('includeSolution')
+                          ?.errors
+                      ">
+                      {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                    </nz-form-explain>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+            </div>
+            <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+              <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8"
+                *ngIf="item.controls.orderBaseinfo.getRawValue().requiredArrivalDateRequired">
+                <nz-form-item>
+                  <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true" [nzRequired]="ifrequiredDate(i)">
+                    {{'orderv3.components.pre-product.orderBaseInfo.requiredArrivalDate' | translate}}
+                  </nz-form-label>
+                  <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                    <shared-date-picker formControlName="requiredArrivalDate"></shared-date-picker>
+                    <nz-form-explain *ngIf="
+                        item.controls.orderBaseinfo.get('requiredArrivalDate')
+                          ?.dirty &&
+                        item.controls.orderBaseinfo.get('requiredArrivalDate')
+                          ?.errors
+                      ">
+                      {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                    </nz-form-explain>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+              <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8"
+                *ngIf="item.controls.orderBaseinfo.getRawValue().estimateInstallationRequired">
+                <nz-form-item>
+                  <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true" [nzRequired]="ifrequiredDate(i)">
+                    {{'orderv3.components.pre-product.orderBaseInfo.estimateInstallationDate' | translate}}
+                  </nz-form-label>
+                  <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                    <shared-date-picker formControlName="estimateInstallationDate"></shared-date-picker>
+                    <nz-form-explain *ngIf="
+                        item.controls.orderBaseinfo.get(
+                          'estimateInstallationDate'
+                        )?.dirty &&
+                        item.controls.orderBaseinfo.get(
+                          'estimateInstallationDate'
+                        )?.errors
+                      ">
+                      {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                    </nz-form-explain>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+
+            </div>
+            <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+              <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8"
+                *ngIf="item.controls.orderBaseinfo.getRawValue().estimateInstallationRequired">
+                <nz-form-item>
+                  <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true"
+                    [nzRequired]="item.controls.orderBaseinfo.getRawValue().dealerRequestLetterRequired">
+                    {{'orderv3.components.pre-product.orderBaseInfo.dealerRequestLetterFile' | translate}}
+                  </nz-form-label>
+                  <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                    <shared-upload-file [title]="'上传'" [type]="null" formControlName="dealerRequestLetterFile">
+                    </shared-upload-file>
+                    <nz-form-explain *ngIf="
+                        item.controls.orderBaseinfo.get(
+                          'dealerRequestLetterFile'
+                        )?.dirty &&
+                        item.controls.orderBaseinfo.get(
+                          'dealerRequestLetterFile'
+                        )?.errors
+                      ">
+                      {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                    </nz-form-explain>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+              <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+                <nz-form-item>
+                  <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true"
+                    [nzRequired]="item.controls.orderBaseinfo.getRawValue().dealerRequestLetterRequired">
+                    {{'orderv3.components.pre-product.orderBaseInfo.cpclFile' | translate}}
+                  </nz-form-label>
+                  <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                    <shared-upload-file [title]="'上传'" [type]="null" formControlName="cpclFile">
+                    </shared-upload-file>
+                    <nz-form-explain *ngIf="
+                        item.controls.orderBaseinfo.get('cpclFile')?.dirty &&
+                        item.controls.orderBaseinfo.get('cpclFile')?.errors
+                      ">
+                      {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                    </nz-form-explain>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+              <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8"
+                *ngIf="item.controls.orderBaseinfo.getRawValue().estimateInstallationRequired">
+                <nz-form-item>
+                  <nz-form-label nzXs="24" nzSm="24" nzMd="10" nzXl="8" nzXXl="6" [nzNoColon]="true">
+                    {{'orderv3.components.pre-product.orderBaseInfo.otherSupportFile' | translate}}
+                  </nz-form-label>
+                  <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                    <shared-upload-file [title]="'上传'" [type]="null" formControlName="otherSupportFile">
+                    </shared-upload-file>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+            </div>
+            <div *ngIf="item.controls.orderBaseinfo.getRawValue().orderModality =='PD&IGT'" nz-row nzType="flex"
+              nzJustify="start" nzAlign="middle">
+              <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8"
+                *ngIf="item.controls.orderBaseinfo.getRawValue().magneticResonanceShieldingShow">
+
+                <nz-form-item>
+                  <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzXl="8" nzXXl="6" [nzNoColon]="true" nzRequired="true">
+                    {{'orderv3.components.pre-product.orderBaseInfo.magneticResonanceShieldingFile' | translate}}
+                  </nz-form-label>
+                  <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                    <shared-upload-file
+                      [title]="'orderv3.components.pre-product.orderBaseInfo.magneticResonanceCompany' | translate"
+                      [type]="null" formControlName="magneticResonanceShieldingFile">
+                    </shared-upload-file>
+                    <nz-form-explain *ngIf="
+                          item.controls.orderBaseinfo.get(
+                            'magneticResonanceShieldingFile'
+                          )?.dirty &&
+                          item.controls.orderBaseinfo.get(
+                            'magneticResonanceShieldingFile'
+                          )?.errors
+                        ">
+                      {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                    </nz-form-explain>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+              <div nz-col nzXs="24" nzSm="24" nzMd="14" nzLg="8"
+                *ngIf="item.controls.orderBaseinfo.getRawValue().igtThirdPartyFileShow">
+                <nz-form-item>
+                  <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true" [nzRequired]="
+                        item.controls.orderBaseinfo.getRawValue()
+                          .igtThirdPartySingle == '1'
+                      ">
+                    {{'orderv3.components.pre-product.orderBaseInfo.igtThirdPartySingle' | translate}}
+                  </nz-form-label>
+
+                  <nz-form-control nzXs="24" nzSm="24" nzMd="9">
+                    <nz-radio-group class="minwidth" [nzDisabled]="
+                          item.controls.orderSalesinfo.getRawValue().isDisabled
+                        " formControlName="igtThirdPartySingle" (ngModelChange)="igtChang(i)">
+                      <label nz-radio nzValue="1">{{'orderv3.components.pre-product.common.radioOk' |
+                        translate}}</label>
+                      <label nz-radio nzValue="0">{{'orderv3.components.pre-product.common.radioCancel' |
+                        translate}}</label>
+                    </nz-radio-group>
+                  </nz-form-control>
+                  <nz-form-control nzXs="24" nzSm="24" nzMd="9" *ngIf="
+                      item.controls.orderBaseinfo.getRawValue()
+                        .igtThirdPartySingle == '1'
+                    ">
+                    <shared-upload-file
+                      [title]="'orderv3.components.pre-product.orderBaseInfo.igtThirdPartySingle' | translate"
+                      [type]="null" formControlName="igtThirdPartyFile">
+                    </shared-upload-file>
+                    <nz-form-explain *ngIf="
+                        item.controls.orderBaseinfo.get('igtThirdPartyFile')
+                          ?.dirty &&
+                        item.controls.orderBaseinfo.get('igtThirdPartyFile')
+                          ?.errors
+                      ">
+                      {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                    </nz-form-explain>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+            </div>
+            <div nz-row nzType="flex" nzJustify="start" nzAlign="top">
+              <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8" *ngIf="
+                  item.controls.orderBaseinfo.getRawValue().orderModality ==
+                  'PD&IGT'
+                ">
+                <nz-form-item>
+                  <nz-form-label nzXs="24" nzSm="24" nzMd="10" nzXl="8" nzXXl="6" [nzNoColon]="true"
+                    [nzRequired]="item.controls.orderBaseinfo.getRawValue().prebookQuantity>0">
+                    关联的Pre-book Order
+                  </nz-form-label>
+                  <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                    <nz-input-group style="width: 100%" [nzSuffix]="clearDealerBtn" [nzAddOnAfter]="selectDealerBtn">
+                      <input type="text" readonly nz-input formControlName="prebookReferenceId" [placeholder]="
+                          editable ? '点击右侧按钮选择Pre-book申请号' : ''
+                        " />
+                    </nz-input-group>
+                    <nz-form-explain *ngIf="
+                        item.controls.orderBaseinfo.get('prebookReferenceId')
+                          ?.dirty &&
+                        item.controls.orderBaseinfo.get('prebookReferenceId')
+                          ?.errors
+                      ">
+                      {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                    </nz-form-explain>
+                    <div *ngIf="item.controls.orderBaseinfo.getRawValue().prebookQuantity>1" class="lintesting">
+                      系统检测到可关联的Pre-book Order,请人工选择关联
+                    </div>
+                    <div
+                      *ngIf="item.controls.orderBaseinfo.getRawValue().prebookQuantity==0&&!item.controls.orderBaseinfo.getRawValue().prebookReferenceId"
+                      class="lintesting">
+                      尚无可关联的Pre-book Order
+                    </div>
+
+                    <ng-template #selectDealerBtn>
+                      <button
+                        [disabled]="item.controls.orderSalesinfo.getRawValue().prebookDisabled||item.controls.orderBaseinfo.getRawValue().prebookQuantity==0"
+                        nz-button nzType="primary" class="ml-md" (click)="onShowSelectPrebookModal(i)">
+                        {{'orderv3.components.pre-product.common.select' | translate}}
+                      </button>
+                    </ng-template>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+              <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8" *ngIf="
+                  item.controls.orderBaseinfo.getRawValue().orderModality ==
+                  'PD&IGT'
+                ">
+                <nz-form-item>
+                  <nz-form-label nzXs="24" nzSm="24" nzMd="10" nzXl="8" nzXXl="6" [nzNoColon]="true">
+                    关联的Pre-book Order当前状态
+                  </nz-form-label>
+                  <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                    <input nz-input [ngModelOptions]="{standalone: true}" disabled
+                      [ngModel]="item.controls.orderBaseinfo.getRawValue().prebookStatus|ProcessTaskStatusPipe|async"
+                      maxlength="255" />
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+              <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8" *ngIf="
+                  item.controls.orderBaseinfo.getRawValue().orderModality ==
+                  'PD&IGT'
+                ">
+                <nz-form-item>
+                  <nz-form-label nzXs="24" nzSm="24" nzMd="10" nzXl="8" nzXXl="6" [nzNoColon]="true">
+                    关联的Pre-book Order的SO#
+                  </nz-form-label>
+                  <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                    <input nz-input formControlName="prebookSo" maxlength="255" />
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+            </div>
+          </form>
+        </app-form-section>
+
+        <app-form-section [form]="item.controls.endUserinfo" class="mtb1rem" dynamic="true"
+          title="{{'orderv3.components.pre-product.orderEndUserInfo.title' | translate}}" *ngIf="
+            item.controls.orderBaseinfo.getRawValue().centralizedPurchasing ==
+            '1'
+          ">
+          <form nz-form [formGroup]="item.controls.endUserinfo" [nzNoColon]="true">
+            <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+              <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+                <nz-form-item>
+                  <nz-form-label nzXs="24" nzSm="24" nzMd="12" [nzNoColon]="true">
+                    {{'orderv3.components.pre-product.orderEndUserInfo.orderSameEndUser' | translate}}
+                  </nz-form-label>
+                  <nz-form-control nzXs="24" nzSm="24" nzMd="12">
+                    <nz-radio-group [nzDisabled]="
+                        item.controls.orderSalesinfo.getRawValue().isDisabled
+                      " (ngModelChange)="isEndUserSimilar(i)" formControlName="orderSameEndUser">
+                      <label nz-radio nzValue="1">是</label>
+                      <label nz-radio nzValue="0">否</label>
+                    </nz-radio-group>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+            </div>
+            <ng-container *ngIf="
+                item.controls.endUserinfo.getRawValue().orderSameEndUser == '0'
+              ">
+              <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+                <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+                  <nz-form-item>
+                    <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true">
+                      {{'orderv3.components.pre-product.orderEndUserInfo.endUser' | translate}}
+                    </nz-form-label>
+                    <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                      <nz-input-group style="width: 100%" [nzSuffix]="clearHospitalBtn"
+                        [nzAddOnAfter]="selectHospitalBtn">
+                        <input id="hospitalName" type="text" nz-input maxlength="255" formControlName="endUser" />
+                      </nz-input-group>
+                      <ng-template #clearHospitalBtn>
+                        <i nz-icon nz-tooltip class="ant-input-clear-icon" nzTheme="fill" nzType="close-circle" *ngIf="
+                            item.controls.endUserinfo.get('endUser').value &&
+                            editable
+                          " (click)="onClearHospital()"></i>
+                      </ng-template>
+                      <ng-template #selectHospitalBtn>
+                        <button *ngIf="editable" nz-button nzType="primary" class="ml-md"
+                          (click)="onShowSelectHospitalModal(i)">
+                          {{'orderv3.components.pre-product.common.selectHospital' | translate}}
+                        </button>
+                      </ng-template>
+                      <nz-form-explain *ngIf="
+                          item.controls.endUserinfo.get('endUser')?.dirty &&
+                          item.controls.endUserinfo.get('endUser')?.errors
+                        ">
+                        {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                      </nz-form-explain>
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+                <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+                  <nz-form-item>
+                    <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true">
+                      {{'orderv3.components.pre-product.orderEndUserInfo.endUserId' | translate}}
+                    </nz-form-label>
+                    <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                      <input nz-input formControlName="endUserId" maxlength="255" />
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+                <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+                  <nz-form-item>
+                    <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true">
+                      {{'orderv3.components.pre-product.orderEndUserInfo.endUserSapCode' | translate}}
+                    </nz-form-label>
+                    <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                      <input nz-input formControlName="endUserSapCode" maxlength="255" />
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+              </div>
+              <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+                <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+                  <nz-form-item>
+                    <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true">
+                      {{'orderv3.components.pre-product.orderEndUserInfo.endUserTaxNum' | translate}}
+                    </nz-form-label>
+                    <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                      <input nz-input formControlName="endUserTaxNum" maxlength="255" />
+                      <nz-form-explain *ngIf="
+                          item.controls.endUserinfo.get('endUserTaxNum')
+                            ?.dirty &&
+                          item.controls.endUserinfo.get('endUserTaxNum')?.errors
+                        ">
+                        {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                      </nz-form-explain>
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+                <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+                  <nz-form-item>
+                    <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true">
+                      {{'orderv3.components.pre-product.orderEndUserInfo.hospitalType' | translate}}
+                    </nz-form-label>
+                    <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                      <input nz-input formControlName="hospitalType" maxlength="255" />
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+                <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+                  <nz-form-item>
+                    <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true" [nzRequired]="segmentNzRequired(i)">
+                      {{'orderv3.components.pre-product.orderEndUserInfo.segment' | translate}}
+
+                    </nz-form-label>
+                    <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                      <input nz-input readonly class="readonly" formControlName="segment" maxlength="255" />
+                      <nz-form-explain *ngIf="
+                          item.controls.endUserinfo.get('segment')
+                            ?.dirty &&
+                          item.controls.endUserinfo.get('segment')
+                            ?.errors
+                        ">
+                        {{'orderv3.components.pre-product.common.segmentError' | translate}}
+                      </nz-form-explain>
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+              </div>
+              <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+                <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+                  <nz-form-item>
+                    <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true" [nzRequired]="isEnduser(i)">
+                      {{'orderv3.components.pre-product.orderEndUserInfo.endUserAddress' | translate}}
+                    </nz-form-label>
+                    <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                      <input nz-input formControlName="endUserAddress" maxlength="255" />
+                      <nz-form-explain *ngIf="
+                          item.controls.endUserinfo.get('endUserAddress')
+                            ?.dirty &&
+                          item.controls.endUserinfo.get('endUserAddress')
+                            ?.errors
+                        ">
+                        {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                      </nz-form-explain>
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+                <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                  <nz-form-item>
+                    <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzXl="8" nzXXl="6" [nzNoColon]="true"
+                      [nzRequired]="isEnduser(i)">
+                      {{'orderv3.components.pre-product.orderEndUserInfo.endUserActuallyDeliveryAddress' | translate}}
+                    </nz-form-label>
+                    <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                      <input nz-input formControlName="endUserActuallyDeliveryAddress" maxlength="255" />
+                      <nz-form-explain *ngIf="
+                          endUserFrom.get('endUserActuallyDeliveryAddress')?.dirty &&
+                          endUserFrom.get('endUserActuallyDeliveryAddress')?.errors
+                        ">
+                        {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                      </nz-form-explain>
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+                <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+                  <nz-form-item>
+                    <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true" [nzRequired]="isEnduser(i)">
+                      {{'orderv3.components.pre-product.orderEndUserInfo.endUserPhone' | translate}}
+                    </nz-form-label>
+                    <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                      <input nz-input formControlName="endUserPhone" maxlength="100" />
+                      <nz-form-explain *ngIf="
+                          item.controls.endUserinfo.get('endUserPhone')
+                            ?.dirty &&
+                          item.controls.endUserinfo.get('endUserPhone')?.errors
+                        ">
+                        {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                      </nz-form-explain>
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+                <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+                  <nz-form-item>
+                    <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true">
+                      {{'orderv3.components.pre-product.orderEndUserInfo.endUserEmail' | translate}}
+                    </nz-form-label>
+                    <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                      <input nz-input formControlName="endUserEmail" maxlength="100" />
+                      <nz-form-explain *ngIf="
+                          item.controls.endUserinfo.get('endUserEmail')
+                            ?.dirty &&
+                          item.controls.endUserinfo.get('endUserEmail')?.errors
+                        ">
+                        {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                      </nz-form-explain>
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+                <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+                  <nz-form-item>
+                    <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true" [nzRequired]="isEnduser(i)">
+                      {{'orderv3.components.pre-product.orderEndUserInfo.endUserContact' | translate}}
+                    </nz-form-label>
+                    <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                      <input nz-input formControlName="endUserContact" maxlength="255" />
+                      <nz-form-explain *ngIf="
+                          item.controls.endUserinfo.get('endUserContact')
+                            ?.dirty &&
+                          item.controls.endUserinfo.get('endUserContact')
+                            ?.errors
+                        ">
+                        {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                      </nz-form-explain>
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+                <div nz-col nzXs="24" nzSm="24" nzMd="8"
+                  *ngIf="item.controls.orderBaseinfo.getRawValue().orderModality=='US'">
+                  <nz-form-item>
+                    <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzXl="8" nzXXl="6" [nzNoColon]="true">
+                      {{'orderv3.components.pre-product.orderEndUserInfo.usHta' | translate}}
+                    </nz-form-label>
+                    <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                      <input nz-input formControlName="usHta" maxlength="255" />
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+              </div>
+            </ng-container>
+          </form>
+        </app-form-section>
+        <app-form-section [form]="item.controls.foreignInfo" class="mtb1rem" dynamic="true"
+          title="{{'orderv3.components.pre-product.orderForeignInfo.title' | translate}}" *ngIf="
+          foreignformShow(i)
+          ">
+          <form nz-form [formGroup]="item.controls.foreignInfo" [nzNoColon]="true">
+            <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+              <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+                <nz-form-item>
+                  <nz-form-label nzXs="24" nzSm="24" nzMd="12" [nzNoColon]="true">
+                    {{'orderv3.components.pre-product.orderForeignInfo.orderSameForeignTradeCorp' | translate}}
+                  </nz-form-label>
+                  <nz-form-control nzXs="24" nzSm="24" nzMd="12">
+                    <nz-radio-group [nzDisabled]="
+                        item.controls.orderSalesinfo.getRawValue().isDisabled||item.controls.orderSalesinfo.getRawValue().isDisabledForeign
+                      " formControlName="orderSameForeignTradeCorp" (ngModelChange)="isForeginSimilar(i)">
+                      <label nz-radio nzValue="1">{{'orderv3.components.pre-product.common.radioOk' |
+                        translate}}</label>
+                      <label nz-radio nzValue="0">{{'orderv3.components.pre-product.common.radioCancel' |
+                        translate}}</label>
+                    </nz-radio-group>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+            </div>
+            <ng-container *ngIf="
+                item.controls.foreignInfo.getRawValue()
+                  .orderSameForeignTradeCorp == '0'
+              ">
+              <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+                <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+                  <nz-form-item>
+                    <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true">
+                    </nz-form-label>
+                    <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                      <label nz-checkbox (ngModelChange)="foreignSample($event,i)"
+                        formControlName="foreignTradeCorpSameDealer">{{'orderv3.components.pre-product.orderForeignInfo.foreignTradeCorpSameDealer'
+                        | translate}}</label>
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+              </div>
+              <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+                <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+                  <nz-form-item>
+                    <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true" nzRequired>
+                      {{'orderv3.components.pre-product.orderForeignInfo.foreignTradeCorpName' | translate}}
+                    </nz-form-label>
+                    <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                      <nz-input-group style="width: 100%" [nzSuffix]="clearCompanyBtn"
+                        [nzAddOnAfter]="selectCompanyBtn">
+                        <input type="text" nz-input maxlength="255" (blur)="foreignKeyup($event,i)"
+                          formControlName="foreignTradeCorpName" />
+                      </nz-input-group>
+                      <ng-template #clearCompanyBtn>
+                        <i nz-icon nz-tooltip class="ant-input-clear-icon" nzTheme="fill" nzType="close-circle" *ngIf="
+                            item.controls.foreignInfo.get(
+                              'foreignTradeCorpName'
+                            ).value&&!item.controls.orderSalesinfo.getRawValue()
+                            .isDisabled
+                          " (click)="onClearForeignCompany(i)"></i>
+                      </ng-template>
+                      <ng-template #selectCompanyBtn>
+                        <button nz-button nzType="primary" class="ml-md" [disabled]="
+                          !editable ||
+                          item.controls.orderSalesinfo.getRawValue()
+                            .isDisabled
+                        " (click)="onshowForeignCompanyDialog(i)">
+                          {{'orderv3.components.pre-product.orderForeignInfo.selectIePool' | translate}}
+                        </button>
+                      </ng-template>
+                      <nz-form-explain *ngIf="
+                          item.controls.foreignInfo.get('foreignTradeCorpName')
+                            ?.dirty &&
+                          item.controls.foreignInfo.get('foreignTradeCorpName')
+                            ?.errors
+                        ">
+                        {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                      </nz-form-explain>
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+                <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+                  <nz-form-item>
+                    <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                      <label nz-checkbox
+                        formControlName="companyNotInIePool">{{'orderv3.components.pre-product.orderForeignInfo.companyNotInIePool'
+                        | translate}}</label>
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+                <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+                  <nz-form-item>
+                    <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true">
+                      {{'orderv3.components.pre-product.orderForeignInfo.foreignTradeCorpSapCode' | translate}}
+                    </nz-form-label>
+                    <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                      <input nz-input formControlName="foreignTradeCorpSapCode" maxlength="255" />
+                      <nz-form-explain *ngIf="
+                          item.controls.foreignInfo.get(
+                            'foreignTradeCorpSapCode'
+                          )?.dirty &&
+                          item.controls.foreignInfo.get(
+                            'foreignTradeCorpSapCode'
+                          )?.errors
+                        ">
+                        {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                      </nz-form-explain>
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+              </div>
+              <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+                <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+                  <nz-form-item>
+                    <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true">
+                      {{'orderv3.components.pre-product.orderForeignInfo.foreignTradeCorpDdpStatus' | translate}}
+                    </nz-form-label>
+                    <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                      <input nz-input readonly class="readonly" formControlName="foreignTradeCorpDdpStatus"
+                        maxlength="255" />
+                      <nz-alert *ngIf="item.controls.foreignInfo.get('foreignTradeCorpDdpStatus').value =='不通过'"
+                        nzType="warning" nzMessage="当前外贸公司DDP已过有效期" nzShowIcon></nz-alert>
+                      <nz-form-explain style="color:red" *ngIf="item.controls.foreignInfo.get('foreignTradeCorpDdpStatus')?.dirty 
+                          && item.controls.foreignInfo.get( 'foreignTradeCorpDdpStatus' )?.errors">
+                        {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                      </nz-form-explain>
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+                <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+                  <nz-form-item>
+                    <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true">
+                      {{'orderv3.components.pre-product.orderForeignInfo.foreignTradeCorpDdpValidityDate' | translate}}
+                    </nz-form-label>
+                    <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                      <shared-date-picker formControlName="foreignTradeCorpDdpValidityDate"
+                        (ngModelChange)="changForeignDate($event,i)"></shared-date-picker>
+                      <nz-form-explain *ngIf="
+                          item.controls.foreignInfo.get(
+                            'foreignTradeCorpDdpValidityDate'
+                          )?.dirty &&
+                          item.controls.foreignInfo.get(
+                            'foreignTradeCorpDdpValidityDate'
+                          )?.errors
+                        ">
+                        {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                      </nz-form-explain>
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+                <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+                  <nz-form-item>
+                    <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true" nzRequired>
+                      {{'orderv3.components.pre-product.orderForeignInfo.foreignTradeCorpTaxNum' | translate}}
+                    </nz-form-label>
+                    <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                      <input nz-input formControlName="foreignTradeCorpTaxNum" maxlength="255" />
+                      <nz-form-explain *ngIf="
+                          item.controls.foreignInfo.get(
+                            'foreignTradeCorpTaxNum'
+                          )?.dirty &&
+                          item.controls.foreignInfo.get(
+                            'foreignTradeCorpTaxNum'
+                          )?.errors
+                        ">
+                        {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                      </nz-form-explain>
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+              </div>
+              <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+                <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+                  <nz-form-item>
+                    <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true" nzRequired>
+                      {{'orderv3.components.pre-product.orderForeignInfo.foreignTradeCorpAddress' | translate}}
+                    </nz-form-label>
+                    <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                      <input nz-input formControlName="foreignTradeCorpAddress" maxlength="255" />
+                      <nz-form-explain *ngIf="
+                          item.controls.foreignInfo.get(
+                            'foreignTradeCorpAddress'
+                          )?.dirty &&
+                          item.controls.foreignInfo.get(
+                            'foreignTradeCorpAddress'
+                          )?.errors
+                        ">
+                        {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                      </nz-form-explain>
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+                <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+                  <nz-form-item>
+                    <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true" nzRequired>
+                      {{'orderv3.components.pre-product.orderForeignInfo.foreignTradeCorpPhone' | translate}}
+                    </nz-form-label>
+                    <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                      <input nz-input formControlName="foreignTradeCorpPhone" maxlength="255" />
+                      <nz-form-explain *ngIf="
+                          item.controls.foreignInfo.get('foreignTradeCorpPhone')
+                            ?.dirty &&
+                          item.controls.foreignInfo.get('foreignTradeCorpPhone')
+                            ?.errors
+                        ">
+                        {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                      </nz-form-explain>
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+                <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+                  <nz-form-item>
+                    <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true" nzRequired>
+                      {{'orderv3.components.pre-product.orderForeignInfo.foreignTradeCorpContact' | translate}}
+                    </nz-form-label>
+                    <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                      <input nz-input formControlName="foreignTradeCorpContact" maxlength="255" />
+                      <nz-form-explain *ngIf="
+                          item.controls.foreignInfo.get(
+                            'foreignTradeCorpContact'
+                          )?.dirty &&
+                          item.controls.foreignInfo.get(
+                            'foreignTradeCorpContact'
+                          )?.errors
+                        ">
+                        {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                      </nz-form-explain>
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+              </div>
+              <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+                <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+                  <nz-form-item>
+                    <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true" nzRequired>
+                      {{'orderv3.components.pre-product.orderForeignInfo.foreignTradeCorpEmail' | translate}}
+                    </nz-form-label>
+                    <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                      <input nz-input formControlName="foreignTradeCorpEmail" maxlength="255" />
+                      <nz-form-explain *ngIf="
+                          item.controls.foreignInfo.get('foreignTradeCorpEmail')
+                            ?.dirty &&
+                          item.controls.foreignInfo.get('foreignTradeCorpEmail')
+                            ?.errors
+                        ">
+                        {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                      </nz-form-explain>
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+                <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+                  <nz-form-item>
+                    <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true" nzRequired>
+                      {{'orderv3.components.pre-product.orderForeignInfo.importAgreementSignName' | translate}}
+                    </nz-form-label>
+                    <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                      <input nz-input formControlName="importAgreementSignName" maxlength="255" />
+                      <nz-form-explain *ngIf="
+                          item.controls.foreignInfo.get(
+                            'importAgreementSignName'
+                          )?.dirty &&
+                          item.controls.foreignInfo.get(
+                            'importAgreementSignName'
+                          )?.errors
+                        ">
+                        {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                      </nz-form-explain>
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+                <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+                  <nz-form-item>
+                    <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true" nzRequired>
+                      {{'orderv3.components.pre-product.orderForeignInfo.importAgreementSignPosition' | translate}}
+                    </nz-form-label>
+                    <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                      <input nz-input formControlName="importAgreementSignPosition" maxlength="255" />
+                      <nz-form-explain *ngIf="
+                          item.controls.foreignInfo.get(
+                            'importAgreementSignPosition'
+                          )?.dirty &&
+                          item.controls.foreignInfo.get(
+                            'importAgreementSignPosition'
+                          )?.errors
+                        ">
+                        {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                      </nz-form-explain>
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+              </div>
+            </ng-container>
+          </form>
+        </app-form-section>
+        <app-form-section class="mtb1rem" [form]="item.controls.mainTrems"
+          title="{{'orderv3.components.pre-product.orderContractTermsInfo.title' | translate}}">
+          <form nz-form [formGroup]="item.controls.mainTrems" [nzNoColon]="true">
+            <div nz-row nzType="flex" nzJustify="start" nzAlign="top" nzGutter="20">
+              <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                <nz-form-item>
+                  <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true" [nzRequired]="provisionChang(i)">
+                    {{'orderv3.components.pre-product.orderContractTermsInfo.paymentProvision' | translate}}
+                  </nz-form-label>
+                  <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                    <Label-popup [width]="200">
+                      <nz-select *ngIf="
+                          !item.controls.orderSalesinfo.getRawValue().isDisabled
+                        " nzShowSearch formControlName="paymentProvision"
+                        (ngModelChange)="changPaymentProvision($event,i)">
+                        <nz-option nzCustomContent
+                          *ngFor="let item of item.controls.mainTrems.getRawValue().paymentProvisionList"
+                          [nzLabel]="item.payment" [nzValue]="item.payment">
+                          <div nz-tooltip class="options" [nzTitle]="item.payment">
+                            {{ item.payment }}
+                          </div>
+                        </nz-option>
+                      </nz-select>
+
+                      <nz-form-explain *ngIf="
+                            item.controls.mainTrems.get('paymentProvision')
+                              ?.dirty &&
+                            item.controls.mainTrems.get('paymentProvision')
+                              ?.errors
+                          ">
+                        {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                      </nz-form-explain>
+                      <ng-container *ngIf="
+                          item.controls.orderSalesinfo.getRawValue().isDisabled
+                        ">
+                        <input nz-input formControlName="paymentProvision" maxlength="255" />
+                      </ng-container>
+                      <ng-template labelPopupContent>
+                        可选择付款条款；如果非飞利浦标准条款，请在备注中描述。可上传支持文件（非必传）
+                      </ng-template>
+                    </Label-popup>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+              <div nz-col nzXs="24" nzSm="24" nzMd="16">
+                <nz-form-item>
+                  <div nz-row nzType="flex" nzJustify="start" nzAlign="top" nzGutter="20">
+                    <nz-form-control nz-col nzXs="24" nzSm="24" nzMd="8" nz-tooltip
+                      [nzTitle]="item.controls.mainTrems.getRawValue().paymentProvisionRemarks">
+                      <textarea nz-input oninput="if(value.length>255)value=value.slice(0,255)" placeholder=""
+                        nzPlacement="topLeft" [nzAutosize]="{ minRows: 1, maxRows: 6 }"
+                        formControlName="paymentProvisionRemarks"></textarea>
+                      <nz-form-explain *ngIf="
+                        item.controls.mainTrems.get('paymentProvisionRemarks')
+                          ?.dirty &&
+                        item.controls.mainTrems.get('paymentProvisionRemarks')
+                          ?.errors
+                      ">
+                        {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                      </nz-form-explain>
+                      <ng-container *ngIf="
+                          item.controls.mainTrems.getRawValue()
+                            .paymentProvisionRemarks
+                        ">
+                        <div>
+                          还可以输入:{{
+                          item.controls.mainTrems.getRawValue()
+                          .paymentProvisionRemarks.length
+                          }}/255
+                        </div>
+                      </ng-container>
+                    </nz-form-control>
+                    <nz-form-control nz-col nzXs="24" nzSm="24" nzMd="16">
+                      <div class="maxuploadtProd">
+                        <shared-upload-file [title]="'上传附件'" [type]="null" formControlName="paymentProvisionFile">
+                        </shared-upload-file>
+                      </div>
+                    </nz-form-control>
+                  </div>
+                </nz-form-item>
+              </div>
+            </div>
+            <ng-container *ngIf="isShowmainClause(i)">
+              <div nz-row nzType="flex" nzJustify="start" nzAlign="top" nzGutter="20">
+                <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                  <nz-form-item>
+
+                    <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true"
+                      [nzRequired]="item.controls.mainTrems.getRawValue().performanceBondisRequired">
+                      {{'orderv3.components.pre-product.orderContractTermsInfo.performanceBond' | translate}}
+                    </nz-form-label>
+                    <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                      <Label-popup [width]="'200px'">
+                        <nz-radio-group (ngModelChange)="performanceBondModelChanges($event,i)" [nzDisabled]="
+                            item.controls.orderSalesinfo.getRawValue()
+                              .isDisabledMain
+                          " formControlName="performanceBond">
+                          <label nz-radio nzValue="1">{{'orderv3.components.pre-product.common.radioOk' |
+                            translate}}</label>
+                          <label nz-radio nzValue="0">{{'orderv3.components.pre-product.common.radioCancel' |
+                            translate}}</label>
+                        </nz-radio-group>
+                        <ng-template labelPopupContent>履约保函如直投项目中客户要求飞利浦出具履约保函，请选择“是”并在备注中详细描述。可上传支持文件（非必传）
+                        </ng-template>
+                      </Label-popup>
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+                <div nz-col nzXs="24" nzSm="24" nzMd="16">
+                  <nz-form-item>
+                    <div nz-row nzType="flex" nzJustify="start" nzAlign="top" nzGutter="20">
+                      <nz-form-control nz-col nzXs="24" nzSm="24" nzMd="8" nz-tooltip
+                        [nzTitle]="item.controls.mainTrems.getRawValue().performanceBondRemarks">
+                        <textarea nz-input oninput="if(value.length>255)value=value.slice(0,255)" placeholder=""
+                          nzPlacement="topLeft" [nzAutosize]="{ minRows: 1, maxRows: 6 }"
+                          formControlName="performanceBondRemarks"></textarea>
+                        <nz-form-explain *ngIf="
+                            item.controls.mainTrems.get('performanceBondRemarks')?.dirty &&
+                            item.controls.mainTrems.get('performanceBondRemarks')?.errors
+                          ">
+                          {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                        </nz-form-explain>
+                        <ng-container *ngIf="
+                            item.controls.mainTrems.getRawValue()
+                              .performanceBondRemarks
+                          ">
+                          <div>
+                            还可以输入:{{
+                            item.controls.mainTrems.getRawValue()
+                            .performanceBondRemarks.length
+                            }}/255
+                          </div>
+                        </ng-container>
+                      </nz-form-control>
+                      <nz-form-control nz-col nzXs="24" nzSm="24" nzMd="16">
+                        <div class="maxuploadtProd">
+                          <shared-upload-file [title]="'上传附件'" [type]="null" formControlName="performanceBondFile">
+                          </shared-upload-file>
+                        </div>
+                      </nz-form-control>
+                    </div>
+                  </nz-form-item>
+                </div>
+              </div>
+              <div nz-row nzType="flex" nzJustify="start" nzAlign="top" nzGutter="20">
+                <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                  <nz-form-item>
+                    <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true"
+                      [nzRequired]="item.controls.mainTrems.getRawValue().qualityGuaranteeRequired">
+                      {{'orderv3.components.pre-product.orderContractTermsInfo.qualityGuarantee' | translate}}
+                    </nz-form-label>
+                    <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                      <Label-popup [width]="200">
+                        <nz-radio-group [nzDisabled]="
+                            item.controls.orderSalesinfo.getRawValue()
+                              .isDisabledMain
+                          " (ngModelChange)="qualityGuaranteeModelChanges($event,i)"
+                          formControlName="qualityGuarantee">
+                          <label nz-radio nzValue="1">{{'orderv3.components.pre-product.common.radioOk' |
+                            translate}}</label>
+                          <label nz-radio nzValue="0">{{'orderv3.components.pre-product.common.radioCancel' |
+                            translate}}</label>
+                        </nz-radio-group>
+                        <ng-template labelPopupContent>可选择标准或非标准条款；如果非飞利浦标准条款，请在备注中描述。可上传支持文件（非必传）</ng-template>
+                      </Label-popup>
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+                <div nz-col nzXs="24" nzSm="24" nzMd="16">
+                  <nz-form-item>
+                    <div nz-row nzType="flex" nzJustify="start" nzAlign="top" nzGutter="20">
+                      <nz-form-control nz-col nzXs="24" nzSm="24" nzMd="8" nz-tooltip
+                        [nzTitle]="item.controls.mainTrems.getRawValue().qualityGuaranteeRemarks">
+                        <textarea nz-input oninput="if(value.length>255)value=value.slice(0,255)" placeholder=""
+                          nzPlacement="topLeft" [nzAutosize]="{ minRows: 1, maxRows: 6 }"
+                          formControlName="qualityGuaranteeRemarks"></textarea>
+                        <nz-form-explain *ngIf="
+                          item.controls.mainTrems.get('qualityGuaranteeRemarks')?.dirty &&
+                          item.controls.mainTrems.get('qualityGuaranteeRemarks')?.errors
+                        ">
+                          {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                        </nz-form-explain>
+                        <ng-container *ngIf="
+                            item.controls.mainTrems.getRawValue()
+                              .qualityGuaranteeRemarks
+                          ">
+                          <div>
+                            还可以输入:{{
+                            item.controls.mainTrems.getRawValue()
+                            .qualityGuaranteeRemarks.length
+                            }}/255
+                          </div>
+                        </ng-container>
+                      </nz-form-control>
+                      <nz-form-control nz-col nzXs="24" nzSm="24" nzMd="16" nz-tooltip>
+                        <div class="maxuploadtProd">
+                          <shared-upload-file [title]="'上传附件'" [type]="null" formControlName="qualityGuaranteeFile">
+                          </shared-upload-file>
+                        </div>
+                      </nz-form-control>
+                    </div>
+                  </nz-form-item>
+                </div>
+              </div>
+              <div nz-row nzType="flex" nzJustify="start" nzAlign="top" nzGutter="20">
+                <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                  <nz-form-item>
+                    <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true"
+                      [nzRequired]="item.controls.mainTrems.getRawValue().afterSalePriceRequired">
+                      {{'orderv3.components.pre-product.orderContractTermsInfo.afterSalePrice' | translate}}
+                    </nz-form-label>
+                    <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                      <Label-popup [width]="'200px'">
+                        <nz-radio-group [nzDisabled]="
+                            item.controls.orderSalesinfo.getRawValue()
+                              .isDisabledMain
+                          " (ngModelChange)="afterSalePriceModelChanges($event,i)" formControlName="afterSalePrice">
+                          <label nz-radio nzValue="1">{{'orderv3.components.pre-product.common.radioOk' |
+                            translate}}</label>
+                          <label nz-radio nzValue="0">{{'orderv3.components.pre-product.common.radioCancel' |
+                            translate}}</label>
+                        </nz-radio-group>
+                        <ng-template labelPopupContent>选择“是”代表有售后限价，请在备注中描述，需要上传CS的确认邮件（必传）</ng-template>
+                      </Label-popup>
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+                <div nz-col nzXs="24" nzSm="24" nzMd="16">
+                  <nz-form-item>
+                    <div nz-row nzType="flex" nzJustify="start" nzAlign="top" nzGutter="20">
+                      <nz-form-control nz-col nzXs="24" nzSm="24" nzMd="8" nz-tooltip
+                        [nzTitle]="item.controls.mainTrems.getRawValue().afterSalePriceRemarks">
+                        <textarea nz-input oninput="if(value.length>255)value=value.slice(0,255)" placeholder=""
+                          nzPlacement="topLeft" [nzAutosize]="{ minRows: 1, maxRows: 6 }"
+                          formControlName="afterSalePriceRemarks"></textarea>
+                        <nz-form-explain *ngIf="
+                          item.controls.mainTrems.get('afterSalePriceRemarks')?.dirty &&
+                          item.controls.mainTrems.get('afterSalePriceRemarks')?.errors
+                        ">
+                          {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                        </nz-form-explain>
+                        <ng-container *ngIf="
+                            item.controls.mainTrems.getRawValue()
+                              .afterSalePriceRemarks
+                          ">
+                          <div>
+                            还可以输入:{{
+                            item.controls.mainTrems.getRawValue()
+                            .afterSalePriceRemarks.length
+                            }}/255
+                          </div>
+                        </ng-container>
+                      </nz-form-control>
+                      <nz-form-control nz-col nzXs="24" nzSm="24" nzMd="16" nz-tooltip>
+                        <div class="maxuploadtProd">
+                          <shared-upload-file [title]="'上传附件'" [type]="null" formControlName="afterSalePriceFile">
+                          </shared-upload-file>
+                        </div>
+                      </nz-form-control>
+                    </div>
+                  </nz-form-item>
+                </div>
+              </div>
+            </ng-container>
+          </form>
+        </app-form-section>
+        <app-form-section *ngIf="isShowmainClause(i)" class="mtb1rem" [form]="item.controls.otherTerms"
+          title="{{'orderv3.components.pre-product.orderOtherContractInfo.title' | translate}}">
+          <form nz-form [formGroup]="item.controls.otherTerms" [nzNoColon]="true">
+            <div nz-row nzType="flex" nzJustify="start" nzAlign="top" nzGutter="20">
+              <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                <nz-form-item>
+                  <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true"
+                    [nzRequired]="item.controls.otherTerms.getRawValue().shipmentDeliveryRequired">
+                    {{'orderv3.components.pre-product.orderOtherContractInfo.shipmentDelivery' | translate}}
+                  </nz-form-label>
+                  <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                    <Label-popup [width]="200">
+                      <nz-select nzShowSearch formControlName="shipmentDelivery"
+                        (ngModelChange)="shipmentDeliveryModelChanges($event,i)">
+                        <nz-option
+                          nzLabel="{{'orderv3.components.pre-product.orderOtherContractInfo.standardTerms' | translate}}"
+                          nzValue="0"></nz-option>
+                        <nz-option
+                          nzLabel="{{'orderv3.components.pre-product.orderOtherContractInfo.nonStandardTerms' | translate}}"
+                          nzValue="1"></nz-option>
+                      </nz-select>
+                      <ng-template labelPopupContent>可选择标准或非标准条款；如果非飞利浦标准条款，请在备注中描述。可上传支持文件（非必传）</ng-template>
+                    </Label-popup>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+              <div nz-col nzXs="24" nzSm="24" nzMd="16">
+                <nz-form-item>
+                  <div nz-row nzType="flex" nzJustify="start" nzAlign="top" nzGutter="20">
+                    <nz-form-control nz-col nzXs="24" nzSm="24" nzMd="8" nz-tooltip
+                      [nzTitle]="item.controls.otherTerms.getRawValue().shipmentDeliveryRemarks">
+                      <textarea nz-input oninput="if(value.length>255)value=value.slice(0,255)" placeholder=""
+                        nzPlacement="topLeft" [nzAutosize]="{ minRows: 1, maxRows: 6 }"
+                        formControlName="shipmentDeliveryRemarks"></textarea>
+                      <nz-form-explain *ngIf="
+                            item.controls.otherTerms.get('shipmentDeliveryRemarks')?.dirty &&
+                            item.controls.otherTerms.get('shipmentDeliveryRemarks')?.errors
+                          ">
+                        {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                      </nz-form-explain>
+                      <ng-container *ngIf="
+                          item.controls.otherTerms.getRawValue()
+                            .shipmentDeliveryRemarks
+                        ">
+                        <div>
+                          还可以输入:{{
+                          item.controls.otherTerms.getRawValue()
+                          .shipmentDeliveryRemarks.length
+                          }}/255
+                        </div>
+                      </ng-container>
+                    </nz-form-control>
+                    <nz-form-control nz-col nzXs="24" nzSm="24" nzMd="16" nz-tooltip>
+                      <div class="maxuploadtProd">
+                        <shared-upload-file [title]="'上传附件'" [type]="null" formControlName="shipmentDeliveryFile">
+                        </shared-upload-file>
+                      </div>
+                    </nz-form-control>
+                  </div>
+                </nz-form-item>
+              </div>
+            </div>
+            <div nz-row nzType="flex" nzJustify="start" nzAlign="top" *ngIf="
+                item.controls.orderBaseinfo.getRawValue().orderModality ==
+                'PD&IGT'
+              " nzGutter="20">
+              <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                <nz-form-item>
+                  <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true"
+                    [nzRequired]="item.controls.otherTerms.getRawValue().sitePreparationRequired">
+                    {{'orderv3.components.pre-product.orderOtherContractInfo.sitePreparation' | translate}}
+                  </nz-form-label>
+                  <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                    <Label-popup [width]="200">
+                      <nz-select nzShowSearch formControlName="sitePreparation"
+                        (ngModelChange)="sitePreparationModelChanges($event,i)">
+                        <nz-option
+                          nzLabel="{{'orderv3.components.pre-product.orderOtherContractInfo.standardTerms' | translate}}"
+                          nzValue="0"></nz-option>
+                        <nz-option
+                          nzLabel="{{'orderv3.components.pre-product.orderOtherContractInfo.nonStandardTerms' | translate}}"
+                          nzValue="1"></nz-option>
+                      </nz-select>
+                      <ng-template labelPopupContent>可选择标准或非标准条款；如果非飞利浦标准条款，请在备注中描述。可上传支持文件（非必传）</ng-template>
+                    </Label-popup>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+              <div nz-col nzXs="24" nzSm="24" nzMd="16">
+                <nz-form-item>
+                  <div nz-row nzType="flex" nzJustify="start" nzAlign="top" nzGutter="20">
+                    <nz-form-control nz-col nzXs="24" nzSm="24" nzMd="8" nz-tooltip
+                      [nzTitle]="item.controls.otherTerms.getRawValue().sitePreparationRemarks">
+                      <textarea nz-input oninput="if(value.length>255)value=value.slice(0,255)" placeholder=""
+                        nzPlacement="topLeft" [nzAutosize]="{ minRows: 1, maxRows: 6 }"
+                        formControlName="sitePreparationRemarks"></textarea>
+                      <nz-form-explain *ngIf="
+                        item.controls.otherTerms.get('sitePreparationRemarks')?.dirty &&
+                        item.controls.otherTerms.get('sitePreparationRemarks')?.errors
+                      ">
+                        {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                      </nz-form-explain>
+                      <ng-container *ngIf="
+                          item.controls.otherTerms.getRawValue()
+                            .sitePreparationRemarks
+                        ">
+
+                        <div>
+                          还可以输入:{{
+                          item.controls.otherTerms.getRawValue()
+                          .sitePreparationRemarks.length
+                          }}/255
+                        </div>
+                      </ng-container>
+                    </nz-form-control>
+                    <nz-form-control nz-col nzXs="24" nzSm="24" nzMd="16" nz-tooltip>
+                      <div class="maxuploadtProd">
+                        <shared-upload-file [title]="'上传附件'" [type]="null" formControlName="sitePreparationFile">
+                        </shared-upload-file>
+                      </div>
+                    </nz-form-control>
+                  </div>
+                </nz-form-item>
+              </div>
+            </div>
+
+            <div nz-row nzType="flex" nzJustify="start" nzAlign="top" nzGutter="20">
+              <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                <nz-form-item>
+                  <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true"
+                    [nzRequired]="item.controls.otherTerms.getRawValue().installationWarrantyRequired">
+                    {{'orderv3.components.pre-product.orderOtherContractInfo.installationWarranty' | translate}}
+                  </nz-form-label>
+                  <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                    <Label-popup [width]="200">
+                      <nz-select nzShowSearch formControlName="installationWarranty"
+                        (ngModelChange)="installationWarrantyModelChanges($event,i)">
+                        <nz-option
+                          nzLabel="{{'orderv3.components.pre-product.orderOtherContractInfo.standardTerms' | translate}}"
+                          nzValue="0"></nz-option>
+                        <nz-option
+                          nzLabel="{{'orderv3.components.pre-product.orderOtherContractInfo.nonStandardTerms' | translate}}"
+                          nzValue="1"></nz-option>
+                      </nz-select>
+                      <ng-template labelPopupContent>可选择标准或非标准条款；如果非飞利浦标准条款，请在备注中描述。可上传支持文件（非必传）</ng-template>
+                    </Label-popup>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+              <div nz-col nzXs="24" nzSm="24" nzMd="16">
+                <nz-form-item>
+                  <div nz-row nzType="flex" nzJustify="start" nzAlign="top" nzGutter="20">
+                    <nz-form-control nz-col nzXs="24" nzSm="24" nzMd="8" nz-tooltip
+                      [nzTitle]="item.controls.otherTerms.getRawValue().installationWarrantyRemarks">
+                      <textarea nz-input oninput="if(value.length>255)value=value.slice(0,255)" placeholder=""
+                        nzPlacement="topLeft" [nzAutosize]="{ minRows: 1, maxRows: 6 }"
+                        formControlName="installationWarrantyRemarks"></textarea>
+                      <nz-form-explain *ngIf="
+                          item.controls.otherTerms.get('installationWarrantyRemarks')?.dirty &&
+                          item.controls.otherTerms.get('installationWarrantyRemarks')?.errors
+                        ">
+                        {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                      </nz-form-explain>
+                      <ng-container *ngIf="
+                          item.controls.otherTerms.getRawValue()
+                            .installationWarrantyRemarks
+                        ">
+                        <div>
+                          还可以输入:{{
+                          item.controls.otherTerms.getRawValue()
+                          .installationWarrantyRemarks.length
+                          }}/255
+                        </div>
+                      </ng-container>
+                    </nz-form-control>
+                    <nz-form-control nz-col nzXs="24" nzSm="24" nzMd="16" nz-tooltip>
+                      <div class="maxuploadtProd">
+                        <shared-upload-file [title]="'上传附件'" [type]="null" formControlName="installationWarrantyFile">
+                        </shared-upload-file>
+                      </div>
+                    </nz-form-control>
+                  </div>
+                </nz-form-item>
+              </div>
+            </div>
+            <div nz-row nzType="flex" nzJustify="start" nzAlign="top" nzGutter="20" *ngIf="
+                status == 'ecos_oit_deal_oa' &&
+                item.controls.otherTerms.getRawValue().installationWarranty ==
+                  '1'
+              ">
+              <div nz-col nzXs="24" nzSm="24" nzMd="8"></div>
+              <div nz-col nzXs="24" nzSm="24" nzMd="16">
+                <div nz-row nzType="flex" nzJustify="middle" nzAlign="middle">
+                  <div nz-col nzXs="24" nzSm="24" nzMd="24">
+                    <nz-form-item>
+                      <nz-form-control nzXs="24" nzSm="4" style="width: 120px">
+                        {{'orderv3.components.pre-product.orderOtherContractInfo.installationWarrantySecondaryApproval'
+                        | translate}}
+                      </nz-form-control>
+                      <nz-form-control class="ml10" nzXs="24" nzSm="4" style="width:80px">
+                        <nz-select nzShowSearch formControlName="installationWarrantySecondaryApproval">
+                          <nz-option nzLabel="{{'orderv3.components.pre-product.common.radioOk' | translate}}"
+                            nzValue="1"></nz-option>
+                          <nz-option nzLabel="{{'orderv3.components.pre-product.common.radioCancel' | translate}}"
+                            nzValue="0"></nz-option>
+                        </nz-select>
+                      </nz-form-control>
+                    </nz-form-item>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div nz-row nzType="flex" nzJustify="start" nzAlign="top" nzGutter="20">
+              <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                <nz-form-item>
+                  <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true" [nzRequired]="isOtherTrain(i)">
+                    {{'orderv3.components.pre-product.orderOtherContractInfo.otherTerms' | translate}}
+                  </nz-form-label>
+                  <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                    <div>
+                      <Label-popup [width]="'200px'">
+                        <label nz-checkbox formControlName="otherTrain">
+                          {{'orderv3.components.pre-product.orderOtherContractInfo.otherTrain' | translate}}
+                        </label>
+                        <ng-template labelPopupContent>
+                          除上述条款外，如有其他非标准条款，请在下表中选择或描述。可上传支持文件（非必传）
+                        </ng-template>
+                      </Label-popup>
+                    </div>
+                    <div>
+                      <label nz-checkbox
+                        formControlName="otherFine">{{'orderv3.components.pre-product.orderOtherContractInfo.otherFine'
+                        | translate}}</label>
+                    </div>
+                    <div>
+                      <label nz-checkbox
+                        formControlName="otherIp">{{'orderv3.components.pre-product.orderOtherContractInfo.otherIp' |
+                        translate}}</label>
+                    </div>
+                    <div>
+                      <label nz-checkbox
+                        formControlName="otherContractTemplate">{{'orderv3.components.pre-product.orderOtherContractInfo.otherContractTemplate'
+                        | translate}}</label>
+                    </div>
+                    <div>
+                      <label nz-checkbox
+                        formControlName="otherOcap">{{'orderv3.components.pre-product.orderOtherContractInfo.otherOcap'
+                        | translate}}</label>
+                    </div>
+                    <div class="flexbox-between">
+                      <label nz-checkbox formControlName="other"
+                        (ngModelChange)="changeOter(i)">{{'orderv3.components.pre-product.orderOtherContractInfo.other'
+                        | translate}}</label>
+                      <nz-form-control *ngIf="item.controls.otherTerms.getRawValue().other" nzXs="24" nzSm="24"
+                        nzMd="18">
+                        <nz-form-label [nzNoColon]="true" [nzRequired]="changeOter(i)">
+                        </nz-form-label>
+                        <input type="text" class="freeText" nz-input maxlength="255" formControlName="otherLabel" />
+
+                        <nz-form-explain style="margin-left:25px" *ngIf="
+                            item.controls.otherTerms.get('otherLabel')?.dirty &&
+                            item.controls.otherTerms.get('otherLabel')?.errors
+                          ">
+                          {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                        </nz-form-explain>
+                      </nz-form-control>
+                    </div>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+              <div nz-col nzXs="24" nzSm="24" nzMd="16">
+                <nz-form-item>
+                  <div nz-row nzType="flex" nzJustify="start" nzAlign="top" nzGutter="20">
+                    <nz-form-control nz-col nzXs="24" nzSm="24" nzMd="8" nz-tooltip
+                      [nzTitle]="item.controls.otherTerms.getRawValue().otherRemarks">
+                      <textarea nz-input oninput="if(value.length>255)value=value.slice(0,255)" placeholder=""
+                        nzPlacement="topLeft" [nzAutosize]="{ minRows: 1, maxRows: 6 }"
+                        formControlName="otherRemarks"></textarea>
+                      <nz-form-explain *ngIf="
+                            item.controls.otherTerms.get('otherRemarks')?.dirty &&
+                            item.controls.otherTerms.get('otherRemarks')?.errors
+                          ">
+                        {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                      </nz-form-explain>
+                      <ng-container *ngIf="
+                          item.controls.otherTerms.getRawValue().otherRemarks
+                        ">
+                        <div>
+                          还可以输入:{{
+                          item.controls.otherTerms.getRawValue().otherRemarks
+                          .length
+                          }}/255
+                        </div>
+                      </ng-container>
+                    </nz-form-control>
+                    <nz-form-control nz-col nzXs="24" nzSm="24" nzMd="16" nz-tooltip>
+                      <div class="maxuploadtProd">
+                        <shared-upload-file [title]="'上传附件'" [type]="null" formControlName="otherTermsFile">
+                        </shared-upload-file>
+                      </div>
+                    </nz-form-control>
+                  </div>
+                </nz-form-item>
+              </div>
+            </div>
+          </form>
+        </app-form-section>
+        <app-form-section *ngIf="showVatInfo(i)" class="mtb1rem" nz-form [form]="item.controls.accountFrom"
+          title="{{ 'orderv3.components.pre-base-info-form.vatInfo.title' | translate }}">
+          <form nz-form [formGroup]="item.controls.accountFrom" [nzNoColon]="true">
+            <div nz-row nzType="flex" nzJustify="start" nzAlign="top" nzGutter="20">
+              <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                <nz-form-item>
+                  <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzXl="8" nzXXl="6" [nzNoColon]="true"
+                    [nzRequired]="isVatInfo(i)">
+                    {{ 'orderv3.components.pre-base-info-form.vatInfo.accountName' | translate }}
+                  </nz-form-label>
+                  <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                    <input nz-input formControlName="accountName" maxlength="255" />
+                    <nz-form-explain *ngIf="
+                              item.controls.accountFrom.get(
+                                'accountName'
+                              )?.dirty &&
+                              item.controls.accountFrom.get(
+                                'accountName'
+                              )?.errors
+                            ">
+                      {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                    </nz-form-explain>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+              <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                <nz-form-item>
+                  <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzXl="8" nzXXl="6" [nzNoColon]="true"
+                    [nzRequired]="isVatInfo(i)">
+                    {{ 'orderv3.components.pre-base-info-form.vatInfo.bankName' | translate }}
+                  </nz-form-label>
+                  <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                    <input nz-input formControlName="bankName" maxlength="255" />
+                    <nz-form-explain *ngIf="
+                              item.controls.accountFrom.get(
+                                'bankName'
+                              )?.dirty &&
+                              item.controls.accountFrom.get(
+                                'bankName'
+                              )?.errors
+                            ">
+                      {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                    </nz-form-explain>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+              <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                <nz-form-item>
+                  <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzXl="8" nzXXl="6" [nzNoColon]="true"
+                    [nzRequired]="isVatInfo(i)">
+                    {{ 'orderv3.components.pre-base-info-form.vatInfo.accountNo' | translate }}
+                  </nz-form-label>
+                  <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                    <input nz-input formControlName="accountNo" maxlength="255" />
+                    <nz-form-explain *ngIf="
+                              item.controls.accountFrom.get(
+                                'accountNo'
+                              )?.dirty &&
+                              item.controls.accountFrom.get(
+                                'accountNo'
+                              )?.errors
+                            ">
+                      {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                    </nz-form-explain>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+            </div>
+            <div nz-row nzType="flex" nzJustify="start" nzAlign="top" nzGutter="20">
+              <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                <nz-form-item>
+                  <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzXl="8" nzXXl="6" [nzNoColon]="true"
+                    [nzRequired]="isVatInfo(i)">
+                    {{ 'orderv3.components.pre-base-info-form.vatInfo.taxNum' | translate }}
+                  </nz-form-label>
+                  <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                    <input nz-input formControlName="taxNum" maxlength="255" />
+                    <nz-form-explain *ngIf="
+                              item.controls.accountFrom.get(
+                                'taxNum'
+                              )?.dirty &&
+                              item.controls.accountFrom.get(
+                                'taxNum'
+                              )?.errors
+                            ">
+                      {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                    </nz-form-explain>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+              <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                <nz-form-item>
+                  <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzXl="8" nzXXl="6" [nzNoColon]="true"
+                    [nzRequired]="isVatInfo(i)">
+                    {{ 'orderv3.components.pre-base-info-form.vatInfo.registrationAddress' | translate }}
+                  </nz-form-label>
+                  <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                    <input nz-input formControlName="registrationAddress" maxlength="255" />
+                    <nz-form-explain *ngIf="
+                              item.controls.accountFrom.get(
+                                'registrationAddress'
+                              )?.dirty &&
+                              item.controls.accountFrom.get(
+                                'registrationAddress'
+                              )?.errors
+                            ">
+                      {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                    </nz-form-explain>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+              <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                <nz-form-item>
+                  <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzXl="8" nzXXl="6" [nzNoColon]="true"
+                    [nzRequired]="isVatInfo(i)">
+                    {{ 'orderv3.components.pre-base-info-form.vatInfo.accountPhoneFax' | translate }}
+                  </nz-form-label>
+                  <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                    <input nz-input formControlName="accountPhoneFax" maxlength="255" />
+                    <nz-form-explain *ngIf="
+                              item.controls.accountFrom.get(
+                                'accountPhoneFax'
+                              )?.dirty &&
+                              item.controls.accountFrom.get(
+                                'accountPhoneFax'
+                              )?.errors
+                            ">
+                      {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                    </nz-form-explain>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+            </div>
+            <div nz-row nzType="flex" nzJustify="start" nzAlign="top" nzGutter="20">
+              <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                <nz-form-item>
+                  <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzXl="8" nzXXl="6" [nzNoColon]="true"
+                    [nzRequired]="isVatInfo(i)">
+                    {{ 'orderv3.components.pre-base-info-form.vatInfo.recipientPhone' | translate }}
+                  </nz-form-label>
+                  <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                    <input nz-input formControlName="recipientPhone" maxlength="255" />
+                    <nz-form-explain *ngIf="
+                              item.controls.accountFrom.get(
+                                'recipientPhone'
+                              )?.dirty &&
+                              item.controls.accountFrom.get(
+                                'recipientPhone'
+                              )?.errors
+                            ">
+                      {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                    </nz-form-explain>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+              <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                <nz-form-item>
+                  <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzXl="8" nzXXl="6" [nzNoColon]="true"
+                    [nzRequired]="isVatInfo(i)">
+                    {{ 'orderv3.components.pre-base-info-form.vatInfo.invoicesDeliverAddress' | translate }}
+                  </nz-form-label>
+                  <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                    <input nz-input formControlName="invoicesDeliverAddress" maxlength="255" />
+                    <nz-form-explain *ngIf="
+                              item.controls.accountFrom.get(
+                                'invoicesDeliverAddress'
+                              )?.dirty &&
+                              item.controls.accountFrom.get(
+                                'invoicesDeliverAddress'
+                              )?.errors
+                            ">
+                      {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                    </nz-form-explain>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+              <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                <nz-form-item>
+                  <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzXl="8" nzXXl="6" [nzNoColon]="true"
+                    [nzRequired]="isVatInfo(i)">
+                    {{ 'orderv3.components.pre-base-info-form.vatInfo.recipient' | translate }}
+                  </nz-form-label>
+                  <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                    <input nz-input formControlName="recipient" maxlength="255" />
+                    <nz-form-explain *ngIf="
+                              item.controls.accountFrom.get(
+                                'recipient'
+                              )?.dirty &&
+                              item.controls.accountFrom.get(
+                                'recipient'
+                              )?.errors
+                            ">
+                      {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                    </nz-form-explain>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+            </div>
+          </form>
+        </app-form-section>
+
+        <app-form-section class="mtb1rem" *ngIf="specialShow(i)" nz-form [form]="item.controls.speciallyTerms"
+          title="{{'orderv3.components.pre-product.specialTermsInfo.title' | translate}}">
+          <form nz-form [formGroup]="item.controls.speciallyTerms" [nzNoColon]="true">
+            <div nz-row nzType="flex" nzJustify="start" nzAlign="top" nzGutter="20"
+              *ngIf="priceApproval.getRawValue().sampleCheck == '1'">
+              <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                <nz-form-item>
+                  <nz-form-label nzXl="8" nzXXl="6" [nzNoColon]="true"
+                    [nzRequired]="item.controls.speciallyTerms.getRawValue().supportFileMissing=='1'">
+                    {{'orderv3.components.pre-product.specialTermsInfo.supportFileMissing' | translate}}
+                  </nz-form-label>
+                  <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                    <Label-popup [width]="'200px'">
+                      <nz-radio-group [nzDisabled]="
+                          item.controls.orderSalesinfo.getRawValue()
+                            .isDisabledMain
+                        " formControlName="supportFileMissing" (ngModelChange)="supportChang(i)">
+                        <label nz-radio nzValue="1">是</label>
+                        <label nz-radio nzValue="0">否</label>
+                      </nz-radio-group>
+                      <ng-template labelPopupContent>
+                        销售选择“是”或“否”；如缺少场地报告、用户合同等OIT必备文件，注明缺少文件名称，并可上传支持文件（非必传）
+                      </ng-template>
+                    </Label-popup>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+              <div nz-col nzXs="24" nzSm="24" nzMd="16">
+                <nz-form-item>
+                  <div nz-row nzType="flex" nzJustify="start" nzAlign="top" nzGutter="20">
+                    <nz-form-control nz-col nzXs="24" nzSm="24" nzMd="8" nz-tooltip
+                      [nzTitle]="item.controls.speciallyTerms.getRawValue().supportFileMissingRemarks">
+                      <textarea nz-input oninput="if(value.length>255)value=value.slice(0,255)" placeholder=""
+                        nzPlacement="topLeft" [nzAutosize]="{ minRows: 1, maxRows: 6 }"
+                        formControlName="supportFileMissingRemarks"></textarea>
+                      <nz-form-explain *ngIf="
+                            item.controls.speciallyTerms.get('supportFileMissingRemarks')?.dirty &&
+                            item.controls.speciallyTerms.get('supportFileMissingRemarks')?.errors
+                          ">
+                        {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                      </nz-form-explain>
+                      <ng-container *ngIf="
+                          item.controls.speciallyTerms.getRawValue()
+                            .supportFileMissingRemarks
+                        ">
+                        <div>
+                          还可以输入:{{
+                          item.controls.speciallyTerms.getRawValue()
+                          .supportFileMissingRemarks.length
+                          }}/255
+                        </div>
+                      </ng-container>
+                    </nz-form-control>
+                    <nz-form-control nz-col nzXs="24" nzSm="24" nzMd="16" nz-tooltip>
+                      <div class="maxuploadtProd">
+                        <shared-upload-file [title]="'上传附件'" [type]="null" formControlName="supportFileMissingFile">
+                        </shared-upload-file>
+                      </div>
+                    </nz-form-control>
+                  </div>
+                </nz-form-item>
+              </div>
+            </div>
+            <ng-container *ngIf="
+                priceApproval.getRawValue().sampleCheck == '1' &&
+                item.controls.orderBaseinfo.getRawValue().orderModality ==
+                  'PD&IGT'
+              ">
+              <div nz-row nzType="flex" nzJustify="start" nzAlign="top" nzGutter="20">
+                <div nz-col nzXs="24" nzSm="24" nzMd="8" *ngIf="
+                    baseInfoFrom.getRawValue().biddingType == '国内公开标' ||
+                    baseInfoFrom.getRawValue().biddingType == '国际公开标'
+                  ">
+                  <nz-form-item>
+                    <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true">
+                      {{'orderv3.components.pre-product.specialTermsInfo.biddingFile' | translate}}
+                    </nz-form-label>
+                    <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                      <div class="maxuploadtProd">
+                        <shared-upload-file [title]="'上传附件'" [type]="null" formControlName="biddingFile">
+                        </shared-upload-file>
+                      </div>
+                      <nz-form-explain *ngIf="
+                          item.controls.speciallyTerms.get('biddingFile')
+                            ?.dirty &&
+                          item.controls.speciallyTerms.get('biddingFile')
+                            ?.errors
+                        ">
+                        {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                      </nz-form-explain>
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+                <div nz-col nzXs="24" nzSm="24" nzMd="8" *ngIf="
+                    baseInfoFrom.getRawValue().biddingType == '国内公开标' ||
+                    baseInfoFrom.getRawValue().biddingType == '国际公开标'
+                  ">
+                  <nz-form-item>
+                    <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true" [nzRequired]="
+                        item.controls.speciallyTerms.getRawValue().isUsRequired
+                      ">
+                      {{'orderv3.components.pre-product.specialTermsInfo.tenderFile' | translate}}
+                    </nz-form-label>
+                    <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                      <div class="maxuploadtProd">
+                        <shared-upload-file [title]="'上传附件'" [type]="null" formControlName="tenderFile">
+                        </shared-upload-file>
+                      </div>
+                      <nz-form-explain *ngIf="
+                          item.controls.speciallyTerms.get('tenderFile')
+                            ?.dirty &&
+                          item.controls.speciallyTerms.get('tenderFile')?.errors
+                        ">
+                        {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                      </nz-form-explain>
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+
+                <div nz-col nzXs="24" nzSm="24" nzMd="8" *ngIf="
+                    (baseInfoFrom.getRawValue().biddingType == '国内公开标' ||
+                    baseInfoFrom.getRawValue().biddingType == '国际公开标') &&
+                    (baseInfoFrom.getRawValue().businessModel == 'DISTRIBUTOR')
+                  ">
+                  <nz-form-item>
+                    <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true" [nzRequired]="
+                        item.controls.speciallyTerms.getRawValue().isUsRequired
+                      ">
+                      {{'orderv3.components.pre-product.specialTermsInfo.endUserContract' | translate}}
+                    </nz-form-label>
+                    <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                      <div class="maxuploadtProd">
+                        <shared-upload-file [title]="'上传附件'" [type]="null" formControlName="endUserContract">
+                        </shared-upload-file>
+                      </div>
+                      <nz-form-explain *ngIf="
+                          item.controls.speciallyTerms.get('endUserContract')
+                            ?.dirty &&
+                          item.controls.speciallyTerms.get('endUserContract')
+                            ?.errors
+                        ">
+                        {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                      </nz-form-explain>
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+              </div>
+
+              <div nz-row nzType="flex" nzJustify="start" nzAlign="top" nzGutter="20">
+                <div nz-col nzXs="24" nzSm="24" nzMd="14" *ngIf="projectAnaly()">
+                  <nz-form-item>
+                    <nz-form-label nzXs="24" nzSm="24" nzMd="3" [nzNoColon]="true" [nzRequired]="
+                        item.controls.speciallyTerms.getRawValue().isUsRequired
+                      ">
+                      {{'orderv3.components.pre-product.specialTermsInfo.projectAnalysisTable' | translate}}
+                    </nz-form-label>
+                    <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                      <div class="flexbox-start">
+                        <button class="down" nz-button nzType="link" (click)="generateAnalysisTemplate('EcosP52',i)">
+                          {{ "orderv3.components.pre-base-info-table.tbody.projectAnalysisTable" | translate }}
+                        </button>
+                        <div class="maxuploadtProd">
+                          <shared-upload-file [title]="'上传附件'" [type]="null" formControlName="projectAnalysisTable">
+                          </shared-upload-file>
+                          <nz-form-explain *ngIf="
+                              item.controls.speciallyTerms.get(
+                                'projectAnalysisTable'
+                              )?.dirty &&
+                              item.controls.speciallyTerms.get(
+                                'projectAnalysisTable'
+                              )?.errors
+                            ">
+                            {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                          </nz-form-explain>
+                        </div>
+                      </div>
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+              </div>
+
+            </ng-container>
+            <ng-container *ngIf="
+                priceApproval.getRawValue().sampleCheck == '1' &&
+                (item.controls.orderBaseinfo.getRawValue().orderModality ==
+                  'US' ||
+                  item.controls.orderBaseinfo.getRawValue().orderModality ==
+                    'CC')
+              ">
+              <div nz-row nzType="flex" nzJustify="start" nzAlign="top" nzGutter="20">
+                <div nz-col nzXs="24" nzSm="24" nzMd="8" *ngIf="baseInfoFrom.getRawValue().businessModel == 'DIRECT'">
+                  <nz-form-item>
+                    <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true" [nzRequired]="
+                        item.controls.speciallyTerms.getRawValue().isUsRequired
+                      ">
+                      {{'orderv3.components.pre-product.specialTermsInfo.biddingFile' | translate}}
+                    </nz-form-label>
+                    <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                      <shared-upload-file [title]="'上传附件'" [type]="null" formControlName="biddingFile">
+                      </shared-upload-file>
+                      <nz-form-explain *ngIf="
+                          item.controls.speciallyTerms.get('biddingFile')
+                            ?.dirty &&
+                          item.controls.speciallyTerms.get('biddingFile')
+                            ?.errors
+                        ">
+                        {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                      </nz-form-explain>
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+                <div nz-col nzXs="24" nzSm="24" nzMd="8" *ngIf="baseInfoFrom.getRawValue().businessModel == 'DIRECT'">
+                  <nz-form-item>
+                    <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true" [nzRequired]="
+                        item.controls.speciallyTerms.getRawValue().isUsRequired
+                      ">
+                      {{'orderv3.components.pre-product.specialTermsInfo.tenderFile' | translate}}
+                    </nz-form-label>
+                    <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                      <shared-upload-file [title]="'上传附件'" [type]="null" formControlName="tenderFile">
+                      </shared-upload-file>
+                      <nz-form-explain *ngIf="
+                          item.controls.speciallyTerms.get('tenderFile')
+                            ?.dirty &&
+                          item.controls.speciallyTerms.get('tenderFile')?.errors
+                        ">
+                        {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                      </nz-form-explain>
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+                <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                  <nz-form-item>
+                    <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true" [nzRequired]="
+                        item.controls.speciallyTerms.getRawValue().isUsRequired
+                      ">
+                      {{'orderv3.components.pre-product.specialTermsInfo.endUserContract' | translate}}
+                    </nz-form-label>
+                    <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                      <shared-upload-file [title]="'上传附件'" [type]="null" formControlName="endUserContract">
+                      </shared-upload-file>
+                      <nz-form-explain *ngIf="
+                          item.controls.speciallyTerms.get('endUserContract')
+                            ?.dirty &&
+                          item.controls.speciallyTerms.get('endUserContract')
+                            ?.errors
+                        ">
+                        {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                      </nz-form-explain>
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+              </div>
+              <div nz-row nzType="flex" nzJustify="start" nzAlign="top" nzGutter="20"
+                *ngIf="endUserFrom.getRawValue().hospitalType == '公立医院'">
+                <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                  <nz-form-item>
+                    <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true" [nzRequired]="
+                        item.controls.speciallyTerms.getRawValue().isUsRequired
+                      ">
+                      {{'orderv3.components.pre-product.specialTermsInfo.bidWinningFile' | translate}}
+                    </nz-form-label>
+                    <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                      <div class="maxuploadtProd">
+                        <shared-upload-file [title]="'上传附件'" [type]="null" formControlName="bidWinningFile">
+                        </shared-upload-file>
+                      </div>
+                      <nz-form-explain *ngIf="
+                          item.controls.speciallyTerms.get('bidWinningFile')
+                            ?.dirty &&
+                          item.controls.speciallyTerms.get('bidWinningFile')
+                            ?.errors
+                        ">
+                        {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                      </nz-form-explain>
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+              </div>
+            </ng-container>
+            <div nz-row nzType="flex" nzJustify="start" nzAlign="top" nzGutter="20" *ngIf="isDiffer(i)">
+              <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                <nz-form-item>
+                  <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true"
+                    [nzRequired]="item.controls.speciallyTerms.getRawValue().amountDifferenceRequired">
+                    {{'orderv3.components.pre-product.specialTermsInfo.amountDifference' | translate}}
+                  </nz-form-label>
+                  <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                    <Label-popup [width]="'200px'">
+                      <nz-radio-group [nzDisabled]="
+                          item.controls.orderSalesinfo.getRawValue()
+                            .isDisabledMain
+                        " (ngModelChange)="amountDifferenceModelChanges($event,i)" formControlName="amountDifference">
+                        <label nz-radio nzValue="1">{{'orderv3.components.pre-product.common.radioOk' |
+                          translate}}</label>
+                        <label nz-radio nzValue="0">{{'orderv3.components.pre-product.common.radioCancel' |
+                          translate}}</label>
+                      </nz-radio-group>
+                      <ng-template labelPopupContent>销售选择“是”或“否”；如果有价差，需上传支持文件（必传）</ng-template>
+                    </Label-popup>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+              <div nz-col nzXs="24" nzSm="24" nzMd="16">
+                <nz-form-item>
+                  <div nz-row nzType="flex" nzJustify="start" nzAlign="top" nzGutter="20">
+                    <nz-form-control nz-col nzXs="24" nzSm="24" nzMd="8" nz-tooltip
+                      [nzTitle]="item.controls.speciallyTerms.getRawValue().amountDifferenceRemarks">
+                      <textarea nz-input oninput="if(value.length>255)value=value.slice(0,255)" placeholder=""
+                        nzPlacement="topLeft" [nzAutosize]="{ minRows: 1, maxRows: 6 }"
+                        formControlName="amountDifferenceRemarks"></textarea>
+                      <nz-form-explain *ngIf="
+                          item.controls.speciallyTerms.get('amountDifferenceRemarks')?.dirty &&
+                          item.controls.speciallyTerms.get('amountDifferenceRemarks')?.errors
+                        ">
+                        {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
+                      </nz-form-explain>
+                      <ng-container *ngIf="
+                          item.controls.speciallyTerms.getRawValue()
+                            .amountDifferenceRemarks
+                        ">
+                        <div>
+                          还可以输入:{{
+                          item.controls.speciallyTerms.getRawValue()
+                          .amountDifferenceRemarks.length
+                          }}/255
+                        </div>
+                      </ng-container>
+                    </nz-form-control>
+                    <nz-form-control nz-col nzXs="24" nzSm="24" nzMd="16" nz-tooltip>
+                      <div class="maxuploadtProd">
+                        <shared-upload-file [title]="'上传附件'" [type]="null" formControlName="amountDifferenceFile">
+                        </shared-upload-file>
+                      </div>
+                    </nz-form-control>
+                  </div>
+                </nz-form-item>
+              </div>
+            </div>
+          </form>
+        </app-form-section>
+
+      </form>
+    </app-form-section>
+  </ng-container>
+</div>
+<order-select-user #selectUser (select)="onSelectuser($event)"></order-select-user>
+<order-select-user #selectActualUser (select)="onSelectActualuser($event)"></order-select-user>
+<order-select-user #selectSoluUser (select)="onSelectSoluuser($event)"></order-select-user>
+<shared-select-hospital #selectHospital [modality]="modalityInfo" (select)="onHospitalselect($event)">
+</shared-select-hospital>
+<shared-select-foreign-company #selectForign (select)="onForignselect($event)"></shared-select-foreign-company>
+<select-prebook #selectPreBook (select)="onPrebookselect($event)"></select-prebook>
+
+<select-refno #selectRefno (select)="onRefnoselect($event)"></select-refno>
+<!--合同模板控件-->
+<div class="showDiag" *ngIf="isPdf">
+  <div class="showDiag-box">
+    <div class="showDiag-box-title">
+      <div>查看PDF</div>
+      <i nz-icon nzType="close" class="close" (click)="isPdfCancel()" nzTheme="outline"></i>
+    </div>
+    <app-pdfpreview [padData]="pdfSRC"></app-pdfpreview>
+  </div>
+</div>

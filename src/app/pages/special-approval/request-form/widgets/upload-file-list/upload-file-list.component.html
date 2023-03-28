@@ -1,0 +1,5 @@
+<div class="upload-file-list">
+  <div *ngFor="let file of fileList" class="file-item" (click)="onDownloadFile(file)" [title]="file.name">
+    {{ file.name }}
+  </div>
+</div>

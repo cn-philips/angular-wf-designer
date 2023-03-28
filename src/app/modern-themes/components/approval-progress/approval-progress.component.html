@@ -1,0 +1,39 @@
+<div *ngIf="procInstId > 0 && isShow" class="approval-progress-wrapper">
+  <div class="approval-progress-container">
+    <div
+      *ngFor="let node of nodeList"
+      [ngClass]="{
+        'approval-progress-node': true,
+        active: doneNodes.includes(node.state.toLowerCase()),
+        pending: pendingNodes.includes( node.state ),
+        multiple: node.childNode && node.childNode.length > 0
+      }"
+      (click)="handleMultipleNodeClick(node)"
+      nz-popover
+      [nzTrigger]="
+        node.childNode && node.childNode.length > 0 ? 'click' : 'null'
+      "
+      [nzContent]="contentTemplate"
+    >
+      <div class="approval-progress-node-label">
+        {{ node.nodeDisplayName }}
+      </div>
+      <ng-template #contentTemplate>
+        <div class="approval-progress-child-container">
+          <div
+            *ngFor="let childNode of node.childNode"
+            [ngClass]="{
+              'approval-progress-node': true,
+              active:doneNodes.includes(childNode.state.toLowerCase()) ,
+              pending: pendingNodes.includes(childNode.state.toLowerCase())
+            }"
+          >
+            <div class="approval-progress-child-node-label">
+              {{ childNode.nodeDisplayName }}
+            </div>
+          </div>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</div>

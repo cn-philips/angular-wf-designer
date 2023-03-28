@@ -1,0 +1,182 @@
+<form nz-form [formGroup]="validateForm">
+  <app-apploading [load]="load"></app-apploading>
+  <nz-card class="pr mtb1rem" nzTitle="Site Ready 场地准备">
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzSpan="24">
+        <nz-form-item>
+          <nz-form-label [nzSm]="4" [nzXs]="24" style="min-width: 160px"><span>Expected Site Ready Date</span><br>预计场地Ready时间</nz-form-label>
+          <nz-form-control [nzSm]="8" [nzXs]="24">
+            <nz-date-picker nzSize="large" formControlName="readyTime" style="width: 100%" [nzStyle]="style"
+                [(ngModel)]="param.readyTime" nzPlaceHolder=""></nz-date-picker>
+                <nz-form-explain *ngIf="
+                validateForm.get('readyTime')?.dirty &&
+                validateForm.get('readyTime')?.errors
+              ">
+              此选项必填字段
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+</nz-card>
+<nz-card class="pr mtb1rem" nzTitle="OA Supplemental Information OA补充信息">
+  <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+    <div nz-col nzSpan="24">
+      <nz-form-item>
+        <nz-form-label [nzSm]="4" [nzXs]="24" style="min-width: 160px" nzRequired><span>Export Controls Documents</span><br>外贸公司出口管制</nz-form-label>
+        <nz-form-control [nzSm]="8" [nzXs]="24">
+          <button (click)="fileDwon(param.foreignTradeFile)"  class="down" nz-tooltip [nzTitle]="param.foreignTradeFileName" nz-button nzType="link">
+            {{param.foreignTradeFileName}}
+          </button>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzXs="24"
+    nzSm="24"
+    nzMd="12">
+      <nz-form-item>
+        <nz-form-label [nzSm]="8" [nzXs]="24" nzRequired><span>Stock Agreement Draft</span><br>备货协议草稿</nz-form-label>
+            <nz-form-control [nzSm]="14" [nzXs]="24">
+              <button (click)="fileDwon(param.stockAgreementDraftFile)"   class="down" nz-tooltip [nzTitle]="param.stockAgreementDraftFileName" nz-button nzType="link">
+                {{param.stockAgreementDraftFileName}}
+              </button>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzXs="24"
+    nzSm="24"
+    nzMd="12">
+      <nz-form-item>
+        <nz-form-label [nzSm]="8" [nzXs]="24" nzRequired><span>Stock Agreement</span><br>备货协议正本</nz-form-label>
+            <nz-form-control [nzSm]="14" [nzXs]="24">
+              <button (click)="fileDwon(param.stockAgreementFile)"   class="down" nz-tooltip [nzTitle]="param.stockAgreementFileName" nz-button nzType="link">
+                {{param.stockAgreementFileName}}
+              </button>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzXs="24"
+    nzSm="24"
+    nzMd="12">
+      <nz-form-item>
+        <nz-form-label [nzSm]="8" [nzXs]="24" nzRequired><span>Sofon File</span><br>Sofon文件</nz-form-label>
+            <nz-form-control [nzSm]="14" [nzXs]="24">
+              <button (click)="fileDwon(param.sofonFile)"   class="down" nz-tooltip [nzTitle]="param.sofonFileName" nz-button nzType="link">
+                {{param.sofonFileName}}
+              </button>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzXs="24"
+    nzSm="24"
+    nzMd="12">
+      <nz-form-item>
+        <nz-form-label [nzSm]="8" [nzXs]="24" nzRequired>Sofon No.</nz-form-label>
+            <nz-form-control [nzSm]="14" [nzXs]="24" nz-tooltip [nzTitle]="param.sofonNo">
+              <input type="text" oninput="if(value.length>200)value=value.slice(0,200)"  class="form-control" value="" formControlName="sofonNo"
+              [(ngModel)]="param.sofonNo" />
+              <nz-form-explain *ngIf="validateForm.get('sofonNo')?.dirty && validateForm.get('sofonNo')?.errors">
+                此选项必填字段
+             </nz-form-explain>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzXs="24"
+    nzSm="24"
+    nzMd="12">
+      <nz-form-item>
+        <nz-form-label [nzSm]="8" [nzXs]="24" nzRequired><span>Proof of Payment</span><br>付款凭证</nz-form-label>
+            <nz-form-control [nzSm]="14" [nzXs]="24">
+              <button (click)="fileDwon(param.paymentVoucherFile)"   class="down" nz-tooltip [nzTitle]="param.paymentVoucherFileName" nz-button nzType="link">
+                {{param.paymentVoucherFileName}}
+              </button>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzSpan="24">
+      <nz-form-item>
+        <nz-form-label [nzSm]="4" [nzXs]="24" nzRequired style="min-width: 160px"><span>OM</span><br>需要发送邮件的物流专员</nz-form-label>
+        <nz-form-control [nzSm]="8" [nzXs]="24">
+          <nz-select formControlName="logisticsSpecialist" [(ngModel)]="param.logisticsSpecialist" nzAllowClear
+            nzPlaceHolder="Select Personnel 请选择人员">
+            <nz-option *ngFor="let item of oMlist" [nzValue]="item.email" [nzLabel]="item.name"></nz-option>
+            <ng-container *ngIf="!arrIndexOfStr(oMlist, 'email', param.logisticsSpecialist)">
+              <nz-option [nzValue]="param.logisticsSpecialist" [nzLabel]="param.logisticsSpecialist"></nz-option>
+            </ng-container>
+          </nz-select>
+          <nz-form-explain *ngIf="validateForm.get('logisticsSpecialist')?.dirty && validateForm.get('logisticsSpecialist')?.errors">
+             此选项必填字段
+          </nz-form-explain>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+</nz-card>
+<nz-card class="pr mtb1rem" nzTitle="Upload SO# by OM OM回填SO#">
+  <div nz-row>
+    <div nz-col nzSpan="24">
+      <nz-form-item>
+        <nz-form-label [nzSm]="4" [nzXs]="24" nzFor="email"><span>Remarks</span><br>备注</nz-form-label>
+        <nz-form-control [nzSm]="8" [nzXs]="24" nz-tooltip  [nzTitle]="param.remarks">
+          <input oninput="if(value.length>255)value=value.slice(0,255)" nz-input [(ngModel)]="param.remarks" formControlName="remarks"  placeholder="请输入" nzSize="default" />
+          <ng-container *ngIf="param.remarks">
+            <div>还可以输入:{{param.remarks.length}}/{{textLens}}</div>
+          </ng-container>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+   <div nz-row>
+      <div nz-col nzSpan="24">
+        <nz-form-item>
+          <nz-form-label nzRequired [nzSm]="4" [nzXs]="24" nzFor="email">SO#</nz-form-label>
+          <nz-form-control [nzSm]="8" [nzXs]="24" nz-tooltip  [nzTitle]="param.so">
+            <input nz-input oninput="if(value.length>100)value=value.slice(0,100)"  formControlName="so"  [(ngModel)]="param.so" placeholder="请输入" nzSize="default" />
+            <div>还可以输入:{{param.so.length}}/{{textLen}}</div>
+            <nz-form-explain *ngIf="
+            validateForm.get('so')?.dirty &&
+            validateForm.get('so')?.errors
+          ">
+          <ng-container *ngIf="
+          validateForm.get('so')?.hasError('required')
+        ">此选项必填字段</ng-container>
+          <ng-container *ngIf="
+          validateForm
+            .get('so')
+            ?.hasError('soform')
+        ">只能输入数字和分号</ng-container>
+        </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+    <div nz-row>
+      <div nz-col nzSpan="24">
+        <nz-form-item>
+          <nz-form-label [nzSm]="4" [nzXs]="24" nzFor="email"><span>Attachment</span><br>附件</nz-form-label>
+          <nz-form-control [nzSm]="8" [nzXs]="24">
+            <div class="maxuploadto">
+            <nz-upload
+            [(nzFileList)]="fileFileList"
+            [nzBeforeUpload]="fileBeforeUpload"
+            [nzLimit]="1"
+            [nzRemove]="nzRemoveFile"
+            [nzPreview]="dwonLoad"
+            [nzShowUploadList]="nzShowUploadList"
+          >
+            <button [disabled]="disa"  nz-button><i nz-icon nzType="upload"></i><span>Upload 上传附件</span></button>
+          </nz-upload>
+          </div>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+   <div *ngIf="!disa" nz-row nzType="flex" nzJustify="end" nzAlign="middle">
+      <button *ngIf="flag==0" nz-button [nzType]="'primary'" style="margin-left: 10px;"
+        (click)="cancelContract()">
+       Cancel 取消
+      </button>
+      <button nz-button nzTitle="你确定要执行提交的操作?" nz-popconfirm (nzOnConfirm)="submit()" class="ml6" nzType="primary">Submit 提交</button>
+    </div>
+  </nz-card>
+ </form>

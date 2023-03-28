@@ -1,0 +1,100 @@
+<app-form-section class="mtb1rem" [form]="baseInfoFrom" [title]="'orderv3.components.oa-add-info.title' | translate">
+  <form nz-form [formGroup]="oaAddInfo" [nzNoColon]="true">
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="12" *ngIf="baseInfoFrom.getRawValue().orderModality === 'PD&IGT'">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true" nzRequired>
+            {{"orderv3.components.oa-add-info.letter-date" | translate}}
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+            <nz-date-picker formControlName="customerRequestLetterDate"
+              [nzPlaceHolder]="oaAddInfo.get('customerRequestLetterDate').disabled?'':'请选择日期'">
+            </nz-date-picker>
+            <nz-form-explain
+              *ngIf="oaAddInfo.get('customerRequestLetterDate')?.dirty && oaAddInfo.get('customerRequestLetterDate')?.errors">
+              此选项必填字段
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzXs="24" nzSm="24" nzMd="12">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true" nzRequired> {{"orderv3.components.oa-add-info.contract-v" |translate}} </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+            <nz-select formControlName="contractVersion">
+              <nz-option *ngFor="let version of contractVersionList" [nzLabel]="version.label"
+                [nzValue]="version.label"></nz-option>
+            </nz-select>
+            <nz-form-explain
+              *ngIf="oaAddInfo.get('contractVersion')?.dirty && oaAddInfo.get('contractVersion')?.errors">
+              此选项必填字段
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="12">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true">
+            {{"orderv3.components.oa-add-info.ocap" | translate}}
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+            <nz-radio-group formControlName="ocap">
+              <label nz-radio nzValue="1">是</label>
+              <label nz-radio nzValue="0">否</label>
+            </nz-radio-group>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzXs="24" nzSm="24" nzMd="12" *ngIf="isThirdShow()">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true" nzRequired>
+            {{"orderv3.components.oa-add-info.third-check" | translate}}
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+            <nz-radio-group formControlName="purchaseVerification">
+              <label nz-radio nzValue="1">是</label>
+              <label nz-radio nzValue="0">否</label>
+            </nz-radio-group>
+            <nz-form-explain
+              *ngIf="oaAddInfo.get('purchaseVerification')?.dirty && oaAddInfo.get('purchaseVerification')?.errors">
+              此选项必填字段
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>        
+      </div>
+      <div nz-col nzXs="24" nzSm="24" nzMd="12" *ngIf="oaAddInfo.getRawValue().preConcludedItem===true">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true">
+            {{"orderv3.components.oa-add-info.third-check-info" | translate}}            
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+            preConcluded
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="12">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true"> {{"orderv3.components.oa-add-info.attachment" | translate}}
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+            <shared-upload-file [title]="'上传'" [type]="null" formControlName="oaSupportFile">
+            </shared-upload-file>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzXs="24" nzSm="24" nzMd="12">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true"> {{"orderv3.components.oa-add-info.remark" | translate}}
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+            <input nz-input formControlName="remark" maxlength="255" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+  </form>
+</app-form-section>

@@ -1,0 +1,56 @@
+<nz-alert nzType="info" nzShowIcon [nzMessage]="nzMessage">
+  <ng-template #nzMessage>
+    <div>请谨慎选择需要抄送的人员和抄送节点，避免过多重复通知邮件。请确保抄送人为有权限了解申请信息的人员。</div>
+    <div style="font-weight:bold">注意：无需抄送审批人（审批人已有通知邮件）</div>
+  </ng-template>
+</nz-alert>
+<nz-card class="mtb1rem" nzTitle="抄送人选择">
+  <form nz-form [formGroup]="formValues">
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="12">
+        <nz-form-item>
+          <nz-form-label nzXl="8" nzXXl="6">抄送人</nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <nz-select
+              style="width: 100%"
+              nzMode="multiple"
+              [nzPlaceHolder]="editable ? '输入邮箱查询' : ''"
+              nzShowSearch
+              nzAllowClear
+              formControlName="ccPerson"
+              [nzServerSearch]="true"
+              (nzOnSearch)="onSearchUser($event)"
+            >
+              <ng-container *ngFor="let user of userList">
+                <nz-option *ngIf="!isSearchLoading" [nzValue]="user.email" [nzLabel]="user.name || user.email" [nzCustomContent]="true">
+                  {{ user.displayName || user.email }}
+                </nz-option>
+              </ng-container>
+              <nz-option *ngIf="isSearchLoading" nzDisabled nzCustomContent>
+                <i nz-icon type="loading" class="loading-icon"></i> 查询中...
+              </nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+
+      <div nz-col nzXs="24" nzSm="24" nzMd="12" *ngIf="ccWarningMessage.show">
+        <nz-form-item>
+          <nz-alert nzType="warning" [nzMessage]="ccWarningMessage.message"></nz-alert>
+        </nz-form-item>
+      </div>
+    </div>
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="12">
+        <nz-form-item>
+          <nz-form-label nzXl="8" nzXXl="6">抄送节点</nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <nz-select [nzPlaceHolder]="editable ? '请选择抄送节点' : ''" style="width: 100%" formControlName="ccType" nzAllowClear>
+              <nz-option *ngFor="let item of selectOptions.ccTypes" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+  </form>
+</nz-card>

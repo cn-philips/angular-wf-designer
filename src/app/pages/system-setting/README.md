@@ -1,0 +1,9 @@
+# 系统设置相关页面
+|───business-config   业务配置管理
+├───change-owner      项目owner修改
+├───data-dictionary   数据字典
+├───my-delegation     我的委托
+├───region-user       区域用户管理
+├───role              角色管理
+├───role-permission   角色权限管理
+└───schedule          定时任务

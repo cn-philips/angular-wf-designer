@@ -1,0 +1,24 @@
+<nz-modal
+  [(nzVisible)]="isVisible"
+  [nzTitle]="title"
+  [nzWidth]="720"
+  [nzOkText]="null"
+  [nzCancelText]="null"
+  [nzFooter]="null"
+  (nzOnCancel)="hideModal()"
+  class="dialog-panel-wrapper"
+>
+  <div>
+    <nz-tabset
+      style="height: 420px;padding: 0;"
+      [nzTabPosition]="'left'"
+      [(nzSelectedIndex)]="selectedIndex"
+    >
+      <nz-tab *ngFor="let tab of panelTabs" [nzTitle]="tab.title">
+        <div>
+          <ng-template [ngTemplateOutlet]="tab?.tplRef"></ng-template>
+        </div>
+      </nz-tab>
+    </nz-tabset>
+  </div>
+</nz-modal>

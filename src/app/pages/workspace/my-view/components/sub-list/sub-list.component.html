@@ -1,0 +1,213 @@
+<nz-table nzVirtualScroll [nzData]="tableData" [nzVirtualItemSize]="10" nzFrontPagination="false"
+  [nzPageIndex]="pageParams.pageNo" [nzPageSize]="pageParams.pageSize" [nzTotal]="total" [nzLoading]="loading"
+  [nzScroll]="isFirstLoad?{ x: '2200px'}:{ x: '2200px', y: '600px' }" (nzPageIndexChange)="changePageIndex($event)"
+  [nzShowTotal]="totalTemplate" (nzPageSizeChange)="changePageSize($event)" style="margin-top: 16px"
+  [nzNoResult]="nzNoResultTpl">
+  <ng-template #nzNoResultTpl>
+    <nz-empty class="empty-remind" [nzNotFoundContent]="isFirstLoad?'请输入查询条件，点击“搜索”按钮查询':'暂无数据'"></nz-empty>
+  </ng-template>
+  <thead>
+    <tr>
+      <th class="tableHead" nzAlign="center" style="width: 220px">
+        {{"list-pages.table-header.ref-no" | translate}}
+      </th>
+      <th class="tableHead" nzAlign="center" style="width: 200px">
+        {{"list-pages.table-header.task-status" | translate}}
+      </th>
+      <th class="tableHead" nzAlign="center" style="width: 220px">
+        {{"list-pages.table-header.applicant" | translate}}
+      </th>
+      <th class="tableHead" nzAlign="center" style="width: 240px">
+        {{"list-pages.table-header.hospital-name" | translate}}
+      </th>
+      <th class="tableHead" nzAlign="center" style="width: 240px">
+        {{"list-pages.table-header.dealer-name" | translate}}
+      </th>
+      <th class="tableHead" nzAlign="center" style="width: 100px">
+        {{"list-pages.table-header.business-model" | translate}}
+      </th>
+      <th class="tableHead" nzAlign="center" style="width: 100px">
+        {{"list-pages.table-header.oit-mode" | translate}}
+      </th>
+      <th class="tableHead" nzAlign="center" style="width: 200px">
+        {{"list-pages.table-header.so" | translate}}
+      </th>
+      <th class="tableHead" nzAlign="center" style="width: 200px">
+        {{"list-pages.table-header.bidding-number" | translate}}
+      </th>
+      <th class="tableHead" nzAlign="center" style="width: 200px">
+        {{"list-pages.table-header.market-bundle-name" | translate}}
+      </th>
+      <th class="tableHead" nzAlign="center" style="width: 200px">
+        {{"list-pages.table-header.bidder-name" | translate}}
+      </th>
+      <th class="tableHead" nzAlign="center" style="width: 200px">
+        {{"list-pages.table-header.third-check" | translate}}
+      </th>
+      <th class="tableHead" nzAlign="center" nzRight="0px" style="width: 200px">
+        {{"list-pages.table-header.action" | translate}}
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <ng-template nz-virtual-scroll let-data let-index="index">
+      <tr>
+        <td class="tableData" style="width: 220px;" nzAlign="center">{{ data.referenceId }}</td>
+        <td *ngIf="data.procPhase === 'p3'" class="tableData" style="width: 200px;" nzAlign="center">{{
+          data.taskStatus|ProcessTaskStatusPipe | async }}</td>
+        <td *ngIf="data.procPhase != 'p3'" class="tableData" style="width: 200px;" nzAlign="center">{{ data.taskStatus |
+          ProcessStatusPipe}}</td>
+        <td class="tableData" style="width: 220px;" nzAlign="center">{{ data.applicant }}</td>
+        <td class="tableData" style="width: 240px;" nzAlign="center">{{ data.hospitalName }}</td>
+        <td class="tableData" style="width: 240px;" nzAlign="center">{{ data.dealerName }}</td>
+        <td class="tableData" style="width: 100px;" nzAlign="center">{{ data.businessModel | ProcessModel}}</td>
+        <td class="tableData" style="width: 100px;" nzAlign="center">{{ ProOitModeType(data.oitMode?data.oitMode:'' ) }}
+        </td>
+        <td class="tableData" style="width: 200px;" nzAlign="center">{{ data.so }}</td>
+        <td class="tableData" style="width: 200px;" nzAlign="center">{{ data.biddingNumber }}</td>
+        <td class="tableData" style="width: 200px;" nzAlign="center">{{ data.marketBundleName }}</td>
+        <td class="tableData" style="width: 200px;" nzAlign="center">{{ data.bidderName }}</td>
+        <td class="tableData" style="width: 200px;" nzAlign="center">{{ data.productVerificationInformation }}</td>
+        <td class="tableData" style="width: 180px;" nzAlign="center" nzRight="0px">
+          <!-- 三期操作 -->
+          <a *ngIf="data.procPhase === 'p3'" style="display: block; color: #337FBF;" (click)="operate(data)">查看</a>
+
+          <!-- 一期操作 -->
+          <!--进单oa and 场地审核-->
+          <a *ngIf="data.taskStatus === 'DCDSH'||data.taskStatus === 'DOACS'" style="display: block; color: #337FBF;"
+            (click)="goToPreorderaudit(data)">{{ flag === 0&&data.operation? (data.taskStatus | ProcessStatusPipe)
+            :'查看'}}</a>
+          <a *ngIf="data.taskStatus === 'DTJ'" style="display: block; color: #337FBF;"
+            (click)="goToApplyTenderModif(data)">{{ flag===0&&data.operation?(data.taskStatus | ProcessStatusPipe) :
+            '查看'}}</a>
+          <a *ngIf="data.taskStatus === 'DBA'" style="display: block; color: #337FBF;" (click)="goToBid(data)">
+            {{ flag=== 0&&data.operation? (data.taskStatus | ProcessStatusPipe) : '查看'}}</a>
+          <!--已中标确认-->
+          <a *ngIf="data.taskStatus === 'YZBQR'||data.taskStatus === 'YZBQRYBCWJ'||data.taskStatus === 'BIDCANCELLED'"
+            style="display: block; color: #337FBF;" (click)="goToWinningBid2(data)">查看</a>
+          <a *ngIf="data.taskStatus === 'DSWZYQR'" style="display: block; color: #337FBF;"
+            (click)="goToWinningBid(data)">
+            {{ flag === 0&&data.operation?(data.taskStatus | ProcessStatusPipe) : '查看'}}</a>
+          <a *ngIf="data.taskStatus==='YZBQRDBCWJ'" style="display: block; color: #337FBF;"
+            (click)="goToSupportUp(data)">
+            {{ flag === 0&&data.operation?(data.taskStatus | ProcessStatusPipe) : '查看'}}</a>
+          <a *ngIf="data.taskStatus === 'DSWYSH' || data.taskStatus === 'XSBMDMSH' || data.taskStatus === 'XSBMZSLSH' || data.taskStatus === '2JSH'"
+            style="display: block; color: #337FBF;" (click)="goTenderreview(data)">{{ flag === 0&&data.operation?
+            (data.taskStatus | ProcessStatusPipe) :'查看'}}</a>
+          <a *ngIf="data.taskStatus === 'DSWZYSQ'" style="display: block; color: #337FBF;" (click)="goEmp(data)">
+            {{ flag === 0&&data.operation? (data.taskStatus | ProcessStatusPipe) : '查看'}}</a>
+          <!--合同子流程审核  查看-->
+          <a *ngIf="data.taskStatus === 'DZLCSH'||data.taskStatus === 'JDEND'||data.taskStatus === 'CANCELLED'||data.taskStatus==='CLOSED'"
+            style="display: block; color: #337FBF;" (click)="goUn(data)">查看</a>
+          <a *ngIf="data.taskStatus === 'OITENDDBCWJSC'" style="display: block; color: #337FBF;"
+            (click)="goCompleteOitFile(data)">查看</a>
+
+          <!--待补充文件上传-->
+          <a *ngIf="data.taskStatus === 'DBCWJSC'" style="display: block;color: #337FBF;" (click)="goSuppfile(data)">
+            {{ flag === 0&&data.operation?(data.taskStatus | ProcessStatusPipe) : '查看'}}</a>
+
+          <!--OIT完成  查看-->
+          <a *ngIf="data.taskStatus === 'OITEND' || data.taskStatus === 'DOITWJSC'"
+            style="display: block;color: #337FBF;" (click)="goCompleteOit(data)">查看</a>
+
+          <!--审核order summary -->
+          <a *ngIf="data.taskStatus === 'DODSH'" style="display: block; color: #337FBF;"
+            (click)="goExaminesummary(data)">{{ flag === 0&&data.operation? (data.taskStatus | ProcessStatusPipe) :
+            '查看'}}</a>
+          <!-- 审核合同概要表 -->
+          <!-- 待销售部门审核 -->
+          <!--OA审核-->
+          <!--特批进单审核-->
+          <a *ngIf="data.taskStatus === 'DXSBMSH' || data.taskStatus === 'DXSBM2JSH' || data.taskStatus === 'DOAJDQR' || data.taskStatus ==='DHTOASH' || data.taskStatus ==='DFBSH' || data.taskStatus ==='DTPJDSH'||data.taskStatus ==='cancel_oa_leader_approval'||data.taskStatus ==='cancel_sales_approval'||data.taskStatus==='reject_sales_approval'||data.taskStatus==='close_dm_approval'||data.taskStatus==='close_oa_leader_approval'||data.taskStatus==='reject_oa_leader_approval'"
+            style="display: block; color: #337FBF;" (click)="goExamineOrder(data)">{{ flag === 0&&data.operation?
+            (data.taskStatus | ProcessStatusPipe) :'查看'}}</a>
+          <!--修改合共概要表-->
+          <!--取消进单或者关闭合同概要表-->
+          <a *ngIf="data.taskStatus === 'CANCELLEDSUB'||data.taskStatus==='CLOSEDSUB'"
+            style="display: block; color: #337FBF;" (click)="goExamineOrderEnd(data)">查看</a>
+          <!--取消进单 end-->
+          <a *ngIf="data.taskStatus === 'DHTGYBTX'||data.taskStatus === 'XJDHTGYBTX'"
+            style="display: block; color: #337FBF;" (click)="goInconmodif(data)">
+            {{ flag === 0&&data.operation? (data.taskStatus | ProcessStatusPipe) : '查看'}}</a>
+          <!--合同签署-->
+          <a *ngIf="data.taskStatus === 'DHTQS'" style="display: block; color: #337FBF;" (click)="goConsign(data)">{{
+            flag === 0&&data.operation? (data.taskStatus | ProcessStatusPipe) : '查看'}}</a>
+          <a *ngIf="data.taskStatus === 'DTXHT'" style="display: block; color: #337FBF;"
+            (click)="goOrdersummary(data)">{{ flag === 0&&data.operation?(data.taskStatus | ProcessStatusPipe) :
+            '查看'}}</a>
+
+          <!--未中标 二次开标 已办查看-->
+          <a *ngIf="( data.taskStatus === 'WZB' || data.taskStatus === '2CKB') && (flag === 1 || isMyStart)"
+            style="display: block; color: #337FBF;" (click)="goToBid2(data)">查看</a>
+          <a *ngIf="(data.taskStatus === 'ZBSQ' || data.taskStatus === '2CKB') && flag === 0"
+            style="display: block; color: #337FBF;" nz-popconfirm nzTitle="你确定要执行待备案的操作?"
+            (nzOnConfirm)="confirmBidding(data, 'approved')" (nzOnCancel)="cancelBidding()">待备案</a>
+          <a *ngIf="(data.taskStatus === 'ZBSQ' || data.taskStatus === '2CKB') && flag === 0"
+            style="display: block; color: #337FBF;" nz-popconfirm nzTitle="你确定要执行二次开标的操作?"
+            (nzOnConfirm)="confirmSecondBid(data, 'secbidding')" (nzOnCancel)="cancelSecondBid()">二次开标</a>
+          <a *ngIf="(data.taskStatus === 'ZBSQ' || data.taskStatus === '2CKB') && flag === 0"
+            style="display: block; color: #337FBF;" (click)="goEmp2(data)">查看授权信息</a>
+
+          <!--项目终止-二次开标 -->
+          <a *ngIf="( data.taskStatus === '2CKBZZ')" style="display: block; color: #337FBF;"
+            (click)="goToBid(data)">查看</a>
+
+          <!--改单审批-->
+          <a *ngIf="(data.taskStatus === 'change_oit_approval'||data.taskStatus ==='change_oit')"
+            style="display: block; color: #337FBF;" (click)="goChangeApproval(data)">{{ flag === 0&&data.operation?
+            (data.taskStatus |ProcessStatusPipe) :'查看'}}</a>
+          <!--发起改单-->
+          <!-- <a *ngIf="(data.taskStatus === 'DBCWJSC'||data.taskStatus === 'OITEND'||data.taskStatus === 'OITENDDBCWJSC')&&isMyStart&&data.isCancel!=1"
+            style="display: block; color: #337FBF;" (click)="changeOrder(data)">
+            Request Order Change 发起改单
+          </a> -->
+          <!--发起改单-->
+          <!--probook 申请-->
+          <a *ngIf="data.taskStatus === 'prebook_dtj'||data.taskStatus === 'prebook_sales_apply'"
+            style="display: block; color: #337FBF;" (click)="getPrebook(data)">
+            {{flag === 0&&data.operation? (data.taskStatus | ProcessStatusPipe) : '查看'}}
+          </a>
+          <!--probook end-->
+
+
+          <!--ZPM核查场地状态-->
+          <a *ngIf="data.taskStatus === 'prebook_zpm_approval'||data.taskStatus === 'prebook_dsi_approval'"
+            style="display: block; color: #337FBF;" (click)="getPrebookzmp(data)">
+            {{flag === 0&&data.operation? (data.taskStatus | ProcessStatusPipe) : '查看'}}
+          </a>
+          <!--ZPM核查场地状态 end-->
+          <!--PREBOOK-OA审核 sale leader dsi leader 审核-->
+          <a *ngIf="data.taskStatus === 'prebook_oa_approval'||data.taskStatus === 'prebook_district_leader_approval'||data.taskStatus === 'prebook_sales_leader_approval'"
+            style="display: block; color: #337FBF;" (click)="getPrebookOA(data)">
+            {{flag === 0&&data.operation? (data.taskStatus | ProcessStatusPipe) : '查看'}}
+          </a>
+          <!--PREBOOK-OA审核 end-->
+
+          <!--PREBOOK-oa补充文件-->
+          <a *ngIf="data.taskStatus === 'prebook_oa_supplement'" style="display: block; color: #337FBF;"
+            (click)="getPrebookSupplement(data)">
+            {{flag === 0&&data.operation? (data.taskStatus | ProcessStatusPipe) : '查看'}}
+          </a>
+          <!--PREBOOK-oa补充文件 end-->
+          <!--PREBOOK-om回填 prebook_end回填-->
+          <a *ngIf="data.taskStatus === 'prebook_om_backfill'||data.taskStatus === 'prebook_end'"
+            style="display: block; color: #337FBF;" (click)="getPrebookom(data)">
+            {{flag === 0&&data.operation? (data.taskStatus | ProcessStatusPipe) : '查看'}}
+          </a>
+          <!--PREBOOK-om回填 end-->
+
+          <!--PREBOOK-om中止的-->
+          <a *ngIf="data.taskStatus === 'PREBOOKCANCELLED'" style="display: block; color: #337FBF;"
+            (click)="getPrebookend(data)">
+            {{flag === 0&&data.operation? (data.taskStatus | ProcessStatusPipe) : '查看'}}
+          </a>
+          <!--PREBOOK-om中止 end-->
+
+        </td>
+      </tr>
+    </ng-template>
+
+  </tbody>
+
+</nz-table>
+<ng-template #totalTemplate let-total> 总共 {{ total }} 条记录（其中OIT完成 {{ subOitTotal }} 条）</ng-template>

@@ -1,0 +1,35 @@
+:host .approve-diagram {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  overflow: auto;
+  .approve-row {
+    display: flex;
+    align-items: center;
+    .approve-col {
+      .approve-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        .vertical-line {
+          margin: 8px 0;
+          height: 30px;
+          border-left: 3px solid;
+        }
+
+        &:last-child .vertical-line {
+          display: none;
+        }
+      }
+    }
+    .horizontal-line {
+      margin: 0 8px;
+      width: 30px;
+      border-top: 3px solid;
+    }
+
+    &:last-child .horizontal-line {
+      display: none;
+    }
+  }
+}

@@ -1,0 +1,117 @@
+<nz-table
+  #fixedTable
+  [nzData]="listOfMapData"
+  [nzScroll]="{ x: '3400px' }"
+  [nzLoading]="loading"
+  [nzFrontPagination]="false"
+  [nzTotal]="total"
+  [nzShowTotal]="totalTemplate"
+  [nzPageIndex]="pagination.pageNo"
+  [nzPageSize]="pagination.pageSize"
+  (nzPageIndexChange)="changePageIndex($event)"
+  (nzPageSizeChange)="changePageSize($event)"
+  [nzHideOnSinglePage]="false"
+  [nzPageSizeOptions]="[5, 10, 20, 30, 40, 50 ]"
+  [nzShowQuickJumper]="true"
+  [nzShowSizeChanger]="true"
+  style="margin-top: 20px;"
+>
+  <thead>
+  <tr>
+    <th nzWidth="250px" nzLeft="0px"><span>Dic Key</span><br>字典key</th>
+    <th nzWidth="200px"><span>Dic Group</span><br>字典分组</th>
+    <th nzWidth="200px"><span>Dic Label</span><br>字典标签</th>
+    <th nzWidth="200px"><span>Status</span><br>状态</th>
+<!--    <th nzWidth="200px">排序</th>-->
+    <th nzWidth="200px"><span>Dic Value</span><br>字典键值</th>
+<!--    <th nzWidth="200px">字典类型</th>-->
+<!--    <th nzWidth="200px">样式属性（其他样式扩展）</th>-->
+<!--    <th nzWidth="200px">表格回显样式</th>-->
+    <!-- <th nzWidth="200px"><span>Default</span><br>是否默认</th> -->
+    <th nzWidth="200px"><span>Remarks</span><br>备注</th>
+    <!-- <th nzWidth="200px"><span>Create By</span><br>创建者</th>
+    <th nzWidth="200px"><span>Create Date</span><br>创建时间</th>
+    <th nzWidth="200px"><span>Update By</span><br>更新者</th>
+    <th nzWidth="200px"><span>Update Date</span><br>更新时间</th> -->
+<!--    <th nzWidth="200px">是否删除</th>-->
+    <th nzWidth="150px" nzRight="0px">Action<br>操作</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let item of fixedTable.data">
+    <td nzLeft="0px">
+      {{ item.dictKey }}
+    </td>
+    <td>
+      {{ item.dictGroup }}
+    </td>
+    <td>
+      {{ item.dictLabel }}
+    </td>
+    <td>
+      {{ status[item.status] }}
+    </td>
+<!--    <td>-->
+<!--      {{ dictSort[item.dictSort] }}-->
+<!--    </td>-->
+    <td>
+      {{ item.dictValue }}
+    </td>
+<!--    <td>-->
+<!--      {{ item.dictType }}-->
+<!--    </td>-->
+    
+<!--    <td>-->
+<!--      {{ item.cssClass }}-->
+<!--    </td>-->
+<!--    <td>-->
+<!--      {{ item.listClass }}-->
+<!--    </td>-->
+    <!-- <td>
+      {{ isDefault[item.isDefault] }}
+    </td> -->
+    <td>
+      {{ item.remark }}
+    </td>
+    <!-- <td>
+      {{ item.createBy }}
+    </td>
+    <td>
+      !--正常时间--
+      {{ UpTime(item.createTime,false) }}
+    </td>
+    <td>
+      {{ item.updateBy }}
+    </td>
+    <td>
+      !--时间快8小时--
+      {{ UpTime(item.updateTime,true) }}
+    </td> -->
+<!--    <td>-->
+<!--      {{ isDeleted[item.isDeleted] }}-->
+<!--    </td>-->
+    <td
+      nzRight="0px"
+    >
+      <button
+        style="display: block;margin: 1rem 1rem 1rem 0;"
+        nz-button
+        nzSize="small"
+        nzType="primary"
+        (click)="updateItem(item)"
+      >Edit 修改</button>
+      <button
+        style="display: block;margin: 1rem 1rem 1rem 0;"
+        nz-button
+        nzSize="small"
+        nzType="default"
+        nz-popconfirm
+        nzTitle="你确定要执行删除的操作?"
+        (nzOnConfirm)="executeDelete(item)"
+        (nzOnCancel)="cancelDelete()"
+      >Delete 删除</button>
+    </td>
+  </tr>
+  </tbody>
+</nz-table>
+<ng-template #totalTemplate let-total>Total 数据总条数 {{ total }} </ng-template>

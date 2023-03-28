@@ -1,0 +1,116 @@
+.data-source {
+  margin-bottom: 0.5rem;
+  color: red;
+}
+
+.mt10 {
+  margin-top: 10px;
+}
+
+.ml10 {
+  margin-left: 10px;
+}
+
+.mb10 {
+  margin-bottom: 10px;
+}
+
+.flex {
+  display: flex;
+  width: 100%;
+  align-items: center;
+
+  .opera {
+    width: auto;
+  }
+}
+
+::ng-deep .tooltip-pree {
+  min-width: 500px !important;
+}
+
+.agreement-info {
+  padding-bottom: 8px;
+  white-space: nowrap;
+  font-size: 14px;
+  color:#efefef;
+  overflow-x: scroll;
+}
+
+.text {
+  width: 350px;
+  height: 30px;
+  line-height: 30px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block;
+  border: 1px solid #ddd;
+  white-space: nowrap;
+  vertical-align: -10px;
+  border-radius: 3px;
+  padding-left: 6px;
+}
+
+.opera {
+  display: flex;
+  justify-content: space-between;
+
+  .opera-oppo {
+    display: flex;
+    align-items: center;
+
+    .ant-form-item {
+      margin-bottom: 0;
+
+      .opera-oppo-input-group {
+        display: flex;
+
+        &::ng-deep label {
+          margin-bottom: 0;
+        }
+      }
+    }
+  }
+}
+
+.opera-oppo-input-group {
+  display: flex;
+  &::ng-deep label {
+    margin-bottom: 0;
+  }
+}
+
+.product {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.product-left {
+  display: inline-block;
+  width: 20%;
+  min-width: 370px;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.product-right {
+  display: inline-block;
+  width: 80%;
+}
+
+.tabbox {
+  min-height: 200px;
+  margin-bottom: 20px;
+}
+
+::ng-deep .ant-select-selection--multiple .ant-select-search--inline .ant-select-search__field {
+  display: none;
+}
+
+.commercial-product-name {
+  margin-bottom: 8px;
+  .title {
+    margin-right: 16px;
+    color: rgba(0, 0, 0, 0.85);
+  }
+}

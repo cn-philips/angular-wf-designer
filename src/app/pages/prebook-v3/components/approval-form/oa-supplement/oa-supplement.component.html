@@ -1,0 +1,134 @@
+<form nz-form [formGroup]="oaSupplement">
+  <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+    <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+      <nz-form-item>
+        <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired>外贸公司出口管制</nz-form-label>
+        <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+          <shared-upload-file type="button" title="上传附件" formControlName="exportControl"></shared-upload-file>
+          <nz-form-explain
+            *ngIf="oaSupplement.get('exportControl')?.dirty && oaSupplement.get('exportControl')?.errors">
+            {{"biddingv3.components.basic-info.required" | translate}}
+          </nz-form-explain>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+
+  <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+    <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+      <nz-form-item>
+        <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired>备货协议草稿</nz-form-label>
+        <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+          <shared-upload-file type="button" title="上传附件" formControlName="stockingAgreementDraft"></shared-upload-file>
+          <nz-form-explain
+            *ngIf="oaSupplement.get('stockingAgreementDraft')?.dirty && oaSupplement.get('stockingAgreementDraft')?.errors">
+            {{"biddingv3.components.basic-info.required" | translate}}
+          </nz-form-explain>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+
+    <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+      <nz-form-item>
+        <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired>备货协议正本</nz-form-label>
+        <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+          <shared-upload-file type="button" title="上传附件" formControlName="stockingAgreementBody"></shared-upload-file>
+          <nz-form-explain
+            *ngIf="oaSupplement.get('stockingAgreementBody')?.dirty && oaSupplement.get('stockingAgreementBody')?.errors">
+            {{"biddingv3.components.basic-info.required" | translate}}
+          </nz-form-explain>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+
+  <div nz-row nzType="flex" nzJustify="start" nzAlign="start">
+    <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+      <nz-form-item>
+        <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired>Sofon文件</nz-form-label>
+        <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+          <ng-container *ngIf="!disabled">
+            <nz-switch formControlName="sofonFileSource"></nz-switch><span>&emsp;从CP选择文件</span>
+            <br/>
+            <sofon-file-upload
+              *ngIf="oaSupplement.get('sofonFileSource').value"
+              formControlName="sofonFile"
+              [orderInfo]="applyDetail.prebook.orderInfo"
+            ></sofon-file-upload>
+            <shared-upload-file
+              *ngIf="!oaSupplement.get('sofonFileSource').value"
+              type="button"
+              title="上传本地文件"
+              formControlName="sofonFile"
+            ></shared-upload-file>
+          </ng-container>
+          <ng-container *ngIf="disabled">
+            <shared-upload-file 
+              *appPermissionsIf="'sofon_file'"
+              type="button"
+              title="上传本地文件"
+              [disabled]="true"
+              [ngModelOptions]="{standalone: true}"
+              [ngModel]="oaSupplement.get('sofonFile').value"
+            ></shared-upload-file>
+          </ng-container>
+          
+          <nz-form-explain
+            style="color: #f5222d;"
+            *ngIf="oaSupplement.get('sofonFile')?.dirty && oaSupplement.get('sofonFile')?.errors">
+            {{"biddingv3.components.basic-info.required" | translate}}
+          </nz-form-explain>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+
+    <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+      <nz-form-item>
+        <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired>Sofon No.</nz-form-label>
+        <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+          <input nz-input formControlName="sofonNo" maxlength="200" />
+          <ng-container *ngIf="oaSupplement.get('sofonNo').value && oaSupplement.get('sofonNo').enabled">
+            <div>还可以输入:{{oaSupplement.get('sofonNo').value.length}}/{{200}}</div>
+          </ng-container>
+          <nz-form-explain
+            *ngIf="oaSupplement.get('sofonNo')?.dirty && oaSupplement.get('sofonNo')?.errors">
+            {{"biddingv3.components.basic-info.required" | translate}}
+          </nz-form-explain>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+
+  <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+    <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+      <nz-form-item>
+        <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired>付款凭证</nz-form-label>
+        <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+          <shared-upload-file type="button" title="上传附件" formControlName="paymentVoucher"></shared-upload-file>
+          <nz-form-explain
+            *ngIf="oaSupplement.get('paymentVoucher')?.dirty && oaSupplement.get('paymentVoucher')?.errors">
+            {{"biddingv3.components.basic-info.required" | translate}}
+          </nz-form-explain>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+
+    <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+      <nz-form-item>
+        <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired>需要发送邮件的物流专员</nz-form-label>
+        <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+          <shared-select
+            formControlName="needsLogisticSpecialist"
+            placeholder="请选择"
+            [nzShowSearch]="true"
+            [options]="omList"
+          ></shared-select>
+          <nz-form-explain
+            *ngIf="oaSupplement.get('needsLogisticSpecialist')?.dirty && oaSupplement.get('needsLogisticSpecialist')?.errors">
+            {{"biddingv3.components.basic-info.required" | translate}}
+          </nz-form-explain>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+</form>

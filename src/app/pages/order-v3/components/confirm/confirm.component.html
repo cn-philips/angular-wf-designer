@@ -1,0 +1,73 @@
+<nz-modal [(nzVisible)]="isAgres" nzWidth="650px" nzTitle="提示" [nzFooter]="modalFooter1" (nzOnCancel)="isAgreCancels()">
+  <nz-spin nzTip="Loading..." [nzSpinning]="load">
+    <form nz-form [formGroup]="remarkFrom">
+      <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+        <div nz-col nzXs="24" nzSm="24" nzMd="24">
+          <nz-form-item style="margin-bottom: 6px">
+            <nz-form-label nzSm="6" nzXl="6" nzXXl="6" [nzNoColon]="true">
+            </nz-form-label>
+            <nz-form-control nzSm="14" nzXl="14" nzXXl="14">
+              <div class="warnings"><i class="icon" nz-icon nzType="warning"
+                  nzTheme="outline"></i>请确认是否{{remarkFrom.getRawValue().title}}</div>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+      <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+        <div nz-col nzXs="24" nzSm="24" nzMd="24">
+          <nz-form-item style="margin-bottom: 6px">
+            <nz-form-label nzSm="6" nzXl="6" nzXXl="6" nzRequired>原因</nz-form-label>
+            <nz-form-control nzSm="14" nzXl="14" nzXXl="14">
+              <nz-select style="width: 100%" nzShowSearch nzAllowClear
+                nzPlaceHolder="" formControlName="cancelReason">
+                <nz-option *ngFor="let item of reasonList" [nzValue]="item.label" [nzLabel]="item.label">
+                </nz-option>
+              </nz-select>
+              <nz-form-explain *ngIf="
+          remarkFrom.get('cancelReason')?.dirty &&
+          remarkFrom.get('cancelReason')?.errors
+        ">
+                <ng-container *ngIf="remarkFrom.get('cancelReason')?.hasError('required')">
+                  此选项必填字段</ng-container>
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+      <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+        <div nz-col nzXs="24" nzSm="24" nzMd="24">
+          <nz-form-item>
+            <nz-form-label nzSm="6" nzXl="6" nzXXl="6">备注</nz-form-label>
+            <nz-form-control nzSm="14" nzXl="14" nzXXl="14">
+              <textarea nz-input oninput="if(value.length>255)value=value.slice(0,255)" nz-input placeholder=""
+                formControlName="cancelRemark" [nzAutosize]="{ minRows: 1, maxRows: 6 }"></textarea>
+              <ng-container *ngIf="remarkFrom.getRawValue().cancelRemark">
+                <div>还可以输入:{{remarkFrom.getRawValue().cancelRemark.length}}/255</div>
+              </ng-container>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+      <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+        <div nz-col nzXs="24" nzSm="24" nzMd="24">
+          <nz-form-item>
+            <nz-form-label nzSm="6" nzXl="6" nzXXl="6">附件</nz-form-label>
+            <nz-form-control nzSm="14" nzXl="14" nzXXl="14">
+              <div class="maxuploadto">
+                <shared-upload-file
+                  [title]="'上传附件'"
+                  [type]="null"
+                  formControlName="attachmentIds">
+                </shared-upload-file>
+              </div>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+    </form>
+    <ng-template #modalFooter1>
+      <button nz-button nzType="default" (click)="isAgreCancels()">取消</button>
+      <button nz-button nzType="primary" (click)="isAgregentOk()">确定</button>
+    </ng-template>
+  </nz-spin>
+</nz-modal>

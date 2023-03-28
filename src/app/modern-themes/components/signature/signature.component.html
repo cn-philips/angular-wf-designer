@@ -1,0 +1,22 @@
+<!-- <nz-upload class="avatar-uploader" nzAction="/act/system/upload" nzName="avatar" nzListType="picture-card"
+  [nzShowUploadList]="false" [nzBeforeUpload]="beforeUpload" (nzChange)="handleChange($event)">
+  <ng-container *ngIf="!signatureUrl">
+    <i class="upload-icon" nz-icon [nzType]="loading ? 'loading' : 'plus'"></i>
+    <div class="ant-upload-text">Upload</div>
+  </ng-container>
+  <img *ngIf="signatureUrl" [src]="signatureUrl" style="width: 100%" />
+</nz-upload> -->
+
+
+<nz-upload class="avatar-uploader" nzName="avatar" nzListType="picture-card" [(nzFileList)]="fileList"
+  [nzShowButton]="fileList.length < limit" [nzShowUploadList]="showUploadList" [nzPreview]="handlePreview"
+  [nzCustomRequest]="onUploadFile" [nzRemove]="onRemoveFile" [nzBeforeUpload]="beforeUpload">
+  <i nz-icon nzType="plus"></i>
+  <div class="ant-upload-text">Upload</div>
+</nz-upload>
+<nz-modal [nzVisible]="previewVisible" [nzContent]="modalContent" [nzFooter]="null"
+  (nzOnCancel)="previewVisible = false">
+  <ng-template #modalContent>
+    <img [src]="signatureUrl" [ngStyle]="{ width: '100%' }" />
+  </ng-template>
+</nz-modal>

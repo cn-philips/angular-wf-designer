@@ -1,0 +1,16 @@
+.image_storage_wrapper {
+  overflow: auto;
+  box-shadow: inset 0 0 10px #333;
+  .image_storage_inner {
+    .image_wrapper {
+      margin: 10px;
+      width: 280px;
+      height: 70px;
+      cursor: pointer;
+      img{
+        width: inherit;
+        height: inherit;
+      }
+    }
+  }
+}

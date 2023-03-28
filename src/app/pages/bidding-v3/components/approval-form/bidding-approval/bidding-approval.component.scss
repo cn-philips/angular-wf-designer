@@ -1,0 +1,47 @@
+.term-selection {
+  display: flex;
+  .selection-list {
+    margin-left: 16px;
+  }
+}
+
+.switch {
+  .ant-checkbox-wrapper {
+    display: flex;
+    align-items: center;
+  }
+}
+
+.approver-list {
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: 24px;
+  .approver-item {
+    display: flex;
+    align-items: center;
+    margin-right: 16px;
+    span {
+      margin-right: 8px;
+    }
+  }
+}
+
+.no-wrap {
+  white-space: nowrap;
+}
+
+footer {
+  position: fixed;
+  bottom: 0;
+  left: 250px;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 4rem;
+  background-color: #fff;
+  z-index: 100;
+  button {
+    margin: 0 8px;
+  }
+}

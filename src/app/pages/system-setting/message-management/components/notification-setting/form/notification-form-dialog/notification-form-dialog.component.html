@@ -1,0 +1,114 @@
+<nz-modal
+  [(nzVisible)]="isVisible"
+  [nzTitle]="
+    'system-settings.message-management.notification.title' | translate
+  "
+  (nzOnCancel)="handleCancel()"
+  (nzOnOk)="handleOk()"
+  nzWidth="50%"
+>
+  <form nz-form [formGroup]="form" [nzNoColon]="true">
+    <nz-form-item>
+      <nz-form-label nzRequired [nzSpan]="6" nzFor="title">{{
+        "system-settings.message-management.common.title" | translate
+      }}</nz-form-label>
+      <nz-form-control [nzSpan]="14">
+        <input nz-input formControlName="title" />
+        <nz-form-explain
+          *ngIf="form.get('title')?.dirty && form.get('title')?.errors"
+          >{{
+            "common._field_required"
+              | translate
+                : {
+                    name:
+                      "system-settings.message-management.common.title"
+                      | translate
+                  }
+          }}</nz-form-explain
+        >
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label nzRequired [nzSpan]="6" nzFor="type">{{
+        "system-settings.message-management.notification.type" | translate
+      }}</nz-form-label>
+      <nz-form-control [nzSpan]="14">
+        <nz-select nzShowSearch nzAllowClear formControlName="type" name="type">
+          <nz-option nzLabel="Info" nzValue="info"></nz-option>
+          <nz-option nzLabel="Warning" nzValue="warning"></nz-option>
+          <nz-option nzLabel="Danger" nzValue="danger"></nz-option>
+        </nz-select>
+        <nz-form-explain
+          *ngIf="form.get('type')?.dirty && form.get('type')?.errors"
+          >{{
+            "common._field_required"
+              | translate
+                : {
+                    name:
+                      "system-settings.message-management.notification.type"
+                      | translate
+                  }
+          }}</nz-form-explain
+        >
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label nzRequired [nzSpan]="6" nzFor="content">{{
+        "system-settings.message-management.common.content" | translate
+      }}</nz-form-label>
+      <nz-form-control [nzSpan]="14">
+        <textarea
+          rows="8"
+          nz-input
+          formControlName="content"
+          name="content"
+        ></textarea>
+        <nz-form-explain
+          *ngIf="form.get('content')?.dirty && form.get('content')?.errors"
+          >{{
+            "common._field_required"
+              | translate
+                : {
+                    name:
+                      "system-settings.message-management.common.content"
+                      | translate
+                  }
+          }}</nz-form-explain
+        >
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzSpan]="6" nzFor="startDate">{{
+        "system-settings.message-management.common.start-date" | translate
+      }}</nz-form-label>
+      <nz-form-control [nzSpan]="14">
+        <nz-date-picker
+          formControlName="startDate"
+          name="startDate"
+          [nzFormat]="'yyyy/MM/dd'"
+        ></nz-date-picker>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSpan]="6" nzFor="endDate">{{
+        "system-settings.message-management.common.end-date" | translate
+      }}</nz-form-label>
+      <nz-form-control [nzSpan]="14">
+        <nz-date-picker
+          formControlName="endDate"
+          name="endDate"
+          [nzFormat]="'yyyy/MM/dd'"
+        ></nz-date-picker>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSpan]="6" nzFor="isEnable">{{
+        "system-settings.message-management.common.enabled" | translate
+      }}</nz-form-label>
+      <nz-form-control [nzSpan]="14">
+        <nz-switch formControlName="isEnable" name="isEnable"></nz-switch>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+</nz-modal>

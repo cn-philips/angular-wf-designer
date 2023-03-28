@@ -1,0 +1,11 @@
+<div class="p-manual-list">
+  <div
+    class="p-manual-list-item"
+    *ngFor="let manual of manualList"
+    (click)="openPdf(manual)"
+  >
+    <div class="p-manual-list-content">
+      {{ manual.tag }}
+    </div>
+  </div>
+</div>

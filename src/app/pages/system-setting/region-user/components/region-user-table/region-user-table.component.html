@@ -1,0 +1,93 @@
+<!-- Table -->
+<div>
+  <div
+    style="padding: 1.5rem"
+    nzType="flex"
+    nz-row
+    nzAlign="middle"
+    nzJustify="space-between"
+  >
+    <div nz-col>
+      <h4>User Management  人员管理</h4>
+    </div>
+    <div nz-col>
+      <button nz-button (click)="handleCreate()" [disabled]="regionNode == undefined ? true: regionNode.level != 0 ? false : true" nzType="primary">Add 添加</button>
+    </div>
+  </div>
+  <nz-table
+    [(nzPageSize)]="paramsOnwer.pageSize"
+    [(nzPageIndex)]="paramsOnwer.pageNo"
+    [nzTotal]="paramsOnwer.total"
+    [nzShowQuickJumper]="true"
+    [nzShowSizeChanger]="true"
+    [nzFrontPagination]="false"
+    [nzHideOnSinglePage]="false"
+    (nzPageIndexChange)="changePageIndexOnwer($event)"
+    (nzPageSizeChange)="changePageSizeOnwer($event)"
+    [nzData]="userTable"
+    nzTableLayout="fixed"
+    nzSize="small"
+    [nzLoading]="isloading"
+  >
+    <thead>
+      <tr>
+        <th *ngFor="let column of tableHeader" [nzWidth]="column.width">
+          {{ column.Ename }}<br>{{column.Cname}}
+        </th>
+        <th nzWidth="120px" nzRight="0px">Action<br> 操作</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let data of userTable;let i = index">
+        <td>{{ data.role }}</td>
+
+        <td *ngIf="data.ifApply == 1" style="color: green">是</td>
+        <td *ngIf="data.ifApply == 0" style="color: red">否</td>
+
+        <td *ngIf="data.ifReview == 1" style="color: green">是</td>
+        <td *ngIf="data.ifReview == 0" style="color: red">否</td>
+
+        <td nzRight="0px">
+          <button
+            nz-button
+            nzSize="small"
+            nzType="primary"
+            (click)="handleEdit(i)"
+          >
+            Edit 编辑
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </nz-table>
+</div>
+<!-- End Table -->
+<!-- Drawer -->
+<nz-drawer
+  [nzClosable]="true"
+  [nzVisible]="isShowDraw"
+  nzPlacement="right"
+  [nzMaskClosable]="true"
+  [nzTitle]="title"
+  [nzWidth]="fullDraw ? '100%' : '50%'"
+  [nzOffsetX]="userFormComponent.ifShowDrawer && !fullDraw ? 200 : 0"
+  (nzOnClose)="handleClose()"
+  class="role-management-draw"
+>
+  <app-region-user-form (getArea)="getArea()" [(isShowDraw)]="isShowDraw" (getLevel)="getlevel()" (edit)="handleEdit($event)" [level]="level" [roleId]="selectedRoleId" [usertable]="userTable" [id]="focusRoleId" [isAdd]="isadd" [type]="FormType" [role]="selectedRole" #userFormComponent>
+  </app-region-user-form>
+
+  <div (click)="toggleDrawerSize()" class="draw-size-btn">
+    <i
+      nz-icon
+      [nzType]="fullDraw ? 'fullscreen-exit' : 'fullscreen'"
+      nzTheme="outline"
+    ></i>
+  </div>
+
+  <div style="float: right">
+<!--    <button nz-button nzType="primary" [disabled]="!userFormCompent.addedUser" (click)="handleSubmit()">保存</button>-->
+    <button nz-button nzType="default" (click)="handleCancel()">Close 关闭</button>
+  </div>
+</nz-drawer>
+<!-- End Drawer -->

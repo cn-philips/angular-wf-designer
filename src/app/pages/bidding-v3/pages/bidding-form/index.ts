@@ -1,0 +1,1 @@
+export * from './bidding-form.component'

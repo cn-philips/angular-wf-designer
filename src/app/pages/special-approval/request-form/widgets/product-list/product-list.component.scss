@@ -1,0 +1,11 @@
+:host /deep/ .ant-table-footer {
+  border: none!important;
+  padding: 0;
+}
+
+:host /deep/ .pos-warranty-month {
+  width: 100%;
+  .ant-input-number-handler-wrap {
+    display: none;
+  }
+}

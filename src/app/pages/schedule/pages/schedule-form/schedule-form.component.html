@@ -1,0 +1,521 @@
+<app-apploading [load]="pageLoading"></app-apploading>
+<div class="tabs-box">
+  <div class="card-body">
+    <form nz-form [formGroup]="formValue" [nzLayout]="'horizontal'" [nzNoColon]="true">
+      <app-form-section title="{{ 'orderv3.components.pre-base-info-form.baseInfo.title' | translate }}">
+        <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+          <div nz-col nzXs="24" nzSm="24" nzMd="8">
+            <nz-form-item>
+              <nz-form-label nzXs="24" nzSm="24" nzMd="10" nzXl="8" nzXXl="6" [nzNoColon]="true" nzRequired>
+                {{ "schedule.page.schedule-form.task-type" | translate }}
+              </nz-form-label>
+              <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                <nz-select formControlName="taskType" (ngModelChange)="taskTypeChange()" nzPlaceHolder="须选择">
+                  <nz-option *ngFor="let item of taskTypeList" [nzValue]="item.code" [nzLabel]="item.label">
+                  </nz-option>
+                </nz-select>
+                <nz-form-explain *ngIf="formValue.get('taskType')?.dirty && formValue.get('taskType')?.errors">
+                  {{ "schedule.errorInfo" | translate }}
+                </nz-form-explain>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          <div nz-col nzXs="24" nzSm="24" nzMd="8">
+            <nz-form-item>
+              <nz-form-label nzXs="24" nzSm="24" nzMd="10" nzXl="8" nzXXl="6" [nzNoColon]="true" nzRequired>
+                {{ "schedule.page.schedule-form.task-name" | translate }}
+              </nz-form-label>
+              <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                <input nz-input formControlName="taskName" maxlength="255" />
+                <nz-form-explain *ngIf="formValue.get('taskName')?.dirty && formValue.get('taskName')?.errors">
+                  {{ "schedule.errorInfo" | translate }}
+                </nz-form-explain>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+          <div nz-col nzXs="24" nzSm="24" nzMd="8">
+            <nz-form-item>
+              <nz-form-label nzXs="24" nzSm="24" nzMd="10" nzXl="8" nzXXl="6" [nzNoColon]="true" nzRequired>
+                {{ "schedule.page.schedule-form.fre" | translate }}
+              </nz-form-label>
+              <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                <nz-select formControlName="taskFrequency" (ngModelChange)="frequencyChange()" nzPlaceHolder="须选择">
+                  <nz-option *ngFor="let item of frequencyList" [nzValue]="item.code" [nzLabel]="item.label">
+                  </nz-option>
+                </nz-select>
+                <nz-form-explain
+                  *ngIf="formValue.get('taskFrequency')?.dirty && formValue.get('taskFrequency')?.errors">
+                  {{ "schedule.errorInfo" | translate }}
+                </nz-form-explain>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        </div>
+        <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+          <div nz-col nzXs="24" nzSm="24" nzMd="8">
+            <nz-form-item>
+              <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzXl="8" nzXXl="6" [nzNoColon]="true" nzRequired>
+                {{ "schedule.page.schedule-form.exe-time" | translate }}
+              </nz-form-label>
+              <nz-form-control *ngIf="this.taskFrequency == 'month'" nzXs="24" nzSm="24" nzMd="7">
+                <nz-select nzShowSearch nzAllowClear [(ngModel)]="day" (ngModelChange)="dayChange()"
+                  nzPlaceHolder="选择日期" [ngModelOptions]="{standalone:true}">
+                  <nz-option *ngFor="let item of monthValues" [nzValue]="item.code" [nzLabel]="item.label">
+                  </nz-option>
+                </nz-select>
+                <nz-form-explain *ngIf="formValue.get('beganTime')?.dirty && formValue.get('beganTime')?.errors">
+                  {{ "schedule.errorInfo" | translate }}
+                </nz-form-explain>
+              </nz-form-control>
+
+              <nz-form-control *ngIf="this.taskFrequency == 'week'" nzXs="24" nzSm="24" nzMd="7">
+                <nz-select nzShowSearch nzAllowClear [(ngModel)]="week" (ngModelChange)="weekChange()"
+                  nzPlaceHolder="选择日期" [ngModelOptions]="{standalone:true}">
+                  <nz-option *ngFor="let item of weekValues" [nzValue]="item.code" [nzLabel]="item.label">
+                  </nz-option>
+                </nz-select>
+                <nz-form-explain *ngIf="formValue.get('beganTime')?.dirty && formValue.get('beganTime')?.errors">
+                  {{ "schedule.errorInfo" | translate }}
+                </nz-form-explain>
+              </nz-form-control>
+
+              <nz-form-control *ngIf="this.taskFrequency != 'once' && this.taskFrequency != 'hour'" nzXs="24" nzSm="24"
+                nzMd="7">
+                <nz-time-picker style="width: 100%;" [(ngModel)]="time" nzFormat="HH:mm" (ngModelChange)="timeChange()"
+                  nzPlaceHolder="选择时间" [nzDisabled]="!this.taskFrequency" nz-tooltip nzTitle="请先选择任务执行频率"
+                  [ngModelOptions]="{standalone:true}">
+                </nz-time-picker>
+                <nz-form-explain *ngIf="formValue.get('beganTime')?.dirty && formValue.get('beganTime')?.errors">
+                  {{ "schedule.errorInfo" | translate }}
+                </nz-form-explain>
+              </nz-form-control>
+
+              <nz-form-control *ngIf="this.taskFrequency == 'hour'" nzXs="24" nzSm="24" nzMd="14">
+                <nz-time-picker style="width: 100%;" [(ngModel)]="hour" nzFormat="mm" nzPlaceHolder="请选择"
+                  (ngModelChange)="hourChange()" [ngModelOptions]="{standalone:true}">
+                </nz-time-picker>
+                <nz-form-explain *ngIf="formValue.get('beganTime')?.dirty && formValue.get('beganTime')?.errors">
+                  {{ "schedule.errorInfo" | translate }}
+                </nz-form-explain>
+              </nz-form-control>
+
+              <nz-form-control *ngIf="this.taskFrequency == 'once'" nzXs="24" nzSm="24" nzMd="14">
+                <nz-date-picker [nzShowTime]="{ nzFormat: 'HH:mm' }" [(ngModel)]="dateTime" nzFormat="yyyy-MM-dd HH:mm"
+                  [ngModelOptions]="{standalone:true}" (ngModelChange)="dateChange()" nzPlaceHolder="选择时间">
+                </nz-date-picker>
+                <nz-form-explain *ngIf="formValue.get('beganTime')?.dirty && formValue.get('beganTime')?.errors">
+                  {{ "schedule.errorInfo" | translate }}
+                </nz-form-explain>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+          <div nz-col nzXs="24" nzSm="24" nzMd="8">
+            <nz-form-item>
+              <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzXl="8" nzXXl="6" [nzNoColon]="true" nzRequired>
+                {{ "schedule.page.schedule-form.status" | translate }}
+              </nz-form-label>
+              <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                <nz-radio-group formControlName="isEnabled">
+                  <label nz-radio *ngFor="let item of enabledList" [nzValue]="item.code">{{item.label}}</label>
+                </nz-radio-group>
+                <nz-form-explain *ngIf="formValue.get('isEnabled')?.dirty && formValue.get('isEnabled')?.errors">
+                  {{ "schedule.errorInfo" | translate }}
+                </nz-form-explain>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          <div *ngIf="this.taskType == 'script'" nz-col nzXs="24" nzSm="24" nzMd="8">
+            <nz-form-item>
+              <nz-form-label nzXs="24" nzSm="24" nzMd="10" nzXl="8" nzXXl="6" [nzNoColon]="true" nzRequired>
+                {{ "schedule.page.schedule-form.script-type" | translate }}
+              </nz-form-label>
+              <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                <nz-select formControlName="scriptType" nzPlaceHolder="须选择">
+                  <nz-option *ngFor="let item of scriptTypeList" [nzValue]="item.code" [nzLabel]="item.label">
+                  </nz-option>
+                </nz-select>
+                <nz-form-explain *ngIf="formValue.get('scriptType')?.dirty && formValue.get('scriptType')?.errors">
+                  {{ "schedule.errorInfo" | translate }}
+                </nz-form-explain>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        </div>
+        <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+          <div nz-col nzXs="24" nzSm="24" nzMd="16">
+            <nz-form-item>
+              <nz-form-label nzSm="24" nzMd="4" nzXl="4" nzXXl="3" [nzNoColon]="true" nzRequired>
+                {{ "schedule.page.schedule-form.desc" | translate }}
+              </nz-form-label>
+              <nz-form-control nzSm="24" nzMd="20" nzXl="20" nzXXl="21">
+                <textarea class="textarea" nz-input formControlName="taskDescription" rows="4"></textarea>
+                <nz-form-explain
+                  *ngIf="formValue.get('taskDescription')?.dirty && formValue.get('taskDescription')?.errors">
+                  {{ "schedule.errorInfo" | translate }}
+                </nz-form-explain>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        </div>
+      </app-form-section>
+
+      <app-form-section *ngIf="this.taskType == 'email'" class="mtb1rem" title="任务接收人信息">
+        <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+          <div nz-col nzXs="24" nzSm="24" nzMd="8">
+            <nz-form-item>
+              <nz-form-label nzXs="24" nzSm="24" nzMd="10" nzXl="8" nzXXl="6" [nzNoColon]="true" nzRequired>
+                {{ "schedule.page.schedule-form.addressee" | translate }}
+              </nz-form-label>
+              <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                <nz-select nzMode="multiple" nzPlaceHolder="输入邮箱查询" nzShowSearch nzAllowClear
+                  formControlName="mainPersons" [nzServerSearch]="true" (nzOnSearch)="onSearchUser($event)">
+                  <ng-container *ngFor="let user of userList">
+                    <nz-option *ngIf="!isSearchLoading" [nzValue]="user.email" [nzLabel]="user.name || user.email"
+                      [nzCustomContent]="true">
+                      {{ user.displayName || user.email }}
+                    </nz-option>
+                  </ng-container>
+                  <nz-option *ngIf="isSearchLoading" nzDisabled nzCustomContent>
+                    <i nz-icon type="loading" class="loading-icon"></i> 查询中...
+                  </nz-option>
+                </nz-select>
+                <nz-form-explain *ngIf="formValue.get('mainPersons')?.dirty && formValue.get('mainPersons')?.errors">
+                  {{ "schedule.errorInfo" | translate }}
+                </nz-form-explain>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          <div nz-col nzXs="24" nzSm="24" nzMd="8">
+            <nz-form-item>
+              <nz-form-label nzXs="24" nzSm="24" nzMd="10" nzXl="8" nzXXl="6" [nzNoColon]="true">
+                {{ "schedule.page.schedule-form.cc-by" | translate }}
+              </nz-form-label>
+              <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                <nz-select nzMode="multiple" nzPlaceHolder="输入邮箱查询" nzShowSearch nzAllowClear
+                  formControlName="ccPersons" [nzServerSearch]="true" (nzOnSearch)="onSearchCcUser($event)">
+                  <ng-container *ngFor="let user of userList">
+                    <nz-option *ngIf="!isCcSearchLoading" [nzValue]="user.email" [nzLabel]="user.name || user.email"
+                      [nzCustomContent]="true">
+                      {{ user.displayName || user.email }}
+                    </nz-option>
+                  </ng-container>
+                  <nz-option *ngIf="isCcSearchLoading" nzDisabled nzCustomContent>
+                    <i nz-icon type="loading" class="loading-icon"></i> 查询中...
+                  </nz-option>
+                </nz-select>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        </div>
+      </app-form-section>
+
+      <app-form-section *ngIf="this.taskType == 'email'" class="mtb1rem" title="任务相关信息">
+        <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+          <div nz-col nzXs="24" nzSm="24" nzMd="8">
+            <nz-form-item>
+              <nz-form-label nzXs="24" nzSm="24" nzMd="10" nzXl="8" nzXXl="6" [nzNoColon]="true" nzRequired>
+                {{ "schedule.page.schedule-form.email-type" | translate }}
+              </nz-form-label>
+              <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                <nz-select formControlName="emailType" (ngModelChange)="emailTypeChange()" nzPlaceHolder="须选择">
+                  <nz-option *ngFor="let item of emailTypeList" [nzValue]="item.code" [nzLabel]="item.label">
+                  </nz-option>
+                </nz-select>
+                <nz-form-explain *ngIf="formValue.get('emailType')?.dirty && formValue.get('emailType')?.errors">
+                  {{ "schedule.errorInfo" | translate }}
+                </nz-form-explain>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          <div nz-col nzXs="24" nzSm="24" nzMd="8">
+            <nz-form-item>
+              <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzXl="8" nzXXl="6" [nzNoColon]="true" nzRequired>
+                {{ "schedule.page.schedule-form.email-title" | translate }}
+              </nz-form-label>
+              <nz-form-control nzXs="24" nzSm="24" nzMd="14" nz-tooltip
+                [nzTitle]="(this.classify == 'special') ? this.emailTitle : ''">
+                <input nz-input formControlName="emailTitle" maxlength="255" />
+                <nz-form-explain *ngIf="formValue.get('emailTitle')?.dirty && formValue.get('emailTitle')?.errors">
+                  {{ "schedule.errorInfo" | translate }}
+                </nz-form-explain>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          <div *ngIf="this.emailType == 'reportForm'" nz-col nzXs="24" nzSm="24" nzMd="8">
+            <nz-form-item>
+              <nz-form-label nzXs="24" nzSm="24" nzMd="10" nzXl="8" nzXXl="6" [nzNoColon]="true" nzRequired>
+                {{ "schedule.page.schedule-form.classify" | translate }}
+              </nz-form-label>
+              <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                <nz-select formControlName="classify" (ngModelChange)="classifyChange()" nzPlaceHolder="须选择">
+                  <nz-option *ngFor="let item of classifyList" [nzValue]="item.code" [nzLabel]="item.label">
+                  </nz-option>
+                </nz-select>
+                <nz-form-explain *ngIf="formValue.get('classify')?.dirty && formValue.get('classify')?.errors">
+                  {{ "schedule.errorInfo" | translate }}
+                </nz-form-explain>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        </div>
+        <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+          <div *ngIf="this.emailType == 'reportForm' && this.classify == 'BOP'" nz-col nzXs="24" nzSm="24" nzMd="8">
+            <nz-form-item>
+              <nz-form-label nzXs="24" nzSm="24" nzMd="10" nzXl="8" nzXXl="6" [nzNoColon]="true" nzRequired>
+                {{ "schedule.page.schedule-form.form-type" | translate }}
+              </nz-form-label>
+              <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                <nz-select formControlName="bopFormType" (ngModelChange)="bopFormTypeChange()" nzPlaceHolder="须选择">
+                  <nz-option *ngFor="let item of bopFormTypeList" [nzValue]="item.code" [nzLabel]="item.label">
+                  </nz-option>
+                </nz-select>
+                <nz-form-explain *ngIf="formValue.get('bopFormType')?.dirty && formValue.get('bopFormType')?.errors">
+                  {{ "schedule.errorInfo" | translate }}
+                </nz-form-explain>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+          <div *ngIf="this.emailType=='reportForm' && this.classify == 'BOP'" nz-col nzXs="24" nzSm="24" nzMd="8">
+            <nz-form-item>
+              <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzXl="8" nzXXl="6" [nzNoColon]="true" nzRequired>
+                {{ "schedule.page.schedule-form.data-scope" | translate }}
+              </nz-form-label>
+              <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                <nz-select *ngIf="!this.isCustomRange" formControlName="dataScope" (ngModelChange)="scopeChange()"
+                  [nzDisabled]="!scopeEnable" nz-tooltip [nzTitle]="(!scopeEnable) ? '请先选择执行时间和报表类型':''"
+                  nzPlaceHolder="须选择">
+                  <ng-container *ngIf="this.bopFormType != 'pre-book'">
+                    <nz-option *ngFor="let item of oitDataScopeList" [nzValue]="item.code" [nzLabel]="item.label">
+                    </nz-option>
+                  </ng-container>
+                  <ng-container *ngIf="this.bopFormType === 'pre-book'">
+                    <nz-option *ngFor="let item of dataScopeList" [nzValue]="item.code" [nzLabel]="item.label">
+                    </nz-option>
+                  </ng-container>
+                </nz-select>
+
+                <nz-range-picker *ngIf="this.isCustomRange && this.bopFormType == 'pre-book'" nzFormat="yyyy-MM-dd"
+                  formControlName="customTime" (ngModelChange)="scopeChange()">
+                </nz-range-picker>
+
+                <ng-container *ngIf="this.isCustomRange && this.bopFormType != 'pre-book'">
+                  <nz-form-control nzXs="24" nzSm="12" nzMd="11">
+                    <nz-month-picker style="margin-left: -10px;" nzPlaceHolder="开始月份" [(ngModel)]="startDate"
+                      (ngModelChange)="oitMonthChange()" [ngModelOptions]="{standalone:true}"
+                      [nzDisabledDate]="disabledStartDate">
+                    </nz-month-picker>
+                  </nz-form-control>
+                  <nz-form-control nzMd="1"></nz-form-control>
+                  <nz-form-control nzXs="24" nzSm="12" nzMd="12">
+                    <nz-month-picker style="margin-left: -10px;" nzPlaceHolder="结束月份" [(ngModel)]="endDate"
+                      (ngModelChange)="oitMonthChange()" [ngModelOptions]="{standalone:true}"
+                      [nzDisabledDate]="disabledEndDate">
+                    </nz-month-picker>
+                  </nz-form-control>
+                </ng-container>
+
+                <label nz-checkbox [nzDisabled]="!scopeEnable" formControlName="isCustomRange"
+                  (ngModelChange)="customRangeChange()">
+                  {{ "schedule.page.schedule-form.custom-time" | translate }}
+                </label>
+                <nz-form-explain *ngIf="showScope" style="color: red;">
+                  {{ showScope }}
+                </nz-form-explain>
+                <nz-form-explain
+                  *ngIf="!this.isCustomRange && formValue.get('dataScope')?.dirty && formValue.get('dataScope')?.errors">
+                  {{ "schedule.errorInfo" | translate }}
+                </nz-form-explain>
+                <nz-form-explain
+                  *ngIf="this.isCustomRange && formValue.get('customTime')?.dirty && formValue.get('customTime')?.errors">
+                  {{ "schedule.errorInfo" | translate }}
+                </nz-form-explain>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          <div *ngIf="this.emailType == 'reportForm' && this.classify == 'special'" nz-col nzXs="24" nzSm="24" nzMd="8">
+            <nz-form-item>
+              <nz-form-label nzXs="24" nzSm="24" nzMd="10" nzXl="8" nzXXl="6" [nzNoColon]="true" nzRequired>
+                BG
+              </nz-form-label>
+              <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                <nz-select formControlName="bg" nzMode="multiple" (ngModelChange)="bgChange()" nzPlaceHolder="须选择">
+                  <nz-option *ngFor="let item of bgList" [nzValue]="item.code" [nzLabel]="item.label">
+                  </nz-option>
+                </nz-select>
+                <nz-form-explain *ngIf="formValue.get('bg')?.dirty && formValue.get('bg')?.errors">
+                  {{ "schedule.errorInfo" | translate }}
+                </nz-form-explain>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          <div *ngIf="this.emailType == 'reportForm' && this.classify == 'special'" nz-col nzXs="24" nzSm="24" nzMd="8">
+            <nz-form-item>
+              <nz-form-label nzXs="24" nzSm="24" nzMd="10" nzXl="8" nzXXl="6" [nzNoColon]="true" nzRequired>
+                {{ "schedule.page.schedule-form.form-type" | translate }}
+              </nz-form-label>
+              <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                <nz-select formControlName="reportFormType" [nzDisabled]="!(this.bg && this.bg.length > 0)"
+                  (ngModelChange)="reportFormTypeChange()" nz-tooltip
+                  [nzTitle]="(!(this.bg && this.bg.length > 0)) ? '请先选择BG':''" nzPlaceHolder="须选择">
+                  <nz-option *ngFor="let item of reportFormTypeList" [nzValue]="item.code" [nzLabel]="item.label">
+                  </nz-option>
+                </nz-select>
+                <nz-form-explain
+                  *ngIf="formValue.get('reportFormType')?.dirty && formValue.get('reportFormType')?.errors">
+                  {{ "schedule.errorInfo" | translate }}
+                </nz-form-explain>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          <div *ngIf="this.emailType=='reportForm' && this.classify == 'special'" nz-col nzXs="24" nzSm="24" nzMd="8">
+            <nz-form-item>
+              <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzXl="8" nzXXl="6" [nzNoColon]="true" nzRequired>
+                {{ "schedule.page.schedule-form.data-scope" | translate }}
+              </nz-form-label>
+              <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                <nz-select *ngIf="!this.isCustomRange" formControlName="dataScope" (ngModelChange)="scopeChange()"
+                  [nzDisabled]="!scopeEnable" nz-tooltip [nzTitle]="(!scopeEnable) ? '请先选择执行时间和报表类型':''"
+                  nzPlaceHolder="须选择">
+                  <nz-option *ngFor="let item of dataScopeList" [nzValue]="item.code" [nzLabel]="item.label">
+                  </nz-option>
+                </nz-select>
+                <nz-range-picker *ngIf="this.isCustomRange" nzFormat="yyyy-MM-dd" formControlName="customTime"
+                  (ngModelChange)="scopeChange()">
+                </nz-range-picker>
+                <label nz-checkbox [nzDisabled]="!scopeEnable" formControlName="isCustomRange"
+                  (ngModelChange)="customRangeChange()">
+                  {{ "schedule.page.schedule-form.custom-time" | translate }}
+                </label>
+                <nz-form-explain *ngIf="showScope" style="color: red;">
+                  {{ showScope }}
+                </nz-form-explain>
+                <nz-form-explain
+                  *ngIf="!this.isCustomRange && formValue.get('dataScope')?.dirty && formValue.get('dataScope')?.errors">
+                  {{ "schedule.errorInfo" | translate }}
+                </nz-form-explain>
+                <nz-form-explain
+                  *ngIf="this.isCustomRange && formValue.get('customTime')?.dirty && formValue.get('customTime')?.errors">
+                  {{ "schedule.errorInfo" | translate }}
+                </nz-form-explain>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        </div>
+        <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+          <div nz-col nzXs="24" nzSm="24" nzMd="16">
+            <nz-form-item>
+              <nz-form-label nzSm="24" nzMd="4" nzXl="4" nzXXl="3" [nzNoColon]="true" nzRequired>
+                {{ "schedule.page.schedule-form.email-text" | translate }}
+              </nz-form-label>
+              <nz-form-control nzSm="24" nzMd="20" nzXl="20" nzXXl="21">
+                <quill-editor [modules]="config" formControlName="emailText" placeholder="" required>
+                </quill-editor>
+                <nz-form-explain *ngIf="formValue.get('emailText')?.dirty && formValue.get('emailText')?.errors">
+                  {{ "schedule.errorInfo" | translate }}
+                </nz-form-explain>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        </div>
+
+        <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+          <div *ngIf="this.emailType == 'reportForm'" nz-col nzXs="24" nzSm="24" nzMd="16">
+            <nz-form-item>
+              <nz-form-label nzSm="24" nzMd="4" nzXl="4" nzXXl="3" [nzNoColon]="true">
+                {{ "schedule.page.schedule-form.attachment" | translate }}
+              </nz-form-label>
+              <nz-form-control nzSm="24" nzMd="20" nzXl="20" nzXXl="21">
+                <input nz-input style="border: 0px;color:#337fbf !important;" formControlName="fileName" />
+                <nz-form-explain *ngIf="formValue.get('fileName')?.dirty && formValue.get('fileName')?.errors">
+                  {{ "schedule.errorInfo" | translate }}
+                </nz-form-explain>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          <div *ngIf="this.emailType != 'reportForm'" nz-col nzXs="24" nzSm="24" nzMd="8">
+            <nz-form-item>
+              <nz-form-label nzXs="24" nzSm="24" nzMd="10" nzXl="8" nzXXl="6" [nzNoColon]="true">
+                {{ "schedule.page.schedule-form.attachment" | translate }}
+              </nz-form-label>
+              <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                <shared-upload-file [title]="" [type]="null" formControlName="attachments">
+                </shared-upload-file>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        </div>
+      </app-form-section>
+    </form>
+
+  </div>
+
+
+  <div nz-row nzType="flex" class="fixed-btn-group" nzJustify="center" nzAlign="middle">
+    <div nz-col nzSpan="24">
+      <nz-form-item>
+        <nz-form-control [nzSm]="24" [nzXs]="24" style="text-align: center">
+          <button nz-button nzType="default" (click)="handleCancel()">
+            {{ "schedule.page.schedule-form.return" | translate }}
+          </button>
+          <button *ngIf="flag == 0" nz-button nzType="primary" (click)="openShowModal()">
+            {{ "schedule.page.schedule-form.submit" | translate }}
+          </button>
+          <button *ngIf="flag == 1" nz-button nzType="primary" (click)="openShowModal()">
+            {{ "schedule.page.schedule-form.save" | translate }}
+          </button>
+          <button *ngIf="flag == 1" nz-button nzType="primary" nz-popconfirm nzTitle="你确定要执行克隆操作?"
+            (nzOnConfirm)="cloneTask()">
+            {{ "schedule.page.schedule-form.clone" | translate }}
+          </button>
+          <nz-dropdown *ngIf="flag == 1" [nzPlacement]="'bottomRight'">
+            <button nz-button nz-dropdown><i class="tranf90" nz-icon nzType="more" nzTheme="outline"></i></button>
+            <ul nz-menu>
+              <li nz-menu-item>
+                <a href="javascript:" nz-popconfirm nzTitle="你确定要执行删除操作?" (nzOnConfirm)="handleDelete()">
+                  {{ "schedule.page.schedule-form.delete" | translate }}
+                </a>
+              </li>
+            </ul>
+          </nz-dropdown>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+</div>
+
+<!--确认信息弹出框-->
+<nz-modal [(nzVisible)]="showInfo" nzWidth="600px" [nzTitle]="'schedule.page.schedule-form.modal-title' | translate "
+  (nzOnCancel)="cancelModeal()" (nzOnOk)="handleSubmit()" [nzFooter]="modalFooter_Task">
+  <ng-container>
+    <div>
+      <nz-descriptions [nzColumn]="{ xxl: 2, xl: 2, md: 1, xs: 1 }">
+        <nz-descriptions-item [nzTitle]="'schedule.page.schedule-form.task-type' | translate">{{showData.taskTypeLabel}}
+        </nz-descriptions-item>
+        <nz-descriptions-item [nzTitle]="'schedule.page.schedule-form.task-name' | translate">{{showData.taskName}}
+        </nz-descriptions-item>
+        <nz-descriptions-item [nzTitle]="'schedule.page.schedule-form.fre' | translate">{{showData.frequencyLabel}}
+        </nz-descriptions-item>
+        <nz-descriptions-item [nzTitle]="'schedule.page.schedule-form.exe-time' | translate">{{showData.beganTime}}
+        </nz-descriptions-item>
+        <nz-descriptions-item *ngIf="this.emailType == 'reportForm'"
+          [nzTitle]="'schedule.page.schedule-form.form-type' | translate">{{showData.reportFormTypeLab}}
+        </nz-descriptions-item>
+        <nz-descriptions-item *ngIf="this.emailType == 'reportForm'"
+          [nzTitle]="'schedule.page.schedule-form.range' | translate">{{showData.dataScopeLab}}
+        </nz-descriptions-item>
+        <nz-descriptions-item *ngIf="this.emailType == 'reportForm'"
+          [nzTitle]="'schedule.page.schedule-form.time-scope' | translate">{{showData.timeScope}}
+        </nz-descriptions-item>
+      </nz-descriptions>
+    </div>
+
+    <ng-template #modalFooter_Task>
+      <button nz-button nzType="default" (click)="cancelModeal()">{{"list-pages.transfer.cancel" | translate}}</button>
+      <button nz-button nzType="primary" (click)="handleSubmit()">
+        {{"list-pages.transfer.ok" | translate}}</button>
+    </ng-template>
+  </ng-container>
+</nz-modal>

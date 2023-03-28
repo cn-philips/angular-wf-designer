@@ -1,0 +1,73 @@
+<nz-modal
+  [(nzVisible)]="isVisible"
+  [nzTitle]="
+    this.type === 'sp'
+      ? spTpl
+      : ('approval-type.' + title + '.title' | translate)
+  "
+  (nzOnCancel)="hide()"
+  (nzOnOk)="hide()"
+  [nzWidth]="1200"
+  [nzFooter]="this.type === 'sp' ? null : footer"
+  class="approval-dialog"
+>
+  <ng-template #spTpl>
+    <div>
+      {{ "approval-type." + title + ".title" | translate }}
+      <div style="float: right; margin-right: 24px">
+        <button
+          [nzSize]="'small'"
+          nz-button
+          nzType="primary"
+          (click)="handleSharePoint(item.value)"
+          *ngFor="let item of sharePointLinkList"
+          style="margin-left: 10px"
+        >
+          <i nz-icon type="file-add"></i>
+          {{ item.label }}
+        </button>
+      </div>
+    </div>
+  </ng-template>
+
+  <app-special-approval-entries
+    *ngIf="this.type === 'sp'"
+    [backgroundColor]="backgroundColor"
+    #sp
+  ></app-special-approval-entries>
+  <app-bidding-approval-entries
+    [backgroundColor]="backgroundColor"
+    #bidding
+    *ngIf="this.type === 'bid'"
+  >
+  </app-bidding-approval-entries>
+  <app-prebook-approval-entries
+    [backgroundColor]="backgroundColor"
+    #prebook
+    *ngIf="this.type === 'prebook'"
+  >
+  </app-prebook-approval-entries>
+  <app-order-approval-entries
+    [backgroundColor]="backgroundColor"
+    *ngIf="this.type === 'order'"
+    #order
+  >
+  </app-order-approval-entries>
+
+  <ng-template #footer>
+    <div>
+      <nz-button-group>
+        <button nz-button nzType="primary" (click)="navigateToCP1()">
+          CP1.0数据发起直通入口
+        </button>
+        <button nz-button nzType="primary" (click)="navigateToCP2()">
+          CP2.0数据发起直通入口
+        </button>
+      </nz-button-group>
+
+      <!-- <small>
+        用<button nz-button [nzSize]="'small'" nzType="link" (click)="navigateToCP1()">CP1.0</button>/<button nz-button [nzSize]="'small'" nzType="link" (click)="navigateToCP2()">CP2.0</button>数据发起直通入口
+      </small> -->
+    </div>
+  </ng-template>
+</nz-modal>

@@ -1,0 +1,29 @@
+:root .ant-table-fixed-header .ant-table-scroll .ant-table-header {
+  overflow: auto;  
+}
+:root .ant-table-body {
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+
+  &::-webkit-scrollbar {
+    background-color: #f5f5f5;
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background-color: #337fbf;
+    // background-image: -webkit-gradient(
+    //   linear,
+    //   0 0,
+    //   0 100%,
+    //   color-stop(0.5, rgba(255, 255, 255, 0.2)),
+    //   color-stop(0.5, transparent),
+    //   to(transparent)
+    // );
+    // &:hover {
+    //   background-color: #3798db;
+    // }
+  }
+}

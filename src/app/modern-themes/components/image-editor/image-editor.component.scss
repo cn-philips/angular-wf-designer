@@ -1,0 +1,30 @@
+.crop-panel {
+  display: flex;
+  flex-direction: revert;
+  .crop-panel-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    .crop-panel-previewer,
+    .crop-panel-cropper {
+      border: 1px #333 solid;
+      border-radius: 5px;
+    }
+    .crop-panel-previewer {
+      width: 500px;
+      margin-right: 20px;
+      img {
+        width: 100%;
+      }
+    }
+    .crop-panel-cropper {
+      width: 500px;
+    }
+  }
+  .crop-panel-image-store {
+    overflow-y: auto;
+    flex: 1;
+    margin: 0 10px;
+  }
+}

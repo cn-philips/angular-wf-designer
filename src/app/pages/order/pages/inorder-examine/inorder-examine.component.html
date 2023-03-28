@@ -1,0 +1,83 @@
+<nz-card class="title_warpper">
+  <div>
+    <h4 class="font-weight-bold">
+      <span>Review Order Summary 审核Order Summary</span>
+    </h4>
+  </div>
+</nz-card>
+<igt-approval-flowline></igt-approval-flowline>
+<div class="demo-vertical-spacing">
+  <div class="posi">
+    <div class="pr">
+      <div class="tabs-box">
+        <div
+          nz-row
+          nzType="flex"
+          nzJustify="end"
+          nzAlign="middle"
+          class="tabs-box-actions"
+        >
+          <div nz-col nzSpan="24">
+            <nz-form-item>
+              <nz-form-control [nzSm]="24" [nzXs]="24" style="text-align: right">
+                <button
+                  nz-button
+                  nzType="default"
+                  (click)="toReturn()"
+                  style="margin-right: 10px"
+                >
+                 Return 返回
+                </button>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        </div>
+      </div>
+    <ngb-tabset type="tabs" [destroyOnHide]="false" (tabChange)="tabclick($event)" [activeId]="activedId"  class="nav-tabs-top nav-responsive-xl">
+      <!--合同概要表-->
+      <ngb-tab id="pending-tab">
+        <ng-template ngbTabTitle><span class="tab-title"><strong>Contract Summary<br>合同概要表</strong>&ensp;</span></ng-template>
+        <ng-template ngbTabContent>
+          <div class="card-body">
+            <app-preOrderBaseInfo #baseInfo [disa]="true" [dataBase]="infor" [conTable]="true"  [showChek]="true"></app-preOrderBaseInfo>
+            <div class="step">
+              <button (click)="myskip('complete-duc')" nz-button nzType="primary">Next 下一步</button>
+            </div>
+          </div>
+        </ng-template>
+      </ngb-tab>
+      <!--order summary-->
+      <ngb-tab id="complete-duc">
+        <ng-template ngbTabTitle><span class="tab-title"><strong>Order Summary<br>&nbsp;</strong></span></ng-template>
+        <ng-template ngbTabContent>
+          <div class="card-body">
+            <app-inorder-in [dataBase]="dataBase"></app-inorder-in>
+            <app-inorder-ex [disa]="true" [dataBase]="dataBase"></app-inorder-ex>
+            <div class="step">
+              <button nz-button (click)="myskip('pending-tab')"  nzType="primary">Back 上一步</button>
+              <button nz-button (click)="myskip('complete-duc3')"  nzType="primary">Next 下一步</button>
+            </div>
+          </div>
+        </ng-template>
+      </ngb-tab>
+      <!--审批order summary-->
+      <ngb-tab id="complete-duc3">
+          <ng-template ngbTabTitle><span class="tab-title"><strong>Approved History<br> 审批</strong></span></ng-template>
+          <ng-template ngbTabContent>
+            <div class="card-body">
+                <nz-card  nzTitle="Approved History 审批记录">
+                  <app-emp-acc></app-emp-acc>
+                </nz-card>
+                <nz-card class="mt10" nzTitle="Review Order Summary 审核Order Summary">
+                  <app-inoderfrom [dataBase]="dataBase"></app-inoderfrom>
+                </nz-card>
+              <div class="step">
+                <button nz-button (click)="myskip('complete-duc')" nzType="primary">Back 上一步</button>
+              </div>
+            </div>
+          </ng-template>
+      </ngb-tab>
+    </ngb-tabset>
+    </div>
+  </div>
+</div>

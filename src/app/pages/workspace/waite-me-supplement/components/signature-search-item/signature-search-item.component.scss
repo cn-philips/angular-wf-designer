@@ -1,0 +1,12 @@
+.radioBtn {
+  margin-top: 16px;
+}
+:root /deep/.ant-select-selection--multiple .ant-select-search--inline .ant-select-search__field{
+  width: 0px;
+}
+.wp-show{display: none;}
+.ml10{margin-left:10px;}
+@media screen and (max-width: 600px) { 
+  .wp-none{display:none;}
+  .wp-show{display:block;max-width:300px;overflow-x:auto;}
+}

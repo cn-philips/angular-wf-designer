@@ -1,0 +1,1 @@
+export { RolePermissionComponent } from './role-permission.component'

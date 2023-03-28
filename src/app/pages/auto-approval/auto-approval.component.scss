@@ -1,0 +1,19 @@
+.iconflex{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width:90%;
+    height:60%;
+    text-align: center;
+    position:fixed;
+    .success{
+      color:#52C41A;
+      font-size:60px;  
+    }
+    .loss{
+      color:red;
+      font-size:60px;  
+    }
+}
+.mb10{margin-bottom:1rem !important}
+.goHome{display: block;}

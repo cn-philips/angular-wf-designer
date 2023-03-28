@@ -1,0 +1,99 @@
+<nz-modal [(nzVisible)]="visible" nzWidth="1000px" [nzTitle]="'components.select-nmpa.title' | translate"
+  [nzFooter]="null" (nzOnCancel)="onHide()">
+  <div nz-row [nzGutter]="24">
+    <div nz-col [nzSpan]="8">
+      <nz-form-item>
+        <nz-form-label [nzSpan]="5">BMC</nz-form-label>
+        <nz-form-control [nzSpan]="18">
+          <input nz-input [(ngModel)]="searchParams.modalityBmc" placeholder="请选择BMC">
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+
+    <div nz-col [nzSpan]="8">
+      <nz-form-item>
+        <nz-form-label [nzSpan]="6">{{"components.select-nmpa.productModel" | translate}}</nz-form-label>
+        <nz-form-control [nzSpan]="18">
+          <input nz-input [(ngModel)]="searchParams.productModel" placeholder="请输入产品型号">
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+
+    <div nz-col [nzSpan]="8">
+      <nz-form-item>
+        <nz-form-label [nzSpan]="6">{{"components.select-nmpa.registrationNumber" | translate}}</nz-form-label>
+        <nz-form-control [nzSpan]="18">
+          <input nz-input [(ngModel)]="searchParams.registrationNumber" placeholder="请输入注册证号">
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+
+    <div nz-col [nzSpan]="24" style="text-align: right;">
+      <nz-form-item>
+        <nz-form-control>
+          <button nz-button class="ml10" nzType="primary" (click)="getTableData(true)"
+            [nzSize]="6">{{"components.select-nmpa.search" | translate}}</button>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+
+  <div class="table-container">
+    <nz-table nzSize="middle" [nzData]="tableData.rows" [nzShowTotal]="totalTemplate" [nzTotal]="tableData.total"
+      [nzLoading]="tableData.loading" [nzPageSizeOptions]="[5, 10, 20, 30, 40, 50 ]" [nzShowQuickJumper]="true"
+      [nzShowSizeChanger]="true" [nzFrontPagination]="false" [nzScroll]="{ y: '300px' }"
+      [(nzPageIndex)]="searchParams.pageNo" [(nzPageSize)]="searchParams.pageSize" (nzPageIndexChange)="getTableData()"
+      (nzPageSizeChange)="getTableData()">
+      <thead style="margin-bottom:0px;">
+        <tr>
+          <th style="width:80px" nzAlign="left">
+            <div style="margin-bottom:20px">BMC</div>  
+          </th>
+          <th style="width:60px">
+            <div style="margin-bottom:20px">Item</div>
+          </th>
+          <th style="width:150px" nzAlign="left">
+            <div style="margin-bottom:20px">医疗器械名称</div>
+          </th>
+          <th style="width:100px" nzAlign="left">
+            <div style="margin-bottom:20px"> 产品型号</div>
+          </th>
+          <th style="width:150px" nzAlign="left">
+            <div style="margin-bottom:20px">注册证号</div>
+          </th>
+          <th style="width:150px" nzAlign="left">
+            <div style="margin-bottom:20px"> 证书有效期</div>
+          </th>
+          <th style="width:150px" nzAlign="left">
+            <div style="margin-bottom:20px">原产国中文</div>
+          </th>
+          <th style="width:150px" nzAlign="left">
+            <div style="margin-bottom:20px">原产国英文</div>
+          </th>
+          <th style="width:80px" nzAlign="left">
+            <div style="margin-bottom:20px">操作</div>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of tableData.rows">
+          <td style="width:80px;word-break: break-all;"  nzAlign="left">{{ item.modalityBmc}}</td>
+          <td style="width:60px;word-break: break-all;"  nzAlign="left">{{item.nmpaItem}}</td> 
+          <td style="width:150px;word-break: break-all;" nzAlign="left">{{ item.medicalDeviceName}}</td>
+          <td style="width:100px;word-break: break-all;" nzAlign="left">{{ item.productModel}}</td>
+          <td style="width:150px;word-break: break-all;" nzAlign="left">{{ item.registrationNumber}}</td>
+          <td style="width:150px;word-break: break-all;" nzAlign="left">{{ item.expiredBy}}</td>
+          <td style="width:150px;word-break: break-all;" nzAlign="left">{{ item.countryOfOrigin}}</td>
+          <td style="width:150px;word-break: break-all;" nzAlign="left">{{ item.countryOfOriginEn}}</td>
+          <td style="width:65px" nzAlign="left">
+            <button nz-button nzSize="small" nzType="primary" (click)="onSelect(item)">
+              {{"components.select-nmpa.select" | translate}}
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </nz-table>
+    <ng-template #totalTemplate let-total> {{"components.select-user.total" | translate: { total : tableData.total } }}
+    </ng-template>
+  </div>
+</nz-modal>

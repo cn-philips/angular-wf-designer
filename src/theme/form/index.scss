@@ -10,15 +10,15 @@ $CUSTOM_INPUT_ENABLED_UNDERLINE_BORDER_FOCUS: #337fbf;
 $THEME_COLOR: #337fbf;
 //
 [disabled]::-webkit-input-placeholder,
-[readonly]::-webkit-input-placeholder {
+[readonly]:not(.ant-calendar-picker-input)::-webkit-input-placeholder {
   color: $CUSTOM_INPUT_DISABLED_TEXT_COLOR !important;
 }
 [disabled]::-moz-placeholder,
-[readonly]::-moz-placeholder {
+[readonly]:not(.ant-calendar-picker-input)::-moz-placeholder {
   color: $CUSTOM_INPUT_DISABLED_TEXT_COLOR !important;
 }
 [disabled]:-ms-input-placeholder,
-[readonly]:-ms-input-placeholder {
+[readonly]:not(.ant-calendar-picker-input):-ms-input-placeholder {
   color: $CUSTOM_INPUT_DISABLED_TEXT_COLOR !important;
 }
 :not([disabled], [readonly])::-webkit-input-placeholder {
@@ -54,6 +54,7 @@ $THEME_COLOR: #337fbf;
     background-color: $CUSTOM_INPUT_BG !important;
     border: unset;
     border-bottom: 0.125rem $CUSTOM_INPUT_UNDERLINE_BORDER solid;
+    padding: 0px 11px;
   }
   .ant-select-search__field__placeholder,
   .ant-select-selection__placeholder {
@@ -73,6 +74,7 @@ $THEME_COLOR: #337fbf;
   }
 }
 .ant-input,
+.ant-input-number,
 .ant-form-item-children input {
   color: $CUSTOM_INPUT_TEXT_COLOR !important;
   background-color: $CUSTOM_INPUT_BG !important;
@@ -102,6 +104,14 @@ $THEME_COLOR: #337fbf;
         background-position: center;
       }
     }
+  }
+
+  &.ant-input-number-input {
+    color: $CUSTOM_INPUT_DISABLED_TEXT_COLOR !important;
+  }
+
+  &.ant-input-number-disabled {
+    border-bottom: 0.125rem $CUSTOM_INPUT_DISABLED_UNDERLINE_BORDER solid;
   }
 }
 form {
@@ -158,3 +168,6 @@ form {
     background-color: $THEME_COLOR !important;
   }
 }
+
+@import "./select.scss";
+@import "./datepicker.scss";

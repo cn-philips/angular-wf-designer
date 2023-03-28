@@ -1,0 +1,1 @@
+export { RoleComponent } from './role.component'

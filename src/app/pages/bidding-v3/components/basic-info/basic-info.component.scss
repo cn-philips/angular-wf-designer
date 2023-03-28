@@ -1,0 +1,35 @@
+@import "styles/media_query.scss";
+.import-btn-wrap {
+  margin-bottom: 0.5rem;
+}
+
+.selection-wrap {
+  margin-top: 1.5rem;
+
+  &:first-child {
+    margin-top: 0;
+  }
+}
+
+.data-source {
+  margin: 0 16px;
+}
+
+.wid100 {
+  width:100%;
+}
+
+/deep/ .ant-input-group-addon {
+  border: none;
+  padding-right: 0;
+  background-color: #fff;
+}
+
+.group-purchase /deep/ {
+  .ant-form-item-children-icon {
+    display: none;
+  }
+  .ant-form-item-label, .ant-form-item-control {
+    line-height: initial;
+  }
+}

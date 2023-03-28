@@ -1,0 +1,17 @@
+<nz-card class="mtb1rem" nzTitle="审批流">
+  <div class="approve-diagram">
+    <div *ngFor="let subList of approveNodeList" class="approve-row">
+      <div class="approve-col">
+        <div *ngFor="let item of subList.approverList" class="approve-item">
+          <div class="approve-avatar">
+            <i nz-icon nzType="user" nzTheme="outline" style="font-size: 36px;"></i>
+            <div>{{ item.role }}</div>
+            <div>{{ item.user }}</div>
+          </div>
+          <div class="vertical-line"></div>
+        </div>
+      </div>
+      <div class="horizontal-line"></div>
+    </div>
+  </div>
+</nz-card>

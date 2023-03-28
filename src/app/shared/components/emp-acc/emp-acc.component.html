@@ -1,0 +1,42 @@
+<div>
+  <nz-table
+    #fixedTable
+    [nzData]="listOfData"
+    [nzFrontPagination]="false"
+    [nzShowPagination]="false"
+    [nzScroll]="{x:'1150px',y:'450px' }"
+    style="word-break: break-all !important;"
+  >
+    <thead>
+    <tr>
+      <th nzWidth="200px" nzLeft="0px" [nzAlign]="nzAlign"><span>Step</span><br>步骤</th>
+      <th nzWidth="200px" [nzAlign]="nzAlign"><span>Executor</span><br>操作者</th>
+      <th nzWidth="200px" [nzAlign]="nzAlign"><span>Status</span><br>操作记录</th>
+      <th nzWidth="200px" [nzAlign]="nzAlign"><span>Remarks</span><br>备注</th>
+      <th nzWidth="150px" [nzAlign]="nzAlign"><span>Attachment</span><br>附件</th>
+      <th nzWidth="200px"  [nzAlign]="nzAlign"><span>Date</span><br>操作时间</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let data of fixedTable.data;">
+      <ng-container>
+        <td nzWidth="200px" style="word-break:break-word;"  nzLeft="0px" [nzAlign]="nzAlign">{{ data.name !== null ? (data.name | ProcessStatusPipe) : '' }}<div *ngIf="isNonStandardTitle(data.name) != null">{{isNonStandardTitle(data.name)}}</div></td>
+        <td nzWidth="200px"  [nzAlign]="nzAlign">{{ data.name == 'ZLCSH' ? '——' : data.assignee }}</td>
+        <td nzWidth="200px" [nzAlign]="nzAlign">{{ changCancel(data.operationHis !== null ? (data.operationHis | ProcessStatusPipe) : (data.name == 'ZLCSH' ? '进行中' : '待操作')) }}</td>
+        <td nzWidth="200px" style="word-break: break-all;"  [nzAlign]="nzAlign" nowrap>
+         <div class="innerboxs" *ngIf="checkHtml(data.comment)"  [innerHTML]="data.comment"></div>
+         <div class="innerbox"  nz-tooltip [nzTitle]="data.comment" *ngIf="!checkHtml(data.comment)">
+          {{(data.comment!==null&&data.comment!=="null")?data.comment:""}}
+         </div>
+        </td>
+        <td nzWidth="200px" style="word-break: break-all;"  [nzAlign]="nzAlign">
+            <button *ngIf="data.attachFile !== null" class="down innerbox" nz-button nzType="link" (click)="fileDwon(data.attachFile)">{{data.attachFileName}}</button>
+            <span *ngIf="data.attachFile === null">——</span>
+        </td>
+        <td nzWidth="200px" [nzAlign]="nzAlign">{{ data.operationHis ? (data.endTime !== '' ? (data.endTime | TimeFormatePipeMs) : '') : '' }}</td>
+      </ng-container>
+    </tr>
+    </tbody>
+  </nz-table>
+  </div>
+  

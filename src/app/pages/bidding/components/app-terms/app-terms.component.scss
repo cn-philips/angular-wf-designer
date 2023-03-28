@@ -1,0 +1,24 @@
+.rem {
+  margin-top: 20px;
+  display: flex;
+  //align-items: center;
+  justify-content: center;
+  max-width: 500px;
+}
+
+.rem label {
+  width: 50px;
+  margin-right: 20px;
+}
+
+label {
+  margin: 10px 0;
+}
+
+//label{
+//  display: inline-block;
+//  width: auto;
+//}
+.hui {
+  color: rgba(0, 0, 0, .25) !important;
+}

@@ -1,0 +1,132 @@
+@import "styles/media_query.scss";
+
+.tab-wrapper {
+  display: flex;
+  flex-direction: row;
+  position: relative;
+  .tab-scroll-wrapper {
+    overflow: hidden;
+    position: relative;
+    padding-top: 4px;
+    @media screen and (max-width: $screen-md-max) {
+      overflow-x: auto;
+      scroll-behavior: smooth;
+      &.hasScroll {
+        margin: 0;
+      }
+    }
+    &.hasScroll {
+      margin: 0 20px;
+    }
+    .tab-scroll-inner-wrapper {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      position: relative;
+      transition: left 0.5s ease;
+    }
+  }
+  .tab-scroll-btn {
+    @media screen and (max-width: $screen-md-max) {
+      display: none;
+    }
+    position: absolute;
+    width: 20px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    &.left-scroll-btn {
+      top: 50%;
+      left: 0;
+      transform: translateY(-50%);
+    }
+    &.right-scroll-btn {
+      top: 50%;
+      right: 0;
+      transform: translateY(-50%);
+    }
+  }
+  .tab {
+    cursor: pointer;
+    padding: 12px 16px 12px 16px;
+    white-space: nowrap;
+    user-select: none;
+    &.active {
+      background-color: #fff;
+      border-radius: 4px 4px 0 0;
+      // overflow: hidden;
+      box-shadow: 1px -3px 6px 0px #f5f5f5;
+      color: #3798db;
+      font-weight: bold;
+    }
+  }
+}
+.tab-content-wrapper {
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  .tab-content {
+    width: 100%;
+    flex-basis: 100%;
+    flex-shrink: 0;
+    display: none;
+    &.leaving {
+      &.toLeft {
+        animation: toLeft 0.5s forwards;
+      }
+      &.toRight {
+        animation: toRight 0.5s forwards;
+      }
+    }
+    &.fromLeft {
+      animation: fromLeft 0.5s;
+    }
+    &.fromRight {
+      animation: fromRight 0.5s;
+    }
+    &.active {
+      display: block;
+    }
+  }
+}
+@keyframes fromLeft {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0%);
+  }
+}
+@keyframes fromRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0%);
+  }
+}
+@keyframes toLeft {
+  from {
+    transform: translateX(0%);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+@keyframes toRight {
+  from {
+    transform: translateX(0%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+::ng-deep.p-border-list-item {
+  .ant-badge-status-dot,
+  .ant-badge-status-text {
+    display: none;
+  }
+}
