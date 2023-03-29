@@ -1,0 +1,5 @@
+export { BiddingApprovalComponent } from './bidding-approval/bidding-approval.component'
+export { AuthApprovalComponent } from './auth-approval/auth-approval.component'
+export { BiddingRecordComponent } from './bidding-record/bidding-record.component'
+export { BiddingConfirmComponent } from './bidding-confirm/bidding-confirm.component'
+export { SupplementFileComponent } from './supplement-file/supplement-file.component'

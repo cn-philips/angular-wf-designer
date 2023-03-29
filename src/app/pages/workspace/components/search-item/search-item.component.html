@@ -1,0 +1,290 @@
+<button nz-button nzType="primary" style="background-color: #3798DB" (click)="exportExcel($event)"
+  [nzLoading]="exportLoading">
+  <i nz-icon nzType="export" nzTheme="outline"></i>{{"list-pages.search-form.export.export" | translate}}
+</button>
+
+<form nz-form [formGroup]="formValues">
+  <div nz-row nzType="flex" nzJustify="start" nzAlign="middle" style="background-color: #F6F7F9;
+  color: #FFFFFF;
+  line-height: 22px;
+  margin-top: 16px;
+  padding-top: 24px">
+    <div nz-col nzXs="24" nzMd="12" nzXl="8">
+      <nz-form-item>
+        <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6">
+          {{"list-pages.search-form.form.reference-no" | translate}}
+        </nz-form-label>
+        <nz-form-control nzXs="24" nzMd="14">
+          <input nz-input formControlName="referenceId" placeholder="" />
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzXs="24" nzMd="12" nzXl="8">
+      <nz-form-item>
+        <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6">
+          {{"list-pages.search-form.form.hospital-name" | translate}}
+        </nz-form-label>
+        <nz-form-control nzXs="24" nzMd="14">
+          <input nz-input formControlName="hospitalName" placeholder="" />
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzXs="24" nzMd="12" nzXl="8" [style.display]="isCollapse ? 'block' : 'none'">
+      <nz-form-item>
+        <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6">
+          {{"list-pages.search-form.form.applicant" | translate}}
+        </nz-form-label>
+        <nz-form-control nzXs="24" nzMd="14">
+          <input nz-input formControlName="applicant" placeholder="" />
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzXs="24" nzMd="12" nzXl="8" [style.display]="isCollapse ? 'block' : 'none'">
+      <nz-form-item>
+        <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6">
+          {{"list-pages.search-form.form.opportunity-id" | translate}}
+        </nz-form-label>
+        <nz-form-control nzXs="24" nzMd="14">
+          <input nz-input formControlName="opportunityId" placeholder="" />
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzXs="24" nzMd="12" nzXl="8" [style.display]="isCollapse ? 'block' : 'none'">
+      <nz-form-item>
+        <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6">
+          {{"list-pages.search-form.form.so" | translate}}
+        </nz-form-label>
+        <nz-form-control nzXs="24" nzMd="14">
+          <input nz-input formControlName="so" placeholder="" />
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzXs="24" nzMd="12" nzXl="8" [style.display]="isCollapse ? 'block' : 'none'">
+      <nz-form-item>
+        <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6">
+          {{"list-pages.search-form.form.oit-mode" | translate}}
+        </nz-form-label>
+        <nz-form-control nzXs="24" nzMd="14">
+          <nz-select formControlName="oitMode" style="width: 100%" nzShowSearch nzAllowClear nzPlaceHolder="">
+            <nz-option *ngFor="let item of entryModeList" [nzValue]="item.code" [nzLabel]="item.label"></nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzXs="24" nzMd="12" nzXl="8" [style.display]="isCollapse ? 'block' : 'none'">
+      <nz-form-item>
+        <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6">
+          {{"list-pages.search-form.form.dealform-id" | translate}}
+        </nz-form-label>
+        <nz-form-control nzXs="24" nzMd="14">
+          <input nz-input formControlName="dealFormId" placeholder="" />
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzXs="24" nzMd="12" nzXl="8" [style.display]="isCollapse ? 'block' : 'none'">
+      <nz-form-item>
+        <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6">
+          {{"list-pages.search-form.form.bmc" | translate}}
+        </nz-form-label>
+        <nz-form-control nzXs="24" nzMd="14">
+          <nz-select formControlName="bmc" style="width: 100%" nzShowSearch nzAllowClear nzPlaceHolder="">
+            <nz-option *ngFor="let item of bmcList" [nzValue]="item.code" [nzLabel]="item.label"></nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzXs="24" nzMd="12" nzXl="8" [style.display]="isCollapse ? 'block' : 'none'">
+      <nz-form-item>
+        <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6">
+          {{"list-pages.search-form.form.product-model" | translate}}
+        </nz-form-label>
+        <nz-form-control nzXs="24" nzMd="14">
+          <input nz-input formControlName="productModel" placeholder="" />
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzXs="24" nzMd="12" nzXl="8" [style.display]="isCollapse ? 'block' : 'none'">
+      <nz-form-item>
+        <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6">
+          {{"list-pages.search-form.form.dealer-name" | translate}}
+        </nz-form-label>
+        <nz-form-control nzXs="24" nzMd="14">
+          <input nz-input formControlName="dealerName" placeholder="" />
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzXs="24" nzMd="12" nzXl="8" [style.display]="isCollapse ? 'block' : 'none'">
+      <nz-form-item>
+        <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6">
+          {{"list-pages.search-form.form.big-area" | translate}}
+        </nz-form-label>
+        <nz-form-control nzXs="24" nzMd="14">
+          <nz-select formControlName="bigArea" style="width: 100%" nzShowSearch nzAllowClear nzPlaceHolder="">
+            <nz-option *ngFor="let item of bigAreaList" [nzValue]="item.code" [nzLabel]="item.label"></nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzXs="24" nzMd="12" nzXl="8" [style.display]="isCollapse ? 'block' : 'none'">
+      <nz-form-item>
+        <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6">
+          {{"list-pages.search-form.form.bidding-number" | translate}}
+        </nz-form-label>
+        <nz-form-control nzXs="24" nzMd="14">
+          <input nz-input formControlName="biddingNumber" placeholder="" />
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzXs="24" nzMd="12" nzXl="8" [style.display]="isCollapse ? 'block' : 'none'">
+      <nz-form-item>
+        <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6">
+          {{"list-pages.search-form.form.bidder-name" | translate}}
+        </nz-form-label>
+        <nz-form-control nzXs="24" nzMd="14">
+          <input nz-input formControlName="bidderName" placeholder="" />
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzXs="24" nzMd="12" nzXl="8" [style.display]="isCollapse ? 'block' : 'none'">
+      <nz-form-item>
+        <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6">
+          {{"list-pages.search-form.form.small-area" | translate}}
+        </nz-form-label>
+        <nz-form-control nzXs="24" nzMd="14">
+          <input nz-input formControlName="smallArea" placeholder="" />
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzXs="24" nzMd="12" nzXl="8" [style.display]="isCollapse ? 'block' : 'none'">
+      <nz-form-item>
+        <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6">
+          {{"list-pages.search-form.form.need-authorization" | translate}}
+        </nz-form-label>
+        <nz-form-control nzXs="24" nzMd="14">
+          <nz-select formControlName="authorizationRequired" nzShowSearch nzAllowClear nzPlaceHolder="">
+            <nz-option nzValue="1" nzLabel="是"></nz-option>
+            <nz-option nzValue="0" nzLabel="否"></nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzXs="24" nzMd="12" nzXl="8" [style.display]="isCollapse ? 'block' : 'none'">
+      <nz-form-item>
+        <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6">
+          {{"list-pages.search-form.form.business-model" | translate}}
+        </nz-form-label>
+        <nz-form-control nzXs="24" nzMd="14">
+          <nz-select formControlName="businessModel" style="width: 100%" nzShowSearch nzAllowClear nzPlaceHolder="">
+            <nz-option *ngFor="let item of businessModelList" [nzValue]="item.code" [nzLabel]="item.label"></nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzXs="24" nzMd="12" nzXl="8" [style.display]="isCollapse ? 'block' : 'none'">
+      <nz-form-item>
+        <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6">
+          {{"list-pages.search-form.form.team" | translate}}
+        </nz-form-label>
+        <nz-form-control nzXs="24" nzMd="14">
+          <nz-select formControlName="team" nzShowSearch nzAllowClear nzPlaceHolder="">
+            <nz-option *ngFor="let item of teamsList" [nzValue]="item.code" [nzLabel]="item.label"></nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzXs="24" nzMd="12" nzXl="8" [style.display]="isCollapse ? 'block' : 'none'">
+      <nz-form-item>
+        <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6">
+          {{"list-pages.search-form.form.modality" | translate}}
+        </nz-form-label>
+        <nz-form-control nzXs="24" nzMd="14">
+          <nz-select formControlName="modality" style="width: 100%" nzShowSearch nzAllowClear nzPlaceHolder="">
+            <nz-option *ngFor="let item of modalityList" [nzValue]="item.bg" [nzLabel]="item.bg"></nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzXs="24" nzMd="12" nzXl="8" [style.display]="isCollapse ? 'block' : 'none'">
+      <nz-form-item>
+        <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6">
+          {{"list-pages.search-form.form.submit-time" | translate}}
+        </nz-form-label>
+        <nz-form-control nzXs="24" nzMd="14">
+          <nz-range-picker nzFormat="yyyy-MM-dd" formControlName="submitTime"
+            (ngModelChange)="timeChange(formValues.value)">
+          </nz-range-picker>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+
+    <div nz-col nzXs="24" nzMd="12" nzXl="8" [style.display]="isCollapse ? 'block' : 'none'">
+      <nz-form-item>
+        <nz-form-label nzMd="10" nzXl="8" nzXXl="6">
+          {{"list-pages.search-form.form.oit-month" | translate}}
+        </nz-form-label>
+        <nz-form-control nzXs="24" nzSm="7">
+          <nz-month-picker formControlName="oitStartMonth" nzPlaceHolder="开始月份"
+            (ngModelChange)="changeStartMonth(formValues.value);" [nzDisabledDate]="disabledStartDate">
+          </nz-month-picker>
+        </nz-form-control>
+        <nz-form-control nzXs="24" nzSm="7">
+          <nz-month-picker formControlName="oitEndMonth" nzPlaceHolder="结束月份"
+            (ngModelChange)="changeEndMonth(formValues.value);" [nzDisabledDate]="disabledEndDate">
+          </nz-month-picker>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+
+    <div *ngIf="!isDraft" nz-col nzXs="24" nzMd="12" nzXl="8" [style.display]="isCollapse ? 'block' : 'none'">
+      <nz-form-item>
+        <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6">
+          {{"list-pages.search-form.form.task-status" | translate}}
+        </nz-form-label>
+        <nz-form-control nzXs="24" nzMd="14">
+          <nz-select formControlName="taskStatus" style="width: 100%" nzShowSearch nzAllowClear nzPlaceHolder="">
+            <nz-option *ngFor="let item of taskStatusList" [nzValue]="item.code" [nzLabel]="item.label"></nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+
+    <div *ngIf="!isDraft" nz-col nzXs="24" nzMd="12" nzXl="8" [style.display]="isCollapse ? 'block' : 'none'">
+      <nz-form-item>
+        <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6">
+          {{"list-pages.search-form.form.contract-no" | translate}}
+        </nz-form-label>
+        <nz-form-control nzXs="24" nzMd="14">
+          <input nz-input formControlName="contractNo" placeholder="" />
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+
+    <div *ngIf="!isDraft" nz-col nzXs="24" nzMd="12" nzXl="8" [style.display]="isCollapse ? 'block' : 'none'">
+      <nz-form-item>
+        <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6">
+          Sofon No
+        </nz-form-label>
+        <nz-form-control nzXs="24" nzMd="14">
+          <input nz-input formControlName="sofonNo" placeholder="" />
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+
+    <div nz-col nzXs="24" nzMd="12" nzXl="8">
+      <nz-form-item class="btns-group" style="text-align: right">
+        <div nz-col nzMd="20" nzXl="22" nzXXl="20">
+          <button nz-button nzType="primary" nzXl="8" nzXXl="6" (click)="submitForm($event, formValues.value)">
+            <i nz-icon type="search"></i>{{"list-pages.search-form.form.search" | translate}}
+          </button>
+          <button nz-button nzType="default" style="margin-left: 10px;" (click)="resetForm(formValues.value)">
+            <i nz-icon nzType="undo" nzTheme="outline"></i>{{"list-pages.search-form.form.clear" | translate}}
+          </button>
+          <a class="btn-collapse" style="margin-left: 10px; color: #1890ff" (click)="toggleCollapse()">
+            {{ (isCollapse ? 'list-pages.search-form.form.collapse' : 'list-pages.search-form.form.expand')|translate }}
+            <i nz-icon [type]="isCollapse ? 'up' : 'down'"></i>
+          </a>
+        </div>
+      </nz-form-item>
+    </div>
+  </div>
+</form>

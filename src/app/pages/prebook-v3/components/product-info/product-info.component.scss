@@ -1,0 +1,42 @@
+.selection-wrap {
+  margin-top: 1.5rem;
+
+  &:first-of-type {
+    margin-top: 0;
+  }
+}
+
+.margin0 {
+  margin:0px;
+}
+::ng-deep .tooltip-pree {
+  min-width: 500px !important;
+}
+.agreement-info {
+  padding-bottom: 8px;
+  white-space: nowrap;
+  font-size: 14px;
+  color:#efefef;
+  overflow-x: scroll;
+}
+
+/deep/ .ant-input-group-addon {
+  border: none;
+  padding-left: 0;
+  background-color: #fff;
+}
+
+/deep/ .ant-form-item {
+  .ant-form-item-label {
+    white-space: normal;
+    label {
+      line-height: 20px;
+    }
+  }
+}
+
+.warning-wrap {
+  white-space: normal;
+  color: red !important;
+  padding: 11px 21px;
+}

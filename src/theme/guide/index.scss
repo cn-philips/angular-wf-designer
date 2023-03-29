@@ -1,0 +1,12 @@
+.navbar-nav-popover {
+  position: fixed !important;
+}
+.driver-close-btn,.driver-prev-btn {
+    display: none !important;
+}
+// Add here
+div#driver-highlighted-element-stage,
+div#driver-page-overlay {
+  background: transparent !important;
+  outline: 5000px solid rgba(0, 0, 0, 0.75);
+}

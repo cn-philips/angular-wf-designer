@@ -1,0 +1,1 @@
+export { ApplyTenderComponent } from './apply-tender.component'

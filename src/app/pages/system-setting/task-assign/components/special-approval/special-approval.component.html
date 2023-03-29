@@ -1,0 +1,266 @@
+<form nz-form [formGroup]="searchForm">
+  <div
+    nz-row
+    nzType="flex"
+    nzJustify="start"
+    nzAlign="middle"
+    class="search-form-wrap"
+    [nzGutter]="{ xxl: 48, xl: 36, md: 24, xs: 0 }"
+  >
+    <div nz-col nzXs="24" nzMd="12" nzXl="8">
+      <nz-form-item>
+        <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6">
+          {{ "list-pages.search-form.form.task-owner" | translate }}
+        </nz-form-label>
+        <nz-form-control nzXs="24" nzMd="14" nzXl="16" nzXXl="18">
+          <nz-select
+            formControlName="delegatedUser"
+            nzShowSearch
+            nzAllowClear
+            nzPlaceHolder="用户邮箱模糊查询"
+            [nzServerSearch]="true"
+            (nzOnSearch)="handleSearchUser($event)"
+          >
+            <ng-container *ngFor="let item of selectOptions.delegatedUser">
+              <nz-option
+                *ngIf="!searchLoading"
+                [nzValue]="item.value"
+                [nzLabel]="item.label"
+              ></nz-option>
+            </ng-container>
+            <nz-option *ngIf="searchLoading" nzDisabled nzCustomContent>
+              <i nz-icon type="loading" class="loading-icon"></i> 查询中....
+            </nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+
+    <div nz-col nzXs="24" nzMd="12" nzXl="8">
+      <nz-form-item>
+        <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6">
+          {{ "list-pages.search-form.form.task-owner-status" | translate }}
+        </nz-form-label>
+        <nz-form-control nzXs="24" nzMd="14" nzXl="16" nzXXl="18">
+          <nz-radio-group formControlName="delegatedUserStatus">
+            <label nz-radio [nzValue]="null">
+              {{ "list-pages.search-form.form.all" | translate }}
+            </label>
+            <!-- <label nz-radio [nzValue]="1">
+            {{ "list-pages.search-form.form.valid" | translate }}
+          </label> -->
+            <label nz-radio [nzValue]="0">
+              {{ "list-pages.search-form.form.invalid" | translate }}
+            </label>
+          </nz-radio-group>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+
+    <ng-container *ngIf="!isCollapse">
+      <div nz-col nzXs="24" nzMd="12" nzXl="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6">
+            申请类型
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzMd="14" nzXl="16" nzXXl="18">
+            <nz-select
+              formControlName="applyType"
+              nzAllowClear
+              nzPlaceHolder=""
+            >
+              <nz-option
+                *ngFor="let type of selectOptions.applyType"
+                [nzValue]="type.value"
+                [nzLabel]="type.label"
+              >
+              </nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzXs="24" nzMd="12" nzXl="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6">
+            BG
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzMd="14" nzXl="16" nzXXl="18">
+            <nz-select formControlName="orderBg" nzAllowClear nzPlaceHolder="">
+              <nz-option
+                *ngFor="let bg of selectOptions.orderBg"
+                [nzValue]="bg.value"
+                [nzLabel]="bg.label"
+              ></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+
+      <div nz-col nzXs="24" nzMd="12" nzXl="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6" nzFor="keyword">
+            关键字
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzMd="14" nzXl="16" nzXXl="18">
+            <nz-input-group nzPrefixIcon="search" style="width: 100%">
+              <input
+                id="keyword"
+                formControlName="keyword"
+                nz-input
+                placeholder="查询申请编号、经销商、医院名称、SAP订单号"
+              />
+            </nz-input-group>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+
+      <div nz-col nzXs="24" nzMd="12" nzXl="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6">
+            {{ "list-pages.search-form.form.submit-date" | translate }}
+          </nz-form-label>
+          <nz-form-control nzXs="12" nzMd="7" nzXl="8" nzXXl="9">
+            <nz-date-picker
+              formControlName="submitStartTime"
+              [nzPlaceHolder]="
+                'list-pages.search-form.form.start-date' | translate
+              "
+              style="width: 100%"
+              [nzStyle]="{ width: '100%' }"
+              [nzDisabledDate]="disabledStartDate"
+            >
+            </nz-date-picker>
+          </nz-form-control>
+          <nz-form-control nzXs="12" nzMd="7" nzXl="8" nzXXl="9">
+            <nz-date-picker
+              formControlName="submitEndTime"
+              [nzPlaceHolder]="
+                'list-pages.search-form.form.end-date' | translate
+              "
+              style="width: 100%"
+              [nzStyle]="{ width: '100%' }"
+              [nzDisabledDate]="disabledEndDate"
+            >
+            </nz-date-picker>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </ng-container>
+
+    <div nz-col nzXs="24" nzMd="24" [nzXl]="{ span: isCollapse ? 8 : 24 }">
+      <nz-form-item style="text-align: right; white-space: nowrap">
+        <nz-form-control nzSpan="24">
+          <button nz-button nzType="primary" (click)="handleSearch()">
+            <i nz-icon type="search"></i
+            >{{ "list-pages.search-form.form.search" | translate }}
+          </button>
+          <button nz-button style="margin: 0 10px" (click)="handleReset()">
+            <i nz-icon nzType="undo" nzTheme="outline"></i
+            >{{ "list-pages.search-form.form.clear" | translate }}
+          </button>
+
+          <span class="collapse-btn" (click)="handleToggleCollapse()">
+            <span>
+              {{
+                (isCollapse
+                  ? "list-pages.search-form.form.expand"
+                  : "list-pages.search-form.form.collapse"
+                ) | translate
+              }}
+            </span>
+            <i nz-icon [type]="isCollapse ? 'down' : 'up'"></i>
+          </span>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+</form>
+
+<button
+  nz-button
+  [disabled]="checkedRows().length === 0"
+  [nzType]="'primary'"
+  (click)="handleShowAssignDialog()"
+>
+  {{ "list-pages.transfer.transfer" | translate }}
+</button>
+
+<div class="table-container">
+  <nz-table
+    [nzData]="dataTable.list"
+    [nzLoading]="dataTable.loading"
+    [nzFrontPagination]="false"
+    [nzTotal]="dataTable.total"
+    [nzScroll]="{ x: '1000px' }"
+    [(nzPageIndex)]="pageParams.pageNo"
+    [(nzPageSize)]="pageParams.pageSize"
+    (nzPageIndexChange)="getTableData()"
+    (nzPageSizeChange)="getTableData()"
+    [nzShowTotal]="totalTemplate"
+    style="margin-top: 16px"
+  >
+    <thead>
+      <tr>
+        <th class="table-header" nzWidth="50px">
+          <label
+            [nzChecked]="allChecked()"
+            (nzCheckedChange)="handleCheckAll($event)"
+            nz-checkbox
+            style="display: inline-block"
+          >
+          </label>
+        </th>
+        <th class="table-header">
+          {{ "list-pages.search-form.form.task-owner" | translate }}
+        </th>
+        <th class="table-header">申请编号</th>
+        <th class="table-header">申请类型</th>
+        <th class="table-header">发起人</th>
+        <th class="table-header">状态</th>
+        <th class="table-header">当前节点</th>
+        <th class="table-header">申请提交时间</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let data of dataTable.list">
+        <td nzWidth="50px">
+          <label
+            nz-checkbox
+            [ngModelOptions]="{ standalone: true }"
+            [(ngModel)]="checkedRowMap[data.id]"
+          ></label>
+        </td>
+        <td class="table-data">
+          {{ data.owner }}
+        </td>
+        <td class="table-data">{{ data.applyCode }}</td>
+        <td class="table-data">
+          {{ spService.formatApplyType(data.applyType) }}
+        </td>
+        <td class="table-data">{{ data.applicant }}</td>
+        <td class="table-data">
+          {{
+            spService.formatRequestStatus(
+              data.processStatus,
+              data.nodeAction,
+              data.status
+            )
+          }}
+        </td>
+        <td class="table-data">{{ data.nodeName }}</td>
+        <td class="table-data">{{ data.processInstanceCreateTime }}</td>
+      </tr>
+    </tbody>
+  </nz-table>
+  <ng-template #totalTemplate let-total>
+    {{ "list-pages.list-total" | translate : { total: dataTable.total } }}
+  </ng-template>
+</div>
+
+<task-assign-dialog
+  [checkedRows]="checkedRows()"
+  [visible]="assignDialogVisible"
+  [isOit]="false"
+  (close)="assignDialogVisible = false"
+  (success)="handleAssignSuccess()"
+></task-assign-dialog>

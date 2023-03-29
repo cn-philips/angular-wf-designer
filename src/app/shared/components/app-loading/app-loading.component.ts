@@ -13,5 +13,4 @@ export class ApploadingComponent implements OnInit {
 
   ngOnInit() {
   }
-
 }

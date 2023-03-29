@@ -16,6 +16,10 @@ export class LayoutService {
     return this.exec(() => this.layoutHelpers.getLayoutSidenav()) || null;
   }
 
+  public isMobileDevice() {
+    return this.exec(() => this.layoutHelpers.isMobileDevice()) || null;
+  }
+
   public getSidenav() {
     return this.exec(() => this.layoutHelpers.getSidenav()) || null;
   }

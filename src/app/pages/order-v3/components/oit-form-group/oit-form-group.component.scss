@@ -1,0 +1,70 @@
+:host /deep/ {
+  .ant-table-footer {
+    border: none!important;
+    padding: 0;
+  }
+  .ant-input-number-handler-wrap {
+    display: none;
+  }
+  .ant-input-group-addon {
+    border: none;
+    padding-right: 0;
+    background-color: #fff;
+  }
+  .ant-input-number {
+    border: none;
+    box-shadow: none!important;
+  }
+  .ant-input-number-input:disabled {
+    border-bottom: 0.125rem #d4dbdf solid;
+  }
+
+  .ant-form-item-label {
+    white-space: normal;
+  }
+
+  .ant-table-row td {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  .ant-form-item label{
+    line-height: 20px;
+  }
+  .ant-upload-disabled {
+    display: none;
+  }
+}
+
+
+:host /deep/ .file-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+  color: #00CC66;
+  cursor: pointer;
+  line-height: normal;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  .file-name {
+    margin-right: 16px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .file-btn, .file-name {
+    display: flex;
+    align-items: center;
+  }
+
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+:host .upload-file-list {
+  margin-top: 10px;
+}

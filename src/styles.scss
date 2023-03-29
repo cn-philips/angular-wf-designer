@@ -1,6 +1,5 @@
-@import '../node_modules/angular-tree-component/dist/angular-tree-component.css';
-@import './vendor/libs/ngx-toastr/ngx-toastr.scss';
-@import './global.scss'; 
+@import "./vendor/libs/ngx-toastr/ngx-toastr.scss";
+@import "./global.scss";
 
 @mixin keyframes($name) {
   @-webkit-keyframes #{$name} {
@@ -15,7 +14,7 @@
 }
 
 // Remove outline on desktops
-@media(min-width: 720px) {
+@media (min-width: 720px) {
   ngb-carousel,
   .dropdown-item,
   ngb-datepicker,
@@ -33,10 +32,10 @@
 
 .router-transitions {
   opacity: 1;
-  transition: opacity .2s;
+  transition: opacity 0.2s;
 
   body.app-loading & {
-    opacity: .75;
+    opacity: 0.75;
   }
 }
 
@@ -44,29 +43,41 @@
 // * Tooltip and popover animations
 
 @include keyframes(ngTooltipAnimation) {
-  0% { opacity: 0; }
-  100% { opacity: 1; }
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 ngb-tooltip-window {
-  animation: ngTooltipAnimation .25s;
+  animation: ngTooltipAnimation 0.25s;
 }
 
 // *******************************************************************************
 // * Modal animations
 
 @include keyframes(ngModalBackdropAnimation) {
-  0% { opacity: 0; }
-  100% { opacity: .5; }
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0.5;
+  }
 }
 @include keyframes(ngMaterialModalBackdropAnimation) {
-  0% { opacity: 0; }
-  100% { opacity: .2; }
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0.2;
+  }
 }
 @include keyframes(ngDefaultModalAnimation) {
   0% {
     opacity: 0;
-    transform: translateY(150px) scale(.8);
+    transform: translateY(150px) scale(0.8);
   }
   100% {
     opacity: 1;
@@ -106,7 +117,7 @@ ngb-tooltip-window {
 @include keyframes(ngFillInModalAnimation) {
   0% {
     opacity: 0;
-    transform: scale(.5, .5);
+    transform: scale(0.5, 0.5);
   }
   100% {
     opacity: 1;
@@ -115,39 +126,39 @@ ngb-tooltip-window {
 }
 
 ngb-modal-backdrop.modal-backdrop {
-  opacity: .5;
-  animation: ngModalBackdropAnimation .15s ease-out;
+  opacity: 0.5;
+  animation: ngModalBackdropAnimation 0.15s ease-out;
 }
 
 ngb-modal-window {
   &.modal .modal-dialog {
-    animation: ngDefaultModalAnimation .15s ease-out;
+    animation: ngDefaultModalAnimation 0.15s ease-out;
   }
 
   &.modal-top .modal-dialog {
-    animation: ngTopModalAnimation .15s ease-out;
+    animation: ngTopModalAnimation 0.15s ease-out;
   }
 
   &.modal-slide .modal-dialog {
-    animation: ngSlideModalAnimation .15s ease-out;
+    animation: ngSlideModalAnimation 0.15s ease-out;
   }
 
   &.modal-fill-in .modal-dialog {
-    animation: ngFillInModalAnimation .15s ease-out;
+    animation: ngFillInModalAnimation 0.15s ease-out;
   }
 
-  [dir=rtl] &.modal-slide .modal-dialog {
-    animation: ngRtlSlideModalAnimation .15s ease-out;
+  [dir="rtl"] &.modal-slide .modal-dialog {
+    animation: ngRtlSlideModalAnimation 0.15s ease-out;
   }
 }
 
 .material-style ngb-modal-backdrop.modal-backdrop {
-  opacity: .2;
-  animation: ngMaterialModalBackdropAnimation .15s ease-out;
+  opacity: 0.2;
+  animation: ngMaterialModalBackdropAnimation 0.15s ease-out;
 }
 
 // Prevent horizontal scrollbar
-[dir=rtl] .dz-hidden-input {
+[dir="rtl"] .dz-hidden-input {
   right: 0 !important;
   left: auto !important;
 }
@@ -162,7 +173,7 @@ ngb-accordion .card-header > * > .btn.btn-link {
   white-space: normal;
   vertical-align: inherit;
   border: 0;
-  font-size: .894rem;
+  font-size: 0.894rem;
 }
 
 .ngb-accordion-with-icon .card-header > * > .btn.btn-link {
@@ -175,51 +186,6 @@ ngb-accordion .card-header > * > .btn.btn-link {
 
 ngb-typeahead-window .dropdown-item {
   cursor: pointer;
-}
-
-// *******************************************************************************
-// * ngx-datatable customized css
-.datatable-column-header-01 {
-  text-align: center;
-}
-
-.datatable-column-money {
-  text-align: right;
-  word-wrap:break-word;
-}
-
-.datatable-column-money-bold {
-  text-align: right;
-  word-wrap: break-word;
-  font-weight: bold;
-}
-
-.datatable-column-normal {
-  word-wrap:break-word;
-}
-
-.datatable-column-normal-bold {
-  word-wrap: break-word;
-  font-weight: bold;
-}
-
-.datatable-column-rejected {
-  word-wrap: break-word;
-  color: red;
-}
-
-// *******************************************************************************
-// * angular-tree-component customized css
-.my-tree { }
-.my-tree tree-node-expander {
-  order: 0;
-}
-.my-tree tree-node-checkbox {
-  order: 1;
-  padding: 4px;
-}
-.my-tree .node-content-wrapper {
-  order: 2;
 }
 
 // *******************************************************************************
@@ -238,54 +204,55 @@ ngb-typeahead-window .dropdown-item {
 // *******************************************************************************
 // * route loader customized css
 .central-loader {
-    position: fixed;
-    display: flex;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0,0,0,0.2);
-    z-index: 1050;
+  position: fixed;
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.2);
+  z-index: 1050;
 }
 
 .central-loader > div {
-    height: 42px;
-    line-height: 40px;
-    width: 200px;
-    text-align: center;
-    margin: auto;
+  height: 42px;
+  line-height: 40px;
+  width: 200px;
+  text-align: center;
+  margin: auto;
 }
 
 // *******************************************************************************
 // * quotation modal && quotation backdrop customized css
-.modal{
-    overflow:auto!important;
-    overflow-x: hidden !important;
-  }
+.modal {
+  overflow: auto !important;
+  overflow-x: hidden !important;
+}
 
 .quotation-modal .modal-lg {
-    min-width: 100%;
-    max-width: 100%;
-    z-index: 1100 !important;
+  min-width: 100%;
+  max-width: 100%;
+  z-index: 1100 !important;
 }
 
 .quotation-modal .modal-content {
-    background-color: whitesmoke;
+  background-color: whitesmoke;
 }
 
 .quotation-backdrop {
-    z-index: 1090 !important;
-    background-color: black !important;
+  z-index: 1090 !important;
+  background-color: black !important;
 }
 
 // *******************************************************************************
 // * no spin customized css for some number input
-.no-spin::-webkit-inner-spin-button, .no-spin::-webkit-outer-spin-button {
-    -webkit-appearance: none !important;
-    margin: 0 !important;
-    -moz-appearance:textfield !important;
+.no-spin::-webkit-inner-spin-button,
+.no-spin::-webkit-outer-spin-button {
+  -webkit-appearance: none !important;
+  margin: 0 !important;
+  -moz-appearance: textfield !important;
 }
 
 .default-color {
-  color: #4E5155 !important;
+  color: #4e5155 !important;
 }
 
 .no-border {
@@ -305,17 +272,17 @@ ngb-typeahead-window .dropdown-item {
 
 // used in mobile
 .view-pc {
-    display: block !important;
+  display: block !important;
 }
 .view-mobile {
-    display: none !important;
+  display: none !important;
 }
-@media(min-width: 720px) {
+@media (min-width: 720px) {
   .view-pc {
-      display: none !important;
+    display: none !important;
   }
   .view-mobile {
-      display: block !important;
+    display: block !important;
   }
 }
 
@@ -329,14 +296,34 @@ ngb-typeahead-window .dropdown-item {
 
 body {
   font-size: 14px !important;
+  overflow-y: scroll;
 }
 
 .has-error {
-  .ant-input-number-input, .ant-select-selection{
+  .ant-input-number-input,
+  .ant-select-selection {
     border-color: #f5222d !important;
   }
 }
 
 .ant-input-number-input:focus {
   border-color: #337fbf !important;
+}
+.fixed-btn-group{
+  position: fixed;
+    width: 100%;
+    left: 0px;
+    bottom: 0px;
+    background: #fff;
+    padding-top: 10px;
+    z-index: 9;
+}
+
+.ant-btn {
+  display: inline-flex!important;
+  align-items: center;
+}
+
+.ant-input-number-handler-wrap {
+  display: none;
 }

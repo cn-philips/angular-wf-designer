@@ -1,0 +1,114 @@
+@import "styles/media_query.scss";
+.progressTabsWrapper {
+  $LINE_WIDTH: 200px;
+  $LINE_MARGIN: 20px;
+  $INDICATOR_SIZE: 24px;
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: row;
+  justify-content: center;
+  &.hasScroll {
+    justify-content: flex-start;
+  }
+  @media screen and (max-width: $screen-sm-max) {
+    justify-content: start;
+  }
+  counter-reset: step;
+  margin-right: -(2 * $LINE_MARGIN + $LINE_WIDTH);
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  .progressTabsContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+  }
+  .progressTab:last-of-type(.progressTab) {
+    background-color: red;
+  }
+  .progressTab {
+    transition: all 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
+    user-select: none;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    cursor: pointer;
+    .progressTabContent {
+      white-space: nowrap;
+    }
+    // INDICATOR
+    &::before {
+      content: counter(step);
+      display: block;
+      border-radius: 50%;
+      counter-increment: step;
+      border-width: 2px;
+      width: $INDICATOR_SIZE;
+      height: $INDICATOR_SIZE;
+      line-height: $INDICATOR_SIZE;
+      box-sizing: content-box;
+      text-align: center;
+      margin-right: 10px;
+      font-size: 16px;
+      // INACTIVE Indicator Style
+      border: var(--COLOR_TAB_INACTIVE_BORDER) 2px solid;
+      color: var(--COLOR_TAB_INACTIVE_TEXT);
+      font-weight: bold;
+      transition: all 0.5s cubic-bezier(0.645, 0.045, 0.355, 1);
+      flex-basis: $INDICATOR_SIZE;
+      flex-shrink: 0;
+    }
+    &.withLine::after {
+      content: "";
+      display: block;
+      height: 2px;
+      width: $LINE_WIDTH;
+      margin-left: $LINE_MARGIN;
+      margin-right: $LINE_MARGIN;
+      background-color: var(--COLOR_TAB_LINE_BG);
+    }
+    // Indicator Style
+    &.active {
+      &::before {
+        background-color: var(--COLOR_TAB_ACTIVE_BG);
+        border-color: var(--COLOR_TAB_ACTIVE_BG);
+        color: var(--COLOR_TAB_ACTIVE_INDICATOR_TEXT);
+      }
+    }
+    &.error {
+      color: var(--COLOR_TAB_ERROR_INDICATOR_TEXT);
+      &.active {
+        color: var(--COLOR_DANGER_PRESSED);
+      }
+      :hover {
+        color: var(--COLOR_DANGER_HOVER);
+      }
+      &::before {
+        background-color: var(--COLOR_TAB_ERROR_BG) !important;
+        border-color: var(--COLOR_TAB_ERROR_BG) !important;
+        color: var(--COLOR_TAB_ERROR_TEXT) !important;
+        content: "!" !important;
+      }
+    }
+    //
+
+    &.disabled {
+      cursor: not-allowed;
+    }
+    &.active,
+    &:hover {
+      color: var(--COLOR_TAB_ACTIVE_TEXT);
+    }
+  }
+}
+.progressContent {
+  // width: 100%;
+
+  // white-space: nowrap;
+  &.show {
+    display: block;
+  }
+  &.hide {
+    display: none;
+  }
+}

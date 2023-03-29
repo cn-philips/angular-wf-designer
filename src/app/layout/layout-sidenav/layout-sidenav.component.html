@@ -4,88 +4,79 @@
     class="sidenav-inner"
     [ngClass]="{ 'py-1': orientation !== 'horizontal' }"
   >
-    <!--    <sidenav-router-link icon="ion ion-ios-home" route="/" [active]="isActive('/')">主页2</sidenav-router-link>-->
-    <!--    &lt;!&ndash; <sidenav-router-link icon="ion ion-ios-folder" route="/template-maintenance" [active]="isActive('/template-maintenance')">Template Maintenance</sidenav-router-link> &ndash;&gt;-->
-    <!--    &lt;!&ndash; <sidenav-router-link icon="ion ion-ios-speedometer" route="/role-authorization" [active]="isActive('/role-authorization')">Role Authorization</sidenav-router-link> &ndash;&gt;-->
-    <!--    &lt;!&ndash; <sidenav-router-link icon="ion ion-md-desktop" route="/page-2" [active]="isActive('/page-2')">Page 2</sidenav-router-link> &ndash;&gt;-->
-    <!--    &lt;!&ndash; <sidenav-router-link icon="ion ion-md-grid" route="/master-data-maintenance" [active]="isActive('/master-data-maintenance')">MDM Sample</sidenav-router-link> &ndash;&gt;-->
-    <!-- <sidenav-router-link icon="ion ion-ios-home" route="/" [active]="isActive('/')">主页</sidenav-router-link>
-    <sidenav-router-link icon="ion ion-ios-home" route="/igt/data-dictionary" [active]="isActive('/igt/data-dictionary')">数据字典</sidenav-router-link> -->
-    <!--    <sidenav-router-link icon="ion ion-ios-home" route="/igt/personal-info" [active]="isActive('/')">人员信息</sidenav-router-link>-->
-    <!--    <sidenav-router-link icon="ion ion-ios-home" route="/igt/master-data-maintenance" [active]="isActive('/igt/master-data-maintenance')">主数据维护</sidenav-router-link>-->
-
-    <!--    <sidenav-menu icon="sidenav-icon ion-ios-document ng-star-inserted" text="模板维护2" [active]="isActive('contemplate')" [open]="isActive('contemplate')">-->
-    <!--      <ng-container>-->
-    <!--        <sidenav-router-link icon="" route="/contemplate" [active]="isActive('/contemplate')">合同模板管理2</sidenav-router-link>-->
-    <!--      </ng-container>-->
-    <!--    </sidenav-menu>-->
-
-    <!--    <sidenav-router-link icon="sidenav-icon ion-ios-podium ng-star-inserted" route="/report2" [active]="isActive('/report2')">实时报表2</sidenav-router-link>-->
-
-    <!-- <sidenav-menu icon="sidenav-icon ion-ios-grid ng-star-inserted" text="系统管理" [active]="isActiveParent('dimensionsTree',true)" [open]="isMenuOpenAlt('dimensionsTree')">
-     <ng-container>
-        <sidenav-router-link icon="" route="/dimensionsTree" [active]="isActive('dimensionsTree')">维度树管理</sidenav-router-link>
-        <sidenav-router-link icon="" route="/roleslist" [active]="isActive('roleslist')">角色管理</sidenav-router-link>
-        <sidenav-router-link icon="" route="/personnelmanagements" [active]="isActive('/personnelmanagements')">人员管理</sidenav-router-link>
-        <sidenav-router-link icon="" route="/dllgt-group-management" [active]="isActive('/dllgt-group-management')">角色组管理</sidenav-router-link>
-        <sidenav-router-link icon="" route="/rolemanage" [active]="isActive('/rolemanage')">角色权限管理</sidenav-router-link>
-     </ng-container>
-   </sidenav-menu> -->
     <ng-template #nav let-list>
       <ng-container *ngFor="let item of list">
         <ng-container *ngIf="item.flag && item.children.length > 0">
           <sidenav-menu
             icon="{{ item.icon }}"
-            text="{{ item.jurisdictionName }}"
+            text="{{ this.lang === 'zh-CN'?item.jurisdictionName:item.jurisdictionEnName }}"
             [active]="isParentActive(item)"
-            [open]="isParentActive(item)"
+            [open]="isParentActive(item)||item.jurisdictionEnName.indexOf('Workspace')>=0||item.jurisdictionEnName.indexOf('My Supplement')>=0"
           >
-            <!-- {{item.jurisdictionName}} -->
             <ng-container
               *ngTemplateOutlet="nav; context: { $implicit: item.children }"
             ></ng-container>
           </sidenav-menu>
         </ng-container>
         <ng-container *ngIf="item.flag == false">
-          <!-- <sidenav-router-link
-            icon="{{ item.icon }}"
-            *ngIf="item.status == 0"
-            route="{{ item.route }}"
-            [skipLocationChange]="false"
-            [active]="isActiveLeaf(item.route)"
-          > -->
           <sidenav-router-link
             icon="{{ item.icon }}"
             *ngIf="item.status == 0"
             route="{{ item.route }}"
             [skipLocationChange]="false"
             [active]="isActiveLeaf(item.route)"
+            [id]="'nav_'+item.jurisdictionCode"
           >
-            {{ item.jurisdictionName }}&nbsp;
-            <div class="badge badge-primary" *ngIf="item.jurisdictionName=='我的任务 Tasks'&& myTasksTotal!=0">{{ myTasksTotal }}</div>
-            <div class="badge badge-primary" *ngIf="item.jurisdictionName=='我的草稿 Drafts'&& myDraftTotal!=0">{{ myDraftTotal }}</div>
-            <div class="badge badge-primary" *ngIf="item.id=='aaee93a2-ed0a-4db9-9537-f72bb500c2fc' && spTaskTotal!=0">{{ spTaskTotal }}</div>
-            <div class="badge badge-primary" *ngIf="item.id=='312bf823-a05b-4ec7-90a9-b4b070a9928a' && spDraftTotal!=0">{{ spDraftTotal }}</div>
+            {{ this.lang === 'zh-CN'?item.jurisdictionName:item.jurisdictionEnName }}&nbsp;
+            <div
+              class="badge badge-primary"
+              *ngIf="
+                item.jurisdictionEnName == 'My Todo' &&
+                taskCountService.myPending != 0
+              "
+            >
+              {{ taskCountService.myPending }}
+            </div>
+            <div
+              class="badge badge-primary"
+              *ngIf="
+                item.jurisdictionEnName == 'My Done' &&
+                taskCountService.myDone != 0
+              "
+            >
+              {{ taskCountService.myDone }}
+            </div>
+            <div
+              class="badge badge-primary"
+              *ngIf="
+                item.jurisdictionEnName == 'My Draft' &&
+                taskCountService.myDraft != 0
+              "
+            >
+              {{ taskCountService.myDraft }}
+            </div>
+            <div
+              class="badge badge-primary"
+              *ngIf="
+                item.jurisdictionEnName == 'My Started' &&
+                taskCountService.myApply != 0
+              "
+            >
+              {{ taskCountService.myApply }}
+            </div>
+            <!-- <div
+              class="badge badge-primary"
+              *ngIf="
+                item.jurisdictionEnName == 'My View' &&
+                taskCountService.myView != 0
+              "
+            >
+              {{ taskCountService.myView }}
+            </div> -->
           </sidenav-router-link>
         </ng-container>
       </ng-container>
     </ng-template>
-
-    <!-- <ng-template #nav let-list>
-      <ng-container *ngFor="let item of list">
-        <ng-container *ngIf="item.childs.length > 0">
-          <sidenav-menu icon="{{item.value.icon}}" text="{{item.value.name}}" [active]="isActiveParent(item.router, item.value)" [open]="isMenuOpenAlt(item.router, item.value)">
-            {{item.value}}
-           <ng-container *ngTemplateOutlet="nav;context:{$implicit:item.childs}"></ng-container>
-          </sidenav-menu>
-        </ng-container>
-       <ng-container *ngIf="item.childs.length == 0">
-          <sidenav-router-link icon="{{item.value.icon}}" route="{{item.router}}" [queryParams]="item.value" [skipLocationChange]="false" [active]="isActiveLeaf(item.router,item.value)">
-            {{item.value.name}}
-          </sidenav-router-link>
-        </ng-container>
-      </ng-container>
-    </ng-template> -->
     <ng-container
       *ngTemplateOutlet="nav; context: { $implicit: list }"
     ></ng-container>

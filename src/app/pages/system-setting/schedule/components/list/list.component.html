@@ -1,0 +1,68 @@
+<nz-table nzVirtualScroll [nzData]="tableData" [nzVirtualItemSize]="10" nzPageSize="10" [nzTotal]="total"
+  [nzLoading]="loading" [nzScroll]="{ x: '1830px', y: '600px' }" [nzShowTotal]="totalTemplate" style="margin-top: 16px">
+  <thead>
+    <tr>
+      <th class="tableHead" nzAlign="center" style="width: 220px">
+        任务编号
+      </th>
+      <th class="tableHead" nzAlign="center" style="width: 120px">
+        任务类型
+      </th>
+      <th class="tableHead" nzAlign="center" style="width: 200px">
+        任务名称
+      </th>
+      <th class="tableHead" nzAlign="center" style="width: 220px">
+        任务描述
+      </th>
+      <th class="tableHead" nzAlign="center" style="width: 140px">
+        任务执行频率
+      </th>
+      <th class="tableHead" nzAlign="center" style="width: 120px">
+        任务状态
+      </th>
+      <th class="tableHead" nzAlign="center" style="width: 200px">
+        创建人
+      </th>
+      <th class="tableHead" nzAlign="center" style="width: 200px">
+        创建时间
+      </th>
+      <th class="tableHead" nzAlign="center" style="width: 200px">
+        修改人
+      </th>
+      <th class="tableHead" nzAlign="center" style="width: 200px">
+        修改时间
+      </th>
+
+      <th class="tableHead" nzAlign="center" nzRight="0px" style="width: 140px">
+        {{"list-pages.table-header.action" | translate}}
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <ng-template nz-virtual-scroll let-data let-index="index">
+      <tr>
+        <td class="tableData" style="width: 220px;" nzAlign="center">{{ data.params.referenceNo }}</td>
+        <td class="tableData" style="width: 120px;" nzAlign="center">{{ TaskType(data.taskType?data.taskType:'') }}</td>
+        <td class="tableData" style="width: 200px;" nzAlign="center">{{ data.taskName }}</td>
+        <td class="tableData" style="width: 220px;" nzAlign="center">{{ data.taskDescription }}</td>
+        <td class="tableData" style="width: 140px;" nzAlign="center">{{
+          Frequency(data.taskFrequency?data.taskFrequency:'') }}</td>
+        <td class="tableData" style="width: 120px;" nzAlign="center">
+          <nz-switch [ngModel]="data.isEnabled" [nzControl]="true" nz-popconfirm
+            [nzTitle]="data.isEnabled?'你确定要执行禁用操作?':'你确定要执行启用操作?'" (nzOnConfirm)="editEnable(data)"
+            nzCheckedChildren="启用" nzUnCheckedChildren="禁用"></nz-switch>
+        </td>
+        <td class="tableData" style="width: 200px;" nzAlign="center">{{ data.createdBy }}</td>
+        <td class="tableData" style="width: 200px;" nzAlign="center">{{ data.createdDate }}</td>
+        <td class="tableData" style="width: 200px;" nzAlign="center">{{ data.modifiedBy }}</td>
+        <td class="tableData" style="width: 200px;" nzAlign="center">{{ data.modifiedDate }}</td>
+        <td class="tableData" style="width: 120px;" nzAlign="center" nzRight="0px">
+          <a style="display: block;color: #337FBF;" (click)="edit(data)">修改</a>
+        </td>
+      </tr>
+    </ng-template>
+
+  </tbody>
+
+</nz-table>
+<ng-template #totalTemplate let-total> {{"list-pages.list-total" | translate: { total: total} }} </ng-template>

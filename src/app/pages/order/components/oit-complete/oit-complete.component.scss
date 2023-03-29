@@ -1,0 +1,32 @@
+.oit-btn {
+  display: block;
+}
+
+.flex {
+  display: flex;
+  position: relative;
+
+  .updata {
+    display: inline-block;
+    position: absolute;
+    left: 120px;
+    top: 4px;
+  }
+
+}
+
+.reflex {
+  display: flex;
+
+  &-radio {
+    width: 180px;
+  }
+
+  &-date {
+    flex: 1;
+  }
+}
+
+.tr {
+  text-align: right;
+}

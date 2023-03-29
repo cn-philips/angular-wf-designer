@@ -1,0 +1,45 @@
+.p-manual-list {
+  padding: 0 10px;
+  .p-manual-list-item {
+    display: flex;
+    box-sizing: border-box;
+    padding: 0 5px;
+    flex-direction: column;
+    justify-content: center;
+    background: #f7f8fa;
+    border-radius: 4px;
+    border-radius: 4px;
+    height: 52px;
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    font-size: 14px;
+    color: #323233;
+    line-height: 20px;
+    margin: 1.8% 0;
+    cursor: pointer;
+    user-select: none;
+    &:hover {
+      color: #fff;
+      background: linear-gradient(135deg, #3da6ee 0%, #2a8ccf 100%);
+    }
+
+    .p-manual-list-content {
+      display: flex;
+      &::before {
+        content: "";
+        display: block;
+        width: 20px;
+        height: 20px;
+        padding: 0 20px;
+        background: url(assets/image/icons/pdf.active.svg) no-repeat center;
+      }
+    }
+
+    &:hover {
+      .p-manual-list-content {
+        &::before {
+          background: url(assets/image/icons/pdf.svg) no-repeat center;
+        }
+      }
+    }
+  }
+}

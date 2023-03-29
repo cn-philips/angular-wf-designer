@@ -1,0 +1,41 @@
+<div *ngIf="hasImage" class="image-control-wrapper">
+  <div class="image-control-content">
+    <img *ngIf="image!==null" [src]="image" />
+  </div>
+  <div class="image-control-actions">
+    <div>
+      <button
+        nz-button
+        (click)="handleEdit()"
+        nzGhost
+        nzType="default"
+        nzSize="small"
+      >
+        <i nz-icon nzType="edit" nzTheme="outline"></i>
+      </button>
+      <button
+        nz-button
+        (click)="handleRemove()"
+        nzGhost
+        nzType="danger"
+        nzSize="small"
+      >
+        <i nz-icon nzType="delete" nzTheme="outline"></i>
+      </button>
+    </div>
+  </div>
+</div>
+<div (click)="handleUpload()" class="no-image-wrapper" *ngIf="!hasImage">
+  <div class="no-image-content">
+    <div>点击上传</div>
+  </div>
+</div>
+<input
+  accept=".png,.jpeg,.jpg"
+  type="file"
+  [name]="name"
+  (change)="this.handleFileSelected($event)"
+  style="display: none"
+  #uploader
+/>
+<app-image-editor (cropped)="handleCropped($event)" #editor></app-image-editor>

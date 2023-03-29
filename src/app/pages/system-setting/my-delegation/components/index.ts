@@ -1,0 +1,1 @@
+export { ShortAgencyComponent } from './short-agency/short-agency.component'

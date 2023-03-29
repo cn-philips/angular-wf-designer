@@ -1,0 +1,1 @@
+export { TenderReviewSaleComponent } from './tender-review-sale.component'

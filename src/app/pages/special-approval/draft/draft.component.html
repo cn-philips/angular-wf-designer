@@ -1,0 +1,211 @@
+<!-- <div class="bg-white py-2">
+  <div nz-row nzType="flex" nz-row nzJustify="center" nzAlign="middle" class="py-2">
+    <div nz-col [nzSpan]="1" class="text-center">
+      <span
+        class="ant-avatar ant-avatar-lg ant-avatar-circle ant-avatar-icon bg-primary d-flex align-items-center justify-content-center">
+        <i nz-icon nzType="control" nzTheme="outline"></i>
+      </span>
+    </div>
+    <div nz-col [nzSpan]="1">
+      <strong class="h4">{{ tableData.count }}</strong> 个
+      <span class="text-grey">我的草稿</span>
+    </div>
+  </div>
+</div> -->
+
+<!-- <nz-card class="request-form" [nzBodyStyle]="{ padding: '12px' }"> -->
+<div style="width: 100%; background-color: #ffffff; padding: 15px 0 15px 0">
+  <form
+    nz-form
+    style="flex: 1"
+    [formGroup]="formValues"
+    (ngSubmit)="getTableData(true)"
+  >
+    <div
+      nz-row
+      nzType="flex"
+      nzJustify="start"
+      nzAlign="middle"
+      style="
+        background-color: #f6f7f9;
+        color: #ffffff;
+        line-height: 22px;
+        padding-top: 24px;
+      "
+    >
+      <div nz-col nzXs="24" nzMd="12" nzXl="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6"
+            >申请类型</nz-form-label
+          >
+          <nz-form-control nzXs="24" nzMd="14">
+            <nz-select
+              formControlName="applyType"
+              nzAllowClear
+              nzPlaceHolder="请选择"
+            >
+              <nz-option
+                *ngFor="let type of selectOptions.applyTypes"
+                [nzValue]="type.value"
+                [nzLabel]="type.label"
+              >
+              </nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzXs="24" nzMd="12" nzXl="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6"
+            >BG</nz-form-label
+          >
+          <nz-form-control nzXs="24" nzMd="14">
+            <nz-select
+              formControlName="orderBg"
+              nzAllowClear
+              nzPlaceHolder="请选择"
+            >
+              <nz-option
+                *ngFor="let bg of selectOptions.bgList"
+                [nzValue]="bg.value"
+                [nzLabel]="bg.label"
+              ></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div
+        nz-col
+        nzXs="24"
+        nzMd="12"
+        nzXl="8"
+        [style.display]="isCollapse ? 'block' : 'none'"
+      >
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6" nzFor="keyword"
+            >关键字</nz-form-label
+          >
+          <nz-form-control nzXs="24" nzMd="14">
+            <nz-input-group nzPrefixIcon="search" style="width: 100%">
+              <input
+                id="keyword"
+                formControlName="keyword"
+                nz-input
+                placeholder="查询申请编号、经销商、医院名称、SAP订单号"
+              />
+            </nz-input-group>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div
+        nz-col
+        nzXs="24"
+        nzMd="12"
+        nzXl="8"
+        [style.display]="isCollapse ? 'block' : 'none'"
+      >
+        <nz-form-item>
+          <nz-form-label
+            nzXs="24"
+            nzMd="10"
+            nzXl="8"
+            nzXXl="6"
+            nzFor="submitDate"
+            >提交时间</nz-form-label
+          >
+          <nz-form-control nzXs="24" nzMd="14">
+            <nz-range-picker
+              nzFormat="yyyy年MM月dd日"
+              style="width: 100%"
+              id="submitDate"
+              formControlName="submitDate"
+            >
+            </nz-range-picker>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div
+        nz-col
+        [nzMd]="{ span: 4, offset: isCollapse ? 10 : 2 }"
+        [nzSm]="{ span: 12, offset: isCollapse ? 12 : 0 }"
+        [nzXs]="{ span: 24 }"
+        style="text-align: right"
+      >
+        <div nz-col [nzSpan]="20" style="text-align: right">
+          <nz-form-item>
+            <nz-form-control>
+              <button nz-button nzType="primary">
+                <i nz-icon nzType="search"></i>
+                搜索
+              </button>
+              <a
+                class="btn-collapse"
+                style="margin-left: 10px; color: #1890ff"
+                (click)="toggleCollapse()"
+              >
+                {{
+                  (isCollapse
+                    ? "list-pages.search-form.form.collapse"
+                    : "list-pages.search-form.form.expand"
+                  ) | translate
+                }}
+                <i nz-icon [type]="isCollapse ? 'up' : 'down'"></i>
+              </a>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+<nz-table
+  [nzData]="tableData.list"
+  [nzLoading]="tableData.loading"
+  [nzFrontPagination]="false"
+  [nzTotal]="tableData.count"
+  [nzScroll]="{ x: '1000px' }"
+  [(nzPageIndex)]="searchParams.pageNo"
+  [(nzPageSize)]="searchParams.pageSize"
+  (nzPageIndexChange)="getTableData()"
+  (nzPageSizeChange)="getTableData()"
+>
+  <thead>
+    <tr>
+      <th>申请编号</th>
+      <th>申请类型</th>
+      <th>发起人</th>
+      <th>申请时间</th>
+      <th nzWidth="150px" nzRight="0px">操作</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let data of tableData.list">
+      <td>{{ data.applyCode }}</td>
+      <td>{{ spService.formatApplyType(data.applyType) }}</td>
+      <td>{{ data.applicant }}</td>
+      <td>{{ data.createTime }}</td>
+      <td nzRight="0px">
+        <button
+          nz-button
+          nzType="primary"
+          nzSize="small"
+          class="bg-success"
+          (click)="onNavigateToRequestDetail(data.id)"
+        >
+          编辑
+        </button>
+        <button
+          nz-button
+          nz-popconfirm
+          nzDanger
+          nzSize="small"
+          nzTitle="确定删除草稿?"
+          (nzOnConfirm)="onDeleteRequest(data)"
+        >
+          删除
+        </button>
+      </td>
+    </tr>
+  </tbody>
+</nz-table>
+<!-- </nz-card> -->

@@ -1,0 +1,191 @@
+@import "styles/media_query.scss";
+.card-wrapper {
+  display: flex;
+  flex-direction: row;
+  height: 10%;
+  margin: 0 -10px;
+  overflow-x: auto;
+  .card {
+    height: 100px;
+    // width: 206px;
+    flex-shrink: 0;
+    flex-basis: calc(16.6667% - 20px);
+    @media screen and (max-width: $screen-md-max) {
+      flex-basis: 206px;
+    }
+    box-shadow: 0 2px 24px 0 rgba(200, 201, 204, 0.6);
+    border-radius: 8px;
+    opacity: 100%;
+    margin: 18px 10px;
+    flex-grow: 0;
+    flex-wrap: nowrap;
+    background-color: #ffffff;
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    &.disabled{
+      display: none;
+      cursor:not-allowed;
+      filter: grayscale(100%)
+    }
+  }
+
+  .card:hover {
+    cursor: pointer;
+  }
+
+  .mytask {
+    .img {
+      background: url("~assets/workspaceicon/todo-uncheckd.svg") no-repeat;
+    }
+  }
+
+  .mytaskSelected {
+    background-color: #1772c3;
+    color: #ffffff;
+    .img {
+      background-image: url("~assets/workspaceicon/todo-checkd.svg");
+    }
+  }
+
+  .mytask:hover {
+    background-color: #1772c3;
+    color: #ffffff;
+    .img {
+      background-image: url("~assets/workspaceicon/todo-checkd.svg");
+    }
+  }
+
+  .done {
+    .img {
+      background-image: url("~assets/workspaceicon/mydone-unchecked.svg");
+    }
+  }
+
+  .doneSelected {
+    background-color: #13b474;
+    color: #ffffff;
+    .img {
+      background-image: url("~assets/workspaceicon/mydone-checked.svg");
+    }
+  }
+
+  .done:hover {
+    background-color: #13b474;
+    color: #ffffff;
+    .img {
+      background-image: url("~assets/workspaceicon/mydone-checked.svg");
+    }
+  }
+
+  .appli {
+    .img {
+      background-image: url("~assets/workspaceicon/myappli-uncheckd.svg");
+    }
+  }
+
+  .appliSelected {
+    background-color: #3798db;
+    color: #ffffff;
+    .img {
+      background-image: url("~assets/workspaceicon/myappli-checkd.svg");
+    }
+  }
+  .appli:hover {
+    background-color: #3798db;
+    color: #ffffff;
+    .img {
+      background-image: url("~assets/workspaceicon/myappli-checkd.svg");
+    }
+  }
+
+  .draft {
+    .img {
+      background-image: url("~assets/workspaceicon/mydraft-uncheckd.svg");
+    }
+  }
+
+  .draftSelected {
+    background-color: #c066d9;
+    color: #ffffff;
+    .img {
+      background-image: url("~assets/workspaceicon/mydraft-checkd.svg");
+    }
+  }
+
+  .draft:hover {
+    background-color: #c066d9;
+    color: #ffffff;
+    .img {
+      background-image: url("~assets/workspaceicon/mydraft-checkd.svg");
+    }
+  }
+
+  .view {
+    .img {
+      background-image: url("~assets/workspaceicon/myview-unchecked.svg");
+    }
+  }
+
+  .viewSelected {
+    background-color: #ff614a;
+    color: #ffffff;
+    .img {
+      background-image: url("~assets/workspaceicon/myview-checked.svg");
+    }
+  }
+
+  .view:hover {
+    background-color: #ff614a;
+    color: #ffffff;
+    .img {
+      background-image: url("~assets/workspaceicon/myview-checked.svg");
+    }
+  }
+
+  .report {
+    .img {
+      background-image: url("~assets/workspaceicon/myreport-uncheckd.svg");
+    }
+  }
+
+  .reportSelected {
+    background-color: #32952c;
+    color: #ffffff;
+    .img {
+      background-image: url("~assets/workspaceicon/myreport-checkd.svg");
+    }
+  }
+
+  .report:hover {
+    background-color: #32952c;
+    color: #ffffff;
+    .img {
+      background-image: url("~assets/workspaceicon/myreport-checkd.svg");
+    }
+  }
+
+  .img {
+    position: relative;
+    top: 22%;
+    left: 10%;
+    width: 48px;
+    height: 48px;
+    background-color: #ffffff;
+    border-radius: 24px;
+  }
+
+  .actionName {
+    position: relative;
+    bottom: 22%;
+    font-size: 14px;
+    padding-left: 43%;
+    line-height: 20px;
+  }
+
+  .amount {
+    position: relative;
+    bottom: 22%;
+    font-size: 18px;
+    padding-left: 43%;
+    line-height: 26px;
+  }
+}

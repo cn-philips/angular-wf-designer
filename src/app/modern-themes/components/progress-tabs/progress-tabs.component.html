@@ -1,0 +1,39 @@
+<div [ngClass]="{ progressTabsWrapper: true, hasScroll: hasScroll }" #wrapper>
+  <div class="progressTabsContainer" #container>
+    <div *ngFor="let tab of tabs; let index = index">
+      <div
+        class="progressTab"
+        [class.active]="tab.id === activeId"
+        [ngClass]="{
+          error: errorIds.includes(tab.id),
+          withLine: index < tabs.length - 1
+        }"
+        (click)="select(tab.id, index); $event.preventDefault()"
+      >
+        <div class="progressTabContent">
+          <ng-template
+            [ngTemplateOutlet]="tab.iconTpl?.templateRef"
+          ></ng-template>
+          <ng-template
+            [ngTemplateOutlet]="tab.titleTpl?.templateRef"
+          ></ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div>
+  <div *ngFor="let tab of tabs">
+    <div
+      class="progressContent"
+      [ngClass]="{
+        show: tab.id === activeId,
+        hide: tab.id !== activeId
+      }"
+    >
+      <ng-template
+        [ngTemplateOutlet]="tab.contentTpl?.templateRef"
+      ></ng-template>
+    </div>
+  </div>
+</div>

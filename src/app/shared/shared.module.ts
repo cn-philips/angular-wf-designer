@@ -1,47 +1,52 @@
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { NgZorroAntdModule } from "ng-zorro-antd";
-import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
+import { RouterModule } from "@angular/router";
+import { HttpClientModule } from "@angular/common/http";
 
+// 第三方组件库
 import { NgxExtendedPdfViewerModule } from "ngx-extended-pdf-viewer";
+import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
+import { NgZorroAntdModule } from "ng-zorro-antd";
+import { ClipboardModule } from 'ngx-clipboard'
 
-import {
-  ApploadingComponent,
-  DatePickerComponent,
-  PdfPreviewComponent,
-  UploadFileComponent,
-} from "./components";
+// 全局组件
+import { COMPONENTS } from "./components";
 
-import { PricePermissionsPipe } from "../pipes/price-permissions.pipe";
+// 全局指令
+import { DIRECTIVES } from "./directives";
 
-const COMPONENTS = [
-  ApploadingComponent,
-  UploadFileComponent,
-  DatePickerComponent,
-  PdfPreviewComponent,
-];
-const PIPES = [PricePermissionsPipe];
+// 全局管道
+import { PIPES } from "./pipes";
+import { TranslateModule } from "@ngx-translate/core";
+
 @NgModule({
-  declarations: [...COMPONENTS, ...PIPES],
+  declarations: [...COMPONENTS, ...PIPES, ...DIRECTIVES],
   imports: [
+    ClipboardModule,
     NgZorroAntdModule,
     NgxExtendedPdfViewerModule,
     FormsModule,
     ReactiveFormsModule,
     CommonModule,
     NgbModule.forRoot(),
+    HttpClientModule,
+    TranslateModule,
   ],
   exports: [
     ...COMPONENTS,
     ...PIPES,
+    ...DIRECTIVES,
     NgZorroAntdModule,
     NgxExtendedPdfViewerModule,
     FormsModule,
     ReactiveFormsModule,
     CommonModule,
     NgbModule,
+    RouterModule,
+    HttpClientModule,
+    TranslateModule,
   ],
-  providers: [],
+  providers: [PIPES],
 })
 export class SharedModule {}

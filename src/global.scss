@@ -1,5 +1,4 @@
-@import "./media_query.scss";
-
+@import "styles/media_query.scss";
 //页面头部
 .global-header {
   margin: 1rem;
@@ -57,21 +56,25 @@
     margin-left: 10px;
   }
 }
-
-.ant-form-item-label {
-  padding: 10px 5px 10px 10px !important;
-  line-height: 20px !important;
-  // white-space: break-spaces!important;
-  text-align: right !important;
-
-  @media screen and (max-width: 768px) {
-    text-align: left !important;
+.tab-pane{
+  .ant-form-item-label{
+    line-height: 1.5em !important; //TODO V3正式上线后去掉
   }
 }
+// .ant-form-item-label {
+//   padding: 10px 5px 10px 10px !important;
+//   line-height: 20px !important;
+//   // white-space: break-spaces!important;
+//   text-align: right !important;
 
-.ant-form-item-label > label {
-  padding-right: 0.5rem;
-}
+//   @media screen and (max-width: 768px) {
+//     text-align: left !important;
+//   }
+// }
+
+// .ant-form-item-label > label {
+//   padding-right: 0.5rem;
+// }
 
 //模块间距
 .tabs-box {
@@ -88,6 +91,7 @@
 
 .mtb1rem {
   margin: 1rem auto !important;
+  display: block;
 }
 
 .global-1rem {
@@ -381,17 +385,24 @@ button:focus {
   white-space: pre-wrap;
 }
 .maxupload {
-  width: 340px;
+  width: 375px;
   margin: 0 auto;
 }
 .maxuploadto {
-  max-width:230px;
+  max-width: 230px;
 }
-.maxuploadto button{
+.maxuploadtProd{
+  max-width: 255px;
+}
+.maxuploadto button {
   margin-top: 15px;
 }
 .ant-upload-list-item-name {
   max-width: 150px;
+}
+.maxuploadmin{
+  max-width:150px;
+  margin:0 auto;
 }
 
 .largery,
@@ -413,8 +424,8 @@ button:focus {
     }
   }
 }
-.warning{
-  padding:3px 6px;
+.warning {
+  padding: 3px 6px;
   background-color: #fffbe5;
   border-radius: 5px;
   border: 1px solid #f4bc00;
@@ -423,19 +434,19 @@ button:focus {
   overflow: hidden;
   text-overflow: ellipsis;
   cursor: pointer;
-  &.nohide{
-    overflow:auto;
-    white-space:normal;
+  &.nohide {
+    overflow: auto;
+    white-space: normal;
   }
-  .a{
-    color:#337fbf !important;
-    margin-right:10px;
+  .a {
+    color: #337fbf !important;
+    margin-right: 10px;
   }
 }
 .tranf90 {
   transform: rotate(90deg);
 }
-.tips{
+.tips {
   width: 100%;
   background-color: #fffbe5;
   border-radius: 5px;
@@ -447,25 +458,25 @@ button:focus {
 // animate
 @-webkit-keyframes fadeIn {
   0% {
-    opacity: 0
+    opacity: 0;
   }
   to {
-    opacity: 1
+    opacity: 1;
   }
 }
 
 @keyframes fadeIn {
   0% {
-    opacity: 0
+    opacity: 0;
   }
   to {
-    opacity: 1
+    opacity: 1;
   }
 }
 
 .animate__fadeIn {
   -webkit-animation-name: fadeIn;
-  animation-name: fadeIn
+  animation-name: fadeIn;
 }
 .animate__animated {
   -webkit-animation-duration: 1s;
@@ -473,5 +484,5 @@ button:focus {
   -webkit-animation-duration: var(--animate-duration);
   animation-duration: var(--animate-duration);
   -webkit-animation-fill-mode: both;
-  animation-fill-mode: both
+  animation-fill-mode: both;
 }

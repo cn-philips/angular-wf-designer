@@ -1,0 +1,21 @@
+<div
+  [ngClass]="{
+    'form-section': true,
+    isFold: isFold,
+    hasError: hasError,
+    disabled: disabled
+  }"
+>
+  <div class="section-header" (click)="toggle()" style="cursor: pointer">
+    <span class="section-title">
+      <span>{{ title }}</span>
+      <ng-content select="[name=title]"></ng-content>
+    </span>
+    <i nz-icon [nzType]="isFold ? 'plus' : 'minus'" nzTheme="outline"></i>
+  </div>
+  <div class="form-section-content" [style.maxHeight]="maxHeight" #content>
+    <div #contentInner>
+      <ng-content></ng-content>
+    </div>
+  </div>
+</div>

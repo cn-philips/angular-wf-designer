@@ -1,0 +1,13 @@
+:host /deep/ {
+
+  // .ant-input-number {
+  //   border: none;
+  // }
+  .ant-input-number-input:disabled {
+    border-bottom: 0.125rem #d4dbdf solid;
+  }
+
+  .ant-input-number-handler-wrap {
+    display: none;
+  }
+}

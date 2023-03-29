@@ -1,0 +1,8 @@
+<div style="width: 100%; background-color: #ffffff; padding: 15px">
+  <cos-waite-me-supplement-search-item [loading]="loading" [formData]="formValues" [total]="total"
+    (search)="updateParams($event)" (setLoading)="getLoading($event)">
+  </cos-waite-me-supplement-search-item>
+  <cos-waite-me-supplement-list #table [loading]="loading" [tableData]="tableData" [total]="total" [type]="type"
+    (pageChange)="updateDataList($event)" (setLoading)="getLoading($event)" [flag]="0">
+  </cos-waite-me-supplement-list>
+</div>

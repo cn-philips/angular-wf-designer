@@ -1,0 +1,537 @@
+<app-form-section class="mtb1rem" [title]="'orderv3.components.oit-form.general.title' | translate">
+  <form nz-form [formGroup]="oitInform" [nzNoColon]="true">
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true">
+            {{"orderv3.components.oit-form.general.supporting" | translate}}
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+            <nz-radio-group formControlName="specialApprovalSupporting">
+              <label nz-radio nzValue="1">是</label>
+              <label nz-radio nzValue="0">否</label>
+            </nz-radio-group>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzXs="24" nzSm="24" nzMd="8" *ngIf="isThirdShow()">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true">
+            {{"orderv3.components.oit-form.general.third-check" | translate}}
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+            <nz-radio-group formControlName="productVerification">
+              <label nz-radio nzValue="1">是</label>
+              <label nz-radio nzValue="0">否</label>
+            </nz-radio-group>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzXs="24" nzSm="24" nzMd="8" *ngIf="oitInform.getRawValue().specialApprovalSupporting == '1'">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true">
+            {{"orderv3.components.oit-form.general.supporting-file" | translate}}
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+            <textarea nz-input oninput="if(value.length>255)value=value.slice(0,255)" placeholder=""
+              nzPlacement="topLeft" [nzAutosize]="{ minRows: 1, maxRows: 6 }"
+              formControlName="speciallySupportingFileName"></textarea>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle"
+      *ngIf="baseInfoFrom.getRawValue().dealFormSalesModality == 'CC'">
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true">
+            Down Payment Time
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+            <shared-date-picker formControlName="downPaymentTime"></shared-date-picker>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true">
+            Down Payment Amount
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+            <input maxlength="255" nz-input oninput="if(value.length>255)value=value.slice(0,255)" formControlName="downPaymentAmount">
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle"
+      *ngIf="baseInfoFrom.getRawValue().dealFormSalesModality == 'CC'">
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true">
+            Order Discount
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+            <input nz-input oninput="if(value.length>255)value=value.slice(0,255)" maxlength="255" formControlName="orderDiscount">
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true">
+            {{"orderv3.components.oit-form.general.special-price-list" | translate}}            
+          </nz-form-label>                   
+            <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+              <nz-select
+                nzAllowClear
+                style="width:120px"
+                formControlName="isSpecialOfferOrder">
+                <nz-option
+                  nzLabel="是"
+                  nzValue="1"></nz-option>
+                <nz-option
+                  nzLabel="否"
+                  nzValue="0"></nz-option>
+              </nz-select>
+            </nz-form-control>          
+        </nz-form-item>
+      </div>
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true">
+           {{"orderv3.components.oit-form.general.special-document"|translate}}
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+            <nz-select
+              nzAllowClear
+              style="width:120px"
+              formControlName="isSpecialOfferDocument">
+              <nz-option
+                nzLabel="是"
+                nzValue="1"></nz-option>
+              <nz-option
+                nzLabel="否"
+                nzValue="0"></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="6" nzRequired [nzNoColon]="true">
+            {{"orderv3.components.oit-form.general.om-name" | translate}}
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+            <nz-input-group style="width: 100%" [nzAddOnAfter]="soluSelectPersonBtn">
+              <input type="text" #omName nz-input formControlName="omName"
+                [placeholder]="editCurr ? '点击右侧按钮选择人员' : ''" />
+            </nz-input-group>
+            <nz-form-explain *ngIf="oitInform.get('omEmail')?.dirty && oitInform.get('omEmail')?.errors"
+              style="color: red">
+              此选项必填字段
+            </nz-form-explain>
+            <ng-template #soluSelectPersonBtn>
+              <button nz-button nzType="primary" class="ml-md" [disabled]="!omDisabled"
+                (click)="onShowEmailModal(baseInfoFrom.getRawValue().orderModality)">{{"orderv3.components.oit-form.general.select"
+                | translate}}</button>
+            </ng-template>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="6" nzRequired [nzNoColon]="true">
+            {{"orderv3.components.oit-form.general.oit-date" | translate}}
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+            <shared-date-picker mode="month" formControlName="oitDate"></shared-date-picker>
+            <nz-form-explain *ngIf="oitInform.get('oitDate')?.dirty && oitInform.get('oitDate')?.errors"
+              style="color: red">
+              此选项必填字段
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="6" nzRequired [nzNoColon]="true">
+            {{"orderv3.components.oit-form.general.export-file" | translate}}
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+            <shared-upload-file [title]="'orderv3.components.oit-form.general.upload' | translate" [type]="null"
+              formControlName="exportControlFile" (ngModelChange)="onAddSupportFile()">
+            </shared-upload-file>
+            <nz-form-explain
+              *ngIf="oitInform.get('exportControlFile')?.dirty &&oitInform.get('exportControlFile')?.errors">
+              此选项必填字段
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzRequired]="oitInform.getRawValue().credentialFileRequired" [nzNoColon]="true">
+            {{"orderv3.components.oit-form.general.credential-file" | translate}}
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+            <shared-upload-file [title]="'orderv3.components.oit-form.general.upload' | translate" [type]="null"
+              formControlName="credentialFile" (ngModelChange)="onAddSupportFile()">
+            </shared-upload-file>
+            <nz-form-explain *ngIf="oitInform.get('credentialFile')?.dirty &&oitInform.get('credentialFile')?.errors">
+              此选项必填字段
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true">
+            {{"orderv3.components.oit-form.general.other-file" | translate}}
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+            <shared-upload-file [title]="'orderv3.components.oit-form.general.upload' | translate" [type]="null"
+              formControlName="otherFile" (ngModelChange)="onAddSupportFile()">
+            </shared-upload-file>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true">
+            {{"orderv3.components.oit-form.general.remark" | translate}}
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+            <textarea nz-input oninput="if(value.length>255)value=value.slice(0,255)" placeholder=""
+              nzPlacement="topLeft" (blur)="onblurRemark()" [nzAutosize]="{ minRows: 1, maxRows: 6 }" formControlName="remark"></textarea>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzXs="24" nzSm="24" nzMd="8"
+        *ngIf="needFileType == 'oit' && oitInform.getRawValue().specialApprovalSupporting == '1'">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true">
+            {{"orderv3.components.oit-form.general.oa-supplement" | translate}}
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+            <nz-radio-group formControlName="oaSupplementFile">
+              <label nz-radio nzValue="1">是</label>
+              <label nz-radio nzValue="0">否</label>
+            </nz-radio-group>
+            <nz-form-explain
+              *ngIf="oitInform.get('oaSupplementFile')?.dirty &&oitInform.get('oaSupplementFile')?.errors">
+              缺失文件是否已补齐
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+     
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true">
+            {{"orderv3.components.oit-form.general.oit-attachment" | translate}}
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+            <shared-upload-file [title]="'orderv3.components.oit-form.general.upload' | translate" [type]="null"
+              formControlName="oitInformationFile">
+            </shared-upload-file>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+    <div *ngIf="needFileTypeShowOff" nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true">
+            {{"orderv3.components.oit-form.general.oit-complete-remark" | translate}}
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+            <textarea nz-input oninput="if(value.length>255)value=value.slice(0,255)" placeholder=""
+              nzPlacement="topLeft" [nzAutosize]="{ minRows: 1, maxRows: 6 }" formControlName="oitEndSupplementRemark"></textarea>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div> 
+    <div *ngIf="needFileTypeShowOff" nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true">
+            {{"orderv3.components.oit-form.general.oit-complete-file" | translate}}
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+            <shared-upload-file [title]="'orderv3.components.oit-form.general.upload' | translate" [type]="null"
+              formControlName="oitEndSupplementFile">
+            </shared-upload-file>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+  </form>
+</app-form-section>
+<!-- <app-form-section [isFold]="baseInfoFrom.getRawValue().dealFormSalesModality == 'CC'" class="mtb1rem"
+  [title]="'orderv3.components.oit-form.financial.title' | translate"> -->
+  <app-form-section  class="mtb1rem"
+  [title]="'orderv3.components.oit-form.financial.title' | translate">
+  <form nz-form [formGroup]="financialInform" [nzNoColon]="true">
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true">
+            {{"orderv3.components.oit-form.financial.is-financial" | translate}}
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+            <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+              <nz-radio-group formControlName="financialScheme" (ngModelChange)="financialSchemeChange($event)">
+                <label nz-radio nzValue="1">是</label>
+                <label nz-radio nzValue="0">否</label>
+              </nz-radio-group>
+            </nz-form-control>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+    <div *ngIf="financialSchemeOff" nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="6" nzRequired [nzNoColon]="true">
+            {{"orderv3.components.oit-form.financial.fin-name" | translate}}
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+            <nz-select nzPlaceHolder="请选择" style="width:100%" formControlName="financialSchemeName"
+              (ngModelChange)="FinancialChange($event)">
+              <nz-option *ngFor="let item of service.financialLists" [nzValue]="item.code" [nzLabel]="item.label">
+              </nz-option>
+            </nz-select>
+            <nz-form-explain
+              *ngIf="financialInform.get('financialSchemeName')?.dirty &&financialInform.get('financialSchemeName')?.errors">
+              此选项必填字段
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="8" *ngIf="financialInform.get('financialSchemeName').value == 'OABC_OTHER'">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="6" nzRequired [nzNoColon]="true">
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+            <textarea nz-input oninput="if(value.length>255)value=value.slice(0,255)"
+              formControlName="financialSchemeOtherRemark"></textarea>
+            <nz-form-explain
+              *ngIf="financialInform.get('financialSchemeOtherRemark')?.dirty &&financialInform.get('financialSchemeOtherRemark')?.errors">
+              此选项必填字段
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+    <div *ngIf="financialSchemeOff" nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true">
+            {{"orderv3.components.oit-form.financial.lending-bank" | translate}}
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+            <input nz-input type="text" style="width:100%" oninput="if(value.length>255)value=value.slice(0,255)" maxlength="255" formControlName="lendingBank">
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true">
+            {{"orderv3.components.oit-form.financial.fin-remark" | translate}}
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+            <textarea nz-input oninput="if(value.length>255)value=value.slice(0,255)" placeholder=""
+              nzPlacement="topLeft" [nzAutosize]="{ minRows: 1, maxRows: 6 }"
+              formControlName="financialSchemeRemark"></textarea>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true">
+            {{"orderv3.components.oit-form.financial.fin-file" | translate}}
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+            <shared-upload-file [title]="" [type]="null" formControlName="oitFinancialSchemeFile">
+            </shared-upload-file>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+  </form>
+</app-form-section>
+<app-form-section class="mtb1rem" [title]="'orderv3.components.oit-form.debook.title' | translate" *ngIf="needFileType">
+  <form nz-form [formGroup]="deBookInform" [nzNoColon]="true">
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true">
+            {{"orderv3.components.oit-form.debook.debook" | translate}}
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+            <nz-radio-group formControlName="deBook" (ngModelChange)="deBookChange($event)">
+              <label nz-radio nzValue="1">是</label>
+              <label nz-radio nzValue="0">否</label>
+            </nz-radio-group>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzXs="24" nzSm="24" nzMd="8" *ngIf="deBookInform.getRawValue().deBook === '1'">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true" nzRequired>
+            {{"orderv3.components.oit-form.debook.debook-date" | translate}}
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+            <!--            <shared-date-picker mode="month" formControlName="deBookDate"></shared-date-picker>-->
+            <nz-month-picker formControlName="deBookDate">
+            </nz-month-picker>
+            <nz-form-explain *ngIf="deBookInform.get('deBookDate')?.dirty &&deBookInform.get('deBookDate')?.errors">
+              此选项必填字段
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="8" *ngIf="deBookInform.getRawValue().deBook === '1'">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true">
+            {{"orderv3.components.oit-form.debook.rebook" | translate}}
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+            <nz-radio-group formControlName="reBook" (ngModelChange)="reBookChange($event)">
+              <label nz-radio nzValue="1">是</label>
+              <label nz-radio nzValue="0">否</label>
+            </nz-radio-group>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzXs="24" nzSm="24" nzMd="8"
+        *ngIf="deBookInform.getRawValue().reBook === '1' && deBookInform.getRawValue().deBook === '1'">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true" nzRequired>
+            {{"orderv3.components.oit-form.debook.rebook-date" | translate}}
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+            <nz-month-picker formControlName="reBookDate" [nzDisabledDate]="disabledDate">
+            </nz-month-picker>
+            <nz-form-explain *ngIf="deBookInform.get('reBookDate')?.dirty &&deBookInform.get('reBookDate')?.errors">
+              此选项必填字段
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true">
+            {{"orderv3.components.oit-form.debook.cancel" | translate}}
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+            <nz-radio-group formControlName="cancel" (ngModelChange)="cancelChange($event)">
+              <label nz-radio nzValue="1">是</label>
+              <label nz-radio nzValue="0">否</label>
+            </nz-radio-group>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzXs="24" nzSm="24" nzMd="8" *ngIf="deBookInform.getRawValue().cancel == '1'">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true" nzRequired>
+            {{"orderv3.components.oit-form.debook.cancel-time" | translate}}
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+            <shared-date-picker formControlName="cancelTime"></shared-date-picker>
+            <nz-form-explain *ngIf="deBookInform.get('cancelTime')?.dirty &&deBookInform.get('cancelTime')?.errors">
+              此选项必填字段
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzXs="24" nzSm="24" nzMd="8" *ngIf="deBookInform.getRawValue().cancel == '1'">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true" nzRequired>
+            {{"orderv3.components.oit-form.debook.cancel-file" | translate}}
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="10">
+            <shared-upload-file [title]="" [type]="null" formControlName="cancelFile">
+            </shared-upload-file>
+            <nz-form-explain *ngIf="deBookInform.get('cancelFile')?.dirty &&deBookInform.get('cancelFile')?.errors">
+              此选项必填字段
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+  </form>
+</app-form-section>
+<app-form-section class="mtb1rem" [title]="'orderv3.components.oit-form.support.title' | translate">
+  <!--  <div *ngFor="let item of supportFileList" style="display: block">-->
+  <!--    <span style="float: left;color: #1DA1F2">{{ item.fileName }}</span>-->
+  <!--    <div *ngFor="let file of item.file" class="file-item">-->
+  <!--    <span class="file-name" [title]="file.fileName" (click)="onDownloadFile(file)">-->
+  <!--      {{ file.fileName }}-->
+  <!--    </span>-->
+  <!--      <span class="file-btn">-->
+  <!--      <i nz-icon nzType="download" nzTheme="outline" (click)="onDownloadFile(file)"></i>-->
+  <!--    </span>-->
+  <!--    </div>-->
+  <!--  </div>-->
+  <nz-collapse [nzBordered]="false">
+    <nz-collapse-panel *ngFor="let item of supportFileList" [nzHeader]="item.fileName" [nzActive]="true"
+      [nzShowArrow]="false">
+      <div *ngFor="let file of item.file" class="file-item">
+        <span class="file-name" [title]="file.fileName" (click)="onDownloadFile(file)">
+          {{ file.fileName? file.fileName : file.name}}
+          <i nz-icon nzType="download" nzTheme="outline" (click)="onDownloadFile(file)"></i>
+
+        </span>
+        <!--        <span class="file-btn">-->
+        <!--    </span>-->
+      </div>
+    </nz-collapse-panel>
+  </nz-collapse>
+  <!--  <div class="upload-file-list" *ngIf="supportFileList.length > 0">-->
+  <!--    <div *ngFor="let item of supportFileList" class="file-item">-->
+  <!--    <span class="file-name" [title]="item.fileName" (click)="onDownloadFile(item.file)">-->
+  <!--      {{ item.fileName }}-->
+  <!--    </span>-->
+  <!--      <span class="file-btn">-->
+  <!--      <i nz-icon nzType="download" nzTheme="outline" (click)="onDownloadFile(item.file)"></i>-->
+  <!--    </span>-->
+  <!--    </div>-->
+  <!--  </div>-->
+
+  <div>
+    <button nz-button nzType="primary" (click)="downloadZipFile()">
+      {{"orderv3.components.oit-form.support.download" | translate}}
+    </button>
+  </div>
+  <ng-container *ngIf="status=='ecos_oit_order_upload'">
+    <nz-alert
+      nzType="warning"
+      class="mt10"
+      nzMessage="提交之前,请在《合同概要表》tab仔细确认OIT Order 所关联的PreBook状态,以确保不会重复提交SO申请"></nz-alert>
+  </ng-container>
+</app-form-section>
+<order-select-user #selectMail (select)="onSelectOmEmail($event)"></order-select-user>

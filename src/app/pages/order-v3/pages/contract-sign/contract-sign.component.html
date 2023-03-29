@@ -1,0 +1,199 @@
+<app-apploading [load]="pageLoading"></app-apploading>
+<nz-card *ngIf="!signaturePageOff" class="title_warpper mtb1rem">
+  <app-approval-progress></app-approval-progress>
+</nz-card>
+<div class="tabs-box">
+    <app-tabs #tabs (select)="tabclick($event)">
+      <app-tab [title]="'orderv3.pages.contract-sign.contract-summary' | translate" id="contract-tab">
+        <div class="card-body">
+          <pre-base-info-from
+            #baseInfoFromChild
+            [formValue]="formValue"
+            [editPreTable]="false"
+            [editable]="false"
+            [isContract]="true"
+          >
+          </pre-base-info-from>
+          <pre-base-info-table #baseInfoTableChild [formValue]="formValue" [isContract]="true"></pre-base-info-table>
+        </div>
+      </app-tab>
+      <app-tab title="Order Summary" id="summary-tab">
+        <div class="card-body">
+          <ecos-ordersummary-info
+            [formValue]="formValue"
+            [bg]="baseInfoFromData.getRawValue().orderModality"
+            [editable]="false"
+            [editPreTable]="false"
+          ></ecos-ordersummary-info>
+          <pre-base-info-table
+            [formValue]="formValue"
+            [isContract]="true"
+            [isResultVerify]="true"
+          ></pre-base-info-table>
+          <app-oa-add-info
+            #oaAddInfoChild
+            [formValue]="formValue"
+          ></app-oa-add-info>
+        </div>
+      </app-tab>
+      <app-tab [title]="'orderv3.pages.contract-sign.sin' | translate" id="complete-tab">
+        <div class="card-body">
+          <ecos-contract-sign-info
+            [formValue]="formValue"
+            [flag]="flag"
+            [applySignatureBtn]="applySignatureBtn"
+            [approvalSigatureBtn]="approvalSigatureBtn"
+            [signaturePageOff]="signaturePageOff"
+          ></ecos-contract-sign-info>
+        </div>
+      </app-tab>
+      <app-tab [title]="'orderv3.pages.contract-sign.history' | translate" id="approval-record">
+        <div class="card-body">
+          <app-form-section [title]="'orderv3.pages.contract-examine.history'| translate">
+            <approval-history-oit [applyId]="applyId">
+            </approval-history-oit>
+            <app-form-section class="mtb1rem" [title]="'orderv3.pages.pre-order.history-child' | translate">
+              <shared-approval-history
+                [procInstId]="procInstId"></shared-approval-history>
+            </app-form-section>
+          </app-form-section>
+          <contract-remarks [formValue]="formValue" [remarkFrom]="remarkFromData"></contract-remarks>
+        </div>
+      </app-tab>
+      <app-tab *ngIf="!attachmentOff" [title]="'orderv3.pages.contract-sign.signature-history' | translate" id="approval-history">
+        <div class="card-body">
+          <app-form-section class="mtb1rem" [title]="'orderv3.pages.contract-examine.history'| translate">
+            <approval-history-signature [applyId]="applyId"></approval-history-signature>
+          </app-form-section>          
+          <contract-remarks [formValue]="formValue" [attachmentOff]="attachmentOff" [remarkFrom]="remarkFromsignatureData"></contract-remarks>
+        </div>
+      </app-tab>
+      <app-tab [title]="'orderv3.pages.contract-sign.change' | translate" *ngIf="changeItem&&attachmentOff" id="approve-change">
+        <div class="card-body">
+          <approve-change [formValue]="formValue"></approve-change>
+        </div>
+      </app-tab>
+    </app-tabs>
+    
+
+    <div *ngIf="flag === '0'" nz-row nzType="flex" class="fixed-btn-group" nzJustify="start" nzAlign="middle">
+      <div nz-col nzSpan="24">
+        <nz-form-item>
+          <nz-form-control [nzSm]="24" [nzXs]="24" style="text-align: center">
+            <button [disabled]="tabIndex==0" nz-button nzType="default" (click)="goPreStep()">
+              上一步
+            </button>
+            <button [disabled]="tabIndex==(tabList.length-1)" nz-button nzType="default" (click)="goNextStep()">
+              下一步
+            </button>
+            <button nz-button nzType="default" style="margin-right: 10px" (click)="handleCancel()">
+              {{"orderv3.pages.contract-sign.cancel" | translate}}
+            </button>          
+            <button nz-button nzType="primary" (click)="orderSubmit('apply_save')">
+              {{"orderv3.pages.contract-sign.save" | translate}}
+            </button>
+            <button nz-button nzType="primary" nz-popconfirm nzTitle="你确定要执行提交的操作?"
+              (nzOnConfirm)="orderSubmit('approved')">
+              {{"orderv3.pages.contract-sign.submit" | translate}}
+            </button>
+            <button nz-button nzType="primary" nz-popconfirm nzTitle="你确定要执行退回到合同概要表的操作?"
+              (nzOnConfirm)="orderSubmit('rejected')">
+              {{"orderv3.pages.contract-sign.reject" | translate}}
+            </button>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+    <div *ngIf="applySignatureBtn" nz-row nzType="flex" class="fixed-btn-group" nzJustify="start" nzAlign="middle">
+      <div nz-col nzSpan="24">
+        <nz-form-item>
+          <nz-form-control [nzSm]="24" [nzXs]="24" style="text-align: center">
+            <button class="wp-none"  [disabled]="tabIndex==0" nz-button nzType="default" (click)="goPreStep()">
+              上一步
+            </button>
+            <button class="wp-none"  [disabled]="tabIndex==(tabList.length-1)" nz-button nzType="default" (click)="goNextStep()">
+              下一步
+            </button>
+            <button nz-button nzType="default" style="margin-right: 10px" (click)="handleCancel()">
+              {{"orderv3.pages.contract-sign.cancel" | translate}}
+            </button>          
+            <button nz-button nzType="primary" (click)="applySignatureSubmit('save','2')">
+              {{"orderv3.pages.contract-sign.save" | translate}}
+            </button>
+            <button nz-button nzType="primary" nz-popconfirm nzTitle="你确定要执行提交的操作?"
+              (nzOnConfirm)="applySignatureSubmit('submit','2')">
+              {{"orderv3.pages.contract-sign.submit" | translate}}
+            </button>            
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+    <div *ngIf="approvalSigatureBtn" nz-row nzType="flex" class="fixed-btn-group" nzJustify="start" nzAlign="middle">
+      <div nz-col nzSpan="24">
+        <nz-form-item>
+          <nz-form-control [nzSm]="24" [nzXs]="24" style="text-align: center">
+            <button class="wp-none" [disabled]="tabIndex==0" nz-button nzType="default" (click)="goPreStep()">
+              上一步
+            </button>
+            <button class="wp-none" [disabled]="tabIndex==(tabList.length-1)" nz-button nzType="default" (click)="goNextStep()">
+              下一步
+            </button>
+            <button nz-button nzType="default" style="margin-right: 10px" (click)="handleCancel()">
+              {{"orderv3.pages.contract-sign.cancel" | translate}}
+            </button>          
+            <button nz-button nzType="primary" (click)="applySignatureSubmit('save','4')">
+              {{"orderv3.pages.contract-sign.save" | translate}}
+            </button>
+            <button nz-button nzType="primary" nz-popconfirm nzTitle="你确定要执行提交的操作?"
+              (nzOnConfirm)="applySignatureSubmit('submit','4')">
+              {{"orderv3.pages.contract-sign.submit" | translate}}
+            </button>  
+            <button nz-button nzType="primary" nz-popconfirm nzTitle="你确定要执行退回的操作?"
+              (nzOnConfirm)="applySignatureSubmit('submit','5',true)">
+              {{"orderv3.pages.contract-sign.back" | translate}}
+            </button> 
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+    <div *ngIf="confirmSigatureBtn" nz-row nzType="flex" class="fixed-btn-group" nzJustify="start" nzAlign="middle">
+      <div nz-col nzSpan="24">
+        <nz-form-item>
+          <nz-form-control [nzSm]="24" [nzXs]="24" style="text-align: center">
+            <button class="wp-none"  [disabled]="tabIndex==0" nz-button nzType="default" (click)="goPreStep()">
+              上一步
+            </button>
+            <button class="wp-none"  [disabled]="tabIndex==(tabList.length-1)" nz-button nzType="default" (click)="goNextStep()">
+              下一步
+            </button>
+            <button nz-button nzType="default" style="margin-right: 10px" (click)="handleCancel()">
+              {{"orderv3.pages.contract-sign.cancel" | translate}}
+            </button>   
+            <button *ngIf="zslSignSupplement==4" nz-button nzType="primary" nz-popconfirm nzTitle="你确定要执行签章完成的操作?"
+             (nzOnConfirm)="applySignatureSubmit('submit','1')">
+              {{"orderv3.pages.contract-sign.confirm" | translate}}
+            </button>
+            <button nz-button nzType="primary" nz-popconfirm nzTitle="你确定要执行重新发起签章的操作?"
+              (nzOnConfirm)="applySignatureSubmit('submit','2')">
+              {{"orderv3.pages.contract-sign.resend" | translate}}
+            </button>  
+            <button nz-button nzType="primary" nz-popconfirm nzTitle="你确定要执行取消签章申请的操作?"
+              (nzOnConfirm)="applySignatureSubmit('submit','1')">
+              {{"orderv3.pages.contract-sign.cancelApply" | translate}}
+            </button> 
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+    
+    <nz-modal [(nzVisible)]="isdealerDdpStatus" nzWidth="650px" nzTitle="提醒" (nzOnOk)="dealerDdpStatusOk()" (nzOnCancel)="dealerDdpStatusCancel()">      
+      <div >
+        经销商DDP有效期为{{dealerFromData.getRawValue().dealerDdpValidityDate}}日，当前已过有效期，确认是否提交
+      </div>    
+    </nz-modal>
+    <nz-modal [(nzVisible)]="isforeignTradeCorpDdpStatus" nzWidth="650px" nzTitle="提醒" (nzOnOk)="foreignTradeCorpDdpStatusOk()"  (nzOnCancel)="foreignTradeCorpDdpStatusCancels()">
+      <div>
+        外贸公司DDP有效期为{{foreignFromData.getRawValue().foreignTradeCorpDdpValidityDate}}日，当前已过有效期，确认是否提交
+      </div>
+    </nz-modal>
+</div>

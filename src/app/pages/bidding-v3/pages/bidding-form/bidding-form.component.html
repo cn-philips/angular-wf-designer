@@ -1,0 +1,70 @@
+<div class="page-container">
+  <app-apploading [load]="pageLoading"></app-apploading>
+  <app-progress-tabs (tabChange)="onClickTab($event)" [activeId]="activedTabId" #tabs>
+    <app-progress-tab id="basic-info">
+      <ng-template pTabIcon>
+        <ng-template pTabTitle>
+          <span class="tab-title"><strong>{{"biddingv3.pages.bidding-form.general" | translate }}</strong></span>
+        </ng-template>
+      </ng-template>
+      <ng-template pTabContent>
+        <div class="tab-wrapper">
+          <bidding-v3-basic-info
+            [biddingForm]="biddingForm"
+            [applyDetail]="originData"
+            (showImportOpp)="showImportOppDialog()"
+            (calcAuthRequired)="onCalcAuthorizationRequired()"
+            (calcPaymentTerms)="onCalcPaymentTerms()"
+          ></bidding-v3-basic-info>
+        </div>
+      </ng-template>
+    </app-progress-tab>
+
+    <app-progress-tab id="product-info">
+      <ng-template pTabTitle>
+        <span class="tab-title"><strong>{{"biddingv3.pages.bidding-form.product" | translate }}</strong></span>
+      </ng-template>
+      <ng-template pTabContent>
+        <div class="tab-wrapper">
+          <bidding-v3-product-info [agreementList]="agreementList" [biddingForm]="biddingForm"
+            (showImportOpp)="showImportOppDialog()" (agreementChange)="calcDistributorAgreement()">
+          </bidding-v3-product-info>
+        </div>
+      </ng-template>
+    </app-progress-tab>
+
+    <app-progress-tab id="supplement-info">
+      <ng-template pTabTitle>
+        <span class="tab-title"><strong>{{"biddingv3.pages.bidding-form.supplement" | translate }}</strong></span>
+      </ng-template>
+      <ng-template pTabContent>
+        <div class="tab-wrapper">
+          <bidding-v3-supplement-info [paymentTerms]="paymentTerms" [agreementList]="agreementList"
+            [biddingForm]="biddingForm" (calcPaymentTerms)="onCalcPaymentTerms()"
+            (dealerChange)="getAgreementList($event)"></bidding-v3-supplement-info>
+        </div>
+      </ng-template>
+    </app-progress-tab>
+  </app-progress-tabs>
+</div>
+
+<footer>
+  <button nz-button [disabled]="activeTabIndex === 0" (click)="goPreStep()">
+    {{"biddingv3.pages.bidding-form.pre-step" | translate }}
+  </button>
+  <button nz-button [disabled]="activeTabIndex === 2" (click)="goNextStep()">
+    {{"biddingv3.pages.bidding-form.next-step" | translate }}
+  </button>
+  <button nz-button (click)="onCancel()">{{"biddingv3.pages.bidding-form.return" | translate }}</button>
+  <button *ngIf="taskStatus === 'ecos_status_draft'" nz-button nzType="default" nz-popconfirm nzTitle="你确定要执行删除的操作?"
+    (nzOnConfirm)="deleteDraft()">{{"biddingv3.pages.bidding-form.delete" | translate}}
+  </button>
+  <button nz-button nz-popconfirm nzTitle="你确定要执行保存的操作?" (nzOnConfirm)="onSave()">
+    {{"biddingv3.pages.bidding-form.save" | translate }}
+  </button>
+  <button nz-button nzType="primary" nz-popconfirm nzTitle="你确定要执行提交的操作?" (nzOnConfirm)="onSubmit()">
+    {{"biddingv3.pages.bidding-form.submit" | translate }}
+  </button>
+</footer>
+
+<bidding-v3-import-opp #importOpp (select)="onSelectOpp($event)"></bidding-v3-import-opp>

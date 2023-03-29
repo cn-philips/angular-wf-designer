@@ -1,0 +1,16 @@
+.ant-message-notice-content {
+  text-align: left;
+  font-size: 18px;
+  font-weight: bold;
+  .ant-message-custom-content{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    i[nz-icon] {
+      & > svg {
+        height: 25px;
+        width: 25px;
+      }
+    }
+  }
+}

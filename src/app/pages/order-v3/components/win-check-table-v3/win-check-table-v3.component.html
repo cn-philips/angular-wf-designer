@@ -1,0 +1,135 @@
+<nz-table #columnTable nzBordered [nzData]="bidData" [nzLoading]="tableLoad"
+  [nzScroll]="{ x: dataBase.businessModel=='DISTRIBUTOR'?'4560px':'4160px',y:'500px' }"
+  [nzFrontPagination]="false" class="wintable">
+  <thead>
+    <tr>
+      <th nzWidth="100px" nzLeft="0px">{{"orderv3.components.win-check-table.order" | translate}}</th>
+      <th nzWidth="140px" nzLeft="100px">{{"orderv3.components.win-check-table.opportunity" | translate}}</th>
+      <th nzWidth="180px" nzLeft="240px">{{"orderv3.components.win-check-table.market-bundle" | translate}}</th>
+      <th nzWidth="100px">{{"orderv3.components.win-check-table.qty" | translate}}</th>
+      <!-- <th nzWidth="350px">产品</th> -->
+      <th nzWidth="850px">{{"orderv3.components.win-check-table.result" | translate}}</th>
+
+      <th nzWidth="250px">{{"orderv3.components.win-check-table.reason" | translate}}</th>
+      <th nzWidth="120px">{{"orderv3.components.win-check-table.simulation-id" | translate}}</th>
+      <th nzWidth="200px">{{"orderv3.components.win-check-table.market-bundle-id" | translate}}</th>
+      <th nzWidth="200px">{{"orderv3.components.win-check-table.customer-oit" | translate}}</th>
+      <th nzWidth="200px">{{"orderv3.components.win-check-table.customer-win" | translate}}</th>
+      <th *ngIf="dataBase.businessModel=='DISTRIBUTOR'" nzWidth="200px">
+        {{"orderv3.components.win-check-table.distributor-oit" | translate}}
+      </th>
+      <th *ngIf="dataBase.businessModel=='DISTRIBUTOR'" nzWidth="200px">
+        {{"orderv3.components.win-check-table.distributor-win" | translate}}
+      </th>
+      <th nzWidth="220px">{{"orderv3.components.win-check-table.oit-person" | translate}}</th>
+      <th nzWidth="220px">{{"orderv3.components.win-check-table.win-person" | translate}}</th>
+      <th nzWidth="220px">{{"orderv3.components.win-check-table.tender-company" | translate}}</th>
+      <th nzWidth="220px">{{"orderv3.components.win-check-table.bidding-name" | translate}}</th>
+      <th nzWidth="200px">{{"orderv3.components.win-check-table.tender-no" | translate}}</th>
+      <th nzWidth="200px">{{"orderv3.components.win-check-table.bidding-no" | translate}}</th>
+      <th nzWidth="200px" *ngIf="dataBase.sampleAuditFlag==1">
+        {{"orderv3.components.win-check-table.estim-price" | translate}}
+      </th>
+      <th nzWidth="200px" *ngIf="dataBase.sampleAuditFlag==1">
+        {{"orderv3.components.win-check-table.award-price" | translate}}
+      </th>
+      <th nzWidth="150px" nzRight="0px">{{"orderv3.components.win-check-table.check-result" | translate}}</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let data of columnTable.data; index as i">
+      <td nzWidth="100px" nzLeft="0px" style="word-break: break-all;">
+        <div class="oppt">{{ data.modelNumber}}</div>
+      </td>
+      <td nzWidth="140px" nzLeft="100px" style="word-break: break-all;">
+        <div class="oppt"> {{ data.opportunityId }}</div>
+      </td>
+      <td nzWidth="180px" nzLeft="240px" style="word-break: break-all;">
+        <div class="oppt">{{ data.marketBundleName }}</div>
+      </td>
+      <td nzWidth="100px" style="word-break:break-all;text-align:left;">
+        <div> {{ data.number}}</div>
+      </td>
+      <td nzWidth="850px">
+        <nz-radio-group [(ngModel)]="data.select" (ngModelChange)="modelChang(i)">
+          <div class="mkbox">
+            <div *ngFor="let item of data.searchResult; index as j;" style="display:flex;">
+              <div style="flex: 2;display: flex;align-items: center;justify-content: flex-start;">
+                <label [nzDisabled]="item.isDisable" nz-radio [ngStyle]="style" [nzValue]="item.id">
+                  <div (click)="gotoWin(item)" nz-tooltip [nzTitle]="item.title" class="win-check-link"
+                    [ngClass]="item.useStatus=='0'?'down':'grey'">
+                    <span class="name">{{ item.marketBundleName}} {{item.number}}台
+                      中标价格:{{item.price!=null&&item.price!=''&&item.price!='0.00'?item.price:'N/A'}}</span>
+                    <span class="usr">{{item.useStatus=='0'?'(未使用)':"(已使用)"}} Bidding Request Links 投标申请表链接</span>
+                    <i class="check" *ngIf="item.temUser==true">(已选中)</i>
+                  </div>
+                </label>
+              </div>
+              <div *ngIf="(item.id==data.select||item.temUser)&&(item.useStatus=='0')"
+                style="flex: 1;display: flex;align-items: center;justify-content: center">
+                <button nz-button nzSize="small" nzType="primary"
+                  (click)="selectClick(i,j)">{{item.temUser?'取消此项进单':'选择此项进单'}}</button>
+              </div>
+            </div>
+          </div>
+        </nz-radio-group>
+      </td>
+
+      <td nzWidth="250px">
+        <!-- {{ data.checkResultReasons }} -->
+        <ng-container *ngIf="data.checkResultReasons&&data.checkResultReasons.length>0">
+          <div *ngFor="let item of data.checkResultReasons; index as j;">
+            {{j+1}}、{{item}}
+          </div>
+        </ng-container>
+      </td>
+      <td nzWidth="120px">
+        <div class="oppt" style="word-break: break-all;">{{ data.simulationId}}</div>
+      </td>
+      <td nzWidth="200px">{{ data.cpMarketBundleId}}</td>
+      <td nzWidth="200px">
+        <div class="oppt">{{data.orderByCustomerName}}</div>
+      </td>
+      <td nzWidth="200px" style="word-break: break-all;">
+        <div class="oppt"> {{data.winningByCustomerName}}</div>
+      </td>
+      <td nzWidth="200px" style="word-break: break-all;"
+        *ngIf="dataBase.businessModel=='DISTRIBUTOR'">
+        <div class="oppt">{{ data.distributor}}</div>
+      </td>
+      <td nzWidth="200px" style="word-break: break-all;"
+        *ngIf="dataBase.businessModel=='DISTRIBUTOR'">
+        <div class="oppt"> {{ data.agreementAgenName}}</div>
+      </td>
+      <td nzWidth="220px" style="word-break: break-all;">
+        <div class="oppt">{{ data.appPerson }}</div>
+      </td>
+      <td nzWidth="220px" style="word-break: break-all;">
+        <div class="oppt">{{ data.winPerson }}</div>
+      </td>
+      <td nzWidth="220px" style="word-break: break-all;">
+        <div class="oppt">{{ data.tenderingCompany }}</div>
+      </td>
+      <td nzWidth="220px">
+        <div class="oppt"> {{ data.biddingName }}</div>
+      </td>
+      <td nzWidth="200px" style="word-break: break-all;">
+        <div class="oppt">{{ data.tenderNo}}</div>
+      </td>
+      <td nzWidth="200px">
+        <div class="oppt"> {{ data.biddingNo }}</div>
+      </td>
+      <td nzWidth="200px" [attr.rowspan]="data.rowspan" *ngIf="data.showCheak&&dataBase.sampleAuditFlag==1">
+        <div class="oppt">{{data.estimBiddingPrice}}{{data.invoiceInformation}}</div>
+      </td>
+      <td nzWidth="200px" [attr.rowspan]="data.rowspan" *ngIf="data.showCheak&&dataBase.sampleAuditFlag==1">
+        <div class="oppt">{{data.biddingAwardPrice}}{{data.biddingAwardCurrency}}</div>
+      </td>
+      <td nzWidth="150px" nzRight="0px">
+        <div *ngIf="data.checkResult!==''" [ngClass]="data.checkResult?'green':'red'">
+          {{ data.checkResult?"成功":"失败" }}
+        </div>
+      </td>
+    </tr>
+  </tbody>
+</nz-table>

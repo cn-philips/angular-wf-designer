@@ -1,0 +1,17 @@
+@import "styles/media_query.scss";
+.approval-dialog-content {
+  display: flex;
+  min-height: 250px;
+
+  & > app-approval-card {
+    margin: 10px;
+    // flex: 1;
+    flex-basis: 50%;
+  }
+
+  @media screen and (max-width: $screen-md-max) {
+    & > app-approval-card {
+      margin: 5px;
+    }
+  }
+}

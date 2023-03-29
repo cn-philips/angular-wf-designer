@@ -1,0 +1,99 @@
+@import "styles/media_query.scss";
+.center {
+  text-align: center;
+}
+.input-group-append {
+  height: 37px;
+}
+.largery {
+  color: #999 !important;
+  margin-top: 1px;
+  font-size: 12px;
+  line-height: 18px;
+  white-space: nowrap;
+  text-align: left;
+
+  /* 手机端适配：largery控件手机端超长横向滚动 */
+  @media screen and (max-width: $screen-xs-max) {
+    overflow-x: auto;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE 10+ */
+    &::-webkit-scrollbar {
+      display: none; /* Chrome Safari */
+    }
+  }
+}
+/deep/.ant-form-item {
+  margin-bottom: 6px;
+}
+
+.pl30 {
+  padding-left: 30px;
+}
+
+.heads {
+  color: red;
+}
+.wid100 {
+  width: 100%;
+}
+.form {
+  border: 1px solid #ddd;
+  padding: 20px 0px;
+  position: relative;
+  .title {
+    position: absolute;
+    padding: 3px 6px;
+    top: -16px;
+    left: 24px;
+    background: #fff;
+    font-size: 16px;
+    color: #333;
+    font-weight: 600;
+  }
+}
+.won {
+  font-weight: bold;
+}
+.overflow {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.tabbox {
+  min-height: 200px;
+  margin-bottom: 20px;
+}
+
+.title-head {
+  display: flex;
+  margin-bottom: 10px;
+  padding-left: 22px;
+  .ml20 {
+    margin-left: 20px;
+  }
+}
+.tr {
+  text-align: right;
+}
+.pr {
+  position: relative;
+  .cancel,
+  .submit,
+  .save {
+    position: absolute;
+    right: 10px;
+    top: 0px;
+    z-index: 999;
+  }
+  .cancel {
+    right: 200px;
+  }
+  .submit {
+    right: 10px;
+  }
+  .save {
+    right: 153px;
+  }
+}
+@import "theme/common/dashboard.scss";

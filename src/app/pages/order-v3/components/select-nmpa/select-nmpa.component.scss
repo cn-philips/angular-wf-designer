@@ -1,0 +1,6 @@
+:host /deep/{
+  :root .ant-table-fixed-header .ant-table-scroll .ant-table-header {
+    overflow: auto; 
+    margin-bottom:0px !important; 
+  }
+}

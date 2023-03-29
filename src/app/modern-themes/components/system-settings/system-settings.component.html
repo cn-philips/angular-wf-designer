@@ -1,0 +1,50 @@
+<form nz-form [nzLayout]="'horizontal'" [nzNoColon]="true">
+  <div style="margin: 10px 0" nz-row>
+    <div nz-col nzSpan="12">
+      <nz-form-item>
+        <nz-form-label [nzSpan]="10">{{
+          "systemStyle" | translate
+        }}</nz-form-label>
+        <nz-form-control [nzSpan]="14">
+          <nz-select
+            style="width: 240px"
+            [ngModelOptions]="{ standalone: true }"
+            [(ngModel)]="currentUIMode"
+            [nzPlaceHolder]="'systemStyle' | translate"
+            (ngModelChange)="doChangeUIStyle()"
+          >
+            <nz-option
+              *ngFor="let uiMode of UI"
+              [nzValue]="uiMode.value"
+              [nzLabel]="uiMode.label"
+            ></nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+  <div nz-row>
+    <div nz-col nzSpan="12">
+      <nz-form-item>
+        <nz-form-label [nzSpan]="10">{{
+          "language" | translate
+        }}</nz-form-label>
+        <nz-form-control [nzSpan]="14">
+          <nz-select
+            style="width: 240px"
+            [(ngModel)]="currentLanguage"
+            [nzPlaceHolder]="'language' | translate"
+            [ngModelOptions]="{ standalone: true }"
+            (ngModelChange)="doChangeLanguage()"
+          >
+            <nz-option
+              *ngFor="let language of locals"
+              [nzValue]="language.value"
+              [nzLabel]="language.label"
+            ></nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+</form>

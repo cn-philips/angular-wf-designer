@@ -1,0 +1,55 @@
+<nz-modal
+  [nzWidth]="'1400px'"
+  [(nzVisible)]="show"
+  [nzTitle]="
+    'system-settings.message-management.carousel.crop-panel.title' | translate
+  "
+  [nzFooter]="modalFooter"
+>
+  <div class="crop-panel">
+    <div class="crop-panel-wrapper">
+      <div>
+        <div>
+          {{
+            "system-settings.message-management.carousel.crop-panel.preview"
+              | translate
+          }}
+        </div>
+        <div class="crop-panel-previewer">
+          <img [src]="croppedImage" />
+        </div>
+      </div>
+      <div>
+        <div>
+          {{
+            "system-settings.message-management.carousel.crop-panel.crop"
+              | translate
+          }}
+        </div>
+        <div class="crop-panel-cropper">
+          <image-cropper
+            [imageChangedEvent]="imageChangedEvent"
+            [maintainAspectRatio]="true"
+            [aspectRatio]="4 / 1"
+            (imageCropped)="imageCropped($event)"
+            (cropperReady)="cropperReady()"
+            (loadImageFailed)="loadImageFailed()"
+            [imageBase64]="imageUrl"
+            #cropper
+          ></image-cropper>
+        </div>
+      </div>
+    </div>
+    <div class="crop-panel-image-store">
+      <app-image-storage (replace)="handleReplace($event)"></app-image-storage>
+    </div>
+  </div>
+  <ng-template #modalFooter>
+    <button nz-button nzType="default" (click)="hideDialog()">
+      {{ "common.cancel" | translate }}
+    </button>
+    <button nz-button nzType="primary" (click)="handleCrop()">
+      {{ "common.confirm" | translate }}
+    </button>
+  </ng-template>
+</nz-modal>

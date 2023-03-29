@@ -1,0 +1,1017 @@
+import { Component, Input, OnInit, ViewChild } from "@angular/core";
+import { OrderV3Service } from "../../order-v3.service";
+import { Router, ActivatedRoute } from '@angular/router';
+import { stringIndexof, delcommafy } from "@core/util/tools"
+import {
+  FormBuilder,
+  FormGroup,
+  FormControl,
+  FormArray,
+  Validators,
+} from "@angular/forms";
+import { NzMessageService } from "ng-zorro-antd";
+import * as moment from 'moment'
+import { isadopt, standardTime } from "@core/util/tools"
+import { Location } from '@angular/common';
+import { BreadcrumbService } from "@app/modern-themes/services/breadcrumb.service";
+import { ProcessTaskStatusPipe } from "@app/shared/pipes/process-task-status.pipe"
+import { RouterExtendService } from "@app/modern-themes/services/router-extend.service";
+@Component({
+  selector: "contract-examine",
+  templateUrl: "./contract-examine.component.html",
+  styleUrls: ["./contract-examine.component.scss"],
+})
+export class ContractExamineComponent implements OnInit {
+  constructor(private serveice: OrderV3Service,
+    private ProcessTaskStatusPipe: ProcessTaskStatusPipe,
+    private breadCrumbService: BreadcrumbService,
+    private location: Location,
+    private activatedRouter: ActivatedRoute,
+    private fb: FormBuilder,
+    private message: NzMessageService,
+    private router: Router,
+    private routerExtendService: RouterExtendService) {
+
+  }
+  public activedId: any = "pending-tab";
+  public tabIndex: any = 0;
+  public editBase: any = false; //基础信息是否编辑
+  public editPreTable: any = false; //基础信息的产品是否可以编辑
+  public completionInfo: any //oit完成
+  public contractSignInfo: any  //合同签署
+  public orderSummaryInfo: any //order summary层级
+  public applyId;
+  public status;
+  public flag;
+  public processInstanceTaskId;
+  public pageLoading: boolean = false;
+  public procInstId;
+  public tabList = ['pending-tab', 'approval-record'];
+  public changeItem: any = false;
+  public isContract = true;
+
+  priceData = {}
+  remarkFrom = {
+    comments: [{ value: null, disabled: false }, [Validators.required]],
+    attachmentIds: [],
+    paymentProvisionSecondaryApproval: [false]
+  }
+  productModelInfo = {
+    orderProductModel: [{ value: null, disabled: !this.editBase }],
+  }
+  baseInfoFrom = {
+    dealFormId: [{ value: null, disabled: true }, [Validators.required]],
+    contractCancelDisabled: [{ value: true, disabled: true }],
+    referenceId: [{ value: null, disabled: true }],
+    dealFormModality: [{ value: null, disabled: true }, [Validators.required]],//dealFormModality
+    businessModel: [{ value: null, disabled: true }, [Validators.required]], //业务模式
+    oitMode: [{ value: null, disabled: !this.editBase }, [Validators.required]], //进单模式
+    // prebookApply: [{ value: "0", disabled: !this.editBase }, [Validators.required]], //关联prebook
+    dealFormSales: [{ value: null, disabled: true }], //dealfrom创建人
+    dealFormSalesName: [{ value: null, disabled: true }],//创建人姓名
+    dealFormSalesModality: [{ value: null, disabled: true }], //dealFormSalesModality创建人
+    dealFormSalesBigArea: [{ value: null, disabled: true }, [Validators.required]],//大区
+    dealFormSalesSmallArea: [{ value: null, disabled: true }, [Validators.required]], //小区
+    dealFormSalesProvince: [{ value: null, disabled: !this.editBase }], //省份
+    oldSalesProvince: [{ value: null, disabled: true }],//旧的省份
+    dealFormSalesCity: [{ value: null, disabled: !this.editBase }],//城市
+    dealFormSalesTeam: [{ value: null, disabled: true }],//deal From team
+    dealFormSalesCycleGroup: [{ value: null, disabled: true }], //Cycle Group
+    approvalAreaConfiguration: [{ value: null, disabled: !this.editBase }, [Validators.required]],//审批区域配置
+
+    biddingType: [{ value: null, disabled: !this.editBase }],//招标类型
+    dealFormSalesPerformanceProvince: [{ value: null, disabled: !this.editBase }], //业绩省份
+    centralizedPurchasing: [{ value: '0', disabled: !this.editBase }, []],//是否集采项目
+    biddingCompany: [{ value: null, disabled: !this.editBase }, [Validators.required]], //投标公司
+    tenderNum: [{ value: null, disabled: !this.editBase }, [Validators.required]], //招标编号
+    requiredArrivalDate: [{ value: null, disabled: true }], //要求到货日期
+    estimateInstallationDate: [{ value: null, disabled: true }], //预计安装日期
+
+    ka: [{ value: null, disabled: !this.editBase }],
+    id: [{ value: null, disabled: true }],
+
+    orderChapterTradeInNetCny: [{ value: null, disabled: true }],
+    orderChapterTradeInCny: [{ value: null, disabled: true }],
+    orderChapterTradeInUsd: [{ value: null, disabled: true }],
+    orderChapterRebateNetCny: [{ value: null, disabled: true }],
+    orderChapterRebateCny: [{ value: null, disabled: true }],
+    orderChapterRebateUsd: [{ value: null, disabled: true }],
+    estimBiddingPrice: [], //预计投标价
+    biddingAwardPrice: [{ value: null, disabled: true }],//中标价格
+    prebookReferenceId: [{ value: null, disabled: true }, []], //prebook申请号
+    prebookApplyId: [{ value: null, disabled: true }],//prebook产品id
+    prebookMainId: [],//prebook mainId,
+    prebookOrderId: [{ value: null, disabled: true }], //prebookorderid
+    prebookStatus: [{ value: null, disabled: true }], //prebook状态
+    prebookSo: [{ value: null, disabled: true }],//prebookSo
+    prebookQuantity: [{ value: null, disabled: true }], //prebook数量
+
+    orderModality: [{ value: null, disabled: true }],
+    orderApprovalAreaConfiguration: [{ value: null, disabled: true }],//order 审批区域配置
+    orderSalesTeam: [{ value: null, disabled: true }], //team
+    orderSalesBigArea: [{ value: null, disabled: true }], //大区
+    orderSalesSmallArea: [{ value: null, disabled: true }], //小区
+    orderSalesModality: [{ value: null, disabled: true }],  //modality
+    orderSalesProvince: [{ value: null, disabled: true }], //省
+    orderSalesPerformanceProvince: [{ value: null, disabled: true }], //业绩省份
+    orderSalesCity: [{ value: null, disabled: true }], //市
+    orderSales: [{ value: null, disabled: true }],
+    orderSalesName: [{ value: null, disabled: true }],
+    orderSalesCycleGroup: [{ value: null, disabled: true }], //CycleGroup
+    biddingApplyList: [[], []],
+    referenceIdList: [[], []],
+
+    solutionSalesEmail: [{ value: null, disabled: true }, []],//solusionSale
+    solutionSalesName: [{ value: null, disabled: true }], //solution名称
+    solutionSalesNameModel: [{ value: null, disabled: true }],
+
+    actualSalesEmail: [{ value: null, disabled: true }], //实际销售
+    actualSalesName: [{ value: null, disabled: true }],//实际销售
+    actualSalesNameModel: [{ value: null, disabled: true }],//实际销售名字
+
+    contractCancelApplyId: [{ value: null, disabled: true }], //contractCancelApplyId
+    contractCancelReferenceId: [{ value: null, disabled: true }], //原合同概要表id
+    isRequired: [{ value: false, disabled: true }],
+    optionDisabled: [{ value: true, disabled: true }],
+    currencySystem: [{ value: true, disabled: true }],
+    orderSalesSapCode: [{ value: null, disabled: true }], //orderSalesSapCode
+    dealIsDisabled: [{ value: false, disabled: true }],//是否显示经销商的按钮
+    profitNetRate: [{ value: null, disabled: true }],//经销商净利润
+    profitGrossRate: [{ value: null, disabled: true }],//经销商毛利率
+    profitGross: [{ value: null, disabled: true }],//经销商毛利润
+    dealerProfit: [{ value: null, disabled: true }],//经销商利润
+  };
+  dealerFrom = {
+    dealerName: [{ value: null, disabled: true }, [Validators.required]], //经销商名称
+    dealerSapCode: [{ value: null, disabled: true },],//经销商sapcode
+    dealerCode: [{ value: null, disabled: true }],//经销商dealerCode
+    dealerDdpStatus: [{ value: null, disabled: true }], //经销商Status
+    dealerDdpValidityDate: [{ value: null, disabled: true }],//经销商ddp有效日期
+    dealerContact: [{ value: null, disabled: !this.editBase }, [Validators.required]],//经销商联系人
+    dealerPhone: [{ value: null, disabled: !this.editBase }, [Validators.required]],//经销商电话
+    dealerEmail: [{ value: null, disabled: !this.editBase }, [Validators.required]],//经销商邮箱
+    dealerAddress: [{ value: null, disabled: !this.editBase }, [Validators.required]],//经销商地址
+    dealerTaxNum: [{ value: null, disabled: !this.editBase }, [Validators.required]],//经销商纳税号
+    purchaseOrderSignatory: [{ value: null, disabled: !this.editBase }, [Validators.required]], //采购订单签署人
+    purchaseOrderSignatoryPosition: [{ value: null, disabled: !this.editBase }, [Validators.required]],//采购订单签署人职务
+  }
+  accountFrom = {
+    accountName: [{ value: null, disabled: !this.editBase }, [Validators.required]],//开户行名称
+    bankName: [{ value: null, disabled: !this.editBase }, [Validators.required]],//开户行
+    accountNo: [{ value: null, disabled: !this.editBase }, [Validators.required]],//账号
+    registrationAddress: [{ value: null, disabled: !this.editBase }, [Validators.required]],//注册地址
+    accountPhoneFax: [{ value: null, disabled: !this.editBase }],//电话/传真
+    recipient: [{ value: null, disabled: !this.editBase }],//收件人
+    recipientPhone: [{ value: null, disabled: !this.editBase }],//收件电话
+    taxNum: [{ value: null, disabled: !this.editBase }, [Validators.required]],//税号
+    invoicesDeliverAddress: [{ value: null, disabled: !this.editBase }, [Validators.required]], //发票邮寄地址
+  }
+  contractBuyerFrom = {
+    contractBuyer: [{ value: null, disabled: !this.editBase }, [Validators.required]],//合同买方
+    contractBuyerSapCode: [{ value: null, disabled: !this.editBase }, [Validators.required]], //合同买方spcode
+    contractBuyerTaxNum: [{ value: null, disabled: !this.editBase }, [Validators.required]],//合同买房税号
+    contractBuyerAddress: [{ value: null, disabled: !this.editBase }, [Validators.required]],//合同买方地址
+    contractBuyerPhone: [{ value: null, disabled: !this.editBase }, [Validators.required]], //合同买方电话
+    contractBuyerContact: [{ value: null, disabled: !this.editBase }, [Validators.required]],//合同买方联系人
+    contractBuyerEmail: [{ value: null, disabled: !this.editBase }, [Validators.required]],//合同买方邮箱
+    contractBuyerSignatory: [{ value: null, disabled: !this.editBase }, [Validators.required]],//合同签署人
+    contractBuyerSignatoryPosition: [{ value: null, disabled: !this.editBase }, [Validators.required]],//合同签署人职务
+  }
+  foreignFrom = {
+    foreignTradeCorpSameDealer: [{ value: null, disabled: !this.editBase }],//外贸公司与经销商相同
+    foreignTradeCorpSameRelatedDealer: [{ value: null, disabled: !this.editBase }],//外贸公司与经销商关联公司相同
+    foreignTradeCorpSapCode: [{ value: null, disabled: !this.editBase },],//外贸公司SAP Code
+    foreignTradeCorpDdpStatus: [{ value: null, disabled: true }, [Validators.required]],//外贸公司DDP Status
+    foreignTradeCorpDdpValidityDate: [{ value: null, disabled: true }, [Validators.required]],//DDP Status有效日期
+    foreignTradeCorpTaxNum: [{ value: null, disabled: !this.editBase }, [Validators.required]],//外贸公司税号
+    foreignTradeCorpAddress: [{ value: null, disabled: !this.editBase }, [Validators.required]], //外贸公司地址
+    companyNotInIePool: [{ value: null, disabled: true }],//进出口公司选择 不在IE pool
+    foreignTradeCorpName: [{ value: null, disabled: !this.editBase }, [Validators.required]], //外贸公司
+    foreignTradeCorpPhone: [{ value: null, disabled: !this.editBase }, [Validators.required]],//外贸公司电话
+    foreignTradeCorpContact: [{ value: null, disabled: !this.editBase }, [Validators.required]],//外贸公司联系人
+    foreignTradeCorpEmail: [{ value: null, disabled: !this.editBase }, [Validators.required]],//外贸公司邮箱
+    importAgreementSignName: [{ value: null, disabled: !this.editBase }, [Validators.required]],//进口协议签署人
+    importAgreementSignPosition: [{ value: null, disabled: !this.editBase }, [Validators.required]], //进口协议签署人职务
+  }
+  endUserFrom = {
+    endUser: [{ value: null, disabled: true }, []],//最终终用户
+    endUserId: [{ value: null, disabled: true }, []],//最终用户编号
+    endUserSapCode: [{ value: null, disabled: true }, []],//最终用户SAP Code
+    endUserTaxNum: [{ value: null, disabled: true }],//最终用户税号
+    hospitalType: [{ value: null, disabled: true }],//医院性质
+    segment: [{ value: null, disabled: true }],//segment
+    endUserActuallyDeliveryAddress: [{ value: null, disabled: !this.editBase }], //最终用户实际发货地址
+    endUserAddress: [{ value: null, disabled: !this.editBase }],//最终用户地址
+    endUserPhone: [{ value: null, disabled: !this.editBase }, [Validators.required]],//最终用户电话
+    endUserEmail: [{ value: null, disabled: !this.editBase }, [Validators.required]],//最终用户邮箱
+    endUserContact: [{ value: null, disabled: !this.editBase }, [Validators.required]],//最终用户联系人
+    usHta: [{ value: null, disabled: true }], //是否HTA US
+  }
+  priceApproval = {
+    currencySystem: [{ value: null, disabled: true }], //币制    
+    financialSolution: [{ value: '0', disabled: true }],//是否使用金融方案
+    lendingBankCompany: [{ value: null, disabled: true }],//贷款行/融资公司名称
+    financialSolutionName: [{ value: null, disabled: true }],//金融方案
+    financialSolutionCny: [{ value: null, disabled: true }],//金融方案金额含税
+    financialSolutionCnyNet: [{ value: null, disabled: true }], //金融方案不含税
+    financialSolutionUsd: [{ value: null, disabled: true }],//金融方案美元
+    tradeInTotal: [{ value: null, disabled: true }],//tradeInTotal总金额
+    rebateTotal: [{ value: null, disabled: true }], //Rebate总额
+    sampleCheck: [{ value: '0', disabled: true }, [Validators.required]], //是否抽样审核
+    vatRate: [{ value: null, disabled: true }], //税率
+    dealPriceCny: [{ value: null, disabled: true }], //dealForm总价含税价
+    dealPriceCnyNet: [{ value: null, disabled: true }],//dealForm总价不含税价
+    dealPriceUsd: [{ value: null, disabled: true }], //dealForm总价美元
+    totalContractPrice: [{ value: null, disabled: true }], //进单单位合同价
+    paymentCny: [{ value: null, disabled: true }], //其它付款方式不含税费用
+    paymentNetCny: [{ value: null, disabled: true }],//其它付款方式含税费用
+    paymentUsd: [{ value: null, disabled: true }],//其它付款方式美元费用
+    creditCny: [{ value: null, disabled: true }], //远期信用证利息含税价
+    creditCnyNet: [{ value: null, disabled: true }],//远期信用证利息不含税价
+    creditUsd: [{ value: null, disabled: true }],//远期信用证利息美元
+    sofonFile: [[], []], //sofonFile
+  }
+
+  baseInfoTable = {
+    bidWinningFile: [[], []], //中标通知书/最终用户合同
+    requestLetter: [[], []], //要货函/场地报告
+    solutionSupportReport: [[], []],//项目解决方案售前支持报告
+    biddingFile: [[], []],//招标文件
+    tenderFile: [[], []],//投标文件
+    endUserContract: [[], []],//最终用户合同
+    projectAnalysisTable: [[], []], //项目分析表模板
+    paymentProvision: [{ value: null, disabled: !this.editBase }],//付款条款
+    paymentProvisionSecondaryApproval: [{ value: null, disabled: !this.editBase }], //付款条款二级
+    paymentProvisionFile: [[]],//付款条款文件
+    paymentProvisionRemarks: [[]],//付款条款备注
+
+    qualityGuarantee: [{ value: null, disabled: !this.editBase }], //质量保函
+    qualityGuaranteeRemarks: [{ value: null, disabled: !this.editBase }], //质量保函备注
+    qualityGuaranteeFile: [[]], //质量保函文件
+
+    performanceBond: [{ value: null, disabled: !this.editBase }], //履约保函
+    performanceBondFile: [[]],//履约保函文件
+    performanceBondRemarks: [[]],//履约保函备注
+    afterSalePrice: [{ value: null, disabled: !this.editBase }],  //是否有售后限价
+    afterSalePriceFile: [[]],//是否有售后限价文件
+    afterSalePriceRemarks: [{ value: null, disabled: !this.editBase }],//是否有售后限价备注
+    shipmentDelivery: [{ value: null, disabled: !this.editBase }],  //装运及交货
+    shipmentDeliveryFile: [[]], //装运及交货附件
+    shipmentDeliveryRemarks: [{ value: null, disabled: !this.editBase }], //装运及交货备注
+    installationWarranty: [{ value: null, disabled: !this.editBase }],//安装及保修
+    installationWarrantyRemarks: [{ value: null, disabled: !this.editBase }],//安装及保修备注
+    installationWarrantyFile: [[]],//安装及保修文件
+    installationWarrantySecondaryApproval: [{ value: null, disabled: true }],//安装下一级审核 //无
+    sitePreparation: [{ value: null, disabled: !this.editBase }], //场地准备
+    sitePreparationFile: [[]],//场地准备文件
+    sitePreparationRemarks: [{ value: null, disabled: !this.editBase }],//场地准备备注
+    otherTrain: [{ value: null, disabled: !this.editBase }],//合同中培训相关条款
+    otherFine: [{ value: null, disabled: !this.editBase }],//罚则及违约责任(不含售后)
+    otherIp: [{ value: null, disabled: !this.editBase }],//IP条款
+    otherContractTemplate: [{ value: null, disabled: !this.editBase }],//非标合同模板
+    otherOcap: [{ value: null, disabled: !this.editBase }],//OCAP
+    other: [{ value: null, disabled: !this.editBase }],//其它
+    otherLabel: [{ value: null, disabled: !this.editBase }],//其它文本框
+    otherRemarks: [{ value: null, disabled: !this.editBase }],//其它备注
+    otherTermsFile: [[]],//其他文件
+    supportFileMissing: [{ value: null, disabled: !this.editBase }], //支持文件缺失需特批进单
+    supportFileMissingFile: [[]],//持文件缺失需特批进单文件
+    supportFileMissingRemarks: [{ value: "", disabled: !this.editBase }],//持文件缺失需特批进单文件
+    amountDifference: [{ value: null, disabled: !this.editBase }], //直投合同订单合同金额和中标金额有价差
+    amountDifferenceFile: [],//直投合同订单合同金额和中标金额有价差文件
+    amountDifferenceRemarks: [{ value: "", disabled: !this.editBase }], //直投合同订单合同金额和中标金额有价差
+    magneticResonanceShieldingFile: [{ value: [], disabled: !this.editBase }],//磁共振屏蔽文件
+    igtThirdPartyFile: [{ value: [], disabled: !this.editBase }],//IGT第三方吊塔确认文件
+    dealerRequestLetterFile: [{ value: [], disabled: !this.editBase }], //要货函文件
+    cpclFile: [{ value: [], disabled: !this.editBase }],//cpcl文件
+    otherSupportFile: [{ value: [], disabled: !this.editBase }],//其他支持文件
+    id: [{ value: null, disabled: true }]
+  }
+
+  //改单的备注信息
+  changOrderFrom = {
+    cancelApplyId: [{ value: "", disabled: true }], //取消改单的id
+    reason: [{ value: "", disabled: true }, [Validators.required]], //改单原因
+    describes: [{ value: "", disabled: true }, []],//改单原因描述
+    changeOrderFile: [[]],//附件
+    supportRemark: [{ value: "", disabled: true }], //备注
+    changeDealForm: [{ value: null, disabled: true }],//需要更改Deal Form进单
+    orderChangeId: [{ value: "", disabled: true }], //审批id
+  }
+
+  //改单的审核
+  examineFrom = {
+    comments: [{ value: "", disabled: true }], //备注
+    attachmentIds: [[]],//附件
+  }
+
+  @ViewChild("baseInfoFromChild") baseInfoFromChild;
+  @ViewChild("productChild") productChild;
+  @ViewChild("baseInfoTableChild") baseInfoTableChild;
+  @ViewChild("tabs") tabs;
+  public formValue: FormGroup = this.fb.group({
+    productModelInfo: this.fb.group({
+      ...this.productModelInfo,
+    }),
+    baseInfoFrom: this.fb.group({
+      ...this.baseInfoFrom,
+    }
+    ),
+    dealerFrom: this.fb.group({
+      ...this.dealerFrom,
+    }),
+    accountFrom: this.fb.group({
+      ...this.accountFrom
+    }),
+    contractBuyerFrom: this.fb.group({
+      ...this.contractBuyerFrom
+    }),
+    foreignFrom: this.fb.group({
+      ...this.foreignFrom
+    }),
+    endUserFrom: this.fb.group({
+      ...this.endUserFrom
+    }),
+    baseInfoTable: this.fb.group({
+      ...this.baseInfoTable
+    }),
+    remarkFrom: this.fb.group({
+      ...this.remarkFrom
+    }),
+    changOrderFrom: this.fb.group({
+      ...this.changOrderFrom
+    }),
+    examineFrom: this.fb.group({
+      ...this.examineFrom
+    }),
+    marketBundleInfo: this.fb.array([]),
+    priceApproval: this.fb.group({ ...this.priceApproval }),
+    applyId: [],
+    processInstanceTaskId: [],
+    processStatus: [],
+    modality: [],
+    cycleGroup: [],
+    bigArea: [],
+    smallArea: [],
+    isFirstLoad: [false],
+  });
+  ngOnInit() {
+    this.init();
+  }
+  init() {
+    this.applyId = this.activatedRouter.queryParams['_value'].id;
+    this.status = this.activatedRouter.queryParams['value'].taskStatus;
+    this.ProcessTaskStatusPipe.transform(this.status).subscribe(val => {
+      this.breadCrumbService.replace(val)
+    })
+    // setTimeout(() => {
+    //   this.isContract=true
+    // },0);
+
+    this.processInstanceTaskId = this.activatedRouter.queryParams['value'].processInstanceTaskId;
+    this.flag = this.activatedRouter.queryParams['value'].flag;
+    this.procInstId = this.activatedRouter.queryParams['value'].procInstId;
+    this.flag == '1' && this.formValue.disable();
+    this.baseInfoTableData.disable();
+    if (this.applyId) {
+      this.pageLoading = true;
+      this.serveice.queryContact(this.applyId).then(res => {
+        const { data } = res;
+        this.pageLoading = false;
+        if (res.code == '0000') {
+          const { completionInfo, orderSummaryInfo, contractSignInfo } = data;
+          this.completionInfo = completionInfo;
+          this.orderSummaryInfo = orderSummaryInfo;
+          this.contractSignInfo = contractSignInfo;
+          this.getData(data);
+        }
+        else {
+          this.message.error(res.msg);
+        }
+      })
+    }
+    const list = [
+      'ecos_oit_order_payment_terms',
+      'ecos_oit_order_payment_sup',
+      'ecos_oit_order_install_terms',
+      'ecos_oit_order_install_sup',
+      'ecos_oit_order_logistics_terms',
+      'ecos_oit_order_site_terms',
+      'ecos_oit_order_agreement_terms',
+      'ecos_oit_order_nstd_countersign',
+      'ecos_oit_order_sp_cluster_bp',
+      'ecos_oit_order_sp_cop_leader',
+      'ecos_oit_order_sp_cfc_leader',
+      'ecos_oit_order_sp_countersign'
+    ]
+    if (list.includes(this.status)) {
+      setTimeout(() => {
+        this.tabIndex = 1;
+        this.myskip(this.tabList[this.tabIndex])
+      }, 500)
+    }
+
+
+    //判断是不是改单的发起
+    this.serveice.changeOrder(this.applyId).then(res => {
+      if (res.code == '0000' && res.data != null && Object.keys(res.data).length > 0) {
+        this.changeItem = true;
+        this.tabList.push('approve-change')
+      }
+    })
+    this.changOrderFromData.get('changeOrderFile').disable();
+  }
+  getData(param) {
+    const { contractInfo, termsCheckInfo } = param;
+    const { marketBundleInfo } = contractInfo;
+    this.formValue.patchValue({
+      applyId: contractInfo.applyId ? contractInfo.applyId : this.applyId,
+      processInstanceTaskId: contractInfo.processInstanceTaskId ? contractInfo.processInstanceTaskId : this.processInstanceTaskId,
+      processStatus: contractInfo.processStatus ? contractInfo.processStatus : this.status,
+    })
+
+
+    this.productModelInfoData.patchValue({
+      ...contractInfo
+    })
+    const {
+      oitMode,
+      centralizedPurchasing,
+      dealFormId,
+      referenceId,
+      dealFormModality,
+      businessModel,
+      dealFormSales,
+      dealFormSalesName,
+      dealFormSalesModality,
+      dealFormSalesBigArea,
+      dealFormSalesSmallArea,
+      dealFormSalesProvince,
+      dealFormSalesCity,
+      dealFormSalesTeam,
+      dealFormSalesCycleGroup,
+      approvalAreaConfiguration,
+      biddingType,
+      dealFormSalesPerformanceProvince,
+      biddingCompany,
+      tenderNum,
+      requiredArrivalDate,
+      estimateInstallationDate,
+      ka,
+      estimBiddingPrice,
+      prebookReferenceId,
+      prebookApplyId,
+      prebookMainId,
+      prebookOrderId,
+      prebookStatus,
+      prebookSo,
+      prebookQuantity,
+      biddingAwardPrice,
+      id,
+      orderModality,
+      orderApprovalAreaConfiguration,
+      orderSalesTeam,
+      orderSalesBigArea,
+      orderSalesModality,
+      orderSalesProvince,
+      orderSalesPerformanceProvince,
+      orderSalesCity,
+      orderSales,
+      orderSalesName,
+      orderSalesCycleGroup,
+      biddingApplyList,
+      referenceIdList,
+      solutionSalesEmail,
+      solutionSalesName,
+      actualSalesEmail,
+      actualSalesName,
+      contractCancelReferenceId,
+      contractCancelApplyId,
+      orderSalesSapCode,
+      profitNetRate,
+      profitGrossRate,
+      profitGross,
+      dealerProfit,
+    } = contractInfo
+    this.baseInfoFromData.patchValue({
+      oldSalesProvince: contractInfo.dealFormSalesProvince,
+      solutionSalesNameModel: contractInfo.solutionSalesEmail ? `${contractInfo.solutionSalesName}(${contractInfo.solutionSalesEmail})` : "",
+      actualSalesNameModel: contractInfo.actualSalesEmail ? `${contractInfo.actualSalesName}(${contractInfo.actualSalesEmail})` : "",
+      oitMode,
+      centralizedPurchasing,
+      dealFormId,
+      referenceId,
+      dealFormSalesPerformanceProvince,
+      dealFormModality,
+      businessModel,
+      dealFormSales,
+      dealFormSalesName,
+      dealFormSalesModality,
+      dealFormSalesBigArea,
+      dealFormSalesSmallArea,
+      dealFormSalesProvince,
+      dealFormSalesCity,
+      dealFormSalesTeam,
+      dealFormSalesCycleGroup,
+      approvalAreaConfiguration,
+      biddingType,
+      biddingCompany,
+      tenderNum,
+      requiredArrivalDate,
+      estimateInstallationDate,
+      ka,
+      estimBiddingPrice,
+      prebookReferenceId,
+      prebookApplyId,
+      prebookMainId,
+      prebookOrderId,
+      prebookStatus,
+      prebookSo,
+      prebookQuantity,
+      biddingAwardPrice,
+      id,
+      orderModality,
+      orderApprovalAreaConfiguration,
+      orderSalesTeam,
+      orderSalesBigArea,
+      orderSalesModality,
+      orderSalesProvince,
+      orderSalesPerformanceProvince,
+      orderSalesCity,
+      orderSales,
+      orderSalesName,
+      orderSalesCycleGroup,
+      biddingApplyList,
+      referenceIdList,
+      solutionSalesEmail,
+      solutionSalesName,
+      actualSalesEmail,
+      actualSalesName,
+      contractCancelReferenceId,
+      contractCancelApplyId,
+      orderSalesSapCode,
+      profitNetRate,
+      profitGrossRate,
+      profitGross,
+      dealerProfit,
+    })
+    this.dealerFromData.patchValue({
+      ...contractInfo,
+    })
+    this.accountFromData.patchValue({
+      ...contractInfo
+    })
+    this.foreignFromData.patchValue({
+      ...contractInfo
+    })
+    this.endUserFromData.patchValue({
+      ...contractInfo
+    })
+    this.contractBuyerFromData.patchValue({
+      ...contractInfo
+    })
+    this.baseInfoTableData.patchValue({
+      ...termsCheckInfo
+    })
+    this.priceApprovalData.patchValue({
+      ...contractInfo
+    })
+
+    const currencySystem = contractInfo.currencySystem
+
+    marketBundleInfo.map((val, index) => {
+      this.marketBundleInfo.push(this.createProdut(val, index, currencySystem))
+    })
+    this.priceApprovalData.patchValue({
+      tradeInTotal: contractInfo.currencySystem == 'CNY' ? (contractInfo.orderTradeInCnyNet != null && contractInfo.orderTradeInCnyNet != "" ? contractInfo.orderTradeInCnyNet : 0) : (contractInfo.orderTradeInUsd != null && contractInfo.orderTradeInUsd != "" ? contractInfo.orderTradeInUsd : 0),
+      rebateTotal: contractInfo.currencySystem == 'CNY' ? (contractInfo.orderRebateCnyNet != null && contractInfo.orderRebateCnyNet != "" ? contractInfo.ordeRerbateCnyNet : 0) : (contractInfo.orderRebateUsd != null && contractInfo.orderRebateUsd != "" ? contractInfo.orderRebateUsd : 0),
+      financialSolutionName: contractInfo.financialSolutionOther ? (contractInfo.financialSolutionOther == 'null' ? '' : contractInfo.financialSolutionOther) : "",
+      totalContractPrice: contractInfo.totalContractPrice != null && contractInfo.totalContractPrice != "" ? contractInfo.totalContractPrice : 0,
+    })
+    this.priceData = {
+      ...this.priceApprovalData.getRawValue()
+    }
+
+    this.marketBundleInfo.disable();
+    if (localStorage.getItem('contractPriceAuthority') == 'false') {
+      this.priceApprovalData.patchValue({
+        tradeInTotal: '',
+        rebateTotal: '',
+        financialSolutionCny: '',
+        financialSolutionCnyNet: '',
+        financialSolutionUsd: '',
+        vatRate: '',
+      })
+    }
+
+    if (localStorage.getItem('dealPriceAuthority') == 'false') {
+      this.priceApprovalData.patchValue({
+        dealPriceCny: '',
+        dealPriceCnyNet: '',
+        dealPriceUsd: '',
+      })
+    }
+
+    if (localStorage.getItem('dealPriceAuthority') == 'false') {
+      this.priceApprovalData.patchValue({
+        totalContractPrice: '',
+      })
+    }
+    if (this.baseInfoFromData.getRawValue().businessModel == 'DISTRIBUTOR') {
+      this.getdistributorDate(); //更新经销商日期    
+    }
+    if (this.priceApprovalData.getRawValue().currencySystem == "USD") {
+      this.getIepoolDate(); //更新经销商日期
+    }
+    this.serveice.productAction(this.formValue);
+    this.serveice.supportFileChangAction(this.formValue);
+
+    if (this.status == 'ecos_oit_order_oa' && this.flag == '0') {
+      this.baseInfoFromData.controls.orderSalesSapCode.enable();
+      this.dealerFromData.controls.dealerSapCode.enable();
+      this.endUserFromData.controls.endUserSapCode.enable();
+      this.foreignFromData.controls.foreignTradeCorpSapCode.enable();
+      this.baseInfoFromData.patchValue({
+        contractCancelDisabled: false,
+      })
+    }
+    if (this.baseInfoFromData.getRawValue().oitMode == 'BIDDING') {
+      this.getBiddingIsSpecial();
+    }
+  }
+  getBiddingIsSpecial() {//bidding模式是否是特批      
+    let { biddingApplyList } = this.baseInfoFromData.getRawValue();
+    biddingApplyList.map(val => {
+      this.serveice.getBiddingIsSpecial(val.id).subscribe(item => {
+        if (item.code == '0000' && item.data == true) {
+          val.biddingIsSpecial = true;
+        }
+        else {
+          val.biddingIsSpecial = false;
+        }
+      })
+    })
+    this.baseInfoFromData.patchValue({
+      biddingApplyList: biddingApplyList
+    })
+  }
+  get productModelInfoData() {
+    return this.formValue.get("productModelInfo") as FormGroup;
+  }
+  get examineFromData() {
+    return this.formValue.get("examineFrom") as FormGroup;
+  }
+  get changOrderFromData() {
+    return this.formValue.get("changOrderFrom") as FormGroup;
+  }
+  get marketBundleInfo(): FormArray {
+    return this.formValue.get("marketBundleInfo") as FormArray;
+  }
+  get remarkFromData(): FormGroup {
+    return this.formValue.get("remarkFrom") as FormGroup;
+  }
+  get baseInfoFromData(): FormGroup {
+    return this.formValue.get("baseInfoFrom") as FormGroup
+  }
+  get priceApprovalData(): FormGroup {
+    return this.formValue.get("priceApproval") as FormGroup
+  }
+  get dealerFromData(): FormGroup {
+    return this.formValue.get("dealerFrom") as FormGroup;
+  }
+  get accountFromData(): FormGroup {
+    return this.formValue.get("accountFrom") as FormGroup;
+  }
+  get foreignFromData(): FormGroup {
+    return this.formValue.get("foreignFrom") as FormGroup;
+  }
+  get endUserFromData(): FormGroup {
+    return this.formValue.get("endUserFrom") as FormGroup;
+  }
+  get baseInfoTableData(): FormGroup {
+    return this.formValue.get("baseInfoTable") as FormGroup;
+  }
+
+  get contractBuyerFromData(): FormGroup {
+    return this.formValue.get("contractBuyerFrom") as FormGroup
+  }
+
+
+  get orderInfo(): FormArray {
+    return this.formValue.get("orderInfo") as FormArray;
+  }
+  //效验经销商日期
+  getdistributorDate() {
+    const { dealerName } = this.dealerFromData.getRawValue();
+    this.serveice.findDealersByPageValid({ dealerName: dealerName }).then((item) => {
+      if (item.code == '0000') {
+        const { rows } = item.data;
+        if (rows.length > 0) {
+          const ddpValidUntil = standardTime(rows[0].mdtdealerddpexpiredate)
+          const ddpStatus = isadopt(ddpValidUntil);
+          if (ddpStatus != "通过") {
+            this.dealerFromData.patchValue({
+              dealerDdpStatus: "不通过",
+              dealerDdpValidityDate: rows[0].mdtdealerddpexpiredate
+            })
+          }
+          else {
+            this.dealerFromData.patchValue({
+              dealerDdpStatus: "通过",
+              dealerDdpValidityDate: rows[0].mdtdealerddpexpiredate
+            })
+          }
+        }
+      }
+    })
+
+
+  }
+  //加载外贸公司日期
+  async getIepoolDate() {
+    const { companyNotInIePool, foreignTradeCorpDdpValidityDate, foreignTradeCorpName } = this.foreignFromData.getRawValue()
+    if (companyNotInIePool) {
+      const ddpValidUntil = standardTime(foreignTradeCorpDdpValidityDate)
+      const ddpStatus = isadopt(ddpValidUntil);
+      if (ddpStatus != "通过") {
+        this.foreignFromData.patchValue({
+          foreignTradeCorpDdpStatus: ddpStatus
+        })
+      }
+    }
+    else {
+      const dateAndValid = await this.serveice.findEcosiepool({ corporateName: foreignTradeCorpName })
+      if (dateAndValid.code == '0000') {
+        const rows = dateAndValid.data.rows;
+        if (rows.length > 0) {
+          const ddpValidUntil = standardTime(rows[0].ddpValidUntil)
+          const ddpStatus = isadopt(ddpValidUntil);
+          if (ddpStatus != "通过") {
+            this.foreignFromData.patchValue({
+              foreignTradeCorpDdpStatus: "不通过",
+              foreignTradeCorpDdpValidityDate: rows[0].ddpValidUntil
+            })
+          }
+          else {
+            this.foreignFromData.patchValue({
+              foreignTradeCorpDdpStatus: "通过",
+              foreignTradeCorpDdpValidityDate: rows[0].ddpValidUntil
+            })
+          }
+        }
+      }
+    }
+  }
+  public myskip(val): void {
+    //外部触发tab选项卡的事件
+    this.tabs.activeId(val)
+  }
+  handleCancel() {
+    //this.location.back();
+    this.routerExtendService.back();
+    // this.router.navigate(['/ecos/my-started'])
+  }
+  async preSubmit(parm) {
+
+    let data = this.formValue.getRawValue();
+    const { applyId, productModelInfo, marketBundleInfo, processInstanceTaskId, processStatus, modality, cycleGroup, bigArea, smallArea, accountFrom, baseInfoFrom, baseInfoTable, contractBuyerFrom, dealerFrom, endUserFrom, foreignFrom, orderInfo, priceApproval, remarkFrom } = data;
+    dealerFrom.dealerDdpValidityDate = dealerFrom.dealerDdpValidityDate != null && dealerFrom.dealerDdpValidityDate != '' ? moment(dealerFrom.dealerDdpValidityDate).format('YYYY-MM-DD hh:mm:ss') : null;
+    foreignFrom.foreignTradeCorpDdpValidityDate = (foreignFrom.foreignTradeCorpDdpValidityDate != null && foreignFrom.foreignTradeCorpDdpValidityDate != "") ? moment(foreignFrom.foreignTradeCorpDdpValidityDate).format('YYYY-MM-DD hh:mm:ss') : null;
+    baseInfoFrom.requiredArrivalDate = (baseInfoFrom.requiredArrivalDate != null && baseInfoFrom.requiredArrivalDate != "") ? moment(baseInfoFrom.requiredArrivalDate).format('YYYY-MM-DD hh:mm:ss') : null;
+    baseInfoFrom.estimateInstallationDate = (baseInfoFrom.estimateInstallationDate != null && baseInfoFrom.estimateInstallationDate != "") ? moment(baseInfoFrom.estimateInstallationDate).format('YYYY-MM-DD hh:mm:ss') : null;
+    if (remarkFrom.attachmentIds && remarkFrom.attachmentIds.length > 0) {
+      remarkFrom.attachmentIds = remarkFrom.attachmentIds.map(val => val.fileId)
+    }
+    baseInfoTable.paymentProvisionSecondaryApproval = remarkFrom.paymentProvisionSecondaryApproval ? '1' : '0';  //付款条款二级审核
+    priceApproval.dealPriceUsd = Number(delcommafy(priceApproval.dealPriceUsd));
+    priceApproval.dealPriceCny = Number(delcommafy(priceApproval.dealPriceCny));
+    const contractInfo = {
+      ...productModelInfo,
+      ...accountFrom,
+      ...baseInfoFrom,
+      ...contractBuyerFrom,
+      ...dealerFrom,
+      ...endUserFrom,
+      ...this.priceData,
+      ...foreignFrom,
+      marketBundleInfo: marketBundleInfo,
+
+    }
+
+
+
+    const param = {
+      ...remarkFrom,
+      applyId,
+      contractInfo: contractInfo,
+      termsCheckInfo: baseInfoTable,
+      completionInfo: this.completionInfo,
+      contractSignInfo: this.contractSignInfo,
+      orderSummaryInfo: this.orderSummaryInfo,
+      status: parm,
+      processInstanceTaskId,
+      processStatus,
+      modality,
+      cycleGroup,
+      bigArea,
+      smallArea,
+    }
+    if (parm == 'approved') {
+
+      this.pageLoading = true;
+      const taskStatusList = ["ecos_oit_order_cancel_oa", "ecos_oit_order_cancel_dm"];
+      const examineOff = taskStatusList.includes(this.status);
+      if (baseInfoFrom.businessModel == 'DISTRIBUTOR' && !examineOff) {
+        const dateAndValid = await this.serveice.findDealersByPageValid({ dealerName: dealerFrom.dealerName })
+        if (dateAndValid.code == '0000') {
+          const rows = dateAndValid.data.rows
+          if (rows.length > 0) {
+            const ddpValidUntil = standardTime(rows[0].mdtdealerddpexpiredate)
+            const ddpStatus = isadopt(ddpValidUntil);
+            if (ddpStatus != "通过") {
+              this.dealerFromData.patchValue({
+                dealerDdpStatus: "不通过",
+                dealerDdpValidityDate: rows[0].mdtdealerddpexpiredate
+              })
+              this.tabIndex = 0;
+              this.myskip(this.tabList[this.tabIndex])
+              this.message.create("error", `经销商DDP Status未通过`);
+              this.pageLoading = false;
+              return
+            }
+          }
+          else{
+            this.message.create("error", `未在经销商库找到经销商信息`);
+            this.pageLoading = false;
+             return
+          }
+
+        }
+        else {
+          this.message.create("error", `未在经销商库找到经销商信息`);
+          return
+        }
+      }
+      if (priceApproval.currencySystem == 'USD' && !examineOff) {
+        if (foreignFrom.companyNotInIePool) {
+          const ddpValidUntil = standardTime(foreignFrom.foreignTradeCorpDdpValidityDate)
+          const ddpStatus = isadopt(ddpValidUntil);
+          if (ddpStatus != "通过") {
+            this.foreignFromData.patchValue({
+              foreignTradeCorpDdpStatus: ddpStatus
+            })
+            this.tabIndex = 0;
+            this.myskip(this.tabList[this.tabIndex])
+            this.message.create("error", `外贸易公司DDP Status未通过`);
+            this.pageLoading = false;
+            return
+          }
+        }
+        else {
+          const dateAndValid = await this.serveice.findEcosiepool({ corporateName: foreignFrom.foreignTradeCorpName })
+
+          if (dateAndValid.code == '0000') {
+            const rows = dateAndValid.data.rows;
+            if(rows.length>0)
+            {
+              const ddpValidUntil = standardTime(rows[0].ddpValidUntil)
+              const ddpStatus = isadopt(ddpValidUntil);
+              if (ddpStatus != "通过") {
+                this.foreignFromData.patchValue({
+                  foreignTradeCorpDdpStatus: "不通过",
+                  foreignTradeCorpDdpValidityDate: rows[0].ddpValidUntil
+                })
+                this.tabIndex = 0;
+                this.myskip(this.tabList[this.tabIndex])
+                this.message.create("error", `外贸易公司DDP Status未通过`);
+                this.pageLoading = false;
+                return
+              }
+            }
+            else
+            {
+              this.pageLoading = false;
+              this.message.create("error", `未在IEPOOL找到经销商信息`);
+              return
+            }            
+          }
+          else {
+            this.message.create("error", `未在IEPOOL找到经销商信息`);
+            return
+          }
+        }
+      }
+      this.submit(param)
+    }
+    else {
+      if (parm == 'rejected') {
+        this.remarkFromData.get('comments')!.setValidators(Validators.required);
+        this.remarkFromData.get('comments')!.markAsDirty();
+        this.remarkFromData.get('comments')!.updateValueAndValidity();
+        if (!this.remarkFromData.valid) {
+          this.tabIndex = 1;
+          this.myskip(this.tabList[this.tabIndex])
+          this.message.warning("请填写拒绝理由!");
+          return;
+        }
+      }
+      else {
+        this.remarkFromData.get('comments')!.clearValidators();
+        this.remarkFromData.get('comments')!.markAsPristine();
+        this.remarkFromData.get('comments')!.updateValueAndValidity();
+      }
+      this.pageLoading = true;
+      this.submit(param);
+    }
+  }
+  submit(param) {
+    this.serveice.contractApproval(param).then(res => {
+      if (res.code == '0000') {
+        this.pageLoading = false;
+        this.message.create('success', res.msg);
+        this.routerExtendService.back();
+      }
+      else {
+        this.message.error(res.msg);
+        this.pageLoading = false;
+      }
+    }).catch((error) => {
+      this.message.create("error", "请求异常");
+      this.pageLoading = false;
+    })
+  }
+  checkFormData = () => {
+    for (const i in this.formValue.controls) {
+      this.formValue.controls[i].markAsDirty();
+      this.formValue.controls[i].updateValueAndValidity();
+    }
+    return this.formValue.valid;
+  };
+
+
+  tabclick(i) {
+    //tab选项卡的点击事件
+    if (typeof i === 'number') {
+      this.tabIndex = i
+    }
+  }
+  createProdut(val: any, index, currencySystem) {
+    //创建产品
+    const netPrice = val.netPrice ? val.netPrice : (currencySystem == 'CNY' ? val.priceCnyNet : val.priceUsd);
+    const group = {
+      cpOrderConfigId: [val.cpOrderConfigId],
+      cpProductId: [val.cpProductId],
+      cpMarketBundleId: [val.cpMarketBundleId],
+      biddingMarketBundleId: [val.biddingMarketBundleId],
+      primaryOpportunity: [{ value: val.primaryOpportunity, disabled: !this.editPreTable }], //是否主机
+      productConfig: [{ value: val.productConfig, disabled: false }], //产品配置
+      marketBundleName: [{ value: val.marketBundleName, disabled: false }],//marketBundleName
+      marketBundleBmc: [{ value: val.marketBundleBmc, disabled: false }],//BMC
+      optionInfo: [{ value: val.optionInfo, disabled: false }],//option
+      productInfo: [{ value: val.productInfo, disabled: false }],//标准配置
+      clinicalClassification: [{ value: val.clinicalClassification, disabled: !this.editBase }],//临床分类
+      firstLevelDepartment: [{ value: val.firstLevelDepartment, disabled: !this.editBase }],//一级科室
+      secondaryDepartment: [{ value: val.secondaryDepartment, disabled: !this.editBase }],//二级科室
+      marketBundleAmount: [{ value: val.marketBundleAmount, disabled: false }],//数量
+      productModel: [{ value: val.productModel, disabled: true }],//产品型号
+      medicalDeviceName: [{ value: val.medicalDeviceName, disabled: true }],//医疗器械名称
+      nmpaNum: [{ value: val.nmpaNum, disabled: true }],//nmpaNum证号
+      nmpaValidityDate: [{ value: val.nmpaValidityDate, disabled: true },],//NMPA证书有效期
+      dtcDealerAgreementNo: [{ value: val.dtcDealerAgreementNo, disabled: !this.editBase },],//Dtc经销商协议号
+      newDealerAgreementNo: [{ value: val.newDealerAgreementNo, disabled: !this.editBase },],//最新经销商协议号newDealerAgreementNo
+      simulationId: [{ value: val.simulationId, disabled: false },],//simulationId
+      marketBundleId: [{ value: val.marketBundleId, disabled: false }],//marketBundleId
+      opportunityId: [{ value: val.opportunityId, disabled: false }],//opportunityId
+      businessOpportunityHierarchyLink: [{ value: val.businessOpportunityHierarchyLink, disabled: true }],//商机层级链接
+      businessOpportunityHierarchyTitle: [{ value: "", disabled: true }], //商机链接提示
+      psm: [{ value: val.psm, disabled: false },], //psm
+      netPrice: [{ value: netPrice, disabled: false },],//Net Price审批价
+      promotions: [{ value: val.promotions, disabled: false },],//Promotion 促销号
+      rebate: [{ value: val.rebate, disabled: false },], //Rebate 经销商奖励金
+      tradeIn: [{ value: val.tradeIn, disabled: false },],//Trade In
+      configFile: [{ value: val.configFile, disabled: false },],//配置文件(盖章)
+      wbsNo: [{ value: val.wbsNo, disabled: !this.editBase },],//WBS号
+      id: [{ value: val.id, disabled: true }],
+      authorizedProduct: [{ value: val.authorizedProduct, disabled: true }], //经销商产品信息
+      authorizedArea: [{ value: val.authorizedArea, disabled: true }],//经销商区域
+      departmentList: [],//科室列表
+      departmentListFirst: [],//一级科室
+      departmentListSecond: [], //二级科室列表
+      dealerCodeList: [], //经销商列表
+      originCountry: [{ value: val.originCountry, disabled: true }], //原产地
+      originCountryEn: [{ value: val.originCountryEn, disabled: true }] //原产地英文
+    }
+    return this.fb.group({
+      ...group,
+    });
+
+  }
+  goPreStep() {
+    this.tabIndex--;
+    this.myskip(this.tabList[this.tabIndex])
+  }
+  goNextStep() {
+    this.tabIndex++;
+    this.myskip(this.tabList[this.tabIndex]);
+  }
+}

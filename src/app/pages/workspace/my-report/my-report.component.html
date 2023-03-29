@@ -1,0 +1,33 @@
+<nz-card
+  ><app-tabs>
+    <!-- <app-tab [title]="'report.OIT.title' | translate">
+      <nz-tabset
+        [nzTabBarGutter]="0"
+        [nzAnimated]="true"
+        nzTabPosition="right"
+        [nzSize]="'small'"
+      >
+        <nz-tab [nzTitle]="'report.OIT.real-time-tracking' | translate">
+          <div class="mt10">
+            <app-oit-realtime></app-oit-realtime>
+          </div>
+        </nz-tab>
+        <nz-tab [nzTitle]="'report.OIT.completion-summary' | translate">
+          <div class="mt10">
+            <app-oit-summary></app-oit-summary>
+          </div>
+        </nz-tab>
+        <nz-tab [nzTitle]="'report.OIT.analysis' | translate">
+          <div class="mt10">
+            <app-leadtime></app-leadtime>
+          </div>
+        </nz-tab>
+      </nz-tabset>
+    </app-tab> -->
+    <app-tab [title]="'Special Approval'">
+      <div class="mt10">
+        <special-approval-report></special-approval-report>
+      </div>
+    </app-tab>
+  </app-tabs>
+</nz-card>

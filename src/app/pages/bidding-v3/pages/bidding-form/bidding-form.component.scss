@@ -1,0 +1,80 @@
+.page-container {
+  background: #fff;
+  padding: 2rem 1.5rem 1.5rem;
+
+  .tab-wrapper {
+    margin-top: 2rem;
+  }
+}
+
+footer {
+  position: fixed;
+  bottom: 0;
+  left: 250px;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 4rem;
+  background-color: #fff;
+  button {
+    margin: 0 8px;
+  }
+}
+
+
+.title-head {
+  display: flex;
+  margin-bottom: 10px;
+  padding-left: 22px;
+
+  .ml20 {
+    margin-left: 20px;
+  }
+}
+
+.tr {
+  text-align: right;
+}
+
+.pr {
+  position: relative;
+
+  .cancel,
+  .submit,
+  .save {
+    position: absolute;
+    right: 10px;
+    top: 0px;
+    z-index: 999;
+  }
+
+  .cancel {
+    right: 200px;
+  }
+
+  .submit {
+    right: 10px;
+  }
+
+  .save {
+    right: 153px;
+  }
+}
+
+/deep/ input[readonly] {
+  &.ant-calendar-picker-input {
+    cursor: pointer;
+  }
+}
+
+@import "common/dashboard.scss";
+
+/deep/ .ant-form-item {
+  .ant-form-item-label {
+    white-space: normal;
+    label {
+      line-height: 20px;
+    }
+  }
+}

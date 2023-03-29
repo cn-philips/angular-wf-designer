@@ -1,0 +1,114 @@
+<app-apploading [load]="pageLoading"></app-apploading>
+<nz-card class="title_warpper mtb1rem">
+  <app-approval-progress></app-approval-progress>
+</nz-card>
+<div class="tabs-box">
+  <app-tabs
+      (select)="tabclick($event)"      
+      #tabs
+    >
+    <app-tab [title]="'orderv3.pages.contract.general'|translate" id="pending-tab">  
+          <div class="card-body">
+            <pre-base-info-from #baseInfoFromChild [formValue]="formValue" [editPreTable]="editPreTable"
+              [editable]="editBase" [changeItem]="changeItem" [isContract]="true">
+            </pre-base-info-from>
+            <pre-base-info-table
+              #baseInfoTableChild
+              [formValue]="formValue"
+              [isContract]="true"></pre-base-info-table>
+          </div>        
+      </app-tab>
+      <app-tab [title]="'orderv3.pages.contract.history'|translate" id="approval-record">  
+          <div class="card-body">
+            <app-form-section [title]="'orderv3.pages.contract-examine.history'| translate">
+              <approval-history-oit [applyId]="applyId">
+              </approval-history-oit>
+              <app-form-section class="mtb1rem" [title]="'orderv3.pages.pre-order.history-child' | translate">
+                <shared-approval-history
+                  [procInstId]="procInstId"></shared-approval-history>
+              </app-form-section>
+            </app-form-section>
+            <contract-remarks [formValue]="formValue" [remarkFrom]="contractRemarkFromData"></contract-remarks>
+          </div>       
+      </app-tab>
+      <app-tab [title]="'orderv3.pages.contract.change'|translate" id="approve-change" *ngIf="changeItem"> 
+          <div class="card-body">
+            <approve-change [formValue]="formValue"></approve-change>
+          </div>       
+      </app-tab>
+    </app-tabs>
+
+    <div *ngIf="flag != 1" nz-row nzType="flex" class="fixed-btn-group" nzJustify="center" nzAlign="middle">
+      <div nz-col nzSpan="24">
+        <nz-form-item>
+          <nz-form-control [nzSm]="24" [nzXs]="24" style="text-align: center">
+            <button [disabled]="tabIndex==0" nz-button nzType="default" (click)="goPreStep()">
+              {{"orderv3.pages.contract.pre-step" | translate}}
+            </button>
+            <button [disabled]="tabIndex==(tabList.length-1)" nz-button nzType="default" (click)="goNextStep()">
+              {{"orderv3.pages.contract.next-step" | translate}}
+            </button>
+            <button nz-button nzType="default" (click)="handleCancel()">
+              {{"orderv3.pages.contract.cancel" | translate}}
+            </button>
+            <button nz-button nzType="primary" (click)="preSubmit('apply_save')">
+              {{"orderv3.pages.contract.save" | translate}}
+            </button>
+            <button nz-button nzType="primary" nz-popconfirm nzTitle="你确定要执行提交的操作?"
+              (nzOnConfirm)="preSubmit('approved')">
+              {{"orderv3.pages.contract.submit" | translate}}
+            </button>
+            <nz-dropdown [nzPlacement]="'bottomRight'">
+              <button nz-button nz-dropdown><i class="tranf90" nz-icon nzType="more" nzTheme="outline"></i></button>
+              <ul nz-menu>
+                <li nz-menu-item>
+                  <a href="javascript:" (click)="cancelOrder()">{{"orderv3.pages.contract.cel-order" | translate}}</a>
+                </li>
+                <li *ngIf="cancelOrderMenu" nz-menu-item>
+                  <a href="javascript:" (click)="canChangeCelOrder()">
+                    {{"orderv3.pages.contract.cel-change" | translate}}
+                  </a>
+                </li>
+              </ul>
+            </nz-dropdown>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+    <div *ngIf="flag==1" nz-row nzType="flex" class="fixed-btn-group" nzJustify="center" nzAlign="middle">
+      <div nz-col nzSpan="24">
+        <nz-form-item>
+          <nz-form-control [nzSm]="24" [nzXs]="24" style="text-align: center">
+            <button [disabled]="tabIndex==0" nz-button nzType="default" (click)="goPreStep()">
+              {{"orderv3.pages.contract.pre-step" | translate}}
+            </button>
+            <button [disabled]="tabIndex==(tabList.length-1)" nz-button nzType="default" (click)="goNextStep()">
+              {{"orderv3.pages.contract.next-step" | translate}}
+            </button>
+            <button nz-button nzType="default" (click)="handleCancel()">
+              {{"orderv3.pages.contract.cancel" | translate}}
+            </button>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+ 
+</div>
+<app-confirm #confim [remarkFrom]="remarkFromData" (select)="selectConfim($event)"></app-confirm>
+<nz-modal [(nzVisible)]="isVisible" [nzTitle]="'orderv3.pages.contract.cel-change' | translate"
+  [nzFooter]="modalFooter1" (nzOnCancel)="changeHandleCancel()">
+  <ng-container>
+    <nz-spin nzTip="Loading..." [nzSpinning]="popupLoad">
+      <div class="warnings">
+        <i class="icon" nz-icon nzType="warning" nzTheme="outline"></i>
+        确定要取消改单!
+      </div>
+      <ng-template #modalFooter1>
+        <button nz-button nzType="default" (click)="changeHandleCancel()">
+          {{"orderv3.pages.contract.cancel" | translate}}</button>
+        <button nz-button nzType="primary" [nzLoading]="popupLoad"
+          (click)="changeHandleOk()">{{"orderv3.pages.contract.ok" | translate}}</button>
+      </ng-template>
+    </nz-spin>
+  </ng-container>
+</nz-modal>

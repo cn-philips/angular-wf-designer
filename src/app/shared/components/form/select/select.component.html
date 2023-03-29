@@ -1,0 +1,12 @@
+<nz-select
+  *ngIf="!disabled"
+  [(ngModel)]="selected"
+  (ngModelChange)="getItem($event, options)"
+  [nzAllowClear]="allowClear"
+  [nzShowSearch]="nzShowSearch"
+  [nzPlaceHolder]="placeholder"
+  [nzDropdownMatchSelectWidth]="nzDropdownMatchSelectWidth"
+  [nzNotFoundContent]="notFoundContent">
+  <nz-option *ngFor="let opt of options" [nzValue]="opt.value" [nzLabel]="opt.label"></nz-option>
+</nz-select>
+<input nz-input [ngModel]="displayVal" [disabled]="true" *ngIf="disabled">

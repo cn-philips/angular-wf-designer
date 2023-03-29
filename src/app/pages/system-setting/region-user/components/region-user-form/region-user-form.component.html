@@ -1,0 +1,154 @@
+<!-- 角色概述 -->
+<form nz-form>
+  <div nz-row nzType="flex" nzJustify="space-between">
+    <div nz-col>
+      <h4>Role Information 角色概述</h4>
+    </div>
+    <div nz-col></div>
+  </div>
+  <div nz-row>
+    <!-- Title/Role -->
+    <div nz-col nzSpan="12">
+      <nz-form-item>
+        <nz-form-label [nzRequired]="isAdd" [nzSpan]="7">Title/Role</nz-form-label>
+        <nz-form-control [nzSpan]="17">
+          <input nzSize="small" name="role" nz-input [(ngModel)]="role" *ngIf="!isAdd" [disabled]="!isAdd" />
+          <nz-select *ngIf="isAdd" [nzDisabled]="!isAdd" nzSize="small" name="role" nzShowSearch nzAllowClear
+            [(ngModel)]="role" (ngModelChange)="rolechanges($event)">
+            <nz-option *ngFor="let item of rolelist" [nzValue]="item.value" [nzLabel]="item.label"></nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <!-- 是否申请角色 -->
+    <div nz-col nzSpan="12">
+      <nz-form-item>
+        <nz-form-label [nzSpan]="7">Is Applicant<br>是否申请角色</nz-form-label>
+        <nz-form-control [nzSpan]="17">
+          <nz-select [nzDisabled]="true" nzSize="small" name="isRequestor" [(ngModel)]="isRequestor">
+            <nz-option nzValue="0" nzLabel="否"></nz-option>
+            <nz-option nzValue="1" nzLabel="是"></nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <!-- 是否审核角色 -->
+    <div nz-col nzSpan="12">
+      <nz-form-item>
+        <nz-form-label [nzSpan]="7">Is Approver<br>是否审核角色</nz-form-label>
+        <nz-form-control [nzSpan]="17">
+          <nz-select [nzDisabled]="true" nzSize="small" name="isApprover" [(ngModel)]="isApprover">
+            <nz-option nzValue="0" nzLabel="否"></nz-option>
+            <nz-option nzValue="1" nzLabel="是"></nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+</form>
+<!-- End 角色概述 -->
+
+<!-- 人员管理 -->
+<div nz-row nzType="flex" nzJustify="space-between">
+  <div nz-col>
+    <h4> User Management 人员管理</h4>
+  </div>
+  <div nz-col>
+    <button nz-button nzSize="small" nzType="primary" [disabled]="!role" (click)="handleCreate()">
+      Add 添加
+    </button>
+  </div>
+</div>
+<div nz-row class="mtb1rem">
+  <div nz-col>
+    <!-- Table -->
+    <nz-table [nzData]="roleUsersData" [nzShowPagination]="true" [nzLoading]="isloading"
+      [(nzPageSize)]="paramsOnwer.pageSize" [(nzPageIndex)]="paramsOnwer.pageNo" [nzTotal]="paramsOnwer.total"
+      [nzShowQuickJumper]="true" [nzShowSizeChanger]="true" [nzFrontPagination]="false" [nzHideOnSinglePage]="false"
+      (nzPageIndexChange)="changePageIndexOnwer($event)" (nzPageSizeChange)="changePageSizeOnwer($event)"
+      nzSize="small">
+      <thead>
+        <tr>
+          <th *ngFor="let column of tableHeader" [nzWidth]="column.width">
+            {{ column.Ename}}<br>{{column.Cname}}
+          </th>
+          <th nzWidth="120px" nzRight="0px">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let data of roleUsersData">
+          <td>{{ data.dataSource }}</td>
+          <td>{{ data.modality }}</td>
+          <td>{{ data.cluster }}</td>
+          <td>{{ data.bmc }}</td>
+          <td>{{ data.team }}</td>
+          <td *ngIf="data.funcTeamType == 1" style="color: green">是</td>
+          <td *ngIf="data.funcTeamType == 0" style="color: red">否</td>
+          <td *ngIf="(data.funcTeamType != 0) && (data.funcTeamType != 1)"> </td>
+          <td><a style="color: #1e70cd" (click)="handlelook(data.id,data.email)">{{ data.email }}</a></td>
+          <td nzRight="0px">
+            <button nz-button nzSize="small" nzType="primary" (click)="handleEdit(data.id)"
+              [disabled]="data.dataSource == 'CD' || data.dataSource == 'CP'">
+              Edit 编辑
+            </button>
+            <br>
+            <button style="margin-top: 4px" nz-popconfirm nzTitle="确定删除此条记录？" nz-button nzSize="small" nzType="danger"
+              [disabled]="data.dataSource == 'CD' || data.dataSource == 'CP'"
+              (nzOnConfirm)="handleDelete(data.id,data.email)" (nzOnCancel)="cancel()">
+              Delete 删除
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </nz-table>
+    <!-- End Table -->
+  </div>
+</div>
+<!-- End 人员管理 -->
+
+<!-- Drawer -->
+<nz-drawer [nzClosable]="true" [nzVisible]="ifShowDrawer" nzPlacement="right" [nzMaskClosable]="true" [nzTitle]="title"
+  [nzWidth]="'50%'" (nzOnClose)="handleCancel()" class="role-management-draw">
+
+  <!-- End Role-Modality-BMC  -->
+  <!-- User Basic Inform -->
+  <div nz-row nzType="flex" nzJustify="space-between">
+    <div nz-col>
+      <h5>General Information 基础信息</h5>
+    </div>
+  </div>
+  <div nz-row>
+    <div nz-col>
+      <app-user-basic-info-form #basicInfoFormComponent [islook]="islook" [readonly]="readonly" [(user)]="userInform"
+        [formType]="userFormType"></app-user-basic-info-form>
+    </div>
+  </div>
+
+  <!-- Role-Modality-BMC  -->
+  <div nz-row nzType="flex" nzJustify="space-between">
+    <div nz-col *ngIf="!islook">
+      <h5>Role-Modality-BMC</h5>
+    </div>
+    <div nz-col *ngIf="islook">
+      <h5>Business-Info-Area</h5>
+    </div>
+  </div>
+  <div nz-row>
+    <div nz-col>
+      <app-role-modality-bmc-form *ngIf="!islook" #userinform [islook]="islook" [(user)]="userInform" [userRole]="role">
+      </app-role-modality-bmc-form>
+
+      <br *ngIf="islook">
+      <app-business-info-area style="margin-top: 10px" #areaComponent *ngIf="islook" [dataSource]="businessinfo"
+        [email]="email" [readonly]="true"></app-business-info-area>
+    </div>
+  </div>
+
+
+  <!-- End User Basic Inform -->
+  <div style="float: right">
+    <button nz-button nzType="primary" (click)="handleSubmit()" *ngIf="!islook">Save 保存</button>
+    <button nz-button nzType="default" (click)="handleCancel()">Close 关闭</button>
+  </div>
+</nz-drawer>
+<!-- End Drawer -->

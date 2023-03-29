@@ -1,0 +1,61 @@
+<nz-modal [(nzVisible)]="visible" nzWidth="1000px" [nzTitle]="'orderv3.components.select-deal.title' | translate"
+  [nzFooter]="null" (nzOnCancel)="onHide()">
+
+  <div nz-row [nzGutter]="24">
+    <div nz-col [nzSpan]="10">
+      <nz-form-item>
+        <nz-form-label [nzSpan]="8">{{"orderv3.components.select-deal.deal-form" | translate}}</nz-form-label>
+        <nz-form-control [nzSpan]="10">
+          <input nz-input [(ngModel)]="searchParams.dealFormId" placeholder="请输入Deal From Id">          
+        </nz-form-control>
+        <nz-form-control [nzSpan]="6">
+          <button nz-button class="ml3" nzType="primary" (click)="getTableData(true)" [nzSize]="6">
+            {{"orderv3.components.select-deal.search" | translate}}
+          </button>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+
+    <!-- <div nz-col [nzSpan]="16" style="text-align: left;">
+      <nz-form-item>
+        <nz-form-control>
+          <button nz-button class="ml10" nzType="primary" (click)="getTableData(true)" [nzSize]="6">
+            {{"orderv3.components.select-deal.search" | translate}}
+          </button>
+        </nz-form-control>
+      </nz-form-item>
+    </div> -->
+  </div>
+
+  <div class="table-container">
+    <nz-table [nzData]="tableData.rows" [nzShowTotal]="totalTemplate" [nzTotal]="tableData.total"
+      [nzLoading]="tableData.loading" [nzPageSizeOptions]="[5, 10, 20, 30, 40, 50 ]" [nzShowQuickJumper]="true"
+      [nzShowSizeChanger]="true" [nzFrontPagination]="false" [nzScroll]="{ y: '300px' }"
+      [(nzPageIndex)]="searchParams.pageNo" [(nzPageSize)]="searchParams.pageSize" (nzPageIndexChange)="getTableData()"
+      (nzPageSizeChange)="getTableData()">
+      <thead>
+        <tr>
+          <th nzWidth="160px" nzAlign="left">{{"orderv3.components.select-deal.deal-form-id" | translate}}</th>
+          <th nzAlign="left">{{"orderv3.components.select-deal.hospital-name" | translate}}</th>
+          <th nzWidth="80px" nzAlign="left">{{"orderv3.components.select-deal.action" | translate}}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of tableData.rows">
+          <td nzAlign="left">{{item.dealFormId}} <i *ngIf="item.dealFormId==searchParams.id" class="icon" nz-icon
+              nzType="check" nzTheme="outline"></i></td>
+          <td nzAlign="left">{{ item.hospitalName}}</td>
+          <td nzAlign="left">
+            <button nz-button nzSize="small" nzType="primary" (click)="onSelect(item)">
+              {{"orderv3.components.select-deal.select" | translate}}
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </nz-table>
+
+    <ng-template #totalTemplate let-total>
+      {{"orderv3.components.select-deal.total" | translate: { total : tableData.total } }}
+    </ng-template>
+  </div>
+</nz-modal>

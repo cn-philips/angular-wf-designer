@@ -7,9 +7,7 @@
 @import "~vendor/libs/ngx-swiper-wrapper/mixins";
 @import "~vendor/libs/spinkit/mixins";
 @import "~vendor/libs/plyr/mixins";
-@import "~vendor/libs/ng-select/mixins";
 @import "~vendor/libs/ngx-chips/mixins";
-@import "~vendor/libs/ngx-datatable/mixins";
 @import "~vendor/libs/ng2-archwizard/mixins";
 @import "~vendor/libs/angular-calendar/mixins";
 
@@ -23,9 +21,7 @@
   @include swiper-theme($background);
   @include spinkit-theme($background);
   @include plyr-theme($background, $color);
-  @include ng-select-theme($background, $color);
   @include ngx-chips-theme($background, $color);
-  @include ngx-datatable-theme($background, $color);
   @include ng2-archwizard-theme($background);
   @include angular-calendar-theme($background, $color);
 }
@@ -37,9 +33,7 @@
   @include swiper-theme($background);
   @include spinkit-theme($background);
   @include plyr-theme($background, $color);
-  @include material-ng-select-theme($background, $color);
   @include ngx-chips-theme($background, $color);
-  @include ngx-datatable-theme($background, $color);
   @include ng2-archwizard-theme($background);
   @include angular-calendar-theme($background, $color);
 }

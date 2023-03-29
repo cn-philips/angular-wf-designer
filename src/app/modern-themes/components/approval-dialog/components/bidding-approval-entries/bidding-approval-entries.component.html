@@ -1,0 +1,63 @@
+<div class="approval-dialog-content">
+  <app-approval-card [backgroundColor]="backgroundColor">
+    <div title>{{ "importing-card.bidding.by-deal-form-id" | translate }}</div>
+    <div content>
+      <form [formGroup]="dealForm" nz-form>
+        <nz-form-item>
+          <nz-form-control>
+            <input
+              [placeholder]="
+                'common._type_in' | translate: { name: 'Deal Form ID' }
+              "
+              formControlName="dealFormId"
+              nz-input
+            />
+          </nz-form-control>
+        </nz-form-item>
+      </form>
+    </div>
+
+    <div desc>
+      <button
+        [disabled]="dealForm.invalid"
+        style="float: right"
+        nz-button
+        (click)="handleImportByDealFormId()"
+        nzType="primary"
+        [nzLoading]="isLoading"
+      >
+        {{ "common.import" | translate }}
+      </button>
+    </div>
+  </app-approval-card>
+  <app-approval-card [backgroundColor]="backgroundColor">
+    <div title>{{ "importing-card.bidding.by-simulation-id" | translate }}</div>
+    <div content>
+      <form [formGroup]="simulationForm" nz-form>
+        <nz-form-item>
+          <nz-form-control>
+            <input
+              [placeholder]="
+                'common._type_in' | translate: { name: 'Simulation ID' }
+              "
+              formControlName="simulationId"
+              nz-input
+            />
+          </nz-form-control>
+        </nz-form-item>
+      </form>
+    </div>
+    <div desc>
+      <button
+        [disabled]="simulationForm.invalid"
+        style="float: right"
+        nz-button
+        nzType="primary"
+        (click)="handleImportBySimulationId()"
+        [nzLoading]="isLoading"
+      >
+        {{ "common.import" | translate }}
+      </button>
+    </div>
+  </app-approval-card>
+</div>

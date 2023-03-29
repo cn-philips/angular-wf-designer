@@ -1,0 +1,32 @@
+<div class="approval-dialog-content">
+  <app-approval-card [backgroundColor]="backgroundColor">
+    <div title>{{ "importing-card.order.by-deal-form-id" | translate }}</div>
+    <div content>
+      <form [formGroup]="form" nz-form>
+        <nz-form-item>
+          <nz-form-control>
+            <input
+              [placeholder]="
+                'common._type_in' | translate: { name: 'Deal Form ID' }
+              "
+              nz-input
+              formControlName="dealFormId"
+            />
+          </nz-form-control>
+        </nz-form-item>
+      </form>
+    </div>
+    <div desc>
+      <button
+        [disabled]="form.invalid"
+        style="float: right"
+        nz-button
+        nzType="primary"
+        [nzLoading]="isLoading"
+        (click)="handleImport()"
+      >
+        {{ "common.import" | translate }}
+      </button>
+    </div>
+  </app-approval-card>
+</div>

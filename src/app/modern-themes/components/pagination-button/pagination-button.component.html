@@ -1,0 +1,19 @@
+<div
+  [ngClass]="{
+    'pagination-button': true,
+    'pagination-button-left': direction === 'previous',
+    'pagination-button-right': direction === 'next',
+    'pagination-button-disabled': disabled,
+    'pagination-button-absolute': type
+  }"
+  [ngStyle]="style"
+  (click)="handleClick($event)"
+>
+  <div>
+    <i
+      nz-icon
+      [nzType]="this.direction === 'previous' ? 'left' : 'right'"
+      nzTheme="outline"
+    ></i>
+  </div>
+</div>

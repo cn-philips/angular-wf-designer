@@ -1,0 +1,18 @@
+<div class="card-wrapper">
+  <div
+    *ngFor="let item of list"
+    class="card {{
+      listTitle === item.name ? item.class + 'Selected' : item.class
+    }}"
+    [ngClass]="{disabled:!item.hasPermission}"
+    (click)="item.hasPermission&&changeItem(item.name)"
+  >
+    <div class="img"></div>
+    <div class="actionName">
+      {{ "dashboard." + item.name | translate }}
+    </div>
+    <div class="amount">
+      {{ item.amount }}
+    </div>
+  </div>
+</div>

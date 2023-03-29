@@ -1,0 +1,577 @@
+<form nz-form [formGroup]="searchForm">
+  <div
+    nz-row
+    nzType="flex"
+    nzJustify="start"
+    nzAlign="middle"
+    class="search-form-wrap"
+    [nzGutter]="{ xxl: 48, xl: 36, md: 24, xs: 0 }"
+  >
+    <div nz-col nzXs="24" nzMd="12" nzXl="8">
+      <nz-form-item>
+        <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6">
+          {{ "list-pages.search-form.form.task-owner" | translate }}
+        </nz-form-label>
+        <nz-form-control nzXs="24" nzMd="14" nzXl="16" nzXXl="18">
+          <!-- <input nz-input formControlName="taskAssignee" placeholder="" /> -->
+
+          <nz-select
+            formControlName="taskAssignee"
+            nzShowSearch
+            nzAllowClear
+            nzPlaceHolder="用户邮箱模糊查询"
+            [nzServerSearch]="true"
+            (nzOnSearch)="handleSearchUser($event)"
+          >
+            <ng-container *ngFor="let item of selectOptions.taskAssignee">
+              <nz-option
+                *ngIf="!searchLoading"
+                [nzValue]="item.value"
+                [nzLabel]="item.label"
+              ></nz-option>
+            </ng-container>
+            <nz-option *ngIf="searchLoading" nzDisabled nzCustomContent>
+              <i nz-icon type="loading" class="loading-icon"></i> 查询中....
+            </nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+
+    <div nz-col nzXs="24" nzMd="12" nzXl="8">
+      <nz-form-item>
+        <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6">
+          {{ "list-pages.search-form.form.task-owner-status" | translate }}
+        </nz-form-label>
+        <nz-form-control nzXs="24" nzMd="14" nzXl="16" nzXXl="18">
+          <nz-radio-group formControlName="taskAssigneeStatus">
+            <label nz-radio [nzValue]="null">
+              {{ "list-pages.search-form.form.all" | translate }}
+            </label>
+            <!-- <label nz-radio [nzValue]="1">
+            {{ "list-pages.search-form.form.valid" | translate }}
+          </label> -->
+            <label nz-radio [nzValue]="0">
+              {{ "list-pages.search-form.form.invalid" | translate }}
+            </label>
+          </nz-radio-group>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+
+    <ng-container *ngIf="!isCollapse">
+      <div nz-col nzXs="24" nzMd="12" nzXl="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6">
+            {{ "list-pages.search-form.form.reference-no" | translate }}
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzMd="14" nzXl="16" nzXXl="18">
+            <input nz-input formControlName="referenceId" placeholder="" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzXs="24" nzMd="12" nzXl="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6">
+            {{ "list-pages.search-form.form.hospital-name" | translate }}
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzMd="14" nzXl="16" nzXXl="18">
+            <input nz-input formControlName="hospitalName" placeholder="" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+
+      <div nz-col nzXs="24" nzMd="12" nzXl="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6">
+            {{ "list-pages.search-form.form.applicant" | translate }}
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzMd="14" nzXl="16" nzXXl="18">
+            <input nz-input formControlName="applicant" placeholder="" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzXs="24" nzMd="12" nzXl="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6">
+            {{ "list-pages.search-form.form.opportunity-id" | translate }}
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzMd="14" nzXl="16" nzXXl="18">
+            <input nz-input formControlName="opportunityId" placeholder="" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzXs="24" nzMd="12" nzXl="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6">
+            {{ "list-pages.search-form.form.so" | translate }}
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzMd="14" nzXl="16" nzXXl="18">
+            <input nz-input formControlName="so" placeholder="" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzXs="24" nzMd="12" nzXl="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6">
+            {{ "list-pages.search-form.form.oit-mode" | translate }}
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzMd="14" nzXl="16" nzXXl="18">
+            <nz-select
+              formControlName="oitMode"
+              style="width: 100%"
+              nzShowSearch
+              nzAllowClear
+              nzPlaceHolder=""
+            >
+              <nz-option
+                *ngFor="let item of selectOptions.oitMode"
+                [nzValue]="item.code"
+                [nzLabel]="item.label"
+              ></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzXs="24" nzMd="12" nzXl="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6">
+            {{ "list-pages.search-form.form.dealform-id" | translate }}
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzMd="14" nzXl="16" nzXXl="18">
+            <input nz-input formControlName="dealFormId" placeholder="" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzXs="24" nzMd="12" nzXl="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6">
+            {{ "list-pages.search-form.form.bmc" | translate }}
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzMd="14" nzXl="16" nzXXl="18">
+            <nz-select
+              formControlName="bmc"
+              style="width: 100%"
+              nzShowSearch
+              nzAllowClear
+              nzPlaceHolder=""
+            >
+              <nz-option
+                *ngFor="let item of selectOptions.bmc"
+                [nzValue]="item.code"
+                [nzLabel]="item.label"
+              ></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzXs="24" nzMd="12" nzXl="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6">
+            {{ "list-pages.search-form.form.product-model" | translate }}
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzMd="14" nzXl="16" nzXXl="18">
+            <input nz-input formControlName="productModel" placeholder="" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzXs="24" nzMd="12" nzXl="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6">
+            {{ "list-pages.search-form.form.dealer-name" | translate }}
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzMd="14" nzXl="16" nzXXl="18">
+            <input nz-input formControlName="dealerName" placeholder="" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzXs="24" nzMd="12" nzXl="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6">
+            {{ "list-pages.search-form.form.big-area" | translate }}
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzMd="14" nzXl="16" nzXXl="18">
+            <nz-select
+              formControlName="bigArea"
+              style="width: 100%"
+              nzShowSearch
+              nzAllowClear
+              nzPlaceHolder=""
+            >
+              <nz-option
+                *ngFor="let item of selectOptions.bigArea"
+                [nzValue]="item.code"
+                [nzLabel]="item.label"
+              ></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzXs="24" nzMd="12" nzXl="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6">
+            {{ "list-pages.search-form.form.bidding-number" | translate }}
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzMd="14" nzXl="16" nzXXl="18">
+            <input nz-input formControlName="biddingNumber" placeholder="" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzXs="24" nzMd="12" nzXl="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6">
+            {{ "list-pages.search-form.form.bidder-name" | translate }}
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzMd="14" nzXl="16" nzXXl="18">
+            <input nz-input formControlName="bidderName" placeholder="" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzXs="24" nzMd="12" nzXl="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6">
+            {{ "list-pages.search-form.form.small-area" | translate }}
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzMd="14" nzXl="16" nzXXl="18">
+            <input nz-input formControlName="smallArea" placeholder="" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzXs="24" nzMd="12" nzXl="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6">
+            {{ "list-pages.search-form.form.need-authorization" | translate }}
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzMd="14" nzXl="16" nzXXl="18">
+            <nz-select
+              formControlName="authorizationRequired"
+              nzShowSearch
+              nzAllowClear
+              nzPlaceHolder=""
+            >
+              <nz-option nzValue="1" nzLabel="是"></nz-option>
+              <nz-option nzValue="0" nzLabel="否"></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzXs="24" nzMd="12" nzXl="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6">
+            {{ "list-pages.search-form.form.business-model" | translate }}
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzMd="14" nzXl="16" nzXXl="18">
+            <nz-select
+              formControlName="businessModel"
+              style="width: 100%"
+              nzShowSearch
+              nzAllowClear
+              nzPlaceHolder=""
+            >
+              <nz-option
+                *ngFor="let item of selectOptions.businessModel"
+                [nzValue]="item.code"
+                [nzLabel]="item.label"
+              ></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzXs="24" nzMd="12" nzXl="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6">
+            {{ "list-pages.search-form.form.team" | translate }}
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzMd="14" nzXl="16" nzXXl="18">
+            <nz-select
+              formControlName="team"
+              nzShowSearch
+              nzAllowClear
+              nzPlaceHolder=""
+            >
+              <nz-option
+                *ngFor="let item of selectOptions.team"
+                [nzValue]="item.code"
+                [nzLabel]="item.label"
+              ></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzXs="24" nzMd="12" nzXl="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6">
+            {{ "list-pages.search-form.form.modality" | translate }}
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzMd="14" nzXl="16" nzXXl="18">
+            <nz-select
+              formControlName="modality"
+              style="width: 100%"
+              nzShowSearch
+              nzAllowClear
+              nzPlaceHolder=""
+            >
+              <nz-option
+                *ngFor="let item of selectOptions.modality"
+                [nzValue]="item.value"
+                [nzLabel]="item.label"
+              ></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+
+      <div nz-col nzXs="24" nzMd="12" nzXl="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6">
+            {{ "list-pages.search-form.form.submit-date" | translate }}
+          </nz-form-label>
+          <nz-form-control nzXs="12" nzMd="7" nzXl="8" nzXXl="9">
+            <nz-date-picker
+              formControlName="submitStartTime"
+              [nzPlaceHolder]="
+                'list-pages.search-form.form.start-date' | translate
+              "
+              style="width: 100%"
+              [nzStyle]="{ width: '100%' }"
+              [nzDisabledDate]="disabledStartDate"
+            >
+            </nz-date-picker>
+          </nz-form-control>
+          <nz-form-control nzXs="12" nzMd="7" nzXl="8" nzXXl="9">
+            <nz-date-picker
+              formControlName="submitEndTime"
+              [nzPlaceHolder]="
+                'list-pages.search-form.form.end-date' | translate
+              "
+              style="width: 100%"
+              [nzStyle]="{ width: '100%' }"
+              [nzDisabledDate]="disabledEndDate"
+            >
+            </nz-date-picker>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+
+      <div nz-col nzXs="24" nzMd="12" nzXl="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6">
+            {{ "list-pages.search-form.form.oit-month" | translate }}
+          </nz-form-label>
+          <nz-form-control nzXs="12" nzMd="7" nzXl="8" nzXXl="9">
+            <nz-month-picker
+              formControlName="oitStartMonth"
+              [nzPlaceHolder]="
+                'list-pages.search-form.form.start-month' | translate
+              "
+              style="width: 100%"
+              [nzStyle]="{ width: '100%' }"
+              [nzDisabledDate]="disabledStartMonth"
+            >
+            </nz-month-picker>
+          </nz-form-control>
+          <nz-form-control nzXs="12" nzMd="7" nzXl="8" nzXXl="9">
+            <nz-month-picker
+              formControlName="oitEndMonth"
+              [nzPlaceHolder]="
+                'list-pages.search-form.form.end-month' | translate
+              "
+              style="width: 100%"
+              [nzStyle]="{ width: '100%' }"
+              [nzDisabledDate]="disabledEndMonth"
+            >
+            </nz-month-picker>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </ng-container>
+
+    <div
+      nz-col
+      nzXs="24"
+      nzMd="24"
+      [nzXl]="{ span: 8, offset: isCollapse ? 0 : 8 }"
+    >
+      <nz-form-item style="text-align: right; white-space: nowrap">
+        <nz-form-control nzSpan="24">
+          <button nz-button nzType="primary" (click)="handleSearch()">
+            <i nz-icon type="search"></i
+            >{{ "list-pages.search-form.form.search" | translate }}
+          </button>
+          <button nz-button style="margin: 0 10px" (click)="handleReset()">
+            <i nz-icon nzType="undo" nzTheme="outline"></i
+            >{{ "list-pages.search-form.form.clear" | translate }}
+          </button>
+
+          <span class="collapse-btn" (click)="handleToggleCollapse()">
+            <span>
+              {{
+                (isCollapse
+                  ? "list-pages.search-form.form.expand"
+                  : "list-pages.search-form.form.collapse"
+                ) | translate
+              }}
+            </span>
+            <i nz-icon [type]="isCollapse ? 'down' : 'up'"></i>
+          </span>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+</form>
+
+<button
+  nz-button
+  [disabled]="checkedRows().length === 0"
+  [nzType]="'primary'"
+  (click)="handleShowAssignDialog()"
+>
+  {{ "list-pages.transfer.transfer" | translate }}
+</button>
+
+<div class="table-container">
+  <nz-table
+    nzVirtualScroll
+    [nzData]="dataTable.list"
+    [nzVirtualItemSize]="10"
+    nzFrontPagination="false"
+    [nzPageIndex]="pageParams.pageNo"
+    [nzPageSize]="pageParams.pageSize"
+    [nzTotal]="dataTable.total"
+    [nzLoading]="dataTable.loading"
+    [nzScroll]="{ x: '2200px', y: '600px' }"
+    (nzPageIndexChange)="handleSearch($event)"
+    [nzShowTotal]="totalTemplate"
+    (nzPageSizeChange)="handlePageSizeChange($event)"
+    style="margin-top: 16px"
+  >
+    <thead>
+      <tr>
+        <th class="table-header" nzWidth="50px">
+          <label
+            [nzChecked]="allChecked()"
+            (nzCheckedChange)="handleCheckAll($event)"
+            nz-checkbox
+            style="display: inline-block"
+          >
+          </label>
+        </th>
+        <th class="table-header" nzAlign="center" style="width: 220px">
+          {{ "list-pages.search-form.form.task-owner" | translate }}
+        </th>
+        <th class="table-header" nzAlign="center" style="width: 200px">
+          {{ "list-pages.table-header.task-status" | translate }}
+        </th>
+        <th class="table-header" nzAlign="center" style="width: 220px">
+          {{ "list-pages.table-header.ref-no" | translate }}
+        </th>
+        <th class="table-header" nzAlign="center" style="width: 220px">
+          {{ "list-pages.table-header.applicant" | translate }}
+        </th>
+        <th class="table-header" nzAlign="center" style="width: 240px">
+          {{ "list-pages.table-header.hospital-name" | translate }}
+        </th>
+        <th class="table-header" nzAlign="center" style="width: 240px">
+          {{ "list-pages.table-header.dealer-name" | translate }}
+        </th>
+        <th class="table-header" nzAlign="center" style="width: 180px">
+          {{ "list-pages.table-header.business-model" | translate }}
+        </th>
+        <th class="table-header" nzAlign="center" style="width: 100px">
+          {{ "list-pages.table-header.oit-mode" | translate }}
+        </th>
+        <th class="table-header" nzAlign="center" style="width: 200px">
+          {{ "list-pages.table-header.so" | translate }}
+        </th>
+        <th class="table-header" nzAlign="center" style="width: 200px">
+          {{ "list-pages.table-header.bidding-number" | translate }}
+        </th>
+        <th class="table-header" nzAlign="center" style="width: 200px">
+          {{ "list-pages.table-header.market-bundle-name" | translate }}
+        </th>
+        <th class="table-header" nzAlign="center" style="width: 200px">
+          {{ "list-pages.table-header.bidder-name" | translate }}
+        </th>
+        <th class="table-header" nzAlign="center" style="width: 200px">
+          {{ "list-pages.table-header.third-check" | translate }}
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-template nz-virtual-scroll let-data let-index="index">
+        <tr>
+          <td nzWidth="50px">
+            <label
+              nz-checkbox
+              [ngModelOptions]="{ standalone: true }"
+              [(ngModel)]="checkedRowMap[data.id]"
+            ></label>
+          </td>
+          <td class="table-data" style="width: 220px" nzAlign="center">
+            {{ data.taskAssignee }}
+          </td>
+          <td
+            *ngIf="data.procPhase === 'p3'"
+            class="table-data"
+            style="width: 200px"
+            nzAlign="center"
+          >
+            {{ data.taskStatus | ProcessTaskStatusPipe | async }}
+          </td>
+          <td
+            *ngIf="data.procPhase != 'p3'"
+            class="table-data"
+            style="width: 200px"
+            nzAlign="center"
+          >
+            {{ data.taskStatus | ProcessStatusPipe }}
+          </td>
+          <td class="table-data" style="width: 220px" nzAlign="center">
+            {{ data.referenceId }}
+          </td>
+          <td class="table-data" style="width: 220px" nzAlign="center">
+            {{ data.applicant }}
+          </td>
+          <td class="table-data" style="width: 240px" nzAlign="center">
+            {{ data.hospitalName }}
+          </td>
+          <td class="table-data" style="width: 240px" nzAlign="center">
+            {{ data.dealerName }}
+          </td>
+          <td class="table-data" style="width: 180px" nzAlign="center">
+            {{ data.businessModel | ProcessModel }}
+          </td>
+          <td class="table-data" style="width: 100px" nzAlign="center">
+            {{ transformOitMode(data.oitMode) }}
+          </td>
+          <td class="table-data" style="width: 200px" nzAlign="center">
+            {{ data.so }}
+          </td>
+          <td class="table-data" style="width: 200px" nzAlign="center">
+            {{ data.biddingNumber }}
+          </td>
+          <td class="table-data" style="width: 200px" nzAlign="center">
+            {{ data.marketBundleName }}
+          </td>
+          <td class="table-data" style="width: 200px" nzAlign="center">
+            {{ data.bidderName }}
+          </td>
+          <td class="table-data" style="width: 200px" nzAlign="center">
+            {{ data.productVerificationInformation }}
+          </td>
+        </tr>
+      </ng-template>
+    </tbody>
+  </nz-table>
+  <ng-template #totalTemplate let-total>
+    {{ "list-pages.list-total" | translate : { total: dataTable.total } }}
+  </ng-template>
+</div>
+
+<task-assign-dialog
+  [checkedRows]="checkedRows()"
+  [visible]="assignDialogVisible"
+  [isOit]="true"
+  (close)="assignDialogVisible = false"
+  (success)="handleAssignSuccess()"
+></task-assign-dialog>

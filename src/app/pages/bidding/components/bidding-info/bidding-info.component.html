@@ -1,0 +1,427 @@
+<!--isDisable 1 显示上传按钮 2显示下载，3下载和上传同时显示-->
+<app-apploading [load]="load"></app-apploading>
+<form nz-form [formGroup]="validateForm">
+  <div nz-row nzType="flex" nzJustify="start" nzAlign="right">
+    <div nz-col nzSpan="24" *ngIf="isChan2()">
+      <nz-form-item>
+        <nz-form-label [nzSm]="4" [nzXs]="24">{{biddingNoType?'Bidding Award Notice':'End User contract'}}<br>{{biddingNoType?'中标通知书':'最终用户合同'}}</nz-form-label>
+        <nz-form-control [nzSm]="4" [nzXs]="24"style="margin-top: 15px">
+          <div>
+          <nz-upload *ngIf="isDisable==1||isDisable==3"  [(nzFileList)]="fileNoticeList" [nzBeforeUpload]="beforeNoticeUpload" [nzLimit]="1" [nzPreview]="dwonLoad" [nzRemove]="nzRemovNotice">
+            <button [disabled]="flags==1"  nz-button><i nz-icon nzType="upload"></i><span>Upload 文件上传</span></button>
+          </nz-upload>
+          </div>
+          <button nz-tooltip [nzTitle]="data.bidWinningNoticeName" *ngIf="(isDisable==2||isDisable==3)&&data.bidWinningNotice" class="down link-tesk" nz-button nzType="link" (click)="fileDwon(data.bidWinningNotice)">{{data.bidWinningNoticeName}}</button>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzSpan="24" *ngIf="biddingNoType&&isChan2()">
+      <nz-form-item>
+        <nz-form-label [nzSm]="4" [nzXs]="24">Bidding Award Announcement<br>中标公告</nz-form-label>
+        <nz-form-control [nzSm]="7" [nzXs]="24">
+          <div class="maxuploadto">
+          <nz-upload *ngIf="isDisable==1||isDisable==3" [(nzFileList)]="fileAnnouncementList" [nzBeforeUpload]="beforeAnnouncementUpload" [nzLimit]="1" [nzPreview]="dwonLoad" [nzRemove]="beforeAnnouncementDel">
+            <button [disabled]="flags==1"  nz-button><i nz-icon nzType="upload" style="margin-top:10px"></i><span>Upload 文件上传</span></button>
+          </nz-upload>
+          </div>
+          <button nz-tooltip [nzTitle]="data.bidWinningAnnouncementName" *ngIf="(isDisable==2||isDisable==3)&&data.bidWinningAnnouncement" class="down link-tesk" nz-button nzType="link" (click)="fileDwon(data.bidWinningAnnouncement)">{{data.bidWinningAnnouncementName}}</button>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzSpan="24" *ngIf="infor&&infor.businessType!='DISTRIBUTOR'&&isChan2()">
+      <nz-form-item>
+        <nz-form-label nzRequired [nzSm]="4" [nzXs]="24">Commitment Document<br>投标及其他承诺文件</nz-form-label>
+        <nz-form-control [nzSm]="7" [nzXs]="24">
+          <div class="maxuploadto">
+          <nz-upload *ngIf="isDisable==1||isDisable==3" [(nzFileList)]="filecommitmentList" [nzBeforeUpload]="beforecommitmentUpload" [nzLimit]="1" [nzPreview]="dwonLoad" [nzRemove]="beforecommitmentDel">
+            <button [disabled]="flags==1"  nz-button><i nz-icon nzType="upload"></i><span>Upload 文件上传</span></button>
+          </nz-upload>
+          </div>
+          <button nz-tooltip [nzTitle]="data.commitmentDocumentName" *ngIf="(isDisable==2||isDisable==3)&&data.commitmentDocument" class="down link-tesk" nz-button nzType="link" (click)="fileDwon(data.commitmentDocument)">{{data.commitmentDocumentName}}</button>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzSpan="24" *ngIf="infor&&infor.businessType!='DISTRIBUTOR'&&isChan2()">
+      <nz-form-item>
+        <nz-form-label nzRequired [nzSm]="5" [nzXs]="24">Participation Declaration Letter<br>参与投标声明函</nz-form-label>
+        <nz-form-control [nzSm]="7" [nzXs]="24">
+          <div class="maxuploadto">
+          <nz-upload *ngIf="isDisable==1||isDisable==3" [(nzFileList)]="fileStatementList" [nzBeforeUpload]="beforeStatementUpload" [nzLimit]="1" [nzPreview]="dwonLoad" [nzRemove]="beforeStatementDel">
+            <button [disabled]="flags==1"  nz-button><i nz-icon nzType="upload"></i><span>Upload 文件上传</span></button>
+          </nz-upload>
+          </div>
+          <button nz-tooltip [nzTitle]="data.statementName" *ngIf="(isDisable==2||isDisable==3)&&data.statement" class="down link-tesk" nz-button nzType="link" (click)="fileDwon(data.statement)">{{data.statementName}}</button>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzSpan="24">
+      <nz-form-item>
+        <nz-form-label nzRequired [nzSm]="4" [nzXs]="24">{{biddingNoTypeDemend?'Delivery Request Letter':'Site Survey Report'}}<br>{{biddingNoTypeDemend?'要货函':'Site Survey Report'}}</nz-form-label>
+        <nz-form-control [nzSm]="4" [nzXs]="24">
+          <div class="maxuploadto">
+          <nz-upload *ngIf="isDisable==1||isDisable==3"  [(nzFileList)]="filedemandLetterList" [nzBeforeUpload]="beforeDemandLetterUpload" [nzLimit]="1" [nzPreview]="dwonLoad" [nzRemove]="beforeDemandLetterDel">
+            <button  [disabled]="flags==1"  nz-button><i nz-icon nzType="upload"></i><span>Upload 文件上传</span></button>
+          </nz-upload>
+          </div>
+          <button nz-tooltip [nzTitle]="data.demandstLetterName" *ngIf="(isDisable==2||isDisable==3)&&data.demandLetter" class="down link-tesk" nz-button nzType="link" (click)="fileDwon(data.demandLetter)">{{data.demandLetterName}}</button>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzSpan="24" *ngIf="isChan2()">
+      <nz-form-item>
+        <nz-form-label  [nzSm]="4" [nzXs]="24">Site Survey Report<br>for Solution Deal<br>项目解决方案售前支持报告</nz-form-label>
+        <nz-form-control [nzSm]="7" [nzXs]="24" style="margin-top: 20px">
+          <div class="maxuploadto">
+          <nz-upload *ngIf="isDisable==1||isDisable==3"  [(nzFileList)]="fileSupportList" [nzBeforeUpload]="beforeSupportUpload" [nzLimit]="1" [nzPreview]="dwonLoad" [nzRemove]="beforeSupportDel">
+            <button  [disabled]="flags==1"  nz-button><i nz-icon nzType="upload"></i><span>Upload 文件上传</span></button>
+          </nz-upload>
+          </div>
+          <button nz-tooltip [nzTitle]="data.supportName" *ngIf="(isDisable==2||isDisable==3)&&data.support" class="down link-tesk" nz-button nzType="link" (click)="fileDwon(data.support)">{{data.supportName}}</button>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <!--  <div nz-col nzSpan="24">-->
+    <!--      <nz-form-item>-->
+    <!--          <nz-form-label [nzSm]="12" [nzXs]="24">场地勘验报告/要货函</nz-form-label>-->
+    <!--          <nz-form-control [nzSm]="4" [nzXs]="24">-->
+    <!--            <nz-upload nzAction="https://jsonplaceholder.typicode.com/posts/">-->
+    <!--              <button *ngIf="isDisable==1"  nz-button><i nz-icon nzType="upload"></i><span>文件上传</span></button>-->
+    <!--              <a  href="javascript:" *ngIf="isDisable==2||isDisable==3" href="javascript:">附件</a>-->
+    <!--            </nz-upload>-->
+    <!--          </nz-form-control>-->
+    <!--          <nz-form-control [nzSm]="8" [nzXs]="24" *ngIf="isChan">-->
+    <!--&lt;!&ndash;              <label nz-checkbox [disabled]="isDisable==2||isDisable==3"  [(ngModel)]="data.completionDate">预计机房完成日期小于6个月</label>&ndash;&gt;-->
+    <!--          </nz-form-control>-->
+    <!--      </nz-form-item>-->
+    <!--  </div>-->
+    <div nz-col nzSpan="24">
+      <nz-form-item>
+        <nz-form-label nzRequired [nzSm]="4" [nzXs]="24">Bidding Award Price<br> 中标价格</nz-form-label>
+        <nz-form-control [nzSm]="4" [nzXs]="24">
+          <!--不可编辑-->
+          <input nz-input *ngIf="(isDisable==2||isDisable==3) || flag" [ngModelOptions]="{standalone:true}" [disabled]="isDisable==2||isDisable==3 || flag" [(ngModel)]="data.biddingPrice" style="width: 100%" />
+          <!--可编辑-->
+          <input nz-input #price *ngIf="!(isDisable==2||isDisable==3) && !flag" formControlName='price' [disabled]="isDisable==2||isDisable==3" [(ngModel)]="data.biddingPrice" (ngModelChange)="toNumber($event)" />
+          <nz-form-explain
+            *ngIf="validateForm.get('price')?.dirty && validateForm.get('price')?.errors">
+            此选项必填字段
+          </nz-form-explain>
+        </nz-form-control>
+        <nz-form-control [nzSm]="2" [nzXs]="24" style="padding-left:4px;">
+          <!--不可编辑-->
+          <nz-select *ngIf="(isDisable==2||isDisable==3) || flag"  [ngModelOptions]="{standalone:true}" [disabled]="isDisable==2||isDisable==3 || flag" style="width: 100%;" [(ngModel)]="data.isUsdOrRmb"  nzAllowClear nzPlaceHolder="请选择币制">
+            <nz-option nzValue="USD" nzLabel="USD"></nz-option>
+            <nz-option nzValue="RMB" nzLabel="RMB"></nz-option>
+          </nz-select>
+          <!--可编辑-->
+          <nz-select *ngIf="!(isDisable==2||isDisable==3) && !flag" formControlName='pricetype' [disabled]="isDisable==2||isDisable==3" style="width: 100%;" [(ngModel)]="data.isUsdOrRmb"  nzAllowClear nzPlaceHolder="请选择币制">
+            <nz-option nzValue="USD" nzLabel="USD"></nz-option>
+            <nz-option nzValue="RMB" nzLabel="RMB"></nz-option>
+          </nz-select>
+          <nz-form-explain
+            *ngIf="validateForm.get('pricetype')?.dirty && validateForm.get('pricetype')?.errors">
+            此选项必填字段
+          </nz-form-explain>
+        </nz-form-control>
+        <nz-form-control [nzSm]="12" [nzXs]="24" style="min-width: 500px;">
+          <nz-form-item style="margin-left: 10px;width: 500px">Make sure the price is aligning with price in Notification of Award<br> 请确保中标价格与中标通知书金额一致</nz-form-item>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <!--<div nz-col nzSpan="24" *ngIf="isChan">
+        <nz-form-item>
+            <nz-form-label [nzSm]="12" [nzXs]="24">需后补备案文件</nz-form-label>
+            <nz-form-control [nzSm]="12" [nzXs]="24">
+              <div><label  [nzDisabled]="isDisable==2||isDisable==3" nz-checkbox [(ngModel)]="data.bidWinningNotices">中标通知书</label></div>
+              <div><label  [nzDisabled]="isDisable==2||isDisable==3"  nz-checkbox [(ngModel)]="data.bidWinningAnnouncement">中标公告</label></div>
+              <div class="flex">
+                <label class="mixwid"  [nzDisabled]="isDisable==2||isDisable==3"  nz-checkbox>其它</label>
+                <input  [disabled]="isDisable==2||isDisable==3" nz-input  [(ngModel)]="data.otherDocument" name="email" type="email">
+              </div>
+            </nz-form-control>
+        </nz-form-item>
+    </div>-->
+    <div nz-col nzSpan="24" *ngIf="isChan2()">
+      <nz-form-item>
+        <nz-form-label [nzSm]="4" [nzXs]="24">Description for Lack of Documents<br>文件缺失或需特批说明</nz-form-label>
+        <nz-form-control [nzSm]="6" [nzXs]="24">
+          <!--不可编辑-->
+          <textarea rows="4" *ngIf="(isDisable==2||isDisable==3) || flag" [disabled]="isDisable==2||isDisable==3 || flag"  nz-input [(ngModel)]="data.bidWinningbidExplain" [ngModelOptions]="{standalone: true}"></textarea>
+          <!--可编辑-->
+          <textarea rows="4" *ngIf="!(isDisable==2||isDisable==3) && !flag" nz-input [(ngModel)]="data.bidWinningbidExplain" [ngModelOptions]="{standalone: true}"></textarea>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+
+    <div nz-col nzSpan="24">
+      <nz-form-item>
+        <nz-form-label [nzSm]="4" [nzXs]="24" nzRequired>Sample Check<br>是否特价项目</nz-form-label>
+        <nz-form-control [nzSm]="6" [nzXs]="24">
+          <!--不可编辑-->
+      <nz-radio-group rows="4" *ngIf="(isDisable==2||isDisable==3) || flag" [disabled]="isDisable==2||isDisable==3 || flag" nzSize="default" [ngModelOptions]="{standalone: true}"
+                      [(ngModel)]="data.isSpecial" style="margin-top: 20px;">
+        <label nz-radio nzValue="1">Y 是</label>
+        <label nz-radio nzValue="0">N 否</label>
+      </nz-radio-group>
+          <!--可编辑-->
+      <nz-radio-group rows="4" *ngIf="!(isDisable==2||isDisable==3) && !flag" nzSize="default" formControlName="isSpecial"
+                      [(ngModel)]="data.isSpecial">
+        <label nz-radio nzValue="1">Y 是</label>
+        <label nz-radio nzValue="0">N 否</label>
+      </nz-radio-group>
+      <nz-form-explain
+        *ngIf="validateForm.get('isSpecial')?.dirty && validateForm.get('isSpecial')?.errors">
+        此选项必填字段
+      </nz-form-explain>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+
+    <!--中标日期   可选择-->
+    <div nz-col nzSpan="24" *ngIf="isChan2()&&!(isDisable==2||isDisable==3)&&!flag">
+      <nz-form-item class="mb6">
+        <nz-form-label [nzSpan]="4" nzRequired nzFor="email">Bidding Award Date<br>中标日期</nz-form-label>
+        <nz-form-control [nzSpan]="7">
+          <!--          <input ngModel [(ngModel)]="data.bidWinningTime" formControlName='time' class="form-control" [disabled]="isDisable==2||isDisable==3" name="createTimeStart" ngbDatepicker navigation="'select'" #d1="ngbDatepicker">-->
+          <nz-date-picker formControlName="time" [(ngModel)]="data.bidWinningTime"  [disabled]="isDisable==2||isDisable==3" name="createTimeStart"></nz-date-picker>
+          <!--          <input ngModel [(ngModel)]="data.bidWinningTime" [ngModelOptions]="{standalone: true}" class="form-control" [disabled]="isDisable==2||isDisable==3" name="createTimeStart" ngbDatepicker navigation="'select'" #d1="ngbDatepicker">-->
+          <nz-form-explain
+            *ngIf="validateForm.get('time')?.dirty && validateForm.get('time')?.errors">
+            此选项必填字段
+          </nz-form-explain>
+        </nz-form-control>
+        <nz-form-control [nzSpan]="4">
+          <!--        <button class="input-group-text" [disabled]="isDisable==2||isDisable==3" (click)="d1.toggle()" type="button" style="margin: 0 !important;">-->
+          <!--          <span class="ion ion-md-calendar" style="cursor: pointer;"></span>-->
+          <!--        </button>-->
+        </nz-form-control>
+
+      </nz-form-item>
+    </div>
+
+    <!--中标日期   不可选择-->
+    <div nz-col nzSpan="24" *ngIf="isChan2()&&((isDisable==2||isDisable==3)||flag)">
+      <nz-form-item class="mb6">
+        <nz-form-label [nzSpan]="4" nzRequired nzFor="email">Bidding Award Date<br>中标日期</nz-form-label>
+        <nz-form-control [nzSpan]="7">
+          <!--          <input [(ngModel)]="data.bidWinningTime" [ngModelOptions]="{standalone: true}" class="form-control" [disabled]="isDisable==2||isDisable==3" name="createTimeStart">-->
+          <nz-date-picker [ngModelOptions]="{standalone: true}" [(ngModel)]="data.bidWinningTime"  [disabled]="isDisable==2||isDisable==3||flag" name="createTimeStart"></nz-date-picker>
+          <!--          <input ngModel [(ngModel)]="data.bidWinningTime" [ngModelOptions]="{standalone: true}" class="form-control" [disabled]="isDisable==2||isDisable==3" name="createTimeStart" ngbDatepicker navigation="'select'" #d1="ngbDatepicker">-->
+          <nz-form-explain
+            *ngIf="validateForm.get('time')?.dirty && validateForm.get('time')?.errors">
+            此选项必填字段
+          </nz-form-explain>
+        </nz-form-control>
+        <nz-form-control [nzSpan]="4">
+          <!--          <button class="input-group-text" [disabled]="isDisable==2||isDisable==3" type="button" style="margin: 0 !important;">-->
+          <!--            <span class="ion ion-md-calendar" style="cursor: pointer;"></span>-->
+          <!--          </button>-->
+        </nz-form-control>
+
+      </nz-form-item>
+    </div>
+
+  </div>
+  <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+    <!--中标产品   可选择-->
+    <div nz-col nzSpan="24" *ngIf="!(isDisable==2||isDisable==3) && !flag">
+      <nz-form-item>
+        <nz-form-label [nzSm]="4" [nzXs]="24">Winning Product Details<br>中标产品信息</nz-form-label>
+        <nz-form-control [nzSm]="18" [nzXs]="24">
+          <div class="cheabox" *ngFor="let it of data.biddingProductlist">
+            <header>
+              <a href="javascript:" style="cursor: default;">Opportunity : {{it.opportunityId}}</a>
+              <a href="javascript:" style="cursor: default;" *ngIf="it.dealFormId != null && it.dealFormId != ''">&nbsp; Deal Form ID : {{it.dealFormId}}</a>
+            </header>
+            <div *ngIf="it.biddingProductlist">
+            <nz-table
+              #it2
+              [nzScroll]="{ x: '1710px' }"
+              [nzFrontPagination]="false"
+              [nzData]="it.biddingProductlist"
+            >
+              <thead>
+              <tr class="table-tr">
+                <th nzWidth="20px" nzLeft="0px">
+                  <label [nzDisabled]="isDisable==2||isDisable==3||flags==1"
+                         [nzChecked]="AllCheck(it2.data)"
+                         (nzCheckedChange)="CheckAll($event, it2.data)"
+                         nz-checkbox
+                         style="display: inline-block;"
+                  >
+                  </label>
+                </th>
+                <th nzWidth="150px">Opportunity ID</th>
+                <th nzWidth="100px">Cluster</th>
+                <th nzWidth="100px">BMC</th>
+<!--                <th nzWidth="100px">MAG</th>-->
+                <th nzWidth="300px">Product Model<br>产品型号</th>
+                <th nzWidth="350px">Market Bundle Name<br>本地产品名称</th>
+                <th nzWidth="100px"><span>Qty</span><br>台数</th>
+                <th nzWidth="170px">Create Date<br>创建时间</th>
+                <th nzWidth="170px">Creator<br>创建人</th>
+<!--                <th nzWidth="150px">Status<br>状态</th>-->
+                <th nzWidth="200px" nzRight="0px">Bidding Award Price<br>中标价格</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr *ngFor="let itmk of it2.data; let i = index" class="table-tr">
+                <td nzLeft="0px">
+                  <label [(ngModel)]="itmk.checked" [ngModelOptions]="{standalone: true}"
+                         [nzDisabled]="isDisable==2||isDisable==3||flags==1"
+                         nz-checkbox
+                         style="display: inline-block;"
+                  >
+                  </label>
+                </td>
+                <td>{{itmk.opportunityId}}</td>
+                <td>{{ itmk.cluster }}</td>
+                <td>{{ itmk.bmc }}</td>
+<!--                <td>{{ itmk.mag }}</td>-->
+                <td>{{ itmk.productModel }}</td>
+                <td>{{ itmk.marketBundleName }}</td>
+                <td>{{ itmk.number }}</td>
+                <td>{{ itmk.createdDate | TimeFormatePipeNow}}</td>
+                <td>{{ itmk.createUser }}</td>
+<!--                <td>{{ itmk.status }}</td>-->
+                <td nzRight="0px"><input nz-input style="width: 180px" [id]="'c'+i+itmk.opportunityId+itmk.dealFormId" [ngModelOptions]="{standalone: true}"  [(ngModel)]="itmk.biddingPrice"  nzSize="default" (ngModelChange)="toNumber2($event, itmk.biddingPrice, 'c'+i+itmk.opportunityId+itmk.dealFormId)" /></td>
+              </tr>
+              </tbody>
+            </nz-table>
+            </div>
+
+<!--            <div *ngFor="let itmk of it.biddingProductlist;let i=index">-->
+<!--              <label [(ngModel)]="itmk.checked" [ngModelOptions]="{standalone: true}"-->
+<!--                     [nzDisabled]="isDisable==2||isDisable==3||flags==1"-->
+<!--                     nz-checkbox-->
+<!--                     style="display: inline-block;width: 135px"-->
+<!--              >{{itmk.marketBundleName}}-->
+<!--              </label>-->
+<!--              &nbsp;&nbsp;&nbsp;-->
+<!--              中标价格-->
+<!--              &nbsp;&nbsp;&nbsp;-->
+<!--              <input   style="width: 125px" [formControlName]='itmk.id' [(ngModel)]="itmk.biddingPrice"  nz-input nzSize="default" />-->
+<!--            </div>-->
+          </div>
+          <nz-form-explain  style="color: #f5222d !important;"
+                            *ngIf="validateForm.get('opp')?.dirty && validateForm.get('opp')?.errors">
+            <ng-container *ngIf="validateForm.get('opp')?.hasError('required')">
+              至少选择一个
+            </ng-container>
+          </nz-form-explain>
+        </nz-form-control>
+
+      </nz-form-item>
+    </div>
+
+    <!--中标产品  不可选-->
+    <div nz-col nzSpan="24" *ngIf="isDisable==2||isDisable==3 || flag">
+      <nz-form-item>
+        <nz-form-label [nzSm]="4" [nzXs]="24">Winning Product Details<br>中标产品信息</nz-form-label>
+        <nz-form-control [nzSm]="18" [nzXs]="24">
+          <div class="cheabox" *ngFor="let it of data.biddingProductlist">
+            <header>
+              <a href="javascript:" style="cursor: default;">Opportunity : {{it.opportunityId}}</a>
+              <a href="javascript:" style="cursor: default;" *ngIf="it.dealFormId != null && it.dealFormId != ''">&nbsp; Deal Form ID : {{it.dealFormId}}</a>
+            </header>
+
+            <div *ngIf="it.biddingProductlist">
+              <nz-table
+                #it2
+                [nzScroll]="{ x: '1710px' }"
+                [nzFrontPagination]="false"
+                [nzData]="it.biddingProductlist"
+              >
+                <thead>
+                <tr class="table-tr">
+                  <th nzWidth="20px" nzLeft="0px">
+                    <label [nzDisabled]="isDisable==2||isDisable==3||flags==1"
+                           [nzChecked]="AllCheck(it2.data)"
+                           (nzCheckedChange)="CheckAll($event, it2.data)"
+                           nz-checkbox
+                           style="display: inline-block;"
+                    >
+                    </label>
+                  </th>
+                  <th nzWidth="150px">Opportunity ID</th>
+                  <th nzWidth="100px">Cluster</th>
+                  <th nzWidth="100px">BMC</th>
+<!--                  <th nzWidth="100px">MAG</th>-->
+                  <th nzWidth="300px">Product Model<br>产品型号</th>
+                  <th nzWidth="350px">Market Bundle Name<br>本地产品名称</th>
+                  <th nzWidth="100px">Qty<br>台数</th>
+                  <th nzWidth="170px">Create Date<br>创建时间</th>
+                  <th nzWidth="170px">Creator<br>创建人</th>
+<!--                  <th nzWidth="150px">Status<br>状态</th>-->
+                  <th nzWidth="200px" nzRight="0px">Bidding Award Price<br>中标价格</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let itmk of it2.data" class="table-tr">
+                  <td nzLeft="0px">
+                    <label [(ngModel)]="itmk.checked" [ngModelOptions]="{standalone: true}"
+                           [nzDisabled]="true"
+                           nz-checkbox
+                           style="display: inline-block;"
+                    >
+                    </label>
+                  </td>
+                  <td>{{itmk.opportunityId}}</td>
+                  <td>{{ itmk.cluster }}</td>
+                  <td>{{ itmk.bmc }}</td>
+<!--                  <td>{{ itmk.mag }}</td>-->
+                  <td>{{ itmk.productModel }}</td>
+                  <td>{{ itmk.marketBundleName }}</td>
+                  <td>{{ itmk.number }}</td>
+                  <td>{{ itmk.createdDate | TimeFormatePipe}}</td>
+                  <td>{{ itmk.createUser }}</td>
+<!--                  <td>{{ itmk.status }}</td>-->
+                  <td nzRight="0px"><nz-input-number style="width: 180px" [ngModelOptions]="{standalone: true}" [(ngModel)]="itmk.biddingPrice" nzSize="default" [nzMin]="0" [nzMax]="99999999999999999.99" [nzDisabled]="true"></nz-input-number></td>
+                </tr>
+                </tbody>
+              </nz-table>
+            </div>
+
+<!--            <div *ngFor="let itmk of it.biddingProductlist;let i=index">-->
+<!--              <label [(ngModel)]="itmk.checked" [ngModelOptions]="{standalone: true}"-->
+<!--                     [nzDisabled]="true"-->
+<!--                     nz-checkbox-->
+<!--                     style="display: inline-block;width: 135px"-->
+<!--              >{{itmk.marketBundleName}}-->
+<!--              </label>-->
+<!--              &nbsp;&nbsp;&nbsp;-->
+<!--              中标价格-->
+<!--              &nbsp;&nbsp;&nbsp;-->
+<!--              <input  style="width: 125px" Disabled="true" [formControlName]='itmk.id' [(ngModel)]="itmk.biddingPrice"  nz-input nzSize="default" />-->
+<!--            </div>-->
+          </div>
+
+          <!-- <div class="cheabox" *ngFor="let it of OpportunityId">
+            <header>
+              <a href="javascript:">Opportunity{{it}}</a>
+            </header>
+            <div *ngFor="let itmk of data.biddingProductlist">
+             <div *ngFor="let itmk2 of itmk.biddingProductlist">
+              <label *ngIf="itmk.opportunityId==it"
+                     [nzDisabled]="isDisable==2||isDisable==3 || flag"
+                     nz-checkbox nzChecked
+                     style="display: inline-block;width: 135px">{{itmk.marketBundleName}}</label>
+             </div>
+              &nbsp;&nbsp;&nbsp;
+              中标价格
+              &nbsp;&nbsp;&nbsp;
+              <input style="width: 125px" nz-input nzSize="default" [disabled]="isDisable==2||isDisable==3 || flag" />
+            </div>
+          </div> -->
+          <!--        <nz-form-explain  style="color: #f5222d !important;"-->
+          <!--                          *ngIf="validateForm.get('opp')?.dirty && validateForm.get('opp')?.errors">-->
+          <!--          <ng-container *ngIf="validateForm.get('opp')?.hasError('required')">-->
+          <!--            至少选择一个-->
+          <!--          </ng-container>-->
+          <!--        </nz-form-explain>-->
+        </nz-form-control>
+
+      </nz-form-item>
+    </div>
+  </div>
+</form>

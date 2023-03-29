@@ -1,0 +1,101 @@
+<app-tabs>
+  <app-tab title="'Option list'">
+    <nz-table class="mt10" #baseTable [nzData]="optionInfo" nzTableLayout="fixed" [nzScroll]="{ x:'800px'}"
+      [nzShowPagination]="true" nzFrontPagination="true" nzBordered>
+      <thead>
+        <tr>    
+          <th nzAlign="center" nzWidth="100px">{{"orderv3.components.option-table.option-name" | translate}}</th>
+          <th nzAlign="center" style="width:60px">{{"orderv3.components.option-table.qty" | translate}}</th> 
+          <th nzLeft="0px" nzAlign="center" style="width:180px" nzWidth="100px">{{"orderv3.components.option-table.no" | translate}}</th>  
+          <ng-container *ngIf="orderBaseinfoData&&orderBaseinfoData.getRawValue()">     
+            <th nzAlign="center" *ngIf="orderBaseinfoData.getRawValue().currencySystem=='CNY'" style="width:100px">{{"orderv3.components.option-table.singlePriceCny"|translate}}</th>  
+           </ng-container>  
+           <ng-container *ngIf="orderBaseinfoData&&orderBaseinfoData.getRawValue()">  
+          <th nzAlign="center" *ngIf="orderBaseinfoData.getRawValue().currencySystem=='USD'" style="width:100px">{{"orderv3.components.option-table.singlePriceUsd"|translate}}</th> 
+          </ng-container>
+          <ng-container *ngIf="orderBaseinfoData&&orderBaseinfoData.getRawValue()">  
+           <th nzAlign="center" *ngIf="orderBaseinfoData.getRawValue().currencySystem=='CNY'" style="width:100px" nzWidth="100px">{{"orderv3.components.option-table.price-cny" | translate}}</th>
+          </ng-container> 
+          <ng-container *ngIf="orderBaseinfoData&&orderBaseinfoData.getRawValue()">  
+            <th nzAlign="center" *ngIf="orderBaseinfoData.getRawValue().currencySystem=='USD'" style="width:100px" nzWidth="100px">{{"orderv3.components.option-table.price-usd" | translate}}</th>
+          </ng-container>
+          <th nzAlign="center" style="width:100px" nzWidth="100px">{{"orderv3.components.option-table.medicalDeviceName" | translate}}</th>
+          <th nzAlign="center" style="width:100px" nzWidth="100px">{{"orderv3.components.option-table.productModel" | translate}}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let data of baseTable.data;index as j;">                 
+          <td nzAlign="center">
+            {{data.optionName}}
+          </td>
+          <td nzAlign="center">
+            {{data.qty}}            
+          </td> 
+          <td  nzAlign="center">
+            <div class="oppt">{{data.articleNo}}</div>  
+          </td>   
+          <ng-container *ngIf="orderBaseinfoData&&orderBaseinfoData.getRawValue()"> 
+            <td *ngIf="orderBaseinfoData.getRawValue().currencySystem=='CNY'" nzAlign="center">
+              {{data.singlePriceCny|priceAuthority:'details':'CC'}}
+            </td>  
+          </ng-container> 
+          <ng-container *ngIf="orderBaseinfoData&&orderBaseinfoData.getRawValue()">    
+            <td *ngIf="orderBaseinfoData.getRawValue().currencySystem=='USD'" nzAlign="center">
+              {{data.singlePriceUsd|priceAuthority:'details':'CC'}}
+            </td>  
+          </ng-container> 
+          <ng-container *ngIf="orderBaseinfoData&&orderBaseinfoData.getRawValue()">   
+            <td *ngIf="orderBaseinfoData.getRawValue().currencySystem=='CNY'" nzAlign="center">
+              {{data.priceCny|priceAuthority:'details':'CC'}}
+            </td>
+          </ng-container>
+          <ng-container *ngIf="orderBaseinfoData&&orderBaseinfoData.getRawValue()">  
+            <td *ngIf="orderBaseinfoData.getRawValue().currencySystem=='USD'" nzAlign="center">
+              {{data.priceUsd|priceAuthority:'details':'CC'}}
+            </td>
+          </ng-container>
+          <td nzAlign="center">                   
+            <nz-input-group [nzSuffix]="clearMedicalInfo">
+            <input
+              nz-input
+              [ngModelOptions]="{ standalone: true }"
+              [disabled]="orderBaseinfoData.getRawValue().optionDisabled"
+              [(ngModel)]="data.medicalDeviceName"
+              maxlength="255" />
+            </nz-input-group>
+            <ng-template #clearMedicalInfo>
+              <i
+                *ngIf="data.medicalDeviceName&&!orderBaseinfoData.getRawValue().optionDisabled"
+                nz-icon
+                nz-tooltip
+                class="ant-input-clear-icon"
+                nzTheme="fill"
+                nzType="close-circle"
+                (click)="clearDeviceName(data)"></i>
+            </ng-template>
+          </td>
+          <td nzAlign="center">  
+            <nz-input-group [nzSuffix]="clearproductModelInfo">          
+            <input
+              nz-input
+              [ngModelOptions]="{ standalone: true }"
+              [disabled]="orderBaseinfoData.getRawValue().optionDisabled"
+              [(ngModel)]="data.productModel"
+              maxlength="255" />
+            </nz-input-group>  
+            <ng-template #clearproductModelInfo>
+              <i
+                *ngIf="data.productModel&&!orderBaseinfoData.getRawValue().optionDisabled"
+                nz-icon
+                nz-tooltip
+                class="ant-input-clear-icon"
+                nzTheme="fill"
+                nzType="close-circle"
+                (click)="clearProductModelName(data)"></i>
+            </ng-template>
+          </td>
+        </tr>
+      </tbody>
+    </nz-table>
+  </app-tab>
+</app-tabs>

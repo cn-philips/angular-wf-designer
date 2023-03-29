@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 
-import { DictService } from './services/dict.service'
+import { DictService } from '@core/services/dict.service'
 
 @Injectable()
 export class AppService {

@@ -1,0 +1,27 @@
+.order-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+  &:nth-child(1) {
+    margin-top: 0;
+  }
+  a {
+    margin-left: 16px;
+    font-weight: bold;
+    color: #3798db;
+  }
+}
+
+.warning-wrap {
+  white-space: normal;
+  color: red !important;
+  padding: 11px 21px;
+  margin: 10px 20px;
+  font-size: 14px;
+
+  .view-detail {
+    font-weight: bold;
+    color: #3798db;
+  }
+}

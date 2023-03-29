@@ -1,0 +1,1683 @@
+<app-form-section *ngIf="projectSupporting()" class="mtb1rem" [form]="baseInfoTable"
+  title="{{ 'orderv3.components.pre-base-info-table.title' | translate }}">
+  <form nz-form [formGroup]="baseInfoTable" [nzNoColon]="true">
+    <nz-table class="global-ant-table-empty" nzBordered [nzShowPagination]="false">
+      <thead>
+        <tr>
+          <!--                    <th [width]="isContract && isResultVerify?'15%': '30%'" nzAlign="center">文件名称</th>-->
+          <th [width]="isContract && isResultVerify?'15%': '30%'" nzAlign="center">
+            {{ "orderv3.components.pre-base-info-table.thead.fileName" | translate }}</th>
+          <th width="25%" nzAlign="center">{{ "orderv3.components.pre-base-info-table.thead.fileType" | translate }}
+          </th>
+          <th width="45%" nzAlign="center">{{ "orderv3.components.pre-base-info-table.thead.file" | translate }}</th>
+          <th width="15%" nzAlign="center" *ngIf="isContract && isResultVerify">
+            {{ "orderv3.components.pre-base-info-table.thead.isChecked" | translate }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <ng-container *ngIf="isContract">
+          <tr>
+            <td nzAlign="center" [attr.rowspan]="rowspanClause">
+              {{ "orderv3.components.pre-base-info-table.tbody.contractConfirm" | translate }}<br>
+              <span style="color: red" *ngIf="hasNonStandardApprove()">
+                {{'点击"批准"按钮，表示已经认可"该非标条款"审核通过'}}
+              </span>
+            </td>
+            <td nzAlign="center">
+              <nz-form-label [nzNoColon]="true" [nzRequired]="provisionChang()">
+                <span
+                  [class]="(status=='ecos_oit_order_payment_terms'||status=='ecos_oit_order_payment_sup' && flag == '0')? 'red' : ''">
+                  {{ "orderv3.components.pre-base-info-table.tbody.paymentProvision" | translate }}
+                </span>
+              </nz-form-label>
+            </td>
+            <td nzAlign="center">
+              <div nz-row nzType="flex" nzJustify="start" nzAlign="top" nzGutter="5">
+                <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                  <nz-form-item>
+                    <nz-form-control nzXs="24" nzSm="24" nzMd="24" nz-tooltip
+                      [nzTitle]="baseInfoTable.getRawValue().paymentProvision">
+                      <ng-container *ngIf="!baseInfoTable.get('paymentProvision').disabled">
+                        <Label-popup [width]="200">
+                          <nz-select nzShowSearch formControlName="paymentProvision">
+                            <nz-option nzCustomContent *ngFor="let item of service.paymentLists"
+                              [nzLabel]="item.payment" [nzValue]="item.payment">
+                              <div nz-tooltip class="options" [nzTitle]="item.payment">
+                                {{item.payment}}
+                              </div>
+                            </nz-option>
+                          </nz-select>
+                          <ng-template labelPopupContent>可选择付款条款；如果非飞利浦标准条款，请在备注中描述。可上传支持文件（非必传）</ng-template>
+                        </Label-popup>
+                      </ng-container>
+                      <ng-container *ngIf="baseInfoTable.get('paymentProvision').disabled">
+                        <div nz-tooltip [nzTitle]="baseInfoTable.getRawValue().paymentProvision">
+                          <input nz-input formControlName="paymentProvision" maxlength="255" />
+                        </div>
+                      </ng-container>
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+                <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                  <nz-form-item>
+                    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle" nzGutter="20">
+                      <nz-form-control nz-col nzXs="24" nzSm="24" nzMd="24" nz-tooltip
+                        [nzTitle]="baseInfoTable.getRawValue().paymentProvisionRemarks">
+                        <textarea nz-input oninput="if(value.length>255)value=value.slice(0,255)" placeholder=""
+                          nzPlacement="topLeft" [nzAutosize]="{ minRows: 1, maxRows: 6 }"
+                          formControlName="paymentProvisionRemarks"></textarea>
+                        <nz-form-explain style="color: red" *ngIf="
+                          baseInfoTable.get('paymentProvisionRemarks')?.dirty &&
+                          baseInfoTable.get('paymentProvisionRemarks')?.errors
+                          ">
+                          {{ "orderv3.components.pre-base-info-table.commons.errorInfo" | translate }}
+                        </nz-form-explain>
+                        <ng-container *ngIf="baseInfoTable.getRawValue().paymentProvisionRemarks">
+                          <div>还可以输入:{{baseInfoTable.getRawValue().paymentProvisionRemarks.length}}/255</div>
+                        </ng-container>
+                      </nz-form-control>
+                    </div>
+                  </nz-form-item>
+                </div>
+                <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                  <nz-form-item>
+                    <nz-form-control nz-col nzXs="24" nzSm="24" nzMd="24" nz-tooltip>
+                      <div class="maxuploadmin">
+                        <shared-upload-file [title]="'上传附件'" [type]="null" formControlName="paymentProvisionFile">
+                        </shared-upload-file>
+                      </div>
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+              </div>
+            </td>
+            <td nzAlign="center" *ngIf="isContract && isResultVerify">
+              <nz-form-label nzRequired [nzNoColon]="'true'">
+              </nz-form-label>
+              <nz-radio-group formControlName="paymentProvisionCheckFlag">
+                <label nz-radio nzValue="1">{{ "orderv3.components.pre-base-info-table.commons.radioYes" | translate
+                  }}</label>
+                <label nz-radio nzValue="0">{{ "orderv3.components.pre-base-info-table.commons.radioNo" | translate
+                  }}</label>
+              </nz-radio-group>
+              <nz-form-control>
+                <nz-form-explain style="color: red" *ngIf="
+                  baseInfoTable.get('paymentProvisionCheckFlag')?.dirty &&
+                  baseInfoTable.get('paymentProvisionCheckFlag')?.errors
+                  ">
+                  {{ "orderv3.components.pre-base-info-table.commons.errorInfo" | translate }}
+                </nz-form-explain>
+              </nz-form-control>
+            </td>
+          </tr>
+          <ng-container *ngIf="isShowmainClause()">
+            <tr>
+              <td nzAlign="center">
+                <nz-form-label [nzNoColon]="true"
+                  [nzRequired]="performanceBondChange('shipmentDelivery','shipmentDeliveryRemarks')">
+                  <span [class]="(status=='ecos_oit_order_logistics_terms'&&flag=='0')? 'red' : ''">
+                    {{ "orderv3.components.pre-base-info-table.tbody.shipmentDelivery" | translate }}
+                  </span>
+                </nz-form-label>
+              </td>
+              <td nzAlign="center">
+                <div nz-row nzType="flex" nzJustify="start" nzAlign="top" nzGutter="20">
+                  <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                    <nz-form-item>
+                      <nz-form-control nzXs="24" nzSm="24" nzMd="24">
+                        <Label-popup [width]="200">
+                          <nz-select nzShowSearch formControlName="shipmentDelivery">
+                            <nz-option
+                              nzLabel="{{ 'orderv3.components.pre-base-info-table.commons.standardTerms' | translate }}"
+                              nzValue="0"></nz-option>
+                            <nz-option
+                              nzLabel="{{ 'orderv3.components.pre-base-info-table.commons.nonStandardTerms' | translate }}"
+                              nzValue="1"></nz-option>
+                          </nz-select>
+                          <ng-template labelPopupContent>可选择付款条款；如果非飞利浦标准条款，请在备注中描述。可上传支持文件（非必传）</ng-template>
+                        </Label-popup>
+                      </nz-form-control>
+                    </nz-form-item>
+                  </div>
+                  <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                    <nz-form-item>
+                      <div nz-row nzType="flex" nzJustify="start" nzAlign="top" nzGutter="5">
+                        <nz-form-control nz-col nzXs="24" nzSm="24" nzMd="24" nz-tooltip
+                          [nzTitle]="baseInfoTable.getRawValue().shipmentDeliveryRemarks">
+                          <textarea nz-input oninput="if(value.length>255)value=value.slice(0,255)" placeholder=""
+                            nzPlacement="topLeft" [nzAutosize]="{ minRows: 1, maxRows: 6 }"
+                            formControlName="shipmentDeliveryRemarks"></textarea>
+                          <nz-form-explain style="color: red" *ngIf="
+                                  baseInfoTable.get('shipmentDeliveryRemarks')?.dirty &&
+                                  baseInfoTable.get('shipmentDeliveryRemarks')?.errors
+                                  ">
+                            {{ "orderv3.components.pre-base-info-table.commons.errorInfo" | translate }}
+                          </nz-form-explain>
+                          <ng-container *ngIf="baseInfoTable.getRawValue().shipmentDeliveryRemarks">
+                            <div>还可以输入:{{baseInfoTable.getRawValue().shipmentDeliveryRemarks.length}}/255</div>
+                          </ng-container>
+                        </nz-form-control>
+                      </div>
+                    </nz-form-item>
+                  </div>
+                  <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                    <nz-form-item>
+                      <nz-form-control nz-col nzXs="24" nzSm="24" nzMd="24" nz-tooltip>
+                        <div class="maxuploadmin">
+                          <shared-upload-file
+                            [title]="'orderv3.components.pre-base-info-table.commons.upload' | translate" [type]="null"
+                            formControlName="shipmentDeliveryFile">
+                          </shared-upload-file>
+                        </div>
+                      </nz-form-control>
+                    </nz-form-item>
+                  </div>
+                </div>
+              </td>
+              <td nzAlign="center" *ngIf="isContract && isResultVerify">
+                <nz-form-label nzRequired [nzNoColon]="'true'">
+                </nz-form-label>
+                <nz-radio-group formControlName="shipmentDeliveryCheckFlag">
+                  <label nz-radio nzValue="1">{{ "orderv3.components.pre-base-info-table.commons.radioYes" | translate
+                    }}</label>
+                  <label nz-radio nzValue="0">{{ "orderv3.components.pre-base-info-table.commons.radioNo" | translate
+                    }}</label>
+                </nz-radio-group>
+                <nz-form-control>
+                  <nz-form-explain style="color: red" *ngIf="
+                  baseInfoTable.get('shipmentDeliveryCheckFlag')?.dirty &&
+                  baseInfoTable.get('shipmentDeliveryCheckFlag')?.errors
+                  ">
+                    {{ "orderv3.components.pre-base-info-table.commons.errorInfo" | translate }}
+                  </nz-form-explain>
+                </nz-form-control>
+              </td>
+            </tr>
+            <tr>
+              <td nzAlign="center">
+                <nz-form-label [nzNoColon]="true"
+                  [nzRequired]="performanceBondChange('installationWarranty','installationWarrantyRemarks')">
+                  <span
+                    [class]="(status=='ecos_oit_order_install_terms'||status=='ecos_oit_order_install_sup'&&flag=='0')? 'red' : ''">
+                    {{ "orderv3.components.pre-base-info-table.tbody.installationWarranty" | translate }}
+                  </span>
+                </nz-form-label>
+              </td>
+              <td nzAlign="center">
+                <div nz-row nzType="flex" nzJustify="start" nzAlign="top" nzGutter="5">
+                  <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                    <nz-form-item>
+                      <nz-form-control nzXs="24" nzSm="24" nzMd="24">
+                        <Label-popup [width]="200">
+                          <nz-select nzShowSearch formControlName="installationWarranty">
+                            <nz-option
+                              nzLabel="{{ 'orderv3.components.pre-base-info-table.commons.standardTerms' | translate }}"
+                              nzValue="0"></nz-option>
+                            <nz-option
+                              nzLabel="{{ 'orderv3.components.pre-base-info-table.commons.nonStandardTerms' | translate }}"
+                              nzValue="1"></nz-option>
+                          </nz-select>
+                          <ng-template labelPopupContent>可选择付款条款；如果非飞利浦标准条款，请在备注中描述。可上传支持文件（非必传）</ng-template>
+                        </Label-popup>
+                      </nz-form-control>
+                    </nz-form-item>
+                  </div>
+                  <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                    <nz-form-item>
+                      <div nz-row nzType="flex" nzJustify="start" nzAlign="top" nzGutter="20">
+                        <nz-form-control nz-col nzXs="24" nzSm="24" nzMd="24" nz-tooltip
+                          [nzTitle]="baseInfoTable.getRawValue().installationWarrantyRemarks">
+                          <textarea nz-input oninput="if(value.length>255)value=value.slice(0,255)" placeholder=""
+                            nzPlacement="topLeft" [nzAutosize]="{ minRows: 1, maxRows: 6 }"
+                            formControlName="installationWarrantyRemarks"></textarea>
+                          <nz-form-explain style="color: red" *ngIf="
+                                baseInfoTable.get('installationWarrantyRemarks')?.dirty &&
+                                baseInfoTable.get('installationWarrantyRemarks')?.errors
+                                ">
+                            {{ "orderv3.components.pre-base-info-table.commons.errorInfo" | translate }}
+                          </nz-form-explain>
+                          <ng-container *ngIf="baseInfoTable.getRawValue().installationWarrantyRemarks">
+                            <div>还可以输入:{{baseInfoTable.getRawValue().installationWarrantyRemarks.length}}/255</div>
+                          </ng-container>
+                        </nz-form-control>
+                      </div>
+                    </nz-form-item>
+                  </div>
+                  <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                    <nz-form-item>
+                      <nz-form-control nz-col nzXs="24" nzSm="24" nzMd="24" nz-tooltip>
+                        <div class="maxuploadmin">
+                          <shared-upload-file
+                            [title]="'orderv3.components.pre-base-info-table.commons.upload' | translate" [type]="null"
+                            formControlName="installationWarrantyFile">
+                          </shared-upload-file>
+                        </div>
+                      </nz-form-control>
+                    </nz-form-item>
+                  </div>
+                  <div nz-col nzXs="24" nzSm="24" nzMd="8"
+                    *ngIf="baseInfoTable.getRawValue().installationWarranty == '1'">
+                    <nz-form-label nzXs="24" nzSm="24" nzMd="24">
+                      {{ "orderv3.components.pre-base-info-table.tbody.nextLevelIsApproval" | translate }}
+                    </nz-form-label>
+                  </div>
+                  <div nz-col nzXs="24" nzSm="24" nzMd="8"
+                    *ngIf="baseInfoTable.getRawValue().installationWarranty == '1'">
+                    <nz-form-item>
+                      <nz-form-control nzXs="24" nzSm="24" nzMd="24">
+                        <nz-select nzShowSearch formControlName="installationWarrantySecondaryApproval">
+                          <nz-option
+                            nzLabel="{{ 'orderv3.components.pre-base-info-table.commons.radioYes' | translate }}"
+                            nzValue="1"></nz-option>
+                          <nz-option
+                            nzLabel="{{ 'orderv3.components.pre-base-info-table.commons.radioNo' | translate }}"
+                            nzValue="0"></nz-option>
+                        </nz-select>
+                      </nz-form-control>
+                    </nz-form-item>
+                  </div>
+                </div>
+              </td>
+              <td nzAlign="center" *ngIf="isContract && isResultVerify">
+                <nz-form-item>
+                  <nz-form-label nzRequired [nzNoColon]="'true'">
+                  </nz-form-label>
+                  <nz-radio-group formControlName="installationWarrantyCheckFlag">
+                    <label nz-radio nzValue="1">{{ 'orderv3.components.pre-base-info-table.commons.radioYes' | translate
+                      }}</label>
+                    <label nz-radio nzValue="0">{{ 'orderv3.components.pre-base-info-table.commons.radioNo' | translate
+                      }}</label>
+                  </nz-radio-group>
+                  <nz-form-control>
+                    <nz-form-explain style="color: red" *ngIf="
+                  baseInfoTable.get('installationWarrantyCheckFlag')?.dirty &&
+                  baseInfoTable.get('installationWarrantyCheckFlag')?.errors
+                  ">
+                      {{ "orderv3.components.pre-base-info-table.commons.errorInfo" | translate }}
+                    </nz-form-explain>
+                  </nz-form-control>
+                </nz-form-item>
+
+              </td>
+            </tr>
+            <tr
+              *ngIf="(!isContract&&baseInfoFrom.getRawValue().dealFormSalesModality=='PD&IGT')||(isContract&&baseInfoFrom.getRawValue().orderModality=='PD&IGT')">
+              <td nzAlign="center">
+                <nz-form-label [nzNoColon]="true"
+                  [nzRequired]="performanceBondChange('sitePreparation','sitePreparationRemarks')">
+                  <span [class]="(status=='ecos_oit_order_site_terms'&&flag=='0')? 'red' : ''">
+                    {{ "orderv3.components.pre-base-info-table.tbody.sitePreparation" | translate }}
+                  </span>
+                </nz-form-label>
+              </td>
+              <td nzAlign="center">
+                <div nz-row nzType="flex" nzJustify="start" nzAlign="top" nzGutter="5">
+                  <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                    <nz-form-item>
+                      <nz-form-control nzXs="24" nzSm="24" nzMd="24">
+                        <Label-popup [width]="200">
+                          <nz-select nzShowSearch formControlName="sitePreparation">
+                            <nz-option
+                              nzLabel="{{ 'orderv3.components.pre-base-info-table.commons.standardTerms' | translate }}"
+                              nzValue="0"></nz-option>
+                            <nz-option
+                              nzLabel="{{ 'orderv3.components.pre-base-info-table.commons.nonStandardTerms' | translate }}"
+                              nzValue="1"></nz-option>
+                          </nz-select>
+                          <ng-template labelPopupContent>可选择付款条款；如果非飞利浦标准条款，请在备注中描述。可上传支持文件（非必传）</ng-template>
+                        </Label-popup>
+                      </nz-form-control>
+                    </nz-form-item>
+                  </div>
+                  <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                    <nz-form-item>
+                      <div nz-row nzType="flex" nzJustify="start" nzAlign="top" nzGutter="20">
+                        <nz-form-control nz-col nzXs="24" nzSm="24" nzMd="24" nz-tooltip
+                          [nzTitle]="baseInfoTable.getRawValue().sitePreparationRemarks">
+                          <textarea nz-input oninput="if(value.length>255)value=value.slice(0,255)" placeholder=""
+                            nzPlacement="topLeft" [nzAutosize]="{ minRows: 1, maxRows: 6 }"
+                            formControlName="sitePreparationRemarks"></textarea>
+                          <nz-form-explain style="color: red" *ngIf="
+                                baseInfoTable.get('sitePreparationRemarks')?.dirty &&
+                                baseInfoTable.get('sitePreparationRemarks')?.errors
+                                ">
+                            {{ "orderv3.components.pre-base-info-table.commons.errorInfo" | translate }}
+                          </nz-form-explain>
+                          <ng-container *ngIf="baseInfoTable.getRawValue().sitePreparationRemarks">
+                            <div>还可以输入:{{baseInfoTable.getRawValue().sitePreparationRemarks.length}}/255</div>
+                          </ng-container>
+                        </nz-form-control>
+                      </div>
+                    </nz-form-item>
+                  </div>
+                  <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                    <nz-form-item>
+                      <nz-form-control nz-col nzXs="24" nzSm="24" nzMd="24" nz-tooltip>
+                        <div class="maxuploadmin">
+                          <shared-upload-file
+                            [title]="'orderv3.components.pre-base-info-table.commons.upload' | translate" [type]="null"
+                            formControlName="sitePreparationFile">
+                          </shared-upload-file>
+                        </div>
+                      </nz-form-control>
+                    </nz-form-item>
+                  </div>
+                </div>
+              </td>
+              <td nzAlign="center" *ngIf="isContract && isResultVerify">
+                <nz-form-label nzRequired [nzNoColon]="'true'">
+                </nz-form-label>
+                <nz-radio-group formControlName="sitePreparationCheckFlag">
+                  <label nz-radio nzValue="1">{{ 'orderv3.components.pre-base-info-table.commons.radioYes' | translate
+                    }}</label>
+                  <label nz-radio nzValue="0">{{ 'orderv3.components.pre-base-info-table.commons.radioNo' | translate
+                    }}</label>
+                </nz-radio-group>
+                <nz-form-control>
+                  <nz-form-explain style="color: red" *ngIf="
+                  baseInfoTable.get('sitePreparationCheckFlag')?.dirty &&
+                  baseInfoTable.get('sitePreparationCheckFlag')?.errors
+                  ">
+                    {{ "orderv3.components.pre-base-info-table.commons.errorInfo" | translate }}
+                  </nz-form-explain>
+                </nz-form-control>
+              </td>
+            </tr>
+            <tr>
+              <td nzAlign="center">
+                <nz-form-label [nzNoColon]="true"
+                  [nzRequired]="performanceBondChange('performanceBond','performanceBondRemarks')">
+                  {{ "orderv3.components.pre-base-info-table.tbody.performanceBond" | translate }}
+                </nz-form-label>
+              </td>
+              <td nzAlign="center">
+                <div nz-row nzType="flex" nzJustify="start" nzAlign="top" nzGutter="5">
+                  <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                    <nz-form-item>
+                      <nz-form-control nzXs="24" nzSm="24" nzMd="24">
+                        <Label-popup [width]="'200px'">
+                          <nz-radio-group [nzDisabled]="!editable" formControlName="performanceBond">
+                            <label nz-radio nzValue="1">{{ 'orderv3.components.pre-base-info-table.commons.radioYes' |
+                              translate }}</label>
+                            <label nz-radio nzValue="0">{{ 'orderv3.components.pre-base-info-table.commons.radioNo' |
+                              translate }}</label>
+                          </nz-radio-group>
+                          <ng-template labelPopupContent>履约保函如直投项目中客户要求飞利浦出具履约保函，请选择“是”并在备注中详细描述。可上传支持文件（非必传）
+                          </ng-template>
+                        </Label-popup>
+                      </nz-form-control>
+                    </nz-form-item>
+                  </div>
+                  <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                    <nz-form-item>
+                      <div nz-row nzType="flex" nzJustify="start" nzAlign="top" nzGutter="20">
+                        <nz-form-control nz-col nzXs="24" nzSm="24" nzMd="24" nz-tooltip
+                          [nzTitle]="baseInfoTable.getRawValue().performanceBondRemarks">
+                          <textarea nz-input oninput="if(value.length>255)value=value.slice(0,255)" placeholder=""
+                            nzPlacement="topLeft" [nzAutosize]="{ minRows: 1, maxRows: 6 }"
+                            formControlName="performanceBondRemarks"></textarea>
+                          <nz-form-explain style="color: red" *ngIf="
+                                baseInfoTable.get('performanceBondRemarks')?.dirty &&
+                                baseInfoTable.get('performanceBondRemarks')?.errors
+                                ">
+                            {{ "orderv3.components.pre-base-info-table.commons.errorInfo" | translate }}
+                          </nz-form-explain>
+                          <ng-container *ngIf="baseInfoTable.getRawValue().performanceBondRemarks">
+                            <div>还可以输入:{{baseInfoTable.getRawValue().performanceBondRemarks.length}}/255</div>
+                          </ng-container>
+                        </nz-form-control>
+                      </div>
+                    </nz-form-item>
+                  </div>
+                  <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                    <nz-form-control nz-col nzXs="24" nzSm="24" nzMd="24" nz-tooltip>
+                      <div class="maxuploadmin">
+                        <shared-upload-file
+                          [title]="'orderv3.components.pre-base-info-table.commons.upload' | translate" [type]="null"
+                          formControlName="performanceBondFile">
+                        </shared-upload-file>
+                      </div>
+                    </nz-form-control>
+                  </div>
+                </div>
+              </td>
+              <td nzAlign="center" *ngIf="isContract && isResultVerify">
+                <nz-form-label nzRequired [nzNoColon]="'true'">
+                </nz-form-label>
+                <nz-radio-group formControlName="performanceBondCheckFlag">
+                  <label nz-radio nzValue="1">{{ 'orderv3.components.pre-base-info-table.commons.radioYes' | translate
+                    }}</label>
+                  <label nz-radio nzValue="0">{{ 'orderv3.components.pre-base-info-table.commons.radioNo' | translate
+                    }}</label>
+                </nz-radio-group>
+                <nz-form-control>
+                  <nz-form-explain style="color: red" *ngIf="
+                  baseInfoTable.get('performanceBondCheckFlag')?.dirty &&
+                  baseInfoTable.get('performanceBondCheckFlag')?.errors
+                  ">
+                    {{ "orderv3.components.pre-base-info-table.commons.errorInfo" | translate }}
+                  </nz-form-explain>
+                </nz-form-control>
+              </td>
+            </tr>
+            <tr>
+              <td nzAlign="center">
+                <nz-form-label [nzNoColon]="true">
+                  <div [className]="(status=='ecos_oit_order_site_terms'&&flag=='0')?'red':''">
+                    <nz-form-label [nzRequired]="performanceBondChange('qualityGuarantee','qualityGuaranteeRemarks')">
+                      {{ "orderv3.components.pre-base-info-table.tbody.qualityGuarantee" | translate }}
+                    </nz-form-label>
+                  </div>
+                </nz-form-label>
+              </td>
+              <td nzAlign="center">
+                <div nz-row nzType="flex" nzJustify="start" nzAlign="top" nzGutter="5">
+                  <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                    <nz-form-item>
+                      <nz-form-control nzXs="24" nzSm="24" nzMd="24">
+                        <Label-popup [width]="200">
+                          <nz-radio-group [nzDisabled]="!editable" formControlName="qualityGuarantee">
+                            <label nz-radio nzValue="1">{{ 'orderv3.components.pre-base-info-table.commons.radioYes' |
+                              translate }}</label>
+                            <label nz-radio nzValue="0">{{ 'orderv3.components.pre-base-info-table.commons.radioNo' |
+                              translate }}</label>
+                          </nz-radio-group>
+                          <ng-template labelPopupContent>可选择付款条款；如果非飞利浦标准条款，请在备注中描述。可上传支持文件（非必传）</ng-template>
+                        </Label-popup>
+                      </nz-form-control>
+                    </nz-form-item>
+                  </div>
+                  <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                    <nz-form-item>
+                      <div nz-row nzType="flex" nzJustify="start" nzAlign="top" nzGutter="20">
+                        <nz-form-control nz-col nzXs="24" nzSm="24" nzMd="24" nz-tooltip
+                          [nzTitle]="baseInfoTable.getRawValue().qualityGuaranteeRemarks">
+                          <textarea nz-input oninput="if(value.length>255)value=value.slice(0,255)" placeholder=""
+                            nzPlacement="topLeft" [nzAutosize]="{ minRows: 1, maxRows: 6 }"
+                            formControlName="qualityGuaranteeRemarks"></textarea>
+                          <nz-form-explain style="color: red" *ngIf="
+                                baseInfoTable.get('qualityGuaranteeRemarks')?.dirty &&
+                                baseInfoTable.get('qualityGuaranteeRemarks')?.errors
+                                ">
+                            {{ "orderv3.components.pre-base-info-table.commons.errorInfo" | translate }}
+                          </nz-form-explain>
+                          <ng-container *ngIf="baseInfoTable.getRawValue().qualityGuaranteeRemarks">
+                            <div>还可以输入:{{baseInfoTable.getRawValue().qualityGuaranteeRemarks.length}}/255</div>
+                          </ng-container>
+                        </nz-form-control>
+                      </div>
+                    </nz-form-item>
+                  </div>
+                  <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                    <nz-form-item>
+                      <nz-form-control nz-col nzXs="24" nzSm="24" nzMd="24" nz-tooltip>
+                        <div class="maxuploadmin">
+                          <shared-upload-file
+                            [title]="'orderv3.components.pre-base-info-table.commons.upload' | translate" [type]="null"
+                            formControlName="qualityGuaranteeFile">
+                          </shared-upload-file>
+                        </div>
+                      </nz-form-control>
+                    </nz-form-item>
+                  </div>
+                </div>
+              </td>
+              <td nzAlign="center" *ngIf="isContract && isResultVerify">
+                <nz-form-label nzRequired [nzNoColon]="'true'">
+                </nz-form-label>
+                <nz-radio-group formControlName="qualityGuaranteeCheckFlag">
+                  <label nz-radio nzValue="1">{{ 'orderv3.components.pre-base-info-table.commons.radioYes' | translate
+                    }}</label>
+                  <label nz-radio nzValue="0">{{ 'orderv3.components.pre-base-info-table.commons.radioNo' | translate
+                    }}</label>
+                </nz-radio-group>
+                <nz-form-control>
+                  <nz-form-explain style="color: red" *ngIf="
+                  baseInfoTable.get('qualityGuaranteeCheckFlag')?.dirty &&
+                  baseInfoTable.get('qualityGuaranteeCheckFlag')?.errors
+                  ">
+                    {{ "orderv3.components.pre-base-info-table.commons.errorInfo" | translate }}
+                  </nz-form-explain>
+                </nz-form-control>
+              </td>
+            </tr>
+            <tr>
+              <td nzAlign="center">
+                <nz-form-label [nzNoColon]="true"
+                  [nzRequired]="performanceBondChange('afterSalePrice','afterSalePriceRemarks')">
+
+                  {{ "orderv3.components.pre-base-info-table.tbody.afterSalePrice" | translate }}
+                </nz-form-label>
+              </td>
+              <td nzAlign="center">
+                <div nz-row nzType="flex" nzJustify="start" nzAlign="top" nzGutter="5">
+                  <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                    <nz-form-item>
+                      <nz-form-control nzXs="24" nzSm="24" nzMd="24">
+                        <Label-popup [width]="'200px'">
+                          <nz-radio-group [nzDisabled]="!editable" formControlName="afterSalePrice">
+                            <label nz-radio nzValue="1">{{ 'orderv3.components.pre-base-info-table.commons.radioYes' |
+                              translate }}</label>
+                            <label nz-radio nzValue="0">{{ 'orderv3.components.pre-base-info-table.commons.radioNo' |
+                              translate }}</label>
+                          </nz-radio-group>
+                          <ng-template labelPopupContent>选择“是”代表有售后限价，请在备注中描述，需要上传CS的确认邮件（必传）</ng-template>
+                        </Label-popup>
+                      </nz-form-control>
+                    </nz-form-item>
+                  </div>
+                  <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                    <nz-form-item>
+                      <div nz-row nzType="flex" nzJustify="start" nzAlign="top" nzGutter="20">
+                        <nz-form-control nz-col nzXs="24" nzSm="24" nzMd="24" nz-tooltip
+                          [nzTitle]="baseInfoTable.getRawValue().afterSalePriceRemarks">
+                          <textarea nz-input oninput="if(value.length>255)value=value.slice(0,255)" placeholder=""
+                            nzPlacement="topLeft" [nzAutosize]="{ minRows: 1, maxRows: 6 }"
+                            formControlName="afterSalePriceRemarks"></textarea>
+                          <nz-form-explain style="color: red" *ngIf="
+                                baseInfoTable.get('afterSalePriceRemarks')?.dirty &&
+                                baseInfoTable.get('afterSalePriceRemarks')?.errors
+                                ">
+                            {{ "orderv3.components.pre-base-info-table.commons.errorInfo" | translate }}
+                          </nz-form-explain>
+                          <ng-container *ngIf="baseInfoTable.getRawValue().afterSalePriceRemarks">
+                            <div>还可以输入:{{baseInfoTable.getRawValue().afterSalePriceRemarks.length}}/255</div>
+                          </ng-container>
+                        </nz-form-control>
+                      </div>
+                    </nz-form-item>
+                  </div>
+                  <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                    <nz-form-item>
+                      <nz-form-control nz-col nzXs="24" nzSm="24" nzMd="24" nz-tooltip>
+                        <div class="maxuploadmin">
+                          <shared-upload-file
+                            [title]="'orderv3.components.pre-base-info-table.commons.upload' | translate" [type]="null"
+                            formControlName="afterSalePriceFile">
+                          </shared-upload-file>
+                        </div>
+                      </nz-form-control>
+                    </nz-form-item>
+                  </div>
+                </div>
+              </td>
+              <td nzAlign="center" *ngIf="isContract && isResultVerify">
+                <nz-form-label nzRequired [nzNoColon]="'true'">
+                </nz-form-label>
+                <nz-radio-group formControlName="afterSalesCheckFlag">
+                  <label nz-radio nzValue="1">{{ 'orderv3.components.pre-base-info-table.commons.radioYes' | translate
+                    }}</label>
+                  <label nz-radio nzValue="0">{{ 'orderv3.components.pre-base-info-table.commons.radioNo' | translate
+                    }}</label>
+                </nz-radio-group>
+                <nz-form-control>
+                  <nz-form-explain style="color: red" *ngIf="
+                  baseInfoTable.get('afterSalesCheckFlag')?.dirty &&
+                  baseInfoTable.get('afterSalesCheckFlag')?.errors
+                  ">
+                    {{ "orderv3.components.pre-base-info-table.commons.errorInfo" | translate }}
+                  </nz-form-explain>
+                </nz-form-control>
+              </td>
+            </tr>
+            <tr>
+              <td nzAlign="center">
+                <nz-form-label [nzNoColon]="true" [nzRequired]="isOtherRequired()">
+                  {{ "orderv3.components.pre-base-info-table.tbody.otherTerms" | translate }}
+                </nz-form-label>
+              </td>
+              <td nzAlign="center">
+                <div nz-row nzType="flex" nzJustify="start" nzAlign="top" nzGutter="5">
+                  <div nz-col nzXs="24" nzSm="24" nzMd="10">
+                    <nz-form-item>
+                      <nz-form-control nzXs="24" nzSm="24" nzMd="24">
+                        <div class="flexLabel">
+                          <div>
+                            <label nz-checkbox formControlName="otherTrain">
+
+                              {{ "orderv3.components.pre-base-info-table.tbody.otherTrain" | translate }}
+
+                            </label>
+                          </div>
+                          <div><label nz-checkbox formControlName="otherFine">{{
+                              "orderv3.components.pre-base-info-table.tbody.otherFine" | translate }}</label>
+                          </div>
+                          <div><label nz-checkbox formControlName="otherIp">{{
+                              "orderv3.components.pre-base-info-table.tbody.otherIp" | translate }}</label>
+                          </div>
+                          <div><label nz-checkbox formControlName="otherContractTemplate">{{
+                              "orderv3.components.pre-base-info-table.tbody.otherContractTemplate" | translate
+                              }}</label>
+                          </div>
+                          <div><label nz-checkbox formControlName="otherOcap">{{
+                              "orderv3.components.pre-base-info-table.tbody.otherOcap" | translate }}</label>
+                          </div>
+                          <div class="flexbox_rv">
+                            <label nz-checkbox formControlName="other" style="width:120"
+                              (ngModelChange)="changeOter(i)">{{ "orderv3.components.pre-base-info-table.tbody.other" |
+                              translate }}</label>
+                            <nz-form-control *ngIf="baseInfoTable.getRawValue().other">
+                              <nz-form-label [nzNoColon]="true" [nzRequired]="changeOter(i)">
+                              </nz-form-label>
+                              <input type="text" class="freeText" maxlength="255" nz-input
+                                formControlName="otherLabel" />
+                              <nz-form-explain style="color: red;
+                                position: absolute;
+                                width: 100px;
+                                left: 22px;" *ngIf="
+                                baseInfoTable.get('otherLabel')?.dirty &&
+                                baseInfoTable.get('otherLabel')?.errors
+                                ">
+                                {{ "orderv3.components.pre-base-info-table.commons.errorInfo" | translate }}
+                              </nz-form-explain>
+                            </nz-form-control>
+                          </div>
+                        </div>
+                      </nz-form-control>
+                    </nz-form-item>
+                  </div>
+                  <div nz-col nzXs="24" nzSm="24" nzMd="6">
+                    <nz-form-item>
+                      <div nz-row nzType="flex" nzJustify="start" nzAlign="top" nzGutter="20">
+                        <nz-form-control nz-col nzXs="24" nzSm="24" nzMd="24" nz-tooltip
+                          [nzTitle]="baseInfoTable.getRawValue().otherRemarks">
+                          <Label-popup [width]="'200px'">
+                            <textarea nz-input oninput="if(value.length>255)value=value.slice(0,255)" placeholder=""
+                              nzPlacement="topLeft" [nzAutosize]="{ minRows: 1, maxRows: 6 }"
+                              formControlName="otherRemarks"></textarea>
+                            <nz-form-explain style="color: red" *ngIf="
+                                baseInfoTable.get('otherRemarks')?.dirty &&
+                                baseInfoTable.get('otherRemarks')?.errors
+                                ">
+                              {{ "orderv3.components.pre-base-info-table.commons.errorInfo" | translate }}
+                            </nz-form-explain>
+                            <ng-template labelPopupContent>除上述条款外，如有其他非标准条款，请在下表中选择或描述。可上传支持文件（非必传</ng-template>
+                          </Label-popup>
+                          <ng-container *ngIf="baseInfoTable.getRawValue().otherRemarks">
+                            <div>还可以输入:{{baseInfoTable.getRawValue().otherRemarks.length}}/255</div>
+                          </ng-container>
+                        </nz-form-control>
+                      </div>
+                    </nz-form-item>
+                  </div>
+                  <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                    <nz-form-item>
+                      <nz-form-control nz-col nzXs="24" nzSm="24" nzMd="24" nz-tooltip>
+                        <div class="maxuploadmin">
+                          <shared-upload-file
+                            [title]="'orderv3.components.pre-base-info-table.commons.upload' | translate" [type]="null"
+                            formControlName="otherTermsFile">
+                          </shared-upload-file>
+                        </div>
+                      </nz-form-control>
+                    </nz-form-item>
+                  </div>
+                </div>
+              </td>
+              <td nzAlign="center" *ngIf="isContract && isResultVerify">
+                <nz-form-label nzRequired [nzNoColon]="'true'">
+                </nz-form-label>
+                <nz-radio-group formControlName="otherCheckFlag">
+                  <label nz-radio nzValue="1">{{ 'orderv3.components.pre-base-info-table.commons.radioYes' | translate
+                    }}</label>
+                  <label nz-radio nzValue="0">{{ 'orderv3.components.pre-base-info-table.commons.radioNo' | translate
+                    }}</label>
+                </nz-radio-group>
+                <nz-form-control>
+                  <nz-form-explain style="color: red" *ngIf="
+                  baseInfoTable.get('otherCheckFlag')?.dirty &&
+                  baseInfoTable.get('otherCheckFlag')?.errors
+                  ">
+                    {{ "orderv3.components.pre-base-info-table.commons.errorInfo" | translate }}
+                  </nz-form-explain>
+                </nz-form-control>
+              </td>
+            </tr>
+          </ng-container>
+          <tr *ngIf="isSupporting()">
+            <td nzAlign="center" [attr.rowspan]="speciallyRows()"
+              [class]="((status=='ecos_oit_order_sp_cop_leader'||status=='ecos_oit_order_sp_cluster_bp'||status=='ecos_oit_order_sp_cfc_leader')&&baseInfoTable.getRawValue().supportFileMissing=='1'&&flag=='0')?'red': ''">
+              {{ "orderv3.components.pre-base-info-table.tbody.specialBiddingApproval" | translate }}</td>
+            <td nzAlign="center">
+              <nz-form-label [nzRequired]="performanceBondChange('supportFileMissing','supportFileMissingRemarks')"
+                [nzNoColon]="true">
+                <span
+                  [class]="((status=='ecos_oit_order_sp_cop_leader'||status=='ecos_oit_order_sp_cluster_bp'||status=='ecos_oit_order_sp_cfc_leader')&&baseInfoTable.getRawValue().supportFileMissing=='1'&&flag=='0')?'red': ''">
+                  {{ "orderv3.components.pre-base-info-table.tbody.supportFileMissing" | translate }}
+                </span>
+              </nz-form-label>
+            </td>
+            <td nzAlign="center">
+              <div nz-row nzType="flex" nzJustify="start" nzAlign="top" nzGutter="5">
+                <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                  <nz-form-item>
+                    <nz-form-control nzXs="24" nzSm="24" nzMd="24">
+                      <Label-popup [width]="200">
+                        <nz-radio-group formControlName="supportFileMissing" (ngModelChange)="supportChang($event)">
+                          <label nz-radio nzValue="1">{{ 'orderv3.components.pre-base-info-table.commons.radioYes' |
+                            translate }}</label>
+                          <label nz-radio nzValue="0">{{ 'orderv3.components.pre-base-info-table.commons.radioNo' |
+                            translate }}</label>
+                        </nz-radio-group>
+                      </Label-popup>
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+                <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                  <nz-form-item>
+                    <div nz-row nzType="flex" nzJustify="start" nzAlign="top" nzGutter="20">
+                      <nz-form-control nz-col nzXs="24" nzSm="24" nzMd="24" nz-tooltip
+                        [nzTitle]="baseInfoTable.getRawValue().supportFileMissingRemarks">
+                        <textarea nz-input oninput="if(value.length>255)value=value.slice(0,255)" placeholder=""
+                          nzPlacement="topLeft" [nzAutosize]="{ minRows: 1, maxRows: 6 }"
+                          formControlName="supportFileMissingRemarks"></textarea>
+                        <nz-form-explain style="color: red" *ngIf="
+                          baseInfoTable.get('supportFileMissingRemarks')?.dirty &&
+                          baseInfoTable.get('supportFileMissingRemarks')?.errors
+                          ">
+                          {{ "orderv3.components.pre-base-info-table.commons.errorInfo" | translate }}
+                        </nz-form-explain>
+                        <ng-container *ngIf="baseInfoTable.getRawValue().supportFileMissingRemarks">
+                          <div>还可以输入:{{baseInfoTable.getRawValue().supportFileMissingRemarks.length}}/255</div>
+                        </ng-container>
+                      </nz-form-control>
+                    </div>
+                  </nz-form-item>
+                </div>
+                <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                  <nz-form-item>
+                    <nz-form-control nz-col nzXs="24" nzSm="24" nzMd="24" nz-tooltip>
+                      <div class="maxuploadmin">
+                        <shared-upload-file
+                          [title]="'orderv3.components.pre-base-info-table.commons.upload' | translate" [type]="null"
+                          formControlName="supportFileMissingFile">
+                        </shared-upload-file>
+                      </div>
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+              </div>
+            </td>
+            <td nzAlign="center" *ngIf="isContract && isResultVerify">
+              <nz-form-label nzRequired [nzNoColon]="'true'">
+              </nz-form-label>
+              <nz-radio-group formControlName="supportFileMissingCheckFlag">
+                <label nz-radio nzValue="1">{{ 'orderv3.components.pre-base-info-table.commons.radioYes' | translate
+                  }}</label>
+                <label nz-radio nzValue="0">{{ 'orderv3.components.pre-base-info-table.commons.radioNo' | translate
+                  }}</label>
+              </nz-radio-group>
+              <nz-form-control>
+                <nz-form-explain style="color: red" *ngIf="
+                  baseInfoTable.get('supportFileMissingCheckFlag')?.dirty &&
+                  baseInfoTable.get('supportFileMissingCheckFlag')?.errors
+                  ">
+                  {{ "orderv3.components.pre-base-info-table.commons.errorInfo" | translate }}
+                </nz-form-explain>
+              </nz-form-control>
+            </td>
+          </tr>
+          <tr *ngIf="isDiffer()">
+            <td nzAlign="center" *ngIf="!isSupporting()">
+              {{ "orderv3.components.pre-base-info-table.tbody.specialBiddingApproval" | translate }}</td>
+            <td nzAlign="center">
+              <nz-form-label [nzRequired]="performanceBondChange('amountDifference','amountDifferenceRemarks')"
+                [nzNoColon]="true">
+                <span
+                  [class]="((status=='ecos_oit_order_sp_cop_leader'||status=='ecos_oit_order_sp_cluster_bp'||status=='ecos_oit_order_sp_cfc_leader')&&baseInfoTable.getRawValue().amountDifference=='1'&&flag=='0')?'red':''">
+                  {{ "orderv3.components.pre-base-info-table.tbody.amountDifference" | translate }}
+                </span>
+              </nz-form-label>
+            </td>
+            <td nzAlign="center">
+              <div nz-row nzType="flex" nzJustify="start" nzAlign="top" nzGutter="5">
+                <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                  <nz-form-item>
+                    <nz-form-control nzXs="24" nzSm="24" nzMd="24">
+                      <Label-popup [width]="200">
+                        <nz-radio-group formControlName="amountDifference">
+                          <label nz-radio nzValue="1">{{ 'orderv3.components.pre-base-info-table.commons.radioYes' |
+                            translate }}</label>
+                          <label nz-radio nzValue="0">{{ 'orderv3.components.pre-base-info-table.commons.radioNo' |
+                            translate }}</label>
+                        </nz-radio-group>
+                      </Label-popup>
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+                <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                  <nz-form-item>
+                    <div nz-row nzType="flex" nzJustify="start" nzAlign="top" nzGutter="20">
+                      <nz-form-control nz-col nzXs="24" nzSm="24" nzMd="24" nz-tooltip>
+                        <textarea nz-input oninput="if(value.length>255)value=value.slice(0,255)" placeholder=""
+                          nzPlacement="topLeft" [nzAutosize]="{ minRows: 1, maxRows: 6 }"
+                          formControlName="amountDifferenceRemarks"></textarea>
+                        <nz-form-explain style="color: red" *ngIf="
+                          baseInfoTable.get('amountDifferenceRemarks')?.dirty &&
+                          baseInfoTable.get('amountDifferenceRemarks')?.errors
+                          ">
+                          {{ "orderv3.components.pre-base-info-table.commons.errorInfo" | translate }}
+                        </nz-form-explain>
+                        <ng-container *ngIf="baseInfoTable.getRawValue().amountDifferenceRemarks">
+                          <div>还可以输入:{{baseInfoTable.getRawValue().amountDifferenceRemarks.length}}/255</div>
+                        </ng-container>
+                      </nz-form-control>
+                    </div>
+                  </nz-form-item>
+                </div>
+                <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                  <nz-form-item>
+                    <nz-form-control nz-col nzXs="24" nzSm="24" nzMd="24" nz-tooltip>
+                      <div class="maxuploadmin">
+                        <shared-upload-file
+                          [title]="'orderv3.components.pre-base-info-table.commons.upload' | translate" [type]="null"
+                          formControlName="amountDifferenceFile">
+                        </shared-upload-file>
+                      </div>
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+              </div>
+            </td>
+            <td nzAlign="center" *ngIf="isContract && isResultVerify">
+              <nz-form-label nzRequired [nzNoColon]="'true'">
+              </nz-form-label>
+              <nz-radio-group formControlName="amountDifferenceCheckFlag">
+                <label nz-radio nzValue="1">{{ 'orderv3.components.pre-base-info-table.commons.radioYes' | translate
+                  }}</label>
+                <label nz-radio nzValue="0">{{ 'orderv3.components.pre-base-info-table.commons.radioNo' | translate
+                  }}</label>
+              </nz-radio-group>
+              <nz-form-control>
+                <nz-form-explain style="color: red" *ngIf="
+                  baseInfoTable.get('amountDifferenceCheckFlag')?.dirty &&
+                  baseInfoTable.get('amountDifferenceCheckFlag')?.errors
+                  ">
+                  {{ "orderv3.components.pre-base-info-table.commons.errorInfo" | translate }}
+                </nz-form-explain>
+              </nz-form-control>
+            </td>
+          </tr>
+        </ng-container>
+        <!--PD&IGT-->
+        <ng-container
+          *ngIf="(!isContract&&baseInfoFrom.getRawValue().dealFormSalesModality=='PD&IGT')||(isContract&&baseInfoFrom.getRawValue().orderModality=='PD&IGT')">
+          <tr *ngIf="bidwinningFileShow()">
+            <td nzAlign="center" rowspan="3">
+              <div>{{ "orderv3.components.pre-base-info-table.tbody.biddingFileApproval" | translate }}</div>
+              <div *ngIf="biddingShow()">
+                <div class="red">请注意:此项目在中标备案阶段存在特批情况</div>
+                <div class="bidding-detail">
+                  <ng-container *ngFor="let item of baseInfoFrom.getRawValue().biddingApplyList">
+                    <a class="biddingBtn" (click)="toWinbidding(item)" *ngIf="item.biddingIsSpecial">
+                      {{item.referenceId}}链接
+                    </a>
+                  </ng-container>
+                </div>
+              </div>
+            </td>
+            <td nzAlign="center">
+              <nz-form-label [nzRequired]="bidRequired()" [nzNoColon]="true"> {{bidWinningFileTitle == '中标通知书' ?
+                ('orderv3.components.pre-base-info-table.tbody.bidWinningFile'| translate)
+                : ('orderv3.components.pre-base-info-table.tbody.endUserContract' | translate) }}</nz-form-label>
+            </td>
+            <td nzAlign="center">
+              <nz-form-control>
+                <div class="maxupload">
+                  <shared-upload-file [title]="bidWinningFileTitle" [type]="null" formControlName="bidWinningFile">
+                  </shared-upload-file>
+                  <div class="red" *ngIf="showRedTitle('bidWinningFile')">
+                    如未上传文件将在"中标确认校验"后自动带入"中标确认"文件
+                  </div>
+                  <nz-form-explain *ngIf="
+                  baseInfoTable.get('bidWinningFile')?.dirty &&
+                  baseInfoTable.get('bidWinningFile')?.errors
+                  ">
+                    {{ "orderv3.components.pre-base-info-table.commons.errorInfo" | translate }}
+                  </nz-form-explain>
+                </div>
+              </nz-form-control>
+            </td>
+            <td nzAlign="center" *ngIf="isContract && isResultVerify">
+              <nz-form-label nzRequired [nzNoColon]="'true'">
+              </nz-form-label>
+              <nz-radio-group formControlName="bidWinningNoticeCheckFlag">
+                <label nz-radio nzValue="1">{{ 'orderv3.components.pre-base-info-table.commons.radioYes' | translate
+                  }}</label>
+                <label nz-radio nzValue="0">{{ 'orderv3.components.pre-base-info-table.commons.radioNo' | translate
+                  }}</label>
+              </nz-radio-group>
+              <nz-form-control>
+                <nz-form-explain style="color: red" *ngIf="
+                  baseInfoTable.get('bidWinningNoticeCheckFlag')?.dirty &&
+                  baseInfoTable.get('bidWinningNoticeCheckFlag')?.errors
+                  ">
+                  {{ "orderv3.components.pre-base-info-table.commons.errorInfo" | translate }}
+                </nz-form-explain>
+              </nz-form-control>
+            </td>
+          </tr>
+          <tr>
+            <td *ngIf="!bidwinningFileShow()" [attr.rowspan]="2" nzAlign="center">
+              <div>{{ "orderv3.components.pre-base-info-table.tbody.biddingFileApproval" | translate }}</div>
+              <div *ngIf="biddingShow()">
+                <div class="red">请注意:此项目在中标备案阶段存在特批情况</div>
+                <div class="bidding-detail">
+                  <ng-container *ngFor="
+                    let item of baseInfoFrom.getRawValue().biddingApplyList
+                  ">
+                    <a class="biddingBtn" (click)="toWinbidding(item)" *ngIf="item.biddingIsSpecial">
+                      {{ item.referenceId }}链接
+                    </a>
+                  </ng-container>
+                </div>
+              </div>
+            </td>
+            <td nzAlign="center">
+              <nz-form-label [nzNoColon]="true" [nzRequired]="bidRequired()">
+                {{requestLetterTitle == '要货函' ? ('orderv3.components.pre-base-info-table.tbody.dealerRequestLetterFile'
+                | translate)
+                : ('orderv3.components.pre-base-info-table.tbody.sitePreparation' | translate) }}
+              </nz-form-label>
+            </td>
+            <td nzAlign="center">
+              <nz-form-control>
+                <div class="maxupload">
+                  <shared-upload-file [title]="requestLetterTitle" [type]="null" formControlName="requestLetter">
+                  </shared-upload-file>
+                  <div class="red" *ngIf="showRedTitle('requestLetter')">
+                    如未上传文件将在"中标确认校验"后自动带入"中标确认"文件
+                  </div>
+                  <nz-form-explain *ngIf="
+                  baseInfoTable.get('requestLetter')?.dirty &&
+                  baseInfoTable.get('requestLetter')?.errors
+                  ">
+                    {{ "orderv3.components.pre-base-info-table.commons.errorInfo" | translate }}
+                  </nz-form-explain>
+                </div>
+              </nz-form-control>
+            </td>
+            <td nzAlign="center" *ngIf="isContract && isResultVerify">
+              <nz-form-label nzRequired [nzNoColon]="'true'">
+              </nz-form-label>
+              <nz-radio-group formControlName="siteReportCheckFlag">
+                <label nz-radio nzValue="1">{{ 'orderv3.components.pre-base-info-table.commons.radioYes' | translate
+                  }}</label>
+                <label nz-radio nzValue="0">{{ 'orderv3.components.pre-base-info-table.commons.radioNo' | translate
+                  }}</label>
+              </nz-radio-group>
+              <nz-form-control>
+                <nz-form-explain style="color: red" *ngIf="
+                  baseInfoTable.get('siteReportCheckFlag')?.dirty &&
+                  baseInfoTable.get('siteReportCheckFlag')?.errors
+                  ">
+                  {{ "orderv3.components.pre-base-info-table.commons.errorInfo" | translate }}
+                </nz-form-explain>
+              </nz-form-control>
+            </td>
+          </tr>
+          <tr>
+            <td nzAlign="center">
+              <nz-form-label [nzNoColon]="'true'">
+                {{ "orderv3.components.pre-base-info-table.tbody.solutionSupportReport" | translate }}
+              </nz-form-label>
+            </td>
+            <td nzAlign="center">
+              <div class="maxupload">
+                <shared-upload-file [title]="'项目支持报告'" [type]="null" formControlName="solutionSupportReport">
+                </shared-upload-file>
+                <div class="red" *ngIf="showRedTitle('bidWinningFile')">
+                  如未上传文件将在"中标确认校验"后自动带入"中标确认"文件
+                </div>
+              </div>
+            </td>
+            <td nzAlign="center" *ngIf="isContract && isResultVerify">
+              <nz-form-label nzRequired [nzNoColon]="'true'">
+              </nz-form-label>
+              <nz-radio-group formControlName="projectSolutionsCheckFlag">
+                <label nz-radio nzValue="1">{{ 'orderv3.components.pre-base-info-table.commons.radioYes' | translate
+                  }}</label>
+                <label nz-radio nzValue="0">{{ 'orderv3.components.pre-base-info-table.commons.radioNo' | translate
+                  }}</label>
+              </nz-radio-group>
+              <nz-form-control>
+                <nz-form-explain style="color: red" *ngIf="
+                  baseInfoTable.get('projectSolutionsCheckFlag')?.dirty &&
+                  baseInfoTable.get('projectSolutionsCheckFlag')?.errors
+                  ">
+                  {{ "orderv3.components.pre-base-info-table.commons.errorInfo" | translate }}
+                </nz-form-explain>
+              </nz-form-control>
+            </td>
+          </tr>
+        </ng-container>
+        <!--PD&IGT end-->
+        <ng-container
+          *ngIf="(!isContract&&priceApproval.getRawValue().sampleCheck=='1'&&baseInfoFrom.getRawValue().dealFormSalesModality=='PD&IGT')||(isContract&&priceApproval.getRawValue().sampleCheck=='1'&&baseInfoFrom.getRawValue().orderModality=='PD&IGT')">
+          <tr *ngIf="showSampling()">
+            <td nzAlign="center" [attr.rowspan]="rowspan">
+              {{ "orderv3.components.pre-base-info-table.tbody.sampleCheckSupportFile" | translate }}</td>
+            <td nzAlign="center">
+              <nz-form-label [nzNoColon]="true">
+                {{ "orderv3.components.pre-base-info-table.tbody.biddingFile" | translate }}
+              </nz-form-label>
+            </td>
+            <td nzAlign="center">
+              <nz-form-control>
+                <div class="maxupload">
+
+                  <shared-upload-file [title]="'orderv3.components.pre-base-info-table.tbody.biddingFile' | translate"
+                    [type]="null" formControlName="biddingFile" (ngModelChange)="fileUpload($event,'biddingFile')">
+                  </shared-upload-file>
+                  <nz-form-explain *ngIf="
+                  baseInfoTable.get('biddingFile')?.dirty &&
+                  baseInfoTable.get('biddingFile')?.errors
+                  ">
+                    {{ "orderv3.components.pre-base-info-table.commons.errorInfo" | translate }}
+                  </nz-form-explain>
+                </div>
+              </nz-form-control>
+            </td>
+            <td nzAlign="center" *ngIf="isContract && isResultVerify">
+              <nz-form-label nzRequired [nzNoColon]="'true'">
+              </nz-form-label>
+              <nz-radio-group formControlName="biddingDocumentsCheckFlag">
+                <label nz-radio [nzValue]="'1'">{{ 'orderv3.components.pre-base-info-table.commons.radioYes' | translate
+                  }}</label>
+                <label nz-radio [nzValue]="'0'">{{ 'orderv3.components.pre-base-info-table.commons.radioNo' | translate
+                  }}</label>
+              </nz-radio-group>
+              <nz-form-control>
+                <nz-form-explain style="color: red" *ngIf="
+                  baseInfoTable.get('biddingDocumentsCheckFlag')?.dirty &&
+                  baseInfoTable.get('biddingDocumentsCheckFlag')?.errors
+                  ">
+                  {{ "orderv3.components.pre-base-info-table.commons.errorInfo" | translate }}
+                </nz-form-explain>
+              </nz-form-control>
+            </td>
+          </tr>
+          <tr *ngIf="showSampling()">
+            <td nzAlign="center">
+              <nz-form-label [nzNoColon]="true"
+                [nzRequired]="isPDIGTRequired&& baseInfoTable.getRawValue().supportFileMissing != '1'">
+                {{ "orderv3.components.pre-base-info-table.tbody.tenderFile" | translate }}
+              </nz-form-label>
+            </td>
+            <td nzAlign="center">
+              <nz-form-control>
+                <div class="maxupload">
+                  <shared-upload-file [title]="'orderv3.components.pre-base-info-table.tbody.tenderFile' | translate"
+                    [type]="null" (ngModelChange)="fileUpload($event,'tenderFile')" formControlName="tenderFile">
+                  </shared-upload-file>
+                  <nz-form-explain *ngIf="
+                baseInfoTable.get('tenderFile')?.dirty &&
+                baseInfoTable.get('tenderFile')?.errors
+                ">
+                    {{ "orderv3.components.pre-base-info-table.commons.errorInfo" | translate }}
+                  </nz-form-explain>
+                </div>
+              </nz-form-control>
+            </td>
+            <td nzAlign="center" *ngIf="isContract && isResultVerify">
+              <nz-form-label nzRequired [nzNoColon]="'true'">
+              </nz-form-label>
+              <nz-radio-group formControlName="tenderDocumentsCheckFlag">
+                <label nz-radio nzValue="1">{{ 'orderv3.components.pre-base-info-table.commons.radioYes' | translate
+                  }}</label>
+                <label nz-radio nzValue="0">{{ 'orderv3.components.pre-base-info-table.commons.radioNo' | translate
+                  }}</label>
+              </nz-radio-group>
+              <nz-form-control>
+                <nz-form-explain style="color: red" *ngIf="
+                  baseInfoTable.get('tenderDocumentsCheckFlag')?.dirty &&
+                  baseInfoTable.get('tenderDocumentsCheckFlag')?.errors
+                  ">
+                  {{ "orderv3.components.pre-base-info-table.commons.errorInfo" | translate }}
+                </nz-form-explain>
+              </nz-form-control>
+            </td>
+          </tr>
+
+
+          <tr *ngIf="showSampling()">
+            <td nzAlign="center">
+              <nz-form-label [nzNoColon]="true"
+                [nzRequired]="isPDIGTRequired&& baseInfoTable.getRawValue().supportFileMissing != '1'">
+                {{ "orderv3.components.pre-base-info-table.tbody.endUserContract" | translate }}
+              </nz-form-label>
+            </td>
+            <td nzAlign="center">
+              <nz-form-control>
+                <div class="maxupload">
+                  <shared-upload-file
+                    [title]="'orderv3.components.pre-base-info-table.tbody.endUserContract' | translate" [type]="null"
+                    formControlName="endUserContract" (ngModelChange)="fileUpload($event,'endUserContract')">
+                  </shared-upload-file>
+                  <nz-form-explain *ngIf="
+                  baseInfoTable.get('endUserContract')?.dirty &&
+                  baseInfoTable.get('endUserContract')?.errors
+                  ">
+                    {{ "orderv3.components.pre-base-info-table.commons.errorInfo" | translate }}
+                  </nz-form-explain>
+                </div>
+              </nz-form-control>
+            </td>
+            <td nzAlign="center" *ngIf="isContract && isResultVerify">
+              <nz-form-label nzRequired [nzNoColon]="'true'">
+              </nz-form-label>
+              <nz-radio-group formControlName="enduserContractCheckFlag">
+                <label nz-radio nzValue="1">{{ 'orderv3.components.pre-base-info-table.commons.radioYes' | translate
+                  }}</label>
+                <label nz-radio nzValue="0">{{ 'orderv3.components.pre-base-info-table.commons.radioNo' | translate
+                  }}</label>
+              </nz-radio-group>
+              <nz-form-control>
+                <nz-form-explain style="color: red" *ngIf="
+                  baseInfoTable.get('enduserContractCheckFlag')?.dirty &&
+                  baseInfoTable.get('enduserContractCheckFlag')?.errors
+                  ">
+                  {{ "orderv3.components.pre-base-info-table.commons.errorInfo" | translate }}
+                </nz-form-explain>
+              </nz-form-control>
+            </td>
+          </tr>
+
+
+          <tr *ngIf="showProject()">
+            <td nzAlign="center"
+              *ngIf="baseInfoFrom.getRawValue().biddingType!='国内公开标'&&baseInfoFrom.getRawValue().biddingType!='国际公开标'">
+              抽样审核订单支持文件</td>
+            <td nzAlign="center">
+              <nz-form-label [nzNoColon]="true"
+                [nzRequired]="isPDIGTRequired&& baseInfoTable.getRawValue().supportFileMissing != '1'">
+                {{ "orderv3.components.pre-base-info-table.tbody.projectAnalysisTable" | translate }}
+              </nz-form-label>
+            </td>
+            <td nzAlign="center">
+              <div>
+                <button class="down" nz-button nzType="link" (click)="generateAnalysisTemplate('EcosP52')">
+                  {{ "orderv3.components.pre-base-info-table.tbody.projectAnalysisTable" | translate }}
+                </button>
+              </div>
+              <div>
+                <nz-form-control>
+                  <div class="maxupload">
+                    <shared-upload-file
+                      [title]="'orderv3.components.pre-base-info-table.tbody.projectAnalysisTable' | translate"
+                      [type]="null" (ngModelChange)="fileUpload($event,'projectAnalysisTable')"
+                      formControlName="projectAnalysisTable">
+                    </shared-upload-file>
+                    <nz-form-explain *ngIf="
+                    baseInfoTable.get('projectAnalysisTable')?.dirty &&
+                    baseInfoTable.get('projectAnalysisTable')?.errors
+                    ">
+                      {{ "orderv3.components.pre-base-info-table.commons.errorInfo" | translate }}
+                    </nz-form-explain>
+                  </div>
+                </nz-form-control>
+              </div>
+            </td>
+            <td nzAlign="center" *ngIf="isContract && isResultVerify">
+              <nz-form-label nzRequired [nzNoColon]="'true'">
+              </nz-form-label>
+              <nz-radio-group formControlName="projectAnalysisTableCheckFlag">
+                <label nz-radio nzValue="1">{{ 'orderv3.components.pre-base-info-table.commons.radioYes' | translate
+                  }}</label>
+                <label nz-radio nzValue="0">{{ 'orderv3.components.pre-base-info-table.commons.radioNo' | translate
+                  }}</label>
+              </nz-radio-group>
+              <nz-form-control>
+                <nz-form-explain style="color: red" *ngIf="
+                  baseInfoTable.get('projectAnalysisTableCheckFlag')?.dirty &&
+                  baseInfoTable.get('projectAnalysisTableCheckFlag')?.errors
+                  ">
+                  {{ "orderv3.components.pre-base-info-table.commons.errorInfo" | translate }}
+                </nz-form-explain>
+              </nz-form-control>
+            </td>
+          </tr>
+        </ng-container>
+        <!--PD&IGT-->
+        <!--us和cc的-->
+        <ng-container *ngIf="isShowUsandCC()">
+          <tr *ngIf="showUsSampling()">
+            <td nzAlign="center" [attr.rowspan]="usRowspan">
+              {{ "orderv3.components.pre-base-info-table.tbody.sampleCheckSupportFile" | translate }}</td>
+            <td nzAlign="center">
+              <nz-form-label [nzNoColon]="true"
+                [nzRequired]="isUsRequired&& baseInfoTable.getRawValue().supportFileMissing != '1'">
+                {{ "orderv3.components.pre-base-info-table.tbody.biddingFile" | translate }}
+              </nz-form-label>
+            </td>
+            <td nzAlign="center">
+              <nz-form-control>
+                <div class="maxupload">
+                  <shared-upload-file [title]="'招标文件'" [type]="null" formControlName="biddingFile"
+                    (ngModelChange)="fileUpload($event,'biddingFile')">
+                  </shared-upload-file>
+
+                  <nz-form-explain *ngIf="
+                    baseInfoTable.get('biddingFile')?.dirty &&
+                    baseInfoTable.get('biddingFile')?.errors
+                    ">
+                    {{ "orderv3.components.pre-base-info-table.commons.errorInfo" | translate }}
+                  </nz-form-explain>
+                </div>
+              </nz-form-control>
+            </td>
+            <td nzAlign="center" *ngIf="isContract && isResultVerify">
+              <nz-form-label nzRequired [nzNoColon]="'true'">
+              </nz-form-label>
+              <nz-radio-group formControlName="biddingDocumentsCheckFlag">
+                <label nz-radio nzValue="1">{{ 'orderv3.components.pre-base-info-table.commons.radioYes' | translate
+                  }}</label>
+                <label nz-radio nzValue="0">{{ 'orderv3.components.pre-base-info-table.commons.radioNo' | translate
+                  }}</label>
+              </nz-radio-group>
+              <nz-form-control>
+                <nz-form-explain style="color: red" *ngIf="
+                  baseInfoTable.get('biddingDocumentsCheckFlag')?.dirty &&
+                  baseInfoTable.get('biddingDocumentsCheckFlag')?.errors
+                  ">
+                  {{ "orderv3.components.pre-base-info-table.commons.errorInfo" | translate }}
+                </nz-form-explain>
+              </nz-form-control>
+            </td>
+          </tr>
+          <tr *ngIf="showUsSampling()">
+            <td nzAlign="center">
+              <nz-form-label [nzNoColon]="true"
+                [nzRequired]="isUsRequired&& baseInfoTable.getRawValue().supportFileMissing != '1'">
+                {{ "orderv3.components.pre-base-info-table.tbody.tenderFile" | translate }}
+              </nz-form-label>
+            </td>
+            <td nzAlign="center">
+              <nz-form-control>
+                <div class="maxupload">
+                  <shared-upload-file [title]="'orderv3.components.pre-base-info-table.tbody.tenderFile' | translate"
+                    [type]="null" (ngModelChange)="fileUpload($event,'tenderFile')" formControlName="tenderFile">
+                  </shared-upload-file>
+                  <nz-form-explain *ngIf="
+                  baseInfoTable.get('tenderFile')?.dirty &&
+                  baseInfoTable.get('tenderFile')?.errors
+                  ">
+                    {{ "orderv3.components.pre-base-info-table.commons.errorInfo" | translate }}
+                  </nz-form-explain>
+                </div>
+              </nz-form-control>
+            </td>
+            <td nzAlign="center" *ngIf="isContract && isResultVerify">
+              <nz-form-label nzRequired [nzNoColon]="'true'">
+              </nz-form-label>
+              <nz-radio-group formControlName="tenderDocumentsCheckFlag">
+                <label nz-radio nzValue="1">{{ 'orderv3.components.pre-base-info-table.commons.radioYes' | translate
+                  }}</label>
+                <label nz-radio nzValue="0">{{ 'orderv3.components.pre-base-info-table.commons.radioNo' | translate
+                  }}</label>
+              </nz-radio-group>
+              <nz-form-control>
+                <nz-form-explain style="color: red" *ngIf="
+                  baseInfoTable.get('tenderDocumentsCheckFlag')?.dirty &&
+                  baseInfoTable.get('tenderDocumentsCheckFlag')?.errors
+                  ">
+                  {{ "orderv3.components.pre-base-info-table.commons.errorInfo" | translate }}
+                </nz-form-explain>
+              </nz-form-control>
+            </td>
+          </tr>
+          <tr *ngIf="showUsbidWinningFile()">
+            <td nzAlign="center" rowspan="2" *ngIf="!showUsSampling()">
+              {{ "orderv3.components.pre-base-info-table.tbody.sampleCheckSupportFile" | translate }}</td>
+            <td nzAlign="center">
+              <nz-form-label [nzNoColon]="true"
+                [nzRequired]="isUsRequired&& baseInfoTable.getRawValue().supportFileMissing != '1'">
+                {{ "orderv3.components.pre-base-info-table.tbody.bidWinningFile" | translate }}
+              </nz-form-label>
+            </td>
+            <td nzAlign="center">
+              <nz-form-control>
+                <div class="maxupload">
+                  <shared-upload-file
+                    [title]="'orderv3.components.pre-base-info-table.tbody.bidWinningFile' | translate" [type]="null"
+                    formControlName="bidWinningFile" (ngModelChange)="fileUpload($event,'bidWinningFile')">
+                  </shared-upload-file>
+                  <nz-form-explain *ngIf="
+                  baseInfoTable.get('bidWinningFile')?.dirty &&
+                  baseInfoTable.get('bidWinningFile')?.errors
+                  ">
+                    {{ "orderv3.components.pre-base-info-table.commons.errorInfo" | translate }}
+                  </nz-form-explain>
+                </div>
+              </nz-form-control>
+            </td>
+            <td nzAlign="center" *ngIf="isContract && isResultVerify">
+              <nz-form-label nzRequired [nzNoColon]="'true'">
+              </nz-form-label>
+              <nz-radio-group formControlName="bidWinningNoticeCheckFlag">
+                <label nz-radio nzValue="1">{{ 'orderv3.components.pre-base-info-table.commons.radioYes' | translate
+                  }}</label>
+                <label nz-radio nzValue="0">{{ 'orderv3.components.pre-base-info-table.commons.radioNo' | translate
+                  }}</label>
+              </nz-radio-group>
+              <nz-form-control>
+                <nz-form-explain style="color: red" *ngIf="
+                  baseInfoTable.get('bidWinningNoticeCheckFlag')?.dirty &&
+                  baseInfoTable.get('bidWinningNoticeCheckFlag')?.errors
+                  ">
+                  {{ "orderv3.components.pre-base-info-table.commons.errorInfo" | translate }}
+                </nz-form-explain>
+              </nz-form-control>
+            </td>
+          </tr>
+          <tr>
+            <td nzAlign="center" *ngIf="!showUsSampling()&&!showUsbidWinningFile()">抽样审核订单支持文件</td>
+            <td nzAlign="center">
+              <nz-form-label [nzNoColon]="true"
+                [nzRequired]="isUsRequired&& baseInfoTable.getRawValue().supportFileMissing != '1'">
+                {{ "orderv3.components.pre-base-info-table.tbody.endUserContract" | translate }}
+              </nz-form-label>
+            </td>
+            <td nzAlign="center">
+              <nz-form-control>
+                <div class="maxupload">
+                  <shared-upload-file
+                    [title]="'orderv3.components.pre-base-info-table.tbody.endUserContract' | translate" [type]="null"
+                    formControlName="endUserContract" (ngModelChange)="fileUpload($event,'endUserContract')">
+                  </shared-upload-file>
+                  <nz-form-explain *ngIf="
+                  baseInfoTable.get('endUserContract')?.dirty &&
+                  baseInfoTable.get('endUserContract')?.errors
+                  ">
+                    {{ "orderv3.components.pre-base-info-table.commons.errorInfo" | translate }}
+                  </nz-form-explain>
+                </div>
+              </nz-form-control>
+            </td>
+            <td nzAlign="center" *ngIf="isContract && isResultVerify">
+              <nz-form-label nzRequired [nzNoColon]="'true'">
+              </nz-form-label>
+              <nz-radio-group formControlName="enduserContractCheckFlag">
+                <label nz-radio nzValue="1">
+                  {{ 'orderv3.components.pre-base-info-table.commons.radioYes' | translate }}</label>
+                <label nz-radio nzValue="0">{{ 'orderv3.components.pre-base-info-table.commons.radioNo' | translate
+                  }}</label>
+              </nz-radio-group>
+              <nz-form-control>
+                <nz-form-explain style="color: red" *ngIf="
+                  baseInfoTable.get('enduserContractCheckFlag')?.dirty &&
+                  baseInfoTable.get('enduserContractCheckFlag')?.errors
+                  ">
+                  {{ "orderv3.components.pre-base-info-table.commons.errorInfo" | translate }}
+                </nz-form-explain>
+              </nz-form-control>
+            </td>
+          </tr>
+        </ng-container>
+        <!--us和cc的 end-->
+        <!--PD&IGT-->
+        <ng-container *ngIf="isShowigtAndmagnetic()">
+          <tr>
+            <td nzAlign="center" [attr.rowspan]="rowSpanLetter()">
+              {{ "orderv3.components.pre-base-info-table.tbody.projectFileApproval" | translate }}</td>
+            <td nzAlign="center">
+              <nz-form-label [nzNoColon]="true" [nzRequired]="isRequiredLetter()">
+                {{ "orderv3.components.pre-base-info-table.tbody.cpclFile" | translate }}</nz-form-label>
+            </td>
+            <td nzAlign="center">
+              <nz-form-control>
+                <div class="maxupload">
+                  <shared-upload-file [title]="'orderv3.components.pre-base-info-table.tbody.cpclFile' | translate"
+                    [type]="null" formControlName="cpclFile">
+                  </shared-upload-file>
+                  <nz-form-explain *ngIf="
+                      baseInfoTable.get('cpclFile')?.dirty &&
+                      baseInfoTable.get('cpclFile')?.errors
+                      ">
+                    {{ "orderv3.components.pre-base-info-table.commons.errorInfo" | translate }}
+                  </nz-form-explain>
+                </div>
+              </nz-form-control>
+            </td>
+            <td nzAlign="center" *ngIf="isContract && isResultVerify">
+              <nz-form-label nzRequired [nzNoColon]="'true'">
+              </nz-form-label>
+              <nz-radio-group formControlName="cpclFileFlag">
+                <label nz-radio nzValue="1">{{ 'orderv3.components.pre-base-info-table.commons.radioYes' | translate
+                  }}</label>
+                <label nz-radio nzValue="0">{{ 'orderv3.components.pre-base-info-table.commons.radioNo' | translate
+                  }}</label>
+              </nz-radio-group>
+              <nz-form-control>
+                <nz-form-explain style="color: red" *ngIf="
+                  baseInfoTable.get('cpclFileFlag')?.dirty &&
+                  baseInfoTable.get('cpclFileFlag')?.errors
+                  ">
+                  {{ "orderv3.components.pre-base-info-table.commons.errorInfo" | translate }}
+                </nz-form-explain>
+              </nz-form-control>
+            </td>
+          </tr>
+          <tr
+            *ngIf="baseInfoTable.getRawValue().magneticResonanceShieldingFile && baseInfoTable.getRawValue().magneticResonanceShieldingFile.length > 0">
+            <!-- <td nzAlign="center" rowspan="2">{{ "orderv3.components.pre-base-info-table.tbody.projectFileApproval" | translate }}</td> -->
+            <td nzAlign="center">
+              <nz-form-label [nzNoColon]="true" nzRequired="true">
+                {{ "orderv3.components.pre-base-info-table.tbody.magneticResonanceShieldingFile" | translate }}
+              </nz-form-label>
+            </td>
+            <td nzAlign="center">
+              <nz-form-control>
+                <div class="maxupload">
+                  <shared-upload-file
+                    [title]="'orderv3.components.pre-base-info-table.tbody.magneticResonanceShieldingFile' | translate"
+                    [type]="null" formControlName="magneticResonanceShieldingFile">
+                  </shared-upload-file>
+                  <nz-form-explain *ngIf="
+                baseInfoTable.get('magneticResonanceShieldingFile')?.dirty &&
+                baseInfoTable.get('magneticResonanceShieldingFile')?.errors
+                ">
+                    {{ "orderv3.components.pre-base-info-table.commons.errorInfo" | translate }}
+                  </nz-form-explain>
+                </div>
+              </nz-form-control>
+            </td>
+            <td nzAlign="center" *ngIf="isContract && isResultVerify">
+              <nz-form-label nzRequired [nzNoColon]="'true'">
+              </nz-form-label>
+              <nz-radio-group formControlName="mrshieldingCompanyCheckflag">
+                <label nz-radio nzValue="1">{{ 'orderv3.components.pre-base-info-table.commons.radioYes' | translate
+                  }}</label>
+                <label nz-radio nzValue="0">{{ 'orderv3.components.pre-base-info-table.commons.radioNo' | translate
+                  }}</label>
+              </nz-radio-group>
+              <nz-form-control>
+                <nz-form-explain style="color: red" *ngIf="
+                  baseInfoTable.get('mrshieldingCompanyCheckflag')?.dirty &&
+                  baseInfoTable.get('mrshieldingCompanyCheckflag')?.errors
+                  ">
+                  {{ "orderv3.components.pre-base-info-table.commons.errorInfo" | translate }}
+                </nz-form-explain>
+              </nz-form-control>
+            </td>
+          </tr>
+          <tr
+            *ngIf="baseInfoTable.getRawValue().igtThirdPartyFile && baseInfoTable.getRawValue().igtThirdPartyFile.length > 0">
+            <!-- <td nzAlign="center" rowspan="2">{{ "orderv3.components.pre-base-info-table.tbody.projectFileApproval" | translate }}</td> -->
+            <td nzAlign="center">{{ "orderv3.components.pre-base-info-table.tbody.igtThirdPartyFile" | translate }}</td>
+            <td nzAlign="center">
+              <nz-form-control>
+                <div class="maxupload">
+                  <shared-upload-file
+                    [title]="'orderv3.components.pre-base-info-table.tbody.igtThirdPartyFile' | translate" [type]="null"
+                    formControlName="igtThirdPartyFile">
+                  </shared-upload-file>
+                  <nz-form-explain *ngIf="
+                baseInfoTable.get('igtThirdPartyFile')?.dirty &&
+                baseInfoTable.get('igtThirdPartyFile')?.errors
+                ">
+                    {{ "orderv3.components.pre-base-info-table.commons.errorInfo" | translate }}
+                  </nz-form-explain>
+                </div>
+              </nz-form-control>
+            </td>
+            <td nzAlign="center" *ngIf="isContract && isResultVerify">
+              <nz-form-label nzRequired [nzNoColon]="'true'">
+              </nz-form-label>
+              <nz-radio-group formControlName="confirmationFileCheckFlag">
+                <label nz-radio nzValue="1">{{ 'orderv3.components.pre-base-info-table.commons.radioYes' | translate
+                  }}</label>
+                <label nz-radio nzValue="0">{{ 'orderv3.components.pre-base-info-table.commons.radioNo' | translate
+                  }}</label>
+              </nz-radio-group>
+              <nz-form-control>
+                <nz-form-explain style="color: red" *ngIf="
+                  baseInfoTable.get('confirmationFileCheckFlag')?.dirty &&
+                  baseInfoTable.get('confirmationFileCheckFlag')?.errors
+                  ">
+                  {{ "orderv3.components.pre-base-info-table.commons.errorInfo" | translate }}
+                </nz-form-explain>
+              </nz-form-control>
+            </td>
+          </tr>
+        </ng-container>
+        <!--PD&IGT end -->
+        <!--  US和cc项目支持文件      -->
+        <ng-container
+          *ngIf="(baseInfoFrom.getRawValue().orderModality === 'US'||baseInfoFrom.getRawValue().orderModality === 'CC')&&isContract">
+          <tr>
+            <td rowspan="3" nzAlign="center">
+              {{ "orderv3.components.pre-base-info-table.tbody.projectSupportFile" | translate }}</td>
+            <td nzAlign="center">
+              <nz-form-label [nzNoColon]="true" [nzRequired]="isRequiredLetter()">
+                {{ "orderv3.components.pre-base-info-table.tbody.dealerRequestLetterFile" | translate }}</nz-form-label>
+            </td>
+            <td nzAlign="center">
+              <nz-form-control>
+                <div class="maxupload">
+                  <shared-upload-file
+                    [title]="'orderv3.components.pre-base-info-table.tbody.dealerRequestLetterFile' | translate"
+                    [type]="null" formControlName="dealerRequestLetterFile">
+                  </shared-upload-file>
+                  <nz-form-explain *ngIf="
+                    baseInfoTable.get('dealerRequestLetterFile')?.dirty &&
+                    baseInfoTable.get('dealerRequestLetterFile')?.errors
+                    ">
+                    {{ "orderv3.components.pre-base-info-table.commons.errorInfo" | translate }}
+                  </nz-form-explain>
+                </div>
+              </nz-form-control>
+            </td>
+            <td nzAlign="center" *ngIf="isContract && isResultVerify">
+              <nz-form-label nzRequired [nzNoColon]="'true'">
+              </nz-form-label>
+              <nz-radio-group formControlName="dealerRequestLetterFileFlag">
+                <label nz-radio nzValue="1">{{ 'orderv3.components.pre-base-info-table.commons.radioYes' | translate
+                  }}</label>
+                <label nz-radio nzValue="0">{{ 'orderv3.components.pre-base-info-table.commons.radioNo' | translate
+                  }}</label>
+              </nz-radio-group>
+              <nz-form-control>
+                <nz-form-explain style="color: red" *ngIf="
+                  baseInfoTable.get('dealerRequestLetterFileFlag')?.dirty &&
+                  baseInfoTable.get('dealerRequestLetterFileFlag')?.errors
+                  ">
+                  {{ "orderv3.components.pre-base-info-table.commons.errorInfo" | translate }}
+                </nz-form-explain>
+              </nz-form-control>
+            </td>
+          </tr>
+          <tr>
+            <td nzAlign="center">
+              <nz-form-label [nzNoColon]="true" [nzRequired]="isRequiredLetter()">
+                {{ "orderv3.components.pre-base-info-table.tbody.cpclFile" | translate }}</nz-form-label>
+            </td>
+            <td nzAlign="center">
+              <nz-form-control>
+                <div class="maxupload">
+                  <shared-upload-file [title]="'orderv3.components.pre-base-info-table.tbody.cpclFile' | translate"
+                    [type]="null" formControlName="cpclFile">
+                  </shared-upload-file>
+                  <nz-form-explain *ngIf="
+                      baseInfoTable.get('cpclFile')?.dirty &&
+                      baseInfoTable.get('cpclFile')?.errors
+                      ">
+                    {{ "orderv3.components.pre-base-info-table.commons.errorInfo" | translate }}
+                  </nz-form-explain>
+                </div>
+              </nz-form-control>
+            </td>
+            <td nzAlign="center" *ngIf="isContract && isResultVerify">
+              <nz-form-label nzRequired [nzNoColon]="'true'">
+              </nz-form-label>
+              <nz-radio-group formControlName="cpclFileFlag">
+                <label nz-radio nzValue="1">{{ 'orderv3.components.pre-base-info-table.commons.radioYes' | translate
+                  }}</label>
+                <label nz-radio nzValue="0">{{ 'orderv3.components.pre-base-info-table.commons.radioNo' | translate
+                  }}</label>
+              </nz-radio-group>
+              <nz-form-control>
+                <nz-form-explain style="color: red" *ngIf="
+                  baseInfoTable.get('cpclFileFlag')?.dirty &&
+                  baseInfoTable.get('cpclFileFlag')?.errors
+                  ">
+                  {{ "orderv3.components.pre-base-info-table.commons.errorInfo" | translate }}
+                </nz-form-explain>
+              </nz-form-control>
+            </td>
+          </tr>
+          <tr>
+            <td nzAlign="center">
+              <nz-form-label [nzNoColon]="true">
+                {{ "orderv3.components.pre-base-info-table.tbody.otherSupportFile" | translate }}</nz-form-label>
+            </td>
+            <td nzAlign="center">
+              <nz-form-control>
+                <div class="maxupload">
+                  <shared-upload-file
+                    [title]="'orderv3.components.pre-base-info-table.tbody.otherSupportFile' | translate" [type]="null"
+                    formControlName="otherSupportFile">
+                  </shared-upload-file>
+                  <nz-form-explain *ngIf="
+                        baseInfoTable.get('otherSupportFile')?.dirty &&
+                        baseInfoTable.get('otherSupportFile')?.errors
+                        ">
+                    {{ "orderv3.components.pre-base-info-table.commons.errorInfo" | translate }}
+                  </nz-form-explain>
+                </div>
+              </nz-form-control>
+            </td>
+            <td nzAlign="center" *ngIf="isContract && isResultVerify">
+              <nz-form-label nzRequired [nzNoColon]="'true'">
+              </nz-form-label>
+              <nz-radio-group formControlName="otherSupportFileFlag">
+                <label nz-radio nzValue="1">{{ 'orderv3.components.pre-base-info-table.commons.radioYes' | translate
+                  }}</label>
+                <label nz-radio nzValue="0">{{ 'orderv3.components.pre-base-info-table.commons.radioNo' | translate
+                  }}</label>
+              </nz-radio-group>
+              <nz-form-control>
+                <nz-form-explain style="color: red" *ngIf="
+                  baseInfoTable.get('otherSupportFileFlag')?.dirty &&
+                  baseInfoTable.get('otherSupportFileFlag')?.errors
+                  ">
+                  {{ "orderv3.components.pre-base-info-table.commons.errorInfo" | translate }}
+                </nz-form-explain>
+              </nz-form-control>
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </nz-table>
+  </form>
+</app-form-section>
+<!--合同模板控件-->
+<div class="showDiag" *ngIf="isPdf">
+  <div class="showDiag-box">
+    <div class="showDiag-box-title">
+      <div>查看PDF</div>
+      <i nz-icon nzType="close" class="close" (click)="isPdfCancel()" nzTheme="outline"></i>
+    </div>
+    <app-pdfpreview [padData]="pdfSRC"></app-pdfpreview>
+  </div>
+</div>

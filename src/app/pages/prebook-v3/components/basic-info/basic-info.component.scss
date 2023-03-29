@@ -1,0 +1,38 @@
+.import-btn-wrap {
+  margin-bottom: 0.5rem;
+}
+
+.selection-wrap {
+  margin-top: 1.5rem;
+
+  &:first-of-type {
+    margin-top: 0;
+  }
+}
+
+/deep/ .ant-form-item {
+  .ant-form-item-label {
+    white-space: normal;
+
+    label {
+      line-height: 20px;
+    }
+  }
+}
+
+.wid100 {
+  width: 100%;
+}
+
+/deep/ .ant-input-group-addon {
+  border: none;
+  padding-right: 0;
+  background-color: #fff;
+}
+
+.warning-wrap {
+  white-space: normal;
+  color: red !important;
+  padding: 11px 21px;
+  margin: 10px 20px;
+}

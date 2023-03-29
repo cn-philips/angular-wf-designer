@@ -1,0 +1,47 @@
+.selectbox{
+  display: flex;
+  justify-content:space-between;
+  align-items: center;
+  .select{
+    width:18px;
+    height:18px;
+    display: flex;
+    border:1px solid #ddd;
+    border-radius: 50%;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    &.curr{
+      border-color: #1890FF;
+    }
+    &.disa{
+      border-color:#d9d9d9;
+      & .radio{
+        background:#d9d9d9
+      }
+    }    
+    .radio{
+      width:10px;
+      height:10px;
+      background:#1890FF;
+      display: block;
+      border-radius: 50%;
+    }
+  }
+}
+.margin0{
+  margin:0px;
+}
+::ng-deep .tooltip-pree {
+  min-width: 500px !important;
+}
+.agreement-info {
+  padding-bottom: 8px;
+  white-space: nowrap;
+  font-size: 14px;
+  color:#efefef;
+  overflow-x: scroll;
+}
+.lineCut{
+  cursor: pointer;
+}

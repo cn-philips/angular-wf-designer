@@ -1,0 +1,158 @@
+<div *ngIf="bg === 'US'">
+  <form nz-form [formGroup]="formValue" [nzNoColon]="true">
+    <!-- <ng-template [ngIf]="formValue.getRawValue().marketBundleInfo.length>0"> -->
+    <!-- [nzData]="formValue.getRawValue().marketBundleInfo" -->
+    <nz-table [nzData]="formValue.getRawValue().marketBundleInfo" [nzVirtualItemSize]="10" [nzFrontPagination]="false"
+      [nzShowPagination]="false" [nzScroll]="{ x: '2250px'}" nzBordered [nzShowPagination]="false">
+      <thead>
+        <tr>
+          <th style="width:300px" nzAlign="center">{{"orderv3.components.real-time.main-article" | translate}}</th>
+          <th style="width:300px" nzAlign="center">{{"orderv3.components.real-time.product-config" | translate}}</th>
+          <th style="width:300px" nzAlign="center">{{"orderv3.components.real-time.market-bundle-name" | translate}}</th>
+          <th style="width:300px" nzAlign="center">{{"orderv3.components.real-time.product-model" | translate}}</th>
+          <th style="width:300px" nzAlign="center" *ngIf="bg != 'CC'">
+            <nz-form-label nzRequired>
+              {{"orderv3.components.real-time.wbs" | translate}}
+            </nz-form-label>
+          </th>
+          <th style="width:150px" nzAlign="center">{{"orderv3.components.real-time.bmc" | translate}}</th>
+          <th style="width:150px" nzAlign="center">{{"orderv3.components.real-time.qty" | translate}}</th>
+          <th style="width:300px" nzAlign="center">{{"orderv3.components.real-time.device-name" | translate}}</th>
+          <th style="width:300px" nzAlign="center">{{"orderv3.components.real-time.nmpa" | translate}}</th>
+          <th style="width:150px" nzAlign="center">{{"orderv3.components.real-time.nmpa-date" | translate}}</th>
+          <th style="width:150px" nzAlign="center">{{"orderv3.components.real-time.link" | translate}}</th>
+          <th style="width:150px" nzAlign="center">{{"orderv3.components.real-time.config-file" | translate}}</th>
+        </tr>
+      </thead>
+      <tbody formArrayName="marketBundleInfo">
+        <ng-container *ngFor="let orderInfo of marketBundleInfo.controls;let i=index" [formGroupName]="i">
+          <tr>
+            <td style="width:300px" height="75px" nzAlign="center">
+              <label nz-radio [nzDisabled]="true" style="color: #1a1a1a"
+                [ngModel]="orderInfo.getRawValue().primaryOpportunity" [ngModelOptions]="{standalone: true}">主机</label>
+            </td>
+            <td style="width:300px" height="75px" nzAlign="center">
+              {{ orderInfo.getRawValue().productConfig }}
+            </td>
+            <td style="width:300px" height="75px" nzAlign="center">
+              {{ orderInfo.getRawValue().marketBundleName }}
+            </td>
+            <td style="width:300px" height="75px" nzAlign="center">
+              {{ orderInfo.getRawValue().productModel }}
+            </td>
+            <td  style="width:300px" height="75px" nzAlign="center" *ngIf="bg != 'CC'">
+              <nz-form-item>
+                <nz-form-control>
+                  <input nz-input  maxlength="100" style="width:100%" formControlName="wbsNo" placeholder="请输入" nzSize="default">
+                  <nz-form-explain *ngIf="
+                  orderInfo.get('wbsNo')?.dirty &&
+                  orderInfo.get('wbsNo')?.errors
+                ">
+                    此选项必填字段
+                  </nz-form-explain>
+                </nz-form-control>
+              </nz-form-item>
+            </td>
+            <td style="width:150px" height="75px" nzAlign="center">
+              {{ orderInfo.getRawValue().marketBundleBmc }}
+            </td>
+            <td style="width:150px" height="75px" nzAlign="center">
+              {{ orderInfo.getRawValue().marketBundleAmount }}
+            </td>
+            <td style="width:300px" height="75px" nzAlign="center">
+              {{ orderInfo.getRawValue().medicalDeviceName }}
+            </td>
+            <td style="width:300px" height="75px" nzAlign="center">
+              {{ orderInfo.getRawValue().nmpaNum }}
+            </td>
+            <td style="width:150px" height="75px" nzAlign="center">
+              {{ orderInfo.getRawValue().nmpaValidityDate }}
+            </td>
+            <td style="width:150px" height="75px" nzAlign="center">
+              {{ orderInfo.getRawValue().businessOpportunityHierarchyLink }}
+            </td>
+            <td style="width:130px" height="75px" nzAlign="center">
+              <ng-container *ngIf="orderInfo.getRawValue().configFile&&orderInfo.getRawValue().configFile.length>0">
+                <div *ngFor="let item of orderInfo.getRawValue().configFile">
+                  <button class="down"
+                    nz-button nzType="link"
+                    (click)="fileDown(item)">
+                    {{item.fileName}}
+                  </button>
+                </div>
+              </ng-container>
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </nz-table>
+    <!-- </ng-template> -->
+  </form>
+  <br>
+</div>
+
+<form nz-form [formGroup]="soNoCheckFormData">
+  <app-apploading [load]="load"></app-apploading>
+  <div nz-row>
+    <div nz-col nzSpan="13">
+      <nz-form-item>
+        <nz-form-label [nzSpan]="6" nzFor="email">{{"orderv3.components.real-time.remarks" | translate}}</nz-form-label>
+        <nz-form-control [nzSpan]="16">
+          <!-- <input nz-input  formControlName="soRemark"
+          maxlength="255"
+            placeholder="请输入"  /> -->
+            <input
+            nz-input
+            formControlName="soRemark"
+            maxlength="255" />
+          <ng-container *ngIf="soNoCheckFormData.getRawValue().soRemark">
+            <div>还可以输入:{{soNoCheckFormData.getRawValue().soRemark.length}}/255</div>
+          </ng-container>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+
+  <div nz-row>
+    <div nz-col nzSpan="13">
+      <nz-form-item>
+        <nz-form-label nzRequired [nzSpan]="6">{{"orderv3.components.real-time.so" | translate}}</nz-form-label>
+        <nz-form-control [nzSpan]="16">
+          <div nz-col nzSpan="12">
+            <input nz-input oninput="if(value && value.length>100)value=value.slice(0,100)" formControlName="soNo"
+              [(ngModel)]="parm.soNo" placeholder="请输入" nzSize="default" />
+            <ng-container *ngIf="parm.soNo">
+              <div>还可以输入:{{parm.soNo.length}}/{{textLen}}</div>
+            </ng-container>
+            <nz-form-explain *ngIf="soNoCheckFormData.get('soNo')?.dirty &&soNoCheckFormData.get('soNo')?.errors">
+              <ng-container *ngIf="soNoCheckFormData.get('soNo')?.hasError('required') ">此选项必填字段</ng-container>
+              <ng-container *ngIf="soNoCheckFormData.get('soNo')?.hasError('soform')">只能输入数字和分号</ng-container>
+            </nz-form-explain>
+          </div>
+          <!-- <div nz-col nzSpan="12">
+            <div nz-tooltip [nzTitle]="soNo" *ngIf="dataBase.isPrebookApply=='1'" class="warning space" nzFor="email">
+              此订单存在关联Pre-book申请，SO#{{soNo}}
+            </div>
+          </div> -->
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+  <div nz-row>
+    <div nz-col nzSpan="13">
+      <nz-form-item>
+        <nz-form-label [nzSpan]="6">{{"orderv3.components.real-time.attachment" | translate}}</nz-form-label>
+        <nz-form-control [nzSpan]="14">
+          <shared-upload-file [title]="" [type]="null" formControlName="fillSoFile">
+          </shared-upload-file>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+  <div nz-row>
+    <nz-alert
+        nzType="warning"
+        nzMessage="提交之前,请在《合同概要表》tab仔细确认OIT Order 所关联的Pre-book状态,以确保不会重复提交SO申请"
+      ></nz-alert>
+  </div>  
+</form>

@@ -1,0 +1,45 @@
+:host /deep/ {
+  .ant-table-footer {
+    border: none!important;
+    padding: 0;
+  }
+  .ant-input-number-handler-wrap {
+    display: none;
+  }
+  .ant-input-group-addon {
+    border: none;
+    padding-right: 0;
+    background-color: #fff;
+  }
+  .ant-input-number {
+    border: none;
+    box-shadow: none!important;
+  }
+  .ant-input-number-input:disabled {
+    border-bottom: 0.125rem #d4dbdf solid;
+  }
+
+  .ant-form-item-label {
+    white-space: normal;
+  }
+
+  .ant-form-item label{
+    line-height:20px;
+  }
+  .ant-table-row td {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  .lintesting{
+    color:red;
+    line-height: 20px;
+  }  
+}
+.biddingBtn{
+  color: #00CC66 !important
+}
+.readonly{
+  border-bottom: 0.125rem #d4dbdf solid !important;
+  background: #f5f5f5;
+    color: rgba(0, 0, 0, 0.25)
+}

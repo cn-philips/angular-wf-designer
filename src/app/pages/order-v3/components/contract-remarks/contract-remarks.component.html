@@ -1,0 +1,50 @@
+<app-form-section class="mtb1rem" [title]="'orderv3.components.contract-remarks.title' | translate">
+  <form nz-form [formGroup]="remarkFrom" [nzNoColon]="true">
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzRequired]="isNzRequired">
+            {{"orderv3.components.contract-remarks.remarks" | translate}}
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+            <textarea nz-input oninput="if(value.length>255)value=value.slice(0,255)" placeholder=""
+              nzPlacement="topLeft" [nzAutosize]="{ minRows: 1, maxRows: 6 }" formControlName="comments"></textarea>
+            <nz-form-explain style="color:red" *ngIf="remarkFrom.get('comments')?.dirty && remarkFrom.get('comments')?.errors">
+              {{(status=="ecos_oit_order_resubmit"?"orderv3.components.pre-order-remarks.required":"orderv3.components.pre-order-remarks.reasons") | translate}}
+            </nz-form-explain>
+            <ng-container *ngIf="remarkFrom.getRawValue().comments">
+              <div>还可以输入:{{remarkFrom.getRawValue().comments.length}}/255</div>
+            </ng-container>
+          </nz-form-control>          
+        </nz-form-item>
+      </div>
+    </div>
+    <div *ngIf="attachmentOff" nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="6">
+            {{"orderv3.components.contract-remarks.attachment" | translate}}
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+            <nz-alert *ngIf="isDealerDdpStatus()" nzType="warning" [nzMessage]="dealDDpstatusTitle" nzShowIcon></nz-alert>
+            <nz-alert *ngIf="isforeignDdpStatus()" nzType="warning" [nzMessage]="foreignFromDDpstatusTitle" nzShowIcon></nz-alert>
+            <shared-upload-file formControlName="attachmentIds"></shared-upload-file>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+    <div *ngIf="status=='ecos_oit_order_payment_terms'&&flag=='0'" nz-row nzType="flex" nzJustify="start"
+      nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="6">
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="18">            
+            <label nz-checkbox formControlName="paymentProvisionSecondaryApproval">
+              {{"orderv3.components.contract-remarks.payment" | translate}}</label>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+  </form>
+</app-form-section>

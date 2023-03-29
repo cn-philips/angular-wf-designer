@@ -371,7 +371,7 @@ export function isadopt(param)
     let year = endDates.getFullYear();
     let month = endDates.getMonth() + 1;
     let day = endDates.getDate();
-    let overdue = `${year}-${month}-${day}`;
+    let overdue = `${year}/${month}/${day}`;
     let overDate = new Date(overdue).setHours(0, 0, 0, 0);
     let endDate = new Date(overDate).getTime();
     let nowDate = new Date(new Date().setHours(0, 0, 0, 0)).getTime()
@@ -402,3 +402,4 @@ export function haveRolesArr(arr) {
   }
   return false;
 }
+

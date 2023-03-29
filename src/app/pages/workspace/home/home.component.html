@@ -1,0 +1,59 @@
+<div>
+  <cos-card-list
+    (clickTab)="onClickTab($event)"
+    [list]="cardList"
+    [listTitle]="listTitle"
+  ></cos-card-list>
+  <br />
+</div>
+
+<div>
+  <cos-task-list
+    *ngIf="listsCollection.myTodo.show"
+    [list]="listsCollection.myTodo.data"
+    [isLoading]="listsCollection.myTodo.isLoading"
+    [listTitle]="'dashboard.myTodo' | translate"
+    (cardClick)="handleMyTodoClick($event)"
+    #listComponent
+  ></cos-task-list>
+  <cos-task-list
+    *ngIf="listsCollection.myDone.show"
+    [list]="listsCollection.myDone.data"
+    [isLoading]="listsCollection.myDone.isLoading"
+    [listTitle]="'dashboard.myDone' | translate"
+    (cardClick)="handleMyDoneClick($event)"
+    #listComponent
+  ></cos-task-list>
+  <cos-task-list
+    *ngIf="listsCollection.myApply.show"
+    [list]="listsCollection.myApply.data"
+    [isLoading]="listsCollection.myApply.isLoading"
+    [listTitle]="'dashboard.myApply' | translate"
+    (cardClick)="handleMyApplyClick($event)"
+    #listComponent
+  ></cos-task-list>
+  <cos-task-list
+    *ngIf="listsCollection.myDraft.show"
+    [list]="listsCollection.myDraft.data"
+    [isLoading]="listsCollection.myDraft.isLoading"
+    [listTitle]="'dashboard.myDraft' | translate"
+    (cardClick)="handleMyDraftClick($event)"
+    #listComponent
+  ></cos-task-list>
+  <cos-task-list
+    *ngIf="listsCollection.myView.show"
+    [list]="listsCollection.myView.data"
+    [isLoading]="listsCollection.myView.isLoading"
+    [listTitle]="'dashboard.myView' | translate"
+    (cardClick)="handleMyViewClick($event)"
+    #listComponent
+  ></cos-task-list>
+  <cos-task-list
+    *ngIf="listsCollection.myReport.show"
+    [list]="listsCollection.myReport.data"
+    [isLoading]="listsCollection.myReport.isLoading"
+    [listTitle]="'dashboard.myReport' | translate"
+    (cardClick)="handleMyReportClick($event)"
+    #listComponent
+  ></cos-task-list>
+</div>

@@ -1,0 +1,141 @@
+<form nz-form [formGroup]="validateForm">
+  <div nz-row>
+    <div nz-col nzSpan="12">
+      <nz-form-item>
+        <nz-form-label [nzSpan]="7">Role</nz-form-label>
+        <nz-form-control [nzSpan]="17">
+          <input nz-input nzSize="small" formControlName="role">
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzSpan="12">
+      <nz-form-item>
+        <nz-form-label [nzSpan]="7" [nzRequired]="!islook">Team</nz-form-label>
+        <nz-form-control [nzSpan]="17">
+          <nz-select nzSize="small" formControlName="team">
+            <nz-option *ngFor="let item of teamOptions" [nzValue]="item.value" [nzLabel]="item.label"></nz-option>
+          </nz-select>
+          <!--          <input nz-input formControlName="team" nzSize="small">-->
+          <nz-form-explain *ngIf="validateForm.get('team')?.dirty && validateForm.get('team')?.errors">
+            请选择team
+          </nz-form-explain>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+  <div nz-row>
+    <div nz-col nzSpan="12">
+      <nz-form-item>
+        <nz-form-label [nzSpan]="7" [nzRequired]="!islook">Modality</nz-form-label>
+        <nz-form-control [nzSpan]="17">
+          <nz-select nzSize="small" formControlName="modality" (ngModelChange)="ModalityChanges($event)">
+            <nz-option *ngFor="let item of modalityOptions" [nzValue]="item.value" [nzLabel]="item.label"></nz-option>
+          </nz-select>
+          <nz-form-explain *ngIf="validateForm.get('modality')?.dirty && validateForm.get('modality')?.errors">
+            请选择modality
+          </nz-form-explain>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzSpan="12">
+      <nz-form-item>
+        <nz-form-label [nzSpan]="7" [nzRequired]="!islook">BMC</nz-form-label>
+        <nz-form-control [nzSpan]="17">
+          <nz-select nzSize="small" formControlName="bmc" (ngModelChange)="BMCChanges($event)">
+            <nz-option *ngFor="let item of bmcOptions" [nzValue]="item.value" [nzLabel]="item.label"></nz-option>
+          </nz-select>
+          <nz-form-explain *ngIf="validateForm.get('bmc')?.dirty && validateForm.get('bmc')?.errors">
+            请选择bmc
+          </nz-form-explain>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+  <div nz-row>
+    <div nz-col nzSpan="12">
+      <nz-form-item>
+        <nz-form-label [nzSpan]="7">Cluster</nz-form-label>
+        <nz-form-control [nzSpan]="17">
+          <input nz-input formControlName="cluster">
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzSpan="12">
+      <nz-form-item>
+        <nz-form-label [nzSpan]="7" [nzRequired]="true">是否服务团队</nz-form-label>
+        <nz-form-control [nzSpan]="17">
+          <nz-select nzSize="small" formControlName="funcTeamType" (ngModelChange)="funcTeamTypeChange()">
+            <nz-option nzValue="1" nzLabel="是"></nz-option>
+            <nz-option nzValue="0" nzLabel="否"></nz-option>
+          </nz-select>
+          <nz-form-explain *ngIf="validateForm.get('funcTeamType')?.dirty && validateForm.get('funcTeamType')?.errors">
+            请选择是否服务团队
+          </nz-form-explain>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+
+  <div nz-row>
+    <div nz-col nzSpan="12">
+      <nz-form-item>
+        <nz-table [nzData]="magList.value" [nzFooter]="tableFooter1" [nzShowPagination]="false" nzBordered>
+          <thead>
+            <tr>
+              <th nzWidth="60px">BMC</th>
+              <th nzWidth="100px">MAG</th>
+              <th nzWidth="20px" nzRight="0px">操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of magList.value">
+              <td nzWidth="60px">
+                <input type="text" nz-input [(ngModel)]="item.dictValue" [ngModelOptions]="{standalone: true}" />
+              </td>
+              <td nzWidth="100px">
+                <input type="text" nz-input [(ngModel)]="item.mag" [ngModelOptions]="{standalone: true}" nz-tooltip
+                  nzTitle="有多个MAG时请用','分隔" />
+              </td>
+              <td nzWidth="20px" nzRight="0px">
+                <button nz-button nzType="primary" nzSize="small" (click)="onDeleteProduct1(item)">删除</button>
+              </td>
+            </tr>
+          </tbody>
+        </nz-table>
+      </nz-form-item>
+    </div>
+    <div nz-col nzSpan="12">
+      <nz-form-item *ngIf="this.funcTeamType == 1">
+        <nz-table [nzData]="serveTeamList.value" [nzFooter]="tableFooter2" [nzShowPagination]="false" nzBordered>
+          <thead>
+            <tr>
+              <th nzWidth="160px">Serve Team</th>
+              <th nzWidth="40px" nzRight="0px">操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of serveTeamList.value">
+              <td>
+                <input type="text" nz-input [(ngModel)]="item.dictValue" [ngModelOptions]="{standalone: true}" />
+              </td>
+              <td nzRight="0px">
+                <button nz-button nzType="primary" nzSize="small" (click)="onDeleteProduct2(item)">删除</button>
+              </td>
+            </tr>
+          </tbody>
+        </nz-table>
+      </nz-form-item>
+    </div>
+  </div>
+</form>
+
+<ng-template #tableFooter1>
+  <button nz-button nzType="dashed" nzBlock (click)="onAdd1()">
+    <i nz-icon nzType="plus" nzTheme="outline"></i>添加
+  </button>
+</ng-template>
+<ng-template #tableFooter2>
+  <button nz-button nzType="dashed" nzBlock (click)="onAdd2()">
+    <i nz-icon nzType="plus" nzTheme="outline"></i>添加
+  </button>
+</ng-template>

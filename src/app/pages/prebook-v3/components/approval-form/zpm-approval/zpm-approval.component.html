@@ -1,0 +1,15 @@
+<form nz-form [formGroup]="zpmApproval">
+  <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+    <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+      <nz-form-item>
+        <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired>预计场地Ready时间</nz-form-label>
+        <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+          <shared-date-picker formControlName="estimatedSiteReadyTime"></shared-date-picker>
+          <nz-form-explain *ngIf="zpmApproval.get('estimatedSiteReadyTime')?.dirty && zpmApproval.get('estimatedSiteReadyTime')?.errors">
+            {{"biddingv3.components.basic-info.required" | translate}}
+          </nz-form-explain>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+</form>

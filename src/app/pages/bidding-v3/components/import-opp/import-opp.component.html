@@ -1,0 +1,229 @@
+<nz-modal [(nzVisible)]="visible" nzWidth="1200px" [nzTitle]="'biddingv3.components.import-opp.title' | translate"
+  [nzFooter]="modalFooter" (nzOnCancel)="onHide()">
+  <ng-container>
+    <div>
+      <app-apploading [load]="dialogLoading" [isInner]="true"></app-apploading>
+      <div class="seachbox">
+        <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+          <div nz-col nzXs="24" nzSm="24" nzMd="8">
+            <nz-form-item>
+              <nz-form-label nzXs="24" nzSm="24" nzMd="10">Opportunity ID</nz-form-label>
+              <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                <input nz-input [(ngModel)]="searchParams.opportunityId" nz-tooltip
+                  [nzTitle]="searchParams.opportunityId" />
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+          <div nz-col nzXs="24" nzSm="24" nzMd="8">
+            <nz-form-item>
+              <nz-form-label nzXs="24" nzSm="24" nzMd="10">Deal Form ID</nz-form-label>
+              <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                <input nz-input [(ngModel)]="searchParams.dealFormId" nz-tooltip [nzTitle]="searchParams.dealFormId" />
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+          <div nz-col nzXs="24" nzSm="24" nzMd="8">
+            <nz-form-item>
+              <nz-form-label nzXs="24" nzSm="24" nzMd="10">Simulation ID</nz-form-label>
+              <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                <input nz-input [(ngModel)]="searchParams.simulationId" nz-tooltip
+                  [nzTitle]="searchParams.simulationId" />
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+          <div nz-col nzXs="24" nzSm="24" nzMd="8">
+            <nz-form-item>
+              <nz-form-label nzXs="24" nzSm="24" nzMd="10">Opportunity Name</nz-form-label>
+              <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                <input nz-input [(ngModel)]="searchParams.opportunityName" nz-tooltip
+                  [nzTitle]="searchParams.opportunityName" />
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+          <div nz-col nzXs="24" nzSm="24" nzMd="8">
+            <nz-form-item>
+              <nz-form-label nzXs="24" nzSm="24" nzMd="10">Account Name</nz-form-label>
+              <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                <input nz-input [(ngModel)]="searchParams.accountName" nz-tooltip [nzTitle]="searchParams.accountName"
+                  [disabled]="accountNameDisabled" />
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          <div nz-col nzXs="24" nzSm="24" nzMd="6"></div>
+          <div nz-col nzXs="24" nzSm="24" nzMd="2">
+            <nz-form-item>
+              <nz-form-control nzXs="24" nzSm="24" nzMd="24" style="padding-left: 30px">
+                <button nz-button class="ml10" nzType="primary" (click)="getTableData()">
+                  {{"biddingv3.components.import-opp.search" | translate}}
+                </button>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="heads">{{"biddingv3.components.import-opp.deal-reuslt" | translate}}</div>
+        <div class="tabbox">
+          <nz-table [nzScroll]="{ x: '1000px', y: '200px' }" #basicTables nzSize="small" [nzData]="dealFormTable.data"
+            [nzTotal]="dealFormTable.total" [nzPageIndex]="dealFormTable.pageNo" [nzPageSize]="dealFormTable.pageSize"
+            [nzShowTotal]="totalTemplateCP" [nzFrontPagination]="false"
+            (nzPageIndexChange)="onDealFormTableNoChange($event)" (nzPageSizeChange)="onDealFormTableSizeChange($event)"
+            [nzHideOnSinglePage]="false" [nzPageSizeOptions]="[5, 10, 20, 30, 40, 50]" [nzShowQuickJumper]="true"
+            [nzShowSizeChanger]="true" [nzLoading]="dealFormTable.loading">
+            <thead>
+              <tr>
+                <th nzLeft="0px" nzAlign="center" nzWidth="60px">&nbsp;</th>
+                <th nzAlign="center" nzWidth="150px">Opportunity ID</th>
+                <th nzAlign="center" nzWidth="150px">Deal Form ID</th>
+                <th nzAlign="center" nzWidth="150px">Simulation ID</th>
+                <th nzAlign="center" nzWidth="200px">Market Bundle Name</th>
+                <th nzAlign="center" nzWidth="150px">{{"biddingv3.components.import-opp.type" | translate}}</th>
+                <th nzAlign="center" nzWidth="300px">Opportunity Name</th>
+                <th nzAlign="center" nzWidth="150px">{{"biddingv3.components.import-opp.hospital-name" | translate}}
+                </th>
+                <th nzAlign="center" nzWidth="200px">{{"biddingv3.components.import-opp.open-date" | translate}}</th>
+                <th nzAlign="center" nzWidth="200px">
+                  <div>Created Date</div>
+                </th>
+                <th nzAlign="center" nzWidth="215px">{{"biddingv3.components.import-opp.link" | translate}}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let data of dealFormTable.data; let m = index">
+                <td nzLeft="0px" nzAlign="center">
+                  <label [ngModel]="data === selectedData" nz-radio
+                    [nzDisabled]="
+                      dataSource &&
+                      (
+                        dealFormOppSet.has([data.dealFormId, data.opportunityId].join('-')) || 
+                        data.accountName !== searchParams.accountName ||
+                        businessModel.toUpperCase() !== data.businessModel.toUpperCase()
+                      )"
+                    (ngModelChange)="onSelectDealForm(data)"></label>
+                </td>
+                <td nzAlign="center">{{ data.opportunityId }}</td>
+                <td nzAlign="center">{{ data.dealFormId }}</td>
+                <td nzAlign="center">{{ data.simulationId }}</td>
+                <td nzAlign="center" class="overflow">
+                  {{ data.marketBundleName }}
+                </td>
+                <td nzAlign="center" class="overflow">
+                  {{ data.productModel }}
+                </td>
+                <td nzAlign="center" class="overflow">
+                  {{ data.opportunityName }}
+                </td>
+                <td nzAlign="center" class="overflow">
+                  {{ data.accountName }}
+                </td>
+                <td nzAlign="center">
+                  {{ data.bidDate }}
+                </td>
+                <td nzAlign="center">
+                  {{ data.createdDate }}
+                </td>
+                <td nzAlign="center">
+                  {{ data.opportunityHierarchyLink }}
+                </td>
+                <!--                <td nzRight="0px" nzAlign="center">{{data.dataSource}}</td>-->
+              </tr>
+            </tbody>
+          </nz-table>
+          <ng-template #totalTemplateCP let-total>
+            {{"biddingv3.components.import-opp.total" | translate: {total: dealFormTable.total} }}
+          </ng-template>
+        </div>
+        <!--          *ngIf="arr && arr.crmData && arr.crmData.length > 0"-->
+        <div class="heads">
+          {{"biddingv3.components.import-opp.sim-reuslt" | translate}}
+        </div>
+        <div class="tabbox">
+          <nz-table [nzScroll]="{ x: '1000px', y: '200px' }" #basicTable nzSize="small" [nzData]="simulationTable.data"
+            [nzTotal]="simulationTable.total" [nzPageIndex]="simulationTable.pageNo"
+            [nzPageSize]="simulationTable.pageSize" [nzShowTotal]="totalTemplateCRM" [nzFrontPagination]="false"
+            (nzPageIndexChange)="onSimulationTableNoChange($event)"
+            (nzPageSizeChange)="onSimulationTableSizeChange($event)" [nzHideOnSinglePage]="false"
+            [nzPageSizeOptions]="[5, 10, 20, 30, 40, 50]" [nzShowQuickJumper]="true" [nzShowSizeChanger]="true"
+            [nzLoading]="simulationTable.loading">
+            <thead>
+              <tr>
+                <th nzLeft="0px" nzAlign="center" nzWidth="60px">&nbsp;</th>
+                <th nzAlign="center" nzWidth="150px">Opportunity ID</th>
+                <th nzAlign="center" nzWidth="150px">Simulation ID</th>
+                <th nzAlign="center" nzWidth="200px">Market Bundle Name</th>
+                <th nzAlign="center" nzWidth="150px">
+                  <!-- <div>Product Model</div> -->
+                  <div>{{"biddingv3.components.import-opp.type" | translate}}</div>
+                </th>
+                <th nzAlign="center" nzWidth="300px">Opportunity Name</th>
+                <th nzAlign="center" nzWidth="300px">
+                  <!-- <div>Account Name</div> -->
+                  <div>{{"biddingv3.components.import-opp.hospital-name" | translate}}</div>
+                </th>
+                <th nzAlign="center" nzWidth="200px">
+                  <!-- <div>Bidding Date</div> -->
+                  <div>{{"biddingv3.components.import-opp.open-date" | translate}}</div>
+                </th>
+                <th nzAlign="center" nzWidth="200px">
+                  <div>Created Date</div>
+                </th>
+                <th nzAlign="center" nzWidth="215px">
+                  <!-- <div>Opportinity Hierarchy Link</div> -->
+                  <div>{{"biddingv3.components.import-opp.link" | translate}}</div>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let data of simulationTable.data; let i = index">
+                <td nzLeft="0px" nzAlign="center">
+                  <label [ngModel]="data === selectedData" nz-radio
+                    [nzDisabled]="dataSource && (opportunityIdSet.has(data.opportunityId) || data.accountName !== searchParams.accountName || businessModel.toUpperCase() !== data.businessModel.toUpperCase())"
+                    (ngModelChange)="onSelectSimulation(data)"></label>
+                </td>
+                <td nzAlign="center">{{ data.opportunityId }}</td>
+                <td nzAlign="center">{{ data.simulationId }}</td>
+                <td nzAlign="center" class="overflow">
+                  {{ data.marketBundleName }}
+                </td>
+                <td nzAlign="center" class="overflow">
+                  {{ data.productModel }}
+                </td>
+                <td nzAlign="center" class="overflow">
+                  {{ data.opportunityName }}
+                </td>
+                <td nzAlign="center" class="overflow">
+                  {{ data.accountName }}
+                </td>
+                <td nzAlign="center">
+                  {{ data.bidDate }}
+                </td>
+                <td nzAlign="center">
+                  {{ data.createdDate }}
+                </td>
+                <td nzAlign="center">
+                  {{ data.opportunityHierarchyLink }}
+                </td>
+                <!--                <td nzRight="0px" nzAlign="center">{{data.dataSource}}</td>-->
+              </tr>
+            </tbody>
+          </nz-table>
+          <ng-template #totalTemplateCRM let-total>
+            {{"biddingv3.components.import-opp.total" | translate: {total: simulationTable.total} }}
+          </ng-template>
+        </div>
+      </div>
+    </div>
+    <ng-template #modalFooter>
+      <button nz-button nzType="default" (click)="onHide()">
+        {{"biddingv3.components.import-opp.cancel" | translate}}
+      </button>
+      <button nz-button nzType="primary" (click)="onSubmit()">
+        {{"biddingv3.components.import-opp.ok" | translate}}
+      </button>
+    </ng-template>
+  </ng-container>
+</nz-modal>

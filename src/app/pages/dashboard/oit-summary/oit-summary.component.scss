@@ -1,0 +1,39 @@
+@import "common/dashboard.scss";
+
+.business-card {
+  display: inline-block;
+  padding: 8px 24px;
+  margin-right: 24px;
+  border: 1px solid #337fbf;
+  text-align: center;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all .5;
+  min-width: 260px;
+  .title {
+    font-size: 14px;
+  }
+  .num-wrap {
+    color: #337fbf;
+    font-size: 24px;
+  }
+
+  &.active {
+    color: #fff;
+    background: #337fbf;
+    .num-wrap {
+      color: #fff;
+    }
+  }
+}
+
+.chart-wrap {
+  position: relative;
+  display: flex;
+  justify-content: left;
+  height: 480px;
+}
+#yearly-summary-chart {
+  width: 90%;
+  height: 480px;
+}

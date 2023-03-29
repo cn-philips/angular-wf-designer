@@ -1,0 +1,100 @@
+<nz-card class="title_warpper mb-4">
+  <div>
+    <h4 class="font-weight-bold">
+      <span>{{ 'dashboard.oitSummary' | translate }}</span>
+    </h4>
+  </div>
+</nz-card>
+<nz-card>
+  <form nz-form [formGroup]="formValues">
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle" nzGutter="32">
+      <div nz-col [nzMd]="8" [nzSm]="12" [nzXs]="24">
+        <nz-form-item>
+          <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="year">Modality</nz-form-label>
+          <nz-form-control [nzSm]="18" [nzXs]="24">
+            <nz-checkbox-group formControlName="modalityList" (ngModelChange)="onModalityChange()"></nz-checkbox-group>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col [nzMd]="8" [nzSm]="12" [nzXs]="24">
+        <nz-form-item>
+          <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="team">Team</nz-form-label>
+          <nz-form-control [nzSm]="18" [nzXs]="24">
+            <nz-select
+              id="team"
+              formControlName="team"
+              nzAllowClear
+              (ngModelChange)="getChartData()"
+            >
+              <nz-option *ngFor="let item of teamList" [nzValue]="item.team" [nzLabel]="item.team"></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col [nzMd]="8" [nzSm]="12" [nzXs]="24">
+        <nz-form-item>
+          <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="year">{{ "dashboard.year" | translate }}</nz-form-label>
+          <nz-form-control [nzSm]="18" [nzXs]="24">
+            <nz-year-picker
+              id="year"
+              nzFormat="yyyy年"
+              formControlName="year"
+              nzPlaceHolder=""
+              style="width:100%"
+              [nzStyle]="{width:'100%'}"
+              (ngModelChange)="onYearChange($event)"
+            ></nz-year-picker>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col [nzMd]="8" [nzSm]="12" [nzXs]="24">
+        <nz-form-item>
+          <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="month">{{ "dashboard.month" | translate }}</nz-form-label>
+          <nz-form-control [nzSm]="18" [nzXs]="24">
+            <nz-select
+              id="month"
+              formControlName="month"
+              nzAllowClear
+              (ngModelChange)="onMonthChange()"
+            >
+              <nz-option *ngIf="months.length === 0" nzDisabled nzLabel="请先选择年份"></nz-option>
+              <nz-option *ngFor="let month of months" [nzValue]="month.value" [nzLabel]="month.label" [nzDisabled]="month.disabled"></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col [nzMd]="8" [nzSm]="12" [nzXs]="24">
+        <nz-form-item>
+          <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="team">BMC</nz-form-label>
+          <nz-form-control [nzSm]="18" [nzXs]="24">
+            <nz-select
+              id="bmc"
+              formControlName="bmc"
+              nzAllowClear
+              (ngModelChange)="getChartData()"
+            >
+              <nz-option *ngFor="let bmc of bmcs" [nzValue]="bmc" [nzLabel]="bmc"></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+  </form>
+
+  <div>
+    <div class="business-card" [ngClass]="chartType === 'count' ? 'active' : ''" (click)="onToggleChartType('count')">
+      <div class="title">{{ 'dashboard.orderTotal' | translate }}</div>
+      <div class="num-wrap">{{ chartData.totalCount | NumberThousandth }}</div>
+    </div>
+
+    <div class="business-card" [ngClass]="chartType === 'amount' ? 'active' : ''" (click)="onToggleChartType('amount')">
+      <div class="title">Net Contract Value(excl.VAT)</div>
+      <div class="num-wrap">{{ chartData.totalAmount | number: '0.2-2'| NumberThousandth }}</div>
+    </div>
+  </div>
+
+  <div class="chart-wrap">
+    <app-apploading [load]="chartLoading" [isInner]="true"></app-apploading>
+    <div id="yearly-summary-chart" class="yearly-summary-chart"></div>
+  </div>
+</nz-card>

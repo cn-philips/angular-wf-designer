@@ -1,0 +1,41 @@
+<nz-modal [(nzVisible)]="visible" nzWidth="1000px" [nzTitle]="'请选择原合同概要表Reference No'"
+  [nzFooter]="null" (nzOnCancel)="onHide()"> 
+  <div class="table-container">
+    <nz-table [nzData]="tableData.rows" [nzShowTotal]="totalTemplate" [nzTotal]="tableData.total"
+      [nzLoading]="tableData.loading" [nzPageSizeOptions]="[5, 10, 20, 30, 40, 50 ]" [nzShowQuickJumper]="true"
+      [nzShowSizeChanger]="true" [nzFrontPagination]="false" [nzScroll]="{ x:'800px',y:'300px'}"
+      [(nzPageIndex)]="searchParams.pageNo" [(nzPageSize)]="searchParams.pageSize" (nzPageIndexChange)="getTableData()"
+      (nzPageSizeChange)="getTableData()">
+      <thead>
+        <tr>
+          <th  style="width:200px" nzAlign="center">Reference No</th>
+          <th style="width:200px" nzAlign="center">dealFormId</th>
+          <th  nzAlign="center">Reference ApplyId</th>          
+          <th style="width:100px" nzRight="0px" nzAlign="center">{{"orderv3.components.select-deal.action" | translate}}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of tableData.rows">
+          <td style="width:200px" nzAlign="center">
+            {{item.referenceId}}
+          </td>
+          <td style="width:200px" nzAlign="center">
+            {{item.dealFormId}}
+          </td>
+          <td nzAlign="center">
+            {{ item.id}}
+          </td>         
+          <td nzAlign="center" style="width:83px" nzRight="0px">
+            <button nz-button nzSize="small" nzType="primary" (click)="onSelect(item)">
+              {{"orderv3.components.select-deal.select" | translate}}
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </nz-table>
+    <ng-template #totalTemplate let-total>
+      {{"orderv3.components.select-deal.total" | translate: { total : tableData.total } }}
+    </ng-template>
+  </div>
+</nz-modal>
+

@@ -1,0 +1,228 @@
+<!-- 中标确认审批表单 -->
+<form nz-form [formGroup]="biddingConfirm">
+  <bidding-v3-bidding-reference
+    *ngIf="!disabled && applyDetail.otherBiddingNumber && applyDetail.otherBiddingNumber.length > 0"
+    [data]="applyDetail.otherBiddingNumber"
+  ></bidding-v3-bidding-reference>
+  <nz-form-item *ngIf="spItemsVisible">
+    <nz-form-label [nzSpan]="4">
+      <span [ngClass]="{red: isSpApprovalNode}">需特批会签事项</span>
+    </nz-form-label>
+    <nz-form-control [nzSpan]="20">
+      <div class="sp-item-list" formArrayName="specialApprovalItems">
+        <div class="sp-item" *ngFor="let item of specialApprovalItems.controls" [formGroup]="item">
+          <shared-checkbox
+            formControlName="status"
+            [trueValue]="1"
+            [falseValue]="0"
+            [label]="item.get('name').value"
+            [labelClass]="isSpApprovalNode && activeItem(item) ? 'red' : ''"
+            (ngModelChange)="handleSpItemStatusChange(item)"
+          ></shared-checkbox>
+
+          <span nz-popover class="view-detail" [nzContent]="spDetailContent">查看特批详情</span>
+          <ng-template #spDetailContent>
+            <div style="width: 400px">
+              <nz-form-item>
+                <nz-form-label [nzSpan]="6">特批事项名称</nz-form-label>
+                <nz-form-control [nzSpan]="18">{{ item.get('name').value }}</nz-form-control>
+              </nz-form-item>
+              <nz-form-item>
+                <nz-form-label [nzSpan]="6">特批事项描述</nz-form-label>
+                <nz-form-control [nzSpan]="18">{{ item.get('description').value }}</nz-form-control>
+              </nz-form-item>
+              <nz-form-item>
+                <nz-form-label [nzSpan]="6">会签审批角色</nz-form-label>
+                <nz-form-control [nzSpan]="18">{{ item.get('roleList').value }}</nz-form-control>
+              </nz-form-item>
+            </div>
+          </ng-template>
+          <ng-container *ngIf="item.get('status').value === 1">
+            <input class="comment-input" nz-input formControlName="comment" [placeholder]="item.get('comment').disabled ? '' : '请填写备注信息'" />
+            <shared-upload-file type="button" formControlName="attachments"></shared-upload-file>
+          </ng-container>
+        </div>
+      </div>
+    </nz-form-control>
+  </nz-form-item>
+  
+  <nz-form-item>
+    <nz-form-label [nzSpan]="4">
+      {{"biddingv3.components.approval-form.bidding-confirm.special" | translate}}
+    </nz-form-label>
+    <nz-form-control [nzSpan]="5">
+      <div>
+        <label nz-checkbox formControlName="lackingAwardNotice" (ngModelChange)="calcLackingFilesAdded()">
+          {{"biddingv3.components.approval-form.bidding-confirm.lacking" | translate}}
+        </label>
+      </div>
+      <div *ngIf="applyDetail.biddingType !== '其他类型'">
+        <label nz-checkbox formControlName="lackingWinningNotice" (ngModelChange)="calcLackingFilesAdded()">
+          {{"biddingv3.components.approval-form.bidding-confirm.winning" | translate}}
+        </label>
+      </div>
+      <div>
+        <label nz-checkbox formControlName="lackingGoodsLetter" (ngModelChange)="calcLackingFilesAdded()">
+          {{"biddingv3.components.approval-form.bidding-confirm.goods" | translate}}
+        </label>
+      </div>
+      <div style="display: flex;align-items: flex-start;">
+        <label style="display: flex; align-items: center" nz-checkbox formControlName="lackingOther"
+          (ngModelChange)="onLackingAwardNoticeChange($event)"><span style="white-space: nowrap">
+            {{"biddingv3.components.approval-form.bidding-confirm.other" | translate}}
+          </span></label>
+        <div>
+          <span style="display: flex">
+            <span *ngIf="lackingOtherDescRequired" class="is-required">*</span>
+            <input *ngIf="biddingConfirm.get('lackingOther').value" nz-input formControlName="lackingOtherDesc" />
+          </span>
+          <nz-form-explain *ngIf="
+            biddingConfirm.get('lackingOther').value &&
+            biddingConfirm.get('lackingOtherDesc')?.dirty &&
+            biddingConfirm.get('lackingOtherDesc')?.errors
+          ">
+            <span style="color:#f5222d">此选项必填字段</span>
+          </nz-form-explain>
+        </div>
+      </div>
+    </nz-form-control>
+  </nz-form-item>
+
+  <nz-form-item>
+    <!-- <nz-form-label [nzSpan]="4" [nzRequired]="specialApprovalSupportFilesRequired"> -->
+    <nz-form-label [nzSpan]="4">
+      {{"biddingv3.components.approval-form.bidding-confirm.support-file" | translate}}
+    </nz-form-label>
+    <nz-form-control [nzSpan]="10">
+      <shared-upload-file type="button"
+        [title]="'biddingv3.components.approval-form.bidding-confirm.upload' | translate"
+        formControlName="specialApprovalSupportFiles"></shared-upload-file>
+      <!-- <nz-form-explain *ngIf="
+        specialApprovalSupportFilesRequired &&
+        biddingConfirm.get('specialApprovalSupportFiles')?.dirty &&
+        biddingConfirm.get('specialApprovalSupportFiles')?.errors
+      ">
+        此选项必填字段
+      </nz-form-explain> -->
+    </nz-form-control>
+  </nz-form-item>
+
+  <nz-form-item *ngIf="!disabled">
+    <nz-form-label [nzSpan]="4">{{"biddingv3.components.approval-form.bidding-confirm.remark" | translate}}
+    </nz-form-label>
+    <nz-form-control [nzSpan]="10">
+      <textarea [nzAutosize]="{ minRows: 4, maxRows: 6 }" nz-input style="width: 100%" formControlName="processComments"
+        (ngModelChange)="remarkMsgVisible=false"></textarea>
+      <a *ngIf="remarkMsgVisible" style="color: #f5222d">{{ remarkMsg }}</a>
+    </nz-form-control>
+  </nz-form-item>
+
+  <nz-form-item>
+    <nz-form-label [nzSpan]="4" [nzRequired]="winningNoticeFilesRequired">
+      {{"biddingv3.components.approval-form.bidding-confirm.winning-notice" | translate}}
+    </nz-form-label>
+    <nz-form-control [nzSpan]="10">
+      <shared-upload-file type="button"
+        [title]="'biddingv3.components.approval-form.bidding-confirm.upload' | translate"
+        formControlName="winningNoticeFiles"></shared-upload-file>
+        <nz-form-explain *ngIf="
+          biddingConfirm.get('winningNoticeFiles')?.dirty &&
+          biddingConfirm.get('winningNoticeFiles')?.errors
+        ">
+        此选项必填字段
+      </nz-form-explain>
+    </nz-form-control>
+  </nz-form-item>
+
+  <nz-form-item>
+    <nz-form-label [nzSpan]="4">
+      {{"biddingv3.components.approval-form.bidding-confirm.announce-price" | translate}}
+    </nz-form-label>
+    <nz-form-control [nzSpan]="4">
+      <nz-input-number style="width: 100%;" formControlName="biddingAnnouncePrice" [nzMin]="0" [nzPrecision]="2">
+      </nz-input-number>
+    </nz-form-control>
+    <nz-form-control style="margin-left:8px;width:120px;float:left">
+      <shared-select formControlName="biddingAnnounceCurrency" placeholder="请选择币制" [options]="selectOption.currency">
+      </shared-select>
+    </nz-form-control>
+  </nz-form-item>
+
+  <nz-form-item>
+    <nz-form-label [nzSpan]="4">{{"biddingv3.components.approval-form.bidding-confirm.announce-date" | translate}}
+    </nz-form-label>
+    <nz-form-control [nzSpan]="4">
+      <shared-date-picker formControlName="biddingAnnounceDate"></shared-date-picker>
+    </nz-form-control>
+  </nz-form-item>
+
+  <nz-form-item>
+    <nz-form-label [nzSpan]="4">
+      {{"biddingv3.components.approval-form.bidding-confirm.end-time" | translate}}
+    </nz-form-label>
+    <nz-form-control [nzSpan]="4">
+      <shared-date-picker formControlName="endTimeDate"></shared-date-picker>
+    </nz-form-control>
+  </nz-form-item>
+
+  <nz-form-item>
+    <nz-form-label [nzSpan]="4">
+      {{"biddingv3.components.approval-form.bidding-confirm.special-date" | translate}}
+    </nz-form-label>
+    <nz-form-control [nzSpan]="4">
+      <shared-date-picker formControlName="specialApprovalDate"></shared-date-picker>
+    </nz-form-control>
+  </nz-form-item>
+
+  <nz-form-item>
+    <nz-form-label [nzSpan]="4">
+      {{"biddingv3.components.approval-form.bidding-confirm.sign-date" | translate}}
+    </nz-form-label>
+    <nz-form-control [nzSpan]="4">
+      <shared-date-picker formControlName="biddingNoticeSignDate"></shared-date-picker>
+    </nz-form-control>
+  </nz-form-item>
+
+  <nz-form-item>
+    <nz-form-label [nzSpan]="4">
+      {{"biddingv3.components.approval-form.bidding-confirm.supplement" | translate}}
+    </nz-form-label>
+    <nz-form-control [nzSpan]="10">
+      <shared-upload-file type="button"
+        [title]="'biddingv3.components.approval-form.bidding-confirm.upload' | translate"
+        formControlName="confirmSupplementFiles"></shared-upload-file>
+    </nz-form-control>
+  </nz-form-item>
+</form>
+
+<footer *ngIf="!disabled">
+  <button *ngIf="applyDetail.authorizationRequired==0" nz-button nzType="default" nz-popconfirm nzTitle="你确定要执行退回的操作?"
+    (nzOnConfirm)="onReject('rejected')">
+    {{"biddingv3.components.approval-form.bidding-confirm.rejected" | translate}}
+  </button>
+  <button nz-button (click)="biddingV3Service.goTodoPage()">
+    {{"biddingv3.components.approval-form.bidding-confirm.return" | translate}}
+  </button>
+  <button *ngIf="!showVerifyCpBtn" nz-button nzType="primary" nz-popconfirm nzTitle="你确定要执行批准的操作?"
+    (nzOnConfirm)="onApprove()">
+    {{"biddingv3.components.approval-form.bidding-confirm.approve" | translate}}
+  </button>
+  <button nz-button nzType="primary" nz-popconfirm nzTitle="你确定要执行拒绝的操作?" (nzOnConfirm)="onReject('unconfirmed')">
+    {{"biddingv3.components.approval-form.bidding-confirm.reject" | translate}}
+  </button>
+  <button *ngIf="showVerifyCpBtn" nz-button nzType="primary" nz-popconfirm nzTitle="你确定要执行校验CP结果的操作?"
+    (nzOnConfirm)="showCpVerifyDialog()">
+    {{"biddingv3.components.approval-form.bidding-confirm.verify-cp" | translate}}
+  </button>
+</footer>
+
+<footer *ngIf="saveFileBtnVisible">
+  <button nz-button (click)="biddingV3Service.goBack()">
+    {{"biddingv3.components.approval-form.supplement-file.return" | translate}}
+  </button>
+  <button nz-button nzType="primary" nz-popconfirm nzTitle="你确定要执行保存的操作?" (nzOnConfirm)="onSave()">
+    {{"biddingv3.pages.bidding-form.save" | translate }}
+  </button>
+</footer>
+
+<bidding-v3-cp-verify #cpVerify (verify)="onApprove()"></bidding-v3-cp-verify>

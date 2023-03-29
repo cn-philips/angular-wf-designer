@@ -1,0 +1,85 @@
+<app-apploading [load]="pageLoading"></app-apploading>
+<nz-card class="title_warpper mtb1rem">
+  <app-approval-progress></app-approval-progress>
+</nz-card>
+<div class="tabs-box">
+  <app-tabs
+      (select)="tabclick($event)"      
+      #tabs
+    >
+    <app-tab [title]="'orderv3.pages.pre-order-examine.general' | translate" id="pending-tab"> 
+        <div class="card-body">
+          <pre-base-info-from #baseInfoFromChild [formValue]="formValue" [editable]="editBase"
+            (addProduct)="addProduct($event)">
+          </pre-base-info-from>
+          <pre-base-info-table #baseInfoTableChild [formValue]="formValue"></pre-base-info-table>
+        </div>
+    </app-tab>
+    <app-tab [title]="'orderv3.pages.pre-order-examine.product' |
+    translate" id="complete-tab">
+        <div class="card-body">
+          <pre-product
+            #productChild
+            [formValue]="formValue"
+            [editable]="editable"
+            [editPreTable]="editPreTable"
+          ></pre-product>
+        </div>      
+    </app-tab>
+    <app-tab [title]="'orderv3.pages.pre-order-examine.history' | translate" id="approval-record">     
+        <div class="card-body">
+            <app-form-section class="mtb1rem" [title]="'orderv3.pages.pre-order-examine.history' | translate">
+              <app-form-section class="mtb1rem" [title]="'orderv3.pages.pre-order.history-order' | translate">
+                <shared-approval-history [procInstId]="procInstId"></shared-approval-history>
+            </app-form-section>
+            <approval-history-oit [applyId]="applyId">
+            </approval-history-oit>
+          </app-form-section>
+        </div>     
+    </app-tab>
+  </app-tabs>
+  <div
+    *ngIf="flag != 1"
+    nz-row
+    nzType="flex"
+    class="fixed-btn-group"
+    nzJustify="center"
+    nzAlign="middle"
+  >
+    <div nz-col nzSpan="24">
+      <nz-form-item>
+        <nz-form-control [nzSm]="24" [nzXs]="24" style="text-align: center">
+          <button [disabled]="tabIndex==0" nz-button nzType="default" (click)="goPreStep()">
+            {{"orderv3.pages.pre-order-examine.pre-step" | translate}}
+          </button>
+          <button [disabled]="tabIndex==(tabList.length-1)" nz-button nzType="default" (click)="goNextStep()">
+            {{"orderv3.pages.pre-order-examine.next-step" | translate}}
+          </button>
+          <button nz-button nzType="default" (click)="handleCancel()">
+            {{"orderv3.pages.pre-order-examine.cancel" | translate}}
+          </button>
+          <button nz-button nzType="primary" nz-popconfirm nzTitle="你确定要执行提交的操作?" (nzOnConfirm)="preSubmit('approved')">
+            {{"orderv3.pages.pre-order-examine.submit" | translate}}
+          </button>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+  <div *ngIf="flag==1" nz-row nzType="flex" class="fixed-btn-group" nzJustify="center" nzAlign="middle">
+    <div nz-col nzSpan="24">
+      <nz-form-item>
+        <nz-form-control [nzSm]="24" [nzXs]="24" style="text-align: center">
+          <button [disabled]="tabIndex==0" nz-button nzType="default" (click)="goPreStep()">
+            {{"orderv3.pages.pre-order-examine.pre-step" | translate}}
+          </button>
+          <button [disabled]="tabIndex==(tabList.length-1)" nz-button nzType="default" (click)="goNextStep()">
+            {{"orderv3.pages.pre-order-examine.next-step" | translate}}
+          </button>
+          <button nz-button nzType="default" (click)="handleCancel()">
+            {{"orderv3.pages.pre-order-examine.cancel" | translate}}
+          </button>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+</div>

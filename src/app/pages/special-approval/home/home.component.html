@@ -1,0 +1,91 @@
+<app-apploading [load]="pageLoading"></app-apploading>
+
+<nz-card class="title_warpper mb-4">
+  <div>
+    <h4 class="font-weight-bold">
+      <span>特批主页</span>
+    </h4>
+  </div>
+  <div>
+    <ng-container *ngFor="let item of sharePointLinkList; let m = index">
+      <button
+        *ngIf="item.isShow"
+        nzSize="large"
+        nz-button
+        nzType="primary"
+        [ngClass]="m === 0 ? 'ml0' : 'ml10'"
+        (click)="linkToSharepoint(item.value)"
+        nz-tooltip
+        [nzTitle]="item.hint"
+      >
+        <i nz-icon type="file-add"></i>{{ item.label }}
+      </button>
+    </ng-container>
+  </div>
+</nz-card>
+<header *ngIf="showQuickLink">
+  <div class="left-wrap">
+    <i nz-icon nzType="link" nzTheme="outline"></i>
+    <span>快速链接</span>
+  </div>
+  <div class="filter-wrap">
+    <nz-tabset nzType="card" [nzTabBarStyle]="{ marginBottom: '0' }">
+      <nz-tab nzTitle="全部" (nzSelect)="filteredTemplateList = allTemplateList"></nz-tab>
+      <nz-tab *ngFor="let tab of tabList" [nzTitle]="tab.title" (nzSelect)="onFilterChange(tab)"></nz-tab>
+    </nz-tabset>
+  </div>
+</header>
+
+<div class="template-list" *ngIf="showQuickLink" style="margin-bottom:24px">
+  <div class="template-item" *ngFor="let template of filteredTemplateList" (click)="onNavigateToNewRequest(template)">
+    <nz-card class="template-item__content" [nzBodyStyle]="{ padding: 0 }" style="width: 240px; margin-bottom: 0; height: 100%">
+      <div class="template-name" [title]="template.name">{{ template.name }}</div>
+      <div class="template-desc">
+        <span>流程简介:</span>
+        <div class="template-desc__content" [title]="template.desc">{{ template.desc }}</div>
+      </div>
+      <div class="template-apply">适用: {{ template.bg }}</div>
+      <div class="template-type">{{ template.typeName }}</div>
+    </nz-card>
+  </div>
+</div>
+
+<div class="row" style="flex-wrap: nowrap;overflow: auto;">
+  <div class="col-sm-3" *ngFor="let card of cardList">
+    <div class="card">
+      <h5 class="card-header with-elements">
+        <div class="card-header-title">
+          <i class="ion ion-ios-mail-unread"></i>
+          <span>{{ card.title }}</span>
+        </div>
+        <div class="card-header-elements ml-auto">
+          <div class="badge badge-primary">{{ card.total }}</div>
+        </div>
+      </h5>
+      <div class="card-body">
+        <ng-container *ngIf="card.total == 0">
+          <div class="card-empty-icon" style="text-align: center"></div>
+        </ng-container>
+        <ng-container *ngIf="card.total > 0">
+          <div *ngFor="let request of card.list" class="request-list" (click)="onNavigateToRequestDetail(request, card)">
+            <div class="request-list__header"></div>
+            <div class="request-list__body">
+              <strong class="font-weight-semibold">{{ request.applyCode }}</strong>
+            </div>
+            <div class="request-list__footer">
+              <span class="apply-item">{{ formatApplyTypeItem(request) }}</span>
+              <small class="request-date">{{ request.createTime | date: "yyyy-MM-dd" }}</small>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+      <a
+        href="javascript:void(0)"
+        class="card-footer d-block text-center text-dark small font-weight-semibold"
+        (click)="onNavigateToListPage(card.path)"
+        >SHOW MORE</a
+      >
+    </div>
+  </div>
+</div>
+

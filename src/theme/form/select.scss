@@ -1,0 +1,21 @@
+nz-form-control {
+  & > .ant-form-item-control {
+    margin-left: 10px;
+  }
+  nz-select {
+    .ant-select-selection {
+      .ant-select-selection__rendered {
+        margin-left: unset !important;
+        margin-right: unset !important;
+      }
+    }
+  }
+}
+nz-form-label {
+  label.ant-form-item-no-colon {
+    &::after {
+      display: none !important;
+      content: none !important;
+    }
+  }
+}

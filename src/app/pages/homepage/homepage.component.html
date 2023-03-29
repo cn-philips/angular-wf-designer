@@ -1,0 +1,172 @@
+<div class="homepage-container">
+  <!-- message -->
+  <div
+    class="message-root-div"
+    *ngIf="
+      message_error.length > 0 ||
+      message_info.length > 0 ||
+      message_warning.length > 0
+    "
+  >
+    <div class="message-div" *ngFor="let item of message_error; let i = index">
+      <nz-alert
+        nzType="error"
+        [nzMessage]="msgTempError"
+        nzShowIcon
+        nzCloseable
+        (nzOnClose)="closeMessage(message_error, i)"
+      >
+        <ng-template #msgTempError>
+          <div style="font-weight: bold" [innerHTML]="item.content"></div>
+        </ng-template>
+      </nz-alert>
+    </div>
+    <div
+      class="message-div"
+      *ngFor="let item of message_warning; let i = index"
+    >
+      <nz-alert
+        nzType="warning"
+        [nzMessage]="msgTempWarning"
+        nzShowIcon
+        nzCloseable
+        (nzOnClose)="closeMessage(message_warning, i)"
+      >
+        <ng-template #msgTempWarning>
+          <div style="font-weight: bold" [innerHTML]="item.content"></div>
+        </ng-template>
+      </nz-alert>
+    </div>
+    <div class="message-div" *ngFor="let item of message_info; let i = index">
+      <nz-alert
+        nzType="info"
+        [nzMessage]="msgTempInfo"
+        nzShowIcon
+        nzCloseable
+        (nzOnClose)="closeMessage(message_info, i)"
+      >
+        <ng-template #msgTempInfo>
+          <div style="font-weight: bold" [innerHTML]="item.content"></div>
+        </ng-template>
+      </nz-alert>
+    </div>
+  </div>
+  <app-carousel [items]="carouselItems" style="height: 35vh"></app-carousel>
+  <div
+    nz-row
+    nzType="flex"
+    nzGutter="16"
+    class="p-hover-card-wrapper"
+    id="entriesBox"
+  >
+    <div nz-col nzXs="12" nzSm="12" nzMd="6">
+      <div
+        [ngClass]="{
+          'p-hover-card': true,
+          bid: true,
+          disabled: !hasPermission(MenuType.bidding)
+        }"
+        (click)="hasPermission(MenuType.bidding)&&handleDialogClick('bid')"
+      >
+        <div class="p-hover-card-title">
+          {{ "approval-type.bid.title" | translate }}
+        </div>
+        <div class="p-hover-card-content">
+          {{ "approval-type.bid.introduction" | translate }}
+        </div>
+      </div>
+    </div>
+    <div nz-col nzXs="12" nzSm="12" nzMd="6">
+      <div
+        [ngClass]="{
+          'p-hover-card': true,
+          order: true,
+          disabled: !hasPermission(MenuType.order)
+        }"
+        (click)="hasPermission(MenuType.order)&&handleDialogClick('order')"
+      >
+        <div class="p-hover-card-title">
+          {{ "approval-type.order.title" | translate }}
+        </div>
+        <div class="p-hover-card-content">
+          {{ "approval-type.order.introduction" | translate }}
+        </div>
+      </div>
+    </div>
+    <div nz-col nzXs="12" nzSm="12" nzMd="6">
+      <div
+        [ngClass]="{
+          'p-hover-card': true,
+          prebook: true,
+          disabled: !hasPermission(MenuType.prebook)
+        }"
+        (click)="hasPermission(MenuType.prebook)&&handleDialogClick('prebook')"
+      >
+        <div class="p-hover-card-title">
+          {{ "approval-type.prebook.title" | translate }}
+        </div>
+        <div class="p-hover-card-content">
+          {{ "approval-type.prebook.introduction" | translate }}
+        </div>
+      </div>
+    </div>
+    <div nz-col nzXs="12" nzSm="12" nzMd="6">
+      <div
+          [ngClass]="{
+          'p-hover-card': true,
+          'special-approval': true,
+          disabled: !hasPermission(MenuType.specialApproval)
+        }"
+        (click)="hasPermission(MenuType.specialApproval)&&handleDialogClick('sp')"
+      >
+        <div class="p-hover-card-title">
+          {{ "approval-type.sp.title" | translate }}
+        </div>
+        <div class="p-hover-card-content">
+          {{ "approval-type.sp.introduction" | translate }}
+        </div>
+      </div>
+    </div>
+  </div>
+  <app-approval-dialog
+    backgroundColor="#FF7F97"
+    type="sp"
+    #dialog
+  ></app-approval-dialog>
+  <app-approval-dialog
+    type="bid"
+    backgroundColor="#13B474"
+    #biddingDialog
+  ></app-approval-dialog>
+    <app-approval-dialog
+    backgroundColor="#ff893b"
+    type="prebook"
+    #prebookDialog
+  ></app-approval-dialog>
+  <app-approval-dialog
+    backgroundColor="#587FDC"
+    type="order"
+    #orderDialog
+  ></app-approval-dialog>
+  <app-alert
+    [countDown]="10"
+    [confirmText]="'common.countdown' | translate"
+    [countDownText]="'common.confirm' | translate"
+    #alert
+    (onConfirmed)="handleConfirmed($event)"
+  >
+  </app-alert>
+</div>
+
+<!--首次打开弹框-->
+<!-- <nz-modal
+  [(nzVisible)]="message_modal_show"
+  nzTitle="提示"
+  (nzOnCancel)="modalCancel()"
+  [nzFooter]="modalFooter"
+>
+  <p *ngFor="let item of message_modal">{{ item.label }}</p>
+  <ng-template #modalFooter>
+    <button nz-button nzType="primary" (click)="modalCancel()">OK 确定</button>
+  </ng-template>
+</nz-modal> -->

@@ -1,0 +1,319 @@
+<form nz-form [formGroup]="prebookForm">
+  <div class="mb10" nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+    <div class="warning inline warning-wrap" nz-row nzXs="12" nzSm="12" nzMd="6">
+      注意：仅CT,MR,DXR,AMI,IGT-S,PDS-RadOnc产品可作为主机发起Pre-book申请
+    </div>
+  </div>
+  <div formArrayName="orderInfo">
+    <div class="selection-wrap" *ngFor="let item of orderInfo.controls;let index=index" [formGroup]="item">
+      <app-form-section [title]="orderTitle(index, item)" [form]="item">
+        <ng-container *ngIf="isPDIGTOrder(item) && hasValidMarketBundle(item)">
+          <ng-container *ngIf="!item.get('isUsed').value">
+            <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+              <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+                <nz-form-item>
+                  <nz-form-label nzXs="24" nzSm="24" nzMd="8" [nzNoColon]="true"></nz-form-label>
+                  <nz-form-control nzXs="24" nzSm="24" nzMd="16">
+                    <shared-checkbox
+                      formControlName="isDeleted"
+                      [trueValue]="0"
+                      [falseValue]="1"
+                      label="本次申请选择此Order进行Pre-book"
+                      (ngModelChange)="onIsDeletedChange(item, $event)"
+                    >
+                    </shared-checkbox>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+            </div>
+    
+            <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+              <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+                <nz-form-item>
+                  <nz-form-label nzXs="24" nzSm="24" nzMd="8">关联的OIT Order</nz-form-label>
+                  <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                    <nz-input-group style="width: 100%" [nzAddOnAfter]="selectOitOrderBtn">
+                      <input
+                        style="cursor: pointer;color:#337fbf"
+                        nz-input
+                        readonly
+                        [ngModelOptions]="{ standalone: true }"
+                        [ngModel]="item.get('oitReferenceId').value"
+                        (click)="goOitPage(item)"
+                        #oitReferenceId
+                      />
+                    </nz-input-group>
+                    <ng-template #selectOitOrderBtn>
+                      <button
+                        [disabled]="item.get('isDeleted').value == 1"
+                        *ngIf="showLinkBtn"
+                        nz-button
+                        nzType="primary"
+                        class="ml-md"
+                        (click)="onShowLinkOit(item)"
+                      >
+                        选择
+                      </button>
+                    </ng-template>
+
+                    <nz-form-explain *ngIf="item.get('hasLinkedOitOrder').value == 1" style="white-space: nowrap;color:red">系统检测到可关联的OIT Order，请人工选择后关联</nz-form-explain>
+                    <nz-form-explain *ngIf="item.get('hasLinkedOitOrder').value == 2" style="white-space: nowrap;color:red">尚无可关联的OIT Order</nz-form-explain>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+    
+              <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+                <nz-form-item>
+                  <nz-form-label nzXs="24" nzSm="24" nzMd="8">关联的OIT Order当前状态</nz-form-label>
+                  <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                    <input
+                      nz-input
+                      [ngModelOptions]="{ standalone: true }"
+                      [ngModel]="item.getRawValue().oitOrderProcessStatus|ProcessTaskStatusPipe|async"
+                      disabled
+                    />
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+    
+              <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+                <nz-form-item>
+                  <nz-form-label nzXs="24" nzSm="24" nzMd="8">关联的OIT Order的SO#</nz-form-label>
+                  <nz-form-control nzXs="24" nzSm="24" nzMd="16">
+                    <input nz-input formControlName="oitOrderSo" />
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+            </div>
+          </ng-container>
+
+          <div *ngIf="item.get('isUsed').value">
+            <nz-alert nzShowIcon nzType="warning" nzMessage="此Order已经存在于其他Pre-book申请中，无法参与本次Pre-book申请"></nz-alert>
+          </div>
+        </ng-container>
+
+        <div *ngIf="!isPDIGTOrder(item)">
+          <nz-alert nzShowIcon nzType="warning" nzMessage="此Order的Modality类型≠PD&IGT，无法参与本次Pre-book申请"></nz-alert>
+        </div>
+
+        <div *ngIf="isPDIGTOrder(item) && !hasValidMarketBundle(item)">
+          <nz-alert nzShowIcon nzType="warning" nzMessage="此Order没有可以发起Pre-book申请的主机，仅CT,MR,DXR,AMI,IGT-S,PDS-RadOnc产品可作为主机发起Pre-book申请"></nz-alert>
+        </div>
+
+        <!-- 产品列表 -->
+        <div>
+          <nz-table
+            nzSize="small"
+            [nzData]="item.get('marketBundleInfo').controls"
+            nzBordered
+            nzTableLayout="fixed"
+            [nzShowPagination]="false"
+            [nzScroll]="{ x: '3400px' }"
+          >
+            <thead>
+              <tr>
+                <th style="width:300px" nzAlign="center">{{"orderv3.components.real-time.main-article" | translate}}</th>
+                <th style="width:300px" nzAlign="center">{{"orderv3.components.real-time.product-config" | translate}}</th>
+                <th style="width:300px" nzAlign="center">Market Bundle Name</th>
+                <th style="width:150px" nzAlign="center">{{"orderv3.components.real-time.bmc" | translate}}</th>
+                <th style="width:150px" nzAlign="center">{{"orderv3.components.real-time.qty" | translate}}</th>
+                <th style="width:300px" nzAlign="center">{{"orderv3.components.real-time.product-model" | translate}}</th>
+                <th style="width:300px" nzAlign="center">{{"orderv3.components.real-time.device-name" | translate}}</th>
+                <th
+                  style="width:200px"
+                  nzAlign="center"
+                  *ngIf="businessModel=='DISTRIBUTOR'"
+                >
+                  D2C经销商协议
+                </th>
+                <th
+                  style="width:200px"
+                  nzAlign="center"
+                  *ngIf="businessModel=='DISTRIBUTOR'"
+                >
+                  最新经销商协议
+                </th>
+                <th style="width:300px" nzAlign="center">{{"orderv3.components.real-time.nmpa" | translate}}</th>
+                <th style="width:150px" nzAlign="center">{{"orderv3.components.real-time.nmpa-date" | translate}}</th>
+                <th style="width:200px" nzAlign="center">Simulation ID</th>
+                <th style="width:200px" nzAlign="center">Market Bundle ID</th>
+                <th style="width:200px" nzAlign="center">Opportunity ID</th>
+                <th style="width:150px" nzAlign="center">{{"orderv3.components.real-time.link" | translate}}</th>
+              </tr>
+            </thead>
+            <tbody formArrayName="marketBundleInfo">
+              <tr *ngFor="let marketBundle of item.get('marketBundleInfo').controls;let i=index" [formGroup]="marketBundle">
+                <td nzAlign="center">
+                  <shared-radio
+                    formControlName="primaryOpportunity"
+                    trueValue="true"
+                    falseValue="false"
+                    label="主机"
+                    (ngModelChange)="onSetPrimaryOpp(item, marketBundle, $event)"
+                  ></shared-radio>
+                </td>
+                <td nzAlign="center">
+                  {{ marketBundle.getRawValue().productConfig }}
+                </td>
+                <td nzAlign="center">
+                  {{ marketBundle.getRawValue().marketBundleName }}
+                </td>
+                <td nzAlign="center">
+                  {{ marketBundle.getRawValue().marketBundleBmc }}
+                </td>
+                <td nzAlign="center">
+                  {{ marketBundle.getRawValue().marketBundleAmount }}
+                </td>
+                <td nzAlign="center">
+                  <input
+                    *ngIf="isOAPorcessNode"
+                    nz-input
+                    formControlName="productModel"
+                    maxlength="255"
+                  />
+                  <ng-container *ngIf="!isOAPorcessNode">
+                    {{ marketBundle.getRawValue().productModel }}
+                  </ng-container>
+                </td>
+                <td nzAlign="center">
+                  <input
+                    *ngIf="isOAPorcessNode"
+                    nz-input
+                    formControlName="medicalDeviceName"
+                    maxlength="255"
+                  />
+                  <ng-container *ngIf="!isOAPorcessNode">
+                    {{ marketBundle.getRawValue().medicalDeviceName }}
+                  </ng-container>
+                </td>
+                <td nzAlign="center" *ngIf="businessModel == 'DISTRIBUTOR'">
+                  {{ marketBundle.getRawValue().dtcDealerAgreementNo }}
+                </td>
+                <td nzAlign="center" *ngIf="businessModel == 'DISTRIBUTOR'">
+                  <div nz-tooltip [nzTitle]="marketBundle.get('newDealerAgreementNo').value ? titleTemplateDis : null" nzOverlayClassName="tooltip-pree" nzPlacement="left" nzMouseLeaveDelay="0.2">
+                    <shared-select
+                      formControlName="newDealerAgreementNo"
+                      placeholder="请选择"
+                      [allowClear]="true"
+                      [options]="dealerAgreementList"
+                      (ngModelChange)="onDealerAgreementChange(marketBundle, $event)"
+                    >
+                    </shared-select>
+                  </div>
+                  <ng-template #titleTemplateDis>
+                    <div class="agreement-info">
+                      <div>{{ marketBundle.getRawValue().newDealerAgreementNo }}</div>
+                      <div>{{'授权产品：' + marketBundle.getRawValue().authorizedProduct }}</div>
+                      <div>{{'授权区域：' + marketBundle.getRawValue().authorizedArea }}</div>
+                    </div>
+                  </ng-template>
+                </td>
+                <td nzAlign="center">
+                  <nz-input-group *ngIf="isOAPorcessNode" style="width: 100%" [nzAddOnAfter]="selectNpmaBtn">
+                    <input
+                      type="text"
+                      nz-tooltip
+                      nz-input
+                      maxlength="255"
+                      formControlName="nmpaNum"
+                      placeholder="点击右侧按钮选择NMPA证号" />
+                  </nz-input-group>
+                  <ng-template #selectNpmaBtn>
+                    <button
+                      nz-button
+                      nzType="primary"
+                      class="ml-md"
+                      [disabled]="marketBundle.get('nmpaNum').disabled"
+                      (click)="onShowSelectNmpaModal(marketBundle)">
+                      更新
+                    </button>
+                  </ng-template>
+
+                  <ng-container *ngIf="!isOAPorcessNode">
+                    {{ marketBundle.getRawValue().nmpaNum }}
+                  </ng-container>
+                </td>
+                <td nzAlign="center">
+                  <shared-date-picker *ngIf="isOAPorcessNode" formControlName="nmpaValidityDate"></shared-date-picker>
+                  <ng-container *ngIf="!isOAPorcessNode">
+                    {{ marketBundle.getRawValue().nmpaValidityDate }}
+                  </ng-container>
+                </td>
+                <td nzAlign="center">
+                  {{ marketBundle.getRawValue().simulationId }}
+                </td>
+                <td nzAlign="center">
+                  {{ marketBundle.getRawValue().marketBundleId }}
+                </td>
+                <td nzAlign="center">
+                  {{ marketBundle.getRawValue().opportunityId }}
+                </td>
+                <td nzAlign="center">
+                  {{ marketBundle.getRawValue().businessOpportunityHierarchyLink }}
+                </td>
+              </tr>
+            </tbody>
+          </nz-table>
+        </div>
+        <span style="color:#f5222d" *ngIf="item?.errors?.noPrimaryOpp">
+          请至少选择一个主机
+        </span>
+
+        <!-- 补充SO号 -->
+        <div *ngIf="isPDIGTOrder(item) && showSOField && item.get('isDeleted').value === 0" class="mt10">
+          <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+            <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+              <nz-form-item>
+                <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired>SO#</nz-form-label>
+                <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                  <input nz-input formControlName="so" maxlength="100" />
+                  <ng-container *ngIf="item.get('so').value && item.get('so').enabled">
+                    <div>还可以输入:{{item.get('so').value.length}}/{{100}}</div>
+                  </ng-container>
+                  <nz-form-explain *ngIf="item.get('so')?.dirty &&item.get('so')?.errors">
+                    <ng-container *ngIf="item.get('so')?.hasError('required')">此选项必填字段</ng-container>
+                    <ng-container *ngIf="item.get('so')?.hasError('soValue')">只能输入数字和分号</ng-container>
+                  </nz-form-explain>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+          </div>
+  
+          <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+            <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+              <nz-form-item>
+                <nz-form-label nzXs="24" nzSm="24" nzMd="8">备注</nz-form-label>
+                <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                  <textarea
+                    [nzAutosize]="{ minRows: 4, maxRows: 6 }"
+                    nz-input
+                    style="width: 100%"
+                    formControlName="remark"
+                  ></textarea>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+          </div>
+        
+          <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+            <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+              <nz-form-item>
+                <nz-form-label nzXs="24" nzSm="24" nzMd="8">上传附件</nz-form-label>
+                <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                  <shared-upload-file type="button" title="上传附件" formControlName="omFiles"></shared-upload-file>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+          </div>
+        </div>
+      </app-form-section>
+    </div>
+  </div>
+  <span style="color:#f5222d" *ngIf="orderInfo?.errors?.asLeasetOneUsedOrder">
+    请至少选择一个Order作为Pre-book申请
+  </span>
+</form>
+
+<prebook-v3-link-oit #linkOit (select)="onSelectLinkOit($event)"></prebook-v3-link-oit>
+
+<prebook-v3-select-nmpa #selectNmpa (select)="onNmpaFormSelect($event)"></prebook-v3-select-nmpa>

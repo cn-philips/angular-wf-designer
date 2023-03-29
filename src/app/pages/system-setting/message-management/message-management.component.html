@@ -1,0 +1,23 @@
+<nz-card>
+  <app-tabs>
+    <app-tab
+      [title]="
+        'system-settings.message-management.notification.title' | translate
+      "
+    >
+      <app-notification-setting></app-notification-setting>
+    </app-tab>
+    <app-tab
+      [title]="
+        'system-settings.message-management.announcement.title' | translate
+      "
+    >
+      <app-announcement-setting></app-announcement-setting>
+    </app-tab>
+    <app-tab
+      [title]="'system-settings.message-management.carousel.title' | translate"
+    >
+      <app-carousel-setting></app-carousel-setting
+    ></app-tab>
+  </app-tabs>
+</nz-card>

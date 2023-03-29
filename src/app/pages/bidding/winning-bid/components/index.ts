@@ -1,0 +1,1 @@
+export { WinningConfirmComponent } from './winning-confirm/winning-confirm.component'

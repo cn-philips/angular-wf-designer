@@ -1,0 +1,50 @@
+/deep/ .bidding-price {
+  .ant-form-item-children-icon {
+    display: none;
+  }
+  .ant-form-item-control {
+    line-height: 0;
+  }
+
+  .ant-form-item {
+    display: flex;
+    width: 100%;
+  }
+
+  .ant-form-item-control-wrapper {
+    width: 280px;
+  }
+}
+
+
+/deep/ .opportunity-id {
+  color: #337fbf;
+}
+/deep/ .product-info {
+  display: flex;
+  .bidding-price {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    margin-left: 16px;
+    span {
+      margin-right: 8px;
+      white-space: nowrap;
+    }
+  }
+}
+
+.sp-item-list {
+  .sp-item {
+    display: flex;
+    .view-detail {
+      cursor: pointer;
+      color: #337fbf;
+    }
+
+    .comment-input {
+      margin: 0 16px;
+      width: 300px;
+    }
+  }
+}

@@ -1,0 +1,55 @@
+<nz-modal [nzVisible]="visible" nzWidth="1000px" [nzTitle]="'components.foreign-company.title' | translate"
+  [nzFooter]="null" (nzOnCancel)="onHide()">
+  <div nz-row [nzGutter]="24">
+    <div nz-col [nzSpan]="8">
+      <nz-form-item>
+        <nz-form-label [nzSpan]="6" nzFor="email">{{"components.foreign-company.company-name" | translate}}
+        </nz-form-label>
+        <nz-form-control [nzSpan]="18">
+          <input nz-input [(ngModel)]="searchParams.corporateName" placeholder="请输入公司名称">
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+
+    <div nz-col [nzSpan]="16" style="text-align: right;">
+      <nz-form-item>
+        <nz-form-control>
+          <button nz-button class="ml10" nzType="primary" (click)="getTableData(true)" [nzSize]="6">
+            {{"components.foreign-company.search" | translate}}
+          </button>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+
+  <div class="table-container">
+    <nz-table [nzData]="tableData.rows" [nzShowTotal]="totalTemplate" [nzTotal]="tableData.total"
+      [nzLoading]="tableData.loading" [nzPageSizeOptions]="[5, 10, 20, 30, 40, 50 ]" [nzShowQuickJumper]="true"
+      [nzShowSizeChanger]="true" [nzFrontPagination]="false" [nzScroll]="{ y: '300px' }"
+      [(nzPageIndex)]="searchParams.pageNo" [(nzPageSize)]="searchParams.pageSize" (nzPageIndexChange)="getTableData()"
+      (nzPageSizeChange)="getTableData()">
+      <thead>
+        <tr>
+          <th nzWidth="300px" nzAlign="left">{{"components.foreign-company.chinese-name" | translate}}</th>
+          <th nzWidth="120px" nzAlign="left">{{"components.foreign-company.code" | translate}}</th>
+          <th nzAlign="left">{{"components.foreign-company.address" | translate}}</th>
+          <th nzWidth="60px">{{"components.foreign-company.action" | translate}}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of tableData.rows">
+          <td nzAlign="left">{{ item.corporateName }}</td>
+          <td nzAlign="left">{{ item.serialNumber }}</td>
+          <td nzAlign="left">{{ item.corporateAddress }}</td>
+          <td nzAlign="right">
+            <button nz-button nzSize="small" nzType="primary"
+              (click)="onSelect(item)">{{"components.foreign-company.select" | translate}}</button>
+          </td>
+        </tr>
+      </tbody>
+    </nz-table>
+
+    <ng-template #totalTemplate let-total>
+      {{"components.foreign-company.total" | translate: { total : tableData.total } }} </ng-template>
+  </div>
+</nz-modal>

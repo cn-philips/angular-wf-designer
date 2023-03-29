@@ -1,0 +1,56 @@
+/deep/ {
+    .card-body {
+        background-color: #fff;
+    }
+
+    .ant-select-search__field {
+        width: 100% !important;
+        max-width: 100%;
+        border-bottom: 0px !important;
+    }
+
+    .ant-form-item-label {
+        white-space: normal;
+    }
+
+    .ant-form-item label {
+        line-height: 20px;
+    }
+
+    .ql-editor {
+        height: 300px;
+    }
+
+    .ql-toolbar.ql-snow {
+        line-height: 1.5em !important;
+    }
+
+    .ant-descriptions-item-label {
+        font-weight: 500 !important;
+    }
+
+    .ant-descriptions-item-content {
+        color: #f5222d !important;
+    }
+
+    .ant-form-explain {
+        color: #f5222d !important;
+    }
+
+    .has-error .ant-select-selection {
+        border-color: #f5222d !important;
+    }
+
+    .has-error .ant-input {
+        border-color: #f5222d !important;
+    }
+
+    .ant-time-picker {
+        color: #337fbf !important;
+    }
+}
+
+.textarea {
+    width: 100%;
+    border: 1px solid #ddd;
+}

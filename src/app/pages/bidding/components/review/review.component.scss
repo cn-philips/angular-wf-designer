@@ -1,0 +1,42 @@
+.flex {
+  display: flex;
+  flex-direction: row;
+}
+
+.mt10 {
+  margin-top: 10px;
+}
+
+.foot {
+  text-align: right;
+  margin-top: 10px;
+}
+
+.nonbox {
+  width: 160px;
+}
+
+.nonbox2 {
+  width: 240px;
+}
+
+.lable1 {
+  width: 70px;
+}
+
+.lable2 {
+  width: 153px;
+}
+
+.min-label {
+  min-width: 153px;
+}
+
+label {
+  display: inline-block;
+  width: auto;
+}
+
+.hui {
+  color: rgba(0, 0, 0, .25) !important;
+}

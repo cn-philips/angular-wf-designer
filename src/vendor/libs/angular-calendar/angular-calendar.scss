@@ -1,4 +1,4 @@
-@import '~vendor/styles/_custom-variables/libs';
+@import "~vendor/styles/_custom-variables/libs";
 @import "node_modules/angular-calendar/scss/angular-calendar";
 @import "mixins";
 
@@ -13,23 +13,23 @@ $angular-calendar-open-day-events-padding: 15px !default;
 }
 
 .cal-event-action {
-  margin-right: .25rem;
+  margin-right: 0.25rem;
   vertical-align: middle;
 
-  [dir=rtl] & {
+  [dir="rtl"] & {
     margin-right: 0;
-    margin-left: .25rem;
+    margin-left: 0.25rem;
   }
 }
 
 .cal-month-view .cal-open-day-events .cal-event-action {
   margin-right: 0;
-  margin-left: .25rem;
+  margin-left: 0.25rem;
   color: inherit !important;
-  font-size: .8em;
+  font-size: 0.8em;
 
-  [dir=rtl] & {
-    margin-right: .25rem;
+  [dir="rtl"] & {
+    margin-right: 0.25rem;
     margin-left: 0;
   }
 }
@@ -59,16 +59,16 @@ $angular-calendar-open-day-events-padding: 15px !default;
   border: 1px solid;
   border-bottom: 0;
 
-  html:not([dir=rtl]) & + .cal-cell {
+  html:not([dir="rtl"]) & + .cal-cell {
     border-left: 0;
   }
 
-  [dir=rtl] & + .cal-cell {
+  [dir="rtl"] & + .cal-cell {
     border-right: 0;
   }
 }
 
-[dir=rtl] {
+[dir="rtl"] {
   .cal-month-view {
     .cal-cell {
       float: right;
@@ -177,7 +177,7 @@ $angular-calendar-open-day-events-padding: 15px !default;
     }
   }
 
-  &[dir=rtl] {
+  &[dir="rtl"] {
     .cal-month-view .cal-day-cell:not(:last-child),
     .cal-week-view .cal-day-headers .cal-header:not(:last-child) {
       border-right: 0;
@@ -260,7 +260,7 @@ $angular-calendar-open-day-events-padding: 15px !default;
     }
   }
 
-  &[dir=rtl] {
+  &[dir="rtl"] {
     .cal-month-view .cal-day-cell:not(:last-child),
     .cal-week-view .cal-day-headers .cal-header:not(:last-child) {
       border-right: 0;

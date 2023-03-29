@@ -1,0 +1,136 @@
+<!-- 发放授权审核表单 -->
+<form nz-form [formGroup]="grantAuthApprovalInfo">
+  <bidding-v3-bidding-reference
+    *ngIf="!disabled && applyDetail.otherBiddingNumber && applyDetail.otherBiddingNumber.length > 0"
+    [data]="applyDetail.otherBiddingNumber"
+  ></bidding-v3-bidding-reference>
+  <nz-form-item>
+    <nz-form-label [nzSpan]="4">
+      {{"biddingv3.components.approval-form.auth-approval.data-source" | translate}}
+    </nz-form-label>
+    <nz-form-control [nzSpan]="10">
+      {{ applyDetail.dataSource }}
+    </nz-form-control>
+  </nz-form-item>
+
+  <nz-form-item>
+    <nz-form-label [nzSpan]="4">
+      {{"biddingv3.components.approval-form.auth-approval.business-model" | translate}}
+    </nz-form-label>
+    <nz-form-control [nzSpan]="10">
+      {{ applyDetail.businessModel | BusinessModelPipe }}
+    </nz-form-control>
+  </nz-form-item>
+
+  <nz-form-item>
+    <nz-form-label [nzSpan]="4">
+      {{"biddingv3.components.approval-form.auth-approval.cp-verify" | translate}}
+    </nz-form-label>
+    <nz-form-control [nzSpan]="10">
+      <nz-radio-group formControlName="cpVerifyRequired">
+        <label nz-radio [nzValue]="1">是</label>
+        <label nz-radio [nzValue]="0">否，无需校验CP</label>
+      </nz-radio-group>
+    </nz-form-control>
+  </nz-form-item>
+
+  <nz-form-item>
+    <nz-form-label [nzSpan]="4" nzRequired>
+      {{"biddingv3.components.approval-form.auth-approval.auth-file" | translate}}
+    </nz-form-label>
+    <nz-form-control [nzSpan]="10">
+      <shared-upload-file type="button" [title]="'biddingv3.components.approval-form.auth-approval.upload' | translate"
+        formControlName="authorizationFiles"></shared-upload-file>
+      <nz-form-explain
+        *ngIf="grantAuthApprovalInfo.get('authorizationFiles')?.dirty && grantAuthApprovalInfo.get('authorizationFiles')?.errors">
+        此选项必填字段
+      </nz-form-explain>
+    </nz-form-control>
+  </nz-form-item>
+
+  <nz-form-item>
+    <nz-form-label [nzSpan]="4">
+      {{"biddingv3.components.approval-form.auth-approval.export-file" | translate}}
+    </nz-form-label>
+    <nz-form-control [nzSpan]="10">
+      <shared-upload-file type="button" [title]="'biddingv3.components.approval-form.auth-approval.upload' | translate"
+        formControlName="exportControlFiles"></shared-upload-file>
+    </nz-form-control>
+  </nz-form-item>
+
+  <nz-form-item>
+    <nz-form-label [nzSpan]="4">
+      {{"biddingv3.components.approval-form.auth-approval.pv-code" | translate}}
+    </nz-form-label>
+    <nz-form-control [nzSpan]="10">
+      <input nz-input formControlName="pvPaymentCode" />
+    </nz-form-control>
+  </nz-form-item>
+
+  <nz-form-item *ngIf="!disabled">
+    <nz-form-label [nzSpan]="4">
+      {{"biddingv3.components.approval-form.auth-approval.remark" | translate}}
+    </nz-form-label>
+    <nz-form-control [nzSpan]="10">
+      <textarea [nzAutosize]="{ minRows: 4, maxRows: 6 }" nz-input style="width: 100%" formControlName="processComments"
+        (ngModelChange)="remarkMsgVisible=false"></textarea>
+      <a *ngIf="remarkMsgVisible" style="color: #f5222d">请填写拒绝理由</a>
+    </nz-form-control>
+  </nz-form-item>
+
+  <nz-form-item>
+    <nz-form-label [nzSpan]="4">
+      {{"biddingv3.components.approval-form.auth-approval.other-file" | translate}}
+    </nz-form-label>
+    <nz-form-control [nzSpan]="18">
+      <div style="display:flex;align-items:center">
+        <shared-upload-file type="button"
+          [title]="'biddingv3.components.approval-form.auth-approval.upload' | translate"
+          formControlName="authorizationOtherFiles"></shared-upload-file>
+        <div *ngIf="!disabled" style="margin-left:16px">
+          <ng-container *ngIf="applyDetail.businessModel === BUSINESS_MODEL_DIRECT">
+            <button class="down paddnon" style="margin-right:8px" nz-button nzType="link"
+              (click)="onShowTemplatePreviewer('DirectSQHL')">9-4制造商出具的授权函-荷兰格式</button>
+            <button class="down paddnon" nz-button nzType="link"
+              (click)="onShowTemplatePreviewer('DirectSQsz')">9-4制造商出具的授权函-苏州格式</button>
+          </ng-container>
+          <ng-container *ngIf="applyDetail.businessModel !== BUSINESS_MODEL_DIRECT">
+            <button class="down paddnon" style="margin-right:8px" nz-button nzType="link"
+              (click)="onShowTemplatePreviewer('DisSQHL')">9-4制造商出具的授权函-荷兰格式</button>
+            <button class="down paddnon" nz-button nzType="link"
+              (click)="onShowTemplatePreviewer('DisSQSZ')">9-4制造商出具的授权函-苏州格式</button>
+          </ng-container>
+        </div>
+      </div>
+    </nz-form-control>
+  </nz-form-item>
+</form>
+
+<footer *ngIf="!disabled">
+  <button nz-button (click)="biddingV3Service.goTodoPage()">
+    {{"biddingv3.components.approval-form.auth-approval.return" | translate}}
+  </button>
+  <button *ngIf="grantAuthApprovalInfo.get('cpVerifyRequired').value === 1" nz-button nzType="primary" nz-popconfirm
+    nzTitle="你确定要执行授权确认的操作?" (nzOnConfirm)="showCpVerifyDialog()">
+    {{"biddingv3.components.approval-form.auth-approval.cp-verify-re" | translate}}
+  </button>
+  <button *ngIf="grantAuthApprovalInfo.get('cpVerifyRequired').value === 0" nz-button nzType="primary" nz-popconfirm
+    nzTitle="你确定要执行授权确认的操作?" (nzOnConfirm)="handleAction('approved')">
+    {{"biddingv3.components.approval-form.auth-approval.grant-auth" | translate}}
+  </button>
+  <button nz-button nzType="primary" nz-popconfirm nzTitle="你确定要执行拒绝的操作?" (nzOnConfirm)="handleAction('rejected')">
+    {{"biddingv3.components.approval-form.auth-approval.reject" | translate}}
+  </button>
+</footer>
+
+<div class="showDiag" *ngIf="templatePreviewerVisible">
+  <div class="showDiag-box">
+    <div class="showDiag-box-title">
+      <div>{{"biddingv3.components.approval-form.auth-approval.view" | translate}}</div>
+      <i nz-icon nzType="close" class="close" (click)="templatePreviewerVisible=false" nzTheme="outline"></i>
+    </div>
+    <bidding-v3-pdfpreview [padData]="templateParams"></bidding-v3-pdfpreview>
+  </div>
+</div>
+
+<bidding-v3-cp-verify #cpVerify (verify)="handleAction('approved')"></bidding-v3-cp-verify>

@@ -1,0 +1,7 @@
+<div class="image_storage_wrapper">
+  <div class="image_storage_inner">
+    <div *ngFor="let img of images" class="image_wrapper" (click)="handleClick(img)">
+      <img [src]="img.thumbnail" [alt]="img.description">
+    </div>
+  </div>
+</div>

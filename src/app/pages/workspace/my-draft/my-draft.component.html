@@ -1,0 +1,19 @@
+<nz-card>
+  <app-tabs>
+    <app-tab title="Bidding/OIT/Pre-book" [count]="total">
+      <div style="width: 100%; background-color: #ffffff; padding: 15px 0 15px 0">
+        <cos-search-item [isDraft]="true" [loading]="loading" [formData]="formValues" (search)="updateParams($event)"
+          (setLoading)="getLoading($event)" (exportEvent)="exportData()" [exportLoading]="exportLoading">
+        </cos-search-item>
+        <cos-list #table [isDraft]="true" [loading]="loading" [tableData]="tableData" [total]="total" [flag]="0"
+          (pageChange)="updateDataList($event)" (setLoading)="getLoading($event)">
+        </cos-list>
+      </div>
+    </app-tab>
+    <app-tab title="Special Approval" [count]="spTable.tableData.count">
+      <div style="width: 100%; background-color: #ffffff; padding: 15px 0 15px 0">
+        <special-approval-draft #spTable></special-approval-draft>
+      </div>
+    </app-tab>
+  </app-tabs>
+</nz-card>

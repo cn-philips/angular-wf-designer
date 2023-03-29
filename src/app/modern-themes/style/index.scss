@@ -1,0 +1,43 @@
+@import "./form/index.scss";
+// Philips List Item Border
+.p-border-list-item {
+  position: relative;
+  &::before {
+    display: inline-block;
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    box-sizing: border-box;
+    border-left: 3px;
+    padding-left: 3px;
+    background: #3798db;
+    animation: revert-scale-bg 0.1s cubic-bezier(0.075, 0.82, 0.165, 1) forwards;
+  }
+  &.active,
+  &:hover {
+    &::before {
+      animation: scale-bg 1s cubic-bezier(0.075, 0.82, 0.165, 1) forwards;
+    }
+  }
+  @keyframes scale-bg {
+    0% {
+      height: 0;
+      top: 50%;
+    }
+    100% {
+      height: 100%;
+      top: 0;
+    }
+  }
+  @keyframes revert-scale-bg {
+    0% {
+      height: 100%;
+      top: 0;
+    }
+    100% {
+      height: 0;
+      top: 50%;
+    }
+  }
+}

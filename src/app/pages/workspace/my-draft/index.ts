@@ -1,0 +1,1 @@
+export { MyDraftComponent } from './my-draft.component'

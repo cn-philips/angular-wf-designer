@@ -1,0 +1,734 @@
+<form [formGroup]="biddingForm">
+  <button *ngIf="showReopenButton" nz-button class="edit-btn" style="margin-bottom: 8px;" nz-popconfirm
+    nzTitle="你确定要再次编辑表单信息, 确定后将重新审批所有非标条款?" (nzOnConfirm)="onReopenForm()">
+    {{"biddingv3.components.supplement-info.re-edit" | translate}}
+  </button>
+  <div formGroupName="supplementInfo">
+    <!-- 直投 -->
+    <ng-container *ngIf="businessModel === BUSINESS_MODEL_DIRECT">
+      <div class="selection-wrap" formGroupName="biddingInfo">
+        <app-form-section [title]="'biddingv3.components.supplement-info.bidding-info.title' | translate"
+          [form]="biddingInfo">
+          <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+            <div nz-col nzXs="24" nzSm="24" nzMd="24">
+              <nz-form-item>
+                <nz-form-label nzXs="24" nzSm="24" nzMd="3" nzRequired>
+                  {{"biddingv3.components.supplement-info.bidding-info.auth" | translate}}
+                </nz-form-label>
+                <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+                  <nz-radio-group formControlName="authorizationRequired">
+                    <label nz-radio [nzValue]="1">是</label>
+                    <label nz-radio [nzValue]="0">
+                      <span>否</span>
+                      <ng-container *ngIf="biddingInfo.get('authorizationRequired').value === 0">
+                        &nbsp;,民营医院直接进单
+                      </ng-container>
+                    </label>
+                  </nz-radio-group>
+                  <span>注释:选择"否，民营医院直接进单"，请在"中标备案"流程节点填写相关信息</span>
+                  <nz-form-explain
+                    *ngIf="biddingInfo.get('authorizationRequired')?.dirty && biddingInfo.get('authorizationRequired')?.errors">
+                    此选项必填字段
+                  </nz-form-explain>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+
+            <div nz-col nzXs="24" nzSm="24" nzMd="8">
+              <nz-form-item>
+                <nz-form-label nzXs="24" nzSm="24" nzMd="9" nzRequired>
+                  {{"biddingv3.components.supplement-info.bidding-info.bidder-name" | translate}}
+                </nz-form-label>
+                <nz-form-control nzXs="24" nzSm="24" nzMd="15">
+                  <shared-select formControlName="bidderName" placeholder="请选择" [options]="selectOption.bidderName"
+                    (ngModelChange)="onBidderNameChange($event)">
+                  </shared-select>
+                  <nz-form-explain
+                    *ngIf="biddingInfo.get('bidderName')?.dirty && biddingInfo.get('bidderName')?.errors">
+                    此选项必填字段
+                  </nz-form-explain>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+
+            <div nz-col nzXs="24" nzSm="24" nzMd="8">
+              <nz-form-item>
+                <nz-form-label nzXs="24" nzSm="24" nzMd="12">
+                  {{"biddingv3.components.supplement-info.bidding-info.address" | translate}}
+                </nz-form-label>
+                <nz-form-control nzXs="24" nzSm="24" nzMd="12">
+                  <input nz-input formControlName="bidderRegistAddress" />
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+
+            <div nz-col nzXs="24" nzSm="24" nzMd="8">
+              <nz-form-item>
+                <nz-form-label nzXs="24" nzSm="24" nzMd="12">
+                  {{"biddingv3.components.supplement-info.bidding-info.location" | translate}}
+                </nz-form-label>
+                <nz-form-control nzXs="24" nzSm="24" nzMd="12">
+                  <input nz-input formControlName="bidderRegistLocation" />
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+
+            <div nz-col nzSpan="24">
+              <nz-form-item>
+                <nz-form-label nzXs="24" nzSm="24" nzMd="3" nzNoColon>
+                  <span class="down" (click)="showTemplatePreviewer('CYTBSMH')">
+                    {{"biddingv3.components.supplement-info.bidding-info.previewer" | translate}}
+                  </span>
+                </nz-form-label>
+              </nz-form-item>
+            </div>
+
+            <div nz-col nzXs="24" nzSm="24" nzMd="24">
+              <nz-form-item>
+                <nz-form-label nzXs="24" nzSm="24" nzMd="3">
+                  {{"biddingv3.components.supplement-info.bidding-info.letter-file" | translate}}
+                </nz-form-label>
+                <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+                  <shared-upload-file type="button" title="上传附件" formControlName="participationTenderLetterFiles">
+                  </shared-upload-file>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+
+            <div nz-col nzSpan="24">
+              <nz-form-item>
+                <nz-form-label nzXs="24" nzSm="24" nzMd="3" nzNoColon>
+                  <span class="down" (click)="showTemplatePreviewer('XSJLTBWT')">
+                    销售经理投标委托函模板
+                  </span>
+                </nz-form-label>
+              </nz-form-item>
+            </div>
+
+            <div nz-col nzXs="24" nzSm="24" nzMd="24">
+              <nz-form-item>
+                <nz-form-label nzXs="24" nzSm="24" nzMd="3">
+                  销售经理投标委托函
+                </nz-form-label>
+                <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+                  <shared-upload-file type="button" title="上传附件" formControlName="salesManagerAuthorizationLetter">
+                  </shared-upload-file>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+
+            <div nz-col nzXs="24" nzSm="24" nzMd="24">
+              <nz-form-item>
+                <nz-form-label nzXs="24" nzSm="24" nzMd="3" nzRequired>
+                  {{"biddingv3.components.supplement-info.bidding-info.document-file" | translate}}
+                </nz-form-label>
+                <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+                  <shared-upload-file type="button" title="上传附件" formControlName="biddingDocumentFiles">
+                  </shared-upload-file>
+                  <nz-form-explain
+                    *ngIf="biddingInfo.get('biddingDocumentFiles')?.dirty && biddingInfo.get('biddingDocumentFiles')?.errors">
+                    此选项必填字段
+                  </nz-form-explain>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+          </div>
+        </app-form-section>
+      </div>
+
+      <div class="selection-wrap" formGroupName="biddingTerm">
+        <app-form-section [title]="'biddingv3.components.supplement-info.bidding-term.title' | translate"
+          [form]="biddingTerm">
+          <div formGroupName="logisticTerm">
+            <app-form-section [title]="'biddingv3.components.supplement-info.bidding-term.logistic' | translate"
+              [form]="logisticTerm">
+              <a nz-popconfirm [nzTitle]="reopenTitle" nzOkText="确认"
+                (nzOnConfirm)="onReopenTerm(logisticTerm, 'logisticTermsApprovalStatus')">
+                <button *ngIf="showReopenButton && !logisticTerm.enabled" nz-button class="edit-btn absolute"
+                  style="left:85px;">
+                  {{"biddingv3.components.supplement-info.bidding-term.re-edit" | translate}}
+                </button>
+              </a>
+
+              <div class="highlight" *ngIf="fromTask && taskStatus == 'ecos_bid_logistics_terms'">
+                *&ensp;点击“批准”按钮，表示已认可“红色标记审批条款”审批通过
+              </div>
+
+              <nz-form-item>
+                <nz-form-control style="width: 200px">
+                  <nz-select placeholder="请选择" formControlName="logisticTerms"
+                    (ngModelChange)="onLogisticTermsChange($event)">
+                    <nz-option *ngFor="let item of selectOption.logisticTerms" [nzLabel]="item.label"
+                      [nzValue]="item.value"></nz-option>
+                  </nz-select>
+                  <nz-form-explain
+                    *ngIf="logisticTerm?.get('logisticTerms')?.dirty && logisticTerm?.get('logisticTerms')?.errors">
+                    此选项必填字段
+                  </nz-form-explain>
+                </nz-form-control>
+                <nz-form-control
+                  [ngClass]="logisticTerm?.dirty && logisticTerm?.errors?.logisticTermsDescError ? 'has-error' : ''">
+                  <textarea class="textarea" formControlName="logisticTermsDesc" rows="4"></textarea>
+                  <nz-form-explain
+                    *ngIf="logisticTerm?.get('logisticTermsDesc')?.dirty && logisticTerm?.get('logisticTermsDesc')?.errors">
+                    此选项必填字段
+                  </nz-form-explain>
+                  <nz-form-explain *ngIf="logisticTerm?.errors?.logisticTermsDescError">
+                    您输入的非标准条款内容与标准条款内容一致，请修改条款内容或选择标准条款，否则将无法提交!
+                  </nz-form-explain>
+                </nz-form-control>
+              </nz-form-item>
+            </app-form-section>
+          </div>
+
+          <div class="selection-wrap">
+            <app-form-section [title]="'biddingv3.components.supplement-info.bidding-term.after' | translate"
+              [form]="afterSaleTermsDesc">
+              <a nz-popconfirm [nzTitle]="reopenTitle" nzOkText="确认"
+                (nzOnConfirm)="onReopenTerm(afterSaleTermsDesc, 'afterSaleTermsApprovalStatus')">
+                <button *ngIf="showReopenButton && !afterSaleTermsDesc.enabled" nz-button class="edit-btn absolute"
+                  style="left:140px;">
+                  {{"biddingv3.components.supplement-info.bidding-term.re-edit" | translate}}
+                </button>
+              </a>
+
+              <div class="highlight" *ngIf="fromTask && taskStatus == 'ecos_bid_after_sales_terms'">
+                *&ensp;点击“批准”按钮，表示已认可“红色标记审批条款”审批通过
+              </div>
+
+              <nz-form-item>
+                <nz-form-control>
+                  <textarea class="textarea" formControlName="afterSaleTermsDesc" rows="4"></textarea>
+                  <nz-form-explain
+                    *ngIf="biddingTerm?.get('afterSaleTermsDesc')?.dirty && biddingTerm?.get('afterSaleTermsDesc')?.errors">
+                    此选项必填字段
+                  </nz-form-explain>
+                </nz-form-control>
+              </nz-form-item>
+            </app-form-section>
+          </div>
+
+          <div class="selection-wrap" formGroupName="biddingAmount">
+            <app-form-section [title]="'biddingv3.components.supplement-info.bidding-term.amount' | translate"
+              [form]="biddingAmount">
+              <a nz-popconfirm [nzTitle]="reopenTitle" nzOkText="确认"
+                (nzOnConfirm)="onReopenTerm(biddingAmount, 'bondAmountTermsApprovalStatus')">
+                <button *ngIf="showReopenButton && !biddingAmount.enabled" nz-button class="edit-btn absolute"
+                  style="left:222px">
+                  {{"biddingv3.components.supplement-info.bidding-term.re-edit" | translate}}
+                </button>
+              </a>
+
+              <div class="highlight" *ngIf="fromTask && taskStatus === 'ecos_bid_deposit_terms'">
+                *&ensp;点击“批准”按钮，表示已认可“红色标记审批条款”审批通过
+              </div>
+
+              <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+                <div nz-col nzXs="24" nzSm="24" nzMd="24">
+                  <nz-form-item>
+                    <nz-form-label [nzSpan]="4">
+                      {{"biddingv3.components.supplement-info.bidding-term.bidding-price" | translate}}
+                    </nz-form-label>
+                    <nz-form-control [nzSm]="4" style="width: 90px">
+                      <shared-select formControlName="bidderCurrency" placeholder="请选择"
+                        [options]="selectOption.currency" (ngModelChange)="onBidderCurrencyChange($event)"></shared-select>
+                      <nz-form-explain
+                        *ngIf="biddingAmount.get('bidderCurrency')?.dirty && biddingAmount.get('bidderCurrency')?.errors">
+                        <div style="text-align: center">此选项必填字段</div>
+                      </nz-form-explain>
+                    </nz-form-control>
+                    <nz-form-control [nzSm]="4" style="width: 50px"><span class="ml10">金额</span></nz-form-control>
+                    <nz-form-control [nzSm]="4" style="width: 180px">
+                      <nz-input-number style="width: 90%" formControlName="bidderAmount" [nzMin]="0" [nzPrecision]="2">
+                      </nz-input-number>
+                      <nz-form-explain
+                        *ngIf="biddingAmount.get('bidderAmount')?.dirty && biddingAmount.get('bidderAmount')?.errors">
+                        <div style="text-align: center">此选项必填字段</div>
+                      </nz-form-explain>
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+              </div>
+              <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+                <div nz-col nzXs="24" nzSm="24" nzMd="24">
+                  <nz-form-item>
+                    <nz-form-label [nzSpan]="4">
+                      {{"biddingv3.components.supplement-info.bidding-term.bond" | translate}}
+                    </nz-form-label>
+                    <nz-form-control [nzSm]="4" style="width: 90px">
+                      <shared-select formControlName="bidderBondCurrency" placeholder="请选择"
+                        [options]="selectOption.currency"></shared-select>
+                      <nz-form-explain
+                        *ngIf="biddingAmount.get('bidderBondCurrency')?.dirty && biddingAmount.get('bidderBondCurrency')?.errors">
+                        此选项必填字段
+                      </nz-form-explain>
+                    </nz-form-control>
+                    <nz-form-control [nzSm]="4" style="width: 134px"><span class="ml10">不小于投标总价的</span>
+                    </nz-form-control>
+                    <nz-form-control [nzSm]="4" style="width: 90px"
+                      [ngClass]="biddingAmount.get('bidderBondPercent')?.dirty && biddingAmount?.errors?.bidderBondError ? 'has-error' : ''">
+                      <nz-input-number style="width: 60px" formControlName="bidderBondPercent" [nzMin]="0" [nzMax]="100"
+                        [nzPrecision]="2"></nz-input-number>
+                      %
+                      <nz-form-explain
+                        *ngIf="biddingAmount.get('bidderBondPercent')?.dirty && biddingAmount?.errors?.bidderBondError">
+                        金额和百分比必填一项
+                      </nz-form-explain>
+                    </nz-form-control>
+                    <nz-form-control [nzSm]="4" style="width: 66px"><span class="ml10">或金额</span></nz-form-control>
+                    <nz-form-control [nzSm]="4" style="width: 180px"
+                      [ngClass]="biddingAmount.get('bidderBondAmount')?.dirty && biddingAmount?.errors?.bidderBondError ? 'has-error' : ''">
+                      <nz-input-number style="width: 90%" formControlName="bidderBondAmount" [nzMin]="0"
+                        [nzPrecision]="2"></nz-input-number>
+                      <nz-form-explain
+                        *ngIf="biddingAmount.get('bidderBondAmount')?.dirty && biddingAmount?.errors?.bidderBondError">
+                        金额和百分比必填一项
+                      </nz-form-explain>
+                    </nz-form-control>
+                    <nz-form-control [nzSm]="4" style="width: 225px">
+                      <span class="note">（参考国际招标文件第六章*15.1）</span>
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+              </div>
+
+              <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+                <div nz-col nzXs="24" nzSm="24" nzMd="24">
+                  <nz-form-item>
+                    <nz-form-label [nzSpan]="4">
+                      {{"biddingv3.components.supplement-info.bidding-term.performance" | translate}}
+                    </nz-form-label>
+                    <nz-form-control [nzSm]="4" style="width: 90px">
+                      <shared-select formControlName="performanceBondCurrency" placeholder="请选择"
+                        [options]="selectOption.currency"></shared-select>
+                      <nz-form-explain
+                        *ngIf="biddingAmount.get('performanceBondCurrency')?.dirty && biddingAmount.get('performanceBondCurrency')?.errors">
+                        此选项必填字段
+                      </nz-form-explain>
+                    </nz-form-control>
+                    <nz-form-control [nzSm]="4" style="width: 90px"><span class="ml10">合同总价的</span></nz-form-control>
+                    <nz-form-control [nzSm]="4" style="width: 90px"
+                      [ngClass]="biddingAmount.get('performanceBondPercent')?.dirty && biddingAmount?.errors?.performanceBondError ? 'has-error' : ''">
+                      <nz-input-number style="width: 60px" formControlName="performanceBondPercent" [nzMin]="0"
+                        [nzMax]="100" [nzPrecision]="2"></nz-input-number>
+                      %
+                      <nz-form-explain
+                        *ngIf="biddingAmount.get('performanceBondPercent')?.dirty && biddingAmount?.errors?.performanceBondError">
+                        金额和百分比必填一项
+                      </nz-form-explain>
+                    </nz-form-control>
+                    <nz-form-control [nzSm]="4" style="width: 66px"><span class="ml10">或金额</span></nz-form-control>
+                    <nz-form-control [nzSm]="4" style="width: 180px"
+                      [ngClass]="biddingAmount.get('performanceBondAmount')?.dirty && biddingAmount?.errors?.performanceBondError ? 'has-error' : ''">
+                      <nz-input-number style="width: 90%" formControlName="performanceBondAmount" [nzMin]="0"
+                        [nzPrecision]="2"></nz-input-number>
+                      <nz-form-explain
+                        *ngIf="biddingAmount.get('performanceBondAmount')?.dirty && biddingAmount?.errors?.performanceBondError">
+                        金额和百分比必填一项
+                      </nz-form-explain>
+                    </nz-form-control>
+                    <nz-form-control [nzSm]="4" style="width: 225px">
+                      <span class="note">（参考国际招标文件第六章*7.1）</span>
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+              </div>
+            </app-form-section>
+          </div>
+
+          <div class="selection-wrap" formGroupName="paymentTerm">
+            <app-form-section [title]="'biddingv3.components.supplement-info.bidding-term.payment' | translate"
+              [form]="paymentTerm">
+              <a nz-popconfirm [nzTitle]="reopenTitle" nzOkText="确认"
+                (nzOnConfirm)="onReopenTerm(paymentTerm, 'paymentTermsApprovalStatus')">
+                <button *ngIf="showReopenButton && !paymentTerm.enabled" nz-button class="edit-btn absolute"
+                  style="left:112px">
+                  {{"biddingv3.components.supplement-info.bidding-term.re-edit" | translate}}
+                </button>
+              </a>
+
+              <div class="highlight" *ngIf="fromTask && taskStatus === 'ecos_bid_payment_terms'">
+                *&ensp;点击“批准”按钮，表示已认可“红色标记审批条款”审批通过
+              </div>
+
+              <nz-form-item>
+                <nz-form-control style="width: 450px">
+                  <nz-select placeholder="请选择" formControlName="paymentTerms">
+                    <nz-option *ngFor="let item of paymentTerms" [nzLabel]="item" [nzValue]="item"></nz-option>
+                  </nz-select>
+                  <nz-form-explain
+                    *ngIf="paymentTerm.get('paymentTerms')?.dirty && paymentTerm.get('paymentTerms')?.errors">
+                    此选项必填字段
+                  </nz-form-explain>
+                </nz-form-control>
+                <nz-form-control>
+                  <textarea formControlName="paymentTermsDesc" rows="4" class="textarea"></textarea>
+                  <nz-form-explain
+                    *ngIf="paymentTerm.get('paymentTermsDesc')?.dirty && paymentTerm.get('paymentTermsDesc')?.errors">
+                    此选项必填字段
+                  </nz-form-explain>
+                </nz-form-control>
+              </nz-form-item>
+            </app-form-section>
+          </div>
+
+          <div class="selection-wrap">
+            <app-form-section [title]="'biddingv3.components.supplement-info.bidding-term.Specifications' | translate"
+              [form]="specificationTermsDesc">
+              <a nz-popconfirm [nzTitle]="reopenTitle" nzOkText="确认"
+                (nzOnConfirm)="onReopenTerm(specificationTermsDesc, 'specificationTermsApprovalStatus')">
+                <button *ngIf="showReopenButton && !specificationTermsDesc.enabled" nz-button class="edit-btn absolute"
+                  style="left:112px">
+                  {{"biddingv3.components.supplement-info.bidding-term.re-edit" | translate}}
+                </button>
+              </a>
+
+              <div class="highlight" *ngIf="fromTask && taskStatus === 'ecos_bid_technical_terms'">
+                *&ensp;点击“批准”按钮，表示已认可“红色标记审批条款”审批通过
+              </div>
+
+              <nz-form-item>
+                <nz-form-control>
+                  <textarea class="textarea" formControlName="specificationTermsDesc" rows="4"></textarea>
+                  <nz-form-explain
+                    *ngIf="biddingTerm.get('specificationTermsDesc')?.dirty && biddingTerm.get('specificationTermsDesc')?.errors">
+                    此选项必填字段
+                  </nz-form-explain>
+                </nz-form-control>
+              </nz-form-item>
+            </app-form-section>
+          </div>
+
+          <div class="selection-wrap">
+            <app-form-section [title]="'biddingv3.components.supplement-info.bidding-term.legal' | translate"
+              [form]="biddingTerm.get('legalTermsDesc')">
+              <nz-form-item>
+                <nz-form-control>
+                  <textarea class="textarea" formControlName="legalTermsDesc" rows="4"></textarea>
+                  <nz-form-explain
+                    *ngIf="biddingTerm.get('legalTermsDesc')?.dirty && biddingTerm.get('legalTermsDesc')?.errors">
+                    此选项必填字段
+                  </nz-form-explain>
+                </nz-form-control>
+              </nz-form-item>
+            </app-form-section>
+          </div>
+        </app-form-section>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="businessModel && businessModel !== BUSINESS_MODEL_DIRECT">
+      <div class="selection-wrap" formGroupName="indirectBiddingInfo">
+        <app-form-section [title]="'biddingv3.components.supplement-info.indirect-info.title' | translate"
+          [form]="indirectBiddingInfo">
+          <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+            <div nz-col nzXs="24" nzSm="24" nzMd="24">
+              <nz-form-item>
+                <nz-form-label nzXs="24" nzSm="24" nzMd="4" nzRequired>
+                  {{"biddingv3.components.supplement-info.indirect-info.auth" | translate}}
+                </nz-form-label>
+                <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+                  <nz-radio-group formControlName="authorizationRequired"
+                    (ngModelChange)="onAuthorizationChange($event)" #authorizationRequired>
+                    <label nz-radio [nzValue]="1">是</label>
+                    <label nz-radio [nzValue]="0">
+                      <span>否</span>
+                      <ng-container *ngIf="biddingInfo.get('authorizationRequired').value === 0">
+                        &nbsp;，凭代理证中标
+                      </ng-container>
+                    </label>
+                  </nz-radio-group>
+                  <span>注释:选择"否，凭代理证中标"，请在“中标备案”流程节点填写中标信息</span>
+                  <nz-form-explain
+                    *ngIf="indirectBiddingInfo.get('authorizationRequired')?.dirty && indirectBiddingInfo.get('authorizationRequired')?.errors">
+                    此选项必填字段
+                  </nz-form-explain>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+          </div>
+        </app-form-section>
+      </div>
+
+      <div class="selection-wrap" formGroupName="biddingCompany">
+        <app-form-section [title]="'biddingv3.components.supplement-info.company.title' | translate"
+          [form]="biddingCompany">
+          <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+            <div nz-col nzXs="24" nzSm="24" nzMd="24">
+              <nz-form-item>
+                <nz-form-label nzXs="24" nzSm="24" nzMd="4" [nzRequired]="authorizationRequired.value == 1">
+                  {{"biddingv3.components.supplement-info.company.sub-distributor" | translate}}
+                </nz-form-label>
+                <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+                  <nz-radio-group formControlName="secondaryDistributor"
+                    (ngModelChange)="onSecondaryDistributorChange($event)" #secondaryDistributor>
+                    <label nz-radio [nzValue]="1">是</label>
+                    <label nz-radio [nzValue]="0">否</label>
+                  </nz-radio-group>
+                  <nz-form-explain
+                    *ngIf="biddingCompany.get('secondaryDistributor')?.dirty && biddingCompany.get('secondaryDistributor')?.errors">
+                    此选项必填字段
+                  </nz-form-explain>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+
+            <div nz-col nzXs="24" nzSm="24" nzMd="12">
+              <nz-form-item>
+                <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired>
+                  {{"biddingv3.components.supplement-info.company.bidder" | translate}}
+                </nz-form-label>
+                <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                  <nz-input-group style="width: 100%" [nzAddOnAfter]="disabled ? null : selectBidderBtn">
+                    <input nz-input formControlName="bidderName" />
+                  </nz-input-group>
+                  <ng-template #selectBidderBtn>
+                    <button nz-button nzSize="middle" nzType="primary" [disabled]="secondaryDistributor.value === 0"
+                      (click)="showSelectDealerDialog('company')">
+                      {{"biddingv3.components.supplement-info.company.select" | translate}}
+                    </button>
+                  </ng-template>
+                  <nz-form-explain
+                    *ngIf="biddingCompany.get('bidderName')?.dirty && biddingCompany.get('bidderName')?.errors">
+                    此选项必填字段
+                  </nz-form-explain>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+
+            <div nz-col nzXs="24" nzSm="24" nzMd="12">
+              <nz-form-item>
+                <nz-form-label nzXs="24" nzSm="24" nzMd="12" nzRequired>
+                  {{"biddingv3.components.supplement-info.company.address" | translate}}
+                </nz-form-label>
+                <nz-form-control nzXs="24" nzSm="24" nzMd="12">
+                  <input nz-input formControlName="bidderRegistAddress" />
+                  <nz-form-explain
+                    *ngIf="biddingCompany.get('bidderRegistAddress')?.dirty && biddingCompany.get('bidderRegistAddress')?.errors">
+                    此选项必填字段
+                  </nz-form-explain>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+
+            <div nz-col nzXs="24" nzSm="24" nzMd="12">
+              <nz-form-item>
+                <nz-form-label nzXs="24" nzSm="24" nzMd="8">
+                  {{"biddingv3.components.supplement-info.company.ddp-status" | translate}}
+                </nz-form-label>
+                <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                  <shared-select formControlName="bidderDdpStatus" placeholder="请选择"
+                    [options]="selectOption.bidderDdpStatus">
+                  </shared-select>
+                  <nz-form-explain *ngIf="biddingCompany?.errors?.ddpStatusError" style="color:#f5222d">
+                    投标公司DDP状态未通过，无法提交
+                  </nz-form-explain>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+
+            <div nz-col nzXs="24" nzSm="24" nzMd="12">
+              <nz-form-item>
+                <nz-form-label nzXs="24" nzSm="24" nzMd="12">
+                  {{"biddingv3.components.supplement-info.company.validity" | translate}}
+                </nz-form-label>
+                <nz-form-control nzXs="24" nzSm="24" nzMd="12">
+                  <shared-date-picker formControlName="bidderDdpDate"></shared-date-picker>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+          </div>
+        </app-form-section>
+      </div>
+
+      <div class="selection-wrap" formGroupName="dealerInfo">
+        <app-form-section [title]="'biddingv3.components.supplement-info.dealer-info.title' | translate"
+          [form]="dealerInfo">
+          <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+            <div nz-col nzXs="24" nzSm="24" nzMd="24">
+              <nz-form-item>
+                <nz-form-label nzXs="24" nzSm="24" nzMd="4" nzRequired nzFor="dealerName">
+                  {{"biddingv3.components.supplement-info.dealer-info.dealer-name" | translate}}
+                </nz-form-label>
+                <nz-form-control nzXs="24" nzSm="24" nzMd="7">
+                  <nz-input-group style="width: 100%" [nzAddOnAfter]="disabled ? null : selectDealerBtn">
+                    <input id="dealerName" nz-input formControlName="dealerName" disabled />
+                  </nz-input-group>
+                  <ng-template #selectDealerBtn>
+                    <button nz-button nzSize="middle" nzType="primary" (click)="showSelectDealerDialog('dealer')">
+                      {{"biddingv3.components.supplement-info.dealer-info.select" | translate}}</button>
+                  </ng-template>
+                  <nz-form-explain *ngIf="dealerInfo.get('dealerName')?.dirty && dealerInfo.get('dealerName')?.errors">
+                    此选项必填字段
+                  </nz-form-explain>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+
+            <div nz-col nzXs="24" nzSm="24" nzMd="12">
+              <nz-form-item>
+                <nz-form-label nzXs="24" nzSm="24" nzMd="8">
+                  {{"biddingv3.components.supplement-info.dealer-info.distributor" | translate}}
+                </nz-form-label>
+                <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                  <div nz-tooltip
+                    [nzTitle]="dealerInfo.get('distributorAgreement').value.length > 0 ? titleTemplateDis : null"
+                    nzOverlayClassName="tooltip-pree" nzPlacement="left" nzMouseLeaveDelay="0.2">
+                    <nz-select formControlName="distributorAgreementNo" placeholder="请选择" nzMode="multiple"
+                      [nzDisabled]="true">
+                      <nz-option *ngFor="let item of agreementList" [nzValue]="item.value" [nzLabel]="item.label">
+                      </nz-option>
+                    </nz-select>
+                  </div>
+                  <ng-template #titleTemplateDis>
+                    <div *ngFor="let item of dealerInfo.get('distributorAgreement').value" class="agreement-info">
+                      <div>{{ item.dealerAgreement }}</div>
+                      <div>{{'授权产品：' + item.authorizedProduct }}</div>
+                      <div>{{'授权区域：' + item.authorizedArea }}</div>
+                    </div>
+                  </ng-template>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+
+            <div nz-col nzXs="24" nzSm="24" nzMd="12">
+              <nz-form-item>
+                <nz-form-label nzXs="24" nzSm="24" nzMd="12" nzRequired>
+                  {{"biddingv3.components.supplement-info.dealer-info.type" | translate}}
+                </nz-form-label>
+                <nz-form-control nzXs="24" nzSm="24" nzMd="12">
+                  <shared-select formControlName="distributorType" placeholder="请选择"
+                    [options]="selectOption.distributorType">
+                  </shared-select>
+                  <nz-form-explain
+                    *ngIf="dealerInfo.get('distributorType')?.dirty && dealerInfo.get('distributorType')?.errors">
+                    此选项必填字段
+                  </nz-form-explain>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+
+            <div nz-col nzXs="24" nzSm="24" nzMd="12">
+              <nz-form-item>
+                <nz-form-label nzXs="24" nzSm="24" nzMd="8">
+                  {{"biddingv3.components.supplement-info.dealer-info.ddp-status" | translate}}
+                </nz-form-label>
+                <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                  <shared-select formControlName="distributorDdpStatus" placeholder="请选择"
+                    [options]="selectOption.distributorDdpStatus">
+                  </shared-select>
+                  <nz-form-explain *ngIf="dealerInfo?.errors?.ddpStatusError" style="color:#f5222d">
+                    协议经销商DDP状态未通过，无法提交
+                  </nz-form-explain>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+
+            <div nz-col nzXs="24" nzSm="24" nzMd="12">
+              <nz-form-item>
+                <nz-form-label nzXs="24" nzSm="24" nzMd="12">
+                  {{"biddingv3.components.supplement-info.dealer-info.validity" | translate}}
+                </nz-form-label>
+                <nz-form-control nzXs="24" nzSm="24" nzMd="12">
+                  <shared-date-picker formControlName="distributorDdpDate"></shared-date-picker>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+          </div>
+        </app-form-section>
+      </div>
+
+      <div class="selection-wrap" formGroupName="biddingFile">
+        <app-form-section [title]="'biddingv3.components.supplement-info.bidding-file.title' | translate"
+          [form]="biddingFile">
+          <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+            <div nz-col nzXs="24" nzSm="24" nzMd="24">
+              <nz-form-item>
+                <nz-form-label nzXs="24" nzSm="24" nzMd="4">
+                  {{"biddingv3.components.supplement-info.bidding-file.print-letter" | translate}}
+                </nz-form-label>
+                <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+                  <span class="down" (click)="showTemplatePreviewer('SQSQH')">
+                    {{"biddingv3.components.supplement-info.bidding-file.letter-temp" | translate}}
+                  </span>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+
+            <div nz-col nzXs="24" nzSm="24" nzMd="24">
+              <nz-form-item>
+                <nz-form-label nzXs="24" nzSm="24" nzMd="4" [nzRequired]="authorizationRequired.value == 1">
+                  {{"biddingv3.components.supplement-info.bidding-file.upload-letter" | translate}}
+                </nz-form-label>
+                <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+                  <shared-upload-file type="button" title="上传附件" formControlName="sealedLetterFiles">
+                  </shared-upload-file>
+                  <nz-form-explain
+                    *ngIf="biddingFile.get('sealedLetterFiles')?.dirty && biddingFile.get('sealedLetterFiles')?.errors">
+                    此选项必填字段
+                  </nz-form-explain>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+
+            <div nz-col nzXs="24" nzSm="24" nzMd="24" *ngIf="secondaryDistributor.value == 1">
+              <nz-form-item>
+                <nz-form-label nzXs="24" nzSm="24" nzMd="4">
+                  {{"biddingv3.components.supplement-info.bidding-file.print-auth" | translate}}
+                </nz-form-label>
+                <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+                  <ng-container
+                    *ngIf="dealerInfo.get('distributorAgreementNo').value && dealerInfo.get('distributorAgreementNo').value.length > 0">
+                    <div *ngFor="let item of dealerInfo.get('distributorAgreementNo').value">
+                      <span class="itbox">{{item}}</span>
+                      <button class="down nml10" nz-button nzType="link"
+                        (click)="joinPdfUrl('TBWT2', item)">飞利浦不出具投标授权</button>
+                      <button class="down nml10" nz-button nzType="link"
+                        (click)="joinPdfUrl('TBWT', item)">飞利浦直接出授权给二级经销商</button>
+                    </div>
+                  </ng-container>
+                  <ng-container
+                    *ngIf="!(dealerInfo.get('distributorAgreementNo').value && dealerInfo.get('distributorAgreementNo').value.length > 0)">
+                    <button class="down nml10" nz-button nzType="link"
+                      (click)="joinPdfUrl('TBWT2', null)">飞利浦不出具投标授权</button>
+                    <button class="down nml10" nz-button nzType="link"
+                      (click)="joinPdfUrl('TBWT', null)">飞利浦直接出授权给二级经销商</button>
+                  </ng-container>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+
+            <div nz-col nzXs="24" nzSm="24" nzMd="24" *ngIf="secondaryDistributor.value == 1">
+              <nz-form-item>
+                <nz-form-label nzXs="24" nzSm="24" nzMd="4" [nzRequired]="authorizationRequired.value == 1">
+                  {{"biddingv3.components.supplement-info.bidding-file.letter-auth" | translate}}
+                </nz-form-label>
+                <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+                  <shared-upload-file type="button" title="上传附件" formControlName="letterOfAuthorizationFiles">
+                  </shared-upload-file>
+                  <nz-form-explain
+                    *ngIf="biddingFile.get('letterOfAuthorizationFiles')?.dirty && biddingFile.get('letterOfAuthorizationFiles')?.errors">
+                    此选项必填字段
+                  </nz-form-explain>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+          </div>
+        </app-form-section>
+      </div>
+    </ng-container>
+  </div>
+</form>
+
+<div class="showDiag" *ngIf="templatePreviewerVisible">
+  <div class="showDiag-box">
+    <div class="showDiag-box-title">
+      <div>{{"biddingv3.components.supplement-info.show-diag" | translate}}</div>
+      <i nz-icon nzType="close" class="close" (click)="templatePreviewerVisible=false" nzTheme="outline"></i>
+    </div>
+    <bidding-v3-pdfpreview [padData]="templateParams"></bidding-v3-pdfpreview>
+    <!-- <ngx-extended-pdf-viewer [src]="pdfSRC" useBrowserLocale="true" height="100vh"></ngx-extended-pdf-viewer> -->
+  </div>
+</div>
+
+<shared-select-dealer #selectDealer (select)="onSelectDealer($event)"></shared-select-dealer>

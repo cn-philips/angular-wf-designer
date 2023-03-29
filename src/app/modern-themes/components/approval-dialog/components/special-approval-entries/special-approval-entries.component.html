@@ -1,0 +1,34 @@
+<app-tabs #tabs>
+  <app-tab title="全部">
+    <div class="approval-dialog-tab-content">
+      <app-approval-card
+        *ngFor="let i of allTemplateList"
+        (click)="onNavigateToNewRequest(i)"
+        [backgroundColor]="backgroundColor"
+      >
+        <div title [innerHTML]="i.name | html"></div>
+        <div desc>
+          {{ i.desc }}
+        </div>
+      </app-approval-card>
+    </div>
+  </app-tab>
+  <app-tab
+    *ngFor="let tab of tabList"
+    [title]="tab.title"
+    (select)="onFilterChange(tab)"
+  >
+    <div class="approval-dialog-tab-content">
+      <app-approval-card
+        *ngFor="let i of filteredTemplateList"
+        (click)="onNavigateToNewRequest(i)"
+        [backgroundColor]="backgroundColor"
+      >
+        <div title [innerHTML]="i.name | html"></div>
+        <div desc>
+          {{ i.desc }}
+        </div>
+      </app-approval-card>
+    </div>
+  </app-tab>
+</app-tabs>

@@ -1,0 +1,23 @@
+.page-container {
+  background: #fff;
+  padding: 2rem 1.5rem 1.5rem;
+
+  .tab-wrapper {
+    margin-top: 2rem;
+  }
+}
+
+footer {
+  position: fixed;
+  bottom: 0;
+  left: 250px;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 4rem;
+  background-color: #fff;
+  button {
+    margin: 0 8px;
+  }
+}
