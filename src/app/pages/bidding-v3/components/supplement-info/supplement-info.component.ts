@@ -12,6 +12,7 @@ import {
   BIDDER_DDP_STATUS_LIST,
 } from "@pages/bidding-v3/bidding-v3.constants";
 import { SelectDealerComponent } from "@shared/components";
+import { Subject } from "rxjs";
 
 @Component({
   selector: "bidding-v3-supplement-info",
@@ -26,6 +27,7 @@ export class SupplementInfoComponent implements OnInit {
   @Input() disabled = false
   @Input() fromTask = false
   @Input() taskStatus = null
+  @Input() subTierSubject: Subject<{ type: string, data: any }>
 
   @Output() calcPaymentTerms = new EventEmitter()
   @Output() dealerChange = new EventEmitter()
@@ -140,6 +142,31 @@ export class SupplementInfoComponent implements OnInit {
       .get("baseInfo")
       .get("businessModel") as FormControl;
     return businessModel.value || '';
+  }
+
+  get isCompanyInDealerList(): Boolean {
+    const companyName = this.biddingCompany.get('bidderName').value
+    if (!companyName) {
+      return true
+    }
+    const subTiers = this.dealerInfo.get('subTiers').value
+    if (Array.isArray(subTiers) && subTiers.length > 0) {
+      for (let i = 0; i < subTiers.length; i++) {
+        const { dealerSubTiers } = subTiers[i]
+        if (Array.isArray(dealerSubTiers) && dealerSubTiers.length > 0) {
+          for (let j = 0; j < dealerSubTiers.length; j++) {
+            if (companyName === dealerSubTiers[j].name) {
+              return true
+            }
+          }
+        } else {
+          return true
+        }
+      }
+    } else {
+      return true
+    }
+    return false
   }
 
   constructor(private dictService: DictService, private fb: FormBuilder) {}

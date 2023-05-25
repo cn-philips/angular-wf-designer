@@ -29,6 +29,9 @@ export class LogoutComponent implements OnInit {
     localStorage.removeItem("roles");
     localStorage.removeItem("permissions");
     localStorage.removeItem("ng_philips_username");
+    localStorage.removeItem("menuList")
+    localStorage.removeItem("permissions")
+    localStorage.removeItem("permissionsV3")
     localStorage.removeItem("routerInfo");
     localStorage.removeItem("ng_philips_email");
     localStorage.removeItem("roleAgents");

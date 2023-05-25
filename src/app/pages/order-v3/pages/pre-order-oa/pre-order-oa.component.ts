@@ -10,19 +10,20 @@ import {
   Validators,
   ValidationErrors
 } from "@angular/forms";
-import { NzMessageService } from "ng-zorro-antd";
+import { NzMessageService, NzModalService } from "ng-zorro-antd";
 import * as moment from 'moment'
 import { isadopt, standardTime } from "@core/util/tools"
 import { Location } from '@angular/common';
 import { BreadcrumbService } from "@app/modern-themes/services/breadcrumb.service";
 import { ProcessTaskStatusPipe } from "@app/shared/pipes/process-task-status.pipe"
 import { RouterExtendService } from "@app/modern-themes/services/router-extend.service";
-// const financialCompleted=(control:FormGroup):ValidationErrors|null=> {//金融方案价格是否等于总价  
-//     console.log(control.getRawValue()) 
+import { Subject } from "rxjs";
+// const financialCompleted=(control:FormGroup):ValidationErrors|null=> {//金融方案价格是否等于总价
+//     console.log(control.getRawValue())
 //     const orderInfo=control.getRawValue()
 //     const valid=true;
 //     console.log(this)
-//     return !valid ? { financialform: true } : null 
+//     return !valid ? { financialform: true } : null
 
 // const {orderInfo,priceApproval}=control.getRawValue()
 // const { financialSolutionCnyNet } = priceApproval
@@ -39,7 +40,7 @@ import { RouterExtendService } from "@app/modern-themes/services/router-extend.s
 //   diff = Math.abs(diff)
 //   console.log(diff)
 //   const valid = diff > 1 ? false : true
-//   return !valid ? { financialform: true } : null 
+//   return !valid ? { financialform: true } : null
 
 // }
 //}
@@ -58,9 +59,12 @@ export class PreOrderoaComponent implements OnInit {
     private message: NzMessageService,
     private router: Router,
     private routerExtendService: RouterExtendService,
+    private modalService: NzModalService,
   ) {
     this.breadCrumbService.replace(this.status)
   }
+
+  subTierSubject = new Subject()
   public user;
   public tabIndex: any = 0;
   public activedId: any = "pending-tab";
@@ -145,12 +149,14 @@ export class PreOrderoaComponent implements OnInit {
 
     contractCancelApplyId: [{ value: null, disabled: true }], //contractCancelApplyId
     contractCancelReferenceId: [{ value: null, disabled: true }], //原合同概要表id
+    contractCancelSoNo: [{ value: null, disabled: true }], //原合同概要表so
     orderSalesSapCode: [{ value: null, disabled: true }], //orderSalesSapCode
     dealIsDisabled: [{ value: false, disabled: true }],//是否显示经销商的按钮
     profitNetRate:[{value:null,disabled:true}],//经销商净利润
     profitGrossRate:[{value:null,disabled:true}],//经销商毛利率
     profitGross:[{value:null,disabled:true}],//经销商毛利润
     dealerProfit:[{value:null,disabled:true}],//经销商利润
+    biddingCurrency: [{ value: null, disabled: true }],//投标币种
   };
   dealerFrom = {
     dealerName: [{ value: null, disabled: true }, [Validators.required]], //经销商名称
@@ -165,6 +171,7 @@ export class PreOrderoaComponent implements OnInit {
     dealerTaxNum: [{ value: null, disabled: !this.editBase }, [Validators.required]],//经销商纳税号
     purchaseOrderSignatory: [{ value: null, disabled: !this.editBase }, [Validators.required]], //采购订单签署人
     purchaseOrderSignatoryPosition: [{ value: null, disabled: !this.editBase }, [Validators.required]],//采购订单签署人职务
+    subTierInfo: this.fb.array([]), // 次级经销商信息
   }
   accountFrom = {
     accountName: [{ value: null, disabled: !this.editBase }, [Validators.required]],//开户行名称
@@ -253,7 +260,7 @@ export class PreOrderoaComponent implements OnInit {
     tenderFile: [[], []],//投标文件
     endUserContract: [[], []],//最终用户合同
     projectAnalysisTable: [[], []], //项目分析表模板
-    
+
   }
 
   @ViewChild("baseInfoFromChild") baseInfoFromChild;
@@ -336,7 +343,7 @@ export class PreOrderoaComponent implements OnInit {
     const rolesOa = rolesList.includes("OA");
     let orderInfos = data.preparationInfo.orderInfo;
     let orderInfo = [];
-   
+
     if (orderInfos && orderInfos.length > 1) {
       const firstArr = orderInfos.filter(vals => vals.orderOa == this.user)
       const orderDiff = orderInfos.filter(vals => vals.orderOa != this.user);
@@ -420,11 +427,14 @@ export class PreOrderoaComponent implements OnInit {
       actualSalesName,
       contractCancelReferenceId,
       contractCancelApplyId,
+      contractCancelSoNo,
       orderSalesSapCode,
+      subTierInfo,
       profitNetRate,
       profitGrossRate,
       profitGross,
       dealerProfit,
+      biddingCurrency
     } = data.preparationInfo
     this.baseInfoFromData.patchValue({
       oldSalesProvince: data.preparationInfo.dealFormSalesProvince,
@@ -480,14 +490,17 @@ export class PreOrderoaComponent implements OnInit {
       actualSalesName,
       contractCancelReferenceId,
       contractCancelApplyId,
+      contractCancelSoNo,
       orderSalesSapCode,
       profitNetRate,
       profitGrossRate,
       profitGross,
       dealerProfit,
+      biddingCurrency
     })
     this.dealerFromData.patchValue({
       ...data.preparationInfo,
+      subTierInfo: data.preparationInfo.subTierInfo || []
     })
     this.accountFromData.patchValue({
       ...data.preparationInfo
@@ -516,10 +529,17 @@ export class PreOrderoaComponent implements OnInit {
     this.restSend = !restSend;
     this.addProduct(orderInfo);
     if (this.baseInfoFromData.getRawValue().businessModel == 'DISTRIBUTOR') {
-      this.getdistributorDate(); //更新经销商日期    
+      this.getdistributorDate(); //更新经销商日期
     }
     if (this.priceApprovalData.getRawValue().currencySystem == "USD") {
       this.getIepoolDate(); //更新经销商日期
+    }
+
+    if (businessModel == 'DISTRIBUTOR') {
+      setTimeout(() => {
+        this.subTierSubject.next({ type: 'add', data: subTierInfo, disabled: !(rolesOa && this.flag == '0') })
+        this.baseInfoFromChild.checkBiddingEqualDealer();
+      }, 0);
     }
 
     //禁用经销商协议
@@ -538,24 +558,24 @@ export class PreOrderoaComponent implements OnInit {
       this.getBiddingIsSpecial();
     }
   }
-  getBiddingIsSpecial() 
-  {//bidding模式是否是特批      
+  getBiddingIsSpecial()
+  {//bidding模式是否是特批
     let {biddingApplyList}=this.baseInfoFromData.getRawValue();
     biddingApplyList.map(val=>{
-      this.serveice.getBiddingIsSpecial(val.id).subscribe(item=>{      
+      this.serveice.getBiddingIsSpecial(val.id).subscribe(item=>{
         if(item.code=='0000'&&item.data==true)
         {
           val.biddingIsSpecial=true;
         }
         else{
           val.biddingIsSpecial=false;
-        }      
+        }
       })
     })
     this.baseInfoFromData.patchValue({
       biddingApplyList:biddingApplyList
-    })    
-    
+    })
+
   }
 
   get remarkFromData(): FormGroup {
@@ -603,7 +623,7 @@ export class PreOrderoaComponent implements OnInit {
     const { dealerName } = this.dealerFromData.getRawValue();
     this.serveice.findDealersByPageValid({ dealerName: dealerName }).then((item) => {
       if (item.code == '0000') {
-        
+
         const { rows } = item.data;
         const ddpValidUntil = standardTime(rows[0].mdtdealerddpexpiredate)
         const ddpStatus = isadopt(ddpValidUntil);
@@ -714,6 +734,22 @@ export class PreOrderoaComponent implements OnInit {
       smallArea,
     }
     if (parm == 'approved') {
+      if (baseInfoFrom.businessModel == 'DISTRIBUTOR') {
+        const subTierInfo = this.formValue.get('dealerFrom').get('subTierInfo') as FormArray
+        if (subTierInfo.invalid) {
+          this.modalService.error({
+            nzTitle: '提示',
+            nzContent: '经销商黑名单校验不通过，请上传必要的支持文件和备注后，再作提交'
+          }).afterClose.subscribe(() => {
+            // this.handleToggleTab('basic-info')
+            this.tabs.activeId('pending-tab')
+            setTimeout(() => {
+              document.querySelector('.dealer-info').scrollIntoView()
+            }, 0);
+          })
+          return
+        }
+      }
       const productChild = this.productChild.checkFormData();
       if (!productChild) {
         this.tabIndex = 1;
@@ -723,8 +759,8 @@ export class PreOrderoaComponent implements OnInit {
       }
       this.pageLoading = true;
       if (baseInfoFrom.businessModel == 'DISTRIBUTOR') {
-        //const dateAndValid=await this.serveice.getDdpDateAndValid(dealerFrom.dealerName); 
-        //console.log(dateAndValid)            
+        //const dateAndValid=await this.serveice.getDdpDateAndValid(dealerFrom.dealerName);
+        //console.log(dateAndValid)
         const dateAndValid = await this.serveice.findDealersByPageValid({ dealerName: dealerFrom.dealerName })
         if (dateAndValid.code == '0000') {
           const rows = dateAndValid.data.rows
@@ -787,7 +823,7 @@ export class PreOrderoaComponent implements OnInit {
           }
         }
       }
-      
+
       if(this.isVerification&&this.currencySome)
       {
           const result=this.verifyPriceData();
@@ -798,7 +834,7 @@ export class PreOrderoaComponent implements OnInit {
             return;
           }
       }
-      
+
       if(this.currencySome)
       {
         const validFinanciaPrice=this.verifyfinanciaPrice()
@@ -806,9 +842,9 @@ export class PreOrderoaComponent implements OnInit {
         {
           this.message.create("error","Order层级金融方案之和与DealForm金融方案金额偏差值大于1元,不允许提交")
           this.pageLoading=false;
-          return 
-        } 
-      }  
+          return
+        }
+      }
       await this.submit(param)
     }
     else if (parm == 'apply_save') {
@@ -921,7 +957,7 @@ export class PreOrderoaComponent implements OnInit {
       formArray.removeAt(0)
     }
   }
-  addProduct(orderList) {        
+  addProduct(orderList) {
     this.clearFormArray(this.orderInfo)
     const orderOaDiff = orderList.every((item) => item.orderOa == this.user) //所有层级的oa与当前登录人是否相同
     const orderOaAgentDiff = orderList.every((item) => item.orderOaAgent == this.user) //所有层级的代理oa与当前登录人是否相同
@@ -992,13 +1028,13 @@ export class PreOrderoaComponent implements OnInit {
         })
       }
     });
-    const {currencySystem}=this.priceApprovalData.getRawValue()    
+    const {currencySystem}=this.priceApprovalData.getRawValue()
     const currencyDiff=currencyList.every(item=>item==currencySystem); //deal层级和order层级币相同的情况才能改价格
    if(currencyDiff)
    {
     this.currencySome=isAllEqual(currencyList)
    }
-  
+
    if(this.flag == '0')
    {
       // this.orderInfo.controls.forEach((element, index) => {
@@ -1046,37 +1082,37 @@ export class PreOrderoaComponent implements OnInit {
         })
      }
      //this.computContral();
-   } 
-    
-    
-    
+   }
+
+
+
     //  setTimeout(() => {
     this.serveice.productAction(this.formValue);
     this.serveice.supportFileChangAction(this.formValue);
     // }, 200);
   }
   verifyPriceData()
-  { //验证其它付款方式和远期信用证利息  
-          
+  { //验证其它付款方式和远期信用证利息
+
     let summary:any= 0;
     const {otherPaymentCnyNet,otherPaymentUsd,currencySystem}=this.priceApprovalData.getRawValue()
-    this.orderInfo.controls.forEach((item, index) => { 
+    this.orderInfo.controls.forEach((item, index) => {
       const orderBaseinfo = this.orderInfo.at(index).get("orderBaseinfo") as FormGroup;
-      const { 
-        currencySystem,           
+      const {
+        currencySystem,
         creditCnyNet,
         creditUsd,
         paymentNetCny,
         paymentUsd,
       } = orderBaseinfo.getRawValue()
-      if (currencySystem == 'CNY') 
+      if (currencySystem == 'CNY')
       {
-        summary+=Number(floatAdd(Number(creditCnyNet),Number(paymentNetCny))) 
+        summary+=Number(floatAdd(Number(creditCnyNet),Number(paymentNetCny)))
       }
       else
       {
-        summary+=Number(floatAdd(Number(creditUsd),Number(paymentUsd))) 
-      }      
+        summary+=Number(floatAdd(Number(creditUsd),Number(paymentUsd)))
+      }
     })
     if(currencySystem=='CNY')
     {
@@ -1091,30 +1127,30 @@ export class PreOrderoaComponent implements OnInit {
       const result=diff > 1 ? true:false
       return result;
     }
-    
+
   }
   verifyfinanciaPrice()
   {
-    //金融方案金额    
-    
+    //金融方案金额
+
     let summary:any= 0;
     const {financialSolutionCnyNet,financialSolutionUsd,currencySystem}=this.priceApprovalData.getRawValue()
-    this.orderInfo.controls.forEach((item, index) => { 
+    this.orderInfo.controls.forEach((item, index) => {
       const orderBaseinfo = this.orderInfo.at(index).get("orderBaseinfo") as FormGroup;
-      const { 
+      const {
         currencySystem,
         financialSolutionCnyNet,
-        financialSolutionUsd,      
-        
+        financialSolutionUsd,
+
       } = orderBaseinfo.getRawValue()
-      if (currencySystem == 'CNY') 
+      if (currencySystem == 'CNY')
       {
-        summary=Number(floatAdd(Number(summary),Number(financialSolutionCnyNet))) 
+        summary=Number(floatAdd(Number(summary),Number(financialSolutionCnyNet)))
       }
       else
       {
-        summary=Number(floatAdd(Number(summary),Number(financialSolutionUsd))) 
-      }      
+        summary=Number(floatAdd(Number(summary),Number(financialSolutionUsd)))
+      }
     })
     if(currencySystem=='CNY')
     {
@@ -1129,9 +1165,9 @@ export class PreOrderoaComponent implements OnInit {
       diff=Math.abs(diff);
       const result=diff > 1 ? true:false
       return result;
-    }    
+    }
   }
-  
+
   tabclick(i) {
     //tab选项卡的点击事件
     if (typeof i === 'number') {
@@ -1149,7 +1185,7 @@ export class PreOrderoaComponent implements OnInit {
     this.tabs.activeId(val)
   }
   createOrder(val: any, index) {
-    //创建   
+    //创建
     const productModelInfo = {
       orderProductModel: [{ value: val.orderProductModel ? val.orderProductModel : null, disabled: true }],
     }
@@ -1191,6 +1227,7 @@ export class PreOrderoaComponent implements OnInit {
     const financialSolutionName = val.financialSolutionName != null && val.financialSolutionName != 'null' ? val.financialSolutionName : "";
     //order 基本信息
     const orderBaseinfo = {
+      actualHospitalId: [ val.actualHospitalId],
       cpDealOrderId: [val.cpDealOrderId],
       orderModality: [val.orderModality],
       marketBundleId: [val.marketBundleId],
@@ -1257,6 +1294,7 @@ export class PreOrderoaComponent implements OnInit {
       centralizedPurchasing: [{ value: val.centralizedPurchasing ? val.centralizedPurchasing : '0', disabled: true }],//是否集采项目
       contractCancelReferenceId: [{ value: val.contractCancelReferenceId ? val.contractCancelReferenceId : null, disabled: true }],//原合同概要表referenceId
       contractCancelApplyId: [{ value: val.contractCancelApplyId ? val.contractCancelApplyId : null, disabled: true }],
+      contractCancelSoNo: [{ value: val.contractCancelSoNo ? val.contractCancelSoNo : null, disabled: true }],//原合同概要表So
       contractCancelSo: [null],//原合同概要表So
       //dealerAgreementNo:[{value:null,disabled:false}],//经销商协议号
       dealerSapCode: [{ value: val.dealerSapCode ? val.dealerSapCode : null, disabled: true }],//经销商spacode
@@ -1271,8 +1309,8 @@ export class PreOrderoaComponent implements OnInit {
       cpclFile: val.cpclFile ? [[...val.cpclFile]] : [],//cpcl文件
       otherSupportFile: val.otherSupportFile ? [[...val.otherSupportFile]] : [],//其他支持文件
       magneticResonanceShieldingFile: val.magneticResonanceShieldingFile ? [[...val.magneticResonanceShieldingFile]] : [],//磁共振屏蔽公司
-      magneticResonanceShieldingShow: [{ value: false, disabled: false }], //是否显示 
-      igtThirdPartySingle: [{ value: '0', disabled: false }], //IGT选项框选项框
+      magneticResonanceShieldingShow: [{ value: false, disabled: false }], //是否显示
+      igtThirdPartySingle: [{ value: val.igtThirdPartySingle ? val.igtThirdPartySingle : '0', disabled: false }], //IGT选项框选项框
       igtThirdPartyFile: val.igtThirdPartyFile ? [[...val.igtThirdPartyFile]] : [],//IGT第三方吊塔确认文件
       igtThirdPartyFileShow: [{ value: false, disabled: false }],//是否显示
       prebookReferenceId: [{ value: val.prebookReferenceId, disabled: true }, []], //prebook申请号
@@ -1289,7 +1327,7 @@ export class PreOrderoaComponent implements OnInit {
       biddingAwardPrice: [{ value: val.biddingAwardPrice ? val.biddingAwardPrice : "", disabled: true }], //中标价格
       isRequired: [{ value: false, disabled: true }],
       optionDisabled: [{ value: true, disabled: true }],
-      businessOpportunityRequired: [{ value: false, disabled: true }],//商机是否必填      
+      businessOpportunityRequired: [{ value: false, disabled: true }],//商机是否必填
       isFold: [{ value: val.isFold != null && val.isFold != undefined && val.isFold != "" ? val.isFold : false, disabled: true }], //是否折叠
       isDisabled: [{ value: val.isFold != null && val.isFold != undefined && val.isFold != "" ? val.isFold : false, disabled: true }],//折叠条是否灰掉
       contractCancelDisabled:[true],
@@ -1491,7 +1529,7 @@ export class PreOrderoaComponent implements OnInit {
     this.tabIndex++;
     this.myskip(this.tabList[this.tabIndex]);
   }
- 
+
 
   paymentCancels()
   {
@@ -1501,10 +1539,10 @@ export class PreOrderoaComponent implements OnInit {
   {
     this.isOtherPayment=false;
     this.isVerification=false;
-    this.preSubmit('approved'); 
+    this.preSubmit('approved');
   }
 
-  // financialCompleted(control: FormGroup): ValidationErrors | null {//金融方案价格是否等于总价  
+  // financialCompleted(control: FormGroup): ValidationErrors | null {//金融方案价格是否等于总价
   //   console.log(control.getRawValue())
   //   const orderInfo = control.getRawValue()
   //   console.log(orderInfo)

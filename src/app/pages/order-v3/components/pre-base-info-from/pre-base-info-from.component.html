@@ -506,8 +506,7 @@
               </nz-option>
             </nz-select>
             <input nz-input *ngIf="baseInfoFrom.getRawValue().businessModel != 'DIRECT'"
-              formControlName="biddingCompany" maxlength="255" />
-
+              formControlName="biddingCompany" maxlength="255" (ngModelChange)="biddingCompanyChange()" />
             <nz-form-explain *ngIf="
                   baseInfoFrom.get('biddingCompany')?.dirty &&
                   baseInfoFrom.get('biddingCompany')?.errors
@@ -517,6 +516,9 @@
               | translate
               }}
             </nz-form-explain>
+            <div class="lintesting" *ngIf="isEqual === 0 && baseInfoFrom.get('biddingCompany').value">
+              投标公司名称不在下方经销商层级中，请注意查验
+            </div>
           </nz-form-control>
         </nz-form-item>
       </div>
@@ -749,6 +751,9 @@
                 {{'orderv3.components.pre-product.common.select' | translate}}
               </button>
             </ng-template>
+            <div *ngIf="baseInfoFrom.get('contractCancelReferenceId').value" class="lintesting">
+              此单为“改单项目”，原合同概要表SO#={{ baseInfoFrom.get('contractCancelSoNo').value }}
+            </div>
           </nz-form-control>
         </nz-form-item>
       </div>
@@ -841,8 +846,8 @@
   <pre-product-table [productGroup]="formValue" [baseInform]="formValue" [isContract]="isContract" [index]="i"
     [editPreTable]="editPreTable"></pre-product-table>
 </app-form-section>
-<app-form-section *ngIf="baseInfoFrom.getRawValue().businessModel == 'DISTRIBUTOR'" class="mtb1rem" [form]="dealerFrom"
-  title="{{
+<app-form-section *ngIf="baseInfoFrom.getRawValue().businessModel == 'DISTRIBUTOR'" class="mtb1rem dealer-info"
+  [form]="dealerFrom" title="{{
       'orderv3.components.pre-base-info-form.dealerInfo.title' | translate
     }}">
   <form nz-form [formGroup]="dealerFrom" [nzNoColon]="true">
@@ -1114,6 +1119,12 @@
             </nz-form-explain>
           </nz-form-control>
         </nz-form-item>
+      </div>
+    </div>
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzSpan="24">
+        <shared-dealer-table [subTierSubject]="subTierSubject" [formGroup]="dealerFrom" arrayName="subTierInfo">
+        </shared-dealer-table>
       </div>
     </div>
   </form>

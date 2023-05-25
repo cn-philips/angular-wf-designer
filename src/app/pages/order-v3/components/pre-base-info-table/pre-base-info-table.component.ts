@@ -62,7 +62,7 @@ export class PreBaseInfoTableComponent implements OnInit {
     this.changeDetectorRef.detectChanges();
   }
 
-  
+
   flag: any
   @Input() formValue: FormGroup;
   @Input() isContract: any = false;
@@ -75,7 +75,7 @@ export class PreBaseInfoTableComponent implements OnInit {
   requestLetterTitle: any = '要货函' //要货函/最终用户
   isUsRequired = true;
   isPDIGTRequired = true;
-  rowspan: any = 3
+  rowspan: any = 4;
   magneticResonanceShieldingFileoff: boolean = false;
   igtThirdPartyFileoff: boolean = false;
   status: any = "";
@@ -102,9 +102,9 @@ export class PreBaseInfoTableComponent implements OnInit {
   get otherTerms(): FormGroup {
     return this.formValue.get("otherTerms") as FormGroup
   }
- 
 
- 
+
+
   init() {
     this.flag = this.activatedRouter.queryParams['_value'].flag;
     this.flag == "1" && this.baseInfoTable.disable();
@@ -139,7 +139,7 @@ export class PreBaseInfoTableComponent implements OnInit {
     }
   }
   isShowmainClause() {
-    //是否显示 主要合同条款    
+    //是否显示 主要合同条款
     const sampleCheck = this.priceApproval.getRawValue().sampleCheck;
     const {dealFormSalesModality,orderModality,businessModel,oitMode} = this.baseInfoFrom.getRawValue();
     if ((!this.isContract&&dealFormSalesModality == "PD&IGT")||(this.isContract&&orderModality=="PD&IGT")) {
@@ -219,7 +219,7 @@ export class PreBaseInfoTableComponent implements OnInit {
   isDiffer() {
     //直投合同有价差
     const {dealFormSalesModality,orderModality} = this.baseInfoFrom.getRawValue()
-    const { oitMode, businessModel } = this.baseInfoFrom.getRawValue();    
+    const { oitMode, businessModel } = this.baseInfoFrom.getRawValue();
     if ((!this.isContract&&(dealFormSalesModality == "PD&IGT"))||(this.isContract&&(orderModality == "PD&IGT"))) {
       if (oitMode == 'BIDDING' && businessModel == 'DIRECT') {
         return true;
@@ -228,7 +228,7 @@ export class PreBaseInfoTableComponent implements OnInit {
         return false;
       }
     }
-    else {      
+    else {
       if (businessModel == 'DIRECT') {
         return true;
       }
@@ -238,7 +238,7 @@ export class PreBaseInfoTableComponent implements OnInit {
     }
 
   }
-  speciallyRows() {    
+  speciallyRows() {
     const isSupport = this.isSupporting();
     const isDiffes = this.isDiffer()
     if (isSupport && isDiffes) {
@@ -286,7 +286,11 @@ export class PreBaseInfoTableComponent implements OnInit {
       if ((biddingType == '国内公开标' || biddingType == '国际公开标') && sampleCheck == '1') {
         //this.baseInfoTable.get('biddingFile')!.setValidators(Validators.required);
         this.baseInfoTable.get("tenderFile")!.setValidators(Validators.required);
-        this.baseInfoTable.get('endUserContract')!.setValidators(Validators.required);
+        if ( businessModel == 'DISTRIBUTOR' ) {
+          this.baseInfoTable.get('endUserContract')!.setValidators(Validators.required);
+        } else {
+          this.baseInfoTable.get("endUserContract")!.clearValidators();
+        }
       }
       else {
         this.baseInfoTable.get('biddingFile').clearValidators();
@@ -369,7 +373,11 @@ export class PreBaseInfoTableComponent implements OnInit {
         if ((biddingType == '国内公开标' || biddingType == '国际公开标') && sampleCheck == '1') {
           //this.baseInfoTable.get('biddingFile')!.setValidators(Validators.required);
           this.baseInfoTable.get("tenderFile")!.setValidators(Validators.required);
-          this.baseInfoTable.get('endUserContract')!.setValidators(Validators.required);
+          if ( businessModel == 'DISTRIBUTOR' ) {
+            this.baseInfoTable.get('endUserContract')!.setValidators(Validators.required);
+          } else {
+            this.baseInfoTable.get("endUserContract")!.clearValidators();
+          }
         }
         else {
           this.baseInfoTable.get('biddingFile').clearValidators();
@@ -383,7 +391,7 @@ export class PreBaseInfoTableComponent implements OnInit {
 
   }
   bidwinningFileShow() { //是否显示中标通知书/最终用户合同
-    const baseInfo = this.baseInfoFrom.getRawValue()   
+    const baseInfo = this.baseInfoFrom.getRawValue()
     if (baseInfo.businessModel != 'DIRECT' || (baseInfo.businessModel == 'DIRECT' && baseInfo.biddingType != '其他类型')) {
       return true
     }
@@ -403,7 +411,7 @@ export class PreBaseInfoTableComponent implements OnInit {
   }
 
   showRequestLetter() {
-    //要货函           
+    //要货函
     const baseInfo = this.baseInfoFrom.getRawValue();
     const {hospitalType}=this.endUserFrom.getRawValue();
     if (hospitalType == '民营医院') {
@@ -428,7 +436,7 @@ export class PreBaseInfoTableComponent implements OnInit {
       this.updatedTableFile();
       return false
     }
-    
+
   }
   showUsSampling() { //抽样审核支持文件 是否必填 US和CC显示与否
     const baseInfo = this.baseInfoFrom.getRawValue();
@@ -448,7 +456,7 @@ export class PreBaseInfoTableComponent implements OnInit {
       this.updatedTableFile()
       return false
     }
-    
+
   }
   showUsbidWinningFile() {
     //中标通知书 是否必填 US和CC显示与否
@@ -461,23 +469,23 @@ export class PreBaseInfoTableComponent implements OnInit {
       this.updatedTableFile()
       return false
     }
-    
+
   }
   showProject() {
     //项目分析表 是否显示
     const businessModel = this.baseInfoFrom.getRawValue().businessModel;
     const baseInfo = this.baseInfoFrom.getRawValue()
-    if (businessModel == 'DISTRIBUTOR' || businessModel == 'Stock') {
+    if (businessModel == 'DISTRIBUTOR') {
       this.rowspan = 4;
       this.updatedTableFile();
       return true
     }
     else {
-      this.rowspan = 3;
+      this.rowspan = 2;
       this.updatedTableFile();
       return false;
     }
-    
+
   }
   // bidRequiredRequestLetter()
   // {
@@ -500,7 +508,7 @@ export class PreBaseInfoTableComponent implements OnInit {
     //中标通知书 是否必填
     const baseInfo = this.baseInfoFrom.getRawValue()
     this.showRequestLetter();
-    this.showTileName();  
+    this.showTileName();
     if(!this.isContract)
     {
       if ((!this.isContract&&baseInfo.dealFormSalesModality == 'PD&IGT')||(this.isContract&&baseInfo.orderModality == 'PD&IGT')) {
@@ -537,7 +545,7 @@ export class PreBaseInfoTableComponent implements OnInit {
           return false;
         }
       }
-    }    
+    }
   }
   isRequiredLetter() {
     const {dealFormSalesModality,orderModality}= this.baseInfoFrom.getRawValue();
@@ -571,7 +579,7 @@ export class PreBaseInfoTableComponent implements OnInit {
   rowSpanLetter()
   {
     const {orderModality}=this.baseInfoFrom.getRawValue();
-    const {magneticResonanceShieldingFile,igtThirdPartyFile} = this.baseInfoTable.getRawValue();   
+    const {magneticResonanceShieldingFile,igtThirdPartyFile} = this.baseInfoTable.getRawValue();
     if (this.isContract&&orderModality=='PD&IGT')
     {
       if(!magneticResonanceShieldingFile&&!igtThirdPartyFile)
@@ -711,18 +719,18 @@ export class PreBaseInfoTableComponent implements OnInit {
     }
   }
   generateAnalysisTemplate(code) {
-    //打开项目分析表     
+    //打开项目分析表
     let orderInfo = this.orderInfo.getRawValue();
     let MarketBundleImges = "";
     let marketProduct = [];
     let cpOrderConfigId:any=[];
     let cpProductId:any=[];
-    const { 
-      tenderNum, biddingCompany, dealFormId, estimBiddingPrice,biddingApplyList, 
-      dealerProfit,profitNetRate,profitGrossRate,profitGross
+    const {
+      tenderNum, biddingCompany, dealFormId, estimBiddingPrice,biddingApplyList,
+      dealerProfit,biddingCurrency,profitNetRate,profitGrossRate,profitGross
     } = this.baseInfoFrom.getRawValue();
     /**
-     * profitNetRate 经销商净利润, 
+     * profitNetRate 经销商净利润,
      * dealerProfit 经销商净利润率,
      * profitGrossRate 经销商毛利率
      * profitGross 经销商毛利润,
@@ -736,6 +744,7 @@ export class PreBaseInfoTableComponent implements OnInit {
       dealerSelfPurchasePriceCny,
       dealerSelfPurchasePriceUsd
     } = this.priceApproval.getRawValue();
+    console.log(" this.priceApproval.getRawValue()", this.priceApproval.getRawValue())
 
     /** //改为cp带入，此处计算过程注销
     const equipmentPrice = currencySystem == 'CNY' ? equipmentPriceCny : equipmentPriceUsd;
@@ -744,7 +753,7 @@ export class PreBaseInfoTableComponent implements OnInit {
     let agentGrossProfit: any = floatSub(equipmentPrice, estimBiddingPrice); //毛利润
     agentGrossProfit=Number(agentGrossProfit).toFixed(2);
     agentGrossProfit=returnFloat(agentGrossProfit, 2)
-    let agentProfit:any= floatSub(agentGrossProfit, dealerSelfPurchase); //净利润   
+    let agentProfit:any= floatSub(agentGrossProfit, dealerSelfPurchase); //净利润
     agentProfit=Number(agentProfit).toFixed(2);
     agentProfit=returnFloat(agentProfit, 2)
     agentProfit = returnFloat(agentProfit, 2)
@@ -752,7 +761,7 @@ export class PreBaseInfoTableComponent implements OnInit {
     const isNullList = [0 ,'0',null,undefined, ""];
     if ( !isNullList.includes(estimBiddingPrice) ) {
       agentGrossProfitMargin = floatDivide(agentGrossProfit, estimBiddingPrice); //毛利率
-      agentGrossProfitMargin = returnFloat(agentGrossProfitMargin, 2)      
+      agentGrossProfitMargin = returnFloat(agentGrossProfitMargin, 2)
       agentGrossProfitMargin = `${agentGrossProfitMargin}%`;
 
       agentNetInterestRate = floatDivide(agentProfit, estimBiddingPrice); //净利润率
@@ -773,18 +782,18 @@ export class PreBaseInfoTableComponent implements OnInit {
     agentGrossProfit=returnFloat(agentGrossProfit, 2);
 
     let agentGrossProfitMargin: any; //经销商毛利率
-    agentGrossProfitMargin = returnFloat(( (!isNullList.includes(profitGrossRate)) ? Number(profitGrossRate).toFixed(2) : 0), 2);
+    agentGrossProfitMargin = returnFloat(( (!isNullList.includes(profitGrossRate)) ? Number(profitGrossRate*100).toFixed(2) : 0), 2);
     agentGrossProfitMargin = `${agentGrossProfitMargin}%`;
 
-    let agentProfit:any = (!isNullList.includes(profitNetRate)) ? Number(profitNetRate).toFixed(2) : 0; //经销商净利润 
+    let agentProfit:any = (!isNullList.includes(profitNetRate)) ? Number(profitNetRate).toFixed(2) : 0; //经销商净利润
     agentProfit=returnFloat(agentProfit, 2);
 
     let agentNetInterestRate: any; //经销商净利润率
-    agentNetInterestRate = returnFloat(( (!isNullList.includes(dealerProfit)) ? Number(dealerProfit).toFixed(2) : 0), 2)
+    agentNetInterestRate = returnFloat(( (!isNullList.includes(dealerProfit)) ? Number(dealerProfit*100).toFixed(2) : 0), 2)
     agentNetInterestRate = `${agentNetInterestRate}%`;
 
     orderInfo.map(val => {
-  
+
       let arr = val.marketBundleInfo.map(vals => {
         cpOrderConfigId.push(vals.cpOrderConfigId)
         cpProductId.push(vals.cpProductId)
@@ -824,7 +833,8 @@ export class PreBaseInfoTableComponent implements OnInit {
       agentGrossProfitMargin: agentGrossProfitMargin,
       agentProfit: agentProfit,
       agentNetInterestRate: agentNetInterestRate,
-      currencySystem,      
+      currencySystem,
+      biddingCurrency,
       dealFormId: dealFormId,
       estimatedTenderPrice: estimBiddingPrice,
       equipmentTotal: currencySystem == 'CNY' ? dealPriceCny : dealPriceUsd,
@@ -856,19 +866,19 @@ export class PreBaseInfoTableComponent implements OnInit {
     }
   }
   projectSupporting()
-  { 
+  {
     //是否显示项目分析文件
     const {dealFormSalesModality,orderModality}=this.baseInfoFrom.getRawValue();
     const {sampleCheck}=this.priceApproval.getRawValue();
     if(!this.isContract)
-    { 
+    {
       if((dealFormSalesModality=='US'||dealFormSalesModality=='CC')&&sampleCheck=='0')
       {
         return false;
       }
       else{
         return true
-      }  
+      }
     }
     else{
      return true
@@ -890,7 +900,7 @@ export class PreBaseInfoTableComponent implements OnInit {
     }
     else{
       return false;
-    } 
+    }
   }
   toWinbidding(item) {
     const url = `${location.origin}${environment.base_href}/#/bidding-v3/${item.id}?procInstId=${item.procInstId}&processStatus=${item.processStatus}&taskStatus=${item.processStatus}`

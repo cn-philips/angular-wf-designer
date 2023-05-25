@@ -53,7 +53,7 @@
 
           <div *ngIf="!disabled">
             <button style="margin-right:8px;" nz-button nzType="primary" (click)="onShowAddProduct(item)">添加/移除产品信息</button>
-            <button nz-button nzType="default" (click)="onDeleteOpportunity(index)">
+            <button nz-button nzType="default" (click)="onDeleteOpportunity(index, item)">
               {{"biddingv3.components.product-info.delete" | translate}}-{{ dataSource === 'CP Deal Form' ? 'Deal Form' :
               'Simulation' }}
             </button>
@@ -66,8 +66,14 @@
         </div>
 
         <div formArrayName="products">
-          <nz-table nzSize="small" #expandTable [nzData]="item.get('products').controls" nzBordered nzTableLayout="fixed"
-            [nzShowPagination]="false" [nzScroll]="{ x: '2300px' }">
+          <nz-table
+            nzSize="small"
+            [nzData]="item.get('products').controls"
+            nzBordered
+            nzTableLayout="fixed"
+            [nzShowPagination]="false"
+            [nzScroll]="{ x: '2300px' }"
+          >
             <thead>
               <tr>
                 <th nzAlign="center" style="width: 200px;">Modality</th>

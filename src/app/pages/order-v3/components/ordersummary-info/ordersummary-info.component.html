@@ -264,6 +264,9 @@
                 ">
                 {{ 'orderv3.components.ordersummary-info.commons.errorInfo' | translate }}
               </nz-form-explain>
+              <div *ngIf="baseInfoFrom.get('contractCancelReferenceId').value" class="lintesting">
+                此单为“改单项目”，原合同概要表SO#={{ baseInfoFrom.get('contractCancelSoNo').value }}
+              </div>
             </nz-form-control>
           </nz-form-item>
         </div>

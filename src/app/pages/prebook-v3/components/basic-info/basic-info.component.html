@@ -162,7 +162,7 @@
   </div>
 
   <!-- 经销商 -->
-  <div class="selection-wrap" formGroupName="dealerInfo" *ngIf="businessModel != BUSINESS_MODEL_DIRECT">
+  <div class="selection-wrap dealer-info" formGroupName="dealerInfo" *ngIf="businessModel != BUSINESS_MODEL_DIRECT">
     <app-form-section [title]="'prebookv3.components.basic-info.title2' | translate" [form]="dealerInfo">
       <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
         <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
@@ -317,6 +317,16 @@
               </nz-form-explain>
             </nz-form-control>
           </nz-form-item>
+        </div>
+      </div>
+
+      <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+        <div nz-col nzSpan="24">
+          <shared-dealer-table
+            [subTierSubject]="subTierSubject"
+            [formGroup]="dealerInfo"
+            arrayName="subTierInfo"
+          ></shared-dealer-table>
         </div>
       </div>
     </app-form-section>

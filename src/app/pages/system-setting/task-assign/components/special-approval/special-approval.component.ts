@@ -49,6 +49,8 @@ export class SpecialApprovalComponent implements OnInit {
     orderBg: BG_LIST,
   };
 
+  searchString
+
   checkedRowMap: { [key: string]: boolean } = {};
 
   constructor(
@@ -70,7 +72,7 @@ export class SpecialApprovalComponent implements OnInit {
           if (!searchString) {
             return Observable.create();
           }
-
+          this.searchString = searchString
           const url = `/act/ecos/oit/cdUser`;
           return this.http.post(url, {
             email: searchString,
@@ -89,6 +91,12 @@ export class SpecialApprovalComponent implements OnInit {
             });
           }
         });
+        if (rows.length === 0) {
+          this.selectOptions.delegatedUser.push({
+            label: this.searchString,
+            value: this.searchString,
+          });
+        }
         this.searchLoading = false;
       });
   }

@@ -28,6 +28,7 @@
               [biddingForm]="biddingForm"
               [showReopenButton]="showReopenButton"
               [editable]="productEditable"
+              [subTierSubject]="subTierSubject"
               (showImportOpp)="showImportOppDialog()"
               (agreementChange)="calcDistributorAgreement()"
               (reopenForm)="onReopenForm()"
@@ -44,6 +45,7 @@
               [fromTask]="fromTask"
               [taskStatus]="taskStatus"
               [showReopenButton]="showReopenButton"
+              [subTierSubject]="subTierSubject"
               (calcPaymentTerms)="onCalcPaymentTerms()"
               (dealerChange)="getAgreementList($event)"
               (reopenForm)="onReopenForm()"
@@ -66,6 +68,7 @@
           <div class="card-body">
             <bidding-v3-auth-approval
               [disabled]="true"
+              [biddingForm]="biddingForm"
               [grantAuthApprovalInfo]="grantAuthApprovalInfo"
               [applyDetail]="originData"
             ></bidding-v3-auth-approval>
@@ -120,7 +123,7 @@
                 [applyDetail]="originData"
                 [biddingForm]="biddingForm"
                 [ddpDateExpired]="ddpDateExpiredVisible"
-                (activeProductTab)="tabs.activeId('product-info')"
+                (activeTab)="handleActiveTab($event)"
               ></bidding-v3-bidding-approval>
             </ng-container>
 
@@ -130,6 +133,8 @@
                 [grantAuthApprovalInfo]="grantAuthApprovalInfo"
                 [applyDetail]="originData"
                 [ddpDateExpired]="ddpDateExpiredVisible"
+                [biddingForm]="biddingForm"
+                (activeTab)="handleActiveTab($event)"
               ></bidding-v3-auth-approval>
             </ng-container>
 
@@ -138,7 +143,9 @@
                 [taskId]="taskId"
                 [biddingFilling]="biddingFilling"
                 [applyDetail]="originData"
+                [biddingForm]="biddingForm"
                 [ddpDateExpired]="ddpDateExpiredVisible"
+                (activeTab)="handleActiveTab($event)"
               >
               </bidding-v3-bidding-record>
             </ng-container>
@@ -151,7 +158,7 @@
                 [biddingForm]="biddingForm"
                 [ddpDateExpired]="ddpDateExpiredVisible"
                 [processStatus]="processStatus"
-                (activeProductTab)="tabs.activeId('product-info')"
+                (activeTab)="handleActiveTab($event)"
               ></bidding-v3-bidding-confirm>
             </ng-container>
 

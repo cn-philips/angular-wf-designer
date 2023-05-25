@@ -331,4 +331,10 @@ export class OrderV3Service {
     return this.http.get(url);
   }
   
+  getOrderOwner(orderId){
+    //查询集采项目时的Order Owner
+    const url = `/act/ecos/oit/getOrderOwner?OrderId=${orderId}`;
+    return this.http.get(url).toPromise();
+  }
+
 }

@@ -41,6 +41,7 @@ export class ScheduleComponent implements OnInit {
   day: any = null; //几号
   week: any = null; //周几
   time: any = null; //时间
+  hour: any = null; //每小时
   tips: any = "提示：本次报表数据导出的时间范围是从";
   showScope: any = null;
 
@@ -80,8 +81,10 @@ export class ScheduleComponent implements OnInit {
     ccPersons: [[], []], // 抄送人
     emailType: [{ value: null, disabled: false }], //邮件类型
     emailTitle: [{ value: null, disabled: false }], //邮件标题
+    classify: [{ value: null, disabled: false }], // 报表分类cos2 cos3
+    bopFormType: [{ value: null }], //cos3 bidding/OIT/pre-book报表类型
     bg: [[]], //BG
-    reportFormType: [{ value: null }], //报表类型
+    reportFormType: [{ value: null }], //cos2 special aproval报表类型
     dataScope: [{ value: null, disabled: false }], //报表时间范围
     dataScopeTime: [{ value: null, disabled: false }], //报表范围时间
     isCustomRange: [{ value: false, disabled: false }], // 是否自定义时间范围
@@ -109,6 +112,14 @@ export class ScheduleComponent implements OnInit {
 
   get emailTitle(): any {
     return this.formValue.get("emailTitle").value as any;
+  }
+
+  get classify(): any {
+    return this.formValue.get("classify").value as any;
+  }
+
+  get bopFormType(): any {
+    return this.formValue.get("bopFormType").value as any;
   }
 
   get bg(): any {
@@ -143,12 +154,26 @@ export class ScheduleComponent implements OnInit {
     { code: "month", label: "每月" },
     { code: "week", label: "每周" },
     { code: "day", label: "每天" },
+    { code: "hour", label: "每小时" },
     { code: "once", label: "一次" },
   ];
+
   emailTypeList = [
     { code: "reportForm", label: "报表邮件" },
     { code: "normal", label: "普通邮件" },
   ];
+
+  classifyList = [
+    { code: "BOP", label: "Bidding/OIT/Pre-book" },
+    { code: "special", label: "Special Aproval" },
+  ]
+
+  bopFormTypeList = [
+    { code: "oit-finance", label: "OIT Report(金融方案)" },
+    { code: "pre-book", label: "Pre-book Report" },
+    { code: "pos", label: "POS Report" },
+  ]
+
   bgList = [
     { code: "PD&IGT", label: "PD&IGT" },
     { code: "US", label: "US" },
@@ -158,6 +183,15 @@ export class ScheduleComponent implements OnInit {
   dataScopeList = [
     { code: "week", label: "任务执行当前周" },
     { code: "lastWeek", label: "任务执行上一周" },
+    { code: "month", label: "任务执行当前月" },
+    { code: "lastMonth", label: "任务执行上一月" },
+    { code: "quarter", label: "任务执行当前季度" },
+    { code: "lastQuarter", label: "任务执行上一季度" },
+    { code: "year", label: "任务执行当前年" },
+    { code: "lastYear", label: "任务执行上一年" },
+  ];
+
+  oitDataScopeList = [
     { code: "month", label: "任务执行当前月" },
     { code: "lastMonth", label: "任务执行上一月" },
     { code: "quarter", label: "任务执行当前季度" },
@@ -264,8 +298,13 @@ export class ScheduleComponent implements OnInit {
       this.formValue.get("emailText").setValidators([Validators.required]);
 
       if (this.emailType == "reportForm") {
-        this.formValue.get("bg").setValidators([Validators.required]);
-        this.formValue.get("reportFormType").setValidators([Validators.required]);
+        this.formValue.get("classify").setValidators([Validators.required]);
+        if(this.classify == 'BOP'){
+          this.formValue.get("bopFormType").setValidators([Validators.required]);
+        } else {
+          this.formValue.get("bg").setValidators([Validators.required]);
+          this.formValue.get("reportFormType").setValidators([Validators.required]);
+        }
         this.formValue.get("fileName").setValidators([Validators.required]);
         if(this.isCustomRange){
           this.formValue.get("customTime").setValidators([Validators.required]);
@@ -287,6 +326,8 @@ export class ScheduleComponent implements OnInit {
     this.formValue.get("reportFormType").clearValidators();
     this.formValue.get("dataScope").clearValidators();
     this.formValue.get("customTime").clearValidators();
+    this.formValue.get("classify").clearValidators();
+    this.formValue.get("bopFormType").clearValidators();
     this.formValue.get("emailText").clearValidators();
     this.formValue.get("fileName").clearValidators();
   }
@@ -334,13 +375,15 @@ export class ScheduleComponent implements OnInit {
       emailType: data.params.emailType, //邮件类型
       emailTitle: data.params.emailTitle, //邮件标题
       bg: data.params.bg, //BG
-      reportFormType: data.params.reportFormType, //报表类型
+      reportFormType: data.params.reportFormType, //报表类型 sp
       dataScope: data.params.dataScope, //报表时间范围
       isCustomRange: data.params.isCustomRange,
       customTime: data.params.customTime,
       emailText: data.params.emailText, //邮件正文
       fileName: data.params.fileName, //导出报表文件名
       attachments: data.params.attachments, //附件
+      classify: data.params.classify, //报表分类
+      bopFormType: data.params.bopFormType, // 报表类型 cos3
     });
 
     //设置执行时间展示
@@ -364,6 +407,15 @@ export class ScheduleComponent implements OnInit {
     } else if(fre == 'day' && time){
         const today = now + " " + time.split(' ')[1];
         this.time = new Date(today);
+    } else if(fre == 'hour' && time){
+      const hour = moment().format("YYYY-MM-DD HH:mm").split(":")[0]+ ":" + time.split(":")[1];
+      this.hour = new Date(hour);
+    }
+
+    //把时间字符串转为日期格式
+    if(this.isCustomRange && this.bopFormType != 'pre-book' && this.customTime && this.customTime.length>0){
+      this.startDate = this.customTime[0] ? new Date(this.customTime[0]) : null;
+      this.endDate = this.customTime[1] ? new Date(this.customTime[1]) : null;
     }
 
     //初始化主送抄送人
@@ -386,6 +438,12 @@ export class ScheduleComponent implements OnInit {
         //初始化报表范围提示
         this.setScopeAndFileName(data.params.dataScopeTime);
         this.scopeEnable = true;
+    }
+
+    if(this.emailType == "reportForm" && this.bopFormType){
+      //初始化报表范围提示
+      this.setScopeAndFileName(data.params.dataScopeTime);
+      this.scopeEnable = true;
     }
   }
 
@@ -419,18 +477,12 @@ export class ScheduleComponent implements OnInit {
       emailText: null,
       fileName: null,
       attachments: [],
+      classify: null,
+      bopFormType: null,
     });
   }
 
   emailTypeChange() {
-    this.resetBg();
-    if (this.emailType == "reportForm") {
-      var title = "可在信息填写完整后自动生成或自行编辑";
-      this.formValue.controls.emailTitle.setValue(title);
-    }
-  }
-
-  resetBg() {
     this.formValue.patchValue({
       bg: [],
       emailTitle: null,
@@ -442,7 +494,27 @@ export class ScheduleComponent implements OnInit {
       emailText: null,
       fileName: null,
       attachments: [],
+      classify: null,
+      bopFormType: null,
     });
+  }
+
+  classifyChange() {
+    this.formValue.patchValue({
+      bg: [],
+      emailTitle: null,
+      reportFormType: null,
+      dataScope: null,
+      dataScopeTime: null,
+      isCustomRange: false,
+      customTime: [],
+      fileName: null,
+      bopFormType: null,
+    });
+    if (this.classify == "special") {
+      var title = "可在信息填写完整后自动生成或自行编辑";
+      this.formValue.controls.emailTitle.setValue(title);
+    }
   }
 
   bgChange() {
@@ -450,7 +522,7 @@ export class ScheduleComponent implements OnInit {
       this.formValue.patchValue({
         reportFormType: null,
       });
-      var title = "信息填写完整后自动生成";
+      var title = "可在信息填写完整后自动生成或自行编辑";
       this.formValue.controls.emailTitle.setValue(title);
       this.reportFormTypeList = [];
       if (this.bg && this.bg.length > 0) {
@@ -482,36 +554,45 @@ export class ScheduleComponent implements OnInit {
     }
   }
 
+  bopFormTypeChange() {
+    //设置邮件标题
+    // this.setEmailTitle();
+    //判断数据范围能否编辑
+    this.isEnable();
+  }
+
   //设置邮件标题
   setEmailTitle() {
-    const bgs = this.bg;
-    const reportType = this.reportFormType;
-    const fre = this.taskFrequency;
-    if (fre && bgs && bgs.length > 0 && reportType) {
-      //数据处理
-      var frequency = "";
-      var type = "";
-      const arrFre = this.frequencyList.filter((val) => val.code == fre);
-      if (arrFre && arrFre.length > 0) {
-        frequency = arrFre[0].label;
-      }
-      const arrType = this.reportFormTypeList.filter(
-        (val) => val.code == reportType
-      );
-      if (arrType && arrType.length > 0) {
-        type = arrType[0].label;
-      }
-      //标题 = BG+报表类型
-      var bg = "";
-      for (var i = 0; i < bgs.length; i++) {
-        if (i == 0) {
-          bg = bgs[i];
-        } else {
-          bg = bg + "|" + bgs[i];
+    if(this.emailType == "reportForm" && this.classify == "special") {
+      const bgs = this.bg;
+      const reportType = this.reportFormType;
+      const fre = this.taskFrequency;
+      if (fre && bgs && bgs.length > 0 && reportType) {
+        //数据处理
+        var frequency = "";
+        var type = "";
+        const arrFre = this.frequencyList.filter((val) => val.code == fre);
+        if (arrFre && arrFre.length > 0) {
+          frequency = arrFre[0].label;
         }
+        const arrType = this.reportFormTypeList.filter(
+          (val) => val.code == reportType
+        );
+        if (arrType && arrType.length > 0) {
+          type = arrType[0].label;
+        }
+        //标题 = BG+报表类型
+        var bg = "";
+        for (var i = 0; i < bgs.length; i++) {
+          if (i == 0) {
+            bg = bgs[i];
+          } else {
+            bg = bg + "|" + bgs[i];
+          }
+        }
+        var title = "COS定时任务：" + frequency + "/" + bg + "/" + type + "报表";
+        this.formValue.controls.emailTitle.setValue(title);
       }
-      var title = "COS定时任务：" + frequency + "/" + bg + "/" + type + "报表";
-      this.formValue.controls.emailTitle.setValue(title);
     }
   }
 
@@ -552,12 +633,18 @@ export class ScheduleComponent implements OnInit {
     if (!this.taskFrequency) {
       setTimeout(() => {
         this.resetTimes();
-      }, 2);
+      }, 1000);
     } else {
       if (this.emailType == "reportForm") {
         //判断数据范围能否编辑
         this.isEnable();
       }
+    }
+  }
+  hourChange(){
+    if (this.emailType == "reportForm") {
+      //判断数据范围能否编辑
+      this.isEnable();
     }
   }
   dateChange() {
@@ -575,6 +662,7 @@ export class ScheduleComponent implements OnInit {
     this.day = null;
     this.week = null;
     this.time = null;
+    this.hour = null;
   }
 
   // 搜索主送人
@@ -628,6 +716,12 @@ export class ScheduleComponent implements OnInit {
       } else {
         this.dateTime = moment(this.time).format("YYYY-MM-DD HH:mm");
       }
+    } else if (fre == "hour") {
+      if (!this.hour) {
+        this.dateTime = null;
+      } else {
+        this.dateTime = moment(this.hour).format("YYYY-MM-DD HH:mm");
+      }
     } else if (fre == "once" && this.dateTime) {
     } else {
       this.dateTime = null;
@@ -670,10 +764,14 @@ export class ScheduleComponent implements OnInit {
   getShowData() {
     this.showData.taskName = this.formValue.get("taskName").value;
     var beganTime = this.formValue.get("beganTime").value;
-    if(beganTime.includes("lastDay")) {
-        this.showData.beganTime = beganTime.replace("lastDay","月末");
+    if(this.taskFrequency === 'hour') {
+      this.showData.beganTime = "每小时"+ moment(beganTime).format("mm") + "分执行";
     } else {
-        this.showData.beganTime = beganTime;
+      if(beganTime.includes("lastDay")) {
+          this.showData.beganTime = beganTime.replace("lastDay","月末");
+      } else {
+          this.showData.beganTime = beganTime;
+      }
     }
 
     const arrTask = this.taskTypeList.filter(
@@ -690,21 +788,33 @@ export class ScheduleComponent implements OnInit {
       this.showData.frequencyLabel = arrFre[0].label;
     }
 
-    if (this.reportFormType) {
-      const arrType = this.reportFormTypeList.filter(
-        (val) => val.code == this.reportFormType
-      );
-      if (arrType && arrType.length > 0) {
-        this.showData.reportFormTypeLab = arrType[0].label;
+    if(this.classify == 'special'){
+      if (this.reportFormType) {
+        const arrType = this.reportFormTypeList.filter(
+          (val) => val.code == this.reportFormType
+        );
+        if (arrType && arrType.length > 0) {
+          this.showData.reportFormTypeLab = arrType[0].label;
+        }
+      }
+    } else {
+      if(this.bopFormType) {
+        this.showData.reportFormTypeLab = this.bopFormTypeList.filter((val) => val.code == this.bopFormType)[0].label;
       }
     }
 
     if (this.isCustomRange) {
       this.showData.dataScopeLab = "自定义";
       if(this.customTime && this.customTime.length > 0){
-        var star = moment(this.customTime[0]).format("YYYY-MM-DD");
-        var end = moment(this.customTime[1]).format("YYYY-MM-DD");
-        this.showData.timeScope = star + "至" + end;
+        if(this.classify == 'BOP' && this.bopFormType != 'pre-book'){
+          var star = moment(this.customTime[0]).format("YYYY-MM");
+          var end = moment(this.customTime[1]).format("YYYY-MM");
+          this.showData.timeScope = star + "至" + end;
+        } else {
+          var star = moment(this.customTime[0]).format("YYYY-MM-DD");
+          var end = moment(this.customTime[1]).format("YYYY-MM-DD");
+          this.showData.timeScope = star + "至" + end;
+        }
       }
     } else {
       if (this.dataScope) {
@@ -744,6 +854,8 @@ export class ScheduleComponent implements OnInit {
       emailText,
       fileName,
       attachments,
+      classify,
+      bopFormType,
     } = data;
 
     const params = {
@@ -763,6 +875,8 @@ export class ScheduleComponent implements OnInit {
       emailText,
       fileName,
       attachments,
+      classify,
+      bopFormType,
       ...this.scopeParam,
     };
     let param = {
@@ -856,6 +970,8 @@ export class ScheduleComponent implements OnInit {
       customTime: [],
       fileName: null,
     });
+    this.startDate = null;
+    this.endDate = null;
   }
 
   scopeEnable: any = false;
@@ -872,23 +988,31 @@ export class ScheduleComponent implements OnInit {
     this.showScope = null;
     this.scopeEnable = false;
     const fre = this.taskFrequency;
-    const type = this.reportFormType;
-    if (this.emailType == "reportForm" && fre && type) {
-      if (fre == "month") {
-        if (this.day && this.time) {
-          this.scopeEnable = true;
-        }
-      } else if (fre == "week") {
-        if (this.week && this.time) {
-          this.scopeEnable = true;
-        }
-      } else if (fre == "day") {
-        if (this.time) {
-          this.scopeEnable = true;
-        }
-      } else if (fre == "once") {
-        if (this.dateTime) {
-          this.scopeEnable = true;
+    const classify = this.classify;
+    const bopTyep = this.bopFormType; // bidding/oit/pre-book 报表类型
+    const spType = this.reportFormType; // special spproval 报表类型
+    if (this.emailType == "reportForm" && fre && classify) {
+      if( (classify == 'BOP' && bopTyep) || (classify != 'BOP' && spType) ){
+        if (fre == "month") {
+          if (this.day && this.time) {
+            this.scopeEnable = true;
+          }
+        } else if (fre == "week") {
+          if (this.week && this.time) {
+            this.scopeEnable = true;
+          }
+        } else if (fre == "day") {
+          if (this.time) {
+            this.scopeEnable = true;
+          }
+        } else if (fre == "hour") {
+          if (this.hour) {
+            this.scopeEnable = true;
+          }
+        } else if (fre == "once") {
+          if (this.dateTime) {
+            this.scopeEnable = true;
+          }
         }
       }
     }
@@ -899,11 +1023,17 @@ export class ScheduleComponent implements OnInit {
     this.showScope = null;
     const fre = this.taskFrequency;
     const scop = this.dataScope;
-    const type = this.reportFormType;
+    const classify = this.classify;
+    var type = null;
+    if(classify == 'special') {
+      type = this.reportFormType;
+    } else if(classify == 'BOP') {
+      type = this.bopFormType;
+    }
     const customRange = this.isCustomRange;
     const customTime = customRange ? this.customTime : [];
 
-    if (fre && dateTime && type && ((!customRange && scop) || (customRange && customTime && customTime.length > 0))) {
+    if (fre && dateTime && classify && type && ((!customRange && scop) || (customRange && customTime && customTime.length > 0))) {
       var count = 0;
       var unit = null;
       var when = null;
@@ -937,15 +1067,17 @@ export class ScheduleComponent implements OnInit {
       }
 
       //获取时间范围
-      this.getTimeScope(count, dateTime, unit, when, customRange, customTime);
-      const reportType = this.reportFormType;
-      //获取文件名
+      this.getTimeScope(count, dateTime, unit, when, customRange, customTime,classify,type);
+      //获取文件名 判断是bidding/oit/pre-book 还是special approval
       var typeLabel = null;
-      const arr = this.reportFormTypeList.filter((val) => val.code == type);
-      if (arr && arr.length > 0) {
-        typeLabel = arr[0].label;
+      if(classify == 'special') {
+        const formType = this.reportFormTypeList.filter((val) => val.code == type)[0];
+        typeLabel = formType ? formType.label : null;
+      } else if(classify == 'BOP') {
+        const formType = this.bopFormTypeList.filter((val) => val.code == type)[0];
+        typeLabel = formType? formType.label : null;
       }
-      this.getFileName(count, dateTime, unit, when, typeLabel, customRange, customTime);
+      this.getFileName(count, dateTime, unit, when, typeLabel, customRange, customTime, classify);
     }
   }
 
@@ -966,7 +1098,7 @@ export class ScheduleComponent implements OnInit {
   }
 
   //获取时间范围
-  getTimeScope(count, dateTime, unit, when, customRange, customTime) {
+  getTimeScope(count, dateTime, unit, when, customRange, customTime,classify,type) {
     if (dateTime) {
       const param = {
         count: count,
@@ -976,6 +1108,8 @@ export class ScheduleComponent implements OnInit {
         when: when,
         customRange: customRange,
         customTime: customTime,
+        classify: classify,
+        bopFormType: type,
       };
       this.serveice.getDuration(param).then((res) => {
         if (res.code == "0000") {
@@ -988,7 +1122,7 @@ export class ScheduleComponent implements OnInit {
   }
 
   //获取文件名
-  getFileName(count, dateTime, unit, when, typeLabel,  customRange, customTime) {
+  getFileName(count, dateTime, unit, when, typeLabel,  customRange, customTime, classify) {
     if (dateTime && typeLabel) {
       const param = {
         fileName: typeLabel,
@@ -999,6 +1133,7 @@ export class ScheduleComponent implements OnInit {
         when: when,
         customRange: customRange,
         customTime: customTime,
+        classify: classify,
       };
       this.serveice.generateFileName(param).then((res) => {
         if (res.code == "0000") {
@@ -1020,6 +1155,36 @@ export class ScheduleComponent implements OnInit {
       this.flag = 0;
       this.pageLoading = false;
     },2000);
+  }
+
+  public startDate = null;
+  public endDate = null;
+  public disabledStartDate = (startValue: Date): boolean => {
+    if (!this.endDate) {
+      return false;
+    }
+    return startValue.getTime() > this.endDate.getTime();
+  }
+  public disabledEndDate = (endValue: Date): boolean => {
+    if (!this.startDate) {
+      return false;
+    }
+    return endValue.getTime() < this.startDate.getTime();
+  }
+  //OIT月份变化
+  oitMonthChange() {
+    if(this.startDate && this.endDate){
+      this.formValue.patchValue({
+        customTime: [this.startDate, this.endDate],
+      })
+      this.scopeChange();
+    } else {
+      this.formValue.patchValue({
+        customTime: [],
+        fileName: null,
+      })
+      this.showScope = null;
+    }
   }
 
 }

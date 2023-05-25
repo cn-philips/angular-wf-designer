@@ -1139,8 +1139,7 @@
             </td>
           </tr>
 
-
-          <tr *ngIf="showSampling()">
+          <tr *ngIf="showSampling() && baseInfoFrom.getRawValue().businessModel == 'DISTRIBUTOR'">
             <td nzAlign="center">
               <nz-form-label [nzNoColon]="true"
                 [nzRequired]="isPDIGTRequired&& baseInfoTable.getRawValue().supportFileMissing != '1'">
@@ -1182,7 +1181,6 @@
               </nz-form-control>
             </td>
           </tr>
-
 
           <tr *ngIf="showProject()">
             <td nzAlign="center"

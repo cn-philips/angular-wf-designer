@@ -270,7 +270,8 @@
         }
       },
       "cp-verify": {
-        "title": "授权发放校验结果",
+        "auth-title": "授权发放校验结果",
+        "bidding-confirm-title":"中标确认校验结果",
         "type": "产品型号",
         "customer-bid": "客户名称（投标)",
         "customer-cp": "客户名称（cp）",
@@ -1313,6 +1314,38 @@
       }
     }
   },
+  "schedule": {
+    "page": {
+      "schedule-form": {
+        "task-type": "任务类型",
+        "task-name": "任务名称",
+        "fre": "任务执行频率",
+        "exe-time": "执行时间",
+        "status": "任务状态",
+        "script-type": "脚本类型",
+        "desc": "任务描述",
+        "addressee": "主送人",
+        "cc-by": "抄送人",
+        "email-type": "邮件类型",
+        "email-title": "邮件标题",
+        "classify": "报表分类",
+        "form-type": "报表类型",
+        "data-scope": "数据范围",
+        "custom-time": "自定义时间范围",
+        "email-text": "邮件正文",
+        "attachment": "附件",
+        "return": "返回",
+        "submit": "提交",
+        "save": "保存",
+        "clone": "克隆",
+        "delete": "删除",
+        "modal-title": "任务信息",
+        "range": "数据期限",
+        "time-scope": "时间范围"
+      }
+    },
+    "errorInfo": "此选项必填字段"
+  },
   "=========================================Report=================================": "",
   "report": {
     "OIT": {
@@ -1357,6 +1390,28 @@
           "crop": "裁剪",
           "preview": "预览"
         }
+      }
+    },
+    "schedule": {
+      "title": "Schedule定时任务",
+      "add": "新增",
+      "search": {
+        "task-no": "任务编号",
+        "task-type": "任务类型",
+        "task-name": "任务名称",
+        "status": "任务状态"
+      },
+      "list": {
+        "task-no": "任务编号",
+        "task-type": "任务类型",
+        "task-name": "任务名称",
+        "desc": "任务描述",
+        "fre": "任务执行频率",
+        "status": "任务状态",
+        "create": "创建人",
+        "create-time": "创建时间",
+        "update": "修改人",
+        "update-time": "修改时间"
       }
     }
   },

@@ -26,8 +26,13 @@
       </ng-template>
       <ng-template pTabContent>
         <div class="tab-wrapper">
-          <bidding-v3-product-info [agreementList]="agreementList" [biddingForm]="biddingForm"
-            (showImportOpp)="showImportOppDialog()" (agreementChange)="calcDistributorAgreement()">
+          <bidding-v3-product-info
+            [agreementList]="agreementList"
+            [biddingForm]="biddingForm"
+            [subTierSubject]="subTierSubject"
+            (showImportOpp)="showImportOppDialog()"
+            (agreementChange)="calcDistributorAgreement()"
+          >
           </bidding-v3-product-info>
         </div>
       </ng-template>
@@ -39,9 +44,14 @@
       </ng-template>
       <ng-template pTabContent>
         <div class="tab-wrapper">
-          <bidding-v3-supplement-info [paymentTerms]="paymentTerms" [agreementList]="agreementList"
-            [biddingForm]="biddingForm" (calcPaymentTerms)="onCalcPaymentTerms()"
-            (dealerChange)="getAgreementList($event)"></bidding-v3-supplement-info>
+          <bidding-v3-supplement-info
+            [paymentTerms]="paymentTerms"
+            [agreementList]="agreementList"
+            [biddingForm]="biddingForm"
+            [subTierSubject]="subTierSubject"
+            (calcPaymentTerms)="onCalcPaymentTerms()"
+            (dealerChange)="getAgreementList($event)"
+          ></bidding-v3-supplement-info>
         </div>
       </ng-template>
     </app-progress-tab>

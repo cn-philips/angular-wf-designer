@@ -4,6 +4,7 @@ import { HttpService } from '@core/services';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { NzMessageService } from 'ng-zorro-antd';
+import { PermissionService } from '@app/modern-themes/services/permission.service';
 class QueryParams {
   loading: boolean;
   total: number;
@@ -68,7 +69,8 @@ export class RoleComponent implements OnInit {
   constructor(private http: HttpService,
     private toastrService: ToastrService,
     private message: NzMessageService,
-    private fb: FormBuilder) {
+    private fb: FormBuilder,
+    public permission:PermissionService) {
     this.listOfRole = [];
     this.queryParams = {
       loading: false,

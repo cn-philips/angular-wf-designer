@@ -9,8 +9,15 @@
     >
     <app-tab [title]="'orderv3.pages.contract.general'|translate" id="pending-tab">  
           <div class="card-body">
-            <pre-base-info-from #baseInfoFromChild [formValue]="formValue" [editPreTable]="editPreTable"
-              [editable]="editBase" [changeItem]="changeItem" [isContract]="true">
+            <pre-base-info-from 
+              #baseInfoFromChild
+              [formValue]="formValue"
+              [editPreTable]="editPreTable"
+              [editable]="editBase"
+              [changeItem]="changeItem"
+              [isContract]="true"
+              [subTierSubject]="subTierSubject"
+            >
             </pre-base-info-from>
             <pre-base-info-table
               #baseInfoTableChild

@@ -1,20 +1,24 @@
 :host /deep/ {
   .ant-table-footer {
-    border: none!important;
+    border: none !important;
     padding: 0;
   }
+
   .ant-input-number-handler-wrap {
     display: none;
   }
+
   .ant-input-group-addon {
     border: none;
     padding-right: 0;
     background-color: #fff;
   }
+
   .ant-input-number {
     border: none;
-    box-shadow: none!important;
+    box-shadow: none !important;
   }
+
   .ant-input-number-input:disabled {
     border-bottom: 0.125rem #d4dbdf solid;
   }
@@ -23,19 +27,27 @@
     white-space: normal;
   }
 
-  .ant-form-item label{
-    line-height:20px;
+  .ant-form-item label {
+    line-height: 20px;
   }
+
   .ant-table-row td {
     padding-top: 0;
     padding-bottom: 0;
   }
+
+  .lintesting {
+    color: red;
+    line-height: 20px;
+  }
 }
+
 table thead {
 
-  width: calc( 100% - 1em )//core code
+  width: calc(100% - 1em) //core code
 
 }
-.lineCut{
+
+.lineCut {
   cursor: pointer;
 }

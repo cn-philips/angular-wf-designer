@@ -53,7 +53,7 @@
         <!-- </form> -->
         <div class="form-group row">
             <div class="col-sm-10 ml-sm-auto">
-                <button class="btn btn-primary" type="button" (click)="updateRole()">Save 保存</button>
+                <button class="btn btn-primary" [disabled]="!permission.hasRole('SYSTEMADMIN')" type="button" (click)="updateRole()">Save 保存</button>
             </div>
         </div>
     </div>

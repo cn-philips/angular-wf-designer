@@ -6,7 +6,7 @@
     <div nz-col nzXs="24" nzMd="12" nzXl="8">
       <nz-form-item>
         <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6">
-          任务编号
+          {{ "system-settings.schedule.search.task-no" | translate }}
         </nz-form-label>
         <nz-form-control nzXs="24" nzMd="14">
           <input nz-input formControlName="referenceNo" placeholder="" />
@@ -17,7 +17,7 @@
     <div nz-col nzXs="24" nzMd="12" nzXl="8">
       <nz-form-item>
         <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6">
-          任务类型
+          {{ "system-settings.schedule.search.task-type" | translate }}
         </nz-form-label>
         <nz-form-control nzXs="24" nzMd="14">
           <nz-select formControlName="taskType" style="width: 100%" nzShowSearch nzAllowClear nzPlaceHolder="">
@@ -29,7 +29,7 @@
     <div nz-col nzXs="24" nzMd="12" nzXl="8" [style.display]="isCollapse ? 'block' : 'none'">
       <nz-form-item>
         <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6">
-          任务名称
+          {{ "system-settings.schedule.search.task-name" | translate }}
         </nz-form-label>
         <nz-form-control nzXs="24" nzMd="14">
           <input nz-input formControlName="taskName" placeholder="" />
@@ -40,7 +40,7 @@
     <div nz-col nzXs="24" nzMd="12" nzXl="8" [style.display]="isCollapse ? 'block' : 'none'">
       <nz-form-item>
         <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6">
-          任务状态
+          {{ "system-settings.schedule.search.status" | translate }}
         </nz-form-label>
         <nz-form-control nzXs="24" nzMd="14">
           <nz-select formControlName="isEnabled" style="width: 100%" nzShowSearch nzAllowClear nzPlaceHolder="">

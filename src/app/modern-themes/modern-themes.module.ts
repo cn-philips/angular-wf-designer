@@ -41,6 +41,7 @@ import { ImageControlComponent } from "./components/image-control/image-control.
 import { ImageStorageComponent } from "./components/image-editor/components/image-storage/image-storage.component";
 import { BreadcrumbService } from "./services/breadcrumb.service";
 import { PrebookApprovalEntriesComponent } from './components/approval-dialog/components/prebook-approval-entries/prebook-approval-entries.component';
+import { PermissionService } from "./services/permission.service";
 @NgModule({
   declarations: [
     ProgressTabsComponent,
@@ -114,6 +115,6 @@ import { PrebookApprovalEntriesComponent } from './components/approval-dialog/co
     ImageControlComponent,
     HtmlPipe,
   ],
-  providers: [UtilityService],
+  providers: [UtilityService,PermissionService],
 })
 export class ModernThemesModule {}

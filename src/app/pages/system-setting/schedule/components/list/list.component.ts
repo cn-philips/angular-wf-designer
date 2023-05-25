@@ -34,6 +34,7 @@ export class ScheduleListComponent implements OnInit {
       { code: 'month', label: '每月' },
       { code: 'week', label: '每周' },
       { code: 'day', label: '每天' },
+      { code: "hour", label: "每小时" },
       { code: 'once', label: '一次' },
   ];
 

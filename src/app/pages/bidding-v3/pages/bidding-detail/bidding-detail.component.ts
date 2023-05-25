@@ -3,7 +3,7 @@ import { Location } from '@angular/common'
 import { FormArray, FormBuilder, FormGroup, ValidationErrors, Validators } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
 import { BiddingV3Service } from "../../bidding-v3.service";
-import { NzMessageService } from "ng-zorro-antd";
+import { NzMessageService, NzModalService } from "ng-zorro-antd";
 import { BIDDING_COMPANIES, BUSINESS_MODEL_DIRECT, CURRENCIES } from "../../bidding-v3.constants";
 import { logisticTermsDescValidator, dealerDdpStatusValidator, bidderDdpStatusValidator, segmentValidator } from '../../bidding-v3.util'
 import { BreadcrumbService } from "@app/modern-themes/services/breadcrumb.service";
@@ -11,6 +11,7 @@ import { ProcessTaskStatusPipe } from "@shared/pipes/process-task-status.pipe";
 import { ImportOppComponent } from "../../components/import-opp/import-opp.component";
 import { TabsComponent } from "@app/modern-themes/components/tabs/tabs.component";
 import { RouterExtendService } from "@app/modern-themes/services/router-extend.service";
+import { Subject } from "rxjs";
 
 // 中标价格不能低于产品中标价格总和
 const biddingAmountValidator = (control: FormGroup): ValidationErrors | null => {
@@ -47,6 +48,8 @@ export class BiddingDetailComponent implements OnInit {
   @ViewChild("importOpp") importOpp: ImportOppComponent;
   @ViewChild('tabs') tabs: TabsComponent
 
+  subTierSubject = new Subject()
+
   taskId;
 
   originData = {
@@ -62,6 +65,7 @@ export class BiddingDetailComponent implements OnInit {
     dealerName: null,
     applyId: null,
     hospitalName: null,
+    hospitalId: null,
     nonStandard: { id: null, isNonStandard: 0, logisticTerms: null },
     marketBundles: [],
     technicalApprovers: [],
@@ -71,6 +75,7 @@ export class BiddingDetailComponent implements OnInit {
     lackingFilesAdded: null,
     authorizationRequired: null,
     distributorDdpDate: null,
+    subTiers: [],
   };
   pageLoading = false;
 
@@ -139,7 +144,7 @@ export class BiddingDetailComponent implements OnInit {
         groupPurchaseCompany: [{ value: null, disabled: true }], // 采购集团名称
         customerCategory: [{ value: null, disabled: true }], // 客户分类
         customerProvince: [{ value: null, disabled: true }], // 客户所属省份
-        groupPurchase: [{ value: false, disabled: true }], // 是否为集采项目
+        groupPurchase: [ false, [Validators.required]], // 是否为集采项目
       }, {
         validators: [segmentValidator]
       }),
@@ -216,6 +221,7 @@ export class BiddingDetailComponent implements OnInit {
         distributorType: [null, [Validators.required]], // 协议经销商类型
         distributorDdpStatus: [{ value: null, disabled: true }], // 协议经销商DDP状态
         distributorDdpDate: [{ value: null, disabled: true }], // 协议经销商DDP有效期截止日期
+        subTiers: this.fb.array([]),
       }),
       biddingFile: this.fb.group({
         // 投标相关文件 [非直投]
@@ -384,7 +390,7 @@ export class BiddingDetailComponent implements OnInit {
 
   // 判断中标确认tab的显示, 这里用缺失文件已补齐来判断
   get showBidConfirmTab() {
-    const show = 
+    const show =
       (this.originData.lackingFilesAdded === 1 || this.originData.lackingFilesAdded === 0) &&
       ((this.processStatus !== 'ecos_bid_confirm' && this.processStatus !== 'ecos_bid_confirm2') || !this.fromTask) &&
       !this.isResubmit &&
@@ -425,8 +431,8 @@ export class BiddingDetailComponent implements OnInit {
     private location: Location,
     private breadcrumbService: BreadcrumbService,
     private processTaskStatusPipe: ProcessTaskStatusPipe,
-    private routerExtend: RouterExtendService
-
+    private routerExtend: RouterExtendService,
+    private modalService: NzModalService,
   ) {}
 
   ngOnInit(): void {
@@ -522,7 +528,7 @@ export class BiddingDetailComponent implements OnInit {
   initBasicInfo() {
     const {
       dataSource, accountName, biddingModel, biddingProgramName, businessModel, biddingType,
-      biddingNumber, biddingOrgName, biddingOpenDate, biddingValidDate, hospitalName,
+      biddingNumber, biddingOrgName, biddingOpenDate, biddingValidDate, hospitalName,hospitalId,
       customerCode, customerType, groupPurchaseCompany, customerCategory, customerProvince,
       groupPurchase, applicant, biddingOwner, biddingOwnerPosition,
       systemRegion, modality, team, cycleGroup, bigArea, smallArea, referenceId,
@@ -544,6 +550,7 @@ export class BiddingDetailComponent implements OnInit {
         },
         finalUser: {
           hospitalName,
+          hospitalId,
           customerCode,
           customerType,
           groupPurchaseCompany,
@@ -663,6 +670,7 @@ export class BiddingDetailComponent implements OnInit {
       sealedLetterFiles,
       letterOfAuthorizationFiles,
       salesManagerAuthorizationLetter,
+      subTiers,
     } = this.originData as any
     const supplementInfo = this.biddingForm.get('supplementInfo') as FormGroup
     const dealerInfo = supplementInfo.get('dealerInfo') as FormGroup
@@ -767,6 +775,10 @@ export class BiddingDetailComponent implements OnInit {
             letterOfAuthorizationFiles,
           },
         })
+        setTimeout(() => {
+          const subTiersDisabled = !(this.fromTask && [ 'ecos_bid_resubmit', 'ecos_bid_bidding_approval', 'ecos_bid_auth', 'ecos_bid_filing', 'ecos_bid_confirm', 'ecos_bid_confirm2'].includes(this.processStatus))
+          this.subTierSubject.next({ type: 'add', data: subTiers, disabled: subTiersDisabled })
+        }, 0);
         if (distributorAgreement) {
           const formArray = this.biddingForm.get('supplementInfo').get('dealerInfo').get('distributorAgreement') as FormArray
           distributorAgreement.forEach(({ dealerAgreement, authorizedProduct, authorizedArea }) => {
@@ -812,6 +824,7 @@ export class BiddingDetailComponent implements OnInit {
     this.biddingV3Service.detail(applyId).subscribe(({ data }) => {
       this.originData = {
         ...data,
+        hospitalId:data.customerCode,
         otherBiddingNumber: data.otherBiddingNumber ? data.otherBiddingNumber.filter(({ referenceId }) => referenceId !== this.referenceId && referenceId)  : []
       };
       const hasNonStandardInfo = data.businessModel === BUSINESS_MODEL_DIRECT && data.nonStandard.isNonStandard === 1
@@ -836,7 +849,7 @@ export class BiddingDetailComponent implements OnInit {
       this.initCancelFlag();
       this.pageLoading = false;
       if (this.fromTask || this.fromSupplement) {
-        
+
         if (this.taskStatus === 'ecos_bid_special_approval') {
           setTimeout(() => {
             this.tabs.activeId('bidding-confirm')
@@ -1218,8 +1231,24 @@ export class BiddingDetailComponent implements OnInit {
       paymentDescription,
       predictBiddingPrice,
       groupPurchase,
+      centralizedOrNot,
       cityName,
+      opportunityId,
     } = data[0];
+
+    setTimeout(() => {
+      const validData = data.filter(({ subTierDealers }) => Array.isArray(subTierDealers))
+      if (validData.length > 0) {
+        this.subTierSubject.next({
+          type: 'add',
+          data: {
+            crmOpId: opportunityId,
+            dealerSubTiers: validData[0].subTierDealers.map((item) => ({ ...item, crmOpId: opportunityId }))
+          }
+        })
+      }
+    }, 0);
+
     const marketBundlesArray = this.biddingForm.get("marketBundles") as FormArray;
     this.biddingForm.patchValue({
       dataSource,
@@ -1335,7 +1364,7 @@ export class BiddingDetailComponent implements OnInit {
           customerCity: cityName,
           customerCategory: category, // 客户分类
           hospitalName, // 医院名称
-          groupPurchase: groupPurchase == 1,
+          groupPurchase: !!centralizedOrNot, //true or false, 数据库存1或0
         },
       },
     });
@@ -1645,4 +1674,7 @@ export class BiddingDetailComponent implements OnInit {
     this.rem_mess = false;
   }
 
+  handleActiveTab(tabName) {
+    this.tabs.activeId(tabName)
+  }
 }

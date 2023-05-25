@@ -54,11 +54,13 @@
             </ng-template>
             <ng-container *ngIf="item.get('status')?.value === 1 || item.get('removed')?.value">
               <input
+                *ngIf="!item.get('comment').disabled"
                 class="comment-input"
                 nz-input
                 formControlName="comment"
-                [placeholder]="item.get('comment')?.disabled ? '' : '请填写备注信息'"
+                placeholder="请填写备注信息"
               />
+              <span *ngIf="item.get('comment').disabled" class="comment-span">{{ item.get('comment').value }}</span>
               <shared-upload-file type="button" formControlName="attachments"></shared-upload-file>
             </ng-container>
           </div>

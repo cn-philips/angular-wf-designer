@@ -126,6 +126,11 @@ export class ChangOrderPopupComponent implements OnInit {
   }
   //确定
   isAgregentOk() {
+    if(this.isDealerDdpStatus() || this.isforeignDdpStatus()){
+      this.message.error("当前经销商或外贸公司DDP已过有效期");
+      return;
+    }
+
     const valid = this.checkFormData();
     if (valid) {
       this.load = true;

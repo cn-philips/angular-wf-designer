@@ -77,7 +77,7 @@ export class OitFormGroupComponent implements OnInit {
   }
   ngOnChanges()
   {
-    
+
     // if (this.deBookInform.getRawValue().deBookDate) {
     //   this.deBookInform.get('deBook').disable()
     //   this.deBookInform.get('deBookDate').disable()
@@ -87,23 +87,23 @@ export class OitFormGroupComponent implements OnInit {
     //   this.deBookInform.get('reBookDate').disable()
     // }
     // if (this.deBookInform.getRawValue().cancel == '1') {
-    //   this.deBookInform.disable();     
+    //   this.deBookInform.disable();
     // }
-    
+
   }
   ngAfterViewInit(): void {
     this.changeDetectorRef.detectChanges();
   }
   ngOnInit() {
     //缺失文件是否补充完整校验  isOA   isOM
-    const roleList = JSON.parse(localStorage.getItem("roles"));   
+    const roleList = JSON.parse(localStorage.getItem("roles"));
     var roles = [];
     const permissions = JSON.parse(localStorage.getItem('permissionsV3')).oit_complated_supplement;
     roles = Array.from(new Set(permissions.map(val => val.fieRoles)));
     roles.forEach(val => {
       if(val && roleList.includes(val)) {
         this.needFileTypeShowOff=true;
-      } 
+      }
     })
 
     if(this.needFileType == 'oit'){
@@ -181,7 +181,7 @@ export class OitFormGroupComponent implements OnInit {
     }
   }
 
-  reBookChange(val) {     
+  reBookChange(val) {
     if (val == '1') {
       this.deBookInform.get('reBookDate').setValidators([Validators.required])
     }
@@ -241,8 +241,8 @@ export class OitFormGroupComponent implements OnInit {
     }
   }
 
-  onAddSupportFile() {  
-    
+  onAddSupportFile() {
+
     let contractFile = this.signFileForm.getRawValue().contractFile
     let exportControlFile  = this.oitInform.getRawValue().exportControlFile
     let credentialFile  = this.oitInform.getRawValue().credentialFile
@@ -250,61 +250,73 @@ export class OitFormGroupComponent implements OnInit {
     let requestLetter = this.baseInfoFrom.getRawValue().orderModality === 'PD&IGT'? this.baseInfoTable.getRawValue().requestLetter: this.baseInfoTable.getRawValue().dealerRequestLetterFile
     let sofonFile = this.priceApproval.getRawValue().sofonFile
     let cpclFile = this.baseInfoTable.getRawValue().cpclFile
-   
+
     const {marketBundleInfo}=this.baseInfoFrom.getRawValue();
     let configFile:any=[];
+    let fileName:any = [];
     if(marketBundleInfo.length>0)
     {
       marketBundleInfo.map(val=>{
         if(val.configFile&&val.configFile.length>0)
         {
           val.configFile.map(vals=>{
-            configFile.push(vals)
+            if(!fileName.includes(vals.fileName)){
+              fileName.push(vals.fileName)
+              configFile.push(vals)
+            }
           })
-        }  
+        }
       })
     }
     else
     {
       configFile=null
     }
-     
+
     this.supportFileList = [
       {
         fileName: '合同文件',
         file: contractFile,
+        permission:["contract_file"]
       },
       {
         fileName: '出口管制文件',
         file: exportControlFile,
+        permission:[]
       },
       {
         fileName: '付款凭证',
-        file: credentialFile
+        file: credentialFile,
+        permission:[]
       },
       {
         fileName: 'SOFON文件',
-        file: sofonFile
+        file: sofonFile,
+        permission:["sofon_file"]
       },
       {
         fileName: '盖章配置',
-        file:configFile
+        file:configFile,
+        permission:["config_file"]
       },
       {
         fileName: 'CPCL文件',
-        file: cpclFile
+        file: cpclFile,
+        permission:[]
       },
       {
         fileName: '要货函',
-        file: requestLetter
+        file: requestLetter,
+        permission:[]
       },
       {
         fileName: '其他文件',
-        file: otherFile
+        file: otherFile,
+        permission:[]
       },
     ]
   }
-   
+
   financialSchemeChange(event)
   {
     //选择是否需要使用金融方案
@@ -333,9 +345,9 @@ export class OitFormGroupComponent implements OnInit {
   downloadZipFile() {
     let fileList = []
     for (let i = 0; i < this.supportFileList.length; i++) {
-      if (this.supportFileList[i].file && this.supportFileList[i].file.length > 0){
+      if (this.supportFileList[i].file && this.supportFileList[i].file.length > 0 && this.hasPerm(this.supportFileList[i].permission)){
         for (let j = 0; j < this.supportFileList[i].file.length; j++) {
-         fileList.push(this.supportFileList[i].file[j].fileId)
+          fileList.push(this.supportFileList[i].file[j].fileId)
         }
       }
     }
@@ -344,8 +356,22 @@ export class OitFormGroupComponent implements OnInit {
     this.http.get(uri, {
       responseType: 'blob'
     }).subscribe(data => {
-      saveAs(data, this.baseInfoFrom.getRawValue().referenceId);
+      saveAs(data, this.baseInfoFrom.getRawValue().referenceId+'.zip');
     });
+  }
+  hasPerm(perms) {
+    if(!perms||perms.length==0)return true
+    const roles = JSON.parse(localStorage.getItem('roles'));
+    const permissions = JSON.parse(localStorage.getItem('permissions'));
+    if (roles && permissions) {
+      for (const k of perms) {
+        if (permissions[k] && permissions[k].some(r => roles.includes(r))) {
+          return true
+        }
+      }
+    }
+
+    return false;
   }
   onblurRemark()
   {

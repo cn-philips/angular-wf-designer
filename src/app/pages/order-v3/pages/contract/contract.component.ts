@@ -9,7 +9,7 @@ import {
   FormArray,
   Validators,
 } from "@angular/forms";
-import { NzMessageService } from "ng-zorro-antd";
+import { NzMessageService, NzModalService } from "ng-zorro-antd";
 import { isadopt, standardTime } from "@core/util/tools"
 import { Location } from '@angular/common';
 import * as moment from 'moment'
@@ -17,14 +17,25 @@ import { BreadcrumbService } from "@app/modern-themes/services/breadcrumb.servic
 
 import { ProcessTaskStatusPipe } from "@app/shared/pipes/process-task-status.pipe"
 import { RouterExtendService } from "@app/modern-themes/services/router-extend.service";
+import { Subject } from "rxjs";
 @Component({
   selector: "app-contract",
   templateUrl: "./contract.component.html",
   styleUrls: ["./contract.component.scss"],
 })
 export class ContractComponent implements OnInit {
-  constructor(private serveice: OrderV3Service, private ProcessTaskStatusPipe: ProcessTaskStatusPipe, private location: Location, private breadCrumbService: BreadcrumbService, private activatedRouter: ActivatedRoute, private fb: FormBuilder, private message: NzMessageService, private router: Router,
-    private routerExtendService: RouterExtendService) { }
+  constructor(
+    private serveice: OrderV3Service,
+    private ProcessTaskStatusPipe: ProcessTaskStatusPipe,
+    private location: Location,
+    private breadCrumbService: BreadcrumbService,
+    private activatedRouter: ActivatedRoute,
+    private fb: FormBuilder,
+    private message: NzMessageService,
+    private router: Router,
+    private routerExtendService: RouterExtendService,
+    private modalService: NzModalService,
+  ) { }
   public activedId: any = "pending-tab";
   public tabIndex: any = 0;
   public editBase: any = true; //基础信息是否编辑
@@ -56,7 +67,7 @@ export class ContractComponent implements OnInit {
   }
 
   priceData: any = {}
-
+  subTierSubject = new Subject()
 
   productModelInfo = {
     orderProductModel: [{ value: null, disabled: !this.editBase }],
@@ -127,21 +138,23 @@ export class ContractComponent implements OnInit {
 
 
     actualSalesEmail: [{ value: null, disabled: !this.editBase }], //实际销售
-    actualSalesName: [{ value: null, disabled: true }],//实际销售 
+    actualSalesName: [{ value: null, disabled: true }],//实际销售
     actualSalesNameModel: [{ value: null, disabled: true }],//实际销售名字
 
     contractCancelReferenceId: [{ value: null, disabled: !this.editBase }], //原合同概要表id
     contractCancelApplyId: [{ value: null, disabled: true }], //contractCancelApplyId
+    contractCancelSoNo: [{ value: null, disabled: !this.editBase }], //原合同概要表so
     contractCancelDisabled: [{ value: true, disabled: true }], //是否禁用选择原合同概要表id
     isRequired: [{ value: false, disabled: true }],
     optionDisabled: [{ value: true, disabled: true }],
     currencySystem: [{ value: true, disabled: true }],
-    orderSalesSapCode: [{ value: null, disabled: !this.editBase }], //orderSalesSapCode  
+    orderSalesSapCode: [{ value: null, disabled: !this.editBase }], //orderSalesSapCode
     dealIsDisabled: [{ value: false, disabled: true }],//是否显示经销商的按钮
     profitNetRate: [{ value: null, disabled: true }],//经销商净利润
     profitGrossRate: [{ value: null, disabled: true }],//经销商毛利率
     profitGross: [{ value: null, disabled: true }],//经销商毛利润
     dealerProfit: [{ value: null, disabled: true }],//经销商利润
+    biddingCurrency: [{ value: null, disabled: true }],//投标币种
   };
   dealerFrom = {
     dealerName: [{ value: null, disabled: true }, [Validators.required]], //经销商名称
@@ -156,6 +169,7 @@ export class ContractComponent implements OnInit {
     dealerTaxNum: [{ value: null, disabled: true }],//经销商纳税号
     purchaseOrderSignatory: [{ value: null, disabled: !this.editBase }, [Validators.required]], //采购订单签署人
     purchaseOrderSignatoryPosition: [{ value: null, disabled: !this.editBase }, [Validators.required]],//采购订单签署人职务
+    subTierInfo: this.fb.array([]), // 次级经销商信息
   }
   accountFrom = {
     accountName: [{ value: null, disabled: !this.editBase }, [Validators.required]],//开户行名称
@@ -479,12 +493,15 @@ export class ContractComponent implements OnInit {
       actualSalesEmail,
       actualSalesName,
       contractCancelReferenceId,
+      contractCancelSoNo,
       contractCancelApplyId,
       orderSalesSapCode,
+      subTierInfo,
       profitNetRate,
       profitGrossRate,
       profitGross,
       dealerProfit,
+      biddingCurrency
     } = contractInfo
     this.productModelInfoData.patchValue({
       ...contractInfo
@@ -546,15 +563,18 @@ export class ContractComponent implements OnInit {
       actualSalesName,
       contractCancelReferenceId,
       contractCancelApplyId,
+      contractCancelSoNo,
       orderSalesSapCode,
       profitNetRate,
       profitGrossRate,
       profitGross,
       dealerProfit,
+      biddingCurrency
     })
 
     this.dealerFromData.patchValue({
       ...contractInfo,
+      subTierInfo: contractInfo.subTierInfo || []
     })
     this.accountFromData.patchValue({
       ...contractInfo
@@ -621,7 +641,16 @@ export class ContractComponent implements OnInit {
       })
     }
     if (this.baseInfoFromData.getRawValue().businessModel == 'DISTRIBUTOR') {
-      this.getdistributorDate(); //更新经销商日期    
+      this.getdistributorDate(); //更新经销商日期
+      setTimeout(() => {
+        const subTierDisbaled = !(this.flag == '0' && ['ecos_oit_order_resubmit'].includes(this.status))
+        this.subTierSubject.next({
+          type: 'add',
+          data: subTierInfo,
+          disabled: subTierDisbaled
+        })
+        this.baseInfoFromChild.checkBiddingEqualDealer();
+      }, 0);
     }
     if (this.priceApprovalData.getRawValue().currencySystem == "USD") {
       this.getIepoolDate(); //更新经销商日期
@@ -639,7 +668,7 @@ export class ContractComponent implements OnInit {
     }
   }
 
-  getBiddingIsSpecial() {//bidding模式是否是特批          
+  getBiddingIsSpecial() {//bidding模式是否是特批
     let { biddingApplyList } = this.baseInfoFromData.getRawValue();
     biddingApplyList.map(val => {
       this.serveice.getBiddingIsSpecial(val.id).subscribe(item => {
@@ -794,6 +823,22 @@ export class ContractComponent implements OnInit {
     else {
 
       if (parm == 'approved') {
+        if (baseInfoFrom.businessModel == 'DISTRIBUTOR') {
+          const subTierInfo = this.formValue.get('dealerFrom').get('subTierInfo') as FormArray
+          if (subTierInfo.invalid) {
+            this.modalService.error({
+              nzTitle: '提示',
+              nzContent: '经销商黑名单校验不通过，请上传必要的支持文件和备注后，再作提交'
+            }).afterClose.subscribe(() => {
+              // this.handleToggleTab('basic-info')
+              this.tabs.activeId('pending-tab')
+              setTimeout(() => {
+                document.querySelector('.dealer-info').scrollIntoView()
+              }, 0);
+            })
+            return
+          }
+        }
         this.pageLoading = true;
         const checkbaseInfoFrom = this.baseInfoFromChild.checkbaseInfoFromData();
         const checkdealerFrom = this.baseInfoFromChild.checkdealerFromFromData();
@@ -839,8 +884,8 @@ export class ContractComponent implements OnInit {
           this.contractRemarkFromData.get('comments')!.updateValueAndValidity();
         }
         if (baseInfoFrom.businessModel == 'DISTRIBUTOR') {
-          //const dateAndValid=await this.serveice.getDdpDateAndValid(dealerFrom.dealerName); 
-          //console.log(dateAndValid)            
+          //const dateAndValid=await this.serveice.getDdpDateAndValid(dealerFrom.dealerName);
+          //console.log(dateAndValid)
           const dateAndValid = await this.serveice.findDealersByPageValid({ dealerName: dealerFrom.dealerName })
           if (dateAndValid.code == '0000') {
             const rows = dateAndValid.data.rows
@@ -964,9 +1009,9 @@ export class ContractComponent implements OnInit {
               dealerDdpValidityDate: rows[0].mdtdealerddpexpiredate
             })
           }
-        }       
+        }
       }
-      
+
     })
 
 

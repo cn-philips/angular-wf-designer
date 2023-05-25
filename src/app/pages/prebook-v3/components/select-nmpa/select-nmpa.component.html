@@ -1,7 +1,7 @@
 <nz-modal [(nzVisible)]="visible" nzWidth="1000px" [nzTitle]="'components.select-nmpa.title' | translate"
   [nzFooter]="null" (nzOnCancel)="onHide()">
   <div nz-row [nzGutter]="24">
-    <div nz-col [nzSpan]="6">
+    <div nz-col [nzSpan]="8">
       <nz-form-item>
         <nz-form-label [nzSpan]="5">BMC</nz-form-label>
         <nz-form-control [nzSpan]="18">
@@ -10,7 +10,7 @@
       </nz-form-item>
     </div>
 
-    <div nz-col [nzSpan]="6">
+    <div nz-col [nzSpan]="8">
       <nz-form-item>
         <nz-form-label [nzSpan]="6">{{"components.select-nmpa.productModel" | translate}}</nz-form-label>
         <nz-form-control [nzSpan]="18">
@@ -19,7 +19,7 @@
       </nz-form-item>
     </div>
 
-    <div nz-col [nzSpan]="6">
+    <div nz-col [nzSpan]="8">
       <nz-form-item>
         <nz-form-label [nzSpan]="6">{{"components.select-nmpa.registrationNumber" | translate}}</nz-form-label>
         <nz-form-control [nzSpan]="18">
@@ -28,7 +28,7 @@
       </nz-form-item>
     </div>
 
-    <div nz-col [nzSpan]="6" style="text-align: right;">
+    <div nz-col [nzSpan]="24" style="text-align: right;">
       <nz-form-item>
         <nz-form-control>
           <button nz-button class="ml10" nzType="primary" (click)="getTableData(true)"

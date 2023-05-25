@@ -1,5 +1,5 @@
-import { Component, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { FormArray, FormControl, FormGroup } from '@angular/forms';
 import { NzMessageService, NzModalService } from 'ng-zorro-antd';
 import { CpVerifyComponent } from "../../cp-verify/cp-verify.component";
 import { BiddingV3Service } from '../../../bidding-v3.service';
@@ -14,6 +14,7 @@ export class AuthApprovalComponent implements OnChanges {
   @Input() disabled = false
   @Input() taskId
   @Input() grantAuthApprovalInfo: FormGroup
+  @Input() biddingForm: FormGroup
   @Input() applyDetail = {
     id: null,
     applyId: null,
@@ -22,6 +23,7 @@ export class AuthApprovalComponent implements OnChanges {
     businessModel: null,
     biddingNumber: null,
     hospitalName: null,
+    hospitalId: null,
     bidderName: null,
     bidderRegistAddress: null,
     cpVerifyRequired: null,
@@ -33,6 +35,7 @@ export class AuthApprovalComponent implements OnChanges {
     otherBiddingNumber: [],
   }
   @Input() ddpDateExpired = false
+  @Output() activeTab = new EventEmitter<string>()
   @ViewChild('cpVerify') cpVerify: CpVerifyComponent
 
   templatePreviewerVisible = false
@@ -156,16 +159,9 @@ export class AuthApprovalComponent implements OnChanges {
   }
 
   onSubmit(action) {
-    const grantAuthApprovalInfo = this.grantAuthApprovalInfo.getRawValue()
-    for(const i in this.grantAuthApprovalInfo.controls) {
-      this.grantAuthApprovalInfo.controls[i].markAsDirty()
-      this.grantAuthApprovalInfo.controls[i].updateValueAndValidity()
-    }
-    if (this.grantAuthApprovalInfo.invalid) {
-      this.message.error('请按要求填写表单信息')
-      return
-    }
     const { id, applyId, businessModel } = this.applyDetail;
+
+    const grantAuthApprovalInfo = this.grantAuthApprovalInfo.getRawValue()
     const data = {
       id,
       applyId,
@@ -175,17 +171,44 @@ export class AuthApprovalComponent implements OnChanges {
       action,
       ...grantAuthApprovalInfo
     }
+    if (businessModel !== BUSINESS_MODEL_DIRECT) {
+      const subTiers = this.biddingForm.get('supplementInfo').get('dealerInfo').get('subTiers') as FormArray
+      if (subTiers.invalid) {
+        this.modalService.error({
+          nzTitle: '提示',
+          nzContent: '经销商黑名单校验不通过，请上传必要的支持文件和备注后，再作提交'
+        }).afterClose.subscribe(() => {
+          this.activeTab.emit('supplement-info')
+          setTimeout(() => {
+            document.querySelector('.dealer-info').scrollIntoView()
+          }, 0);
+        })
+        return
+      }
+      data.subTiers = subTiers.getRawValue()
+    }
+
+    for(const i in this.grantAuthApprovalInfo.controls) {
+      this.grantAuthApprovalInfo.controls[i].markAsDirty()
+      this.grantAuthApprovalInfo.controls[i].updateValueAndValidity()
+    }
+    if (this.grantAuthApprovalInfo.invalid) {
+      this.message.error('请按要求填写表单信息')
+      return
+    }
+
+
     this.biddingV3Service.setPageLoading(true)
-    this.biddingV3Service.approve(data).subscribe(({ code }) => {
+    this.biddingV3Service.approve(data).subscribe(({ code, msg }) => {
       if (code === '0000') {
         this.message.success("审批成功!");
         this.biddingV3Service.goTodoPage()
       } else {
-        this.message.error("审批失败!");
+        this.message.error(msg);
       }
       this.biddingV3Service.setPageLoading(false)
-    }, () => {
-      this.message.error("审批失败!");
+    }, ({ message }) => {
+      this.message.error(message);
       this.biddingV3Service.setPageLoading(false)
     });
   }

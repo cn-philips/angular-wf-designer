@@ -144,17 +144,17 @@ export class SupplementFileComponent implements OnChanges {
       applyId,
     }
     this.biddingV3Service.setPageLoading(true)
-    this.biddingV3Service.submitSupplementFile(data).subscribe(({ code }) => {
+    this.biddingV3Service.submitSupplementFile(data).subscribe(({ code, msg, data }) => {
       if (code === '0000') {
         this.message.success("提交成功!");
         // this.router.navigate(["/ecos/winningbid-supplement"]);
         this.routerExtend.back();
       } else {
-        this.message.error("提交失败!");
+        this.message.error(msg || data);
       }
       this.biddingV3Service.setPageLoading(false)
-    }, () => {
-      this.message.error("提交失败!");
+    }, ({ message }) => {
+      this.message.error(message);
       this.biddingV3Service.setPageLoading(false)
     })
   }

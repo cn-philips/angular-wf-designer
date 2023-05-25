@@ -8,7 +8,8 @@
         <tr>
           <th style="width:300px" nzAlign="center">{{"orderv3.components.real-time.main-article" | translate}}</th>
           <th style="width:300px" nzAlign="center">{{"orderv3.components.real-time.product-config" | translate}}</th>
-          <th style="width:300px" nzAlign="center">{{"orderv3.components.real-time.market-bundle-name" | translate}}</th>
+          <th style="width:300px" nzAlign="center">{{"orderv3.components.real-time.market-bundle-name" | translate}}
+          </th>
           <th style="width:300px" nzAlign="center">{{"orderv3.components.real-time.product-model" | translate}}</th>
           <th style="width:300px" nzAlign="center" *ngIf="bg != 'CC'">
             <nz-form-label nzRequired>
@@ -40,10 +41,11 @@
             <td style="width:300px" height="75px" nzAlign="center">
               {{ orderInfo.getRawValue().productModel }}
             </td>
-            <td  style="width:300px" height="75px" nzAlign="center" *ngIf="bg != 'CC'">
+            <td style="width:300px" height="75px" nzAlign="center" *ngIf="bg != 'CC'">
               <nz-form-item>
                 <nz-form-control>
-                  <input nz-input  maxlength="100" style="width:100%" formControlName="wbsNo" placeholder="请输入" nzSize="default">
+                  <input nz-input maxlength="100" style="width:100%" formControlName="wbsNo" placeholder="请输入"
+                    nzSize="default">
                   <nz-form-explain *ngIf="
                   orderInfo.get('wbsNo')?.dirty &&
                   orderInfo.get('wbsNo')?.errors
@@ -74,9 +76,7 @@
             <td style="width:130px" height="75px" nzAlign="center">
               <ng-container *ngIf="orderInfo.getRawValue().configFile&&orderInfo.getRawValue().configFile.length>0">
                 <div *ngFor="let item of orderInfo.getRawValue().configFile">
-                  <button class="down"
-                    nz-button nzType="link"
-                    (click)="fileDown(item)">
+                  <button class="down" nz-button nzType="link" (click)="fileDown(item)">
                     {{item.fileName}}
                   </button>
                 </div>
@@ -101,10 +101,7 @@
           <!-- <input nz-input  formControlName="soRemark"
           maxlength="255"
             placeholder="请输入"  /> -->
-            <input
-            nz-input
-            formControlName="soRemark"
-            maxlength="255" />
+          <input nz-input formControlName="soRemark" maxlength="255" />
           <ng-container *ngIf="soNoCheckFormData.getRawValue().soRemark">
             <div>还可以输入:{{soNoCheckFormData.getRawValue().soRemark.length}}/255</div>
           </ng-container>
@@ -128,6 +125,12 @@
               <ng-container *ngIf="soNoCheckFormData.get('soNo')?.hasError('required') ">此选项必填字段</ng-container>
               <ng-container *ngIf="soNoCheckFormData.get('soNo')?.hasError('soform')">只能输入数字和分号</ng-container>
             </nz-form-explain>
+            <div *ngIf="baseInfoFrom.get('contractCancelReferenceId').value" class="lintesting">
+              此单为“改单项目”，原合同概要表SO#={{ baseInfoFrom.get('contractCancelSoNo').value }}
+            </div>
+            <div *ngIf="lastSo.isExsit" class="lintesting">
+              此单为“改单项目”，改单前上一版本的SO#={{ lastSo.lastSo }}
+            </div>
           </div>
           <!-- <div nz-col nzSpan="12">
             <div nz-tooltip [nzTitle]="soNo" *ngIf="dataBase.isPrebookApply=='1'" class="warning space" nzFor="email">
@@ -150,9 +153,6 @@
     </div>
   </div>
   <div nz-row>
-    <nz-alert
-        nzType="warning"
-        nzMessage="提交之前,请在《合同概要表》tab仔细确认OIT Order 所关联的Pre-book状态,以确保不会重复提交SO申请"
-      ></nz-alert>
-  </div>  
+    <nz-alert nzType="warning" nzMessage="提交之前,请在《合同概要表》tab仔细确认OIT Order 所关联的Pre-book状态,以确保不会重复提交SO申请"></nz-alert>
+  </div>
 </form>

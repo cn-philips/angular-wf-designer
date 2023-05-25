@@ -1,4 +1,5 @@
 :host /deep/ {
+  width: 100%;
   .ant-upload-disabled {
     display: none;
   }
@@ -22,7 +23,7 @@
     text-overflow: ellipsis;
   }
 
-  .file-btn, .file-name {
+  .file-btn {
     display: flex;
     align-items: center;
   }

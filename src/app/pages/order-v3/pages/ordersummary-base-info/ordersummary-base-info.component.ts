@@ -10,6 +10,7 @@ import { PreBaseInfoTableComponent } from '@pages/order-v3';
 import { BreadcrumbService } from "@app/modern-themes/services/breadcrumb.service";
 import { ProcessTaskStatusPipe } from "@app/shared/pipes/process-task-status.pipe"
 import { RouterExtendService } from '@app/modern-themes/services/router-extend.service';
+import { Subject } from 'rxjs';
 
 export function sampleCheckValidator(control: FormGroup) {
   const sample = control.value;
@@ -37,6 +38,7 @@ export class OrdersummaryBaseInfoComponent implements OnInit {
 
   ) { }
 
+  subTierSubject = new Subject()
   public activedId: any = "pending-tab";
   public editBase: any = true; //基础信息是否编辑
   public editable: any = true; //order层级是否编辑
@@ -134,15 +136,17 @@ export class OrdersummaryBaseInfoComponent implements OnInit {
 
     contractCancelApplyId: [{ value: null, disabled: true }], //contractCancelApplyId
     contractCancelReferenceId: [{ value: null, disabled: true }], //原合同概要表id
+    contractCancelSoNo: [{ value: null, disabled: true}], //原合同概要表So
     orderRequired: [{ value: false, disabled: true }], //order summary 原产地是否必填
     optionDisabled: [{ value: true, disabled: true }],
     currencySystem: [{ value: null, disabled: true }],//币制
     orderSalesSapCode: [{ value: null, disabled: true }], //orderSalesSapCode
-    dealIsDisabled: [{ value: false, disabled: true }],//是否显示经销商的按钮  
+    dealIsDisabled: [{ value: false, disabled: true }],//是否显示经销商的按钮
     profitNetRate: [{ value: null, disabled: true }],//经销商净利润
     profitGrossRate: [{ value: null, disabled: true }],//经销商毛利率
     profitGross: [{ value: null, disabled: true }],//经销商毛利润
-    dealerProfit: [{ value: null, disabled: true }],//经销商利润  
+    dealerProfit: [{ value: null, disabled: true }],//经销商利润
+    biddingCurrency: [{ value: null, disabled: true }],//投标币种
   };
   dealerFrom = {
     dealerName: [{ value: null, disabled: true }, [Validators.required]], //经销商名称
@@ -157,6 +161,7 @@ export class OrdersummaryBaseInfoComponent implements OnInit {
     dealerTaxNum: [{ value: null, disabled: !this.editOther }, [Validators.required]],//经销商纳税号
     purchaseOrderSignatory: [{ value: null, disabled: !this.editOther }, [Validators.required]], //采购订单签署人
     purchaseOrderSignatoryPosition: [{ value: null, disabled: !this.editOther }, [Validators.required]],//采购订单签署人职务
+    subTierInfo: this.fb.array([]), // 次级经销商信息
   }
 
   contractBuyerFrom = {
@@ -395,6 +400,7 @@ export class OrdersummaryBaseInfoComponent implements OnInit {
 
 
   @ViewChild("tabs") tabs;
+  @ViewChild("baseInfoFromChild") baseInfoFromChild;
   @ViewChild("oaAddInfoChild") oaAddInfoChild;
   @ViewChild("preFileTable") preFileTable;
   public formValue: FormGroup = this.fb.group({
@@ -575,11 +581,14 @@ export class OrdersummaryBaseInfoComponent implements OnInit {
       actualSalesName,
       contractCancelReferenceId,
       contractCancelApplyId,
+      contractCancelSoNo,
       orderSalesSapCode,
+      subTierInfo,
       profitNetRate,
       profitGrossRate,
       profitGross,
       dealerProfit,
+      biddingCurrency
     } = contractInfo
     this.formValue.patchValue({
       applyId: data.applyId ? data.applyId : this.applyId,
@@ -647,15 +656,18 @@ export class OrdersummaryBaseInfoComponent implements OnInit {
       actualSalesName,
       contractCancelReferenceId,
       contractCancelApplyId,
+      contractCancelSoNo,
       orderSalesSapCode,
       profitNetRate,
       profitGrossRate,
       profitGross,
       dealerProfit,
+      biddingCurrency
     })
 
     this.dealerFromData.patchValue({
       ...contractInfo,
+      subTierInfo: contractInfo.subTierInfo || []
     })
     this.accountFromData.patchValue({
       ...contractInfo
@@ -754,7 +766,11 @@ export class OrdersummaryBaseInfoComponent implements OnInit {
     }
 
     if (this.baseInfoFromData.getRawValue().businessModel == 'DISTRIBUTOR') {
-      this.getdistributorDate(); //更新经销商日期    
+      this.getdistributorDate(); //更新经销商日期
+      setTimeout(() => {
+        this.subTierSubject.next({ type: 'add', data: subTierInfo, disabled: !(this.flag == '0' && this.status == 'ecos_oit_order_os_input') })
+        this.baseInfoFromChild.checkBiddingEqualDealer();
+      }, 0);
     }
     if (this.priceApprovalData.getRawValue().currencySystem == "USD") {
       this.getIepoolDate(); //更新经销商日期
@@ -782,7 +798,7 @@ export class OrdersummaryBaseInfoComponent implements OnInit {
       this.getBiddingIsSpecial();
     }
   }
-  getBiddingIsSpecial() {//bidding模式是否是特批      
+  getBiddingIsSpecial() {//bidding模式是否是特批
     let { biddingApplyList } = this.baseInfoFromData.getRawValue();
     biddingApplyList.map(val => {
       this.serveice.getBiddingIsSpecial(val.id).subscribe(item => {
@@ -983,6 +999,23 @@ export class OrdersummaryBaseInfoComponent implements OnInit {
 
     if (parm == 'approved') {
       if (processStatus === 'ecos_oit_order_os_input') {
+        if (this.baseInfoFromData.getRawValue().businessModel == 'DISTRIBUTOR') {
+          const subTierInfo = this.formValue.get('dealerFrom').get('subTierInfo') as FormArray
+          if (subTierInfo.invalid) {
+            this.modalService.error({
+              nzTitle: '提示',
+              nzContent: '经销商黑名单校验不通过，请上传必要的支持文件和备注后，再作提交'
+            }).afterClose.subscribe(() => {
+              // this.handleToggleTab('basic-info')
+              this.tabs.activeId('contract-tab')
+              setTimeout(() => {
+                document.querySelector('.dealer-info').scrollIntoView()
+              }, 0);
+            })
+            return
+          }
+        }
+
         this.checkRequired()
         const { orderModality } = this.baseInfoFromData.getRawValue();
         const valid = this.checkFormData(this.priceApprovalData);
@@ -1033,8 +1066,8 @@ export class OrdersummaryBaseInfoComponent implements OnInit {
       }
       this.pageLoading = true;
       if (baseInfoFrom.businessModel == 'DISTRIBUTOR') {
-        //const dateAndValid=await this.serveice.getDdpDateAndValid(dealerFrom.dealerName); 
-        //console.log(dateAndValid)            
+        //const dateAndValid=await this.serveice.getDdpDateAndValid(dealerFrom.dealerName);
+        //console.log(dateAndValid)
         const dateAndValid = await this.serveice.findDealersByPageValid({ dealerName: dealerFrom.dealerName })
         if (dateAndValid.code == '0000') {
           const rows = dateAndValid.data.rows
@@ -1103,7 +1136,7 @@ export class OrdersummaryBaseInfoComponent implements OnInit {
               this.pageLoading=false;
               this.message.create("error", `未在IEPOOL找到经销商信息`);
               return
-            }           
+            }
           }
           else {
             this.pageLoading=false;
@@ -1250,6 +1283,7 @@ export class OrdersummaryBaseInfoComponent implements OnInit {
       currencySystem: [{ value: val.currencySystem ? val.currencySystem : null, disabled: true }],//币制
       centralizedPurchasing: [{ value: val.centralizedPurchasing ? val.centralizedPurchasing : '0', disabled: true }],//是否集采项目
       contractCancelReferenceId: [{ value: val.contractCancelReferenceId ? val.contractCancelReferenceId : null, disabled: true }],//原合同概要表referenceId
+      contractCancelSoNo: [{ value: val.contractCancelSoNo ? val.contractCancelSoNo : null, disabled: true }],//原合同概要表So
       contractCancelMainId: [null],//原合同概要表mainId
       contractCancelSo: [null],//原合同概要表So
       //dealerAgreementNo:[{value:null,disabled:false}],//经销商协议号
@@ -1625,6 +1659,7 @@ export class OrdersummaryBaseInfoComponent implements OnInit {
           if (
             ![
               'projectAnalysisTableCheckFlag',
+              'enduserContractCheckFlag',
             ].includes(value)
           ) {
             return value

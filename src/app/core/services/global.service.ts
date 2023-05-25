@@ -128,4 +128,37 @@ export class GlobalService {
   mainBtnStrChange(data: string) {
     this.mainBtnStr.next(data);
   }
+
+  async getMenus(){
+    //左侧菜单
+    if(localStorage.getItem("menuDomain")===location.origin+location.pathname&&localStorage.getItem("menuList")){
+      // 同源
+      return JSON.parse( localStorage.getItem("menuList"))
+    }else{
+      // 非同源，重新拉
+        localStorage.removeItem("menuList")
+        let res =  await this.http.post("/act/role/getDiigtUserInfo").toPromise();
+        if (
+          "0000" == res.code &&
+          res.data &&
+          res.data.jurisdictions &&
+          res.data.jurisdictions.length > 0
+        ) {
+          let profiles = JSON.stringify(res.data.profiles);
+          localStorage.setItem("profiles", profiles);
+          localStorage.setItem("roleCode", res.data.roleCode);
+          localStorage.setItem("roles", JSON.stringify(res.data.roles));
+          localStorage.setItem(
+            "roleAgents",
+            JSON.stringify(res.data.roleAgents)
+          );
+          localStorage.setItem("menuList", JSON.stringify(res.data.jurisdictions));
+          localStorage.setItem("menuDomain", location.origin+location.pathname);
+          localStorage.setItem("menuDomain",location.origin+location.pathname)
+          return res.data.jurisdictions
+        }else{
+          throw new Error("获取失败")
+        }
+    }
+  }
 }

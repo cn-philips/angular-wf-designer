@@ -3,6 +3,7 @@ import { FormBuilder, FormControl, FormGroup, ValidationErrors } from '@angular/
 import { Observable, Observer } from 'rxjs';
 import { HttpService } from '@core/services';
 import { NzMessageService } from 'ng-zorro-antd';
+import { PermissionService } from '@app/modern-themes/services/permission.service';
 
 @Component({
   selector: 'data-dictionary-form',
@@ -78,6 +79,7 @@ export class DictionaryFormComponent implements OnInit {
     private fb: FormBuilder,
     private http: HttpService,
     private message: NzMessageService,
+    public permission:PermissionService
   ) {
     this.getGroupList();
   }

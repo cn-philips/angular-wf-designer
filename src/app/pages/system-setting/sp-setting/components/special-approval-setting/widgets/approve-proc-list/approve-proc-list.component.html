@@ -1,0 +1,84 @@
+<form nz-form [formGroup]="formValues">
+  <div nz-row>
+    <div nz-col [nzMd]="8" [nzSm]="12" [nzXs]="24">
+      <nz-form-item>
+        <nz-form-label [nzSm]="6" [nzXs]="24">审批编号</nz-form-label>
+        <nz-form-control [nzSm]="18" [nzXs]="24">
+          <nz-select formControlName="code" nzAllowClear nzPlaceHolder="请选择">
+            <nz-option *ngFor="let item of selectOptions.processList" [nzValue]="item.value" [nzLabel]="item.code">
+            </nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col [nzMd]="8" [nzSm]="12" [nzXs]="24">
+      <nz-form-item>
+        <nz-form-label [nzSm]="6" [nzXs]="24">状态</nz-form-label>
+        <nz-form-control [nzSm]="18" [nzXs]="24">
+          <nz-select formControlName="status" nzAllowClear nzPlaceHolder="请选择">
+            <nz-option *ngFor="let item of selectOptions.statuses" [nzValue]="item.value" [nzLabel]="item.label">
+            </nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col [nzMd]="8" [nzSm]="12" [nzXs]="24">
+      <nz-form-item>
+        <nz-form-label [nzSm]="6" [nzXs]="24">审批流名称</nz-form-label>
+        <nz-form-control [nzSm]="18" [nzXs]="24">
+          <nz-select formControlName="name" nzAllowClear nzPlaceHolder="请选择">
+            <nz-option *ngFor="let item of selectOptions.processList" [nzValue]="item.value" [nzLabel]="item.name">
+            </nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+</form>
+
+<div nz-row class="btn-container">
+  <div nz-col [nzMd]="12" [nzSm]="12" [nzXs]="24">
+    <button nz-button nzType="primary" (click)="onShowAddForm()"><i nz-icon nzType="plus"
+        nzTheme="outline"></i>新建</button>
+    <button nz-button nzType="primary" [nzLoading]="cloneBtnLoading" [disabled]="selectedProc === null"
+      (click)="onCloneProc()"><i nz-icon nzType="copy" nzTheme="outline"></i>克隆</button>
+  </div>
+  <div nz-col [nzMd]="12" [nzSm]="12" [nzXs]="24" style="text-align: right;">
+    <button nz-button nzType="primary" (click)="getTableData()"><i nz-icon nzType="search"></i>搜索</button>
+    <button nz-button nzType="primary" (click)="onReset()"><i nz-icon nzType="search"></i>重置</button>
+    <button nz-button nzType="primary" (click)="exportOperateRecords()" [nzLoading]="eLoading">
+      <i nz-icon nzType="export" nzTheme="outline"></i>导出操作记录
+    </button>
+  </div>
+</div>
+
+<nz-table [nzData]="tableData.list" [nzLoading]="tableData.loading" [nzShowPagination]="false">
+  <thead>
+    <tr>
+      <th nzWidth="50px"></th>
+      <th nzAlign="center">审批编号</th>
+      <th nzAlign="center">审批流名称</th>
+      <th nzAlign="center">启用/禁用</th>
+      <th nzAlign="center" nzWidth="150px" nzRight="0px">操作</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let item of tableData.list" style="cursor: pointer;" (click)="onSelectRow(item)">
+      <td nzAlign="center"><label nz-radio [ngModel]="item.id === selectedProc?.id" (ngModelChange)="onSelectRow(item)"
+          class="table-radio"></label></td>
+      <td nzAlign="center">{{ item.code }}</td>
+      <td nzAlign="center">{{ item.name }}</td>
+      <td nzAlign="center">
+        <nz-switch [(ngModel)]="item.status" (click)="onToggleProcStatus(item)"></nz-switch>
+      </td>
+      <td nzAlign="center" nzRight="0px">
+        <a nz-icon class="operation-btn" type="edit" title="编辑" (click)="onShowEditForm(item)"></a>
+        <nz-divider nzType="vertical"></nz-divider>
+        <a nz-icon class="operation-btn" type="delete" title="删除" nz-popconfirm nzTitle="确定删除流程?"
+          (nzOnConfirm)="onDeleteProc(item)"></a>
+      </td>
+    </tr>
+  </tbody>
+</nz-table>
+
+<sp-setting-approve-proc-form (success)="getTableData(true)" #approveProcForm></sp-setting-approve-proc-form>

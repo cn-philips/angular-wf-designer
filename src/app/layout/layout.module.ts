@@ -30,6 +30,7 @@ import { LayoutService } from "./layout.service";
 import { TranslateModule } from "@ngx-translate/core";
 import { ModernThemesModule } from "app/modern-themes/modern-themes.module";
 import { TaskCountService } from "@app/modern-themes/services/task-count.service";
+import { GlobalService } from "@core/services";
 
 // *******************************************************************************
 //
@@ -53,6 +54,6 @@ import { TaskCountService } from "@app/modern-themes/services/task-count.service
     LayoutFooterComponent,
   ],
   exports: [LayoutNavbarComponent, LayoutSidenavComponent, TranslateModule],
-  providers: [LayoutService,TaskCountService],
+  providers: [LayoutService,TaskCountService,GlobalService],
 })
 export class LayoutModule {}

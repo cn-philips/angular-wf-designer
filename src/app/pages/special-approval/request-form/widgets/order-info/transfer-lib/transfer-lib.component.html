@@ -118,7 +118,7 @@
 
             <div nz-col nzSpan="24">
               <nz-form-item class="order-list-normal-label">
-                <nz-form-label nzRequired>预计记认销售日期</nz-form-label>
+                <nz-form-label >预计记认销售日期</nz-form-label>
               </nz-form-item>
             </div>
             <div nz-col nzSpan="24">
@@ -441,21 +441,22 @@
             <div nz-col nzSpan="24">
               <nz-form-item class="order-list-normal-item">
                 <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                  <nz-date-picker formControlName="expectedSaleDate" style="width: 100%" [nzStyle]="{ width: '100%' }">
+                  </nz-date-picker>
+                  <!-- <nz-form-explain *ngIf="ord.get('expectedSaleDate')?.dirty && ord.get('expectedSaleDate')?.errors">
+                    请选择预计记认销售日期
+                  </nz-form-explain> -->
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+
+            <div nz-col nzSpan="24">
+              <nz-form-item class="order-list-normal-item">
+                <nz-form-control nzXs="24" nzSm="24" nzMd="14">
                   <nz-date-picker formControlName="arrivalDate" style="width: 100%" [nzStyle]="{ width: '100%' }">
                   </nz-date-picker>
                   <nz-form-explain *ngIf="ord.get('arrivalDate')?.dirty && ord.get('arrivalDate')?.errors">
                     请选择到货日期
-                  </nz-form-explain>
-                </nz-form-control>
-              </nz-form-item>
-            </div>
-            <div nz-col nzSpan="24">
-              <nz-form-item class="order-list-normal-item">
-                <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-                  <nz-date-picker formControlName="expectedSaleDate" style="width: 100%" [nzStyle]="{ width: '100%' }">
-                  </nz-date-picker>
-                  <nz-form-explain *ngIf="ord.get('expectedSaleDate')?.dirty && ord.get('expectedSaleDate')?.errors">
-                    请选择预计记认销售日期
                   </nz-form-explain>
                 </nz-form-control>
               </nz-form-item>

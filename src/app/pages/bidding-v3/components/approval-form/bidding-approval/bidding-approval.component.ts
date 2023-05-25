@@ -43,7 +43,7 @@ export class BiddingApprovalComponent implements OnChanges {
 
   @Input() ddpDateExpired = false
 
-  @Output() activeProductTab = new EventEmitter()
+  @Output() activeTab = new EventEmitter<string>()
 
   bondAmountApprovers = {} // 投标保证金审批人
 
@@ -320,8 +320,25 @@ export class BiddingApprovalComponent implements OnChanges {
           }
         })
       })
+
+      if (businessModel !== BUSINESS_MODEL_DIRECT) {
+        const subTiers = this.biddingForm.get('supplementInfo').get('dealerInfo').get('subTiers') as FormArray
+        if (subTiers.invalid) {
+          this.modalService.error({
+            nzTitle: '提示',
+            nzContent: '经销商黑名单校验不通过，请上传必要的支持文件和备注后，再作提交'
+          }).afterClose.subscribe(() => {
+            this.activeTab.emit('supplement-info')
+            setTimeout(() => {
+              document.querySelector('.dealer-info').scrollIntoView()
+            }, 0);
+          })
+          return
+        }
+        data.subTiers = subTiers.getRawValue()
+      }
       if (marketBundles.invalid) {
-        this.activeProductTab.emit()
+        this.activeTab.emit('product-info')
         this.message.error('请补充产品信息')
         return
       }
@@ -338,16 +355,16 @@ export class BiddingApprovalComponent implements OnChanges {
     }
 
     this.biddingV3Service.setPageLoading(true)
-    this.biddingV3Service.approve(data).subscribe(({ code }) => {
+    this.biddingV3Service.approve(data).subscribe(({ code, msg }) => {
       if (code === '0000') {
         this.message.success("审批成功!");
         this.biddingV3Service.goTodoPage()
       } else {
-        this.message.error("审批失败!");
+        this.message.error(msg);
       }
       this.biddingV3Service.setPageLoading(false)
-    }, () => {
-      this.message.error("审批失败!");
+    }, ({ message }) => {
+      this.message.error(message);
       this.biddingV3Service.setPageLoading(false)
     });
   }

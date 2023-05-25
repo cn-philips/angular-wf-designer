@@ -9,7 +9,7 @@
   </button>
   <ul nz-menu>
     <li nz-menu-item *appPermissionsIf="'report_oit'">
-      <a (click)="projectReport($event, formValues.value)">OIT Report(PD&IGT)</a>
+      <a (click)="projectReport($event, formValues.value)">OIT Report(DIIGT)</a>
     </li>
     <li nz-menu-item *appPermissionsIf="'report_oit'">
       <a (click)="projectReport($event, formValues.value, 'us')">OIT Report(US)</a>
@@ -27,7 +27,7 @@
       <a (click)="showModeal()">进单状态-按Opportunity查询</a>
     </li>
     <li nz-menu-item *appPermissionsIf="'report_preparation'">
-      <a (click)="BundleReport($event)">Search by Order 进单状态-按进单准备表查询</a>
+      <a (click)="BundleReport($event)">进单状态-按进单准备表查询</a>
     </li>
     <li nz-menu-item *appPermissionsIf="'report_bidding'">
       <a (click)="biddingReport($event)">Bidding Report</a>
@@ -38,13 +38,13 @@
     <li nz-menu-item *appPermissionsIf="'report_pos'">
       <a (click)="POSReport($event)">POS Report</a>
     </li>
-    <li nz-menu-item>
-      <a (click)="orderChangeReport($event)">Report-改单</a>
+    <li nz-menu-item *appPermissionsIf="'report_change_order'">
+      <a (click)="orderChangeReport($event)">改单DIIGT</a>
     </li>
-    <li nz-menu-item>
+    <li nz-menu-item *appPermissionsIf="'report_change_order'">
       <a (click)="orderChangeReport($event, 'us')">Report-改单US</a>
     </li>
-    <li nz-menu-item>
+    <li nz-menu-item *appPermissionsIf="'report_change_order'">
       <a (click)="orderChangeReport($event, 'cc')">Report-改单CC</a>
     </li>
   </ul>

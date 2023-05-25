@@ -16,6 +16,7 @@ import { Location } from '@angular/common';
 import { BreadcrumbService } from "@app/modern-themes/services/breadcrumb.service";
 import { ProcessTaskStatusPipe } from "@app/shared/pipes/process-task-status.pipe"
 import { RouterExtendService } from "@app/modern-themes/services/router-extend.service";
+import { Subject } from "rxjs";
 @Component({
   selector: "contract-examine",
   templateUrl: "./contract-examine.component.html",
@@ -33,6 +34,8 @@ export class ContractExamineComponent implements OnInit {
     private routerExtendService: RouterExtendService) {
 
   }
+
+  subTierSubject = new Subject()
   public activedId: any = "pending-tab";
   public tabIndex: any = 0;
   public editBase: any = false; //基础信息是否编辑
@@ -131,6 +134,7 @@ export class ContractExamineComponent implements OnInit {
 
     contractCancelApplyId: [{ value: null, disabled: true }], //contractCancelApplyId
     contractCancelReferenceId: [{ value: null, disabled: true }], //原合同概要表id
+    contractCancelSoNo: [{ value: null, disabled: true }], //原合同概要表so
     isRequired: [{ value: false, disabled: true }],
     optionDisabled: [{ value: true, disabled: true }],
     currencySystem: [{ value: true, disabled: true }],
@@ -140,6 +144,7 @@ export class ContractExamineComponent implements OnInit {
     profitGrossRate: [{ value: null, disabled: true }],//经销商毛利率
     profitGross: [{ value: null, disabled: true }],//经销商毛利润
     dealerProfit: [{ value: null, disabled: true }],//经销商利润
+    biddingCurrency: [{ value: null, disabled: true }],//投标币种
   };
   dealerFrom = {
     dealerName: [{ value: null, disabled: true }, [Validators.required]], //经销商名称
@@ -154,6 +159,7 @@ export class ContractExamineComponent implements OnInit {
     dealerTaxNum: [{ value: null, disabled: !this.editBase }, [Validators.required]],//经销商纳税号
     purchaseOrderSignatory: [{ value: null, disabled: !this.editBase }, [Validators.required]], //采购订单签署人
     purchaseOrderSignatoryPosition: [{ value: null, disabled: !this.editBase }, [Validators.required]],//采购订单签署人职务
+    subTierInfo: this.fb.array([]), // 次级经销商信息
   }
   accountFrom = {
     accountName: [{ value: null, disabled: !this.editBase }, [Validators.required]],//开户行名称
@@ -208,7 +214,7 @@ export class ContractExamineComponent implements OnInit {
     usHta: [{ value: null, disabled: true }], //是否HTA US
   }
   priceApproval = {
-    currencySystem: [{ value: null, disabled: true }], //币制    
+    currencySystem: [{ value: null, disabled: true }], //币制
     financialSolution: [{ value: '0', disabled: true }],//是否使用金融方案
     lendingBankCompany: [{ value: null, disabled: true }],//贷款行/融资公司名称
     financialSolutionName: [{ value: null, disabled: true }],//金融方案
@@ -487,11 +493,14 @@ export class ContractExamineComponent implements OnInit {
       actualSalesName,
       contractCancelReferenceId,
       contractCancelApplyId,
+      contractCancelSoNo,
       orderSalesSapCode,
+      subTierInfo,
       profitNetRate,
       profitGrossRate,
       profitGross,
       dealerProfit,
+      biddingCurrency
     } = contractInfo
     this.baseInfoFromData.patchValue({
       oldSalesProvince: contractInfo.dealFormSalesProvince,
@@ -549,14 +558,17 @@ export class ContractExamineComponent implements OnInit {
       actualSalesName,
       contractCancelReferenceId,
       contractCancelApplyId,
+      contractCancelSoNo,
       orderSalesSapCode,
       profitNetRate,
       profitGrossRate,
       profitGross,
       dealerProfit,
+      biddingCurrency
     })
     this.dealerFromData.patchValue({
       ...contractInfo,
+      subTierInfo: contractInfo.subTierInfo || []
     })
     this.accountFromData.patchValue({
       ...contractInfo
@@ -618,7 +630,11 @@ export class ContractExamineComponent implements OnInit {
       })
     }
     if (this.baseInfoFromData.getRawValue().businessModel == 'DISTRIBUTOR') {
-      this.getdistributorDate(); //更新经销商日期    
+      this.getdistributorDate(); //更新经销商日期
+      setTimeout(() => {
+        this.subTierSubject.next({ type: 'add', data: subTierInfo, disabled: true })
+        this.baseInfoFromChild.checkBiddingEqualDealer();
+      }, 0);
     }
     if (this.priceApprovalData.getRawValue().currencySystem == "USD") {
       this.getIepoolDate(); //更新经销商日期
@@ -639,7 +655,7 @@ export class ContractExamineComponent implements OnInit {
       this.getBiddingIsSpecial();
     }
   }
-  getBiddingIsSpecial() {//bidding模式是否是特批      
+  getBiddingIsSpecial() {//bidding模式是否是特批
     let { biddingApplyList } = this.baseInfoFromData.getRawValue();
     biddingApplyList.map(val => {
       this.serveice.getBiddingIsSpecial(val.id).subscribe(item => {
@@ -893,7 +909,7 @@ export class ContractExamineComponent implements OnInit {
               this.pageLoading = false;
               this.message.create("error", `未在IEPOOL找到经销商信息`);
               return
-            }            
+            }
           }
           else {
             this.message.create("error", `未在IEPOOL找到经销商信息`);

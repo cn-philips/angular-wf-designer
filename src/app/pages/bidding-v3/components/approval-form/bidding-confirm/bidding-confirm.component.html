@@ -38,14 +38,15 @@
             </div>
           </ng-template>
           <ng-container *ngIf="item.get('status').value === 1">
-            <input class="comment-input" nz-input formControlName="comment" [placeholder]="item.get('comment').disabled ? '' : '请填写备注信息'" />
+            <input *ngIf="!item.get('comment').disabled" class="comment-input" nz-input formControlName="comment" placeholder="请填写备注信息" />
+            <span *ngIf="item.get('comment').disabled" class="comment-span">{{ item.get('comment').value }}</span>
             <shared-upload-file type="button" formControlName="attachments"></shared-upload-file>
           </ng-container>
         </div>
       </div>
     </nz-form-control>
   </nz-form-item>
-  
+
   <nz-form-item>
     <nz-form-label [nzSpan]="4">
       {{"biddingv3.components.approval-form.bidding-confirm.special" | translate}}
@@ -225,4 +226,4 @@
   </button>
 </footer>
 
-<bidding-v3-cp-verify #cpVerify (verify)="onApprove()"></bidding-v3-cp-verify>
+<bidding-v3-cp-verify type="BiddingConfirm" #cpVerify (verify)="onApprove()"></bidding-v3-cp-verify>

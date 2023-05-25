@@ -22,6 +22,7 @@ import { HttpService } from "@core/services";
 import { NzMessageService } from "ng-zorro-antd";
 import { isadopt, standardTime, haveRolesArr,disreduce} from "@core/util/tools";
 import { environment } from '@env';
+import { Subject } from "rxjs";
 
 @Component({
   selector: "pre-base-info-from",
@@ -50,10 +51,10 @@ export class PreBaseInfoFromComponent implements OnInit {
       }
       else{
         this.selectCity(dealFormSalesProvince);
-      }  
-      this.orderEntryMode(businessModel); //获取进单模式      
+      }
+      this.orderEntryMode(businessModel); //获取进单模式
     });
-    this.serveic.paymentDataReceive.subscribe((val)=>{      
+    this.serveic.paymentDataReceive.subscribe((val)=>{
       this.paymentMethods();
      })
   }
@@ -90,6 +91,7 @@ export class PreBaseInfoFromComponent implements OnInit {
   @Input() editable: boolean = true;
   @Input() editPreTable: boolean = true;
   @Input() changeItem: boolean = false;
+  @Input() subTierSubject: Subject<{ type: string, data?: any, disabled?: boolean }>
   @Output() addProduct = new EventEmitter();
 
   @ViewChild('selectSoluUser') selectSoluUser;
@@ -111,10 +113,12 @@ export class PreBaseInfoFromComponent implements OnInit {
 
     // 主页导入
     this.handleImport();
+
   }
   public ddpStatusDmsDealer;
   public saleRegions;
   public needFileType;
+  public isEqual: any = null;
 
   get orderInfo(): FormArray {
     return this.formValue.get('orderInfo') as FormArray
@@ -157,7 +161,7 @@ export class PreBaseInfoFromComponent implements OnInit {
   }
   get orderSalesModel() {
     const { orderSales, orderSalesName } =
-      this.baseInfoFrom.getRawValue();      
+      this.baseInfoFrom.getRawValue();
     if (orderSales) {
       return `${orderSalesName}(${orderSales})`;
     }
@@ -195,8 +199,8 @@ export class PreBaseInfoFromComponent implements OnInit {
       return financialSolutionName
     }
   }
-  
- 
+
+
   init() {
     this.status = this.activatedRouter.queryParams["value"].taskStatus;
     this.flag = this.activatedRouter.queryParams["value"].flag;
@@ -213,11 +217,11 @@ export class PreBaseInfoFromComponent implements OnInit {
     //   .get("dealFormSalesProvince")
     //   .valueChanges.pipe()
     //   .subscribe((prev) => {
-        
+
     //     if(!prev)
     //     {
     //       return;
-    //     }       
+    //     }
     //     const { dealFormSalesProvince, oldSalesProvince, dealFormSalesModality } = this.baseInfoFrom.getRawValue();
     //     this.selectCity(prev);
     //     const isFirstLoad = this.formValue.getRawValue().isFirstLoad;
@@ -241,7 +245,7 @@ export class PreBaseInfoFromComponent implements OnInit {
     //     if(!prev)
     //     {
     //       return;
-    //     } 
+    //     }
     //     const oldSalesProvince =
     //       this.baseInfoFrom.getRawValue().oldSalesProvince;
     //     this.selectCity(prev);
@@ -302,14 +306,14 @@ export class PreBaseInfoFromComponent implements OnInit {
         this.baseInfoFrom.get("orderSalesPerformanceProvince").updateValueAndValidity();
         return false;
       }
-    }    
+    }
   }
   changeOrderSalesProvince(prev)
   {
       if(!prev)
       {
         return;
-      } 
+      }
       const oldSalesProvince =
         this.baseInfoFrom.getRawValue().oldSalesProvince;
       this.selectCity(prev);
@@ -329,7 +333,7 @@ export class PreBaseInfoFromComponent implements OnInit {
       if(!prev)
       {
         return;
-      }       
+      }
       const { dealFormSalesProvince, oldSalesProvince, dealFormSalesModality } = this.baseInfoFrom.getRawValue();
       this.selectCity(prev);
       const isFirstLoad = this.formValue.getRawValue().isFirstLoad;
@@ -345,7 +349,7 @@ export class PreBaseInfoFromComponent implements OnInit {
       });
   }
   selectConfigProvince() {
-    
+
     const { dealFormSalesProvince, oldSalesProvince, dealFormSalesModality, centralizedPurchasing } = this.baseInfoFrom.getRawValue();
     const user = localStorage.getItem("ecom_ng_philips_code1");
     if (this.orderInfo && this.orderInfo.length > 0) {
@@ -365,7 +369,7 @@ export class PreBaseInfoFromComponent implements OnInit {
     }
   }
   selectConfigCity(dealFormSalesCity, orderCity) {
-    
+
     const { dealFormSalesModality } = this.baseInfoFrom.getRawValue();
     const value = this.baseInfoFrom.getRawValue()[dealFormSalesCity]
     const user = localStorage.getItem("ecom_ng_philips_code1");
@@ -744,7 +748,7 @@ export class PreBaseInfoFromComponent implements OnInit {
     this.endUserFrom.reset();
   }
   onDealSelect(val) {
-    //经销商选择回显    
+    //经销商选择回显
     let mdtdealerddpexpiredate, dealerDdpStatus;
     if (val.mdtdealerddpexpiredate) {
       mdtdealerddpexpiredate = standardTime(val.mdtdealerddpexpiredate);
@@ -780,7 +784,7 @@ export class PreBaseInfoFromComponent implements OnInit {
           })
         })
        }
-        
+
       })
 
     }
@@ -819,7 +823,7 @@ export class PreBaseInfoFromComponent implements OnInit {
     for (const i in this.dealerFrom.controls) {
       this.dealerFrom.controls[i].markAsDirty();
       this.dealerFrom.controls[i].updateValueAndValidity();
-    }   
+    }
     return this.dealerFrom.valid;
   };
   //账号管理
@@ -866,7 +870,7 @@ export class PreBaseInfoFromComponent implements OnInit {
     //审批区域是列表还是文本框展示
     if (
       (this.status == undefined ||
-        this.status == "" || this.status == "ecos_status_draft") &&
+        this.status == "" || this.status == "ecos_status_draft" || this.status == "ecos_oit_deal_resubmit") &&
       (this.flag == "0" || this.flag == undefined)
     ) {
       return true;
@@ -909,7 +913,7 @@ export class PreBaseInfoFromComponent implements OnInit {
           ]
             .filter((str) => str && str.trim())
             .join("-"),
-        }));       
+        }));
       this.saleRegions = regions;
       this.saleRegions=disreduce(regions,'label');
       if (this.saleRegions.length == 1) {
@@ -942,14 +946,14 @@ export class PreBaseInfoFromComponent implements OnInit {
   }
   biddingType(type) {
     this.serveic.tenderNumDeliveAction(type);
-    this.serveic.supportFileChangAction(this.formValue); 
+    this.serveic.supportFileChangAction(this.formValue);
     const {biddingType}=this.baseInfoFrom.getRawValue();
       if(type==='其他类型')
       {
         this.baseInfoFrom.patchValue({
           tenderNum:"其他类型"
         })
-      } 
+      }
     // if (!type) {
     //   this.baseInfoFrom.patchValue({
     //     biddingType: this.bidTypeModeList[0].code,
@@ -1039,6 +1043,9 @@ export class PreBaseInfoFromComponent implements OnInit {
       this.baseInfoFrom.get("oitMode").updateValueAndValidity();
 
       if (!this.isContract) {
+        this.formValue.patchValue({
+          isload: true,
+        });
         //this.selectConfigapprovalAreaConfiguration()
         this.serveic.productAction(this.formValue);
       }
@@ -1050,7 +1057,7 @@ export class PreBaseInfoFromComponent implements OnInit {
     this.dealerFrom.reset();
   }
   async onDealFormSelect(val) {
-    
+
     const { applyId, team, modality, cycleGroup, bigArea, smallArea, province, cluster, bmc, role, } =
       this.formValue.getRawValue();
     const { id } = this.baseInfoFrom.getRawValue();
@@ -1084,15 +1091,16 @@ export class PreBaseInfoFromComponent implements OnInit {
       sampleCheck: "0",
     });
     this.serveic.pageLoadAction(true);
-    
+
     const dealData = await this.serveic.cpDealFormInfo(val.dealFormId)
-  
+
       if (dealData.code == "0000") {
         const {
           biddingCompany,
           tenderNum,
           businessModel,
           centralizedPurchasing,
+          centralizedOrNot,
           currencySystem,
           dealFormId,
           dealFormSalesBigArea,
@@ -1156,8 +1164,11 @@ export class PreBaseInfoFromComponent implements OnInit {
           profitNetRate,
           profitGrossRate,
           profitGross,
-          dealerProfit
+          dealerProfit,
+          biddingCurrency,
+          subTierInfo,
         } = dealData.data
+
         this.paymentTerm = paymentTerm;
         let modalityList = orderInfo.map((val) => val.orderModality);
         modalityList = Array.from(new Set(modalityList));
@@ -1168,11 +1179,12 @@ export class PreBaseInfoFromComponent implements OnInit {
             {
               dealIsDisabled:this.dealIsDisabled
             }
-          )          
+          )
         }
         modalityList = modalityList.join("+");
         this.orderEntryMode(businessModel); //获取进单模式
-        let centralized = (centralizedPurchasing != null && centralizedPurchasing != "") ? centralizedPurchasing.toString() : '0';
+        // let centralized = (centralizedPurchasing != null && centralizedPurchasing != "") ? centralizedPurchasing.toString() : '0';
+        let centralized = (centralizedOrNot != null && centralizedOrNot != "") ? (centralizedOrNot?'1' :'0') : '0';
         this.baseInfoFrom.patchValue({
           biddingCompany,
           tenderNum,
@@ -1191,7 +1203,8 @@ export class PreBaseInfoFromComponent implements OnInit {
           profitNetRate,
           profitGrossRate,
           profitGross,
-          dealerProfit
+          dealerProfit,
+          biddingCurrency,
         });
         if (dealerDMSData) {
           let mdtdealerddpexpiredate, dealerDdpStatus;
@@ -1201,7 +1214,7 @@ export class PreBaseInfoFromComponent implements OnInit {
             );
             dealerDdpStatus = isadopt(mdtdealerddpexpiredate);
           }
-  
+
           this.dealerFrom.patchValue({
             dealerName: dealerDMSData.mdtdealername,
             dealerDdpStatus: dealerDdpStatus ? dealerDdpStatus : "不通过",
@@ -1248,11 +1261,11 @@ export class PreBaseInfoFromComponent implements OnInit {
           });
 
         }
-        
+
         this.foreignFrom.patchValue({
           foreignTradeCorpContact,
           foreignTradeCorpName,
-        });     
+        });
         this.priceApproval.patchValue({
           financialSolutionOther,
           financialSolution:financialSolution!=null&&financialSolution!=""?financialSolution.toString():'0',
@@ -1285,9 +1298,9 @@ export class PreBaseInfoFromComponent implements OnInit {
           tradeInTotal: currencySystem == "USD" ? (tradeInUsd != null && tradeInUsd != "" ? tradeInUsd : 0) : (tradeInCnyNet != null && tradeInCnyNet != "" ? tradeInCnyNet : 0),
           rebateTotal: currencySystem == "USD" ? (rebateUsd != null && rebateUsd != "" ? rebateUsd : 0) : (rebateCnyNet != null ? rebateCnyNet : 0),
         });
-        
-  
-  
+
+
+
         if (businessModel == "DIRECT") {
           this.contractBuyerFrom.patchValue({
             contractBuyer: hospitalName,
@@ -1298,14 +1311,14 @@ export class PreBaseInfoFromComponent implements OnInit {
             contractBuyerTaxNum: endUserTaxNum,
             contractBuyerEmail: endUserEmail
           });
+        } else {
+          setTimeout(() => {
+            this.subTierSubject.next({ type: 'add', data: subTierInfo })
+          }, 0);
+          this.checkBiddingEqualDealer();
         }
         const { oitMode } = this.baseInfoFrom.getRawValue();
-        const StockOff =
-          (oitMode == "BIDDING" && hospitalName == "Stock") ||
-            oitMode == "STOCK" ||
-            centralizedPurchasing == 1
-            ? false
-            : true;
+        const StockOff = (oitMode == "BIDDING" && hospitalName == "Stock") || oitMode == "STOCK" || (centralized == '1' ? false : true);
         this.formValue.patchValue({
           StockOff: StockOff,
         });
@@ -1325,14 +1338,39 @@ export class PreBaseInfoFromComponent implements OnInit {
         this.paymentMethods();
         this.atIniepoole();
         this.serveic.productAction(this.formValue);
-  
+
       }
       else {
         this.message.error(dealData.msg)
         this.serveic.pageLoadAction(false);
       }
-  
-    
+
+
+  }
+  biddingCompanyChange(){
+    const biddingCompany = this.baseInfoFrom.get('biddingCompany').value;
+    if(biddingCompany && biddingCompany != ""){
+      this.checkBiddingEqualDealer();
+    }
+  }
+  //判断投标公司是否和经销商相同
+  checkBiddingEqualDealer(){
+    const biddingCompany = this.baseInfoFrom.get('biddingCompany').value;
+    const {dealerName,subTierInfo} = this.dealerFrom.getRawValue();
+    if(biddingCompany && biddingCompany != "" && dealerName && subTierInfo && subTierInfo.length > 0){
+      var dealerCompanyList = [dealerName];
+      subTierInfo.filter(item => {
+        if(item.dealerSubTiers && item.dealerSubTiers.length>0){
+          dealerCompanyList = [...dealerCompanyList, ...item.dealerSubTiers.map(val => val.name)]
+        }
+      })
+      dealerCompanyList = Array.from(new Set(dealerCompanyList));
+      if(dealerCompanyList.includes(biddingCompany)) {
+        this.isEqual = 1;
+      } else {
+        this.isEqual = 0;
+      }
+    }
   }
   importDealInform(param) { //导入经销商code
     if (this.orderInfo && this.orderInfo.controls && this.orderInfo.controls.length > 0) {
@@ -1365,7 +1403,7 @@ export class PreBaseInfoFromComponent implements OnInit {
     this.formValue.patchValue({
       isload: true,
     });
-    // this.serveic.productAction(this.formValue);
+    this.serveic.productAction(this.formValue);
   }
   selectPerformanceProvince(event) {
     //选择业绩
@@ -1379,7 +1417,7 @@ export class PreBaseInfoFromComponent implements OnInit {
     }
   }
   selectSaleCity(event) {
-    //选择城市 
+    //选择城市
     if (!event) {
       return;
     }
@@ -1409,7 +1447,7 @@ export class PreBaseInfoFromComponent implements OnInit {
 
   }
   paymentMethods() {
-    //支持方式 
+    //支持方式
     const { dealFormSalesModality, businessModel, oitMode, orderModality } =
     this.baseInfoFrom.getRawValue();
     const { hospitalType } = this.endUserFrom.getRawValue();
@@ -1422,7 +1460,7 @@ export class PreBaseInfoFromComponent implements OnInit {
       currency: currencySystem
     };
     if (this.status == 'ecos_oit_order_submit' || this.status == 'ecos_oit_order_resubmit' || this.status == "ecos_oit_deal_resubmit" || this.status == undefined || this.status == "ecos_oit_deal_submit" || this.status == "ecos_status_draft" || this.status == "") {
-      if (!this.isContract) {     
+      if (!this.isContract) {
         if (this.orderInfo && this.orderInfo.controls && this.orderInfo.controls.length > 0) {
           this.orderInfo.controls.map((vals, index) => {
             const mainTrems = this.orderInfo.at(index).get('mainTrems') as FormGroup;
@@ -1459,7 +1497,7 @@ export class PreBaseInfoFromComponent implements OnInit {
                     }
                     else{
                       paymentTermValue=null;
-                    }                    
+                    }
                     if (paymentTermValue) {
                       mainTrems.patchValue({
                         paymentProvision: this.paymentTerm,
@@ -1497,7 +1535,7 @@ export class PreBaseInfoFromComponent implements OnInit {
       }
       else {
         params.modality = orderModality;
-        this.serveic.paymentMethod(params).then(paymentData => {          
+        this.serveic.paymentMethod(params).then(paymentData => {
           if (paymentData.code == '0000') {
             let { data } = paymentData
             if (data && data.length > 0) {
@@ -1512,7 +1550,7 @@ export class PreBaseInfoFromComponent implements OnInit {
 
   }
   foreignSample(event) {
-    //外贸公司与经销商相同    
+    //外贸公司与经销商相同
     if (event === null || event === undefined || event === "") {
       return;
     }
@@ -1567,7 +1605,7 @@ export class PreBaseInfoFromComponent implements OnInit {
     const StockOff =
       (oitMode == "BIDDING" && endUser == "Stock") ||
         oitMode == "STOCK" ||
-        centralizedPurchasing == 1
+        centralizedPurchasing == '1'
         ? false
         : true;
     this.formValue.patchValue({
@@ -1625,7 +1663,7 @@ export class PreBaseInfoFromComponent implements OnInit {
         ddpStatus = isadopt(date);
       }
       this.foreignFrom.patchValue({
-        foreignTradeCorpDdpStatus: ddpStatus,
+        foreignTradeCorpDdpStatus: ddpStatus ? ddpStatus : '不通过',
       });
       const { foreignTradeCorpName } = this.foreignFrom.getRawValue();
       if (this.serveic.iepoolLists && this.serveic.iepoolLists.length > 0) {
@@ -1640,7 +1678,7 @@ export class PreBaseInfoFromComponent implements OnInit {
     }
   }
   atIniepoole() {
-    //是否在iepoole里边  
+    //是否在iepoole里边
     const { foreignTradeCorpName } = this.foreignFrom.getRawValue();
     if (this.serveic.iepoolLists && this.serveic.iepoolLists.length > 0) {
       const select = this.serveic.iepoolLists.find(
@@ -1660,7 +1698,7 @@ export class PreBaseInfoFromComponent implements OnInit {
 
 
   }
-  foreignDDpstatus(control: FormControl) {   
+  foreignDDpstatus(control: FormControl) {
     if (control.value) {
       const valid = control.value != "通过" ? false : true;
       return valid ? null : { foreignform: true };
@@ -1687,13 +1725,13 @@ export class PreBaseInfoFromComponent implements OnInit {
     }
   }
   foreignformShow() {
-    
+
       if (this.priceApproval.getRawValue().currencySystem == 'USD') {
         return true;
       }
       else {
         return false;
-      } 
+      }
   }
   isRequiredArrivalDate() {
     //客户要货函货日期和预计安装日期是显示
@@ -1727,7 +1765,7 @@ export class PreBaseInfoFromComponent implements OnInit {
     }
   }
   onShowSelectPrebookModal() {
-    //弹出prebook弹窗口    
+    //弹出prebook弹窗口
     const marketBundleInfoArr = this.marketBundleInfo.getRawValue();
     const marketBundleHost = marketBundleInfoArr.filter(val => (val.primaryOpportunity == 'true' || val.primaryOpportunity == true))
     const opportunityId = marketBundleHost[0].opportunityId;
@@ -1828,7 +1866,8 @@ export class PreBaseInfoFromComponent implements OnInit {
 
     this.baseInfoFrom.patchValue({
       contractCancelReferenceId: val.referenceId,
-      contractCancelApplyId: val.id
+      contractCancelApplyId: val.id,
+      contractCancelSoNo: val.so
     })
   }
   isshowActualSalesName() {
@@ -1866,7 +1905,7 @@ export class PreBaseInfoFromComponent implements OnInit {
   segmentNzRequired()
   {
     //segment是否必填
-    const {hospitalType}=this.endUserFrom.getRawValue()   
+    const {hospitalType}=this.endUserFrom.getRawValue()
     if(hospitalType=='公立医院'||hospitalType=='民营医院')
     {
       this.endUserFrom.get('segment').setValidators(Validators.required)
@@ -1875,7 +1914,7 @@ export class PreBaseInfoFromComponent implements OnInit {
       return true;
     }
     else{
-      this.endUserFrom.get('segment').clearValidators();  
+      this.endUserFrom.get('segment').clearValidators();
       this.endUserFrom.get('segment').updateValueAndValidity();
       return false;
     }

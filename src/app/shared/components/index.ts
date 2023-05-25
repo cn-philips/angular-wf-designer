@@ -18,6 +18,7 @@ import { SelectComponent } from './form/select/select.component'
 import { CheckboxComponent } from './form/checkbox/checkbox.component'
 import { RadioComponent } from './form/radio/radio.component'
 import { ApprovalHistoryComponent } from './approval-history/approval-history.component'
+import { DealerTableComponent } from './dealer-table/dealer-table.component'
 
 export * from './app-loading/app-loading.component'
 export * from './date-picker/date-picker.component'
@@ -36,6 +37,7 @@ export * from './select-hospital/select-hospital.component'
 export * from './select-user/select-user.component'
 export * from './select-foreign-company/select-foreign-company.component'
 export * from './form/select/select.component'
+export * from './dealer-table/dealer-table.component'
 
 export const COMPONENTS = [
   ApploadingComponent, DatePickerComponent, PdfPreviewComponent,
@@ -44,5 +46,5 @@ export const COMPONENTS = [
   TreeBoxComponent, TableShowComponent, DistributorListComponent,
   SelectDealerComponent, SelectHospitalComponent, SelectUserComponent,
   SelectForignCompanyComponent, SelectComponent, ApprovalHistoryComponent,
-  CheckboxComponent, RadioComponent
+  CheckboxComponent, RadioComponent, DealerTableComponent,
 ]

@@ -32,6 +32,7 @@ export class RegionManagementFilterComponent implements OnInit {
   province: any = null;
   isSysteamAdmin: any = false;
   exportLoading: any = false;
+  eLoading: any = false;
   expandPoint: any[] = [];
   constructor(
     private http: HttpService,
@@ -267,6 +268,23 @@ export class RegionManagementFilterComponent implements OnInit {
     }, error => {
       this.message.error('导出失败');
       this.exportLoading = false;
+    });
+  }
+
+  //导出操作记录
+  exportOperateRecords(){
+    this.eLoading = true;
+    var param = {
+      businessType: "User Management",
+    }
+    const url = '/act/ecos/report/userActionLog';
+    this.http.postDownload(url, param).subscribe(rest => {
+      this.fileService.downloadResponse('Tasks', rest);
+      this.message.success('导出成功');
+      this.eLoading = false;
+    }, error => {
+      this.message.error('导出失败');
+      this.eLoading = false;
     });
   }
 

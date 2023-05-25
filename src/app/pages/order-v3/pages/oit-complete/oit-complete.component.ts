@@ -16,6 +16,7 @@ import { BreadcrumbService } from "@app/modern-themes/services/breadcrumb.servic
 import { ProcessTaskStatusPipe } from "@app/shared/pipes/process-task-status.pipe"
 import { HttpService } from '@core/services';
 import { RouterExtendService } from "@app/modern-themes/services/router-extend.service";
+import { Subject } from "rxjs";
 @Component({
   selector: "oit-complete",
   templateUrl: "./oit-complete.component.html",
@@ -34,6 +35,7 @@ export class OitcompleteComponent implements OnInit {
     private http: HttpService,
     private routerExtend: RouterExtendService
   ) { }
+  subTierSubject = new Subject()
   public changeItem: any = false;
   public activedId: any = "pending-oit";
   public tabIndex: any = 0;
@@ -60,12 +62,19 @@ export class OitcompleteComponent implements OnInit {
   public isHandle: any;
   public paymentProvisionList = ["10% TT before OIT, 80% TT before FP, 10% TT against AC",
     "10% TT before OIT, 90% TT before FP",
-    "15% before OIT, 85% before FP",
+    "15% TT before OIT, 85% before FP",
     "30% TT before OIT, 60% TT before FP, 10% TT against ICF",
     "100% TT before OIT",
     "100% LC before OIT",
     "30%TT before OIT, 70% TT before FP",
   ];
+
+  //改单申请上一次的so
+  lastSo: any = {
+    isExist: false,
+    lastSo: null
+  };
+
   remarkFrom = {
     comments: [{ value: null, disabled: false }, [Validators.required]],
     attachmentIds: [],
@@ -229,6 +238,7 @@ export class OitcompleteComponent implements OnInit {
 
     contractCancelApplyId: [{ value: null, disabled: true }], //contractCancelApplyId
     contractCancelReferenceId: [{ value: null, disabled: true }], //原合同概要表id
+    contractCancelSoNo: [{ value: null, disabled: true }], //原合同概要表So
     templateList: [[], []],
     isRequired: [{ value: false, disabled: true }],
     orderRequired: [{ value: false, disabled: true }], //order summary 原产地是否必填
@@ -239,7 +249,8 @@ export class OitcompleteComponent implements OnInit {
     profitNetRate: [{ value: null, disabled: true }],//经销商净利润
     profitGrossRate: [{ value: null, disabled: true }],//经销商毛利率
     profitGross: [{ value: null, disabled: true }],//经销商毛利润
-    dealerProfit: [{ value: null, disabled: true }],//经销商利润    
+    dealerProfit: [{ value: null, disabled: true }],//经销商利润
+    biddingCurrency: [{ value: null, disabled: true }],//投标币种
   };
   dealerFrom = {
     dealerName: [{ value: null, disabled: true }, [Validators.required]], //经销商名称
@@ -254,6 +265,7 @@ export class OitcompleteComponent implements OnInit {
     dealerTaxNum: [{ value: null, disabled: !this.editBase }, [Validators.required]],//经销商纳税号
     purchaseOrderSignatory: [{ value: null, disabled: !this.editBase }, [Validators.required]], //采购订单签署人
     purchaseOrderSignatoryPosition: [{ value: null, disabled: !this.editBase }, [Validators.required]],//采购订单签署人职务
+    subTierInfo: this.fb.array([]), // 次级经销商信息
   }
   accountFrom = {
     accountName: [{ value: null, disabled: !this.editBase }, [Validators.required]],//开户行名称
@@ -645,6 +657,10 @@ export class OitcompleteComponent implements OnInit {
       this.serveice.changeOrder(this.applyId).then(res => {
         if (res.code == '0000' && res.data != null && Object.keys(res.data).length > 0) {
           this.changeItem = true;
+          this.lastSo = {
+            isExsit: true,
+            lastSo: res.data.lastSo ? res.data.lastSo : null,
+          }
         }
       })
     }
@@ -859,11 +875,14 @@ export class OitcompleteComponent implements OnInit {
       actualSalesName,
       contractCancelReferenceId,
       contractCancelApplyId,
+      contractCancelSoNo,
       orderSalesSapCode,
+      subTierInfo,
       profitNetRate,
       profitGrossRate,
       profitGross,
       dealerProfit,
+      biddingCurrency
     } = contractInfo
     this.formValue.patchValue({
       applyId: contractInfo.applyId ? contractInfo.applyId : this.applyId,
@@ -938,17 +957,20 @@ export class OitcompleteComponent implements OnInit {
       actualSalesName,
       contractCancelReferenceId,
       contractCancelApplyId,
+      contractCancelSoNo,
       orderSalesSapCode,
       profitNetRate,
       profitGrossRate,
       profitGross,
       dealerProfit,
+      biddingCurrency
     })
     this.productModelInfoData.patchValue({
       ...contractInfo
     })
     this.dealerFromData.patchValue({
-      ...contractInfo
+      ...contractInfo,
+      subTierInfo: contractInfo.subTierInfo || []
     })
     this.accountFromData.patchValue({
       ...contractInfo
@@ -1171,7 +1193,17 @@ export class OitcompleteComponent implements OnInit {
     }
 
     if (this.baseInfoFromData.getRawValue().businessModel == 'DISTRIBUTOR') {
-      this.getdistributorDate(); //更新经销商日期    
+      this.getdistributorDate(); //更新经销商日期
+      setTimeout(() => {
+        const subTierDisbaled = !((this.flag == '0' && ['ecos_oit_order_upload','ecos_oit_order_change_submit','ecos_oit_order_change_resubmit'].includes(this.status))
+        || (this.allowChangOrder&&['ecos_oit_order_done'].includes(this.status)) )
+        this.subTierSubject.next({
+          type: 'add',
+          data: subTierInfo,
+          disabled: subTierDisbaled
+        })
+        this.baseInfoFromChild.checkBiddingEqualDealer();
+      }, 0);
     }
     if (this.priceApprovalData.getRawValue().currencySystem == "USD") {
       this.getIepoolDate(); //更新经销商日期
@@ -1217,21 +1249,23 @@ export class OitcompleteComponent implements OnInit {
       this.getBiddingIsSpecial();
     }
   }
-  getBiddingIsSpecial() {//bidding模式是否是特批      
+  getBiddingIsSpecial() {//bidding模式是否是特批
     let { biddingApplyList } = this.baseInfoFromData.getRawValue();
-    biddingApplyList.map(val => {
-      this.serveice.getBiddingIsSpecial(val.id).subscribe(item => {
-        if (item.code == '0000' && item.data == true) {
-          val.biddingIsSpecial = true;
-        }
-        else {
-          val.biddingIsSpecial = false;
-        }
+    if(biddingApplyList && biddingApplyList.length > 0){
+      biddingApplyList.map(val => {
+        this.serveice.getBiddingIsSpecial(val.id).subscribe(item => {
+          if (item.code == '0000' && item.data == true) {
+            val.biddingIsSpecial = true;
+          }
+          else {
+            val.biddingIsSpecial = false;
+          }
+        })
       })
-    })
-    this.baseInfoFromData.patchValue({
-      biddingApplyList: biddingApplyList
-    })
+      this.baseInfoFromData.patchValue({
+        biddingApplyList: biddingApplyList
+      })
+    }
   }
   get productModelInfoData(): FormGroup {
     return this.formValue.get('productModelInfo') as FormGroup
@@ -1444,6 +1478,23 @@ export class OitcompleteComponent implements OnInit {
       smallArea,
     }
 
+    if (this.baseInfoFromData.getRawValue().businessModel == 'DISTRIBUTOR') {
+      const subTierInfo = this.formValue.get('dealerFrom').get('subTierInfo') as FormArray
+        if (subTierInfo.invalid) {
+          this.modalService.error({
+            nzTitle: '提示',
+            nzContent: '经销商黑名单校验不通过，请上传必要的支持文件和备注后，再作提交'
+          }).afterClose.subscribe(() => {
+            // this.handleToggleTab('basic-info')
+            this.tabs.activeId('contract-tab')
+            setTimeout(() => {
+              document.querySelector('.dealer-info').scrollIntoView()
+            }, 0);
+          })
+          return
+        }
+    }
+
     if (this.needFileType === 'third') {
       for (let i in this.thirdCheckFormData.controls) {
         this.thirdCheckFormData.controls[i].markAsDirty()
@@ -1454,13 +1505,13 @@ export class OitcompleteComponent implements OnInit {
         return
       }
     }
-    const valid = this.baseInfoFromChild.checkbaseInfoFromData()
-    if (!valid) {
-      this.tabIndex == 0
-      this.myskip('contract-tab')
-      this.message.error('Pre-book没有关联')
-      return
-    }
+    // const valid = this.baseInfoFromChild.checkbaseInfoFromData()
+    // if (!valid) {
+    //   this.tabIndex == 0
+    //   this.myskip('contract-tab')
+    //   this.message.error('Pre-book没有关联')
+    //   return
+    // }
 
     if (this.needFileType === 'oit') {
       for (let i in this.deBookInformmata.controls) {
@@ -1704,6 +1755,23 @@ export class OitcompleteComponent implements OnInit {
   }
   changeOrder() {
     //发起改单
+    if (this.baseInfoFromData.getRawValue().businessModel == 'DISTRIBUTOR') {
+      const subTierInfo = this.formValue.get('dealerFrom').get('subTierInfo') as FormArray
+        if (subTierInfo.invalid) {
+          this.modalService.error({
+            nzTitle: '提示',
+            nzContent: '经销商黑名单校验不通过，请上传必要的支持文件和备注后，再作提交'
+          }).afterClose.subscribe(() => {
+            this.tabs.activeId('contract-tab')
+            setTimeout(() => {
+              document.querySelector('.dealer-info').scrollIntoView()
+            }, 0);
+          })
+          return
+        } else {
+          this.preSubmit('apply_save');
+        }
+    }
     this.changOrderFromData.enable();
     this.changOrderFromData.get("describes").disable();
     this.changeOrderwin.show()
@@ -1785,6 +1853,7 @@ export class OitcompleteComponent implements OnInit {
             this.dealerFromData.patchValue({
               dealerDdpStatus: ddpStatus
             })
+            this.message.error("当前经销商DDP已过有效期")
             return
           }
         }
@@ -1795,6 +1864,7 @@ export class OitcompleteComponent implements OnInit {
             this.foreignFromData.patchValue({
               foreignTradeCorpDdpStatus: ddpStatus
             })
+            this.message.error("当前外贸公司DDP已过有效期")
             return
           }
         }
@@ -1804,9 +1874,50 @@ export class OitcompleteComponent implements OnInit {
         this.message.error("请填写拒绝理由")
         return
       }
-    }
-    else {
+    } else {
+      if(parm == 'approved'){
+        if (this.baseInfoFromData.getRawValue().businessModel == 'DISTRIBUTOR') {
+          const ddpValidUntil = standardTime(this.dealerFromData.getRawValue().dealerDdpValidityDate)
+          const ddpStatus = isadopt(ddpValidUntil);
+          if (ddpStatus != "通过") {
+            this.dealerFromData.patchValue({
+              dealerDdpStatus: ddpStatus
+            })
+            this.message.error("当前经销商DDP已过有效期")
+            return
+          }
+        }
+        if (this.priceApprovalData.getRawValue().currencySystem == 'USD') {
+          const ddpValidUntil = standardTime(this.foreignFromData.getRawValue().foreignTradeCorpDdpValidityDate)
+          const ddpStatus = isadopt(ddpValidUntil);
+          if (ddpStatus != "通过") {
+            this.foreignFromData.patchValue({
+              foreignTradeCorpDdpStatus: ddpStatus
+            })
+            this.message.error("当前外贸公司DDP已过有效期")
+            return
+          }
+        }
 
+        //经销商校验
+        if (this.baseInfoFromData.getRawValue().businessModel == 'DISTRIBUTOR') {
+          const subTierInfo = this.formValue.get('dealerFrom').get('subTierInfo') as FormArray
+          if (subTierInfo.invalid) {
+            this.modalService.error({
+              nzTitle: '提示',
+              nzContent: '经销商黑名单校验不通过，请上传必要的支持文件和备注后，再作提交'
+            }).afterClose.subscribe(() => {
+              this.tabs.activeId('contract-tab')
+              setTimeout(() => {
+                document.querySelector('.dealer-info').scrollIntoView()
+              }, 0);
+            })
+            return
+          } else {
+            this.preSubmit('apply_save');
+          }
+        }
+      }
       const valid = this.startFromData();
       if (!valid) {
         this.message.error("请填写拒绝理由")
@@ -1854,7 +1965,7 @@ export class OitcompleteComponent implements OnInit {
     return this.examineFromData.valid;
   };
   getSpeciallySupportingFile() {
-    //待文件补充放开文件上传必填    
+    //待文件补充放开文件上传必填
     this.oitInformData.get("oaSupplementFile").setValidators([this.oaSupplementFile, Validators.required])
     const orderModality = this.baseInfoFromData.getRawValue().orderModality
     const biddingType = this.baseInfoFromData.getRawValue().biddingType

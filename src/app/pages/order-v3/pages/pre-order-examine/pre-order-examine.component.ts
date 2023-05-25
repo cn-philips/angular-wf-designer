@@ -9,13 +9,14 @@ import {
   FormArray,
   Validators,
 } from "@angular/forms";
-import { NzMessageService } from "ng-zorro-antd";
+import { NzMessageService, NzModalService } from "ng-zorro-antd";
 import * as moment from 'moment'
 import { isadopt, standardTime } from "@core/util/tools"
 import { Location } from '@angular/common';
 import { BreadcrumbService } from "@app/modern-themes/services/breadcrumb.service";
 import { ProcessTaskStatusPipe } from "@app/shared/pipes/process-task-status.pipe"
 import { RouterExtendService } from "@app/modern-themes/services/router-extend.service";
+import { Subject } from "rxjs";
 @Component({
   selector: "pre-order-examine",
   templateUrl: "./pre-order-examine.component.html",
@@ -23,11 +24,17 @@ import { RouterExtendService } from "@app/modern-themes/services/router-extend.s
 })
 
 export class PreorderexamineComponent implements OnInit {
-  constructor(private serveice: OrderV3Service, private ProcessTaskStatusPipe: ProcessTaskStatusPipe, private location: Location, private breadCrumbService: BreadcrumbService, private activatedRouter: ActivatedRoute, private fb: FormBuilder, private message: NzMessageService, private router: Router,
-    private routerExtendService: RouterExtendService
-  ) {
+  constructor(
+    private serveice: OrderV3Service,
+    private ProcessTaskStatusPipe: ProcessTaskStatusPipe,
+    private breadCrumbService: BreadcrumbService,
+    private activatedRouter: ActivatedRoute,
+    private fb: FormBuilder,
+    private message: NzMessageService,
+    private routerExtendService: RouterExtendService,
+  ) { }
 
-  }
+  subTierSubject = new Subject()
   public user;
   public activedId: any = "pending-tab";
   public tabIndex: any = 0;
@@ -100,17 +107,19 @@ export class PreorderexamineComponent implements OnInit {
     solutionSalesNameModel: [{ value: null, disabled: true }],
 
     actualSalesEmail: [{ value: null, disabled: !this.editBase }], //实际销售
-    actualSalesName: [{ value: null, disabled: true }],//实际销售 
+    actualSalesName: [{ value: null, disabled: true }],//实际销售
     actualSalesNameModel: [{ value: null, disabled: true }],//实际销售名字
 
     contractCancelApplyId: [{ value: null, disabled: true }], //contractCancelApplyId
     contractCancelReferenceId: [{ value: null, disabled: true }], //原合同概要表id
+    contractCancelSoNo: [{ value: null, disabled: true }], //原合同概要表So
     orderSalesSapCode: [{ value: null, disabled: true }], //orderSalesSapCode
     dealIsDisabled: [{ value: false, disabled: true }],//是否显示经销商的按钮
     profitNetRate: [{ value: null, disabled: true }],//经销商净利润
     profitGrossRate: [{ value: null, disabled: true }],//经销商毛利率
     profitGross: [{ value: null, disabled: true }],//经销商毛利润
     dealerProfit: [{ value: null, disabled: true }],//经销商利润
+    biddingCurrency: [{ value: null, disabled: true }],//投标币种
   };
   dealerFrom = {
     dealerName: [{ value: null, disabled: true }, [Validators.required]], //经销商名称
@@ -125,6 +134,7 @@ export class PreorderexamineComponent implements OnInit {
     dealerTaxNum: [{ value: null, disabled: !this.editBase }, [Validators.required]],//经销商纳税号
     purchaseOrderSignatory: [{ value: null, disabled: !this.editBase }, [Validators.required]], //采购订单签署人
     purchaseOrderSignatoryPosition: [{ value: null, disabled: !this.editBase }, [Validators.required]],//采购订单签署人职务
+    subTierInfo: this.fb.array([]), // 次级经销商信息
   }
   accountFrom = {
     accountName: [{ value: null, disabled: !this.editBase }, [Validators.required]],//开户行名称
@@ -407,11 +417,14 @@ export class PreorderexamineComponent implements OnInit {
       actualSalesName,
       contractCancelReferenceId,
       contractCancelApplyId,
+      contractCancelSoNo,
       orderSalesSapCode,
+      subTierInfo,
       profitNetRate,
       profitGrossRate,
       profitGross,
       dealerProfit,
+      biddingCurrency
     } = data.preparationInfo
     this.baseInfoFromData.patchValue({
       oldSalesProvince: data.preparationInfo.dealFormSalesProvince,
@@ -467,14 +480,17 @@ export class PreorderexamineComponent implements OnInit {
       actualSalesName,
       contractCancelReferenceId,
       contractCancelApplyId,
+      contractCancelSoNo,
       orderSalesSapCode,
       profitNetRate,
       profitGrossRate,
       profitGross,
       dealerProfit,
+      biddingCurrency
     })
     this.dealerFromData.patchValue({
       ...data.preparationInfo,
+      subTierInfo: data.preparationInfo.subTierInfo || []
     })
     this.accountFromData.patchValue({
       ...data.preparationInfo
@@ -529,7 +545,11 @@ export class PreorderexamineComponent implements OnInit {
     //禁用经销商协议
     // this.orderInfo.disable();
     if (this.baseInfoFromData.getRawValue().businessModel == 'DISTRIBUTOR') {
-      this.getdistributorDate(); //更新经销商日期    
+      this.getdistributorDate(); //更新经销商日期
+      setTimeout(() => {
+        this.subTierSubject.next({ type: 'add', data: subTierInfo, disabled: true })
+        this.baseInfoFromChild.checkBiddingEqualDealer();
+      }, 0);
     }
     if (this.priceApprovalData.getRawValue().currencySystem == "USD") {
       this.getIepoolDate(); //更新经销商日期
@@ -704,8 +724,8 @@ export class PreorderexamineComponent implements OnInit {
     }
     this.pageLoading = true;
     if (baseInfoFrom.businessModel == 'DISTRIBUTOR') {
-      //const dateAndValid=await this.serveice.getDdpDateAndValid(dealerFrom.dealerName); 
-      //console.log(dateAndValid)            
+      //const dateAndValid=await this.serveice.getDdpDateAndValid(dealerFrom.dealerName);
+      //console.log(dateAndValid)
       const dateAndValid = await this.serveice.findDealersByPageValid({ dealerName: dealerFrom.dealerName })
       if (dateAndValid.code == '0000') {
         const rows = dateAndValid.data.rows
@@ -927,7 +947,7 @@ export class PreorderexamineComponent implements OnInit {
     }
   }
   createOrder(val: any, index) {
-    //创建    
+    //创建
     const productModelInfo = {
       orderProductModel: [{ value: val.orderProductModel ? val.orderProductModel : null, disabled: true }],
     }
@@ -969,6 +989,7 @@ export class PreorderexamineComponent implements OnInit {
     const financialSolutionName = val.financialSolutionName != null && val.financialSolutionName != 'null' ? val.financialSolutionName : "";
     //order 基本信息
     const orderBaseinfo = {
+      actualHospitalId: [ val.actualHospitalId ],
       cpDealOrderId: [val.cpDealOrderId],
       orderModality: [val.orderModality],
       marketBundleId: [val.marketBundleId],
@@ -1038,6 +1059,7 @@ export class PreorderexamineComponent implements OnInit {
       centralizedPurchasing: [{ value: val.centralizedPurchasing ? val.centralizedPurchasing : '0', disabled: true }],//是否集采项目
       contractCancelReferenceId: [{ value: val.contractCancelReferenceId ? val.contractCancelReferenceId : null, disabled: true }],//原合同概要表referenceId
       contractCancelApplyId: [{ value: val.contractCancelApplyId ? val.contractCancelApplyId : null, disabled: true }],
+      contractCancelSoNo: [{ value: val.contractCancelSoNo ? val.contractCancelSoNo : null, disabled: true }],//原合同概要表So
       contractCancelSo: [null],//原合同概要表So
 
       dealerSapCode: [{ value: val.dealerSapCode ? val.dealerSapCode : null, disabled: true }],//经销商spacode
@@ -1052,8 +1074,8 @@ export class PreorderexamineComponent implements OnInit {
       cpclFile: val.cpclFile ? [[...val.cpclFile]] : [],//cpcl文件
       otherSupportFile: val.otherSupportFile ? [[...val.otherSupportFile]] : [],//其他支持文件
       magneticResonanceShieldingFile: val.magneticResonanceShieldingFile ? [[...val.magneticResonanceShieldingFile]] : [],//磁共振屏蔽公司
-      magneticResonanceShieldingShow: [{ value: false, disabled: false }], //是否显示 
-      igtThirdPartySingle: [{ value: '0', disabled: false }], //IGT选项框选项框
+      magneticResonanceShieldingShow: [{ value: false, disabled: false }], //是否显示
+      igtThirdPartySingle: [{ value: val.igtThirdPartySingle ? val.igtThirdPartySingle : '0', disabled: false }], //IGT选项框选项框
       igtThirdPartyFile: val.igtThirdPartyFile ? [[...val.igtThirdPartyFile]] : [],//IGT第三方吊塔确认文件
       igtThirdPartyFileShow: [{ value: false, disabled: false }],//是否显示
       prebookReferenceId: [{ value: val.prebookReferenceId, disabled: true }, []], //prebook申请号

@@ -1,3 +1,10 @@
+:host /deep/ {
+  .lintesting {
+    color: red;
+    line-height: 20px;
+  }
+}
+
 .space {
   white-space: normal !important;
   overflow: auto;

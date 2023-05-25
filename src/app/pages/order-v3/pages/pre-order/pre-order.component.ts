@@ -9,7 +9,7 @@ import {
   FormArray,
   Validators,
 } from "@angular/forms";
-import { NzMessageService } from "ng-zorro-antd";
+import { NzMessageService, NzModalService } from "ng-zorro-antd";
 import * as moment from 'moment'
 import { isadopt, standardTime } from "@core/util/tools"
 import { Location } from '@angular/common';
@@ -18,6 +18,7 @@ import { ProcessTaskStatusPipe } from "@app/shared/pipes/process-task-status.pip
 import { Group } from "@core/domain";
 import { RouterExtendService } from "@app/modern-themes/services/router-extend.service";
 import { AppService } from '../../../../app.service';
+import { Subject } from "rxjs";
 
 @Component({
   selector: "app-pre-order",
@@ -34,14 +35,15 @@ export class PreOrderComponent implements OnInit {
     private message: NzMessageService,
     private router: Router,
     private AppService: AppService,
-    private routerExtendService: RouterExtendService) {
+    private routerExtendService: RouterExtendService,
+    private modalService: NzModalService,
+  ) {
     this.serveice.pageLoadReceiv.subscribe(res => {
       this.pageLoading = res;
     })
-
-
-
   }
+
+  subTierSubject = new Subject()
   public submitStatus: any = "apply_submit";
   public tabIndex: any = 0;
   public editBase: any = true; //基础信息是否编辑
@@ -90,7 +92,7 @@ export class PreOrderComponent implements OnInit {
     approvalAreaConfiguration: [{ value: null, disabled: !this.editBase }, [Validators.required]],//审批区域配置
     biddingType: [{ value: null, disabled: !this.editBase }, [Validators.required]],//招标类型
     dealFormSalesPerformanceProvince: [{ value: null, disabled: !this.editBase }],//业绩省份
-    centralizedPurchasing: [{ value: '0', disabled: true }, []],//是否集采项目
+    centralizedPurchasing: [{ value: '0', disabled: !this.editBase }, []],//是否集采项目
     biddingCompany: [{ value: null, disabled: !this.editBase }, [Validators.required]], //投标公司
     tenderNum: [{ value: null, disabled: !this.editBase }, [Validators.required]], //招标编号
     requiredArrivalDate: [{ value: null, disabled: !this.editBase }], //客户要货函日期
@@ -126,17 +128,19 @@ export class PreOrderComponent implements OnInit {
     solutionSalesNameModel: [{ value: null, disabled: true }],
 
     actualSalesEmail: [{ value: null, disabled: !this.editBase }], //实际销售
-    actualSalesName: [{ value: null, disabled: true }],//实际销售 
+    actualSalesName: [{ value: null, disabled: true }],//实际销售
     actualSalesNameModel: [{ value: null, disabled: true }],//实际销售名字
 
     contractCancelReferenceId: [{ value: null, disabled: true }], //原合同概要表id
     contractCancelApplyId: [{ value: null, disabled: true }], //contractCancelApplyId
+    contractCancelSoNo: [{ value: null, disabled: true }], //原so
     orderSalesSapCode: [{ value: null, disabled: true }], //orderSalesSapCode
     dealIsDisabled: [{ value: false, disabled: true }],//是否显示经销商的按钮
     profitNetRate: [{ value: null, disabled: true }],//经销商净利润
     profitGrossRate: [{ value: null, disabled: true }],//经销商毛利率
     profitGross: [{ value: null, disabled: true }],//经销商毛利润
     dealerProfit: [{ value: null, disabled: true }],//经销商利润
+    biddingCurrency: [{ value: null, disabled: true }],//投标币种
   };
   dealerFrom = {
     dealerName: [{ value: null, disabled: true }, [Validators.required]], //经销商名称
@@ -151,6 +155,7 @@ export class PreOrderComponent implements OnInit {
     dealerTaxNum: [{ value: null, disabled: true }],//经销商纳税号
     purchaseOrderSignatory: [{ value: null, disabled: !this.editBase }, [Validators.required]], //采购订单签署人
     purchaseOrderSignatoryPosition: [{ value: null, disabled: !this.editBase }, [Validators.required]],//采购订单签署人职务
+    subTierInfo: this.fb.array([]), // 次级经销商信息
   }
   accountFrom = {
     accountName: [{ value: null, disabled: !this.editBase }, [Validators.required]],//开户行名称
@@ -443,12 +448,15 @@ export class PreOrderComponent implements OnInit {
       actualSalesEmail,
       actualSalesName,
       contractCancelReferenceId,
+      contractCancelSoNo,
       contractCancelApplyId,
       orderSalesSapCode,
+      subTierInfo,
       profitNetRate,
       profitGrossRate,
       profitGross,
       dealerProfit,
+      biddingCurrency
     } = data.preparationInfo
 
     this.baseInfoFromData.patchValue({
@@ -504,15 +512,18 @@ export class PreOrderComponent implements OnInit {
       actualSalesEmail,
       actualSalesName,
       contractCancelReferenceId,
+      contractCancelSoNo,
       contractCancelApplyId,
       orderSalesSapCode,
       profitNetRate,
       profitGrossRate,
       profitGross,
       dealerProfit,
+      biddingCurrency
     })
     this.dealerFromData.patchValue({
       ...data.preparationInfo,
+      subTierInfo: data.preparationInfo.subTierInfo || []
     })
     this.accountFromData.patchValue({
       ...data.preparationInfo
@@ -533,10 +544,17 @@ export class PreOrderComponent implements OnInit {
       ...data.preparationInfo
     })
     if (this.baseInfoFromData.getRawValue().businessModel == 'DISTRIBUTOR') {
-      this.getdistributorDate(); //更新经销商日期    
+      this.getdistributorDate(); //更新经销商日期
     }
     if (this.priceApprovalData.getRawValue().currencySystem == "USD") {
       this.getIepoolDate(); //更新经销商日期
+    }
+
+    if (businessModel == 'DISTRIBUTOR') {
+      setTimeout(() => {
+        this.subTierSubject.next({ type: 'add', data: subTierInfo })
+        this.baseInfoFromChild.checkBiddingEqualDealer();
+      }, 0);
     }
     let modalityLists = orderInfo.map((val) => val.orderModality);
     modalityLists = Array.from(new Set(modalityLists));
@@ -646,12 +664,12 @@ export class PreOrderComponent implements OnInit {
       if (dateAndValid.code == '0000') {
         const rows = dateAndValid.data.rows
         if (rows.length > 0) {
-          const ddpValidUntil = standardTime(rows[0].ddpValidUntil)
+          const ddpValidUntil = standardTime(rows[0].ddpValidUntil) ? standardTime(rows[0].ddpValidUntil) : null;
           const ddpStatus = isadopt(ddpValidUntil);
           if (ddpStatus != "通过") {
             this.foreignFromData.patchValue({
               foreignTradeCorpDdpStatus: "不通过",
-              foreignTradeCorpDdpValidityDate: rows[0].ddpValidUntil
+              foreignTradeCorpDdpValidityDate: rows[0].ddpValidUntil ? rows[0].ddpValidUntil : null,
             })
           }
           else {
@@ -795,6 +813,24 @@ export class PreOrderComponent implements OnInit {
       }
     }
     else {
+
+      if (baseInfoFrom.businessModel == 'DISTRIBUTOR') {
+        const subTierInfo = this.formValue.get('dealerFrom').get('subTierInfo') as FormArray
+        if (subTierInfo.invalid) {
+          this.modalService.error({
+            nzTitle: '提示',
+            nzContent: '经销商黑名单校验不通过，请上传必要的支持文件和备注后，再作提交'
+          }).afterClose.subscribe(() => {
+            // this.handleToggleTab('basic-info')
+            this.tabs.activeId('pending-tab')
+            setTimeout(() => {
+              document.querySelector('.dealer-info').scrollIntoView()
+            }, 0);
+          })
+          return
+        }
+      }
+
       const checkbaseInfoFrom = this.baseInfoFromChild.checkbaseInfoFromData();
       const checkdealerFrom = this.baseInfoFromChild.checkdealerFromFromData();
       const checkaccountFrom = this.baseInfoFromChild.checkaccountFromFromData();
@@ -891,8 +927,8 @@ export class PreOrderComponent implements OnInit {
           agreementAgenName: "", //中标经销商
           simulationId: vals.simulationId,
           marketBundleName: vals.marketBundleName, // marketBundleName
-          orderByCustomerName: endUser, // 进单客户名称
-          orderByApplicant: endUserId, // 进单客户id
+          orderByCustomerName:  endUser , // 进单客户名称,非集采项目时校验
+          orderByApplicant: endUserId, // 进单客户id,非集采项目时校验
           winningByCustomerName: "", // 中标客户名称
           winningByApplicant: "", // 中标客户id
           tenderingCompany: biddingCompany, //进单投标公司
@@ -927,7 +963,7 @@ export class PreOrderComponent implements OnInit {
                   val.rowspan = len > 0 ? len : 1;
                   val.showCheak = index == 0 ? true : false;
                   // let biddingAward=vals.searchResult.find(ite=>ite.biddingAwardPrice!=null);
-                  // val.biddingAwardPrice =biddingAward?biddingAward.biddingAwardPrice:"";              
+                  // val.biddingAwardPrice =biddingAward?biddingAward.biddingAwardPrice:"";
                   let searchResult = vals.searchResult.map(item => ({
                     biddingName: item.bidderName, //投标公司
                     marketBundleId: item.marketBundleId,
@@ -961,8 +997,8 @@ export class PreOrderComponent implements OnInit {
       this.isVisibleWinCheck = false;
       if (parm != 'cancel_deal') {
         if (baseInfoFrom.businessModel == 'DISTRIBUTOR') {
-          //const dateAndValid=await this.serveice.getDdpDateAndValid(dealerFrom.dealerName); 
-          //console.log(dateAndValid)            
+          //const dateAndValid=await this.serveice.getDdpDateAndValid(dealerFrom.dealerName);
+          //console.log(dateAndValid)
           const dateAndValid = await this.serveice.findDealersByPageValid({ dealerName: dealerFrom.dealerName })
           if (dateAndValid.code == '0000') {
             const rows = dateAndValid.data.rows;
@@ -1045,7 +1081,7 @@ export class PreOrderComponent implements OnInit {
 
       }
 
-      if (this.status == 'ecos_oit_deal_resubmit') { //重新提交      
+      if (this.status == 'ecos_oit_deal_resubmit') { //重新提交
         param.status = parm;
         // param.id=id;
         this.serveice.orderApproval(param).then(res => {
@@ -1286,7 +1322,7 @@ export class PreOrderComponent implements OnInit {
 
   }
   tabclick(i) {
-    //tab选项卡的点击事件    
+    //tab选项卡的点击事件
     if (typeof i === 'number') {
       this.tabIndex = i
       if (i == 1) {
@@ -1357,6 +1393,7 @@ export class PreOrderComponent implements OnInit {
     const financialSolutionName = val.financialSolutionName != null && val.financialSolutionName != 'null' ? val.financialSolutionName : "";
     //order 基本信息
     const orderBaseinfo = {
+      actualHospitalId: [val.actualHospitalId],
       cpDealOrderId: [val.cpDealOrderId],
       orderModality: [val.orderModality],
       marketBundleId: [val.marketBundleId],
@@ -1425,6 +1462,7 @@ export class PreOrderComponent implements OnInit {
       centralizedPurchasing: [{ value: val.centralizedPurchasing ? val.centralizedPurchasing : '0', disabled: true }],//是否集采项目
       contractCancelReferenceId: [{ value: val.contractCancelReferenceId ? val.contractCancelReferenceId : null, disabled: true }],//原合同概要表referenceId
       contractCancelApplyId: [{ value: val.contractCancelApplyId ? val.contractCancelApplyId : null, disabled: true }],
+      contractCancelSoNo: [{ value: val.contractCancelSoNo ? val.contractCancelSoNo : null, disabled: true }],//原So
       contractCancelSo: [null],//原合同概要表So
       //dealerAgreementNo:[{value:null,disabled:false}],//经销商协议号
       dealerSapCode: [{ value: val.dealerSapCode ? val.dealerSapCode : null, disabled: true }],//经销商spacode
@@ -1439,8 +1477,8 @@ export class PreOrderComponent implements OnInit {
       cpclFile: val.cpclFile ? [[...val.cpclFile]] : [],//cpcl文件
       otherSupportFile: val.otherSupportFile ? [[...val.otherSupportFile]] : [],//其他支持文件
       magneticResonanceShieldingFile: val.magneticResonanceShieldingFile ? [[...val.magneticResonanceShieldingFile]] : [],//磁共振屏蔽公司
-      magneticResonanceShieldingShow: [{ value: false, disabled: false }], //是否显示 
-      igtThirdPartySingle: [{ value: '0', disabled: false }], //IGT选项框选项框
+      magneticResonanceShieldingShow: [{ value: false, disabled: false }], //是否显示
+      igtThirdPartySingle: [{ value: val.igtThirdPartySingle ? val.igtThirdPartySingle : '0', disabled: false }], //IGT选项框选项框
       igtThirdPartyFile: val.igtThirdPartyFile ? [[...val.igtThirdPartyFile]] : [],//IGT第三方吊塔确认文件
       igtThirdPartyFileShow: [{ value: false, disabled: false }],//是否显示
       prebookReferenceId: [{ value: val.prebookReferenceId, disabled: true }, []], //prebook申请号
@@ -1636,7 +1674,7 @@ export class PreOrderComponent implements OnInit {
       wbsNo: [{ value: val.wbsNo, disabled: !this.editBase },],//WBS号
       id: [{ value: val.id, disabled: true }],
       authorizedProduct: [{ value: val.authorizedProduct, disabled: true }], //经销商产品信息
-      authorizedArea: [{ value: val.authorizedArea, disabled: true }],//经销商区域      
+      authorizedArea: [{ value: val.authorizedArea, disabled: true }],//经销商区域
       departmentList: [],//科室列表
       departmentListFirst: [],//一级科室
       departmentListSecond: [], //二级科室列表

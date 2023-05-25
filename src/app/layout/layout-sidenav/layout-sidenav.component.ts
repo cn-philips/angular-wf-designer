@@ -16,11 +16,12 @@ import {
 import { NzMessageService } from "ng-zorro-antd";
 import { AppService } from "app/app.service";
 import { LayoutService } from "../layout.service";
-import { HttpService } from "@core/services";
+import { GlobalService, HttpService } from "@core/services";
 import { Subscription } from "rxjs";
 import { SpecialApprovalService } from "@pages/special-approval/special-approval.service";
 import { TaskCountService } from "@app/modern-themes/services/task-count.service";
 import { TranslateService } from "@ngx-translate/core";
+import { PermissionService } from "@app/modern-themes/services/permission.service";
 @Component({
   selector: "app-layout-sidenav",
   templateUrl: "./layout-sidenav.component.html",
@@ -37,7 +38,7 @@ export class LayoutSidenavComponent
     false;
   @HostBinding("class.flex-grow-0") private hostClassFlex = false;
 
-  list: any;
+  list: any[];
   menuId = "";
   menuType = "";
   mydraft: any[];
@@ -52,7 +53,9 @@ export class LayoutSidenavComponent
     private http: HttpService,
     private aRoute: ActivatedRoute,
     private taskCountService: TaskCountService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private globalService:GlobalService,
+    private permissionService:PermissionService
   ) {
     // Set host classes
     this.hostClassVertical = this.orientation !== "horizontal";
@@ -71,41 +74,24 @@ export class LayoutSidenavComponent
       });
   }
 
-  ngOnInit(): void {
+  async ngOnInit() {
     this.aRoute.queryParams.subscribe((params) => {
       this.menuId = params.id == null ? "" : params.id;
       this.menuType = params.type == null ? "" : params.type;
     });
     this.initLocalStorage();
-    this.getPricePermissionsAll();
-    this.getPriceAllPermissions();
+    this.permissionService.refreshPermission()
+    // this.getPricePermissionsAll();
+    // this.getPriceAllPermissions();
     this.setPricePermission();
   }
-  private initLocalStorage() {
-    //左侧菜单
-    this.http.post("/act/role/getDiigtUserInfo").subscribe((res) => {
-
-      if (
-        "0000" == res.code &&
-        res.data &&
-        res.data.jurisdictions &&
-        res.data.jurisdictions.length > 0
-      ) {
-        let profiles = JSON.stringify(res.data.profiles);
-        window.localStorage.setItem("profiles", profiles);
-        window.localStorage.setItem("roleCode", res.data.roleCode);
-        window.localStorage.setItem("roles", JSON.stringify(res.data.roles));
-        window.localStorage.setItem(
-          "roleAgents",
-          JSON.stringify(res.data.roleAgents)
-        );
-        this.list = res.data.jurisdictions;
-        window.localStorage.setItem("menuList", JSON.stringify(this.list));
-      } else {
-        this.router.navigate(["/anonymous"]);
-        return;
-      }
-    });
+  private async initLocalStorage() {
+    try{
+      this.list = await this.globalService.getMenus();
+    }catch(e){
+      this.router.navigate(["/anonymous"]);
+      return;
+    }
   }
   public refreshCount() {
     this.taskCountService.refresh();

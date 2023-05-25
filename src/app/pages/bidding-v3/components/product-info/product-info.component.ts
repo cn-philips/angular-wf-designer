@@ -5,6 +5,7 @@ import { BUSINESS_MODEL_DIRECT } from "../../bidding-v3.constants";
 import { AddProductComponent } from '../add-product/add-product.component';
 import { ClipboardService } from 'ngx-clipboard'
 import { NzMessageService } from 'ng-zorro-antd'
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'bidding-v3-product-info',
@@ -19,6 +20,7 @@ export class ProductInfoComponent implements OnInit {
   @Input() biddingForm: FormGroup
   @Input() disabled = false
   @Input() editable = false // 商务专员审核时, 可以修改产品型号和医疗器械名称
+  @Input() subTierSubject: Subject<{ type: string, data: any }>
 
   @Output() showImportOpp = new EventEmitter()
   @Output() agreementChange = new EventEmitter()
@@ -107,7 +109,8 @@ export class ProductInfoComponent implements OnInit {
     this.message.success('Copied')
   }
 
-  onDeleteOpportunity(index) {
+  onDeleteOpportunity(index, marketBundle) {
+    this.subTierSubject.next({ type: 'delete', data: marketBundle.get('opportunityId').value })
     this.marketBundles.removeAt(index)
     this.checkEmpty()
   }
@@ -117,6 +120,7 @@ export class ProductInfoComponent implements OnInit {
     products.removeAt(productIndex)
     console.log({ marketBundle, marketBundleIndex, productIndex });
     if (products.length === 0) {
+      this.subTierSubject.next({ type: 'delete', data: marketBundle.get('opportunityId').value })
       this.marketBundles.removeAt(marketBundleIndex)
     }
     this.checkEmpty()

@@ -6,6 +6,7 @@ import { setBasicInfoValidators } from '@pages/prebook-v3/prebook-v3.utils'
 import { isadopt, standardTime } from "@core/util/tools";
 import { DictService } from '@core/services';
 import { PrebookV3Service } from '@pages/prebook-v3/prebook-v3.service';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'prebook-v3-basic-info',
@@ -17,6 +18,7 @@ export class BasicInfoComponent implements OnInit {
   @Input() prebookForm: FormGroup
   @Input() disabled: boolean
   @Input() importBtnVisible: boolean = true
+  @Input() subTierSubject: Subject<{ type: string, data?: any, disabled?: boolean }>
 
   @Output() setOrderInfo = new EventEmitter()
   @Output() dealerChange = new EventEmitter()
@@ -209,6 +211,8 @@ export class BasicInfoComponent implements OnInit {
       vatRate,
       dealPriceCny,
       dealPriceUsd,
+      equipmentPriceCny,
+      equipmentPriceUsd,
       tradeInCnyNet,
       tradeInUsd,
       segment,
@@ -216,6 +220,7 @@ export class BasicInfoComponent implements OnInit {
       rebateUsd,
       orderInfo,
       dealFormSalesName,
+      subTierInfo,
     } = dealFormInfo
 
     if (currencySystem === 'USD') {
@@ -277,8 +282,8 @@ export class BasicInfoComponent implements OnInit {
     this.priceApprovaInfo.patchValue({
       currencySystem,
       vatRate,
-      dealPriceCny: dealPriceCny || 0,
-      dealPriceUsd: dealPriceUsd || 0,
+      dealPriceCny: equipmentPriceCny != null && equipmentPriceCny != "" ? equipmentPriceCny : 0,
+      dealPriceUsd: equipmentPriceUsd != null && equipmentPriceUsd != "" ? equipmentPriceUsd : 0,
       financialSolutionName: financialSolutionName && financialSolutionName != "null" ? financialSolutionName : '',
       financialSolutionCny: financialSolutionCny || 0,
       financialSolutionUsd: financialSolutionUsd || 0,
@@ -304,6 +309,10 @@ export class BasicInfoComponent implements OnInit {
     this.contractBuyer.markAsDirty()
 
     this.setOrderInfo.emit(orderInfo)
+
+    setTimeout(() => {
+      this.subTierSubject.next({ type: 'add', data: subTierInfo })
+    }, 0);
   }
 
   // 点击外贸公司与经销商相同checkbox, 用经销商数据同步外贸公司

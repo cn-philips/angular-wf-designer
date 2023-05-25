@@ -1,0 +1,147 @@
+<form [formGroup]="formGroup">
+  <div [formArrayName]="arrayName">
+    <div *ngFor="let item of subTiers.controls;let index=index" [formGroup]="item" style="margin-bottom:16px">
+      <p class="red" style="font-weight: bold;">
+        <span>Opportunity：</span>
+        <span class="opp-id">{{ item.get('crmOpId').value }}</span>
+      </p>
+      <div formArrayName="dealerSubTiers">
+        <nz-table
+          nzSize="small"
+          [nzData]="item.get('dealerSubTiers').controls"
+          nzBordered
+          nzTableLayout="fixed"
+          [nzShowPagination]="false"
+        >
+          <thead>
+            <tr>
+              <th nzAlign="center" style="width: 200px;">经销商层级</th>
+              <th nzAlign="center" style="width: 200px;">经销商名称</th>
+              <th nzAlign="center" style="width: 200px;">
+                <!-- <span class="red">*</span> -->
+                <span>是否在“飞利浦拒绝合作清单”</span><br><span>(CP结果)</span>
+              </th>
+              <th nzAlign="center" style="width: 200px;">
+                <span>经销商层级是否超限</span><br><span>(CP结果)</span>
+              </th>
+              <th nzAlign="center" style="width: 200px;">
+                <span>是否在“经销商白名单”</span><br><span>(CP结果)</span>
+              </th>
+              <th nzAlign="center" style="width: 200px;">
+                <span>次级经销商备注</span><br><span>(DTC结果)</span>
+              </th>
+              <th nzAlign="center" style="width: 200px;">
+                <span>次级经销商支持附件</span><br><span>(DTC结果)</span>
+              </th>
+              <th nzAlign="center" style="width: 200px;">
+                <span>是否在“飞利浦拒绝合作清单”</span><br><span>(最新DMS)</span>
+              </th>
+              <th nzAlign="center" style="width: 200px;">
+                <span>特批备注</span>
+              </th>
+              <th nzAlign="center">
+                <span>特批支持附件</span>
+              </th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let dealer of item.get('dealerSubTiers').controls;let dealerIndex=index" [formGroup]="dealer">
+              <td nzAlign="center">{{ dealer.get('level').value }}级</td>
+              <td nzAlign="center">{{ dealer.get('name').value }}</td>
+              <td nzAlign="center" [ngClass]="{red: dealer.get('isBlackList').value}">{{ dealer.get('isBlackList').value ? '是' : '否' }}</td>
+              <td
+                nzAlign="center"
+                [ngClass]="{red: dealer.get('isOverLimit').value}"
+              >
+                <span *ngIf="dealer.get('level').value !== 1">{{ dealer.get('isOverLimit').value ? '是' : '否' }}</span>
+              </td>
+              <td nzAlign="center">
+                <span *ngIf="dealer.get('isWhiteList').value !== null">{{ dealer.get('isWhiteList').value ? '是' : '否' }}</span>
+              </td>
+              <td nzAlign="center">{{ dealer.get('remark').value }}</td>
+              <td nzAlign="center">
+                <span
+                  class="download-link"
+                  *ngIf="dealer.get('supportFile').value"
+                  nz-popover
+                  nzTrigger="click"
+                  nzTitle="下载次级经销商支持附件(DTC结果)"
+                  [nzContent]="contentTemplate"
+                >
+                  点击下载
+                  <i nz-icon nzType="download" nzTheme="outline"></i>
+              </span>
+                <ng-template #contentTemplate>
+                  <nz-table
+                    nzSize="small"
+                    [nzData]="getSupportFile(dealer)"
+                    [nzFrontPagination]="false"
+                    [nzShowPagination]="false"
+                    [nzLoading]="tableLoading"
+                  >
+                    <thead>
+                      <tr>
+                        <th>文件名</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let data of getSupportFile(dealer)">
+                        <td>{{ data.name }}</td>
+                        <td>
+                          <span class="download-link" (click)="onDownloadFile(data)">
+                            下载
+                          </span>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </nz-table>
+                </ng-template>
+              </td>
+              <td nzAlign="center">
+                <i *ngIf="dealer.get('isDMSBlackList').value === 0" nz-icon nzType="loading" nzTheme="outline"></i>
+                <span *ngIf="dealer.get('isDMSBlackList').value !== 0" [ngClass]="{red: dealer.get('isDMSBlackList').value > 0}">
+                  {{ dealer.get('isDMSBlackList').value > 0 ? '是' : '否' }}
+                </span>
+              </td>
+              <td nzAlign="center">
+                <nz-form-item style="margin-bottom: 0;">
+                  <nz-form-control>
+                    <textarea
+                      nz-input
+                      placeholder=""
+                      formControlName="specialRemark"
+                      [nzAutosize]="{ minRows: 2, maxRows: 4 }">
+                    </textarea>
+                    <nz-form-explain
+                      *ngIf="dealer.get('specialRemark')?.dirty && dealer.get('specialRemark')?.errors">
+                      <span *ngIf="dealer.get('isDMSBlackList').value === 0">
+                        请等待DMS结果
+                      </span>
+                      <span *ngIf="dealer.get('isDMSBlackList').value !== 0">
+                        此选项必填字段
+                      </span>
+                    </nz-form-explain>
+                  </nz-form-control>
+                </nz-form-item>
+              </td>
+              <td nzAlign="center">
+                <nz-form-item style="margin-bottom: 0;width: 150px;">
+                  <nz-form-control>
+                    <shared-upload-file type="button" formControlName="dealerSubSpecialFile"></shared-upload-file>
+                    <nz-form-explain
+                      *ngIf="dealer.get('dealerSubSpecialFile')?.dirty && dealer.get('dealerSubSpecialFile')?.errors">
+                      此选项必填字段
+                    </nz-form-explain>
+                  </nz-form-control>
+                </nz-form-item>
+              </td>
+            </tr>
+          </tbody>
+
+        </nz-table>
+      </div>
+    </div>
+  </div>
+</form>

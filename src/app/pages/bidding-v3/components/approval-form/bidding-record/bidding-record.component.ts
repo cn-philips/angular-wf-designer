@@ -28,6 +28,7 @@ export class BiddingRecordComponent implements OnChanges {
   remarkMsgVisible = false;
 
   @Input() taskId;
+  @Input() biddingForm: FormGroup
   @Input() disabled = false;
 
   @Input() biddingFilling: FormGroup;
@@ -57,6 +58,8 @@ export class BiddingRecordComponent implements OnChanges {
     referenceId: null,
   };
   @Input() ddpDateExpired = false;
+
+  @Output() activeTab = new EventEmitter<string>()
 
   get spItemsVisible(): boolean {
     return !EXCLUDE_REFERENCE_NO.includes(this.applyDetail.referenceId)
@@ -506,6 +509,23 @@ export class BiddingRecordComponent implements OnChanges {
           );
         }
       );
+
+      if (businessModel !== BUSINESS_MODEL_DIRECT) {
+        const subTiers = this.biddingForm.get('supplementInfo').get('dealerInfo').get('subTiers') as FormArray
+        if (subTiers.invalid) {
+          this.modalService.error({
+            nzTitle: '提示',
+            nzContent: '经销商黑名单校验不通过，请上传必要的支持文件和备注后，再作提交'
+          }).afterClose.subscribe(() => {
+            this.activeTab.emit('supplement-info')
+            setTimeout(() => {
+              document.querySelector('.dealer-info').scrollIntoView()
+            }, 0);
+          })
+          return
+        }
+        data.subTiers = subTiers.getRawValue()
+      }
 
       if (approvedFormGroup.invalid) {
         this.message.error("请按要求填写表单信息");

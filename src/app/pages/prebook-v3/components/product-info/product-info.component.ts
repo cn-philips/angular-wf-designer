@@ -34,7 +34,7 @@ export class ProductInfoComponent implements OnInit {
   get businessModel(): string {
     return this.prebookForm.get('basicInfo').get('baseInfo').get('businessModel').value
   }
-  
+
   constructor(
     private message: NzMessageService,
     private prebookV3Service: PrebookV3Service,
@@ -260,7 +260,7 @@ export class ProductInfoComponent implements OnInit {
   }
 
   activeMarketBundle: FormGroup
-  
+
   onShowSelectNmpaModal(marketBundle: FormGroup) {
     this.activeMarketBundle = marketBundle
     const { productModel, marketBundleBmc } = marketBundle.getRawValue()

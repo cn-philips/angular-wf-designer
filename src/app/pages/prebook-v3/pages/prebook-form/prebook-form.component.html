@@ -10,7 +10,10 @@
       </ng-template>
       <ng-template pTabContent>
         <div class="tab-wrapper">
-          <prebook-v3-basic-info [prebookForm]="prebookForm" (setOrderInfo)="setOrderInfo($event, true)"
+          <prebook-v3-basic-info
+            [prebookForm]="prebookForm"
+            [subTierSubject]="subTierSubject"
+            (setOrderInfo)="setOrderInfo($event, true)"
             (dealerChange)="handleDealerChange($event)">
           </prebook-v3-basic-info>
         </div>

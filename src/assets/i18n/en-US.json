@@ -270,7 +270,8 @@
         }
       },
       "cp-verify": {
-        "title": "Authorization Grant Verification Result",
+        "auth-title": "Authorization Grant Verification Result",
+        "bidding-confirm-title":"Bidding Confirm Verification Result",
         "type": "Product Model",
         "customer-bid": "Customer Name(Win)",
         "customer-cp": "Customer Name(CP)",
@@ -1305,6 +1306,38 @@
       }
     }
   },
+  "schedule": {
+    "page": {
+      "schedule-form": {
+        "task-type": "Task Type",
+        "task-name": "Task Name",
+        "fre": "Task Execution Frequency",
+        "exe-time": "Execution Time",
+        "status": "Task Status",
+        "script-type": "Script Type",
+        "desc": "Task Description",
+        "addressee": "Addressee",
+        "cc-by": "Cc Persons",
+        "email-type": "Email Type",
+        "email-title": "Email Title",
+        "classify": "Report Classification",
+        "form-type": "Report Type",
+        "data-scope": "Data Scope",
+        "custom-time": "Custom Time Range",
+        "email-text": "Email Content",
+        "attachment": "Attachment",
+        "return": "Return",
+        "submit": "Submit",
+        "save": "Save",
+        "clone": "Clone",
+        "delete": "Delete",
+        "modal-title": "Task Information",
+        "range": "Data Scope",
+        "time-scope": "Custom Time Range"
+      }
+    },
+    "errorInfo": "Required fields for this option"
+  },
   "=========================================Report=================================": "",
   "report": {
     "OIT": {
@@ -1349,6 +1382,28 @@
           "crop": "Crop",
           "preview": "Preview"
         }
+      }
+    },
+    "schedule": {
+      "title": "Schedule Task",
+      "add": "Add",
+      "search": {
+        "task-no": "Task Number",
+        "task-type": "Task Type",
+        "task-name": "Task Name",
+        "status": "Task Status"
+      },
+      "list": {
+        "task-no": "Task Number",
+        "task-type": "Task Type",
+        "task-name": "Task Name",
+        "desc": "Task Description",
+        "fre": "Execution Frequency",
+        "status": "Task Status",
+        "create": "Created By",
+        "create-time": "Created Time",
+        "update": "Modified By",
+        "update-time": "Modified Time"
       }
     }
   },

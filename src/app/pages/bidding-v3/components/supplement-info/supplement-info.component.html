@@ -492,6 +492,9 @@
                     *ngIf="biddingCompany.get('bidderName')?.dirty && biddingCompany.get('bidderName')?.errors">
                     此选项必填字段
                   </nz-form-explain>
+                  <nz-form-explain *ngIf="!isCompanyInDealerList">
+                    <span class="red">投标公司名称不在下方经销商层级中, 请注意查验</span>
+                  </nz-form-explain>
                 </nz-form-control>
               </nz-form-item>
             </div>
@@ -541,7 +544,7 @@
         </app-form-section>
       </div>
 
-      <div class="selection-wrap" formGroupName="dealerInfo">
+      <div class="selection-wrap dealer-info" formGroupName="dealerInfo">
         <app-form-section [title]="'biddingv3.components.supplement-info.dealer-info.title' | translate"
           [form]="dealerInfo">
           <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
@@ -633,6 +636,12 @@
                   <shared-date-picker formControlName="distributorDdpDate"></shared-date-picker>
                 </nz-form-control>
               </nz-form-item>
+            </div>
+          </div>
+
+          <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+            <div nz-col nzSpan="24">
+              <shared-dealer-table [subTierSubject]="subTierSubject" [formGroup]="dealerInfo"></shared-dealer-table>
             </div>
           </div>
         </app-form-section>

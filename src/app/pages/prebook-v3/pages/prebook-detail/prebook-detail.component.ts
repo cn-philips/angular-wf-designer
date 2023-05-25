@@ -4,9 +4,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common'
 import { PrebookV3Service } from '@pages/prebook-v3/prebook-v3.service';
 import { prebookForm, createOrder, initBasicInfo, validateForm, getFormData } from "@pages/prebook-v3/prebook-v3.utils"
-import { NzMessageService } from 'ng-zorro-antd';
+import { NzMessageService, NzModalService } from 'ng-zorro-antd';
+import { BUSINESS_MODEL_DIRECT } from '@pages/bidding-v3/bidding-v3.constants'
 import { TabsComponent } from '@app/modern-themes/components/tabs/tabs.component';
 import { RouterExtendService } from '@app/modern-themes/services/router-extend.service';
+import { Subject } from 'rxjs';
 
 const processStatusMap = {
   ecos_prebook_zpm: '场地审核',
@@ -35,6 +37,8 @@ const soValidators = (control: FormGroup): ValidationErrors | null => {
 export class PrebookDetailComponent implements OnInit {
 
   @ViewChild('tabs') tabs: TabsComponent
+
+  subTierSubject = new Subject()
 
   pageLoading = false;
   prebookForm = prebookForm()
@@ -170,7 +174,8 @@ export class PrebookDetailComponent implements OnInit {
     private router: Router,
     private location: Location,
     private message: NzMessageService,
-    private routerExtend: RouterExtendService
+    private routerExtend: RouterExtendService,
+    private modalService: NzModalService,
   ) { }
 
   ngOnInit() {
@@ -331,7 +336,8 @@ export class PrebookDetailComponent implements OnInit {
         this.disableForm()
         this.initOrderInfo(true)
       }
-      initBasicInfo(this.prebookForm, data)
+      const subTierDisabled = !(this.fromTask && (isResubmit || this.processStatus === 'ecos_prebook_oa_supplemental')) // resumbit || fromTask & 
+      initBasicInfo(this.prebookForm, data, this.subTierSubject, subTierDisabled)
       this.initApprovalForm()
       this.pageLoading = false;
       if (this.fromTask || this.fromSupplement) {
@@ -419,14 +425,32 @@ export class PrebookDetailComponent implements OnInit {
         }
         break
       case 'ecos_prebook_oa_supplemental':
+        // 判断次级经销商黑名单
+        if (data.prebook.businessModel !== BUSINESS_MODEL_DIRECT) {
+          const subTierInfo = this.prebookForm.get('basicInfo').get('dealerInfo').get('subTierInfo') as FormArray
+          if (subTierInfo.invalid) {
+            this.modalService.error({
+              nzTitle: '提示',
+              nzContent: '经销商黑名单校验不通过，请上传必要的支持文件和备注后，再作提交'
+            }).afterClose.subscribe(() => {
+              this.tabs.activeId('basic-info')
+              setTimeout(() => {
+                document.querySelector('.dealer-info').scrollIntoView()
+              }, 0);
+            })
+          }
+        } 
         for (let i in this.oaSupplement.controls) {
           this.oaSupplement.controls[i].markAsDirty()
           this.oaSupplement.controls[i].updateValueAndValidity()
         }
+
         if (this.oaSupplement.invalid) {
           this.message.error('请按要求填写表单信息')
           return
         }
+       
+
         const {
           sofonFileSource,
           exportControl,
@@ -446,6 +470,7 @@ export class PrebookDetailComponent implements OnInit {
           sofonNo,
           paymentVoucher,
           needsLogisticSpecialist,
+          subTierInfo: (this.basicInfo.get('dealerInfo').get('subTierInfo') as FormArray).getRawValue()
         })
         break
       case 'ecos_prebook_om':
@@ -468,6 +493,21 @@ export class PrebookDetailComponent implements OnInit {
       case 'ecos_prebook_resubmit':
         // 校验表单
         const valid = validateForm(this.prebookForm, this.tabs)
+        // 判断次级经销商黑名单
+        if (data.prebook.businessModel !== BUSINESS_MODEL_DIRECT) {
+          const subTierInfo = this.prebookForm.get('basicInfo').get('dealerInfo').get('subTierInfo') as FormArray
+          if (subTierInfo.invalid) {
+            this.modalService.error({
+              nzTitle: '提示',
+              nzContent: '经销商黑名单校验不通过，请上传必要的支持文件和备注后，再作提交'
+            }).afterClose.subscribe(() => {
+              this.tabs.activeId('basic-info')
+              setTimeout(() => {
+                document.querySelector('.dealer-info').scrollIntoView()
+              }, 0);
+            })
+          }
+        } 
         if (!valid) {
           this.message.error('请按要求填写表单信息')
           return

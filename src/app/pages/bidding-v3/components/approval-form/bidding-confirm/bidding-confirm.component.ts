@@ -24,6 +24,7 @@ export class BiddingConfirmComponent implements OnChanges {
     dataSource: null,
     businessModel: null,
     hospitalName: null,
+    hospitalId: null,
     specialProject: null,
     lackingAwardNotice: null,
     lackingWinningNotice: null,
@@ -52,7 +53,7 @@ export class BiddingConfirmComponent implements OnChanges {
   @Input() biddingConfirm: FormGroup
   @Input() ddpDateExpired = false
 
-  @Output() activeProductTab = new EventEmitter()
+  @Output() activeTab = new EventEmitter<string>()
 
   @ViewChild('cpVerify') cpVerify: CpVerifyComponent
 
@@ -69,7 +70,7 @@ export class BiddingConfirmComponent implements OnChanges {
 
   get showVerifyCpBtn() {
     const { dataSource, businessModel, specialProject } = this.applyDetail
-    return !this.disabled && 
+    return !this.disabled &&
       businessModel !== BUSINESS_MODEL_DIRECT &&
       specialProject == 1 &&
       dataSource === 'CP Simulation' &&
@@ -132,8 +133,9 @@ export class BiddingConfirmComponent implements OnChanges {
   handleSpItemStatusChange(item) {
     const spItems = this.specialApprovalItems.getRawValue().filter(({ status, nonRequiredFields }) => status === 1 && nonRequiredFields)
     const winningNoticeFiles = this.biddingConfirm.get('winningNoticeFiles')
+    const { biddingType } = this.applyDetail
     for (let item of spItems) {
-      if (item.nonRequiredFields.includes('winningNoticeFiles')) {
+      if (item.nonRequiredFields.includes('winningNoticeFiles') || biddingType === '其他类型') {
         this.winningNoticeFilesRequired = false
         winningNoticeFiles.clearValidators()
         winningNoticeFiles.updateValueAndValidity()
@@ -199,7 +201,8 @@ export class BiddingConfirmComponent implements OnChanges {
     const {
       lackingAwardNotice, lackingWinningNotice, lackingGoodsLetter, lackingOther, lackingOtherDesc,
       processComments, winningNoticeFiles, biddingAnnouncePrice, biddingAnnounceCurrency, biddingAnnounceDate,
-      endTimeDate, specialApprovalDate, biddingNoticeSignDate, confirmSupplementFiles, lackingFilesAdded, specialApprovalSupportFiles
+      endTimeDate, specialApprovalDate, biddingNoticeSignDate, confirmSupplementFiles, lackingFilesAdded, specialApprovalSupportFiles,
+      biddingType,
     } = this.applyDetail
     this.biddingConfirm.patchValue({
       lackingOtherDesc,
@@ -211,6 +214,11 @@ export class BiddingConfirmComponent implements OnChanges {
       lackingOther: !!lackingOther,
       specialApprovalSupportFiles,
     })
+    if (biddingType === '其他类型') {
+        this.winningNoticeFilesRequired = false
+        winningNoticeFiles.clearValidators()
+        winningNoticeFiles.updateValueAndValidity()
+    }
     if (this.disabled) {
       this.biddingConfirm.disable()
     }
@@ -248,7 +256,7 @@ export class BiddingConfirmComponent implements OnChanges {
   }
 
   // action: unconfirmed => 退回至中标备案
-  // action: rejected => 退回至投标申请表 
+  // action: rejected => 退回至投标申请表
   onReject(action) {
     this.remarkMsgVisible = false
     const biddingConfirm = this.biddingConfirm.getRawValue()
@@ -260,38 +268,56 @@ export class BiddingConfirmComponent implements OnChanges {
     }
     const data = this.getFormData(action)
     this.biddingV3Service.setPageLoading(true)
-    this.biddingV3Service.approve(data).subscribe(({ code }) => {
+    this.biddingV3Service.approve(data).subscribe(({ code, msg }) => {
       if (code === '0000') {
         this.message.success("审批成功!");
         this.biddingV3Service.goTodoPage()
       } else {
-        this.message.error("审批失败!");
+        this.message.error(msg);
       }
       this.biddingV3Service.setPageLoading(false)
-    }, () => {
-      this.message.error("审批失败!");
+    }, ({ message }) => {
+      this.message.error(message);
       this.biddingV3Service.setPageLoading(false)
     })
   }
 
   onSubmit(data) {
     this.biddingV3Service.setPageLoading(true)
-    this.biddingV3Service.approve(data).subscribe(({ code }) => {
+    this.biddingV3Service.approve(data).subscribe(({ code, msg }) => {
       if (code === '0000') {
         this.message.success("审批成功!");
         this.biddingV3Service.goTodoPage()
       } else {
-        this.message.error("审批失败!");
+        this.message.error(msg);
       }
       this.biddingV3Service.setPageLoading(false)
-    }, () => {
-      this.message.error("审批失败!");
+    }, ({ message }) => {
+      this.message.error(message);
       this.biddingV3Service.setPageLoading(false)
     })
   }
 
   onApprove() {
     this.remarkMsgVisible = false
+    const data = this.getFormData('approved')
+    if (this.applyDetail.businessModel !== BUSINESS_MODEL_DIRECT) {
+      const subTiers = this.biddingForm.get('supplementInfo').get('dealerInfo').get('subTiers') as FormArray
+      if (subTiers.invalid) {
+        this.modalService.error({
+          nzTitle: '提示',
+          nzContent: '经销商黑名单校验不通过，请上传必要的支持文件和备注后，再作提交'
+        }).afterClose.subscribe(() => {
+          this.activeTab.emit('supplement-info')
+          setTimeout(() => {
+            document.querySelector('.dealer-info').scrollIntoView()
+          }, 0);
+        })
+        return
+      }
+      data.subTiers = subTiers.getRawValue()
+    }
+
     const biddingConfirm = this.biddingConfirm
     for (let i in biddingConfirm.controls) {
       biddingConfirm.controls[i].markAsDirty()
@@ -303,7 +329,6 @@ export class BiddingConfirmComponent implements OnChanges {
     }
 
     // 校验产品信息
-    const data = this.getFormData('approved')
     const marketBundles = this.biddingForm.get('marketBundles') as FormArray
     marketBundles.markAsDirty()
     marketBundles.updateValueAndValidity()
@@ -317,7 +342,7 @@ export class BiddingConfirmComponent implements OnChanges {
       })
     })
     if (marketBundles.invalid) {
-      this.activeProductTab.emit()
+      this.activeTab.emit('product-info')
       this.message.error('请补充产品信息')
       return
     }

@@ -158,7 +158,7 @@ export class AssignDialogComponent implements OnInit, OnChanges {
     const formValues = this.formValues.getRawValue();
 
     const data = this.checkedRows.map(
-      ({ id, applyId, taskInstId, procInstId }) => ({
+      ({ id, applyId, taskInstId, procInstId,processInstanceTaskId }) => ({
         mainId: id,
         role: formValues.role,
         receiver: formValues.receiver,
@@ -167,6 +167,7 @@ export class AssignDialogComponent implements OnInit, OnChanges {
         applyId,
         taskInstId,
         procInstId,
+        procTaskId:processInstanceTaskId
       })
     );
 

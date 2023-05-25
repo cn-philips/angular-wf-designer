@@ -191,9 +191,13 @@
   [nzScroll]="{ x: '1000px' }"
   [(nzPageIndex)]="searchParams.pageNo"
   [(nzPageSize)]="searchParams.pageSize"
+  [nzNoResult]="nzNoResultTpl"
   (nzPageIndexChange)="getTableData()"
   (nzPageSizeChange)="getTableData()"
->
+> 
+  <ng-template #nzNoResultTpl>
+    <nz-empty class="empty-remind" [nzNotFoundContent]="isFirstLoad?'请输入查询条件，点击“搜索”按钮查询':'暂无数据'"></nz-empty>
+  </ng-template>
   <thead>
     <tr>
       <th>申请编号</th>

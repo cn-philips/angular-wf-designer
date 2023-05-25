@@ -1,18 +1,21 @@
-import { Component, OnInit, ViewChild } from "@angular/core";
+import { Component, Input, OnInit, ViewChild } from "@angular/core";
 import { FormArray } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
 import { PrebookV3Service } from "@pages/prebook-v3/prebook-v3.service";
 import { prebookForm, createOrder, initBasicInfo, validateForm, getFormData } from "@pages/prebook-v3/prebook-v3.utils"
-import { NzMessageService } from "ng-zorro-antd";
+import { NzMessageService, NzModalService } from "ng-zorro-antd";
 import { BUSINESS_MODEL_DIRECT } from '@pages/bidding-v3/bidding-v3.constants'
 import { ProgressTabsComponent } from "@app/modern-themes/components/progress-tabs/progress-tabs.component";
 import { RouterExtendService } from "@app/modern-themes/services/router-extend.service";
+import { Subject } from "rxjs";
 
 @Component({
   templateUrl: "./prebook-form.component.html",
   styleUrls: ["./prebook-form.component.scss"],
 })
 export class PrebookFormComponent implements OnInit {
+  subTierSubject = new Subject()
+
   activedTabId = "basic-info";
   activeTabIndex = 0;
   tabNames = ["basic-info", "product-info"]
@@ -43,7 +46,8 @@ export class PrebookFormComponent implements OnInit {
     private message: NzMessageService,
     private router: Router,
     private prebookV3Service: PrebookV3Service,
-    private routerExtend: RouterExtendService
+    private routerExtend: RouterExtendService,
+    private modalService: NzModalService,
   ) {}
 
   ngOnInit() {
@@ -58,7 +62,7 @@ export class PrebookFormComponent implements OnInit {
     this.pageLoading = true
     this.prebookV3Service.detail(applyId).subscribe(({ data }) => {
       this.originData = data
-      initBasicInfo(this.prebookForm, data)
+      initBasicInfo(this.prebookForm, data, this.subTierSubject)
       // initOrderInfo(this.prebookForm, data)
       this.setOrderInfo(data.prebook.orderInfo)
       this.pageLoading = false
@@ -157,6 +161,22 @@ export class PrebookFormComponent implements OnInit {
       return
     }
     const valid = validateForm(this.prebookForm, this.tabs)
+
+    if (data.prebook.businessModel !== BUSINESS_MODEL_DIRECT) {
+      const subTierInfo = this.prebookForm.get('basicInfo').get('dealerInfo').get('subTierInfo') as FormArray
+      if (subTierInfo.invalid) {
+        this.modalService.error({
+          nzTitle: '提示',
+          nzContent: '经销商黑名单校验不通过，请上传必要的支持文件和备注后，再作提交'
+        }).afterClose.subscribe(() => {
+          this.handleToggleTab('basic-info')
+          setTimeout(() => {
+            document.querySelector('.dealer-info').scrollIntoView()
+          }, 0);
+        })
+      }
+    }
+
     if (!valid) {
       this.message.error('请按要求填写表单信息')
       return

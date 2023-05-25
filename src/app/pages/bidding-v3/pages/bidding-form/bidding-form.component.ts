@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from "@angular/core";
 import { DictService, HttpService } from "@core/services";
-import { NzMessageService } from "ng-zorro-antd";
+import { NzMessageService, NzModalService } from "ng-zorro-antd";
 import { Router, ActivatedRoute } from "@angular/router";
 import { FormArray, FormBuilder, FormControl, FormGroup, ValidationErrors, Validators } from "@angular/forms";
 import { ImportOppComponent } from "../../components/import-opp/import-opp.component";
@@ -9,6 +9,7 @@ import { BIDDING_COMPANIES, BUSINESS_MODEL_DIRECT } from "../../bidding-v3.const
 import { logisticTermsDescValidator, dealerDdpStatusValidator, bidderDdpStatusValidator, segmentValidator } from '../../bidding-v3.util'
 import { ProgressTabsComponent } from "@app/modern-themes/components/progress-tabs/progress-tabs.component";
 import { RouterExtendService } from "@app/modern-themes/services/router-extend.service";
+import { Subject } from "rxjs";
 
 // 投标金额相关校验
 // 投标保证金金额和投标保证金百分比必填一项
@@ -53,6 +54,8 @@ export class BiddingFormComponent implements OnInit {
   public pageLoading: boolean = false; // 加载转圈
   public taskStatus: any = '';
 
+  subTierSubject = new Subject()
+
   agreementList = [] // 经销商协议列表
 
   paymentTerms = []
@@ -83,7 +86,7 @@ export class BiddingFormComponent implements OnInit {
         customerCategory: [{ value: null, disabled: true }], // 客户分类
         customerProvince: [{ value: null, disabled: true }], // 客户所属省份
         customerCity: [{ value: null, disabled: true }], // 客户所属城市, 仅用于合同模板
-        groupPurchase: [{ value: false, disabled: true }], // 是否为集采项目
+        groupPurchase: [ false,  [Validators.required] ], // 是否为集采项目
       }, {
         validators: [segmentValidator]
       }),
@@ -161,6 +164,7 @@ export class BiddingFormComponent implements OnInit {
         distributorType: [null, [Validators.required]], // 协议经销商类型
         distributorDdpStatus: [{ value: null, disabled: true }], // 协议经销商DDP状态
         distributorDdpDate: [{ value: null, disabled: true }], // 协议经销商DDP有效期截止日期
+        subTiers: this.fb.array([]),
       }),
       biddingFile: this.fb.group({
         // 投标相关文件 [非直投]
@@ -212,6 +216,7 @@ export class BiddingFormComponent implements OnInit {
     performanceBondCurrency: null,
     performanceBondPercent: null,
     marketBundles: [],
+    subTiers: [],
   };
 
   referenceId;
@@ -224,7 +229,8 @@ export class BiddingFormComponent implements OnInit {
     private biddingV3Service: BiddingV3Service,
     private http: HttpService,
     private dictService: DictService,
-    private routerExtend: RouterExtendService
+    private routerExtend: RouterExtendService,
+    private modalService: NzModalService,
   ) {}
 
   ngOnInit() {
@@ -271,9 +277,9 @@ export class BiddingFormComponent implements OnInit {
       indirectAuthorizationRequired.patchValue(1)
       indirectAuthorizationRequired.disable()
     } else {
-      authorizationRequired.reset()
+      authorizationRequired.reset(authorizationRequired.value)
       authorizationRequired.enable()
-      indirectAuthorizationRequired.reset()
+      indirectAuthorizationRequired.reset(indirectAuthorizationRequired.value)
       indirectAuthorizationRequired.enable()
     }
   }
@@ -434,6 +440,7 @@ export class BiddingFormComponent implements OnInit {
       sealedLetterFiles,
       letterOfAuthorizationFiles,
       salesManagerAuthorizationLetter,
+      subTiers,
     } = this.originData as any
     const supplementInfo = this.biddingForm.get('supplementInfo') as FormGroup
     const dealerInfo = supplementInfo.get('dealerInfo') as FormGroup
@@ -521,6 +528,9 @@ export class BiddingFormComponent implements OnInit {
             letterOfAuthorizationFiles,
           },
         })
+        setTimeout(() => {
+          this.subTierSubject.next({ type: 'add', data: subTiers })
+        }, 0);
         if (distributorAgreement) {
           const formArray = this.biddingForm.get('supplementInfo').get('dealerInfo').get('distributorAgreement') as FormArray
           distributorAgreement.forEach(({ dealerAgreement, authorizedProduct, authorizedArea }) => {
@@ -780,6 +790,19 @@ export class BiddingFormComponent implements OnInit {
         dealerInfo.controls[i].updateValueAndValidity()
       }
 
+      const subTiers = dealerInfo.get('subTiers') as FormArray
+      if (subTiers.invalid) {
+        this.modalService.error({
+          nzTitle: '提示',
+          nzContent: '经销商黑名单校验不通过，请上传必要的支持文件和备注后，再作提交'
+        }).afterClose.subscribe(() => {
+          this.handleToggleTab('supplement-info')
+          setTimeout(() => {
+            document.querySelector('.dealer-info').scrollIntoView()
+          }, 0);
+        })
+      }
+
       const biddingFile = supplementInfo.get('biddingFile') as FormGroup
       for(let i in biddingFile.controls) {
         biddingFile.controls[i].markAsDirty()
@@ -1016,8 +1039,24 @@ export class BiddingFormComponent implements OnInit {
       paymentDescription,
       predictBiddingPrice,
       groupPurchase,
+      centralizedOrNot,
       cityName,
+      opportunityId,
     } = data[0];
+
+    setTimeout(() => {
+      const validData = data.filter(({ subTierDealers }) => Array.isArray(subTierDealers))
+      validData.forEach((item) => {
+        this.subTierSubject.next({
+          type: 'add',
+          data: {
+            crmOpId: item.opportunityId,
+            dealerSubTiers: item.subTierDealers.map((dealer) => ({ ...dealer, crmOpId: item.opportunityId }))
+          }
+        })
+      })
+    }, 0);
+
     const marketBundlesArray = this.biddingForm.get("marketBundles") as FormArray;
     this.biddingForm.patchValue({
       dataSource,
@@ -1134,7 +1173,7 @@ export class BiddingFormComponent implements OnInit {
           customerCity: cityName,
           customerCategory: category, // 客户分类
           hospitalName, // 医院名称
-          groupPurchase: groupPurchase == 1,
+          groupPurchase: !!centralizedOrNot, //true or false, 数据库存1或0
         },
       },
     });

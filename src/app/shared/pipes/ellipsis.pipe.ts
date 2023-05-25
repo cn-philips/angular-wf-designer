@@ -13,7 +13,7 @@ export class EllipsisPipe implements PipeTransform {
     }
     value = value.toString();
     if (value.length > max) {
-        return value.substring(0,50).concat('...');
+        return value.substring(0,max).concat('...');
     }
     return value;
   }
