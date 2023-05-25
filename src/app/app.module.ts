@@ -34,6 +34,7 @@ import {
 } from "@ngx-translate/core";
 import { TranslateHttpLoader } from "@ngx-translate/http-loader";
 import { HttpClient } from "@angular/common/http";
+import { GlobalService } from "@core/services";
 // registerLocaleData(localeCn, localeCnExtra);
 registerLocaleData(zh);
 export function createTranslateLoader(http: HttpClient) {
@@ -75,6 +76,7 @@ export function createTranslateLoader(http: HttpClient) {
       provide: NZ_I18N,
       useValue: zh_CN,
     },
+    GlobalService
   ],
 
   bootstrap: [AppComponent],

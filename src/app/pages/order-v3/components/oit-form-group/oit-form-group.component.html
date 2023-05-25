@@ -78,8 +78,8 @@
       <div nz-col nzXs="24" nzSm="24" nzMd="8">
         <nz-form-item>
           <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true">
-            {{"orderv3.components.oit-form.general.special-price-list" | translate}}            
-          </nz-form-label>                   
+            {{"orderv3.components.oit-form.general.special-price-list" | translate}}
+          </nz-form-label>
             <nz-form-control nzXs="24" nzSm="24" nzMd="18">
               <nz-select
                 nzAllowClear
@@ -92,7 +92,7 @@
                   nzLabel="否"
                   nzValue="0"></nz-option>
               </nz-select>
-            </nz-form-control>          
+            </nz-form-control>
         </nz-form-item>
       </div>
       <div nz-col nzXs="24" nzSm="24" nzMd="8">
@@ -236,7 +236,7 @@
         </nz-form-item>
       </div>
     </div>
-     
+
     <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
       <div nz-col nzXs="24" nzSm="24" nzMd="8">
         <nz-form-item>
@@ -263,7 +263,7 @@
           </nz-form-control>
         </nz-form-item>
       </div>
-    </div> 
+    </div>
     <div *ngIf="needFileTypeShowOff" nz-row nzType="flex" nzJustify="start" nzAlign="middle">
       <div nz-col nzXs="24" nzSm="24" nzMd="8">
         <nz-form-item>
@@ -498,18 +498,20 @@
   <!--    </div>-->
   <!--  </div>-->
   <nz-collapse [nzBordered]="false">
-    <nz-collapse-panel *ngFor="let item of supportFileList" [nzHeader]="item.fileName" [nzActive]="true"
+    <ng-container *ngFor="let item of supportFileList">
+      <nz-collapse-panel *ngIf="hasPerm(item.permission)" [nzHeader]="item.fileName" [nzActive]="true"
       [nzShowArrow]="false">
-      <div *ngFor="let file of item.file" class="file-item">
-        <span class="file-name" [title]="file.fileName" (click)="onDownloadFile(file)">
-          {{ file.fileName? file.fileName : file.name}}
-          <i nz-icon nzType="download" nzTheme="outline" (click)="onDownloadFile(file)"></i>
+        <div *ngFor="let file of item.file" class="file-item">
+          <span class="file-name" [title]="file.fileName" (click)="onDownloadFile(file)">
+            {{ file.fileName? file.fileName : file.name}}
+            <i nz-icon nzType="download" nzTheme="outline" (click)="onDownloadFile(file)"></i>
 
-        </span>
-        <!--        <span class="file-btn">-->
-        <!--    </span>-->
-      </div>
-    </nz-collapse-panel>
+          </span>
+          <!--        <span class="file-btn">-->
+          <!--    </span>-->
+        </div>
+      </nz-collapse-panel>
+    </ng-container>
   </nz-collapse>
   <!--  <div class="upload-file-list" *ngIf="supportFileList.length > 0">-->
   <!--    <div *ngFor="let item of supportFileList" class="file-item">-->

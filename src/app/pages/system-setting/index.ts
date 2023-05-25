@@ -1,11 +1,11 @@
 import {
   BusinessConfigComponent,
-  SpecialApprovalSettingComponent,
-  ApproveNodeFormComponent,
-  ApproveProcFormComponent,
-  ApproveProcListComponent,
-  BusinessProcFormComponent,
-  BusinessProcListComponent,
+  // SpecialApprovalSettingComponent,
+  // ApproveNodeFormComponent,
+  // ApproveProcFormComponent,
+  // ApproveProcListComponent,
+  // BusinessProcFormComponent,
+  // BusinessProcListComponent,
   SpecialApprovalItemComponent,
 } from "./business-config";
 import {
@@ -45,6 +45,14 @@ import {
   AssignDialogComponent,
 } from "./task-assign";
 import { ScheduleComponent,ScheduleListComponent,ScheduleSearchComponent } from './schedule';
+import { spSettingComponent, 
+  SpecialApprovalSettingComponent, 
+  ApproveNodeFormComponent,
+  ApproveProcFormComponent,
+  ApproveProcListComponent,
+  BusinessProcFormComponent,
+  BusinessProcListComponent,
+} from './sp-setting';
 
 export * from "./business-config";
 export * from "./data-dictionary";
@@ -57,6 +65,7 @@ export * from "./change-owner/change-owner.component";
 export * from "./message-management";
 export * from "./schedule";
 export * from "./task-assign";
+export * from "./sp-setting";
 
 export const PAGES = [
   BusinessConfigComponent,
@@ -72,6 +81,7 @@ export const PAGES = [
   NotificationSettingComponent,
   ScheduleComponent,
   TaskAssignComponent,
+  spSettingComponent,
 ];
 
 export const COMPONENTS = [

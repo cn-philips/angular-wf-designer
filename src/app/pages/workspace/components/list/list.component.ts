@@ -316,6 +316,7 @@ export class ListComponent implements OnInit {
           role: this.role,
           receiver: this.receiver,
           flag: this.continue ? 1 : 0,
+          procTaskId:item.processInstanceTaskId
         });
       });
       if (!(arr && arr.length > 0)) {
@@ -370,6 +371,10 @@ export class ListComponent implements OnInit {
         });
       } else {
         const url = "/act/ecom/homepage/transferOrderRecord";
+        if (this.subAssignLoading) {
+          return;
+        }
+        this.subAssignLoading = true;
         this.http.post(url, arr).subscribe(
           (e) => {
             this.subAssignLoading = false;

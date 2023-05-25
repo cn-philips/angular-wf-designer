@@ -8,6 +8,7 @@ import { SpecialApprovalService } from '../special-approval.service'
 import { SearchParams, RequestItem } from '../special-approval'
 import { DEFAULT_ERROR_MESSAGE, APPLY_TYPES, BG_LIST, PROCESS_STATUS } from '../special-approval.constants'
 import { APPROVE_NODE_ACTION } from '../special-approval-setting.constants'
+import { RouterExtendService } from "@app/modern-themes/services/router-extend.service";
 
 @Component({
   selector: "special-approval-view",
@@ -24,6 +25,7 @@ export class ViewComponent implements OnInit {
   });
 
   public isCollapse = false;
+  isFirstLoad = true
 
 
   searchParams: SearchParams = {
@@ -54,11 +56,12 @@ export class ViewComponent implements OnInit {
     private fb: FormBuilder,
     protected spService: SpecialApprovalService,
     private router: Router,
-    private message: NzMessageService
+    private message: NzMessageService,
+    private routerExt: RouterExtendService,
   ) {}
 
   ngOnInit(): void {
-    this.getTableData();
+    // this.getTableData();
   }
 
   async getTableData(isResetPageNo = false) {
@@ -97,6 +100,7 @@ export class ViewComponent implements OnInit {
       console.error(`获取我可查看列表数据失败, ${message}`);
     } finally {
       this.tableData.loading = false;
+      this.isFirstLoad = false
     }
   }
 
@@ -106,6 +110,6 @@ export class ViewComponent implements OnInit {
 
   // 跳转到申请详情
   onNavigateToRequestDetail({ id }) {
-    this.router.navigate(["/special-approval/request", id]);
+    this.routerExt.navigateWithNewWindow(["/special-approval/request", id]);
   }
 }

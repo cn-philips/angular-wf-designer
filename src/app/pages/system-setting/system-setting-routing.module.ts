@@ -11,7 +11,8 @@ import {
   ChangeOwnerComponent,
   MessageManagementComponent,
   ScheduleComponent,
-  TaskAssignComponent
+  TaskAssignComponent,
+  spSettingComponent,
 } from "./index";
 
 const routes: Route[] = [
@@ -25,6 +26,7 @@ const routes: Route[] = [
   { path: "message", component: MessageManagementComponent },
   { path: "schedule", component: ScheduleComponent },
   { path: 'task-assign', component: TaskAssignComponent },
+  { path: 'sp-setting', component: spSettingComponent },
   { path: "", redirectTo: "role", pathMatch: "full" },
 ];
 

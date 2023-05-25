@@ -147,7 +147,7 @@ export class RequestFormComponent implements OnInit {
     sapOrderNo: [null, [Validators.required]], // SAP订单号
     orderAmount: [null, [Validators.required]], // 合同金额-数额
     currency: [null, [Validators.required]], // 合同金额-货币
-    expectedSaleDate: [null, [Validators.required]], // 预计记认销售日期
+    expectedSaleDate: [null], // 预计记认销售日期
     recordSalesMonth: [null], // 距预计记认销售约N月
     om: [null], // OM
     expectedPaymentDate: [null], // 预计付款日期

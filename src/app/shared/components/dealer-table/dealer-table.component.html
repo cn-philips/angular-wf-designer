@@ -19,19 +19,22 @@
               <th nzAlign="center" style="width: 200px;">经销商名称</th>
               <th nzAlign="center" style="width: 200px;">
                 <!-- <span class="red">*</span> -->
-                <span>是否在黑名单</span><br><span>(CP结果)</span>
+                <span>是否在“飞利浦拒绝合作清单”</span><br><span>(CP结果)</span>
               </th>
               <th nzAlign="center" style="width: 200px;">
                 <span>经销商层级是否超限</span><br><span>(CP结果)</span>
               </th>
               <th nzAlign="center" style="width: 200px;">
-                <span>次级经销商备注</span><br><span>(CP结果)</span>
+                <span>是否在“经销商白名单”</span><br><span>(CP结果)</span>
               </th>
               <th nzAlign="center" style="width: 200px;">
-                <span>次级经销商支持附件</span><br><span>(CP结果)</span>
+                <span>次级经销商备注</span><br><span>(DTC结果)</span>
               </th>
               <th nzAlign="center" style="width: 200px;">
-                <span>是否在黑名单</span><br><span>(最新DMS)</span>
+                <span>次级经销商支持附件</span><br><span>(DTC结果)</span>
+              </th>
+              <th nzAlign="center" style="width: 200px;">
+                <span>是否在“飞利浦拒绝合作清单”</span><br><span>(最新DMS)</span>
               </th>
               <th nzAlign="center" style="width: 200px;">
                 <span>特批备注</span>
@@ -53,12 +56,48 @@
               >
                 <span *ngIf="dealer.get('level').value !== 1">{{ dealer.get('isOverLimit').value ? '是' : '否' }}</span>
               </td>
+              <td nzAlign="center">
+                <span *ngIf="dealer.get('isWhiteList').value !== null">{{ dealer.get('isWhiteList').value ? '是' : '否' }}</span>
+              </td>
               <td nzAlign="center">{{ dealer.get('remark').value }}</td>
               <td nzAlign="center">
-                <a class="download-link" *ngIf="dealer.get('supportFile').value" target="_blank" [href]="dealer.get('supportFile').value">
+                <span
+                  class="download-link"
+                  *ngIf="dealer.get('supportFile').value"
+                  nz-popover
+                  nzTrigger="click"
+                  nzTitle="下载次级经销商支持附件(DTC结果)"
+                  [nzContent]="contentTemplate"
+                >
                   点击下载
                   <i nz-icon nzType="download" nzTheme="outline"></i>
-                </a>
+              </span>
+                <ng-template #contentTemplate>
+                  <nz-table
+                    nzSize="small"
+                    [nzData]="getSupportFile(dealer)"
+                    [nzFrontPagination]="false"
+                    [nzShowPagination]="false"
+                    [nzLoading]="tableLoading"
+                  >
+                    <thead>
+                      <tr>
+                        <th>文件名</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let data of getSupportFile(dealer)">
+                        <td>{{ data.name }}</td>
+                        <td>
+                          <span class="download-link" (click)="onDownloadFile(data)">
+                            下载
+                          </span>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </nz-table>
+                </ng-template>
               </td>
               <td nzAlign="center">
                 <i *ngIf="dealer.get('isDMSBlackList').value === 0" nz-icon nzType="loading" nzTheme="outline"></i>

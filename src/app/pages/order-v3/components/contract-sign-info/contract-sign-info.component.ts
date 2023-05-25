@@ -3,7 +3,7 @@ import { Component, Input, OnInit } from "@angular/core";
 import { FormGroup, FormArray, FormBuilder } from "@angular/forms";
 import { ActivatedRoute, Router } from '@angular/router';
 import { OrderV3Service } from "@pages/order-v3/order-v3.service";
-import { disreduce, removeRepeat, floatSub, fomatFloat, floatDivide, returnFloat } from '@core/util/tools'
+import { disreduce, removeRepeat, floatSub, fomatFloat, floatDivide, returnFloat, NumberThousandth } from '@core/util/tools'
 import * as moment from "moment";
 @Component({
   selector: "ecos-contract-sign-info",
@@ -156,7 +156,7 @@ export class ContractSignInfoComponent implements OnInit {
         }
       }
     })
-    dealerAgreementNo = dealerAgreementNo.join(",");
+    dealerAgreementNo = Array.from(new Set(dealerAgreementNo)).join(",");
     //const orderSignName = this.dealerFrom.getRawValue().purchaseOrderSignatory;
     //const orderSignPost = this.dealerFrom.getRawValue().purchaseOrderSignatoryPosition;
 
@@ -169,7 +169,7 @@ export class ContractSignInfoComponent implements OnInit {
     const { foreignTradeCorpName, foreignTradeCorpAddress } =
       this.foreignFrom.getRawValue();
 
-    const { totalContractPrice, dealPriceCnyNet, dealPriceUsd, currencySystem} = this.priceApprovalData.getRawValue();
+    const { totalContractPrice, dealPriceCny, dealPriceUsd, currencySystem} = this.priceApprovalData.getRawValue();
 
 
     estimateInstallationDate = estimateInstallationDate ? moment(estimateInstallationDate).format(
@@ -259,12 +259,12 @@ export class ContractSignInfoComponent implements OnInit {
       nmpaName: medicalDeviceName ? medicalDeviceName : "",
       salesLeaderPost: "salesLeader", //职位
       salesLeaderPosition: "salesLeader",//职位
-      totalContractPrice: totalContractPrice ? totalContractPrice : "", //进单单位合同价
+      totalContractPrice: totalContractPrice ? NumberThousandth(fomatFloat(totalContractPrice, 2)) : "", //进单单位合同价
       totalPrice: totalPrice ? totalPrice : "", //表格总价
-      contractPrice: contractPrice ? contractPrice : "",//单价  
+      contractPrice: contractPrice ? NumberThousandth(fomatFloat(contractPrice, 2)) : "",//单价  
       dealerAgreementNo: businessModel != "DIRECT" ? dealerAgreementNo : "", //经销商协议号
       magnet,   //是否显示表格中的磁体
-      dealFormPrice: currencySystem === 'CNY'?(dealPriceCnyNet?dealPriceCnyNet:""):(currencySystem === 'USD'?(dealPriceUsd?dealPriceUsd:""):""), //dealForm总价     
+      dealFormPrice: currencySystem === 'CNY'?(dealPriceCny?dealPriceCny:""):(currencySystem === 'USD'?(dealPriceUsd?dealPriceUsd:""):""), //dealForm总价     
       //biddingAgency: //招标机构
       //totalPriceNumber: 9012392, // 表格总金额（阿拉伯数字）
     };
@@ -288,9 +288,14 @@ export class ContractSignInfoComponent implements OnInit {
   generateTableParams(item: any, marketBundleInfo: any, totalContractPrice: any, priceTerms) {
 
     let totalPrice: any = 0;
-    const codeList = ["EcosUS01", "EcosUS02", "EcosUS03", "EcosUS04", "EcosUS05", "EcosUS06"];
-    const codeColSix = ["EcosUS03", "EcosUS04", "EcosUS05"];
-    const ccTempCodeList = ["EcosCC01", "EcosCC02"];
+    const codeList = [
+      "EcosUS01", "EcosUS02", "EcosUS03", "EcosUS04", "EcosUS05", "EcosUS06",
+      "EcosS1007_P202303", "EcosS1008_P202303", "EcosS2002_P202303",
+    ];
+    const codeColSix = [ "EcosUS03", "EcosUS04", "EcosUS05" ];
+    const usIncludeMsg = ["EcosS1007_P202303"]
+    const ccTempCodeList = ["EcosCC01", "EcosCC02", "EcosS1003_P202303"];
+    const ccCodeFive = ["EcosS1003_P202303"];
 
     //US生成表格
     if (codeList.includes(item.code)) {
@@ -299,7 +304,10 @@ export class ContractSignInfoComponent implements OnInit {
       { code: "EcosUS03", tableIndex: 0 },
       { code: "EcosUS04", tableIndex: 1 },
       { code: "EcosUS05", tableIndex: 1 },
-      { code: "EcosUS06", tableIndex: 1 }
+      { code: "EcosUS06", tableIndex: 1 },
+      { code: "EcosS1007_P202303", tableIndex: 1 },
+      { code: "EcosS1008_P202303", tableIndex: 1 },
+      { code: "EcosS2002_P202303", tableIndex: 5 },
       ]
       let resultData = {
         totalPrice: "",
@@ -313,22 +321,22 @@ export class ContractSignInfoComponent implements OnInit {
       marketBundleInfo.map((items, index) => {
         if (items.primaryOpportunity == 'true' || items.primaryOpportunity == true) {
           let unitPrice: any = floatDivide(totalContractPrice, items.marketBundleAmount)
-          unitPrice = fomatFloat(unitPrice, 2)
+          unitPrice = NumberThousandth(fomatFloat(unitPrice, 2))
           let arr = [{ cellName: index + 1 },
-          { cellName: items.medicalDeviceName + " 产品型号:" + items.productModel },
+          { cellName: items.medicalDeviceName + " \n产品型号:" + items.productModel + (usIncludeMsg.includes(item.code)? " \n含相关的：以附件一配置清单为准":"") },
           { cellName: items.marketBundleAmount },
           { cellName: (items.originCountry ? items.originCountry : "") + " +Philips" },
           ];
 
           if (codeColSix.includes(item.code)) {
             const arrCol = [{ cellName: unitPrice },
-            { cellName: totalContractPrice },]
+            { cellName: NumberThousandth(fomatFloat(totalContractPrice,2)) },]
             arr = [...arr, ...arrCol]
           }
           else {
             const arrCol = [{ cellName: priceTerms ? priceTerms : "" },
             { cellName: unitPrice },
-            { cellName: totalContractPrice },]
+            { cellName: NumberThousandth(fomatFloat(totalContractPrice,2)) },]
             arr = [...arr, ...arrCol]
           }
           result[0].dataList.push(arr)
@@ -343,6 +351,7 @@ export class ContractSignInfoComponent implements OnInit {
       //CC生成表格
       const codeIndexList = [{ code: "EcosCC01", tableIndex: 1 },
       { code: "EcosCC02", tableIndex: 1 },
+      { code: "EcosS1003_P202303", tableIndex: 1 },
       ]
       let resultData = {
         totalPrice: "",
@@ -358,11 +367,24 @@ export class ContractSignInfoComponent implements OnInit {
         if (items.primaryOpportunity == 'true' || items.primaryOpportunity == true) {
           let arr = [{ cellName: index + 1 },
           { cellName: items.medicalDeviceName },
-          { cellName: (items.originCountry ? items.originCountry : "") + " +Philips" },
-          { cellName: items.marketBundleAmount },
-          { cellName: "" },
-          { cellName: "" },
           ];
+
+          if(ccCodeFive.includes(item.code)){
+            const arrCol = [
+              { cellName: items.marketBundleAmount },
+              { cellName: "" },
+              { cellName: "" },
+            ]
+            arr = [...arr, ...arrCol]
+          } else {
+            const arrCol = [
+              { cellName: (items.originCountry ? items.originCountry : "") + " +Philips" },
+              { cellName: items.marketBundleAmount },
+              { cellName: "" },
+              { cellName: "" },
+            ]
+            arr = [...arr, ...arrCol]
+          }
           result[0].dataList.push(arr)
         }
       })

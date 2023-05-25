@@ -128,6 +128,9 @@
             <div *ngIf="baseInfoFrom.get('contractCancelReferenceId').value" class="lintesting">
               此单为“改单项目”，原合同概要表SO#={{ baseInfoFrom.get('contractCancelSoNo').value }}
             </div>
+            <div *ngIf="lastSo.isExsit" class="lintesting">
+              此单为“改单项目”，改单前上一版本的SO#={{ lastSo.lastSo }}
+            </div>
           </div>
           <!-- <div nz-col nzSpan="12">
             <div nz-tooltip [nzTitle]="soNo" *ngIf="dataBase.isPrebookApply=='1'" class="warning space" nzFor="email">

@@ -138,7 +138,7 @@ export class ContractComponent implements OnInit {
 
 
     actualSalesEmail: [{ value: null, disabled: !this.editBase }], //实际销售
-    actualSalesName: [{ value: null, disabled: true }],//实际销售 
+    actualSalesName: [{ value: null, disabled: true }],//实际销售
     actualSalesNameModel: [{ value: null, disabled: true }],//实际销售名字
 
     contractCancelReferenceId: [{ value: null, disabled: !this.editBase }], //原合同概要表id
@@ -148,12 +148,13 @@ export class ContractComponent implements OnInit {
     isRequired: [{ value: false, disabled: true }],
     optionDisabled: [{ value: true, disabled: true }],
     currencySystem: [{ value: true, disabled: true }],
-    orderSalesSapCode: [{ value: null, disabled: !this.editBase }], //orderSalesSapCode  
+    orderSalesSapCode: [{ value: null, disabled: !this.editBase }], //orderSalesSapCode
     dealIsDisabled: [{ value: false, disabled: true }],//是否显示经销商的按钮
     profitNetRate: [{ value: null, disabled: true }],//经销商净利润
     profitGrossRate: [{ value: null, disabled: true }],//经销商毛利率
     profitGross: [{ value: null, disabled: true }],//经销商毛利润
     dealerProfit: [{ value: null, disabled: true }],//经销商利润
+    biddingCurrency: [{ value: null, disabled: true }],//投标币种
   };
   dealerFrom = {
     dealerName: [{ value: null, disabled: true }, [Validators.required]], //经销商名称
@@ -500,6 +501,7 @@ export class ContractComponent implements OnInit {
       profitGrossRate,
       profitGross,
       dealerProfit,
+      biddingCurrency
     } = contractInfo
     this.productModelInfoData.patchValue({
       ...contractInfo
@@ -567,6 +569,7 @@ export class ContractComponent implements OnInit {
       profitGrossRate,
       profitGross,
       dealerProfit,
+      biddingCurrency
     })
 
     this.dealerFromData.patchValue({
@@ -638,7 +641,7 @@ export class ContractComponent implements OnInit {
       })
     }
     if (this.baseInfoFromData.getRawValue().businessModel == 'DISTRIBUTOR') {
-      this.getdistributorDate(); //更新经销商日期    
+      this.getdistributorDate(); //更新经销商日期
       setTimeout(() => {
         const subTierDisbaled = !(this.flag == '0' && ['ecos_oit_order_resubmit'].includes(this.status))
         this.subTierSubject.next({
@@ -665,7 +668,7 @@ export class ContractComponent implements OnInit {
     }
   }
 
-  getBiddingIsSpecial() {//bidding模式是否是特批          
+  getBiddingIsSpecial() {//bidding模式是否是特批
     let { biddingApplyList } = this.baseInfoFromData.getRawValue();
     biddingApplyList.map(val => {
       this.serveice.getBiddingIsSpecial(val.id).subscribe(item => {
@@ -881,8 +884,8 @@ export class ContractComponent implements OnInit {
           this.contractRemarkFromData.get('comments')!.updateValueAndValidity();
         }
         if (baseInfoFrom.businessModel == 'DISTRIBUTOR') {
-          //const dateAndValid=await this.serveice.getDdpDateAndValid(dealerFrom.dealerName); 
-          //console.log(dateAndValid)            
+          //const dateAndValid=await this.serveice.getDdpDateAndValid(dealerFrom.dealerName);
+          //console.log(dateAndValid)
           const dateAndValid = await this.serveice.findDealersByPageValid({ dealerName: dealerFrom.dealerName })
           if (dateAndValid.code == '0000') {
             const rows = dateAndValid.data.rows
@@ -1006,9 +1009,9 @@ export class ContractComponent implements OnInit {
               dealerDdpValidityDate: rows[0].mdtdealerddpexpiredate
             })
           }
-        }       
+        }
       }
-      
+
     })
 
 

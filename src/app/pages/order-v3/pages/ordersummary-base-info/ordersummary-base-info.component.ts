@@ -37,7 +37,7 @@ export class OrdersummaryBaseInfoComponent implements OnInit {
     private routerExtendService: RouterExtendService
 
   ) { }
-  
+
   subTierSubject = new Subject()
   public activedId: any = "pending-tab";
   public editBase: any = true; //基础信息是否编辑
@@ -141,11 +141,12 @@ export class OrdersummaryBaseInfoComponent implements OnInit {
     optionDisabled: [{ value: true, disabled: true }],
     currencySystem: [{ value: null, disabled: true }],//币制
     orderSalesSapCode: [{ value: null, disabled: true }], //orderSalesSapCode
-    dealIsDisabled: [{ value: false, disabled: true }],//是否显示经销商的按钮  
+    dealIsDisabled: [{ value: false, disabled: true }],//是否显示经销商的按钮
     profitNetRate: [{ value: null, disabled: true }],//经销商净利润
     profitGrossRate: [{ value: null, disabled: true }],//经销商毛利率
     profitGross: [{ value: null, disabled: true }],//经销商毛利润
-    dealerProfit: [{ value: null, disabled: true }],//经销商利润  
+    dealerProfit: [{ value: null, disabled: true }],//经销商利润
+    biddingCurrency: [{ value: null, disabled: true }],//投标币种
   };
   dealerFrom = {
     dealerName: [{ value: null, disabled: true }, [Validators.required]], //经销商名称
@@ -587,6 +588,7 @@ export class OrdersummaryBaseInfoComponent implements OnInit {
       profitGrossRate,
       profitGross,
       dealerProfit,
+      biddingCurrency
     } = contractInfo
     this.formValue.patchValue({
       applyId: data.applyId ? data.applyId : this.applyId,
@@ -660,6 +662,7 @@ export class OrdersummaryBaseInfoComponent implements OnInit {
       profitGrossRate,
       profitGross,
       dealerProfit,
+      biddingCurrency
     })
 
     this.dealerFromData.patchValue({
@@ -763,7 +766,7 @@ export class OrdersummaryBaseInfoComponent implements OnInit {
     }
 
     if (this.baseInfoFromData.getRawValue().businessModel == 'DISTRIBUTOR') {
-      this.getdistributorDate(); //更新经销商日期    
+      this.getdistributorDate(); //更新经销商日期
       setTimeout(() => {
         this.subTierSubject.next({ type: 'add', data: subTierInfo, disabled: !(this.flag == '0' && this.status == 'ecos_oit_order_os_input') })
         this.baseInfoFromChild.checkBiddingEqualDealer();
@@ -795,7 +798,7 @@ export class OrdersummaryBaseInfoComponent implements OnInit {
       this.getBiddingIsSpecial();
     }
   }
-  getBiddingIsSpecial() {//bidding模式是否是特批      
+  getBiddingIsSpecial() {//bidding模式是否是特批
     let { biddingApplyList } = this.baseInfoFromData.getRawValue();
     biddingApplyList.map(val => {
       this.serveice.getBiddingIsSpecial(val.id).subscribe(item => {
@@ -1063,8 +1066,8 @@ export class OrdersummaryBaseInfoComponent implements OnInit {
       }
       this.pageLoading = true;
       if (baseInfoFrom.businessModel == 'DISTRIBUTOR') {
-        //const dateAndValid=await this.serveice.getDdpDateAndValid(dealerFrom.dealerName); 
-        //console.log(dateAndValid)            
+        //const dateAndValid=await this.serveice.getDdpDateAndValid(dealerFrom.dealerName);
+        //console.log(dateAndValid)
         const dateAndValid = await this.serveice.findDealersByPageValid({ dealerName: dealerFrom.dealerName })
         if (dateAndValid.code == '0000') {
           const rows = dateAndValid.data.rows
@@ -1133,7 +1136,7 @@ export class OrdersummaryBaseInfoComponent implements OnInit {
               this.pageLoading=false;
               this.message.create("error", `未在IEPOOL找到经销商信息`);
               return
-            }           
+            }
           }
           else {
             this.pageLoading=false;
@@ -1574,6 +1577,7 @@ export class OrdersummaryBaseInfoComponent implements OnInit {
           ![
             'dealerRequestLetterFileFlag',
             'otherSupportFileFlag',
+            // 'enduserContractCheckFlag'
           ].includes(value)
         ) {
           return value

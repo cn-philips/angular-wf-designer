@@ -44,7 +44,7 @@
                     <nz-form-explain *ngIf="
                         item.controls.orderSalesinfo.get('orderSales')?.dirty &&
                         item.controls.orderSalesinfo.get('orderSales')?.errors
-                      ">
+                      " style="color:red">
                       {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
                     </nz-form-explain>
                     <ng-template #selectPersonBtn>
@@ -124,8 +124,8 @@
                     <ng-container *ngIf="
                         !item.controls.orderSalesinfo.getRawValue().isDisabled
                       ">
-                      <shared-select (ngModelChange)="selectConfig($event, i)" placeholder="请选择" [options]="saleRegions"
-                        formControlName="orderApprovalAreaConfiguration">
+                      <shared-select (ngModelChange)="selectConfig($event, i)" placeholder="请选择"
+                        [options]="filterSaleRegion(i)" formControlName="orderApprovalAreaConfiguration">
                       </shared-select>
                       <nz-form-explain *ngIf="
                           item.controls.orderSalesinfo.get(
@@ -488,13 +488,13 @@
                   </nz-form-label>
                   <nz-form-control nzXs="24" nzSm="24" nzMd="14">
                     <div *ngIf="flag==0">
-                      <nz-switch [(ngModel)]="switchValid"
+                      <nz-switch [(ngModel)]="switchValids[i]" (ngModelChange)="handleSwitch(i,$event)"
                         [disabled]="item.controls.orderBaseinfo.getRawValue().switchValid"
                         [ngModelOptions]="{standalone: true}"></nz-switch><span
                         style="font-size: xx-small;padding-top: 10%">{{'orderv3.components.pre-product.orderBaseInfo.selectFileFromCP'
                         | translate}}</span>
                     </div>
-                    <ng-container *ngIf="switchValid">
+                    <ng-container *ngIf="switchValids[i]">
                       <nz-form-control>
                         <sofon-upload-file
                           [title]="'orderv3.components.pre-product.orderBaseInfo.sofonFile' | translate" [type]="null"
@@ -508,7 +508,7 @@
                         </nz-form-explain>
                       </nz-form-control>
                     </ng-container>
-                    <ng-container *ngIf="!switchValid">
+                    <ng-container *ngIf="!switchValids[i]">
                       <nz-form-control>
                         <shared-upload-file
                           [title]="'orderv3.components.pre-product.orderBaseInfo.sofonFile' | translate" [type]="null"
@@ -934,11 +934,11 @@
                       <ng-template #clearHospitalBtn>
                         <i nz-icon nz-tooltip class="ant-input-clear-icon" nzTheme="fill" nzType="close-circle" *ngIf="
                             item.controls.endUserinfo.get('endUser').value &&
-                            editable
+                            editable && isCurrentUserEditable()
                           " (click)="onClearHospital()"></i>
                       </ng-template>
                       <ng-template #selectHospitalBtn>
-                        <button *ngIf="editable" nz-button nzType="primary" class="ml-md"
+                        <button *ngIf="editable && isCurrentUserEditable()" nz-button nzType="primary" class="ml-md"
                           (click)="onShowSelectHospitalModal(i)">
                           {{'orderv3.components.pre-product.common.selectHospital' | translate}}
                         </button>
@@ -1246,7 +1246,7 @@
                         maxlength="255" />
                       <nz-alert *ngIf="item.controls.foreignInfo.get('foreignTradeCorpDdpStatus').value =='不通过'"
                         nzType="warning" nzMessage="当前外贸公司DDP已过有效期" nzShowIcon></nz-alert>
-                      <nz-form-explain style="color:red" *ngIf="item.controls.foreignInfo.get('foreignTradeCorpDdpStatus')?.dirty 
+                      <nz-form-explain style="color:red" *ngIf="item.controls.foreignInfo.get('foreignTradeCorpDdpStatus')?.dirty
                           && item.controls.foreignInfo.get( 'foreignTradeCorpDdpStatus' )?.errors">
                         {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
                       </nz-form-explain>
@@ -2338,6 +2338,8 @@
                     </nz-form-control>
                   </nz-form-item>
                 </div>
+
+
               </div>
 
               <div nz-row nzType="flex" nzJustify="start" nzAlign="top" nzGutter="20">

@@ -86,7 +86,7 @@ export class BiddingFormComponent implements OnInit {
         customerCategory: [{ value: null, disabled: true }], // 客户分类
         customerProvince: [{ value: null, disabled: true }], // 客户所属省份
         customerCity: [{ value: null, disabled: true }], // 客户所属城市, 仅用于合同模板
-        groupPurchase: [{ value: false, disabled: true }], // 是否为集采项目
+        groupPurchase: [ false,  [Validators.required] ], // 是否为集采项目
       }, {
         validators: [segmentValidator]
       }),
@@ -1039,21 +1039,22 @@ export class BiddingFormComponent implements OnInit {
       paymentDescription,
       predictBiddingPrice,
       groupPurchase,
+      centralizedOrNot,
       cityName,
       opportunityId,
     } = data[0];
 
     setTimeout(() => {
       const validData = data.filter(({ subTierDealers }) => Array.isArray(subTierDealers))
-      if (validData.length > 0) {
+      validData.forEach((item) => {
         this.subTierSubject.next({
           type: 'add',
           data: {
-            crmOpId: opportunityId,
-            dealerSubTiers: validData[0].subTierDealers.map((item) => ({ ...item, crmOpId: opportunityId }))
+            crmOpId: item.opportunityId,
+            dealerSubTiers: item.subTierDealers.map((dealer) => ({ ...dealer, crmOpId: item.opportunityId }))
           }
         })
-      }
+      })
     }, 0);
 
     const marketBundlesArray = this.biddingForm.get("marketBundles") as FormArray;
@@ -1172,7 +1173,7 @@ export class BiddingFormComponent implements OnInit {
           customerCity: cityName,
           customerCategory: category, // 客户分类
           hospitalName, // 医院名称
-          groupPurchase: groupPurchase == 1,
+          groupPurchase: !!centralizedOrNot, //true or false, 数据库存1或0
         },
       },
     });

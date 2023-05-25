@@ -144,6 +144,7 @@ export class ContractExamineComponent implements OnInit {
     profitGrossRate: [{ value: null, disabled: true }],//经销商毛利率
     profitGross: [{ value: null, disabled: true }],//经销商毛利润
     dealerProfit: [{ value: null, disabled: true }],//经销商利润
+    biddingCurrency: [{ value: null, disabled: true }],//投标币种
   };
   dealerFrom = {
     dealerName: [{ value: null, disabled: true }, [Validators.required]], //经销商名称
@@ -213,7 +214,7 @@ export class ContractExamineComponent implements OnInit {
     usHta: [{ value: null, disabled: true }], //是否HTA US
   }
   priceApproval = {
-    currencySystem: [{ value: null, disabled: true }], //币制    
+    currencySystem: [{ value: null, disabled: true }], //币制
     financialSolution: [{ value: '0', disabled: true }],//是否使用金融方案
     lendingBankCompany: [{ value: null, disabled: true }],//贷款行/融资公司名称
     financialSolutionName: [{ value: null, disabled: true }],//金融方案
@@ -499,6 +500,7 @@ export class ContractExamineComponent implements OnInit {
       profitGrossRate,
       profitGross,
       dealerProfit,
+      biddingCurrency
     } = contractInfo
     this.baseInfoFromData.patchValue({
       oldSalesProvince: contractInfo.dealFormSalesProvince,
@@ -562,6 +564,7 @@ export class ContractExamineComponent implements OnInit {
       profitGrossRate,
       profitGross,
       dealerProfit,
+      biddingCurrency
     })
     this.dealerFromData.patchValue({
       ...contractInfo,
@@ -627,7 +630,7 @@ export class ContractExamineComponent implements OnInit {
       })
     }
     if (this.baseInfoFromData.getRawValue().businessModel == 'DISTRIBUTOR') {
-      this.getdistributorDate(); //更新经销商日期    
+      this.getdistributorDate(); //更新经销商日期
       setTimeout(() => {
         this.subTierSubject.next({ type: 'add', data: subTierInfo, disabled: true })
         this.baseInfoFromChild.checkBiddingEqualDealer();
@@ -652,7 +655,7 @@ export class ContractExamineComponent implements OnInit {
       this.getBiddingIsSpecial();
     }
   }
-  getBiddingIsSpecial() {//bidding模式是否是特批      
+  getBiddingIsSpecial() {//bidding模式是否是特批
     let { biddingApplyList } = this.baseInfoFromData.getRawValue();
     biddingApplyList.map(val => {
       this.serveice.getBiddingIsSpecial(val.id).subscribe(item => {
@@ -906,7 +909,7 @@ export class ContractExamineComponent implements OnInit {
               this.pageLoading = false;
               this.message.create("error", `未在IEPOOL找到经销商信息`);
               return
-            }            
+            }
           }
           else {
             this.message.create("error", `未在IEPOOL找到经销商信息`);

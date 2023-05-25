@@ -1,7 +1,9 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpService } from '@core/services';
+import { NzMessageService } from 'ng-zorro-antd';
 import { Subject, Subscription } from 'rxjs';
+import { environment } from '@env';
 
 @Component({
   selector: 'shared-dealer-table',
@@ -24,6 +26,7 @@ export class DealerTableComponent implements OnInit, OnDestroy {
   constructor(
     private fb: FormBuilder,
     private http: HttpService,
+    private message: NzMessageService,
   ) { }
 
   ngOnInit() {
@@ -41,6 +44,10 @@ export class DealerTableComponent implements OnInit, OnDestroy {
     if (this.subscriber) {
       this.subscriber.unsubscribe()
     }
+  }
+
+  getSupportFile(dealer: FormGroup) {
+    return JSON.parse(dealer.get('supportFile').value)
   }
 
   createOpportunity() {
@@ -61,6 +68,7 @@ export class DealerTableComponent implements OnInit, OnDestroy {
       code: [null],
       isBlackList: [null],
       isOverLimit: [null],
+      isWhiteList: [null],
       isDMSBlackList: [0], // 是否在DMS黑名单
       remark: [null],
       supportFile: [null],
@@ -170,5 +178,21 @@ export class DealerTableComponent implements OnInit, OnDestroy {
           })
         }
       })
+  }
+
+  tableLoading = false
+  // 从DMS接口下载文件
+  onDownloadFile({ id }) {
+    // 先校验
+    const url = `/act/ecosdealer/verifyDmsFile/${id}`
+    this.tableLoading = true
+    this.http.get(url).subscribe(({ code, data }) => {
+      if (code === '0000' && data) {
+        window.open(`${environment.dmsDownloadUrl}/${id}`)
+      } else {
+        this.message.error('文件不存在')
+      }
+      this.tableLoading = false
+    })
   }
 }

@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { HttpService } from '@core/services';
 import { NzMessageService } from 'ng-zorro-antd';
 import * as moment from 'moment';
+import { PermissionService } from '@app/modern-themes/services/permission.service';
 
 @Component({
   selector: 'data-dictionary-table',
@@ -38,6 +39,7 @@ export class DictionaryTableComponent implements OnInit {
     private http: HttpService,
     private message: NzMessageService,
     private nzMessageService: NzMessageService,
+    private permission:PermissionService
   ) {
   }
   cancelSecondBid(): void {

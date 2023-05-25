@@ -5,6 +5,7 @@
 }
 
 .sp-item-list {
+  white-space: nowrap;
   .sp-item {
     display: flex;
     .view-detail {
@@ -15,6 +16,16 @@
     .comment-input {
       margin: 0 16px;
       width: 300px;
+    }
+
+    .comment-span {
+      display: block;
+      max-width: 200px;
+      white-space: normal;
+      word-break: break-all;
+      line-height: 16px;
+      padding: 8px 12px;
+      color: #337fbf;
     }
   }
 }

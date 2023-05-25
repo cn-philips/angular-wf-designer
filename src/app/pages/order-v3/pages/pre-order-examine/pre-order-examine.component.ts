@@ -107,7 +107,7 @@ export class PreorderexamineComponent implements OnInit {
     solutionSalesNameModel: [{ value: null, disabled: true }],
 
     actualSalesEmail: [{ value: null, disabled: !this.editBase }], //实际销售
-    actualSalesName: [{ value: null, disabled: true }],//实际销售 
+    actualSalesName: [{ value: null, disabled: true }],//实际销售
     actualSalesNameModel: [{ value: null, disabled: true }],//实际销售名字
 
     contractCancelApplyId: [{ value: null, disabled: true }], //contractCancelApplyId
@@ -119,6 +119,7 @@ export class PreorderexamineComponent implements OnInit {
     profitGrossRate: [{ value: null, disabled: true }],//经销商毛利率
     profitGross: [{ value: null, disabled: true }],//经销商毛利润
     dealerProfit: [{ value: null, disabled: true }],//经销商利润
+    biddingCurrency: [{ value: null, disabled: true }],//投标币种
   };
   dealerFrom = {
     dealerName: [{ value: null, disabled: true }, [Validators.required]], //经销商名称
@@ -423,6 +424,7 @@ export class PreorderexamineComponent implements OnInit {
       profitGrossRate,
       profitGross,
       dealerProfit,
+      biddingCurrency
     } = data.preparationInfo
     this.baseInfoFromData.patchValue({
       oldSalesProvince: data.preparationInfo.dealFormSalesProvince,
@@ -484,6 +486,7 @@ export class PreorderexamineComponent implements OnInit {
       profitGrossRate,
       profitGross,
       dealerProfit,
+      biddingCurrency
     })
     this.dealerFromData.patchValue({
       ...data.preparationInfo,
@@ -542,7 +545,7 @@ export class PreorderexamineComponent implements OnInit {
     //禁用经销商协议
     // this.orderInfo.disable();
     if (this.baseInfoFromData.getRawValue().businessModel == 'DISTRIBUTOR') {
-      this.getdistributorDate(); //更新经销商日期    
+      this.getdistributorDate(); //更新经销商日期
       setTimeout(() => {
         this.subTierSubject.next({ type: 'add', data: subTierInfo, disabled: true })
         this.baseInfoFromChild.checkBiddingEqualDealer();
@@ -721,8 +724,8 @@ export class PreorderexamineComponent implements OnInit {
     }
     this.pageLoading = true;
     if (baseInfoFrom.businessModel == 'DISTRIBUTOR') {
-      //const dateAndValid=await this.serveice.getDdpDateAndValid(dealerFrom.dealerName); 
-      //console.log(dateAndValid)            
+      //const dateAndValid=await this.serveice.getDdpDateAndValid(dealerFrom.dealerName);
+      //console.log(dateAndValid)
       const dateAndValid = await this.serveice.findDealersByPageValid({ dealerName: dealerFrom.dealerName })
       if (dateAndValid.code == '0000') {
         const rows = dateAndValid.data.rows
@@ -944,7 +947,7 @@ export class PreorderexamineComponent implements OnInit {
     }
   }
   createOrder(val: any, index) {
-    //创建    
+    //创建
     const productModelInfo = {
       orderProductModel: [{ value: val.orderProductModel ? val.orderProductModel : null, disabled: true }],
     }
@@ -986,6 +989,7 @@ export class PreorderexamineComponent implements OnInit {
     const financialSolutionName = val.financialSolutionName != null && val.financialSolutionName != 'null' ? val.financialSolutionName : "";
     //order 基本信息
     const orderBaseinfo = {
+      actualHospitalId: [ val.actualHospitalId ],
       cpDealOrderId: [val.cpDealOrderId],
       orderModality: [val.orderModality],
       marketBundleId: [val.marketBundleId],
@@ -1070,8 +1074,8 @@ export class PreorderexamineComponent implements OnInit {
       cpclFile: val.cpclFile ? [[...val.cpclFile]] : [],//cpcl文件
       otherSupportFile: val.otherSupportFile ? [[...val.otherSupportFile]] : [],//其他支持文件
       magneticResonanceShieldingFile: val.magneticResonanceShieldingFile ? [[...val.magneticResonanceShieldingFile]] : [],//磁共振屏蔽公司
-      magneticResonanceShieldingShow: [{ value: false, disabled: false }], //是否显示 
-      igtThirdPartySingle: [{ value: '0', disabled: false }], //IGT选项框选项框
+      magneticResonanceShieldingShow: [{ value: false, disabled: false }], //是否显示
+      igtThirdPartySingle: [{ value: val.igtThirdPartySingle ? val.igtThirdPartySingle : '0', disabled: false }], //IGT选项框选项框
       igtThirdPartyFile: val.igtThirdPartyFile ? [[...val.igtThirdPartyFile]] : [],//IGT第三方吊塔确认文件
       igtThirdPartyFileShow: [{ value: false, disabled: false }],//是否显示
       prebookReferenceId: [{ value: val.prebookReferenceId, disabled: true }, []], //prebook申请号

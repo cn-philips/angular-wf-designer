@@ -92,7 +92,7 @@ export class PreOrderComponent implements OnInit {
     approvalAreaConfiguration: [{ value: null, disabled: !this.editBase }, [Validators.required]],//审批区域配置
     biddingType: [{ value: null, disabled: !this.editBase }, [Validators.required]],//招标类型
     dealFormSalesPerformanceProvince: [{ value: null, disabled: !this.editBase }],//业绩省份
-    centralizedPurchasing: [{ value: '0', disabled: true }, []],//是否集采项目
+    centralizedPurchasing: [{ value: '0', disabled: !this.editBase }, []],//是否集采项目
     biddingCompany: [{ value: null, disabled: !this.editBase }, [Validators.required]], //投标公司
     tenderNum: [{ value: null, disabled: !this.editBase }, [Validators.required]], //招标编号
     requiredArrivalDate: [{ value: null, disabled: !this.editBase }], //客户要货函日期
@@ -128,7 +128,7 @@ export class PreOrderComponent implements OnInit {
     solutionSalesNameModel: [{ value: null, disabled: true }],
 
     actualSalesEmail: [{ value: null, disabled: !this.editBase }], //实际销售
-    actualSalesName: [{ value: null, disabled: true }],//实际销售 
+    actualSalesName: [{ value: null, disabled: true }],//实际销售
     actualSalesNameModel: [{ value: null, disabled: true }],//实际销售名字
 
     contractCancelReferenceId: [{ value: null, disabled: true }], //原合同概要表id
@@ -140,6 +140,7 @@ export class PreOrderComponent implements OnInit {
     profitGrossRate: [{ value: null, disabled: true }],//经销商毛利率
     profitGross: [{ value: null, disabled: true }],//经销商毛利润
     dealerProfit: [{ value: null, disabled: true }],//经销商利润
+    biddingCurrency: [{ value: null, disabled: true }],//投标币种
   };
   dealerFrom = {
     dealerName: [{ value: null, disabled: true }, [Validators.required]], //经销商名称
@@ -455,6 +456,7 @@ export class PreOrderComponent implements OnInit {
       profitGrossRate,
       profitGross,
       dealerProfit,
+      biddingCurrency
     } = data.preparationInfo
 
     this.baseInfoFromData.patchValue({
@@ -517,6 +519,7 @@ export class PreOrderComponent implements OnInit {
       profitGrossRate,
       profitGross,
       dealerProfit,
+      biddingCurrency
     })
     this.dealerFromData.patchValue({
       ...data.preparationInfo,
@@ -541,7 +544,7 @@ export class PreOrderComponent implements OnInit {
       ...data.preparationInfo
     })
     if (this.baseInfoFromData.getRawValue().businessModel == 'DISTRIBUTOR') {
-      this.getdistributorDate(); //更新经销商日期    
+      this.getdistributorDate(); //更新经销商日期
     }
     if (this.priceApprovalData.getRawValue().currencySystem == "USD") {
       this.getIepoolDate(); //更新经销商日期
@@ -924,8 +927,8 @@ export class PreOrderComponent implements OnInit {
           agreementAgenName: "", //中标经销商
           simulationId: vals.simulationId,
           marketBundleName: vals.marketBundleName, // marketBundleName
-          orderByCustomerName: endUser, // 进单客户名称
-          orderByApplicant: endUserId, // 进单客户id
+          orderByCustomerName:  endUser , // 进单客户名称,非集采项目时校验
+          orderByApplicant: endUserId, // 进单客户id,非集采项目时校验
           winningByCustomerName: "", // 中标客户名称
           winningByApplicant: "", // 中标客户id
           tenderingCompany: biddingCompany, //进单投标公司
@@ -960,7 +963,7 @@ export class PreOrderComponent implements OnInit {
                   val.rowspan = len > 0 ? len : 1;
                   val.showCheak = index == 0 ? true : false;
                   // let biddingAward=vals.searchResult.find(ite=>ite.biddingAwardPrice!=null);
-                  // val.biddingAwardPrice =biddingAward?biddingAward.biddingAwardPrice:"";              
+                  // val.biddingAwardPrice =biddingAward?biddingAward.biddingAwardPrice:"";
                   let searchResult = vals.searchResult.map(item => ({
                     biddingName: item.bidderName, //投标公司
                     marketBundleId: item.marketBundleId,
@@ -994,8 +997,8 @@ export class PreOrderComponent implements OnInit {
       this.isVisibleWinCheck = false;
       if (parm != 'cancel_deal') {
         if (baseInfoFrom.businessModel == 'DISTRIBUTOR') {
-          //const dateAndValid=await this.serveice.getDdpDateAndValid(dealerFrom.dealerName); 
-          //console.log(dateAndValid)            
+          //const dateAndValid=await this.serveice.getDdpDateAndValid(dealerFrom.dealerName);
+          //console.log(dateAndValid)
           const dateAndValid = await this.serveice.findDealersByPageValid({ dealerName: dealerFrom.dealerName })
           if (dateAndValid.code == '0000') {
             const rows = dateAndValid.data.rows;
@@ -1078,7 +1081,7 @@ export class PreOrderComponent implements OnInit {
 
       }
 
-      if (this.status == 'ecos_oit_deal_resubmit') { //重新提交      
+      if (this.status == 'ecos_oit_deal_resubmit') { //重新提交
         param.status = parm;
         // param.id=id;
         this.serveice.orderApproval(param).then(res => {
@@ -1319,7 +1322,7 @@ export class PreOrderComponent implements OnInit {
 
   }
   tabclick(i) {
-    //tab选项卡的点击事件    
+    //tab选项卡的点击事件
     if (typeof i === 'number') {
       this.tabIndex = i
       if (i == 1) {
@@ -1390,6 +1393,7 @@ export class PreOrderComponent implements OnInit {
     const financialSolutionName = val.financialSolutionName != null && val.financialSolutionName != 'null' ? val.financialSolutionName : "";
     //order 基本信息
     const orderBaseinfo = {
+      actualHospitalId: [val.actualHospitalId],
       cpDealOrderId: [val.cpDealOrderId],
       orderModality: [val.orderModality],
       marketBundleId: [val.marketBundleId],
@@ -1473,8 +1477,8 @@ export class PreOrderComponent implements OnInit {
       cpclFile: val.cpclFile ? [[...val.cpclFile]] : [],//cpcl文件
       otherSupportFile: val.otherSupportFile ? [[...val.otherSupportFile]] : [],//其他支持文件
       magneticResonanceShieldingFile: val.magneticResonanceShieldingFile ? [[...val.magneticResonanceShieldingFile]] : [],//磁共振屏蔽公司
-      magneticResonanceShieldingShow: [{ value: false, disabled: false }], //是否显示 
-      igtThirdPartySingle: [{ value: '0', disabled: false }], //IGT选项框选项框
+      magneticResonanceShieldingShow: [{ value: false, disabled: false }], //是否显示
+      igtThirdPartySingle: [{ value: val.igtThirdPartySingle ? val.igtThirdPartySingle : '0', disabled: false }], //IGT选项框选项框
       igtThirdPartyFile: val.igtThirdPartyFile ? [[...val.igtThirdPartyFile]] : [],//IGT第三方吊塔确认文件
       igtThirdPartyFileShow: [{ value: false, disabled: false }],//是否显示
       prebookReferenceId: [{ value: val.prebookReferenceId, disabled: true }, []], //prebook申请号
@@ -1670,7 +1674,7 @@ export class PreOrderComponent implements OnInit {
       wbsNo: [{ value: val.wbsNo, disabled: !this.editBase },],//WBS号
       id: [{ value: val.id, disabled: true }],
       authorizedProduct: [{ value: val.authorizedProduct, disabled: true }], //经销商产品信息
-      authorizedArea: [{ value: val.authorizedArea, disabled: true }],//经销商区域      
+      authorizedArea: [{ value: val.authorizedArea, disabled: true }],//经销商区域
       departmentList: [],//科室列表
       departmentListFirst: [],//一级科室
       departmentListSecond: [], //二级科室列表

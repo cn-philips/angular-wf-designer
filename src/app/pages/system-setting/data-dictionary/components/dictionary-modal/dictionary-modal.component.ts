@@ -1,5 +1,6 @@
 import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { PermissionService } from '@app/modern-themes/services/permission.service';
 import { HttpService } from '@core/services';
 import { NzMessageService } from 'ng-zorro-antd';
 
@@ -155,6 +156,7 @@ export class DictionaryModalComponent implements OnInit {
     private nzMessageService: NzMessageService,
     private http: HttpService,
     private message: NzMessageService,
+    private permission:PermissionService
   ) {
     console.log('this.isCreate', this.isCreate);
     if (this.isCreate) {

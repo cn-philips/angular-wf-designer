@@ -190,7 +190,7 @@ export class MyViewComponent implements OnInit {
   getSubOitTotal() {
     const params = {
       ...this.formValues,
-      subTaskStatusIn: ["DBCWJSC","OITENDDBCWJSC","OITEND","ecos_oit_order_done","ecos_oit_order_upload"],
+      subTaskStatusIn: ["DBCWJSC","OITENDDBCWJSC","OITEND","ecos_oit_order_done"],
       pageNo: 1,
       pageSize: 10,
     }
@@ -259,7 +259,7 @@ export class MyViewComponent implements OnInit {
     // Object.assign(this.pageParams, subDate)
     this.loadingButton.exportMore = true;
     this.http.postDownload(`/act/ecos/report/oit`, params).subscribe(rest => {
-      this.fileService.downloadResponse('Tasks', rest);
+      this.fileService.downloadResponse('OIT Report(DIIGT)', rest);
       this.loadingButton.exportMore = false;
     }, error => {
       this.message.create('error', '请求错误');
@@ -278,7 +278,7 @@ export class MyViewComponent implements OnInit {
     // Object.assign(this.pageParams, subDate)
     this.loadingButton.exportMore = true;
     this.http.postDownload(`/act/ecos/report/oit/us`, params).subscribe(rest => {
-      this.fileService.downloadResponse('Tasks', rest);
+      this.fileService.downloadResponse('OIT Report(US)', rest);
       this.loadingButton.exportMore = false;
     }, error => {
       this.message.create('error', '请求错误');
@@ -297,7 +297,7 @@ export class MyViewComponent implements OnInit {
     // Object.assign(this.pageParams, subDate)
     this.loadingButton.exportMore = true;
     this.http.postDownload(`/act/ecos/report/oit/cc/hpm`, params).subscribe(rest => {
-      this.fileService.downloadResponse('Tasks', rest);
+      this.fileService.downloadResponse('OIT Report(CC-HPM&EC)', rest);
       this.loadingButton.exportMore = false;
     }, error => {
       this.message.create('error', '请求错误');
@@ -316,7 +316,7 @@ export class MyViewComponent implements OnInit {
     // Object.assign(this.pageParams, subDate)
     this.loadingButton.exportMore = true;
     this.http.postDownload(`/act/ecos/report/oit/cc/hrc`, params).subscribe(rest => {
-      this.fileService.downloadResponse('Tasks', rest);
+      this.fileService.downloadResponse('OIT Report(CC-HRC)', rest);
       this.loadingButton.exportMore = false;
     }, error => {
       this.message.create('error', '请求错误');
@@ -332,7 +332,7 @@ export class MyViewComponent implements OnInit {
     }
     this.loadingButton.exportMore = true;
     this.http.postDownload(`/act/ecos/report/bidding`, params).subscribe(rest => {
-      this.fileService.downloadResponse('Tasks', rest);
+      this.fileService.downloadResponse('Bidding Report', rest);
       this.loadingButton.exportMore = false;
     }, error => {
       this.message.create('error', '请求错误');
@@ -347,7 +347,7 @@ export class MyViewComponent implements OnInit {
     }
     this.loadingButton.exportMore = true;
     this.http.postDownload(`/act/ecos/report/prebook`, params).subscribe(rest => {
-      this.fileService.downloadResponse('Tasks', rest);
+      this.fileService.downloadResponse('Pre-book Report', rest);
       this.loadingButton.exportMore = false;
     }, error => {
       this.message.create('error', '请求错误');
@@ -362,7 +362,7 @@ export class MyViewComponent implements OnInit {
     }
     this.loadingButton.exportMore = true;
     this.http.postDownload(`/act/ecos/report/pos`, params).subscribe(rest => {
-      this.fileService.downloadResponse('Tasks', rest);
+      this.fileService.downloadResponse('POS Report', rest);
       this.loadingButton.exportMore = false;
     }, error => {
       this.message.create('error', '请求错误');
@@ -372,7 +372,7 @@ export class MyViewComponent implements OnInit {
   public opportunityReportEvent(e) {
     this.loadingButton.exportMore = true;
     this.http.postDownload(`/act/ecom/homepage/myViews/reportByOpportunity`, e).subscribe(rest => {
-      this.fileService.downloadResponse('Tasks', rest);
+      this.fileService.downloadResponse('进单状态-按Opportunity查询', rest);
       this.loadingButton.exportMore = false;
     }, error => {
       this.message.create('error', '请求错误');
@@ -387,7 +387,7 @@ export class MyViewComponent implements OnInit {
     }
     this.loadingButton.exportMore = true;
     this.http.postDownload(`/act/ecos/report/bundle`, params).subscribe(rest => {
-      this.fileService.downloadResponse('Tasks', rest);
+      this.fileService.downloadResponse('进单状态-按进单准备表查询', rest);
       this.loadingButton.exportMore = false;
     }, error => {
       this.message.create('error', '请求错误');
@@ -406,7 +406,7 @@ export class MyViewComponent implements OnInit {
     }
     this.loadingButton.exportMore = true;
     this.http.postDownload(`/act/ecos/report/financialScheme`, params).subscribe(rest => {
-      this.fileService.downloadResponse('Tasks', rest);
+      this.fileService.downloadResponse('OIT Report(金融方案)', rest);
       this.loadingButton.exportMore = false;
     }, error => {
       this.message.create('error', '请求错误');
@@ -420,13 +420,16 @@ export class MyViewComponent implements OnInit {
     }
     this.loadingButton.exportMore = true;
     var url =`/act/ecos/report/changeOrderReport`;
+    var fileName = "改单DIIGT";
     if(value === 'us'){
       url =`/act/ecos/report/changeOrderReportUs`;
+      fileName = "Report-改单US";
     } else if(value === 'cc'){
       url =`/act/ecos/report/changeOrderReportCc`;
+      fileName = "Report-改单CC";
     }
     this.http.postDownload(url, params).subscribe(rest => {
-      this.fileService.downloadResponse('Tasks', rest);
+      this.fileService.downloadResponse(fileName, rest);
       this.loadingButton.exportMore = false;
     }, error => {
       this.message.create('error', '请求错误');

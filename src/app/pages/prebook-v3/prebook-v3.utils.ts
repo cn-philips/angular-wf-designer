@@ -74,7 +74,7 @@ export const prebookForm = () => new FormGroup({
       dealFormSalesSmallArea: new FormControl({ value: null, disabled: true }), // Deal Form创建人小区
       dealFormSalesProvince: new FormControl(null), // 省份
     }),
-    dealerInfo: new FormGroup({     
+    dealerInfo: new FormGroup({
       // 经销商信息
       dealerName: new FormControl(null, [Validators.required]), // 经销商名称
       dealerCode: new FormControl(null), // 经销商编号
@@ -164,7 +164,7 @@ export const prebookForm = () => new FormGroup({
   sofonNo: new FormControl(null)
 })
 
-export const validBmcList = ['CT', 'MR', 'DXR', 'AMI', 'IGT-S', 'PDS-RadOnc']
+export const validBmcList = ['CT', 'MR', 'DXR', 'AMI', 'IGT-S', 'PDS-RadOnc','IGT-MoS']
 
 export function createMarketBundle({
   id,
@@ -447,7 +447,7 @@ export function initOrderInfo(formGroup: FormGroup, data, disabled = false) {
 }
 
 // 动态设置表单的必填项
-// 外贸公司模块必须在currency = 'USD'时才去做校验, 
+// 外贸公司模块必须在currency = 'USD'时才去做校验,
 // 经销商模块在非直投时才显示
 // 合同买方在直投时显示
 const foreignCompanyControlNames = [
@@ -474,7 +474,7 @@ export function setBasicInfoValidators(basicInfo: FormGroup, { currency, busines
   } else {
     clearValidators(foreignCompany, foreignCompanyControlNames)
   }
-  
+
   const dealerInfo = basicInfo.get('dealerInfo') as FormGroup
   const contractBuyer = basicInfo.get('contractBuyer') as FormGroup
   if (businessModel === 'DIRECT') {

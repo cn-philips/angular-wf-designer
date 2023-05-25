@@ -15,9 +15,8 @@ import {
 } from "@pages/system-setting/message-management/components/interfaces/iNotification";
 import { carousel } from "@pages/system-setting/message-management/components/interfaces/iCarousel";
 import * as Driver from "driver.js";
-import { DictService, HttpService } from "@core/services";
+import { DictService, GlobalService, HttpService } from "@core/services";
 import { environment } from "@env";
-import { NzMessageService } from "ng-zorro-antd";
 export enum menuType {
   bidding,
   order,
@@ -35,6 +34,7 @@ export class HomepageComponent implements OnInit {
     private router: Router,
     private http: HttpService,
     private dictService: DictService,
+    private globalService:GlobalService
   ) {}
   MenuType = menuType;
   @ViewChild("dialog")
@@ -51,7 +51,7 @@ export class HomepageComponent implements OnInit {
   carousel: CarouselComponent;
   public carouselItems: carouselItem[] = [];
   entriesMenusList: any[] = [];
-  ngOnInit(): void {
+  async ngOnInit() {
     this.getMessage();
     this.getMessageModal();
     this.getCarousels();
@@ -89,10 +89,11 @@ export class HomepageComponent implements OnInit {
     }
     return hasPermission;
   }
-  getEntriesMenusList() {
-    let menusRaw = window.localStorage.getItem("menuList");
+  async getEntriesMenusList() {
+    // let menusRaw = window.localStorage.getItem("menuList");
+    let menusRaw = await this.globalService.getMenus()
     if (menusRaw) {
-      let menuList = JSON.parse(menusRaw);
+      let menuList = menusRaw;
       menuList.map((vals) => {
         if (
           vals.id == "621997df-0501-40a3-bd7e-9062291dd4c3" &&

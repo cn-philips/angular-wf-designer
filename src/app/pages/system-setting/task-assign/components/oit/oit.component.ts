@@ -74,6 +74,8 @@ export class OitComponent implements OnInit {
     private message: NzMessageService
   ) {}
 
+  searchString
+
   ngOnInit() {
     this.initSelectOptions();
     this.getTableData();
@@ -86,6 +88,7 @@ export class OitComponent implements OnInit {
           if (!searchString) {
             return Observable.create();
           }
+          this.searchString = searchString
           const params: any = {
             email: searchString,
           };
@@ -105,6 +108,12 @@ export class OitComponent implements OnInit {
             });
           }
         });
+        if (rows.length === 0) {
+          this.selectOptions.taskAssignee.push({
+            label: this.searchString,
+            value: this.searchString,
+          });
+        }
         this.searchLoading = false;
       });
   }
@@ -113,7 +122,7 @@ export class OitComponent implements OnInit {
     const { list } = this.dataTable;
     if (Array.isArray(list) && list.length > 0) {
       for (let i = 0; i < list.length; i++) {
-        if (!this.checkedRowMap[list[i].id]) {
+        if (!this.checkedRowMap[list[i].processInstanceTaskId]) {
           return false;
         }
       }
@@ -123,7 +132,7 @@ export class OitComponent implements OnInit {
   }
 
   checkedRows() {
-    return this.dataTable.list.filter(({ id }) => this.checkedRowMap[id]);
+    return this.dataTable.list.filter(({ processInstanceTaskId }) => this.checkedRowMap[processInstanceTaskId]);
   }
 
   transformOitMode(oitMode) {
@@ -134,8 +143,8 @@ export class OitComponent implements OnInit {
   }
 
   handleCheckAll(checked) {
-    this.dataTable.list.forEach(({ id }) => {
-      this.checkedRowMap[id] = checked;
+    this.dataTable.list.forEach(({ processInstanceTaskId }) => {
+      this.checkedRowMap[processInstanceTaskId] = checked;
     });
   }
 

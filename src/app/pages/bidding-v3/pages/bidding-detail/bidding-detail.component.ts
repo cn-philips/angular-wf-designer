@@ -65,6 +65,7 @@ export class BiddingDetailComponent implements OnInit {
     dealerName: null,
     applyId: null,
     hospitalName: null,
+    hospitalId: null,
     nonStandard: { id: null, isNonStandard: 0, logisticTerms: null },
     marketBundles: [],
     technicalApprovers: [],
@@ -143,7 +144,7 @@ export class BiddingDetailComponent implements OnInit {
         groupPurchaseCompany: [{ value: null, disabled: true }], // 采购集团名称
         customerCategory: [{ value: null, disabled: true }], // 客户分类
         customerProvince: [{ value: null, disabled: true }], // 客户所属省份
-        groupPurchase: [{ value: false, disabled: true }], // 是否为集采项目
+        groupPurchase: [ false, [Validators.required]], // 是否为集采项目
       }, {
         validators: [segmentValidator]
       }),
@@ -389,7 +390,7 @@ export class BiddingDetailComponent implements OnInit {
 
   // 判断中标确认tab的显示, 这里用缺失文件已补齐来判断
   get showBidConfirmTab() {
-    const show = 
+    const show =
       (this.originData.lackingFilesAdded === 1 || this.originData.lackingFilesAdded === 0) &&
       ((this.processStatus !== 'ecos_bid_confirm' && this.processStatus !== 'ecos_bid_confirm2') || !this.fromTask) &&
       !this.isResubmit &&
@@ -527,7 +528,7 @@ export class BiddingDetailComponent implements OnInit {
   initBasicInfo() {
     const {
       dataSource, accountName, biddingModel, biddingProgramName, businessModel, biddingType,
-      biddingNumber, biddingOrgName, biddingOpenDate, biddingValidDate, hospitalName,
+      biddingNumber, biddingOrgName, biddingOpenDate, biddingValidDate, hospitalName,hospitalId,
       customerCode, customerType, groupPurchaseCompany, customerCategory, customerProvince,
       groupPurchase, applicant, biddingOwner, biddingOwnerPosition,
       systemRegion, modality, team, cycleGroup, bigArea, smallArea, referenceId,
@@ -549,6 +550,7 @@ export class BiddingDetailComponent implements OnInit {
         },
         finalUser: {
           hospitalName,
+          hospitalId,
           customerCode,
           customerType,
           groupPurchaseCompany,
@@ -822,6 +824,7 @@ export class BiddingDetailComponent implements OnInit {
     this.biddingV3Service.detail(applyId).subscribe(({ data }) => {
       this.originData = {
         ...data,
+        hospitalId:data.customerCode,
         otherBiddingNumber: data.otherBiddingNumber ? data.otherBiddingNumber.filter(({ referenceId }) => referenceId !== this.referenceId && referenceId)  : []
       };
       const hasNonStandardInfo = data.businessModel === BUSINESS_MODEL_DIRECT && data.nonStandard.isNonStandard === 1
@@ -846,7 +849,7 @@ export class BiddingDetailComponent implements OnInit {
       this.initCancelFlag();
       this.pageLoading = false;
       if (this.fromTask || this.fromSupplement) {
-        
+
         if (this.taskStatus === 'ecos_bid_special_approval') {
           setTimeout(() => {
             this.tabs.activeId('bidding-confirm')
@@ -1228,6 +1231,7 @@ export class BiddingDetailComponent implements OnInit {
       paymentDescription,
       predictBiddingPrice,
       groupPurchase,
+      centralizedOrNot,
       cityName,
       opportunityId,
     } = data[0];
@@ -1360,7 +1364,7 @@ export class BiddingDetailComponent implements OnInit {
           customerCity: cityName,
           customerCategory: category, // 客户分类
           hospitalName, // 医院名称
-          groupPurchase: groupPurchase == 1,
+          groupPurchase: !!centralizedOrNot, //true or false, 数据库存1或0
         },
       },
     });

@@ -355,16 +355,16 @@ export class BiddingApprovalComponent implements OnChanges {
     }
 
     this.biddingV3Service.setPageLoading(true)
-    this.biddingV3Service.approve(data).subscribe(({ code }) => {
+    this.biddingV3Service.approve(data).subscribe(({ code, msg }) => {
       if (code === '0000') {
         this.message.success("审批成功!");
         this.biddingV3Service.goTodoPage()
       } else {
-        this.message.error("审批失败!");
+        this.message.error(msg);
       }
       this.biddingV3Service.setPageLoading(false)
-    }, () => {
-      this.message.error("审批失败!");
+    }, ({ message }) => {
+      this.message.error(message);
       this.biddingV3Service.setPageLoading(false)
     });
   }

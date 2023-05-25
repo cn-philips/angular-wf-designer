@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { PermissionService } from '@app/modern-themes/services/permission.service';
 import { HttpService } from '@core/services';
 import { NzTreeComponent, NzTreeNodeOptions, NzMessageService } from 'ng-zorro-antd';
 
@@ -17,6 +18,7 @@ export class RolePermissionComponent implements OnInit {
   constructor(
     private http: HttpService,
     private message: NzMessageService,
+    public permission:PermissionService
   ) {
     this.initList()
   }

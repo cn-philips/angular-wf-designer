@@ -424,7 +424,7 @@ export const delcommafy = (num) => {
 /**
  * 解决小数乘法的精度问题
  * @arg1 小数
- * @arg2 乘以的数 
+ * @arg2 乘以的数
  */
  export function floatMultiply (arg1, arg2) {
   arg1 = Number(arg1);
@@ -466,7 +466,7 @@ export function toNonExponential(num) {
 /**
  * 解决小数除法的精度问题
  * @arg1 被除数
- * @arg2 除数 
+ * @arg2 除数
  */
 export function floatDivide(arg1, arg2) {
     if(arg1 == null){
@@ -509,7 +509,7 @@ export function floatAdd(arg1, arg2) {
     m = Math.pow(10, Math.max(r1, r2));
     return (floatMultiply(arg1 , m) + floatMultiply(arg2 , m)) / m;
 }
- 
+
 // 减
 export function floatSub(arg1, arg2) {
     var r1, r2, m, n;
@@ -554,18 +554,18 @@ export function floatSub(arg1, arg2) {
     return a;
   }
   //保留两位小数
-  export function fomatFloat(num,n){   
+  export function fomatFloat(num,n){
     var f = parseFloat(num);
     if(isNaN(f)){
         return false;
-    }   
-    f = Math.round(num  *Math.pow(10, n))/Math.pow(10, n); // n幂   
+    }
+    f = Math.round(num  *Math.pow(10, n))/Math.pow(10, n); // n幂
     var s = f.toString();
     var rs = s.indexOf('.');
     //判定如果是整数，增加小数点再补0
     if(rs < 0){
         rs = s.length;
-        s += '.'; 
+        s += '.';
     }
     while(s.length <= rs + n){
         s += '0';

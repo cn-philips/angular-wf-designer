@@ -153,6 +153,9 @@ export class HttpService {
     localStorage.removeItem('ecom_ng_philips_code1');
     localStorage.removeItem('ng_philips_username');
     localStorage.removeItem("WaitingMyHandleState");
+    localStorage.removeItem("menuList")
+    localStorage.removeItem("permissions")
+    localStorage.removeItem("permissionsV3")
     sessionStorage.removeItem('ecom_ng_philips_code1');
     sessionStorage.removeItem('ng_philips_roles');
     sessionStorage.removeItem('ng_philips_groups');
@@ -174,6 +177,9 @@ export class HttpService {
     ex.setTime(ex.getTime() - 1);
     localStorage.removeItem('ecom_ng_philips_code1');
     localStorage.removeItem('ng_philips_username');
+    localStorage.removeItem("menuList")
+    localStorage.removeItem("permissions")
+    localStorage.removeItem("permissionsV3")
     localStorage.removeItem("WaitingMyHandleState");
     sessionStorage.removeItem('ecom_ng_philips_code1');
     sessionStorage.removeItem('ng_philips_roles');

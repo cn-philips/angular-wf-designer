@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { BiddingV3Service } from '@pages/bidding-v3/bidding-v3.service';
 
 @Component({
@@ -9,12 +9,15 @@ import { BiddingV3Service } from '@pages/bidding-v3/bidding-v3.service';
 export class CpVerifyComponent implements OnInit {
   @Output() verify = new EventEmitter()
   visible = false
+  @Input()
+  type:string ='BiddingConfirm' // BiddingConfirm 中标确认 , Authorization 授权发放
 
   tableData = []
   tableLoading = false
 
   hospitalName
   applicant
+  hospitalId
 
   marketBundleMap = new Map()
   resultSet = new Set()
@@ -31,9 +34,10 @@ export class CpVerifyComponent implements OnInit {
     })
   }
 
-  show({ applyId, applicant, hospitalName }) {
+  show({ applyId, applicant, hospitalName, hospitalId }) {
     this.visible = true
     this.hospitalName = hospitalName
+    this.hospitalId = hospitalId
     this.applicant = applicant
     this.getTableData(applyId)
   }
@@ -62,7 +66,7 @@ export class CpVerifyComponent implements OnInit {
       this.resultSet.delete(resultId)
     }
     this.resultSet.add(result.marketBundleId)
-    
+
     result.temUser = true
     item.cpVerifyResults.forEach((item, index) => {
       if (index !== j) {
@@ -70,7 +74,7 @@ export class CpVerifyComponent implements OnInit {
       }
     })
     // item.select = result.marketBundleId
-    const { applicant, hospitalName } = result
+    const { applicant, hospitalName, hospitalId } = result
     item.orderByCustomerNameCp = hospitalName
     item.winPerson = applicant
 
@@ -79,9 +83,14 @@ export class CpVerifyComponent implements OnInit {
       checkResultReasons += '申请人名称不一致;';
     }
 
-    if (hospitalName !== this.hospitalName) {
-      checkResultReasons += '客户名称不一致;';
+    if (hospitalName !== this.hospitalName&&hospitalId !== this.hospitalId) {
+      if(hospitalName !== this.hospitalName){
+        checkResultReasons += '客户名称不一致;';
+      }else{
+        checkResultReasons += '客户Id不一致;';
+      }
     }
+
     item.checkResultReasons = checkResultReasons
     if (checkResultReasons !== '') {
       item.checkResult = false

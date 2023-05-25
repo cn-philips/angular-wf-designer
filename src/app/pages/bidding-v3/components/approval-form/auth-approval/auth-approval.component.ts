@@ -23,6 +23,7 @@ export class AuthApprovalComponent implements OnChanges {
     businessModel: null,
     biddingNumber: null,
     hospitalName: null,
+    hospitalId: null,
     bidderName: null,
     bidderRegistAddress: null,
     cpVerifyRequired: null,
@@ -186,7 +187,7 @@ export class AuthApprovalComponent implements OnChanges {
       }
       data.subTiers = subTiers.getRawValue()
     }
-    
+
     for(const i in this.grantAuthApprovalInfo.controls) {
       this.grantAuthApprovalInfo.controls[i].markAsDirty()
       this.grantAuthApprovalInfo.controls[i].updateValueAndValidity()
@@ -195,19 +196,19 @@ export class AuthApprovalComponent implements OnChanges {
       this.message.error('请按要求填写表单信息')
       return
     }
-   
-    
+
+
     this.biddingV3Service.setPageLoading(true)
-    this.biddingV3Service.approve(data).subscribe(({ code }) => {
+    this.biddingV3Service.approve(data).subscribe(({ code, msg }) => {
       if (code === '0000') {
         this.message.success("审批成功!");
         this.biddingV3Service.goTodoPage()
       } else {
-        this.message.error("审批失败!");
+        this.message.error(msg);
       }
       this.biddingV3Service.setPageLoading(false)
-    }, () => {
-      this.message.error("审批失败!");
+    }, ({ message }) => {
+      this.message.error(message);
       this.biddingV3Service.setPageLoading(false)
     });
   }

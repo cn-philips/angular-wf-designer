@@ -507,7 +507,6 @@
             </nz-select>
             <input nz-input *ngIf="baseInfoFrom.getRawValue().businessModel != 'DIRECT'"
               formControlName="biddingCompany" maxlength="255" (ngModelChange)="biddingCompanyChange()" />
-
             <nz-form-explain *ngIf="
                   baseInfoFrom.get('biddingCompany')?.dirty &&
                   baseInfoFrom.get('biddingCompany')?.errors
@@ -1122,7 +1121,6 @@
         </nz-form-item>
       </div>
     </div>
-
     <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
       <div nz-col nzSpan="24">
         <shared-dealer-table [subTierSubject]="subTierSubject" [formGroup]="dealerFrom" arrayName="subTierInfo">

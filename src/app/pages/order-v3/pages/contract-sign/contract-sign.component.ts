@@ -168,11 +168,12 @@ export class ContractSignComponent implements OnInit {
     optionDisabled: [{ value: true, disabled: true }],
     currencySystem: [{ value: true, disabled: true }],
     orderSalesSapCode: [{ value: null, disabled: true }], //orderSalesSapCode
-    dealIsDisabled: [{ value: false, disabled: true }],//是否显示经销商的按钮 
+    dealIsDisabled: [{ value: false, disabled: true }],//是否显示经销商的按钮
     profitNetRate: [{ value: null, disabled: true }],//经销商净利润
     profitGrossRate: [{ value: null, disabled: true }],//经销商毛利率
     profitGross: [{ value: null, disabled: true }],//经销商毛利润
-    dealerProfit: [{ value: null, disabled: true }],//经销商利润   
+    dealerProfit: [{ value: null, disabled: true }],//经销商利润
+    biddingCurrency: [{ value: null, disabled: true }],//投标币种
   };
   dealerFrom = {
     dealerName: [{ value: null, disabled: true }, [Validators.required]], //经销商名称
@@ -761,6 +762,7 @@ export class ContractSignComponent implements OnInit {
       profitGrossRate,
       profitGross,
       dealerProfit,
+      biddingCurrency
     } = contractInfo;
     this.zslSignSupplement = contractSignInfo.zslSignSupplement;
     this.contractSignFormData.patchValue({
@@ -850,6 +852,7 @@ export class ContractSignComponent implements OnInit {
         profitGrossRate,
         profitGross,
         dealerProfit,
+        biddingCurrency
       })
 
     this.dealerFromData.patchValue({
@@ -995,7 +998,7 @@ export class ContractSignComponent implements OnInit {
       })
     }
     if (this.baseInfoFromData.getRawValue().businessModel == 'DISTRIBUTOR') {
-      this.getdistributorDate(); //更新经销商日期    
+      this.getdistributorDate(); //更新经销商日期
       setTimeout(() => {
         const subTierDisbaled = !(this.flag == '0' && ['ecos_oit_order_os_input', 'ecos_oit_order_sign'].includes(this.status))
         this.subTierSubject.next({
@@ -1015,7 +1018,7 @@ export class ContractSignComponent implements OnInit {
       this.getBiddingIsSpecial();
     }
   }
-  getBiddingIsSpecial() {//bidding模式是否是特批      
+  getBiddingIsSpecial() {//bidding模式是否是特批
     let { biddingApplyList } = this.baseInfoFromData.getRawValue();
     biddingApplyList.map(val => {
       this.serveice.getBiddingIsSpecial(val.id).subscribe(item => {
@@ -1051,7 +1054,7 @@ export class ContractSignComponent implements OnInit {
   }
   //效验经销商日期
   getdistributorDate() {
-    
+
     const { dealerName } = this.dealerFromData.getRawValue();
     console.log(this.dealerFromData.getRawValue())
     this.serveice.findDealersByPageValid({ dealerName: dealerName }).then((item) => {
@@ -1079,7 +1082,7 @@ export class ContractSignComponent implements OnInit {
             }, 1000)
           }
         }
-        else {          
+        else {
           this.message.create("error", '经销商未在经销商列表里边');
         }
       }
@@ -1119,7 +1122,7 @@ export class ContractSignComponent implements OnInit {
             })
           }
         }
-        else {         
+        else {
           this.message.create("error", '外贸公司不存在IEPOOL列表');
         }
       }
@@ -1259,8 +1262,8 @@ export class ContractSignComponent implements OnInit {
       }
       this.pageLoading = true;
       if (baseInfoFrom.businessModel == 'DISTRIBUTOR') {
-        //const dateAndValid=await this.serveice.getDdpDateAndValid(dealerFrom.dealerName); 
-        //console.log(dateAndValid)   
+        //const dateAndValid=await this.serveice.getDdpDateAndValid(dealerFrom.dealerName);
+        //console.log(dateAndValid)
         if (!this.allowPass) {
           const dateAndValid = await this.serveice.findDealersByPageValid({ dealerName: dealerFrom.dealerName })
           if (dateAndValid.code == '0000') {
@@ -1330,7 +1333,7 @@ export class ContractSignComponent implements OnInit {
 
           }
         }
-      }      
+      }
       this.serveice.contractApproval(param).then(res => {
         if (res.code == '0000') {
           this.pageLoading = false;

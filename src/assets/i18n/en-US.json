@@ -270,7 +270,8 @@
         }
       },
       "cp-verify": {
-        "title": "Authorization Grant Verification Result",
+        "auth-title": "Authorization Grant Verification Result",
+        "bidding-confirm-title":"Bidding Confirm Verification Result",
         "type": "Product Model",
         "customer-bid": "Customer Name(Win)",
         "customer-cp": "Customer Name(CP)",

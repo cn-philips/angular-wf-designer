@@ -130,8 +130,8 @@ export class WinCheckTableComponent implements OnInit {
       distributorFlag = distributor == agreementAgenName ? true : false;
       //orderRsult=this.dataBase.businessModel=='DISTRIBUTOR'?(oppResult && market && hospitat && person&&distributorFlag&&tenderingCompanyFlag&&tenderNoFlag&&(useState == "0")):(oppResult && market && hospitat && person&&tenderingCompanyFlag&&tenderNoFlag&&(useState == "0"))
       if (this.dataBase.businessModel == 'DISTRIBUTOR') {
-        if (this.dataBase.centralized) {
-          orderRsult = (oppResult && market && hospitat && distributorFlag && tenderingCompanyFlag && tenderNoFlag && (useState == "0")&&numberResult)
+        if (this.dataBase.centralized == '1') {
+          orderRsult = (oppResult && market && distributorFlag && tenderingCompanyFlag && tenderNoFlag && (useState == "0")&&numberResult)
 
         }
         else {
@@ -139,8 +139,8 @@ export class WinCheckTableComponent implements OnInit {
         }
       }
       else {
-        if (this.dataBase.centralized) {
-          orderRsult = (oppResult && market && hospitat && tenderingCompanyFlag && tenderNoFlag && (useState == "0")&&numberResult)
+        if (this.dataBase.centralized == '1') {
+          orderRsult = (oppResult && market && tenderingCompanyFlag && tenderNoFlag && (useState == "0")&&numberResult)
         }
         else {
           orderRsult = (oppResult && market && hospitat && person && tenderingCompanyFlag && tenderNoFlag && (useState == "0")&&numberResult)
@@ -176,11 +176,11 @@ export class WinCheckTableComponent implements OnInit {
 
         checkResultReasons.push("makertBundleName不匹配");
       }
-      if (!hospitat) {
+      if (this.dataBase.centralized == '0' && !hospitat ) {
 
         checkResultReasons.push("进单客户与投标客户不匹配");
       }
-      if (!this.dataBase.centralized) {
+      if (this.dataBase.centralized == '0') {
         if (!person) {
           checkResultReasons.push("进单申请人与投标人不匹配");
         }

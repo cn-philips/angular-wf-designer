@@ -270,7 +270,8 @@
         }
       },
       "cp-verify": {
-        "title": "授权发放校验结果",
+        "auth-title": "授权发放校验结果",
+        "bidding-confirm-title":"中标确认校验结果",
         "type": "产品型号",
         "customer-bid": "客户名称（投标)",
         "customer-cp": "客户名称（cp）",

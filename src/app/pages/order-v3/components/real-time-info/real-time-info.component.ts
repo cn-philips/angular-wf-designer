@@ -16,6 +16,7 @@ export class RealTimeInfoComponent implements OnInit {
   constructor(public activatedRouter: ActivatedRoute, private router: Router, private fb: FormBuilder, private message: NzMessageService, private http: HttpService) { }
   @Input() formValue: FormGroup;
   @Input() bg: string = 'PDIGT';
+  @Input() lastSo: any = null;
 
   public textLens = 255;
   public textLen = 100;

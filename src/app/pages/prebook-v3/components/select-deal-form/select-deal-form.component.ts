@@ -9,6 +9,7 @@ interface SearchParams {
   pageSize?: number;
   dealFormId?: string;
   id?: string;
+  repeatCheck?: boolean;
 }
 interface TableData {
   loading: boolean;
@@ -21,6 +22,7 @@ const DEFAULT_SEARCH_PARAMS: SearchParams = {
   pageSize: 10,
   dealFormId: null,
   id: null,
+  repeatCheck: false,
 };
 
 const DEFAULT_TABLE_DATA: TableData = {

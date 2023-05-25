@@ -6,14 +6,8 @@
   <app-tabs #tabs (select)="tabclick($event)">
     <app-tab [title]="'orderv3.pages.oit-complete.contract-summary' | translate" id="contract-tab">
       <div class="card-body">
-        <pre-base-info-from
-          #baseInfoFromChild
-          [formValue]="formValue"
-          [editPreTable]="false"
-          [editable]="false"
-          [isContract]="true"
-          [subTierSubject]="subTierSubject"
-        >
+        <pre-base-info-from #baseInfoFromChild [formValue]="formValue" [editPreTable]="false" [editable]="false"
+          [isContract]="true" [subTierSubject]="subTierSubject">
         </pre-base-info-from>
         <pre-base-info-table #baseInfoTableChild [formValue]="formValue" [isContract]="true"></pre-base-info-table>
       </div>
@@ -23,7 +17,7 @@
         <ecos-ordersummary-info [formValue]="formValue" [bg]="baseInfoFromData.getRawValue().orderModality"
           [editable]="false" [editPreTable]="false">
         </ecos-ordersummary-info>
-        <pre-base-info-table [isResultVerify]="true"  [formValue]="formValue" [isContract]="true"></pre-base-info-table>
+        <pre-base-info-table [isResultVerify]="true" [formValue]="formValue" [isContract]="true"></pre-base-info-table>
         <app-oa-add-info #oaAddInfoChild [formValue]="formValue"></app-oa-add-info>
       </div>
     </app-tab>
@@ -46,11 +40,11 @@
           <approval-history-oit [applyId]="applyId">
           </approval-history-oit>
           <app-form-section class="mtb1rem" [title]="'orderv3.pages.pre-order.history-child' | translate">
-            <shared-approval-history
-              [procInstId]="procInstId"></shared-approval-history>
+            <shared-approval-history [procInstId]="procInstId"></shared-approval-history>
           </app-form-section>
         </app-form-section>
-        <contract-remarks [formValue]="formValue" [remarkFrom]="remarkFromData" *ngIf="!needFileTypeOff"></contract-remarks>
+        <contract-remarks [formValue]="formValue" [remarkFrom]="remarkFromData" *ngIf="!needFileTypeOff">
+        </contract-remarks>
       </div>
     </app-tab>
     <app-tab [title]="'orderv3.pages.oit-complete.third-tab' | translate" id="complete-third"
@@ -59,23 +53,24 @@
         <ecos-thirdcheck-info [formValue]="formValue"></ecos-thirdcheck-info>
       </div>
     </app-tab>
-    <app-tab [title]="'orderv3.pages.oit-complete.so-tab' | translate" id="complete-real" *ngIf="needFileType == 'om'||needFileTypeShowOff">
+    <app-tab [title]="'orderv3.pages.oit-complete.so-tab' | translate" id="complete-real"
+      *ngIf="needFileType == 'om'||needFileTypeShowOff">
       <div class="card-body">
-        <ecos-real-time-info [formValue]="formValue" [bg]="baseInfoFromData.getRawValue().orderModality">
+        <ecos-real-time-info [formValue]="formValue" [bg]="baseInfoFromData.getRawValue().orderModality"
+          [lastSo]="lastSo">
         </ecos-real-time-info>
       </div>
-    </app-tab>   
-    <app-tab [title]="changeName" id="approve-change"
-      *ngIf="status == 'ecos_oit_order_change_submit'||status == 'ecos_oit_order_change_resubmit'||status == 'ecos_oit_order_change_approval'||status == 'ecos_oit_order_change_first_approval'
+    </app-tab>
+    <app-tab [title]="changeName" id="approve-change" *ngIf="status == 'ecos_oit_order_change_submit'||status == 'ecos_oit_order_change_resubmit'||status == 'ecos_oit_order_change_approval'||status == 'ecos_oit_order_change_first_approval'
       ||status == 'ecos_oit_order_change_second_approval'">
       <div class="card-body">
         <approve-change #approveChanges [formValue]="formValue"></approve-change>
       </div>
-    </app-tab>  
-    <app-tab [title]="'orderv3.pages.contract.change'|translate" id="approve-changes" *ngIf="changeItem"> 
+    </app-tab>
+    <app-tab [title]="'orderv3.pages.contract.change'|translate" id="approve-changes" *ngIf="changeItem">
       <div class="card-body">
         <approve-change [formValue]="formValue"></approve-change>
-      </div>       
+      </div>
     </app-tab>
   </app-tabs>
   <!--    <ngb-tabset type="tabs" [destroyOnHide]="true" [activeId]="activedId" #tabs>-->
@@ -164,10 +159,9 @@
   <!--        </ng-template>-->
   <!--      </ngb-tab>-->
   <!--    </ngb-tabset>-->
-  <div
-    *ngIf="flag == 0&&status!=='ecos_oit_order_change_submit'&&status!=='ecos_oit_order_change_resubmit'&&status!=='ecos_oit_order_change_approval'&&status !== 'ecos_oit_order_change_first_approval'
-    &&status !== 'ecos_oit_order_change_second_approval'"
-    class="fixed-btn-group" nz-row nzType="flex" class="fixed-btn-group" nzJustify="center" nzAlign="middle">
+  <div *ngIf="flag == 0&&status!=='ecos_oit_order_change_submit'&&status!=='ecos_oit_order_change_resubmit'&&status!=='ecos_oit_order_change_approval'&&status !== 'ecos_oit_order_change_first_approval'
+    &&status !== 'ecos_oit_order_change_second_approval'" class="fixed-btn-group" nz-row nzType="flex"
+    class="fixed-btn-group" nzJustify="center" nzAlign="middle">
     <div nz-col nzSpan="24">
       <nz-form-item>
         <nz-form-control [nzSm]="24" [nzXs]="24" style="text-align: center">
@@ -194,10 +188,9 @@
       </nz-form-item>
     </div>
   </div>
-  <div
-    *ngIf="flag==0&&(status=='ecos_oit_order_change_submit'||status=='ecos_oit_order_change_resubmit'||status=='ecos_oit_order_change_approval'||status == 'ecos_oit_order_change_first_approval'
-    ||status == 'ecos_oit_order_change_second_approval')"
-    class="fixed-btn-group" nz-row nzType="flex" class="fixed-btn-group" nzJustify="center" nzAlign="middle">
+  <div *ngIf="flag==0&&(status=='ecos_oit_order_change_submit'||status=='ecos_oit_order_change_resubmit'||status=='ecos_oit_order_change_approval'||status == 'ecos_oit_order_change_first_approval'
+    ||status == 'ecos_oit_order_change_second_approval')" class="fixed-btn-group" nz-row nzType="flex"
+    class="fixed-btn-group" nzJustify="center" nzAlign="middle">
     <div nz-col nzSpan="24">
       <nz-form-item>
         <nz-form-control *ngIf="status=='ecos_oit_order_change_submit'||status=='ecos_oit_order_change_resubmit'"
@@ -212,8 +205,7 @@
           </button>
         </nz-form-control>
         <nz-form-control *ngIf="status=='ecos_oit_order_change_approval'||status == 'ecos_oit_order_change_first_approval'
-        ||status == 'ecos_oit_order_change_second_approval'" [nzSm]="24" [nzXs]="24"
-          style="text-align: center">
+        ||status == 'ecos_oit_order_change_second_approval'" [nzSm]="24" [nzXs]="24" style="text-align: center">
           <button nz-button nzType="default" nz-popconfirm nzTitle="你确定要执行拒绝的操作?" style="margin-right: 10px"
             (nzOnConfirm)="processChangeOrder('rejected',false)">
             {{"orderv3.pages.oit-complete.refuse" | translate}}
@@ -250,7 +242,8 @@
           <button nz-button nzType="default" style="margin-right: 10px" (click)="handleCancel()">
             {{"orderv3.pages.oit-complete.cancel" | translate}}
           </button>
-          <button nz-button nzType="primary"  nz-popconfirm nzTitle="你确定要执行提交的操作?" (nzOnConfirm)="preSubmit('apply_save')">
+          <button nz-button nzType="primary" nz-popconfirm nzTitle="你确定要执行提交的操作?"
+            (nzOnConfirm)="preSubmit('apply_save')">
             {{"orderv3.pages.oit-complete.submit" | translate}}
           </button>
         </nz-form-control>
