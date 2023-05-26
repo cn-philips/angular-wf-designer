@@ -41,11 +41,14 @@ export class PermissionService {
   }
   /**
    * 刷新权限
-   * @param immediate 是否立刻刷新，如果为否，则每30分钟刷新一次
+   * @param immediate 是否立刻刷新，如果为否，则每period分钟刷新一次
+   * @param period 每period分钟刷新一次
+   * @param expiredTime 权限有效时间，默认30分钟
    */
   public async refreshPermission(
     immediate: boolean = false,
-    period: number = 0
+    period: number = 30,
+    expiredTime:number = 10
   ) {
     let _period = period > 0 ? period : this.period;
     if (!immediate) {
@@ -58,16 +61,24 @@ export class PermissionService {
         console.log("Refresh Permissions per "+ _period + " minus.");
         window.localStorage.removeItem("permissions");
         window.localStorage.removeItem("permissionsV3");
+        window.localStorage.removeItem("perm_last_refresh_time")
         await this.getPricePermissionsAll();
         await this.getPriceAllPermissions();
         this.refreshPermission(false, _period);
+        window.localStorage.setItem("perm_last_refresh_time",new Date().getTime().toString())
       }, _period * 60 * 1000);
     } else {
+      if(new Date().getTime() - Number(window.localStorage.getItem("perm_last_refresh_time")) < expiredTime*30*1000) {
+        console.log("Refreshed recently, no need to refresh.");
+        return
+      }
       console.log("Refresh Permissions Immediately.");
       window.localStorage.removeItem("permissions");
       window.localStorage.removeItem("permissionsV3");
+      window.localStorage.removeItem("perm_last_refresh_time")
       await this.getPricePermissionsAll();
       await this.getPriceAllPermissions();
+      window.localStorage.setItem("perm_last_refresh_time",new Date().getTime().toString())
     }
   }
 }

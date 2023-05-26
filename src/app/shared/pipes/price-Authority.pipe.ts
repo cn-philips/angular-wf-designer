@@ -17,7 +17,7 @@ export class PriceAuthorityPipe implements PipeTransform {
     else{
       modalityList=[];
     }
-    
+
     //过滤
     const permissionList = profiles.map(val => {
         return {
@@ -51,17 +51,17 @@ export class PriceAuthorityPipe implements PipeTransform {
         case 'details':
           for (let i = 0; i < permissionList.length; i++) {
             endPermission = detailsPricePermissions.filter(val => val.fieModality == permissionList[i].modality && val.fieRoles == permissionList[i].role )
-          
+
             if (endPermission && endPermission.length > 0) {
               return value
             }
           }
           return '-'
         case 'contract':
-          
+
           for (let i = 0; i < permissionList.length; i++) {
             endPermission = contractPricePermissions.filter(val => val.fieModality == permissionList[i].modality && val.fieRoles == permissionList[i].role )
-           
+
             if (endPermission && endPermission.length > 0) {
               return value
             }
@@ -88,7 +88,7 @@ export class PriceAuthorityPipe implements PipeTransform {
           }
         case 'contract':
           endPermission = contractPricePermissions.filter(val => modalityList.includes(val.fieModality) && currRoles.includes(val.fieRoles))
-        
+
           if (endPermission && endPermission.length > 0) {
             return value;
           } else {
