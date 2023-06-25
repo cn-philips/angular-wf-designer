@@ -59,9 +59,9 @@ export class PermissionService {
       }
       this.timer = setTimeout(async () => {
         console.log("Refresh Permissions per "+ _period + " minus.");
-        window.localStorage.removeItem("permissions");
-        window.localStorage.removeItem("permissionsV3");
-        window.localStorage.removeItem("perm_last_refresh_time")
+        // window.localStorage.removeItem("permissions");
+        // window.localStorage.removeItem("permissionsV3");
+        // window.localStorage.removeItem("perm_last_refresh_time")
         await this.getPricePermissionsAll();
         await this.getPriceAllPermissions();
         this.refreshPermission(false, _period);
@@ -73,9 +73,9 @@ export class PermissionService {
         return
       }
       console.log("Refresh Permissions Immediately.");
-      window.localStorage.removeItem("permissions");
-      window.localStorage.removeItem("permissionsV3");
-      window.localStorage.removeItem("perm_last_refresh_time")
+      // window.localStorage.removeItem("permissions");
+      // window.localStorage.removeItem("permissionsV3");
+      // window.localStorage.removeItem("perm_last_refresh_time")
       await this.getPricePermissionsAll();
       await this.getPriceAllPermissions();
       window.localStorage.setItem("perm_last_refresh_time",new Date().getTime().toString())

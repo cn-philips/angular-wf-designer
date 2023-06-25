@@ -51,6 +51,7 @@ export class DevloginComponent implements OnInit {
     localStorage.removeItem("routerInfo");
     localStorage.removeItem("ng_philips_email");
     localStorage.removeItem("roleAgents");
+    localStorage.removeItem("perm_last_refresh_time");
     sessionStorage.removeItem("ecom_ng_philips_code1");
     sessionStorage.removeItem("ng_philips_roles");
     sessionStorage.removeItem("ng_philips_groups");

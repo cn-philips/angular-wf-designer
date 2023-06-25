@@ -22,61 +22,65 @@ export class QAListComponent implements OnInit {
   }
   //Q&A的链接
   getQa() {
-    const params = {
-      dictGroup: "LINK_QA_PDF",
-    };
-    if (this.qsType === "cos") {
-      this.http
-        .get(`/act/ecom/dictData/queryDrop?dictGroup=${params.dictGroup}`)
-        .subscribe((rest) => {
-          if (rest.code === "0000") {
-            let manualList = [...rest.data];
-            manualList.map((val) => {
-              val.type = "pdf";
-            });
-            const obj = {
-              dictGroup: "LINK_QA_LINK",
-            };
-            this.http
-              .get(`/act/ecom/dictData/queryDrop?dictGroup=${obj.dictGroup}`)
-              .subscribe((res) => {
-                let videoData = [...res.data];
-                videoData.map((val) => {
-                  val.type = "video";
-                });
-                this.manualList = [...videoData, ...manualList];
+    switch (this.qsType) {
+      case "cos":
+        this.http
+          .get(`/act/ecom/dictData/queryDrop?dictGroup=LINK_QA_PDF`)
+          .subscribe((rest) => {
+            if (rest.code === "0000") {
+              let manualList = [...rest.data];
+              manualList.map((val) => {
+                val.type = "pdf";
               });
-          }
-        });
-    } else if (this.qsType === "sp") {
-      // special approval
-      this.http
-        .get(`/act/ecom/dictData/queryDrop?dictGroup=LINK_QA_PDF_SP`)
-        .subscribe((res) => {
-          const sp_pdf = [...res.data];
-          // const strRegex = /\.(pdf)$/;
-          if (sp_pdf) {
-            sp_pdf.map((e) => {
-              e.type = "pdf";
-              // if (e.label && strRegex.test(e.label.toLowerCase())) {
-              //   e.type = 'pdf';
-              // } else {
-              //   e.type = 'video';
-              // }
-            });
-          }
-          this.http
-            .get(`/act/ecom/dictData/queryDrop?dictGroup=LINK_QA_LINK_SP`)
-            .subscribe((rest) => {
-              const sp_video = [...rest.data];
-              if (sp_video) {
-                sp_video.map((e) => {
-                  e.type = "video";
+              this.http
+                .get(`/act/ecom/dictData/queryDrop?dictGroup=LINK_QA_LINK`)
+                .subscribe((res) => {
+                  let videoData = [...res.data];
+                  videoData.map((val) => {
+                    val.type = "video";
+                  });
+                  this.manualList = [...videoData, ...manualList];
                 });
-              }
-              this.manualList = [...sp_pdf, ...sp_video];
-            });
-        });
+            }
+          });
+        break;
+      case "sp":
+        // special approval
+        this.http
+          .get(`/act/ecom/dictData/queryDrop?dictGroup=LINK_QA_PDF_SP`)
+          .subscribe((res) => {
+            const sp_pdf = [...res.data];
+            if (sp_pdf) {
+              sp_pdf.map((e) => {
+                e.type = "pdf";
+              });
+            }
+            this.http
+              .get(`/act/ecom/dictData/queryDrop?dictGroup=LINK_QA_LINK_SP`)
+              .subscribe((rest) => {
+                const sp_video = [...rest.data];
+                if (sp_video) {
+                  sp_video.map((e) => {
+                    e.type = "video";
+                  });
+                }
+                this.manualList = [...sp_pdf, ...sp_video];
+              });
+          });
+        break;
+      case "snow":
+        this.http
+          .get(`/act/ecom/dictData/queryDrop?dictGroup=LINK_SNOW_PDF`)
+          .subscribe((res) => {
+            if (res.code === "0000") {
+              let manualList = [...res.data];
+              manualList.map((val) => {
+                val.type = "pdf";
+              });
+              this.manualList = [...manualList];
+            }
+          });
+        break;
     }
   }
   //打开pdf

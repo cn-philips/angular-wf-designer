@@ -134,16 +134,22 @@ export class BiddingConfirmComponent implements OnChanges {
     const spItems = this.specialApprovalItems.getRawValue().filter(({ status, nonRequiredFields }) => status === 1 && nonRequiredFields)
     const winningNoticeFiles = this.biddingConfirm.get('winningNoticeFiles')
     const { biddingType } = this.applyDetail
+    var isIncludes = false
+    
     for (let item of spItems) {
-      if (item.nonRequiredFields.includes('winningNoticeFiles') || biddingType === '其他类型') {
-        this.winningNoticeFilesRequired = false
-        winningNoticeFiles.clearValidators()
-        winningNoticeFiles.updateValueAndValidity()
-        return
+      if (item.nonRequiredFields.includes('winningNoticeFiles')) {
+        isIncludes = true;
       }
     }
-    this.winningNoticeFilesRequired = true
-    winningNoticeFiles.setValidators([Validators.required])
+
+    if(biddingType === '其他类型' || isIncludes){
+      this.winningNoticeFilesRequired = false
+      winningNoticeFiles.clearValidators()
+      winningNoticeFiles.updateValueAndValidity()
+    } else {
+      this.winningNoticeFilesRequired = true
+      winningNoticeFiles.setValidators([Validators.required])
+    }
   }
 
   activeItem(spItem: FormGroup) {
@@ -214,10 +220,11 @@ export class BiddingConfirmComponent implements OnChanges {
       lackingOther: !!lackingOther,
       specialApprovalSupportFiles,
     })
+    const winningNoticeFile = this.biddingConfirm.get('winningNoticeFiles')
     if (biddingType === '其他类型') {
         this.winningNoticeFilesRequired = false
-        winningNoticeFiles.clearValidators()
-        winningNoticeFiles.updateValueAndValidity()
+        winningNoticeFile.clearValidators()
+        winningNoticeFile.updateValueAndValidity()
     }
     if (this.disabled) {
       this.biddingConfirm.disable()

@@ -91,7 +91,7 @@ export class HttpService {
     return this.http
       .post(this.getFullHref(url), data, httpOptions)
       .pipe(
-        timeout(300000),
+        timeout(3000000),
         map(this.extractData),
         catchError(this.handleError)
       );
@@ -111,7 +111,7 @@ export class HttpService {
     return this.http
       .post(this.getFullHref(url), data, httpOptionsNoCaches)
       .pipe(
-        timeout(1200000),
+        timeout(12000000),
         map(this.extractData),
         catchError(this.handleError)
       );
