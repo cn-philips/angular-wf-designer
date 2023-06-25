@@ -28,7 +28,7 @@ export class WinCheckTableComponent implements OnInit {
   @Input() tableLoad: any = true;
   listOfData = [];
   ngOnChanges() {
-    
+
       this.bidData.map(res => {
         res.searchResult.map(val => {
           const price = val.price != null && val.price != '' && val.price != '0.00' ?val.price: "N/A";
@@ -36,13 +36,13 @@ export class WinCheckTableComponent implements OnInit {
           val.title = `${val.marketBundleName} ${val.number}台 中标价格: ${price} ${useStatus}`;
         })
       })
-      
+
   }
-  selectClick(index, i) {    
+  selectClick(index, i) {
     let search = this.bidData[index].searchResult[i]; //当前选中search;
     let bidSelect = this.bidData[index].select;
     const selectId = search.id;
-    let useState = search.useStatus; //中标产品是否使用   
+    let useState = search.useStatus; //中标产品是否使用
     let checkArr = []; //用于验证的数组
     this.bidData.map(res => {
       res.isCheak && checkArr.push(res);
@@ -85,16 +85,16 @@ export class WinCheckTableComponent implements OnInit {
       let tenderingCompanyFlag = false; //投标公司
       let tenderNoFlag = false; //招标编号
       let distributorFlag = false; //经销商
-      let numberResult=false; //台数 
+      let numberResult=false; //台数
       let orderRsult: any = false;
-      let checkResultReasons = []; //失败原因      
+      let checkResultReasons = []; //失败原因
       const opportunityId = this.bidData[index].opportunityId; //进单opportunityId18位
       let opportunityIdOrder
-      if(opportunityId.length>=18)
+      if(opportunityId && opportunityId.length>=18)
       {
         opportunityIdOrder=opportunityId.slice(0,15);
       }
-      
+
       const opportunityIdNow = search.opportunityId;
       const makertBundleName = this.bidData[index].marketBundleName;
       const makertBundleNameNow = search.marketBundleName;
@@ -105,7 +105,7 @@ export class WinCheckTableComponent implements OnInit {
       this.bidData[index].winningByCustomerName = search.hospitalName; //中标客户名称
       this.bidData[index].winPerson = search.bidApplicant;//中标申请人
       this.bidData[index].biddingName = search.biddingName; //中标投标公司
-      this.bidData[index].biddingNo = search.biddingNo; //中标招标编号 
+      this.bidData[index].biddingNo = search.biddingNo; //中标招标编号
       this.bidData[index].biddingAwardPrice=search.biddingAwardPrice; //中标价格
       this.bidData[index].biddingAwardCurrency=search.biddingAwardCurrency; //中标币制
 
@@ -119,7 +119,7 @@ export class WinCheckTableComponent implements OnInit {
       const agreementAgenName = search.agreementAgenName; //中标经销商
       const orderNumber=this.bidData[index].number//进单台数
       const bidddingNumber=search.number//进单台数
-     
+
       numberResult=orderNumber==bidddingNumber?true:false;
       oppResult = (opportunityId == opportunityIdNow)||(opportunityIdOrder==opportunityIdNow) ? true : false;
       market = makertBundleName == makertBundleName ? true : false;
@@ -146,14 +146,14 @@ export class WinCheckTableComponent implements OnInit {
           orderRsult = (oppResult && market && hospitat && person && tenderingCompanyFlag && tenderNoFlag && (useState == "0")&&numberResult)
         }
       }
-      
+
       if (orderRsult) {
-        this.bidData[index].checkResult = true;     
+        this.bidData[index].checkResult = true;
         this.bidData[index].biddingMarketBundleId = this.bidData[index].searchResult[i].id; //把选中的id赋值给biddingMarketBundleId
         this.bidData[index].checkResultReasons = [];
         let check = checkArr.every(x => x.checkResult)  //验证是否全部通过
-        if (check) {         
-          
+        if (check) {
+
           this.myVerifi.emit(false);
         }
       }
@@ -166,15 +166,14 @@ export class WinCheckTableComponent implements OnInit {
       }
       if(!numberResult)
       {
-        checkResultReasons.push("台数不匹配"); 
+        checkResultReasons.push("台数不匹配");
       }
       if (!oppResult) {
-
         checkResultReasons.push("opportunityId不匹配");
       }
       if (!market) {
 
-        checkResultReasons.push("makertBundleName不匹配");
+        checkResultReasons.push("marketBundleName不匹配");
       }
       if (this.dataBase.centralized == '0' && !hospitat ) {
 

@@ -1049,8 +1049,8 @@
                     <nz-form-control nzXs="24" nzSm="24" nzMd="14">
                       <input nz-input formControlName="endUserActuallyDeliveryAddress" maxlength="255" />
                       <nz-form-explain *ngIf="
-                          endUserFrom.get('endUserActuallyDeliveryAddress')?.dirty &&
-                          endUserFrom.get('endUserActuallyDeliveryAddress')?.errors
+                          item.controls.endUserinfo.get('endUserActuallyDeliveryAddress')?.dirty &&
+                          item.controls.endUserinfo.get('endUserActuallyDeliveryAddress')?.errors
                         ">
                         {{'orderv3.components.pre-product.common.requiredTerms' | translate}}
                       </nz-form-explain>

@@ -28,7 +28,7 @@ import { TranslateService } from "@ngx-translate/core";
 import { DialogPanelComponent } from "app/modern-themes/components/dialog-panel/dialog-panel.component";
 import { FormGroup } from "@angular/forms";
 import * as Driver from "driver.js";
-
+import { NzModalRef, NzModalService } from 'ng-zorro-antd';
 @Component({
   selector: "app-layout-navbar",
   templateUrl: "./layout-navbar.component.html",
@@ -66,7 +66,8 @@ export class LayoutNavbarComponent {
     private http: HttpService,
     private message: NzMessageService,
     private cookieService: CookieService,
-    private quickLinksService: QuickLinksService
+    private quickLinksService: QuickLinksService,
+    private ngModalService:NzModalService
   ) {
     this.isProduction = environment["isProduction"] || false;
     this.isRTL = appService.isRTL;
@@ -152,15 +153,32 @@ export class LayoutNavbarComponent {
     this.showSettingPanel(2);
   }
   iconClick() {
-    let userName = localStorage.getItem("ecom_ng_philips_code1");
-    let info = {
-      userName: userName,
-      applicationName: this.applicationName,
-    };
-    let jsonString = JSON.stringify(info);
-    let encodeInfo = window.btoa(jsonString);
-    let url = `${location.origin}${environment.itop_href}?info=${encodeInfo}`;
-    window.open(url);
+    // let userName = localStorage.getItem("ecom_ng_philips_code1");
+    // let info = {
+    //   userName: userName,
+    //   applicationName: this.applicationName,
+    // };
+    // let jsonString = JSON.stringify(info);
+    // let encodeInfo = window.btoa(jsonString);
+    // let url = `${location.origin}${environment.itop_href}?info=${encodeInfo}`;
+
+    this.ngModalService.confirm({
+      nzTitle: '提示',
+      nzContent: 'IT support系统已升级为SNOW，提交工单时请务必在"Please select a Service"输入"Local Application Greater China", 在"Configuration Item"字段选择" e-Commercial System (HC) v1.0 (COS) ",以确保支持人员能及时收到工单。',
+      nzOnOk: () => {
+        let url = null
+        if(this.isProduction){
+          url = `https://philips.service-now.com/itportal?id=sc_cat_item&sys_id=8a9bbb31db53e3004eb81aaf299619e8`
+        }else{
+          url = `https://philipsqa.service-now.com/itportal?id=sc_cat_item&sys_id=8a9bbb31db53e3004eb81aaf299619e8`
+        }
+        window.open(url);
+      },
+      nzStyle:{top:'35%'},
+      nzCancelText:null,
+      nzWidth:'50%',
+      nzIconType:'info-circle',
+    })
   }
 
   /* For Dev */

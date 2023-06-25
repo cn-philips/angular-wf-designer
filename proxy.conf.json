@@ -1,6 +1,6 @@
 {
   "/act/*": {
-    "target": "http://20.205.126.226:8082/"
+    "target": "http://localhost:9091/"
   }
 }
 

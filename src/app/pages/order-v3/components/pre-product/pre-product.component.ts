@@ -165,8 +165,13 @@ export class PreProductComponent implements OnInit {
               orderSalesinfo.patchValue({
                 orderDisbled: true,
               });
-            } else if((centralizedPurchasing == "1" || (centralizedPurchasing == "0" && orderModality != dealFormSalesModality) )
-              && isload && cpDealOrderId) {
+            } else if (
+              (centralizedPurchasing == "1" ||
+                (centralizedPurchasing == "0" &&
+                  orderModality != dealFormSalesModality)) &&
+              isload &&
+              cpDealOrderId
+            ) {
               orderSalesinfo.reset();
               orderSalesinfo.patchValue({
                 orderDisbled: false,
@@ -176,11 +181,13 @@ export class PreProductComponent implements OnInit {
               });
               // 集采项目时，获取order owner
               this.service.getOrderOwner(cpDealOrderId).then((res) => {
-                if (res.code = "0000") {
+                if ((res.code = "0000")) {
                   if (res.data) {
                     var sales = res.data.email.toString();
                     var user = this.user.toString();
-                    const isSame = sales.length == user.length && sales.toLowerCase() == user.toLowerCase();
+                    const isSame =
+                      sales.length == user.length &&
+                      sales.toLowerCase() == user.toLowerCase();
                     orderSalesinfo.patchValue({
                       orderSales: res.data.email,
                       orderSalesName: res.data.name,
@@ -190,9 +197,9 @@ export class PreProductComponent implements OnInit {
                     });
                   }
                 } else {
-                  this.message.error(res.msg)
+                  this.message.error(res.msg);
                 }
-              })
+              });
             } else {
               orderSalesinfo.patchValue({
                 orderDisbled: false,
@@ -309,7 +316,7 @@ export class PreProductComponent implements OnInit {
                 marketBundleInfo.at(i).get("medicalDeviceName").enable();
                 marketBundleInfo.at(i).get("nmpaNum").enable();
                 marketBundleInfo.at(i).get("nmpaValidityDate").enable();
-                if("CC"!==orderModality){
+                if ("CC" !== orderModality) {
                   marketBundleInfo
                     .at(i)
                     .get("productModel")
@@ -1052,8 +1059,6 @@ export class PreProductComponent implements OnInit {
     this.index = i;
   }
   onClearOrder(i) {
-
-
     const orderBaseinfo = this.orderInfo
       .at(i)
       .get("orderBaseinfo") as FormGroup;
@@ -1067,23 +1072,24 @@ export class PreProductComponent implements OnInit {
       .get("speciallyTerms") as FormGroup;
 
     // 根据是否有ActualHospital ID和是否为集采项目确定是否要清除 与"基础信息"相同 标识
-    debugger
+    debugger;
     const actualHospitalId = orderBaseinfo.getRawValue().actualHospitalId;
-    if((!!actualHospitalId
-      ||(this.status == "ecos_oit_deal_sales" ||
-    this.status == "ecos_oit_deal_resubmit" ||
-    this.status == "" ||
-    this.status == undefined ||
-    this.status == "ecos_status_draft")) && this.baseInfoFrom.getRawValue().centralizedPurchasing == "1") {
+    if (
+      (!!actualHospitalId ||
+        this.status == "ecos_oit_deal_sales" ||
+        this.status == "ecos_oit_deal_resubmit" ||
+        this.status == "" ||
+        this.status == undefined ||
+        this.status == "ecos_status_draft") &&
+      this.baseInfoFrom.getRawValue().centralizedPurchasing == "1"
+    ) {
       // 保持原样
-    }else{
+    } else {
       endUserinfo.reset();
       endUserinfo.patchValue({
-        orderSameEndUser: "1"
+        orderSameEndUser: "1",
       });
     }
-
-
 
     const {
       orderName,
@@ -1120,7 +1126,6 @@ export class PreProductComponent implements OnInit {
     foreignInfo.reset();
     const { paymentProvisionList } = mainTrems.getRawValue();
     mainTrems.reset();
-
 
     foreignInfo.patchValue({
       orderSameForeignTradeCorp: "1",
@@ -1398,8 +1403,8 @@ export class PreProductComponent implements OnInit {
 
     const { centralizedPurchasing } = this.baseInfoFrom.getRawValue();
     const endUserinfo = this.orderInfo
-    .at(index)
-    .get("endUserinfo") as FormGroup;
+      .at(index)
+      .get("endUserinfo") as FormGroup;
     const orderSameEndUser = endUserinfo.getRawValue().orderSameEndUser;
     if (
       this.user == param &&
@@ -1420,19 +1425,20 @@ export class PreProductComponent implements OnInit {
     if (
       this.user == param &&
       (this.status == undefined ||
-      this.status == "" ||
-      this.status == "ecos_oit_deal_sales" ||
-      this.status == "ecos_oit_deal_submit" ||
-      this.status == "ecos_oit_deal_resubmit" ||
-      this.status == "ecos_status_draft")
-      && (this.flag == "0" || this.flag == undefined)
-      && centralizedPurchasing == "1" ) {
-        endUserinfo.get("endUserAddress").enable();
-        endUserinfo.get("endUserPhone").enable();
-        endUserinfo.get("endUserEmail").enable();
-        endUserinfo.get("endUserContact").enable();
-        endUserinfo.get("endUserActuallyDeliveryAddress").enable();
-    }else{
+        this.status == "" ||
+        this.status == "ecos_oit_deal_sales" ||
+        this.status == "ecos_oit_deal_submit" ||
+        this.status == "ecos_oit_deal_resubmit" ||
+        this.status == "ecos_status_draft") &&
+      (this.flag == "0" || this.flag == undefined) &&
+      centralizedPurchasing == "1"
+    ) {
+      endUserinfo.get("endUserAddress").enable();
+      endUserinfo.get("endUserPhone").enable();
+      endUserinfo.get("endUserEmail").enable();
+      endUserinfo.get("endUserContact").enable();
+      endUserinfo.get("endUserActuallyDeliveryAddress").enable();
+    } else {
       endUserinfo.get("endUserAddress").disable();
       endUserinfo.get("endUserPhone").disable();
       endUserinfo.get("endUserEmail").disable();
@@ -1440,11 +1446,11 @@ export class PreProductComponent implements OnInit {
       endUserinfo.get("endUserActuallyDeliveryAddress").disable();
     }
   }
-  isCurrentUserEditable(){
+  isCurrentUserEditable() {
     const orderSalesinfo = this.orderInfo
-    .at(this.index)
-    .get("orderSalesinfo") as FormGroup;
-    return this.user === orderSalesinfo.getRawValue().orderSales
+      .at(this.index)
+      .get("orderSalesinfo") as FormGroup;
+    return this.user === orderSalesinfo.getRawValue().orderSales;
   }
   onSelectActualuser(val) {
     const orderBaseinfo = this.orderInfo
@@ -1606,10 +1612,12 @@ export class PreProductComponent implements OnInit {
     this.saleRegions = disreduce(regions, "label");
   }
 
-  filterSaleRegion (i){
-    const orderBaseinfo = this.orderInfo.at(i).get("orderBaseinfo") as FormGroup;
+  filterSaleRegion(i) {
+    const orderBaseinfo = this.orderInfo
+      .at(i)
+      .get("orderBaseinfo") as FormGroup;
     const { orderModality } = orderBaseinfo.getRawValue();
-    return this.saleRegions.filter( (item) => item.modality === orderModality )
+    return this.saleRegions.filter((item) => item.modality === orderModality);
   }
 
   selectConfig(systemRegion, i) {
@@ -1767,44 +1775,43 @@ export class PreProductComponent implements OnInit {
       endUserinfo.get("endUserPhone").setValidators(Validators.required);
       //endUserinfo.get('endUserEmail').setValidators(Validators.required)
       endUserinfo.get("endUserContact").setValidators(Validators.required);
-      endUserinfo
-        .get("endUserActuallyDeliveryAddress")
-        .setValidators(Validators.required);
+      endUserinfo.get("endUserActuallyDeliveryAddress").setValidators(Validators.required);
       endUserinfo.get("endUser").updateValueAndValidity();
       endUserinfo.get("endUserTaxNum").updateValueAndValidity();
       endUserinfo.get("endUserAddress").updateValueAndValidity();
       endUserinfo.get("endUserPhone").updateValueAndValidity();
       endUserinfo.get("endUserEmail").updateValueAndValidity();
       endUserinfo.get("endUserContact").updateValueAndValidity();
+      endUserinfo.get("endUserActuallyDeliveryAddress").updateValueAndValidity();
       result = true;
       //  如果是集采还未开始，则不校验
-      if (
-        (this.status == undefined ||
-          this.status == "" ||
-          this.status == "ecos_status_draft" ||
-          this.status == "ecos_oit_deal_resubmit") &&
-        (this.flag == "0" || this.flag == undefined) &&
-        this.baseInfoFrom.getRawValue().centralizedPurchasing == "1"
-      ) {
-        endUserinfo.get("endUser").clearValidators();
-        endUserinfo.get("endUserTaxNum").clearValidators();
-        endUserinfo.get("endUserAddress").clearValidators();
-        endUserinfo.get("endUserPhone").clearValidators();
-        endUserinfo.get("endUserEmail").clearValidators();
-        endUserinfo.get("endUserContact").clearValidators();
-        endUserinfo.get("endUserActuallyDeliveryAddress").clearValidators();
+      // if (
+      //   (this.status == undefined ||
+      //     this.status == "" ||
+      //     this.status == "ecos_status_draft" ||
+      //     this.status == "ecos_oit_deal_resubmit") &&
+      //   (this.flag == "0" || this.flag == undefined) &&
+      //   this.baseInfoFrom.getRawValue().centralizedPurchasing == "1"
+      // ) {
+      //   endUserinfo.get("endUser").clearValidators();
+      //   endUserinfo.get("endUserTaxNum").clearValidators();
+      //   endUserinfo.get("endUserAddress").clearValidators();
+      //   endUserinfo.get("endUserPhone").clearValidators();
+      //   endUserinfo.get("endUserEmail").clearValidators();
+      //   endUserinfo.get("endUserContact").clearValidators();
+      //   endUserinfo.get("endUserActuallyDeliveryAddress").clearValidators();
 
-        endUserinfo.get("endUser").updateValueAndValidity();
-        endUserinfo.get("endUserTaxNum").updateValueAndValidity();
-        endUserinfo.get("endUserAddress").updateValueAndValidity();
-        endUserinfo.get("endUserPhone").updateValueAndValidity();
-        endUserinfo.get("endUserEmail").updateValueAndValidity();
-        endUserinfo.get("endUserContact").updateValueAndValidity();
-        endUserinfo
-          .get("endUserActuallyDeliveryAddress")
-          .updateValueAndValidity();
-        result = false;
-      }
+      //   endUserinfo.get("endUser").updateValueAndValidity();
+      //   endUserinfo.get("endUserTaxNum").updateValueAndValidity();
+      //   endUserinfo.get("endUserAddress").updateValueAndValidity();
+      //   endUserinfo.get("endUserPhone").updateValueAndValidity();
+      //   endUserinfo.get("endUserEmail").updateValueAndValidity();
+      //   endUserinfo.get("endUserContact").updateValueAndValidity();
+      //   endUserinfo
+      //     .get("endUserActuallyDeliveryAddress")
+      //     .updateValueAndValidity();
+      //   result = false;
+      // }
 
       return result;
     } else {
@@ -2145,12 +2152,14 @@ export class PreProductComponent implements OnInit {
     const orderSalesinfo = this.orderInfo
       .at(i)
       .get("orderSalesinfo") as FormGroup;
-    const ordercentralizedPurchasing = orderBaseinfo.getRawValue().centralizedPurchasing;
+    const ordercentralizedPurchasing =
+      orderBaseinfo.getRawValue().centralizedPurchasing;
 
     const { orderSales } = orderSalesinfo.getRawValue();
     var sales = orderSales ? orderSales.toString() : "";
     var user = this.user.toString();
-    const isSame = (sales.length == user.length) && (sales.toLowerCase() == user.toLowerCase());
+    const isSame =
+      sales.length == user.length && sales.toLowerCase() == user.toLowerCase();
     if (ordercentralizedPurchasing == "1" && isSame) {
       orderSalesinfo.get("actualSalesEmail").setValidators(Validators.required);
       orderSalesinfo.get("actualSalesEmail").markAsDirty();
@@ -2742,7 +2751,7 @@ export class PreProductComponent implements OnInit {
     let agentGrossProfitMargin: any; //经销商毛利率
     agentGrossProfitMargin = returnFloat(
       !isNullList.includes(profitGrossRate)
-        ? Number(profitGrossRate*100).toFixed(2)
+        ? Number(profitGrossRate * 100).toFixed(2)
         : 0,
       2
     );
@@ -2755,7 +2764,9 @@ export class PreProductComponent implements OnInit {
 
     let agentNetInterestRate: any; //经销商净利润率
     agentNetInterestRate = returnFloat(
-      !isNullList.includes(dealerProfit) ? Number(dealerProfit*100).toFixed(2) : 0,
+      !isNullList.includes(dealerProfit)
+        ? Number(dealerProfit * 100).toFixed(2)
+        : 0,
       2
     );
     agentNetInterestRate = `${agentNetInterestRate}%`;
@@ -3180,112 +3191,112 @@ export class PreProductComponent implements OnInit {
         this.status == "ecos_oit_deal_sales" ||
         this.status == "ecos_oit_deal_submit" ||
         this.status == "ecos_oit_deal_resubmit" ||
-        this.status == "ecos_status_draft")
-        && (this.flag == "0" || this.flag == undefined)
-        && centralizedPurchasing == "1"
+        this.status == "ecos_status_draft") &&
+      (this.flag == "0" || this.flag == undefined) &&
+      centralizedPurchasing == "1"
     ) {
-        // Order是否有值
-        let promiseArr = [];
-        this.orderInfo.controls.forEach((order, index) => {
-          const orderBaseinfo = this.orderInfo
-            .at(index)
-            .get("orderBaseinfo") as FormGroup;
-          const orderSalesinfo = this.orderInfo
-            .at(index)
-            .get("orderSalesinfo") as FormGroup;
-          const endUserinfo = this.orderInfo
-            .at(index)
-            .get("endUserinfo") as FormGroup;
-          const actualHospitalId = orderBaseinfo.getRawValue().actualHospitalId;
-          const orderModality = orderBaseinfo.getRawValue().orderModality;
-          const orderSameEndUser = endUserinfo.getRawValue().orderSameEndUser;
-          const endUser = endUserinfo.getRawValue().endUser;
-          let orderSales = orderSalesinfo.getRawValue().orderSales;
-          // endUser未设置的情况才填充
-          if(!!!endUser){
-            // 实际落地医院有值得情况
-            if (!!actualHospitalId) {
-              endUserinfo.patchValue({
-                orderSameEndUser: "0",
-              });
-              promiseArr[index] = this.http
-                .post("/act/ecoscdcustomer/findByPage", {
-                  no: actualHospitalId,
-                  modality: [orderModality],
-                })
-                .toPromise();
-            } else {
-              endUserinfo.reset();
-              endUserinfo.patchValue({
-                orderSameEndUser: "1",
-              });
-              const {
-                endUser,
-                endUserId,
-                endUserSapCode,
-                endUserTaxNum,
-                hospitalType,
-                endUserActuallyDeliveryAddress,
-                segment,
-                endUserAddress,
-                endUserPhone,
-                endUserEmail,
-                endUserContact,
-                usHta,
-              } = this.endUserFrom.getRawValue();
-              endUserinfo.patchValue({
-                endUser,
-                endUserId,
-                endUserSapCode,
-                endUserTaxNum,
-                hospitalType,
-                segment,
-                endUserAddress,
-                endUserPhone,
-                endUserEmail,
-                endUserContact,
-                usHta,
-              });
-            }
-          }
-
-          // 如果不相等，则启用手动填写
-          if(orderSameEndUser == "0" && orderSales == this.user){
-            endUserinfo.get("endUserAddress").enable();
-            endUserinfo.get("endUserPhone").enable();
-            endUserinfo.get("endUserEmail").enable();
-            endUserinfo.get("endUserContact").enable();
-            endUserinfo.get("endUserActuallyDeliveryAddress").enable();
-          }else{
-            endUserinfo.get("endUserAddress").disable();
-            endUserinfo.get("endUserPhone").disable();
-            endUserinfo.get("endUserEmail").disable();
-            endUserinfo.get("endUserContact").disable();
-            endUserinfo.get("endUserActuallyDeliveryAddress").disable();
-          }
-        });
-
-        Promise.all(promiseArr)
-          .then((resultArr) => {
-            console.log("resultArr", resultArr);
-            resultArr.map(({ code = null, data = null}, index) => {
-              if (code === "0000") {
-                const { rows } = data;
-                if (rows.length > 0) {
-                  const hospitalInfo = rows.map((row) => {
-                    if (row.category && row.category.split(";").length === 1) {
-                      row.category = row.category.split(":")[1];
-                    }
-                    return row;
-                  })[0];
-                  this.handleHospitalSelected(index, hospitalInfo);
-                }
-              }
+      // Order是否有值
+      let promiseArr = [];
+      this.orderInfo.controls.forEach((order, index) => {
+        const orderBaseinfo = this.orderInfo
+          .at(index)
+          .get("orderBaseinfo") as FormGroup;
+        const orderSalesinfo = this.orderInfo
+          .at(index)
+          .get("orderSalesinfo") as FormGroup;
+        const endUserinfo = this.orderInfo
+          .at(index)
+          .get("endUserinfo") as FormGroup;
+        const actualHospitalId = orderBaseinfo.getRawValue().actualHospitalId;
+        const orderModality = orderBaseinfo.getRawValue().orderModality;
+        const orderSameEndUser = endUserinfo.getRawValue().orderSameEndUser;
+        const endUser = endUserinfo.getRawValue().endUser;
+        let orderSales = orderSalesinfo.getRawValue().orderSales;
+        // endUser未设置的情况才填充
+        if (!!!endUser) {
+          // 实际落地医院有值得情况
+          if (!!actualHospitalId) {
+            endUserinfo.patchValue({
+              orderSameEndUser: "0",
             });
-          })
-          .then(() => {
-            this.service.paymentAction(this.formValue);
+            promiseArr[index] = this.http
+              .post("/act/ecoscdcustomer/findByPage", {
+                no: actualHospitalId,
+                modality: [orderModality],
+              })
+              .toPromise();
+          } else {
+            endUserinfo.reset();
+            endUserinfo.patchValue({
+              orderSameEndUser: "1",
+            });
+            const {
+              endUser,
+              endUserId,
+              endUserSapCode,
+              endUserTaxNum,
+              hospitalType,
+              endUserActuallyDeliveryAddress,
+              segment,
+              endUserAddress,
+              endUserPhone,
+              endUserEmail,
+              endUserContact,
+              usHta,
+            } = this.endUserFrom.getRawValue();
+            endUserinfo.patchValue({
+              endUser,
+              endUserId,
+              endUserSapCode,
+              endUserTaxNum,
+              hospitalType,
+              segment,
+              endUserAddress,
+              endUserPhone,
+              endUserEmail,
+              endUserContact,
+              usHta,
+            });
+          }
+        }
+
+        // 如果不相等，则启用手动填写
+        if (orderSameEndUser == "0" && orderSales == this.user) {
+          endUserinfo.get("endUserAddress").enable();
+          endUserinfo.get("endUserPhone").enable();
+          endUserinfo.get("endUserEmail").enable();
+          endUserinfo.get("endUserContact").enable();
+          endUserinfo.get("endUserActuallyDeliveryAddress").enable();
+        } else {
+          endUserinfo.get("endUserAddress").disable();
+          endUserinfo.get("endUserPhone").disable();
+          endUserinfo.get("endUserEmail").disable();
+          endUserinfo.get("endUserContact").disable();
+          endUserinfo.get("endUserActuallyDeliveryAddress").disable();
+        }
+      });
+
+      Promise.all(promiseArr)
+        .then((resultArr) => {
+          console.log("resultArr", resultArr);
+          resultArr.map(({ code = null, data = null }, index) => {
+            if (code === "0000") {
+              const { rows } = data;
+              if (rows.length > 0) {
+                const hospitalInfo = rows.map((row) => {
+                  if (row.category && row.category.split(";").length === 1) {
+                    row.category = row.category.split(":")[1];
+                  }
+                  return row;
+                })[0];
+                this.handleHospitalSelected(index, hospitalInfo);
+              }
+            }
           });
+        })
+        .then(() => {
+          this.service.paymentAction(this.formValue);
+        });
     }
   }
 }
