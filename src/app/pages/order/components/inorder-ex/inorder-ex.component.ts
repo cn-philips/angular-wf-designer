@@ -153,6 +153,10 @@ export class InorderExComponent implements OnInit {
       }
       else if (applyType == 'STOCK' && businessType == 'DISTRIBUTOR' && tenderPriceCurrencys == 'USD') {
         params.dictGroup = 'SDisU';
+      }else if (
+        clientType == "集团"
+      ) {
+        params.dictGroup = "COPGROUP";
       }
     }
 
