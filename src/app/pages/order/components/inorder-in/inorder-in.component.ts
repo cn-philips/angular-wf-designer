@@ -198,6 +198,10 @@ export class InorderInComponent implements OnInit {
       else if (applyType == 'STOCK' && businessType == 'DISTRIBUTOR' && tenderPriceCurrencys == 'USD') {
         params.dictGroup = 'SDisU';
         // this.dataBase.paymentDescription="";
+      }else if (
+        clientType == "集团"
+      ) {
+        params.dictGroup = "COPGROUP";
       }
     }
 
@@ -230,7 +234,7 @@ export class InorderInComponent implements OnInit {
 
   ngOnChanges() {
     this.mainId = decodeString(this.activatedRouter.queryParams['_value'].id);
-    
+
     if (this.dataBase) {
 
       this.dataBase.lateDayOff = false;

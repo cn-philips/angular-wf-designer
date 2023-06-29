@@ -3222,7 +3222,7 @@ export class PreProductComponent implements OnInit {
             promiseArr[index] = this.http
               .post("/act/ecoscdcustomer/findByPage", {
                 no: actualHospitalId,
-                modality: [orderModality],
+                modality: [orderModality].filter(i=>i),
               })
               .toPromise();
           } else {

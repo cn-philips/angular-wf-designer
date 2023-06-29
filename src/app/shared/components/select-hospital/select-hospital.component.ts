@@ -90,7 +90,7 @@ export class SelectHospitalComponent implements OnInit {
     this.http
       .post("/act/ecoscdcustomer/findByPage", {
         ...this.searchParams,
-        modality: this.modality,
+        modality: this.modality.filter(i=>i),
       })
       .subscribe(({ code, data }) => {
         if (code === "0000") {

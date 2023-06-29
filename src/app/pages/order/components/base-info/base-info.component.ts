@@ -657,6 +657,10 @@ export class BaseInfoComponent implements OnInit {
       ) {
         params.dictGroup = "SDisU";
         // this.dataBase.paymentDescription="";
+      }else if (
+        clientType == "集团"
+      ) {
+        params.dictGroup = "COPGROUP";
       }
     }
 
