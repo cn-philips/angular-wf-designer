@@ -3219,10 +3219,14 @@ export class PreProductComponent implements OnInit {
             endUserinfo.patchValue({
               orderSameEndUser: "0",
             });
+            let orderModalityList = [orderModality].filter(i=>i)
+            if(orderModalityList.length===0){
+              orderModalityList = ["PD&IGT"]
+            }
             promiseArr[index] = this.http
               .post("/act/ecoscdcustomer/findByPage", {
                 no: actualHospitalId,
-                modality: [orderModality].filter(i=>i),
+                modality: orderModalityList,
               })
               .toPromise();
           } else {
