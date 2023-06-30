@@ -87,10 +87,16 @@ export class SelectHospitalComponent implements OnInit {
       this.searchParams.pageNo = 1;
     }
     this.tableData.loading = true;
+    let modalityList = this.modality;
+    if(modalityList&&modalityList.length>0){
+      modalityList = modalityList.filter(i=>i);
+    }else{
+      modalityList = ["PD&IGT"]
+    }
     this.http
       .post("/act/ecoscdcustomer/findByPage", {
         ...this.searchParams,
-        modality: this.modality.filter(i=>i),
+        modality: modalityList,
       })
       .subscribe(({ code, data }) => {
         if (code === "0000") {
