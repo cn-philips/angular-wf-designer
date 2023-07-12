@@ -172,7 +172,15 @@ export class PreProductComponent implements OnInit {
               isload &&
               cpDealOrderId
             ) {
+              // 防止id清除
+              let orderId = orderSalesinfo.getRawValue().id
               orderSalesinfo.reset();
+              // 重新赋值id
+              if(orderId){
+                orderSalesinfo.patchValue({
+                  id: orderId,
+                })
+              }
               orderSalesinfo.patchValue({
                 orderDisbled: false,
                 isDisabled: true,
