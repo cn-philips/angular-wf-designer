@@ -195,6 +195,13 @@ export class PreProductComponent implements OnInit {
                       isDisabled: isSame ? false : true,
                       isDisabledMain: isSame ? false : true,
                     });
+                    // 如果相同的用户，则需要将approvalAreaConfiguration赋值，并且必填
+                    if(isSame){
+                      orderSalesinfo.get('orderApprovalAreaConfiguration').enable();
+                      orderSalesinfo.patchValue({
+                        orderApprovalAreaConfiguration: approvalAreaConfiguration,
+                      })
+                    }
                   }
                 } else {
                   this.message.error(res.msg);
