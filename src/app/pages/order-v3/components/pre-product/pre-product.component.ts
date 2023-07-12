@@ -200,6 +200,14 @@ export class PreProductComponent implements OnInit {
                       orderSalesinfo.get('orderApprovalAreaConfiguration').enable();
                       orderSalesinfo.patchValue({
                         orderApprovalAreaConfiguration: approvalAreaConfiguration,
+                        orderSalesModality: dealFormSalesModality,
+                        orderSalesBigArea: dealFormSalesBigArea,
+                        orderSalesSmallArea: dealFormSalesSmallArea,
+                        orderSalesCycleGroup: cycleGroup,
+                        orderSalesTeam: dealFormSalesTeam,
+                        orderSalesProvince: dealFormSalesProvince,
+                        orderSalesPerformanceProvince: dealFormSalesPerformanceProvince,
+                        orderSalesCity: dealFormSalesCity,
                       })
                     }
                   }
