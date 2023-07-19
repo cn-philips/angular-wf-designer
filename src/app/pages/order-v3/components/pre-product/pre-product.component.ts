@@ -172,7 +172,15 @@ export class PreProductComponent implements OnInit {
               isload &&
               cpDealOrderId
             ) {
+              // 防止id清除
+              let orderId = orderSalesinfo.getRawValue().id
               orderSalesinfo.reset();
+              // 重新赋值id
+              if(orderId){
+                orderSalesinfo.patchValue({
+                  id: orderId,
+                })
+              }
               orderSalesinfo.patchValue({
                 orderDisbled: false,
                 isDisabled: true,
@@ -195,6 +203,21 @@ export class PreProductComponent implements OnInit {
                       isDisabled: isSame ? false : true,
                       isDisabledMain: isSame ? false : true,
                     });
+                    // 如果相同的用户，则需要将approvalAreaConfiguration赋值，并且必填
+                    if(isSame){
+                      orderSalesinfo.get('orderApprovalAreaConfiguration').enable();
+                      orderSalesinfo.patchValue({
+                        orderApprovalAreaConfiguration: approvalAreaConfiguration,
+                        orderSalesModality: dealFormSalesModality,
+                        orderSalesBigArea: dealFormSalesBigArea,
+                        orderSalesSmallArea: dealFormSalesSmallArea,
+                        orderSalesCycleGroup: cycleGroup,
+                        orderSalesTeam: dealFormSalesTeam,
+                        orderSalesProvince: dealFormSalesProvince,
+                        orderSalesPerformanceProvince: dealFormSalesPerformanceProvince,
+                        orderSalesCity: dealFormSalesCity,
+                      })
+                    }
                   }
                 } else {
                   this.message.error(res.msg);
