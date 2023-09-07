@@ -133,9 +133,10 @@
               {{ 'orderv3.components.ordersummary-info.baseInfo.actualSalesEmail' | translate }}
             </nz-form-label>
             <nz-form-control nzXs="24" nzSm="24" nzMd="18">
-              <nz-select formControlName="actualSalesEmail">
+              <input nz-input formControlName="actualSalesEmail" maxlength="255" />
+              <!-- <nz-select formControlName="actualSalesEmail">
                 <nz-option *ngFor="let item of cityList" [nzValue]="item.code" [nzLabel]="item.value"></nz-option>
-              </nz-select>
+              </nz-select> -->
             </nz-form-control>
           </nz-form-item>
         </div>
