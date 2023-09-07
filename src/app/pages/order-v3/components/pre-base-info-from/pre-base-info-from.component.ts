@@ -938,7 +938,7 @@ export class PreBaseInfoFromComponent implements OnInit {
           dealFormSalesBigArea: bigArea,
           dealFormSalesCycleGroup: cycleGroup,
           dealFormSalesSmallArea: smallArea,
-          dealFormSalesProvince: province
+          // dealFormSalesProvince: province
         });
         this.selectCity(province);
       }
@@ -1031,7 +1031,7 @@ export class PreBaseInfoFromComponent implements OnInit {
         dealFormSalesBigArea: bigArea,
         dealFormSalesSmallArea: smallArea,
         dealFormSalesCycleGroup: cycleGroup,
-        dealFormSalesProvince: province
+        // dealFormSalesProvince: province
       });
 
       if (modality == "PD&IGT") {
@@ -1398,7 +1398,6 @@ export class PreBaseInfoFromComponent implements OnInit {
   }
   centralizedChange(event) {
     //是否集采项目
-    const { orderInfo } = this.formValue.getRawValue();
     // this.addProduct.emit(orderInfo)
     this.formValue.patchValue({
       isload: true,
