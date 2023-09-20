@@ -132,5 +132,4 @@
     <bidding-v3-pdfpreview [padData]="templateParams"></bidding-v3-pdfpreview>
   </div>
 </div>
-
-<bidding-v3-cp-verify type="Authorization"  #cpVerify (verify)="handleAction('approved')"></bidding-v3-cp-verify>
+<bidding-v3-cp-verify type="Authorization" [biddingDetail]="applyDetail" [biddingForm]="biddingForm"  #cpVerify (verify)="handleAction('approved')"></bidding-v3-cp-verify>

@@ -226,4 +226,4 @@
   </button>
 </footer>
 
-<bidding-v3-cp-verify type="BiddingConfirm" #cpVerify (verify)="onApprove()"></bidding-v3-cp-verify>
+<bidding-v3-cp-verify  [biddingDetail]="applyDetail" [biddingForm]="biddingForm" type="BiddingConfirm" #cpVerify (verify)="onApprove()"></bidding-v3-cp-verify>
