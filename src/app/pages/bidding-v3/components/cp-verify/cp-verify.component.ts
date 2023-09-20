@@ -91,7 +91,7 @@ export class CpVerifyComponent implements OnInit {
     //DI+IGT : 集采项目＋特价＋数据来源simulation的条件下，中标备案是校验deal价格是否通过时不校验医院信息；
     if(!(this.biddingDetail&&this.biddingForm
       &&isCentralizedPurchase
-      &&(this.biddingDetail.specialProject==1||this.type =='Authorization')
+      &&this.biddingDetail.specialProject==1
       &&this.biddingDetail.modality=='PD&IGT'
       &&this.biddingDetail.dataSource=='CP Simulation')){
       if (hospitalName !== this.hospitalName&&hospitalId !== this.hospitalId) {
