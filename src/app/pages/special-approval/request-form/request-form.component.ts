@@ -1013,7 +1013,8 @@ export class RequestFormComponent implements OnInit {
             transferCargo: "sp_machineexchange_order_type_item_2",
             ...this.requestInfo.orderInfos[1],
             ...changeOrderInfos.orders.at(1),
-            approvalConfigSecond: [
+            // FETR1566123
+            approvalConfigSecond:!!config1? [
               config1.funcTeamType == "0" || !!!config1.funcTeamType
                 ? config1.team
                 : config1.serveTeam,
@@ -1022,7 +1023,7 @@ export class RequestFormComponent implements OnInit {
               config1.bigArea,
               config1.smallArea,
             ] .filter((str) => str && str.trim())
-              .join("-"),
+              .join("-"):"",
             expectedSaleDate: changeOrderInfos.orders.at(1).expectedSaleDate
               ? moment(changeOrderInfos.orders.at(1).expectedSaleDate).format(
                   "YYYY-MM-DD"
