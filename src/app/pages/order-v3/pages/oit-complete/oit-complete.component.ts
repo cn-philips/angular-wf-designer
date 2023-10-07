@@ -676,7 +676,7 @@ export class OitcompleteComponent implements OnInit {
             this.breadCrumbService.replace('OIT完成文件待补充');
             break
           case 'om':
-            this.breadCrumbService.replace('待OM上传SO#');
+            this.breadCrumbService.replace('待上传SO#');
             break;
           case 'contract':
             this.breadCrumbService.replace('待上传正本合同');
