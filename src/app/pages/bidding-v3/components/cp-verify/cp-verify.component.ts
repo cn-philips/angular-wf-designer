@@ -11,6 +11,11 @@ export class CpVerifyComponent implements OnInit {
   visible = false
   @Input()
   type:string ='BiddingConfirm' // BiddingConfirm 中标确认 , Authorization 授权发放
+  @Input()
+  biddingDetail:any = null;
+  @Input()
+  biddingForm:any = null;
+
 
   tableData = []
   tableLoading = false
@@ -82,12 +87,19 @@ export class CpVerifyComponent implements OnInit {
     if (applicant.toLowerCase() !== this.applicant.toLowerCase()) {
       checkResultReasons += '申请人名称不一致;';
     }
-
-    if (hospitalName !== this.hospitalName&&hospitalId !== this.hospitalId) {
-      if(hospitalName !== this.hospitalName){
-        checkResultReasons += '客户名称不一致;';
-      }else{
-        checkResultReasons += '客户Id不一致;';
+    let isCentralizedPurchase = this.biddingForm.get('basicInfo').get('finalUser').get('groupPurchase').value;
+    //DI+IGT : 集采项目＋特价＋数据来源simulation的条件下，中标备案是校验deal价格是否通过时不校验医院信息；
+    if(!(this.biddingDetail&&this.biddingForm
+      &&isCentralizedPurchase
+      &&this.biddingDetail.specialProject==1
+      &&this.biddingDetail.modality=='PD&IGT'
+      &&this.biddingDetail.dataSource=='CP Simulation')){
+      if (hospitalName !== this.hospitalName&&hospitalId !== this.hospitalId) {
+        if(hospitalName !== this.hospitalName){
+          checkResultReasons += '客户名称不一致;';
+        }else{
+          checkResultReasons += '客户Id不一致;';
+        }
       }
     }
 
