@@ -187,6 +187,8 @@
       <th>申请编号</th>
       <th>申请类型</th>
       <th>发起人</th>
+      <th>产品型号</th>
+      <th>医院名称</th>
       <th>状态</th>
       <th>当前节点</th>
       <th>操作节点</th>
@@ -199,6 +201,8 @@
       <td>{{ data.applyCode }}</td>
       <td>{{ spService.formatApplyType(data.applyType) }}</td>
       <td>{{ data.applicant }}</td>
+      <td>{{ data.productModel }}</td>
+      <td>{{ data.hospitalName }}</td>
       <td>
         {{
           spService.formatRequestStatus(
