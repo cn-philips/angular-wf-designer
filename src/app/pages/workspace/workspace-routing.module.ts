@@ -72,7 +72,7 @@ const routes: Route[] = [
   {
     path: "om-supplement",
     component: OmSupplementComponent,
-    data: { breadcrumb: "待OM上传SO#" },
+    data: { breadcrumb: "待上传SO#" },
   },
   {
     path: "third-supplement",
