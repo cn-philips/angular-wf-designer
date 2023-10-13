@@ -89,6 +89,7 @@ export class PreProductComponent implements OnInit {
           speciallyTerms.disable();
           orderBaseinfo.disable();
 
+
           const {
             orderSalesModality,
             orderOa,
@@ -123,6 +124,8 @@ export class PreProductComponent implements OnInit {
           orderBaseinfo.patchValue({
             centralizedPurchasing: centralizedPurchasing,
           });
+
+
           if (
             orderSalesProvince != null &&
             orderSalesProvince != undefined &&
@@ -181,6 +184,7 @@ export class PreProductComponent implements OnInit {
                   id: orderId,
                 })
               }
+
               orderSalesinfo.patchValue({
                 orderDisbled: false,
                 isDisabled: true,
@@ -229,12 +233,16 @@ export class PreProductComponent implements OnInit {
               });
             }
           }
+
+
           this.actualSalesSetValidators(index); //集采实际销售
           this.isSupportbidding(index);
           /*
            * 三种Modality类型是否支持文件缺失进单
            */
           const { sampleCheck } = this.priceApproval.getRawValue();
+
+
           if (
             (orderModality == "US" || orderModality == "CC") &&
             supportFileMissing == "0"
@@ -300,6 +308,7 @@ export class PreProductComponent implements OnInit {
               speciallyTerms.get("endUserContract").clearValidators();
             }
           }
+
 
           let { orderSales, orderSalesName } = orderSalesinfo.getRawValue();
           if (
@@ -600,11 +609,18 @@ export class PreProductComponent implements OnInit {
               isDisabledMain: true,
             });
           }
+
+
           this.showMagneticResonanceShieldingFileHost(index);
+
           this.showigtThirdPartyFileHost(index);
+
           this.ifrequiredshow(index);
+
           this.ifInstallDate(index);
+
           this.isshowActualSalesName(index);
+
         });
       }
 
