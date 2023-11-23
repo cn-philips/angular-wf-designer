@@ -590,6 +590,68 @@ export class PreorderexamineComponent implements OnInit {
     return this.formValue.get("orderInfo") as FormArray;
   }
 
+  private errorOrderLabelsList: String[] = [];
+  get checkDealBiddingAndForeignValidation(): boolean {
+    // 1. 如果是单Order，且Order Sales和Deal Sales一致的情况下，在提交Deal时执行校验
+    // 2. 如果是多Order，且存在Order Sales和Deal Sales不一致的情况下，在提交Deal时校验相同Sales的Order（若没有，则不校验），在其余Sales补充Order信息时二次校验
+    if(this.orderInfo.getRawValue().length==0){
+      return true
+    }
+    this.errorOrderLabelsList = [];
+
+    // 投标公司和外贸公司一样的情况下，如果和年度协议经销商不一致，不让提交baseInfoFrom
+    const { biddingCompany } = this.baseInfoFromData.getRawValue();
+    const { dealerName } = this.dealerFromData.getRawValue();
+    let resultArr= this.getOrderListByDealSales(this.user).map(order => {
+      const {currencySystem,} = order.orderBaseinfo
+      let {foreignTradeCorpSameDealer,foreignTradeCorpName,orderSameForeignTradeCorp} = order.foreignInfo
+      // 是否和deal的外贸公司一样
+      if(orderSameForeignTradeCorp=='1'){
+        const {
+          foreignTradeCorpName:dealForeignTradeCorpName,
+          foreignTradeCorpSameDealer:dealForeignTradeCorpSameDealer, //外贸公司与经销商相同CheckBox
+        } = this.foreignFromData.getRawValue();
+
+        foreignTradeCorpName = dealForeignTradeCorpName
+        foreignTradeCorpSameDealer = dealForeignTradeCorpSameDealer
+      }
+      let result =  this.validateDealBiddingForeign(biddingCompany,dealerName,foreignTradeCorpName,foreignTradeCorpSameDealer,currencySystem)
+      if(!result){
+        this.errorOrderLabelsList.push(order.orderBaseinfo.orderName)
+        this.errorOrderLabelsList=this.errorOrderLabelsList.filter((item,index,self)=>{
+          return self.indexOf(item) === index
+        })
+      }
+      return result
+    })
+    return resultArr.every(item=>item)
+  }
+   // 获取当前Deal Sales名下的Order
+  public getOrderListByDealSales(sales?: string): any[] {
+    sales = sales||this.baseInfoFromData.getRawValue().dealFormSales;
+    const orderList = this.orderInfo.getRawValue();
+    return orderList.filter(item => item.orderSalesinfo.orderSales === sales);
+  }
+  // 校验 投标公司和外贸公司一样的情况下，如果和年度协议经销商不一致，不让提交baseInfoFrom
+  public validateDealBiddingForeign(biddingCompany,dealerName,foreignTradeCorpName,foreignTradeCorpSameDealer,currencySystem): boolean {
+    biddingCompany=biddingCompany||""
+    dealerName=dealerName||""
+    foreignTradeCorpName=foreignTradeCorpName||""
+    foreignTradeCorpSameDealer=foreignTradeCorpSameDealer||false
+    currencySystem=currencySystem||""
+    let result = true;
+    if(currencySystem == "USD" ){
+      if(biddingCompany.trim()==foreignTradeCorpName.trim()&&(foreignTradeCorpName.trim()==dealerName.trim()||foreignTradeCorpSameDealer)||biddingCompany.trim()!=foreignTradeCorpName.trim()){
+        result = true
+      }else{
+        result = false
+      }
+    }else{
+      result = true
+    }
+    return result
+  }
+
   public myskip(val): void {
     //外部触发tab选项卡的事件
     this.tabs.activeId(val)

@@ -4,10 +4,10 @@
 </nz-card>
 <div class="tabs-box">
   <app-tabs
-      (select)="tabclick($event)"      
+      (select)="tabclick($event)"
       #tabs
     >
-    <app-tab [title]="'orderv3.pages.pre-order-examine.general' | translate" id="pending-tab"> 
+    <app-tab [title]="'orderv3.pages.pre-order-examine.general' | translate" id="pending-tab">
         <div class="card-body">
           <pre-base-info-from
             #baseInfoFromChild
@@ -29,9 +29,9 @@
             [editable]="editable"
             [editPreTable]="editPreTable"
           ></pre-product>
-        </div>      
+        </div>
     </app-tab>
-    <app-tab [title]="'orderv3.pages.pre-order-examine.history' | translate" id="approval-record">     
+    <app-tab [title]="'orderv3.pages.pre-order-examine.history' | translate" id="approval-record">
         <div class="card-body">
             <app-form-section class="mtb1rem" [title]="'orderv3.pages.pre-order-examine.history' | translate">
               <app-form-section class="mtb1rem" [title]="'orderv3.pages.pre-order.history-order' | translate">
@@ -40,7 +40,7 @@
             <approval-history-oit [applyId]="applyId">
             </approval-history-oit>
           </app-form-section>
-        </div>     
+        </div>
     </app-tab>
   </app-tabs>
   <div
@@ -63,9 +63,16 @@
           <button nz-button nzType="default" (click)="handleCancel()">
             {{"orderv3.pages.pre-order-examine.cancel" | translate}}
           </button>
-          <button nz-button nzType="primary" nz-popconfirm nzTitle="你确定要执行提交的操作?" (nzOnConfirm)="preSubmit('approved')">
+          <button nz-button nzType="primary" nz-popconfirm
+          [disabled]="!checkDealBiddingAndForeignValidation"
+          nz-tooltip
+          [nzTitle]="!checkDealBiddingAndForeignValidation?validationTooltips:'你确定要执行提交的操作?'"
+          (nzOnConfirm)="preSubmit('approved')">
             {{"orderv3.pages.pre-order-examine.submit" | translate}}
           </button>
+          <ng-template #validationTooltips>
+            <span>{{errorOrderLabelsList}} 协议经销商的二级经销商不允许做外贸！</span>
+          </ng-template>
         </nz-form-control>
       </nz-form-item>
     </div>
