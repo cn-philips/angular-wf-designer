@@ -58,22 +58,32 @@
           <button nz-button nzType="default" (click)="preSubmit('apply_save')">
             {{"orderv3.pages.pre-order.save" | translate}}
           </button>
-          <button *ngIf="
-                !(
-                  baseInfoFromData.getRawValue().oitMode == 'BIDDING' &&
-                  baseInfoFromData.getRawValue().dealFormSalesModality ==
-                    'PD&IGT'
-                )
-              " nz-button nzType="primary" nz-popconfirm nzTitle="你确定要执行提交的操作?"
+
+          <button
+            *ngIf="!(baseInfoFromData.getRawValue().oitMode == 'BIDDING' && baseInfoFromData.getRawValue().dealFormSalesModality == 'PD&IGT')"
+            nz-button
+            [disabled]="!checkDealBiddingAndForeignValidation"
+            nz-tooltip
+            [nzTitle]="!checkDealBiddingAndForeignValidation?validationTooltips:'你确定要执行提交的操作?'"
+            nzType="primary"
+            nz-popconfirm
             (nzOnConfirm)="preSubmit(submitStatus)">
             {{"orderv3.pages.pre-order.submit-apply" | translate}}
           </button>
-          <button *ngIf="
-                baseInfoFromData.getRawValue().oitMode == 'BIDDING' &&
-                baseInfoFromData.getRawValue().dealFormSalesModality == 'PD&IGT'
-              " nz-button nzType="primary" (click)="preSubmit(submitStatus)">
+          <button
+              *ngIf="baseInfoFromData.getRawValue().oitMode == 'BIDDING' && baseInfoFromData.getRawValue().dealFormSalesModality == 'PD&IGT'"
+              [disabled]="!checkDealBiddingAndForeignValidation"
+              nz-tooltip
+              [nzTitle]="!checkDealBiddingAndForeignValidation?validationTooltips:null"
+              nz-button
+              nzType="primary"
+              (click)="preSubmit(submitStatus)">
             {{"orderv3.pages.pre-order.check-submit" | translate}}
           </button>
+          <ng-template #validationTooltips>
+            <span>{{errorOrderLabelsList}} 协议经销商的二级经销商不允许做外贸！</span>
+          </ng-template>
+
           <nz-dropdown *ngIf="status=='ecos_oit_deal_resubmit'" [nzPlacement]="'bottomRight'">
             <button nz-button nz-dropdown><i class="tranf90" nz-icon nzType="more" nzTheme="outline"></i></button>
             <ul nz-menu>

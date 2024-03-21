@@ -1410,6 +1410,7 @@ export class PreProductComponent implements OnInit {
       orderBaseinfo.get("igtThirdPartySingle").enable();
       orderBaseinfo.get("igtThirdPartyFile").enable();
       orderBaseinfo.get("prebookReferenceId").enable();
+      orderSalesinfo.get("orderApprovalAreaConfiguration").enable();
 
       mainTrems.enable();
       otherTerms.enable();
@@ -1434,6 +1435,7 @@ export class PreProductComponent implements OnInit {
       orderBaseinfo.get("igtThirdPartySingle").disable();
       orderBaseinfo.get("igtThirdPartyFile").disable();
       orderBaseinfo.get("prebookReferenceId").disable();
+      orderSalesinfo.get("orderApprovalAreaConfiguration").disable();
       mainTrems.disable();
       otherTerms.disable();
       speciallyTerms.disable();
