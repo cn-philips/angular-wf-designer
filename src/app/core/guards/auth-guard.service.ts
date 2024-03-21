@@ -51,57 +51,74 @@ export class AuthGuard {
         return true;
       }
     } else {
-      let result: any = await this.getuseInfo();
-      if (result.code == '0000') {
-        let routerInfo = JSON.parse(localStorage.getItem('routerInfo'));
-        if (
-          (routerInfo != null && routerInfo != '') ||
-          routerInfo != undefined
-        ) {
-          let keyValue = Object.keys(routerInfo);
-          if (keyValue.length > 1) {
-            localStorage.removeItem('routerInfo');
-            this.router.navigate([routerInfo.url], {
-              queryParams: routerInfo,
-            });
-            // window.open(url,"_self");
-            return true;
-          } else {
-            localStorage.removeItem('routerInfo');
-            this.router.navigate([routerInfo.url]);
-            // window.open(url,"_self");
-            return true;
-          }
-        } else {
-          return true;
-        }
-      } else if (result.code == '0002') {
-        if (state.url != '/') {
-          if (state.url.indexOf('?') != -1) {
-            let stateUrl: any = state.url.split('?');
-            let url = stateUrl[0];
-            let routerInfo: any = {};
-            let urlArr = stateUrl[1].split('&');
-            for (let i = 0; i < urlArr.length; i++) {
-              let arg = urlArr[i];
-              let arr1 = arg.split('=');
-              let key = arr1[0];
-              let value = arr1[1];
-              routerInfo[key] = value;
-            }
-            routerInfo.url = stateUrl[0];
-            routerInfo = JSON.stringify(routerInfo);
-            localStorage.setItem('routerInfo', routerInfo);
-          } else {
-            let routerInfo: any = {};
-            routerInfo.url = state.url;
-            routerInfo = JSON.stringify(routerInfo);
-            localStorage.setItem('routerInfo', routerInfo);
-          }
-        }
-        location.href = result.data;
-      }
+      await this.samlLogin();
     }
+  // else {
+  //     let result: any = await this.getuseInfo();
+  //     if (result.code == '0000') {
+  //       let routerInfo = JSON.parse(localStorage.getItem('routerInfo'));
+  //       if (
+  //         (routerInfo != null && routerInfo != '') ||
+  //         routerInfo != undefined
+  //       ) {
+  //         let keyValue = Object.keys(routerInfo);
+  //         if (keyValue.length > 1) {
+  //           localStorage.removeItem('routerInfo');
+  //           this.router.navigate([routerInfo.url], {
+  //             queryParams: routerInfo,
+  //           });
+  //           // window.open(url,"_self");
+  //           return true;
+  //         } else {
+  //           localStorage.removeItem('routerInfo');
+  //           this.router.navigate([routerInfo.url]);
+  //           // window.open(url,"_self");
+  //           return true;
+  //         }
+  //       } else {
+  //         return true;
+  //       }
+  //     } else if (result.code == '0002') {
+  //       if (state.url != '/') {
+  //         if (state.url.indexOf('?') != -1) {
+  //           let stateUrl: any = state.url.split('?');
+  //           let url = stateUrl[0];
+  //           let routerInfo: any = {};
+  //           let urlArr = stateUrl[1].split('&');
+  //           for (let i = 0; i < urlArr.length; i++) {
+  //             let arg = urlArr[i];
+  //             let arr1 = arg.split('=');
+  //             let key = arr1[0];
+  //             let value = arr1[1];
+  //             routerInfo[key] = value;
+  //           }
+  //           routerInfo.url = stateUrl[0];
+  //           routerInfo = JSON.stringify(routerInfo);
+  //           localStorage.setItem('routerInfo', routerInfo);
+  //         } else {
+  //           let routerInfo: any = {};
+  //           routerInfo.url = state.url;
+  //           routerInfo = JSON.stringify(routerInfo);
+  //           localStorage.setItem('routerInfo', routerInfo);
+  //         }
+  //       }
+  //       location.href = result.data;
+  //     }
+  //   }
+  }
+
+  async samlLogin() {
+    this.http.get('/act/auth/samllogin').subscribe((rest) => {
+      if (rest.code == '0000') {
+        const samlLoginUrl = rest.data.samlLoginUrl;
+        const isLogout = rest.data.isLogout;
+        if(isLogout != 'Y'){
+          setTimeout(() =>  window.location.replace(samlLoginUrl), 1000);
+        }
+      } else {
+        console.log('error:' + rest.msg);
+      }
+    });
   }
 
   async getuseInfo() {
