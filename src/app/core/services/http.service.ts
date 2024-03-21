@@ -161,11 +161,25 @@ export class HttpService {
     sessionStorage.removeItem('ng_philips_groups');
     // localStorage.removeItem('routerInfo');
     localStorage.removeItem('profiles');
-    this.get('/act/logout').subscribe((rest) => {
+
+    this.get('/act/auth/samllogout').subscribe((rest) => {
       if (rest.code == '0000') {
-        const logoutUrl = rest.data.logoutUrl;
-        console.log('logout redirect uri:', logoutUrl);
-        window.open(logoutUrl, '_self');
+        const samlLogoutUrl = rest.data.samlLogoutUrl;
+        console.log('saml logout uri:', samlLogoutUrl);
+        // const samlEnable = rest.data.samlEnable;
+        // if(samlEnable === 'Y'){
+          setTimeout(() =>  window.open(samlLogoutUrl, '_self'), 1000);
+        // }else{
+        //   this.get('/act/logout').subscribe((rest) => {
+        //     if (rest.code == '0000') {
+        //       const logoutUrl = rest.data.logoutUrl;
+        //       console.log('logout redirect uri:', logoutUrl);
+        //       window.open(logoutUrl, '_self');
+        //     } else {
+        //       console.log('error:' + rest.msg);
+        //     }
+        //   });
+        // }
       } else {
         console.log('error:' + rest.msg);
       }
