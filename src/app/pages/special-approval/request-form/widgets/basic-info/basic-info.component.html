@@ -178,7 +178,7 @@
       </div>
     </div>
 
-    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+    <div *ngIf="needReason" nz-row nzType="flex" nzJustify="start" nzAlign="middle">
       <div nz-col nzXs="24" nzSm="24" nzMd="12">
         <nz-form-item>
           <nz-form-label nzFor="reason" nzXl="8" nzXXl="6" nzRequired
@@ -218,7 +218,7 @@
       </div>
     </div>
 
-    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+    <div *ngIf="needUpdateFile" nz-row nzType="flex" nzJustify="start" nzAlign="middle">
       <div nz-col nzXs="24" nzSm="24" nzMd="12">
         <nz-form-item>
           <nz-form-label

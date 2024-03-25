@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from "@angular/core";
 
 import { ActivatedRoute, Router } from "@angular/router";
-import { FormArray, FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { FormArray, FormBuilder, FormGroup, ValidationErrors, Validators } from "@angular/forms";
 import * as moment from "moment";
 import { NzMessageService } from "ng-zorro-antd";
 
@@ -25,6 +25,7 @@ import { LastbuyComponent } from "./widgets/order-info/lastbuy/lastbuy.component
 import { CooUsOrderInfoComponent } from "./widgets/order-info/coo-us/coo-us.component";
 import { CooPdIgtOrderInfoComponent } from "./widgets/order-info/coo-pdigt/coo-pdigt.component";
 import { CooCcOrderInfoComponent } from "./widgets/order-info/coo-cc/coo-cc.component";
+import { ImportedInfoComponent } from "./widgets/order-info/imported-info/imported-info.component"
 import { RouterExtendService } from "@app/modern-themes/services/router-extend.service";
 
 enum TAB_TYPE {
@@ -41,7 +42,44 @@ enum TAB_TYPE {
   DIFFERENCE_AND_COST_INFO = "difference-and-cost-info",
   SUPPLEMENT_INFO = "supplement-info",
 }
-
+const oitProductsValidator = (control: FormArray): ValidationErrors => {
+  // model: [null, [Validators.required]], // 产品型号
+  // bmc: [{ value: null, disabled: true }, [Validators.required]], // 产品线
+  // quantity: [null, [Validators.required]], // 数量
+  let error = {
+    index: - 1,
+    InvalidModel:false,
+    InvalidBmc:false,
+    InvalidQuantity:false
+  }
+  let records = control.getRawValue();
+  for(let i = 0; i<records.length; i++){
+    let r = records[i];
+    error = {
+      index: - 1,
+      InvalidModel:false,
+      InvalidBmc:false,
+      InvalidQuantity:false
+    }
+    if(!!!r.model){
+      error.index = i;
+      error.InvalidModel = true;
+      break;
+    }
+    if(!!!r.bmc){
+      error.index = i;
+      error.InvalidBmc = true;
+      break;
+    }
+    if(!!!r.quantity||Number.isNaN(r.quantity)){
+      error.index = i;
+      error.InvalidQuantity = true;
+      break;
+    }
+  }
+  console.log(error)
+  return error
+};
 @Component({
   selector: "special-approval-request-form",
   templateUrl: "./request-form.component.html",
@@ -57,9 +95,18 @@ export class RequestFormComponent implements OnInit {
   @ViewChild("cooPdIgtOrderInfo")
   public cooPdIgtOrderInfo: CooPdIgtOrderInfoComponent;
   @ViewChild("cooCcOrderInfo") public cooCcOrderInfo: CooCcOrderInfoComponent;
-
+  @ViewChild("importedInfo") public importedInfo: ImportedInfoComponent;
   @ViewChild("lastBuyOrderInfo") public lastBuyOrderInfo: LastbuyComponent;
+  @ViewChild("importedEquipmentInfo") public importedEquipmentInfo: ImportedInfoComponent;
 
+  get needReason(){
+    let noNeedReasonType=[APPLY_TYPE.IMPORTED_EQUIPMENT]
+    return !noNeedReasonType.includes(this.applyType)
+  }
+  get needUpdateFile(){
+    let needUpdateFileType=[APPLY_TYPE.IMPORTED_EQUIPMENT]
+    return !needUpdateFileType.includes(this.applyType)
+  }
   isSupplementNode = false;
 
   public pageTitle: string;
@@ -222,6 +269,25 @@ export class RequestFormComponent implements OnInit {
     notify: [0], // 是否通知用户
     notifier: [null], // 通知用户邮箱列表, 字符串, 逗号隔开
   });
+
+  // 进口设备form表单信息单独配置
+  public importedEquipmentInit =  {
+    bg: [null, [Validators.required]], // BG
+    cycleGroup: [null, [Validators.required]], // 产品区域-team
+    bigArea: [null, [Validators.required]], // 产品区域-大区
+    businessModel: [null, [Validators.required]], // 业务模式
+    dealerName: [null, [Validators.required]], // 经销商名称
+    dealerCode: [null, [Validators.required]], // 经销商编号
+    hospitalName: [null, [Validators.required]], // 医院名称
+    hospitalNo: [null, [Validators.required]], // 医院编号
+    opportunityNumber: [null, [Validators.required]], // 机会编号
+    oitProducts: this.fb.array([], [Validators.required]), // OIT产品
+    reason: [null, [Validators.required]], // 申请原因
+    bmcs:[{ value: null, disabled: true }], // bmc聚合
+    attachments: [[]], // 附件
+    expectedOpenBiddingDate: [null, [Validators.required]], // 预计开标/合同谈判日期
+    expectedOitDate: [null, [Validators.required]], // 预计OIT日期
+  }
 
   // 订单替换form表单信息单独配置
   orderReplacementInit = {
@@ -453,6 +519,13 @@ export class RequestFormComponent implements OnInit {
       arrivalDate: [null], // 到货日期
       actualSaleDate: [{ value: null, disabled: true }], // 实际记认销售日期
     }),
+    importedEquipmentInfo: this.fb.group({
+      ...this.importedEquipmentInit,
+      applyId: null,
+      id: null,
+      isDeleted: 0,
+    })
+
   });
   parseRegion(region) {
     let arr = [
@@ -612,6 +685,9 @@ export class RequestFormComponent implements OnInit {
           case APPLY_TYPE.NONE_DIRECT_ORDER: //非直销订单
             this.noneDirectOrderInfo.patchValue({ bg });
             break;
+          case APPLY_TYPE.IMPORTED_EQUIPMENT: //进口设备
+            this.importedEquipmentForm.patchValue({ bg });
+            break;
           default:
             this.orderInfo.patchValue({ bg });
         }
@@ -722,6 +798,10 @@ export class RequestFormComponent implements OnInit {
 
   get lastBuyInfos(): FormGroup {
     return this.formValues.get("lastBuyInfos") as FormGroup;
+  }
+
+  get importedEquipmentForm(): FormGroup {
+    return this.formValues.get("importedEquipmentInfo") as FormGroup;
   }
 
   public setFormValidators(type, item, bg) {
@@ -857,6 +937,7 @@ export class RequestFormComponent implements OnInit {
       orderReplacementInfo,
       noneDirectOrderInfo,
       lastBuyInfos,
+      importedEquipmentInfo,
     } = this.formValues.getRawValue();
     const {
       applyArrivalTime,
@@ -1261,7 +1342,6 @@ export class RequestFormComponent implements OnInit {
           },
         ];
         break;
-
       case APPLY_TYPE.DE_BOOK:
         data.orderInfos = [];
         let saps = [];
@@ -1358,10 +1438,23 @@ export class RequestFormComponent implements OnInit {
           }
         });
         break;
+      case APPLY_TYPE.IMPORTED_EQUIPMENT:
+        let importedEquipmentOrder = this.importedEquipmentInfo.getData();
+        let arr = importedEquipmentOrder.oitProducts;
+        importedEquipmentOrder.bmcs = this.getBMCsString(arr);
+        data.orderInfos = [importedEquipmentOrder];
+        break;
       default:
         break;
     }
     return data;
+  }
+  getBMCsString(products){
+    // console.log('products',products)
+    if(!products) return "";
+    let arr = products.map((item) => item.bmc).filter((item) => item);
+    arr = arr.filter((i,index)=>arr.indexOf(i)===index);
+    return arr.join(";");
   }
 
   // 设置页面是否可编辑, 满足以下情况可编辑
@@ -1393,6 +1486,7 @@ export class RequestFormComponent implements OnInit {
       this.formValues.controls.cancelorderInfo.disable();
       // 添加订单替换 orderReplacement disabbled
       this.formValues.controls.orderReplacementInfo.disable();
+      this.formValues.controls.importedEquipmentInfo.disable();
     }
     this.editable = editable;
   }
@@ -1644,6 +1738,11 @@ export class RequestFormComponent implements OnInit {
         const isCooCcValid = this.cooCcOrderInfo.validate();
         hasError = this.basicInfo.invalid || !isCooCcValid;
         break;
+        case APPLY_TYPE.IMPORTED_EQUIPMENT:
+          const isImportedEquipmentValid = this.importedEquipmentInfo.validate();
+          console.log('isImportedEquipmentValid',isImportedEquipmentValid)
+          hasError = this.basicInfo.invalid || !isImportedEquipmentValid;
+          break;
       default:
         for (const i in this.orderInfo.controls) {
           this.orderInfo.controls[i].markAsDirty();
@@ -2307,6 +2406,27 @@ export class RequestFormComponent implements OnInit {
             products: orderInfos[0].products || [],
           },
         });
+      } else if (applyType === APPLY_TYPE.IMPORTED_EQUIPMENT) {
+        let order = orderInfos[0];
+        this.formValues.patchValue({
+          importedEquipmentInfo: {
+            ...order,
+            oitProducts:  order.oitProducts || [],
+          },
+        });
+        let oitProductsControl =  this.formValues.controls.importedEquipmentInfo.get('oitProducts') as FormArray
+        for(let p of order.oitProducts){
+          let tmpGroup = {
+            model: [null, [Validators.required]], // 产品型号
+            bmc: [null, [Validators.required]], // 产品线
+            modality: [null, [Validators.required]], // Modality
+            quantity: [null, [Validators.required]], // 数量
+          }
+          let groupInst = this.fb.group(tmpGroup)
+          groupInst.patchValue(p)
+          oitProductsControl.push(groupInst)
+        }
+        this.formValues.controls.importedEquipmentInfo.patchValue({bmcs:this.getBMCsString(order.oitProducts)})
       }
 
       const userSet = new Set<string>();

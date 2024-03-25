@@ -1,0 +1,639 @@
+<nz-card class="mtb1rem" nzTitle="订单信息" class="imported_equipment_form">
+  <form nz-form [formGroup]="formValues">
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <!-- 销售区域 -->
+      <div nz-col nzXs="24" nzSm="24" nzMd="12">
+        <nz-form-item>
+          <nz-form-label nzXl="8" nzXXl="6">销售区域</nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <nz-input-group style="width: 100%; font-size: 0">
+              <input
+                [readonly]="true"
+                type="text"
+                style="width: 48%; margin-right: 4%"
+                nz-input
+                formControlName="cycleGroup"
+              />
+              <input
+                [readonly]="true"
+                type="text"
+                style="width: 48%"
+                nz-input
+                formControlName="bigArea"
+              />
+            </nz-input-group>
+            <div style="display: flex">
+              <nz-form-explain style="width: 48%; margin-right: 4%">
+                <span
+                  style="color: #f5222d"
+                  *ngIf="
+                    formValues.get('cycleGroup')?.dirty &&
+                    formValues.get('cycleGroup')?.errors
+                  "
+                  >请选择销售区域</span
+                >
+              </nz-form-explain>
+              <nz-form-explain
+                style="width: 48%"
+                *ngIf="
+                  formValues.get('bigArea')?.dirty &&
+                  formValues.get('bigArea')?.errors
+                "
+              >
+                <span style="color: #f5222d">请选择销售区域</span>
+              </nz-form-explain>
+            </div>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <!-- 业务模式 -->
+      <div nz-col nzXs="24" nzSm="24" nzMd="12">
+        <nz-form-item>
+          <nz-form-label nzXl="8" nzXXl="6" nzRequired>业务模式</nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <nz-select
+              formControlName="businessModel"
+              nzPlaceHolder="请选择业务模式"
+            >
+              <nz-option
+                *ngFor="let item of selectOptions.businessModels"
+                [nzLabel]="item.label"
+                [nzValue]="item.value"
+              ></nz-option>
+            </nz-select>
+            <nz-form-explain
+              *ngIf="
+                formValues.get('businessModel')?.dirty &&
+                formValues.get('businessModel')?.errors
+              "
+            >
+              请选择业务模式
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <!-- 经销商信息 -->
+      <div
+        *ngIf="formValues.get('businessModel').value == 'distributor'"
+        nz-col
+        nzXs="24"
+        nzSm="24"
+        nzMd="12"
+      >
+        <nz-form-item>
+          <nz-form-label
+            nzXs="24"
+            nzSm="24"
+            nzMd="8"
+            nzXl="8"
+            nzXXl="6"
+            nzRequired
+          >
+            经销商名称
+          </nz-form-label>
+          <nz-form-control
+            nzXs="24"
+            nzSm="24"
+            nzMd="14"
+            nz-tooltip
+            [nzTitle]="formValues.getRawValue().dealerName"
+          >
+            <nz-input-group
+              style="width: 100%"
+              [nzSuffix]="clearDealerBtn"
+              [nzAddOnAfter]="selectDealerBtn"
+            >
+              <input
+                [readonly]="true"
+                type="text"
+                maxlength="255"
+                nz-input
+                formControlName="dealerName"
+                [placeholder]="editable ? '点击右侧按钮选择经销商' : ''"
+              />
+
+              <nz-form-explain
+                *ngIf="
+                  formValues.get('dealerName')?.dirty &&
+                  formValues.get('dealerName')?.errors
+                "
+              >
+                请选择经销商
+              </nz-form-explain>
+            </nz-input-group>
+            <ng-template #clearDealerBtn>
+              <i
+                nz-icon
+                nz-tooltip
+                class="ant-input-clear-icon"
+                nzTheme="fill"
+                nzType="close-circle"
+                *ngIf="editable"
+                (click)="onClearDealer()"
+              ></i>
+            </ng-template>
+            <ng-template #selectDealerBtn>
+              <button
+                *ngIf="editable"
+                nz-button
+                nzType="primary"
+                class="ml-md"
+                (click)="onShowSelectDealerModal()"
+              >
+                选择经销商
+              </button>
+            </ng-template>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div
+        *ngIf="formValues.get('businessModel').value == 'distributor'"
+        nz-col
+        nzXs="24"
+        nzSm="24"
+        nzMd="12"
+      >
+        <nz-form-item>
+          <nz-form-label
+            nzXs="24"
+            nzSm="24"
+            nzMd="8"
+            nzXl="8"
+            nzXXl="6"
+            nzRequired
+          >
+            经销商编号
+          </nz-form-label>
+          <nz-form-control
+            nzXs="24"
+            nzSm="24"
+            nzMd="14"
+            nz-tooltip
+            [nzTitle]="formValues.getRawValue().dealerCode"
+          >
+            <input
+              readonly
+              type="text"
+              maxlength="255"
+              nz-input
+              formControlName="dealerCode"
+            />
+            <nz-form-explain
+              *ngIf="
+                formValues.get('dealerCode')?.dirty &&
+                formValues.get('dealerCode')?.errors
+              "
+            >
+              请选择经销商
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+
+      <!-- 医院信息 -->
+      <div nz-col nzXs="24" nzSm="24" nzMd="12">
+        <nz-form-item>
+          <nz-form-label
+            nzXs="24"
+            nzSm="24"
+            nzMd="10"
+            nzXl="8"
+            nzXXl="6"
+            nzRequired
+          >
+            医院名称
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <nz-input-group
+              style="width: 100%"
+              [nzSuffix]="clearHospitalBtn"
+              [nzAddOnAfter]="selectHospitalBtn"
+            >
+              <input
+                readonly
+                id="hospitalName"
+                type="text"
+                nz-input
+                formControlName="hospitalName"
+              />
+              <nz-form-explain
+                *ngIf="
+                  formValues.get('hospitalName')?.dirty &&
+                  formValues.get('hospitalName')?.errors
+                "
+              >
+                请选择医院
+              </nz-form-explain>
+            </nz-input-group>
+            <ng-template #clearHospitalBtn>
+              <i
+                nz-icon
+                nz-tooltip
+                class="ant-input-clear-icon"
+                nzTheme="fill"
+                nzType="close-circle"
+                *ngIf="editable && formValues.get('hospitalName').value"
+                (click)="onClearHospital()"
+              ></i>
+            </ng-template>
+            <ng-template #selectHospitalBtn>
+              <button
+                *ngIf="editable"
+                nz-button
+                nzType="primary"
+                class="ml-md"
+                (click)="onShowSelectHospitalModal()"
+              >
+                {{
+                  "orderv3.components.pre-base-info-form.endUser.selectHospital"
+                    | translate
+                }}
+              </button>
+            </ng-template>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzXs="24" nzSm="24" nzMd="12">
+        <nz-form-item>
+          <nz-form-label
+            nzXs="24"
+            nzSm="24"
+            nzMd="8"
+            nzXl="8"
+            nzXXl="6"
+            nzRequired
+          >
+            医院编号
+          </nz-form-label>
+          <nz-form-control
+            nzXs="24"
+            nzSm="24"
+            nzMd="14"
+            nz-tooltip
+            [nzTitle]="formValues.getRawValue().hospitalNo"
+          >
+            <input
+              readonly
+              type="text"
+              maxlength="255"
+              nz-input
+              formControlName="hospitalNo"
+            />
+            <nz-form-explain
+              *ngIf="
+                formValues.get('hospitalNo')?.dirty &&
+                formValues.get('hospitalNo')?.errors
+              "
+            >
+              请选择医院
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <!-- 商机号 -->
+      <div nz-col nzXs="24" nzSm="24" nzMd="12">
+        <nz-form-item>
+          <nz-form-label
+            nzXs="24"
+            nzSm="24"
+            nzMd="8"
+            nzXl="8"
+            nzXXl="6"
+            nzRequired
+          >
+            Opportunity#(商机号)
+          </nz-form-label>
+          <nz-form-control
+            nzXs="24"
+            nzSm="24"
+            nzMd="14"
+            nz-tooltip
+            [nzTitle]="formValues.getRawValue().opportunityNumber"
+          >
+            <input
+              type="text"
+              maxlength="255"
+              nz-input
+              formControlName="opportunityNumber"
+            />
+            <nz-form-explain
+              *ngIf="
+                formValues.get('opportunityNumber')?.dirty &&
+                formValues.get('opportunityNumber')?.errors
+              "
+            >
+              请填写 Opportunity#(商机号)
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <!-- 进单产品 -->
+      <nz-card nzTitle="进单产品" style="width: 100%">
+        <div nz-col nzXs="24" nzSm="24" nzMd="24">
+          <nz-form-item>
+            <div nz-col nzXs="24" nzSm="24" nzMd="14">
+              <button
+                *ngIf="editable"
+                nz-button
+                nzType="primary"
+                class="ml-md"
+                (click)="addProductRow()"
+              >
+                新增
+              </button>
+            </div>
+          </nz-form-item>
+        </div>
+        <div nz-col nzSpan="24" formArrayName="oitProducts">
+          <div
+            nz-row
+            [formGroupName]="index"
+            *ngFor="let control of products.controls; let index = index"
+          >
+            <!-- 进单产品型号 -->
+            <div nz-col nzSpan="8">
+              <nz-form-item>
+                <nz-form-label [nzFor]="'model' + index" nzSpan="8" nzRequired>
+                  进单产品型号
+                </nz-form-label>
+                <nz-form-control nzSpan="16">
+                  <nz-input-group
+                    style="width: 100%"
+                    [nzAddOnAfter]="selectImportedProductBtn"
+                  >
+                    <input
+                      [readOnly]="true"
+                      type="text"
+                      maxlength="255"
+                      nz-input
+                      formControlName="model"
+                      [attr.id]="'model' + index"
+                    />
+                    <ng-template #selectImportedProductBtn>
+                      <button
+                        *ngIf="editable"
+                        nz-button
+                        nzType="primary"
+                        class="ml-md"
+                        (click)="onShowSelectImportedProductModal(index)"
+                      >
+                        选择产品
+                      </button>
+                    </ng-template>
+                  </nz-input-group>
+                  <nz-form-explain
+                    *ngIf="
+                      control.get('model')?.dirty &&
+                      control.get('model')?.errors
+                    "
+                  >
+                    此选项必填字段
+                  </nz-form-explain>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+            <!-- 所属产品线 -->
+            <div nz-col nzSpan="8">
+              <nz-form-item>
+                <nz-form-label [nzFor]="'bmc' + index" nzSpan="8" nzRequired>
+                  所属BMC
+                </nz-form-label>
+                <nz-form-control nzSpan="16">
+                  <input
+                    [readOnly]="true"
+                    type="text"
+                    maxlength="255"
+                    nz-input
+                    formControlName="bmc"
+                    [attr.id]="'bmc' + index"
+                  />
+                  <nz-form-explain
+                    *ngIf="
+                      control.get('bmc')?.dirty && control.get('bmc')?.errors
+                    "
+                  >
+                    此选项必填字段
+                  </nz-form-explain>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+            <!-- 数量 -->
+            <div nz-col nzSpan="6">
+              <nz-form-item>
+                <nz-form-label
+                  [nzFor]="'quantity' + index"
+                  nzSpan="8"
+                  nzRequired
+                >
+                  数量
+                </nz-form-label>
+                <nz-form-control nzSpan="16">
+                  <input
+                    type="text"
+                    maxlength="255"
+                    nz-input
+                    formControlName="quantity"
+                    [attr.id]="'quantity' + index"
+                  />
+                  <nz-form-explain
+                    *ngIf="
+                      control.get('quantity')?.dirty &&
+                      control.get('quantity')?.errors
+                    "
+                  >
+                    此选项必填字段
+                  </nz-form-explain>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+            <div nz-col nzSpan="2">
+              <button
+                nzType="link"
+                *ngIf="editable"
+                nz-button
+                (click)="removeProductRow(index)"
+              >
+                移除
+              </button>
+            </div>
+          </div>
+        </div>
+      </nz-card>
+      <!-- 进单产品 -->
+      <div nz-col nzXs="24" nzSm="24" nzMd="12" class="mt10">
+        <nz-form-item>
+          <nz-form-label
+            nzXs="24"
+            nzSm="24"
+            nzMd="8"
+            nzXl="8"
+            nzXXl="6"
+            nzRequired
+          >
+            BMC
+          </nz-form-label>
+          <nz-form-control
+            nzXs="24"
+            nzSm="24"
+            nzMd="14"
+            nz-tooltip
+            [nzTitle]="formValues.getRawValue().bmcs"
+          >
+            <input
+              type="text"
+              maxlength="255"
+              nz-input
+              formControlName="bmcs"
+            />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <!-- 理由 -->
+      <div nz-col nzSpan="24" class="mt10">
+        <div nzXs="24" nzSm="24" nzMd="12" nzXl="12" nzXXl="12">
+          <nz-form-item>
+            <nz-form-label
+              nzXs="24"
+              nzSm="24"
+              nzMd="4"
+              nzXl="4"
+              nzXXl="3"
+              nzRequired
+            >
+              申请进口设备的理由
+            </nz-form-label>
+            <nz-form-control
+              nzXs="24"
+              nzSm="24"
+              nzMd="18"
+              nz-tooltip
+              [nzTitle]="formValues.getRawValue().reason"
+            >
+              <textarea
+                nz-input
+                formControlName="reason"
+                [nzAutosize]="{ minRows: 3, maxRows: 5 }"
+              ></textarea>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+      <!-- 标书要求提供进口设备的截屏 -->
+      <div nz-col nzSpan="24">
+        <div nzXs="24" nzSm="24" nzMd="12" nzXl="12" nzXXl="12">
+          <nz-form-item>
+            <nz-form-label
+                nzXs="24"
+                nzSm="24"
+                nzMd="4"
+                nzXl="4"
+                nzXXl="3"
+              class="upload-file-label"
+              nzRequired
+              [nzNoColon]="true"
+            >
+              申请进口设备的支持文件：
+              <br />
+              <small
+              >（如：公立医院提供进口论证批复,<br />私立医院提供医院盖章文件,<br />
+              或其它有效支持文件。）</small
+            >
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="12" nzXl="12" nzXXl="12">
+              <shared-upload-file formControlName="attachments">
+              </shared-upload-file>
+              <nz-form-explain
+                *ngIf="
+                  formValues.get('attachments')?.dirty &&
+                  formValues.get('attachments')?.errors
+                "
+              >
+                请上传申请进口设备的支持文件
+                <br /><small
+                  >（如：公立医院提供进口论证批复,私立医院提供医院盖章文件,
+                  或其它有效支持文件。）</small
+                >
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+      </div>
+      <!-- 预计开标/合同谈判日期 -->
+
+      <div nz-col nzSpan="24">
+        <div nz-col nzXs="24" nzSm="24" nzMd="12">
+          <nz-form-item>
+            <nz-form-label
+              nzXs="24"
+              nzSm="24"
+              nzMd="8"
+              nzXl="8"
+              nzXXl="6"
+              nzRequired
+            >
+              预计开标/合同谈判日期
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="8">
+              <shared-date-picker
+                formControlName="expectedOpenBiddingDate"
+                [disabledDate]="disabledExpectedBiddingDate"
+              ></shared-date-picker>
+              <nz-form-explain
+                *ngIf="
+                  formValues.get('expectedOpenBiddingDate')?.dirty &&
+                  formValues.get('expectedOpenBiddingDate')?.errors
+                "
+              >
+                此选项必填字段
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+      <!-- 预计OIT日期 -->
+      <div nz-col nzSpan="24">
+        <div nz-col nzXs="24" nzSm="24" nzMd="12">
+          <nz-form-item>
+            <nz-form-label
+              nzXs="24"
+              nzSm="24"
+              nzMd="8"
+              nzXl="8"
+              nzXXl="6"
+              nzRequired
+            >
+              预计OIT日期
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="8">
+              <shared-date-picker
+                formControlName="expectedOitDate"
+              ></shared-date-picker>
+              <nz-form-explain
+                *ngIf="
+                  formValues.get('expectedOitDate')?.dirty &&
+                  formValues.get('expectedOitDate')?.errors
+                "
+              >
+                此选项必填字段
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+    </div>
+  </form>
+  <shared-select-dealer
+    #selectDealer
+    (select)="onDealSelect($event)"
+  ></shared-select-dealer>
+  <shared-select-hospital
+    #selectHospital
+    (select)="onHospitalselect($event)"
+  ></shared-select-hospital>
+  <select-imported-product
+    #selectImportedProduct
+    (select)="onImportedProductselect($event)"
+    [modality]="modality"
+  ></select-imported-product>
+</nz-card>

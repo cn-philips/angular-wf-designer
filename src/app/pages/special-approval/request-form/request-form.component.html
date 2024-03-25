@@ -60,7 +60,8 @@
     <ng-template ngbTabContent>
       <div class="card-body">
         <special-approval-basic-info [saleRegions]="saleRegions" [executed]="executed" [editable]="editable"
-          [formValues]="basicInfo" [formValue]="formValues" (itemChange)="onItemChange($event)">
+          [formValues]="basicInfo" [formValue]="formValues" (itemChange)="onItemChange($event)"
+          [needReason]="needReason" [needUpdateFile]="needUpdateFile">
         </special-approval-basic-info>
       </div>
     </ng-template>
@@ -139,6 +140,10 @@
           [editable]="editable" [formValues]="lastBuyInfos" [showFeedbackTab]="showFeedbackTab"
           [applicantEmail]="applicantEmail">
         </special-approval-lastbuy-info>
+        <app-imported-info #importedEquipmentInfo *ngIf="applyType === APPLY_TYPE.IMPORTED_EQUIPMENT"
+          [editable]="editable" [formValues]="importedEquipmentForm" [baseInfo]="basicInfo"
+          [applicantEmail]="applicantEmail">
+        </app-imported-info>
       </div>
     </ng-template>
   </ngb-tab>

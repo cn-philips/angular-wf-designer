@@ -123,7 +123,7 @@ export class SelectApproverComponent implements OnInit {
         }
       })
     } catch ({ message }) {
-      this.message.error(`获取审批人失败, 请稍候重试`);
+      this.message.error(`获取审批人失败, 请稍候重试，${message}`);
       this.onHideModal();
       console.log(`获取预审节点列表失败, ${message}`);
     } finally {

@@ -22,7 +22,7 @@ export class DatePickerComponent implements OnInit, ControlValueAccessor {
   @Input() placeholder = '请选择'
   @Input() format = null
   @Input() mode = 'date'
-
+  @Input() disabledDate:Function = null
   _value = null // model值
 
   disabled = false
