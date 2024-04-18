@@ -164,13 +164,13 @@ export class ScheduleComponent implements OnInit {
   ];
 
   classifyList = [
-    { code: "BOP", label: "Bidding/OIT/Pre-book" },
+    { code: "BOP", label: "Bidding/OIT/Slot Reservation" },
     { code: "special", label: "Special Aproval" },
   ]
 
   bopFormTypeList = [
     { code: "oit-finance", label: "OIT Report(金融方案)" },
-    { code: "pre-book", label: "Pre-book Report" },
+    { code: "pre-book", label: "Slot Reservation Report" },
     { code: "pos", label: "POS Report" },
   ]
 
@@ -955,7 +955,7 @@ export class ScheduleComponent implements OnInit {
     //创建数据范围提示信息
     if (!this.isAutoChange) {
       this.getDateTime();
-      var dateTime = this.dateTime;  
+      var dateTime = this.dateTime;
       this.setScopeAndFileName(dateTime);
     }
     this.isAutoChange = false;
@@ -1048,7 +1048,7 @@ export class ScheduleComponent implements OnInit {
           when = "CURRENT";
         }
       }
-      
+
       if (dateTime.includes("last")) {
         var h = dateTime.split(",")[1];
         dateTime = moment().endOf("month").format("YYYY-MM-DD") + " " + h;

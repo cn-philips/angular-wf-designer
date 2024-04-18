@@ -28,7 +28,7 @@
       "introduction": "申请进单，以及完成OIT的流程"
     },
     "prebook": {
-      "title": "新建Pre-book",
+      "title": "新建Slot Reservation",
       "introduction": "OIT条件尚不完备，但需要预先申请SO#的流程"
     },
     "sp": {
@@ -869,8 +869,8 @@
           "biddingType": "招标类型",
           "includeSolution": "是否包含solution",
           "solutionSalesEmail": "Solution Sales",
-          "prebookApply": "已申请 Pre-book",
-          "prebookReferenceId": "Pre-book申请号",
+          "prebookApply": "已申请 Slot Reservation",
+          "prebookReferenceId": "Slot Reservation申请号",
           "contractCancelReferenceId": "原合同概要表Reference No",
           "contractCancelSo": "原合同概要表SO#",
           "requiredArrivalDate": "客户要货函日期",
@@ -1023,8 +1023,8 @@
           "magneticResonanceShieldingFile": "磁屏蔽公司确认文件",
           "magneticResonanceCompany": "磁共振屏蔽公司",
           "igtThirdPartySingle": "IGT第三方显示器吊塔确认文件",
-          "prebookApply": "已申请Prebook",
-          "prebookReferenceId": "Prebook申请号",
+          "prebookApply": "已申请Slot Reservation",
+          "prebookReferenceId": "Slot Reservation申请号",
           "forward-credit": "远期信用证利息",
           "other-payment": "其他付款方式费用"
         },
@@ -1290,8 +1290,8 @@
         "total": "Trade In总额",
         "rebate": "Rebate总额",
         "sample-check": "是否抽样审核",
-        "title7": "Pre-book信息",
-        "reason": "Pre-book原因",
+        "title7": "Slot Reservation信息",
+        "reason": "Slot Reservation原因",
         "remark": "详细说明",
         "oit-month": "预计OIT月份",
         "transport": "运输方式",

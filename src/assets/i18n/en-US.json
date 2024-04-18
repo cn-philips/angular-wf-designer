@@ -28,7 +28,7 @@
       "introduction": "Flow of applying orders and OIT completion."
     },
     "prebook": {
-      "title": "Raise Pre-book request",
+      "title": "Raise Slot Reservation request",
       "introduction": "Flow of applying for SO# in advance while OIT is incomplete."
     },
     "sp": {
@@ -863,8 +863,8 @@
           "biddingType": "Bidding Type",
           "includeSolution": "Include Solution",
           "solutionSalesEmail": "Solution Sales",
-          "prebookApply": "Apply Pre-book",
-          "prebookReferenceId": "Pre-book Reference Id",
+          "prebookApply": "Apply Slot Reservation",
+          "prebookReferenceId": "Slot Reservation Reference Id",
           "contractCancelReferenceId": "Contract Cancel Reference Id",
           "contractCancelSo": "Contract Cancel So#",
           "requiredArrivalDate": "Required Arrival Date",
@@ -1282,8 +1282,8 @@
         "total": "Trade In Total",
         "rebate": "Rebate Total",
         "sample-check": "Sample Check",
-        "title7": "Pre-book Information",
-        "reason": "Reason for Pre-Book",
+        "title7": "Slot Reservation Information",
+        "reason": "Reason for Slot Reservation",
         "remark": "Detailed Instructions",
         "oit-month": "Expected OIT Month",
         "transport": "Transport Mode",

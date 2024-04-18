@@ -75,7 +75,7 @@ export class SearchItemComponent implements OnInit {
       })
       this.formValues.get('applicant').disable();
     }
-    
+
     this.getBusinessModelList();
     this.getBigAreaList();
     this.getBmcList();
@@ -109,13 +109,13 @@ export class SearchItemComponent implements OnInit {
       'ecos_oit_order_os_pm','ecos_bid_failure','ecos_bid_2bid','ecos_bid_nstd_countersign'
     ];
     this.dictService.dictData('NODE_ECOS').subscribe((dictData) => {
-      this.taskStatusList = dictData.map(({ code, label }) => ({ code, label: this.translateStatus( code, label) })).filter(item => 
-        !item.code.includes('submit') && !item.code.includes('cancel') && !item.code.includes('done') && !item.code.includes('draft') 
+      this.taskStatusList = dictData.map(({ code, label }) => ({ code, label: this.translateStatus( code, label) })).filter(item =>
+        !item.code.includes('submit') && !item.code.includes('cancel') && !item.code.includes('done') && !item.code.includes('draft')
         && !removeList.includes(item.code)
       )
       this.taskStatusList.sort((a,b) => a.label.localeCompare(b.label));
     });
-  } 
+  }
   // 标记对应进单、投标、prebook的状态
   public translateStatus( code,  label) {
     const isNull = [null, "", undefined];
@@ -126,7 +126,7 @@ export class SearchItemComponent implements OnInit {
     } else if (code.includes('ecos_bid')) {
       return "Bidding-"+label;
     } else if (code.includes('ecos_prebook')) {
-      return "Pre-book-"+label;
+      return "Slot Reservation-"+label;
     }
     return "";
   }
@@ -226,13 +226,13 @@ export class SearchItemComponent implements OnInit {
     if(data.submitTime && data.submitTime.length != 0){
       this.formValues.patchValue({
         ...this.formValues,
-        submitStartTime: moment(data.submitTime[0]).format('YYYY-MM-DD'), 
+        submitStartTime: moment(data.submitTime[0]).format('YYYY-MM-DD'),
         submitEndTime: moment(data.submitTime[1]).format('YYYY-MM-DD'),
       })
     } else {
       this.formValues.patchValue({
         ...this.formValues,
-        submitStartTime: null, 
+        submitStartTime: null,
         submitEndTime: null,
       })
     }

@@ -670,12 +670,12 @@
         <nz-form-item>
           <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzXl="8" nzXXl="6"
             [nzRequired]="baseInfoFrom.getRawValue().prebookQuantity > 0" [nzNoColon]="true">
-            关联的Pre-book Order
+            关联的Slot Reservation Order
           </nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <nz-input-group style="width: 100%" [nzSuffix]="clearDealerBtn" [nzAddOnAfter]="selectDealerBtn">
               <input type="text" readonly nz-input formControlName="prebookReferenceId" [placeholder]="
-                    editable ? '点击右侧按钮选择Pre-book申请号' : ''
+                    editable ? '点击右侧按钮选择Slot Reservation申请号' : ''
                   " />
             </nz-input-group>
             <nz-form-explain *ngIf="
@@ -688,10 +688,10 @@
               }}
             </nz-form-explain>
             <div class="lintesting" *ngIf="preBookTitleHave()">
-              系统检测到可关联的Pre-book Order,请人工选择关联
+              系统检测到可关联的Slot Reservation Order,请人工选择关联
             </div>
             <div class="lintesting" *ngIf="preBookTitleNothing()">
-              尚无可关联的Pre-book Order
+              尚无可关联的Slot Reservation Order
             </div>
             <ng-template #selectDealerBtn>
               <button [disabled]="
@@ -711,7 +711,7 @@
       <div nz-col nzXs="24" nzSm="24" nzMd="8">
         <nz-form-item>
           <nz-form-label nzXs="24" nzSm="24" nzMd="10" nzXl="8" nzXXl="6" [nzNoColon]="true">
-            关联的Pre-book Order当前状态
+            关联的Slot Reservation Order当前状态
           </nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <input nz-input nz-input [ngModelOptions]="{ standalone: true }" disabled [ngModel]="
@@ -725,7 +725,7 @@
       <div nz-col nzXs="24" nzSm="24" nzMd="8">
         <nz-form-item>
           <nz-form-label nzXs="24" nzSm="24" nzMd="10" nzXl="8" nzXXl="6" [nzNoColon]="true">
-            关联的Pre-book Order的SO#
+            关联的Slot Reservation Order的SO#
           </nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <input nz-input formControlName="prebookSo" maxlength="255" />

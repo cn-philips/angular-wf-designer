@@ -123,7 +123,7 @@ export class PrebookDetailComponent implements OnInit {
   }
 
   get showZpmApprovalTab(): boolean {
-    return !['ecos_prebook_resubmit', 'ecos_prebook_zpm'].includes(this.processStatus) 
+    return !['ecos_prebook_resubmit', 'ecos_prebook_zpm'].includes(this.processStatus)
   }
 
   get showOaApprovalTab(): boolean {
@@ -147,7 +147,7 @@ export class PrebookDetailComponent implements OnInit {
       this.processStatus === 'ecos_prebook_oa_supplemental' ||
       this.processStatus === 'ecos_prebook_om'
     ) {
-      return '提交之前，请在产品信息tab仔细确认Pre-book Order的所关联的OIT状态，以确保不会重复提交SO申请'
+      return '提交之前，请在产品信息tab仔细确认Slot Reservation Order的所关联的OIT状态，以确保不会重复提交SO申请'
     } else if (this.processStatus === 'ecos_prebook_zpm') {
       return '你确定要执行提交的操作?'
     } else {
@@ -207,7 +207,7 @@ export class PrebookDetailComponent implements OnInit {
       orderInfo
     } } = this.originData as any
     if (Array.isArray(orderInfo)) {
-      
+
       orderInfo.forEach((item) => {
         const order = createOrder(item, disabled)
         this.orderInfo.push(order)
@@ -336,7 +336,7 @@ export class PrebookDetailComponent implements OnInit {
         this.disableForm()
         this.initOrderInfo(true)
       }
-      const subTierDisabled = !(this.fromTask && (isResubmit || this.processStatus === 'ecos_prebook_oa_supplemental')) // resumbit || fromTask & 
+      const subTierDisabled = !(this.fromTask && (isResubmit || this.processStatus === 'ecos_prebook_oa_supplemental')) // resumbit || fromTask &
       initBasicInfo(this.prebookForm, data, this.subTierSubject, subTierDisabled)
       this.initApprovalForm()
       this.pageLoading = false;
@@ -439,7 +439,7 @@ export class PrebookDetailComponent implements OnInit {
               }, 0);
             })
           }
-        } 
+        }
         for (let i in this.oaSupplement.controls) {
           this.oaSupplement.controls[i].markAsDirty()
           this.oaSupplement.controls[i].updateValueAndValidity()
@@ -449,7 +449,7 @@ export class PrebookDetailComponent implements OnInit {
           this.message.error('请按要求填写表单信息')
           return
         }
-       
+
 
         const {
           sofonFileSource,
@@ -507,7 +507,7 @@ export class PrebookDetailComponent implements OnInit {
               }, 0);
             })
           }
-        } 
+        }
         if (!valid) {
           this.message.error('请按要求填写表单信息')
           return

@@ -347,7 +347,7 @@ export class MyViewComponent implements OnInit {
     }
     this.loadingButton.exportMore = true;
     this.http.postDownload(`/act/ecos/report/prebook`, params).subscribe(rest => {
-      this.fileService.downloadResponse('Pre-book Report', rest);
+      this.fileService.downloadResponse('Slot Reservation Report', rest);
       this.loadingButton.exportMore = false;
     }, error => {
       this.message.create('error', '请求错误');

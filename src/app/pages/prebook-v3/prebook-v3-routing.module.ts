@@ -7,12 +7,12 @@ const routes: Route[] = [
   {
     path: '',
     component: PrebookFormComponent,
-    data: { breadcrumb: "新建Pre-book申请" },
+    data: { breadcrumb: "新建Slot Reservation申请" },
   },
   {
     path: ":id",
     component: PrebookDetailComponent,
-    data: { breadcrumb: "Pre-book申请详情页" },
+    data: { breadcrumb: "Slot Reservation申请详情页" },
   },
 ];
 

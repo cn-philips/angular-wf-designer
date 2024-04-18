@@ -37,7 +37,7 @@
   <div nz-row nzType="flex" nzJustify="start" nzAlign="start">
     <div nz-col nzXs="24" nzSm="24" nzMd="12">
       <nz-form-item style="margin-bottom: 6px">
-        <nz-form-label [nzSm]="8" [nzXs]="24"><span>Related Pre-Book</span><br>有关联的Pre-Book</nz-form-label>
+        <nz-form-label [nzSm]="8" [nzXs]="24"><span>Related Slot Reservation</span><br>有关联的Slot Reservation</nz-form-label>
         <nz-form-control [nzSm]="14" [nzXs]="24">
           <nz-radio-group [disabled]="true" nzSize="default" [(ngModel)]="dataBase.isPrebookApply" style="margin-top: 15px">
             <label nz-radio nzValue="1">Y 是</label>
@@ -48,7 +48,7 @@
     </div>
     <div *ngIf="dataBase.isPrebookApply=='1'" nz-col nzXs="24" nzSm="24" nzMd="12">
       <nz-form-item style="margin-bottom: 6px">
-        <nz-form-label [nzSm]="8" [nzXs]="24">Pre-Book Request<br>Pre-book申请号</nz-form-label>
+        <nz-form-label [nzSm]="8" [nzXs]="24">Slot Reservation Request<br>Slot Reservation申请号</nz-form-label>
         <nz-form-control [nzSm]="14" [nzXs]="24">
           <input type="text" class="form-control" [disabled]="true"
               [(ngModel)]="dataBase.prebookReferenceId" />
@@ -58,7 +58,7 @@
                 ">
                 此选项必填字段
               </nz-form-explain>
-              <div *ngIf="dataBase.prebookReferenceId" class="win-check-link down" (click)="gotoWin(dataBase.prebookMainId)" nz-button nzType="link">打开Pre-book</div>
+              <div *ngIf="dataBase.prebookReferenceId" class="win-check-link down" (click)="gotoWin(dataBase.prebookMainId)" nz-button nzType="link">打开Slot Reservation</div>
         </nz-form-control>
       </nz-form-item>
     </div>
@@ -154,7 +154,7 @@
             注释：所选择的经销商不在经销商列表
           </div>
           <div *ngIf="distributorOffPrebook&&dataBase.isPrebookApply=='1'" class="warning" nzFor="email">
-            注释：经销商数据和Pre-book申请记录不一致
+            注释：经销商数据和Slot Reservation申请记录不一致
           </div>
         </nz-form-control>
       </nz-form-item>
@@ -236,7 +236,7 @@
             注释：所选择的外贸公司不在IE Pool
           </div>
           <div *ngIf="foreignTradeOffPrebook&&dataBase.isPrebookApply=='1'" class="warning nohide" nzFor="email">
-            外贸公司和Pre-book申请记录不一致，请注意外贸公司修改后slot可能被取消，请考虑后提交
+            外贸公司和Slot Reservation申请记录不一致，请注意外贸公司修改后slot可能被取消，请考虑后提交
           </div>
         </nz-form-control>
       </nz-form-item>
