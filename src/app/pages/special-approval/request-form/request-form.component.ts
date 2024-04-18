@@ -27,6 +27,7 @@ import { CooPdIgtOrderInfoComponent } from "./widgets/order-info/coo-pdigt/coo-p
 import { CooCcOrderInfoComponent } from "./widgets/order-info/coo-cc/coo-cc.component";
 import { ImportedInfoComponent } from "./widgets/order-info/imported-info/imported-info.component"
 import { RouterExtendService } from "@app/modern-themes/services/router-extend.service";
+import { compareIgnoreSensitiveCase } from "@app/utils/StringUtils";
 
 enum TAB_TYPE {
   BASIC_INFO = "basic-info",
@@ -576,6 +577,12 @@ export class RequestFormComponent implements OnInit {
         smallArea,
         team: funcTeamType == "0" || !!!funcTeamType ? team : serveTeam,
       });
+      if(this.applyType == APPLY_TYPE.IMPORTED_EQUIPMENT){
+        this.importedEquipmentForm.patchValue({
+          cycleGroup,
+          bigArea
+        })
+      }
     }
   }
 
@@ -1740,7 +1747,6 @@ export class RequestFormComponent implements OnInit {
         break;
         case APPLY_TYPE.IMPORTED_EQUIPMENT:
           const isImportedEquipmentValid = this.importedEquipmentInfo.validate();
-          console.log('isImportedEquipmentValid',isImportedEquipmentValid)
           hasError = this.basicInfo.invalid || !isImportedEquipmentValid;
           break;
       default:
@@ -2455,7 +2461,7 @@ export class RequestFormComponent implements OnInit {
         ? ccPerson.split(",").map((email) => ({ email }))
         : [];
 
-      this.isApplicant = applicant === localStorage.getItem("ecom_ng_philips_code1");
+      this.isApplicant = compareIgnoreSensitiveCase(applicant , localStorage.getItem("ecom_ng_philips_code1"));
 
       const isDraft =
         processStatus === PROCESS_STATUS.DRAFT && this.isApplicant;

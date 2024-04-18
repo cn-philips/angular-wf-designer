@@ -88,6 +88,14 @@ export class ImportedInfoComponent implements OnInit {
   }
 
   init() {
+    this.baseInfo.valueChanges.subscribe((val) => {
+      this.formValues.patchValue({
+        cycleGroup: val.cycleGroup,
+        bigArea: val.bigArea,
+      });
+      // val.cycleGroup
+      // val.bigArea
+    })
     this.products.valueChanges.subscribe((val)=>this.onProductChange(val))
     this.formValues.get('expectedOitDate').valueChanges.subscribe((val)=>this.onExpectedOitDateChange(val))
     if (this.products.length === 0) {
