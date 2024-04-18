@@ -18,6 +18,7 @@ import { BreadcrumbService } from "@app/modern-themes/services/breadcrumb.servic
 import { ProcessTaskStatusPipe } from "@app/shared/pipes/process-task-status.pipe"
 import { RouterExtendService } from "@app/modern-themes/services/router-extend.service";
 import { Subject } from "rxjs";
+import { compareIgnoreSensitiveCase } from "@app/utils/StringUtils";
 // const financialCompleted=(control:FormGroup):ValidationErrors|null=> {//金融方案价格是否等于总价
 //     console.log(control.getRawValue())
 //     const orderInfo=control.getRawValue()
@@ -345,8 +346,8 @@ export class PreOrderoaComponent implements OnInit {
     let orderInfo = [];
 
     if (orderInfos && orderInfos.length > 1) {
-      const firstArr = orderInfos.filter(vals => vals.orderOa == this.user)
-      const orderDiff = orderInfos.filter(vals => vals.orderOa != this.user);
+      const firstArr = orderInfos.filter(vals => compareIgnoreSensitiveCase(vals.orderOa,this.user))
+      const orderDiff = orderInfos.filter(vals => !compareIgnoreSensitiveCase(vals.orderOa,this.user));
 
       if (firstArr.length > 0) {
         firstArr.forEach(val => {
@@ -961,8 +962,8 @@ export class PreOrderoaComponent implements OnInit {
   }
   addProduct(orderList) {
     this.clearFormArray(this.orderInfo)
-    const orderOaDiff = orderList.every((item) => item.orderOa == this.user) //所有层级的oa与当前登录人是否相同
-    const orderOaAgentDiff = orderList.every((item) => item.orderOaAgent == this.user) //所有层级的代理oa与当前登录人是否相同
+    const orderOaDiff = orderList.every((item) => compareIgnoreSensitiveCase(item.orderOa,this.user) ) //所有层级的oa与当前登录人是否相同
+    const orderOaAgentDiff = orderList.every((item) => compareIgnoreSensitiveCase(item.orderOaAgent , this.user)) //所有层级的代理oa与当前登录人是否相同
     const currencyList = orderList.map(item => item.currencySystem);
     const orderModalityList=orderList.map(item=>item.orderModality);
     orderList.map((vals, index) => {
@@ -974,7 +975,7 @@ export class PreOrderoaComponent implements OnInit {
       vals.marketBundleInfo.map((a, index) => {
         marketBundleInfo.push(this.createProdut(a, index, currencySystem));
       });
-      if (vals.orderOa == this.user && this.flag == '0') {
+      if (compareIgnoreSensitiveCase(vals.orderOa, this.user) && this.flag == '0') {
         if (orderModality == 'PD&IGT' || orderModality == 'US') {
           orderBaseinfo.patchValue({
             isRequired: true,

@@ -1,6 +1,11 @@
 {
   "/act/*": {
     "target": "http://localhost:9091/"
+  },
+
+  "/saml/*": {
+    "target": "http://localhost:9091"
   }
+
 }
 
