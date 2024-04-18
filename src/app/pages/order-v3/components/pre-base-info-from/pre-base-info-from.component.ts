@@ -23,6 +23,7 @@ import { NzMessageService } from "ng-zorro-antd";
 import { isadopt, standardTime, haveRolesArr,disreduce} from "@core/util/tools";
 import { environment } from '@env';
 import { Subject } from "rxjs";
+import { compareIgnoreSensitiveCase } from "@app/utils/StringUtils";
 
 @Component({
   selector: "pre-base-info-from",
@@ -358,7 +359,7 @@ export class PreBaseInfoFromComponent implements OnInit {
         const orderBaseinfo = this.orderInfo.at(index).get("orderBaseinfo") as FormGroup;
         const { orderModality } = orderBaseinfo.getRawValue();
         const { orderSales } = orderSalesinfo.getRawValue();
-        if (dealFormSalesModality == orderModality && user == orderSales && centralizedPurchasing == '0') {
+        if (dealFormSalesModality == orderModality && compareIgnoreSensitiveCase(user , orderSales) && centralizedPurchasing == '0') {
           orderSalesinfo.patchValue({
             orderSalesProvince: dealFormSalesProvince,
             orderSalesCity: null,

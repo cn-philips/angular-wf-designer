@@ -11,6 +11,7 @@ import { HttpService } from '@core/services';
 import { RouterExtendService } from '@app/modern-themes/services/router-extend.service';
 import { isadopt, standardTime } from "@core/util/tools"
 import { Subject } from 'rxjs';
+import { compareIgnoreSensitiveCase } from '@app/utils/StringUtils';
 @Component({
   selector: 'app-contract-sign',
   templateUrl: './contract-sign.component.html',
@@ -614,7 +615,7 @@ export class ContractSignComponent implements OnInit {
           }
           else if (this.zslSignSupplement == '3') {
             const zslAdminEmail = localStorage.getItem("ecom_ng_philips_code1");
-            if (zslAdminEmail == contractSignInfo.zslAdminEmail) {
+            if (compareIgnoreSensitiveCase(zslAdminEmail, contractSignInfo.zslAdminEmail)) {
               this.approvalSigatureBtn = true;
               this.remarkFromsignatureData.get("comments").enable();
               this.signFileFormData.get('zslSignedFile').enable();

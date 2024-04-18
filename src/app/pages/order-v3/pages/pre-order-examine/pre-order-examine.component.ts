@@ -17,6 +17,7 @@ import { BreadcrumbService } from "@app/modern-themes/services/breadcrumb.servic
 import { ProcessTaskStatusPipe } from "@app/shared/pipes/process-task-status.pipe"
 import { RouterExtendService } from "@app/modern-themes/services/router-extend.service";
 import { Subject } from "rxjs";
+import { compareIgnoreSensitiveCase } from "@app/utils/StringUtils";
 @Component({
   selector: "pre-order-examine",
   templateUrl: "./pre-order-examine.component.html",
@@ -332,8 +333,8 @@ export class PreorderexamineComponent implements OnInit {
     let orderInfos = data.preparationInfo.orderInfo;
     let orderInfo = [];
     if (orderInfos && orderInfos.length > 1) {
-      const firstArr = orderInfos.filter(vals => vals.orderSales == this.user)
-      const orderDiff = orderInfos.filter(vals => vals.orderSales != this.user);
+      const firstArr = orderInfos.filter(vals => compareIgnoreSensitiveCase(vals.orderSales, this.user))
+      const orderDiff = orderInfos.filter(vals => !compareIgnoreSensitiveCase(vals.orderSales, this.user));
 
       if (firstArr.length > 0) {
         orderInfo = [...firstArr, ...orderDiff]
@@ -348,7 +349,7 @@ export class PreorderexamineComponent implements OnInit {
     if (orderInfos && orderInfos.length > 1 && this.flag == '0') {
 
       orderInfo.forEach(val => {
-        if (this.user == val.orderSales) {
+        if (compareIgnoreSensitiveCase(this.user ,val.orderSales)) {
           val.isFold = false
         }
         else {
@@ -948,7 +949,7 @@ export class PreorderexamineComponent implements OnInit {
       const orderBaseinfo = this.orderInfo.at(index).get('orderBaseinfo') as FormGroup;
       const { orderModality } = orderBaseinfo.getRawValue();
 
-      if (orderSales == this.user && this.flag == '0') {
+      if (compareIgnoreSensitiveCase(orderSales ,this.user )&& this.flag == '0') {
 
         const { businessModel, oitMode } = this.baseInfoFromData.getRawValue();
         const { hospitalType } = this.endUserFromData.getRawValue();
@@ -979,7 +980,7 @@ export class PreorderexamineComponent implements OnInit {
       }
 
       marketBundleInfo.controls.forEach((itl, i) => {
-        if (orderSales == this.user && this.flag == '0') {
+        if (compareIgnoreSensitiveCase(orderSales , this.user) && this.flag == '0') {
           marketBundleInfo.at(i).enable();
         }
         else {

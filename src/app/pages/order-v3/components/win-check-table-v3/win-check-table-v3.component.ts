@@ -6,6 +6,7 @@ import {
   clearSpaces,
   NumberThousandth
 } from '@core/util/tools';
+import { compareIgnoreSensitiveCase } from '@app/utils/StringUtils';
 
 @Component({
   selector: 'preOrder-WinCheckTable',
@@ -124,7 +125,7 @@ export class WinCheckTableComponent implements OnInit {
       oppResult = (opportunityId == opportunityIdNow)||(opportunityIdOrder==opportunityIdNow) ? true : false;
       market = makertBundleName == makertBundleName ? true : false;
       hospitat = (orderByCustomerNameid == search.accountId) || (hospitalName.replace(/\s+/g, "") == orderByCustomerName.replace(/\s+/g, "")) ? true : false;
-      person = bidApplicant == appPerson ? true : false;
+      person = compareIgnoreSensitiveCase(bidApplicant , appPerson)? true : false;
       tenderingCompanyFlag = tenderingCompany == biddingName ? true : false;
       tenderNoFlag = tenderNo == biddingNo ? true : false;
       distributorFlag = distributor == agreementAgenName ? true : false;
