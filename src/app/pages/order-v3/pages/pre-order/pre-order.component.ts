@@ -1145,45 +1145,77 @@ export class PreOrderComponent implements OnInit {
         }
 
       }
-
-      if (this.status == 'ecos_oit_deal_resubmit') { //重新提交
-        param.status = parm;
-        // param.id=id;
-        this.serveice.orderApproval(param).then(res => {
-          if (res.code == '0000') {
+      // FETR1572757-OIT不需要校验Contract-signatory角色是否缺失
+      console.log(`DealForm Sales:${baseInfoFrom.dealFormSales}`)
+      this.serveice.checkContractSignatory({
+        sales:baseInfoFrom.dealFormSales,
+        salesCycleGroup:cycleGroup,
+        salesModality:modality,
+        salesTeam:team,
+        salesBigArea:bigArea,
+        salesSmallArea:smallArea
+      }).subscribe(res=>{
+        if (res.code == '0000') {
+          if(res.data){
+            this.doSubmit(param,parm)
+          }else{
             this.pageLoading = false;
-            this.message.create('success', res.msg);
-            // this.router.navigate(['/ecos']);
-            this.routerExtendService.back();
+            this.modalService.error({
+              nzTitle: '提示',
+              nzContent: '此流程中的Contract Signatory角色缺失人员信息，请及时联系管理员进行补充，以免影响合同签署',
+              nzOnOk: ()=>{
+                this.pageLoading = true;
+                this.doSubmit(param,parm)
+                return true
+              },
+              nzOkText:"继续提交",
+              nzCancelText:"暂不提交"
+            })
           }
-          else {
-            this.message.error(res.msg);
-            this.pageLoading = false;
-          }
-        }).catch(error => {
-          this.message.error("请求失败");
+        } else {
+          this.message.error(res.msg);
           this.pageLoading = false;
-        })
-      }
-      else {
-        this.serveice.orderSubmit(param).then(res => {
-          if (res.code == '0000') {
-            this.pageLoading = false;
-            this.message.create('success', res.msg);
-            // this.router.navigate(['/ecos']);
-            this.routerExtendService.back();
-          }
-          else {
-            this.message.error(res.msg);
-            this.pageLoading = false;
-          }
-        }).catch(error => {
-          this.message.error("请求失败");
-          this.pageLoading = false;
-        })
-      }
+        }
+      })
     }
-
+  }
+  doSubmit(param,parm){
+    if (this.status == 'ecos_oit_deal_resubmit') { //重新提交
+      param.status = parm;
+      // param.id=id;
+      this.serveice.orderApproval(param).then(res => {
+        if (res.code == '0000') {
+          this.pageLoading = false;
+          this.message.create('success', res.msg);
+          // this.router.navigate(['/ecos']);
+          this.routerExtendService.back();
+        }
+        else {
+          this.message.error(res.msg);
+          this.pageLoading = false;
+        }
+      }).catch(error => {
+        this.message.error("请求失败");
+        this.pageLoading = false;
+      })
+    }
+    else {
+      this.serveice.orderSubmit(param).then(res => {
+        if (res.code == '0000') {
+          this.pageLoading = false;
+          this.message.create('success', res.msg);
+          // this.router.navigate(['/ecos']);
+          this.routerExtendService.back();
+        }
+        else {
+          this.message.error(res.msg);
+          this.pageLoading = false;
+        }
+      }).catch(error => {
+        this.message.error("请求失败");
+        this.pageLoading = false;
+      })
+    }
   }
   handleCancel() {
     //this.location.back();

@@ -94,7 +94,7 @@ export class OrderV3Service {
   async cpDealFormInfo(val) {
     //deal From查询
     const url = `/act/ecos/oit/cpDealFormInfo/${val}`;
-    const res = await this.http.get(url).toPromise();  
+    const res = await this.http.get(url).toPromise();
     return res;
   }
   ddpStatusDmsDealer() {
@@ -294,7 +294,7 @@ export class OrderV3Service {
     return this.http.post(url,param).toPromise();
   }
   findEcosiepool(param)
-  { 
+  {
     //外贸易公司查询
     const url=`/act/ecosiepool/findByPage`;
     return this.http.post(url,param).toPromise();
@@ -330,11 +330,16 @@ export class OrderV3Service {
     const url=`/act/ecos/oit/biddingIsSpecial?biddingId=${biddingId}`;
     return this.http.get(url);
   }
-  
+
   getOrderOwner(orderId){
     //查询集采项目时的Order Owner
     const url = `/act/ecos/oit/getOrderOwner?OrderId=${orderId}`;
     return this.http.get(url).toPromise();
+  }
+
+  checkContractSignatory(params){
+    const url=`/act/ecos/signature/checkContractSignatory`;
+    return this.http.post(url,params)
   }
 
 }
