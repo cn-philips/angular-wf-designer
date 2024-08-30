@@ -1,27 +1,23 @@
 import {
-  Component,
-  Input,
-  ChangeDetectionStrategy,
   AfterViewInit,
-  OnInit,
+  ChangeDetectionStrategy,
+  Component,
   HostBinding,
+  Input,
   OnDestroy,
+  OnInit,
 } from "@angular/core";
 import {
-  Router,
   ActivatedRoute,
-  UrlTree,
   NavigationEnd,
+  Router
 } from "@angular/router";
-import { NzMessageService } from "ng-zorro-antd";
+import { PermissionService } from "@app/modern-themes/services/permission.service";
+import { TaskCountService } from "@app/modern-themes/services/task-count.service";
+import { GlobalService, HttpService } from "@core/services";
+import { TranslateService } from "@ngx-translate/core";
 import { AppService } from "app/app.service";
 import { LayoutService } from "../layout.service";
-import { GlobalService, HttpService } from "@core/services";
-import { Subscription } from "rxjs";
-import { SpecialApprovalService } from "@pages/special-approval/special-approval.service";
-import { TaskCountService } from "@app/modern-themes/services/task-count.service";
-import { TranslateService } from "@ngx-translate/core";
-import { PermissionService } from "@app/modern-themes/services/permission.service";
 @Component({
   selector: "app-layout-sidenav",
   templateUrl: "./layout-sidenav.component.html",

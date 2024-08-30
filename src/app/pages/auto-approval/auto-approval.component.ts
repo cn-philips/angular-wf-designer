@@ -3,6 +3,7 @@ import { FormBuilder } from "@angular/forms";
 import { NzMessageService } from "ng-zorro-antd";
 import { Router, ActivatedRoute } from "@angular/router";
 import { HttpService } from "../../core/services";
+import { isTrue } from "@app/utils/StringUtils";
 
 @Component({
   selector: "app-auto-approval",
@@ -55,8 +56,11 @@ export class AutoApprovalComponent implements OnInit {
       this.activatedRouter.queryParams["_value"].approvalResult;
     this.param.phaseThree =
       this.activatedRouter.snapshot.queryParams.phaseThree;
+    this.param.bestSign = this.activatedRouter.snapshot.queryParams.bestSign;
+    this.param.flowId = this.activatedRouter.snapshot.queryParams.flowId;
+    this.param.roleName = this.activatedRouter.snapshot.queryParams.roleName;
     if (this.param.approvalResult == "REJECTED") {
-      const { processInstanceTaskId, approvalResult, phaseTwo, phaseThree } =
+      const { processInstanceTaskId, approvalResult, phaseTwo, phaseThree,bestSign,roleName ,flowId} =
         this.param;
       this.router.navigate(["/mailApproval"], {
         queryParams: {
@@ -64,14 +68,19 @@ export class AutoApprovalComponent implements OnInit {
           approvalResult,
           phaseTwo,
           phaseThree,
+          bestSign,
+          roleName,
+          flowId
         },
       });
     } else {
       let url = "";
-      if (this.param.phaseThree === "true") {
+      if (isTrue(this.param.phaseThree)) {
         url = "/act/ecos/processflow/rapidApproval";
-      } else if (this.param.phaseTwo === "true") {
+      } else if (isTrue(this.param.phaseTwo)) {
         url = "/act/specialapprove/workflow/rapidApproval";
+      } else if(isTrue(this.param.bestSign)){
+        url = `act/contractSign/${this.param.flowId}/${this.param.roleName}/sign`;
       } else {
         url = `/act/process/rapidApproval`;
       }
@@ -96,4 +105,5 @@ export class AutoApprovalComponent implements OnInit {
       );
     }
   }
+
 }

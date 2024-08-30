@@ -16,5 +16,11 @@
         <special-approval-waiting-approve #spTable></special-approval-waiting-approve>
       </div>
     </app-tab>
+
+    <app-tab title="电子签章" [count]="signTable.total">
+      <div style="width: 100%; background-color: #ffffff; padding: 15px 0 15px 0">
+        <contract-electronic-signature #signTable from="my-todo"></contract-electronic-signature>
+      </div>
+    </app-tab>
   </app-tabs>
 </nz-card>

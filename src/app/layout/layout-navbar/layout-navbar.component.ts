@@ -164,7 +164,7 @@ export class LayoutNavbarComponent {
 
     this.ngModalService.confirm({
       nzTitle: '提示',
-      nzContent: 'IT support系统已升级为SNOW，提交工单时请务必在"Please select a Service"输入"Local Application Greater China", 在"Configuration Item"字段选择" e-Commercial System (HC) v1.0 (COS) ",以确保支持人员能及时收到工单。',
+      nzContent: 'IT support系统已升级为SNOW，提交工单时请务必在"Please select a Service"输入"Local Application Greater China", 在"Configuration Item"字段选择"HS Commercial Operation System (COS)",以确保支持人员能及时收到工单。',
       nzOnOk: () => {
         let url = null
         if(this.isProduction){

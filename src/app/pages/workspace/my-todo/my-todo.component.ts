@@ -1,8 +1,8 @@
-import { Component, OnInit, ChangeDetectorRef, Input, ViewChild } from '@angular/core';
-import { FileService, HttpService, ServesiceService } from '@core/services';
-import { NzMessageService } from 'ng-zorro-antd';
-import { WaitingApproveComponent } from '../../special-approval/special-approval.module';
-
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from "@angular/core";
+import { FileService, HttpService, ServesiceService } from "@core/services";
+import { NzMessageService } from "ng-zorro-antd";
+import { WaitingApproveComponent } from "../../special-approval/special-approval.module";
+import { ContractElectronicSignatureComponent } from "../index";
 @Component({
   selector: "cos-my-todo",
   templateUrl: "./my-todo.component.html",
@@ -12,7 +12,7 @@ export class MyTodoComponent implements OnInit {
   title: string = "我的待办";
   @ViewChild("table") table;
   @ViewChild("spTable") spTable: WaitingApproveComponent;
-
+  @ViewChild("signTable") signTable: ContractElectronicSignatureComponent;
   public formValues: {};
 
   public pageParams = {
@@ -124,20 +124,23 @@ export class MyTodoComponent implements OnInit {
   exportData() {
     this.formValues = {
       ...this.formValues,
-      taskAssignee: localStorage.getItem('ecom_ng_philips_code1')
-    }
+      taskAssignee: localStorage.getItem("ecom_ng_philips_code1"),
+    };
     // 我的任务——我的待办
     const params = {
       ...this.formValues,
       pageNo: 1,
-    }
+    };
     this.exportLoading = true;
-    this.http.postDownload(`/act/ecos/report/export/todo`, params).subscribe(rest => {
-      this.fileService.downloadResponse('Tasks', rest);
-      this.exportLoading = false;
-    }, error => {
-      this.message.create('error', '请求错误');
-      this.exportLoading = false;
-    });
+    this.http.postDownload(`/act/ecos/report/export/todo`, params).subscribe(
+      (rest) => {
+        this.fileService.downloadResponse("Tasks", rest);
+        this.exportLoading = false;
+      },
+      (error) => {
+        this.message.create("error", "请求错误");
+        this.exportLoading = false;
+      }
+    );
   }
 }

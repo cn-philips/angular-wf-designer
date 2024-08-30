@@ -1,0 +1,8 @@
+<div class="suggest-wrap">
+  <input nz-input [disabled]="disabled" [(ngModel)]="ngModel" (ngModelChange)="onChange($event)" (focus)="onFocus()"
+    (blur)="onBlur()" />
+  <div class="suggest-list" *ngIf="showSuggest">
+    <div class="suggest-item" *ngFor="let item of suggestionList; index as index"
+      (click)="chooseAccount(item.dealerBestSignAccount)">{{item.dealerBestSignAccount}}</div>
+  </div>
+</div>

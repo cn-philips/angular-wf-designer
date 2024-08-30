@@ -477,6 +477,7 @@
         "port-ch": "Destination Port Chinese Name",
         "port-en": "Destination Port English Name",
         "zslNot-signedFile": "contract documents to be signed",
+        "zslNot-eSignedFile": "contract documents to be eSigned",
         "zsl-SignedFile": "ZSL has added watermark signature to the contract document",
         "transport": "Transport Mode",
         "price-terms": "Price Terms",
@@ -495,8 +496,19 @@
         "zsl-file": "Contract documents signed by ZSL",
         "confirmed-date": "Contract Confirmed Date",
         "contract-file": "Contract Document",
+        "esigned-contract-file": "Contract Esgined Document",
         "uploaded": "The Philips Contract has been Uploaded",
         "support-file": "Supplementary Document",
+        "title3": "Electronic Contract Signature",
+        "flowName": "Electronic Signature Process",
+        "dealerName": "Dealer Name",
+        "dealerAccount": "Dealer Account",
+        "dealerRepresentativeName": "Dealer Contractor Name",
+        "dealerRepresentativeBestSignAccount": "Dealer Contractor Account",
+        "foreignTradeCorpName":"Foreign Trade Corp Name",
+        "foreignTradeCorpAccount":"Foreign Trade Corp Account",
+        "foreignTradeCorpRepresentativeName": "Foreign Trade Corp Contractor Name",
+        "foreignTradeCorpRepresentativeBestSignAccount": "Foreign Trade Corp Contractor Account",
         "remark": "Remarks"
       },
       "oa-add-info": {
@@ -702,7 +714,8 @@
           "dealerEmail": "Dealer Email",
           "dealerContact": "Dealer Contact",
           "purchaseOrderSignatory": "Purchase Order Signatory",
-          "purchaseOrderSignatoryPosition": "Purchase Order Signatory Position"
+          "purchaseOrderSignatoryPosition": "Purchase Order Signatory Position",
+          "dealerBestSignSignerAccount": "Purchase Order Signatory BestSign Account"
         },
         "vatInfo": {
           "title": "VAT Invoice Billing Information",
@@ -743,7 +756,8 @@
           "foreignTradeCorpContact": "Foreign Trade Corp Contact",
           "foreignTradeCorpEmail": "Foreign Trade Corp Email",
           "importAgreementSignName": "Import Agreement Sign Name",
-          "importAgreementSignPosition": "Import Agreement Sign Position"
+          "importAgreementSignPosition": "Import Agreement Sign Position",
+          "foreignBestSignSignerAccount": "Import Agreement Signer BestSign Account"
         },
         "endUser": {
           "title": "End User",
@@ -1458,7 +1472,13 @@
         "all": "All",
         "valid": "Valid",
         "invalid": "Invalid",
-        "need-attention": "Need Attention"
+        "need-attention": "Need Attention",
+        "tabs": {
+          "todo": "Todo",
+          "done": "Done",
+          "waitingForEsign": "尚未发起电子签章",
+          "esigned": "已发起电子签章"
+        }
       }
     },
     "transfer": {
@@ -1487,6 +1507,10 @@
       "market-bundle-name": "Market Bundle",
       "bidder-name": "Bidder",
       "third-check": "Buyer Purchase 3rd Party Item Check",
+      "file-name": "Origin File Nmae",
+      "support-file-name": "Support File Name",
+      "file-type": "File Type",
+      "file-status": "Status",
       "action": "Actions"
     },
     "list-total": " {{ total }} Records In Total"

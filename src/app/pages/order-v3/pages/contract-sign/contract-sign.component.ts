@@ -187,9 +187,10 @@ export class ContractSignComponent implements OnInit {
     dealerEmail: [{ value: null, disabled: !this.editBase }, [Validators.required]],//经销商邮箱
     dealerAddress: [{ value: null, disabled: !this.editBase }, [Validators.required]],//经销商地址
     dealerTaxNum: [{ value: null, disabled: !this.editBase }, [Validators.required]],//经销商纳税号
-    purchaseOrderSignatory: [{ value: null, disabled: !this.editBase }, [Validators.required]], //采购订单签署人
-    purchaseOrderSignatoryPosition: [{ value: null, disabled: !this.editBase }, [Validators.required]],//采购订单签署人职务
+    purchaseOrderSignatory: [{ value: null, disabled: !this.editBase }], //采购订单签署人
+    purchaseOrderSignatoryPosition: [{ value: null, disabled: !this.editBase }],//采购订单签署人职务
     subTierInfo: this.fb.array([]), // 次级经销商信息
+    dealerBestSignSignerAccount: [{ value: null, disabled: !this.editBase }, [Validators.required]], // 经销商上上签账号
   }
 
   contractBuyerFrom = {
@@ -218,6 +219,7 @@ export class ContractSignComponent implements OnInit {
     foreignTradeCorpEmail: [{ value: null, disabled: !this.editBase }, [Validators.required]],//外贸公司邮箱
     importAgreementSignName: [{ value: null, disabled: !this.editBase }, [Validators.required]],//进口协议签署人
     importAgreementSignPosition: [{ value: null, disabled: !this.editBase }, [Validators.required]], //进口协议签署人职务
+    foreignBestSignSignerAccount: [{ value: null, disabled: !this.editBase }, [Validators.required]], // 外贸公司签字人上上签账号
   }
   endUserFrom = {
     endUser: [{ value: null, disabled: true }, []],//最终终用户
@@ -639,6 +641,7 @@ export class ContractSignComponent implements OnInit {
               this.clearRequired('zslNotSignedFile');
             }
           }
+
         }
         else {
           const dealerform = this.dealerFromData.getRawValue()
@@ -646,6 +649,12 @@ export class ContractSignComponent implements OnInit {
           const contractBuyerFrom = this.contractBuyerFromData.getRawValue()
           const accountFrom = this.accountFromData.getRawValue()
           const contractSignForm = this.contractSignFormData.getRawValue();
+          // FETR1576537-增加CC报表内容 开放OA在“合同签署”和“待OIT完成”可以填修改“PRODUCT_MODEL”和“实际发货地址”
+          if(['ecos_oit_order_sign'].includes(this.status)){
+            // this.baseInfoFromData.get('endUserActuallyDeliveryAddress').enable();
+            this.endUserFromData.get('endUserActuallyDeliveryAddress').enable();
+            this.productModelInfoData.get("orderProductModel").enable();
+          }
         }
       })
     }
@@ -764,7 +773,8 @@ export class ContractSignComponent implements OnInit {
       profitGrossRate,
       profitGross,
       dealerProfit,
-      biddingCurrency
+      biddingCurrency,
+      endUserActuallyDeliveryAddress
     } = contractInfo;
     this.zslSignSupplement = contractSignInfo.zslSignSupplement;
     this.contractSignFormData.patchValue({
@@ -855,7 +865,8 @@ export class ContractSignComponent implements OnInit {
         profitGrossRate,
         profitGross,
         dealerProfit,
-        biddingCurrency
+        biddingCurrency,
+        endUserActuallyDeliveryAddress
       })
 
     this.dealerFromData.patchValue({
@@ -1153,6 +1164,7 @@ export class ContractSignComponent implements OnInit {
       marketBundleInfo,
       endUserFrom,
       oaAddInfo,
+      productModelInfo
     } = data;
     signFileForm.contractConfirmedDate = signFileForm.contractConfirmedDate != null && signFileForm.contractConfirmedDate != '' ? moment(signFileForm.contractConfirmedDate).format('YYYY-MM-DD hh:mm:ss') : null;
     dealerFrom.dealerDdpValidityDate = dealerFrom.dealerDdpValidityDate != null && dealerFrom.dealerDdpValidityDate != '' ? moment(dealerFrom.dealerDdpValidityDate).format('YYYY-MM-DD hh:mm:ss') : null;
@@ -1181,13 +1193,17 @@ export class ContractSignComponent implements OnInit {
       ...endUserFrom,
       ...this.priceData,
       ...foreignFrom,
-      marketBundleInfo: marketBundleInfo
+      marketBundleInfo: marketBundleInfo,
+      endUserActuallyDeliveryAddress: endUserFrom.endUserActuallyDeliveryAddress,
+      orderSalesPerformanceProvince: baseInfoFrom.orderSalesPerformanceProvince,
+      orderProductModel: productModelInfo.orderProductModel,
     }
 
     if (remarkFrom.attachmentIds && remarkFrom.attachmentIds.length > 0) {
       remarkFrom.attachmentIds = remarkFrom.attachmentIds.map(val => val.fileId)
     }
-
+    console.log('contractInfo.endUserActuallyDeliveryAddress',contractInfo.endUserActuallyDeliveryAddress)
+    console.log('contractInfo.orderSalesPerformanceProvince',contractInfo.orderSalesPerformanceProvince)
     const orderSummaryInfo = {
       ...priceApproval,
       ...oaAddInfo,
@@ -1448,6 +1464,8 @@ export class ContractSignComponent implements OnInit {
         else {
           this.message.create('success', res.msg);
         }
+      } else {
+        this.message.create('error', res.msg);
       }
     })
   }

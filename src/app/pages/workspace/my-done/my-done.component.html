@@ -13,24 +13,21 @@
           [exportLoading]="exportLoading"
         >
         </cos-my-done-search-item>
-        <cos-my-done-list
-          #table
-          [loading]="loading"
-          [tableData]="tableData"
-          [total]="total"
-          [flag]="1"
-          (pageChange)="updateDataList($event)"
-          (setLoading)="getLoading($event)"
-        >
+        <cos-my-done-list #table [loading]="loading" [tableData]="tableData" [total]="total" [flag]="1"
+          (pageChange)="updateDataList($event)" (setLoading)="getLoading($event)">
         </cos-my-done-list>
       </div>
     </app-tab>
 
     <app-tab title="Special Approval">
-      <div
-        style="width: 100%; background-color: #ffffff; padding: 15px 0 15px 0"
-      >
+      <div style="width: 100%; background-color: #ffffff; padding: 15px 0 15px 0">
         <special-approval-approved></special-approval-approved>
+      </div>
+    </app-tab>
+
+    <app-tab title="电子签章">
+      <div style="width: 100%; background-color: #ffffff; padding: 15px 0 15px 0">
+        <contract-electronic-signature from="my-done"></contract-electronic-signature>
       </div>
     </app-tab>
   </app-tabs>

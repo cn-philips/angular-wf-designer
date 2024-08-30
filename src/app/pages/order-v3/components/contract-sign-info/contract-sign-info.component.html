@@ -17,8 +17,7 @@
             </nz-form-control>
           </nz-form-item>
         </div>
-        <div nz-col nzXs="24" nzSm="24" nzMd="8"
-          *ngIf="baseInfoFromData.getRawValue().businessModel === 'DISTRIBUTOR'">
+        <div nz-col nzXs="24" nzSm="24" nzMd="8" *ngIf="baseInfoFromData.getRawValue().businessModel === 'DISTRIBUTOR'">
           <nz-form-item>
             <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true" nzRequired>
               {{"orderv3.components.contract-sign.order-number" | translate}}
@@ -48,8 +47,7 @@
         </div>
       </div>
       <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
-        <div nz-col nzXs="24" nzSm="24" nzMd="8"
-          *ngIf="baseInfoFromData.getRawValue().businessModel === 'DISTRIBUTOR'">
+        <div nz-col nzXs="24" nzSm="24" nzMd="8" *ngIf="baseInfoFromData.getRawValue().businessModel === 'DISTRIBUTOR'">
           <nz-form-item>
             <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true">
               {{"orderv3.components.contract-sign.signatory" | translate}}
@@ -59,8 +57,7 @@
             </nz-form-control>
           </nz-form-item>
         </div>
-        <div nz-col nzXs="24" nzSm="24" nzMd="8"
-          *ngIf="baseInfoFromData.getRawValue().businessModel === 'DISTRIBUTOR'">
+        <div nz-col nzXs="24" nzSm="24" nzMd="8" *ngIf="baseInfoFromData.getRawValue().businessModel === 'DISTRIBUTOR'">
           <nz-form-item>
             <nz-form-label nzXs="24" nzSm="24" nzMd="8" [nzNoColon]="true">
               {{"orderv3.components.contract-sign.sign-pos" | translate}}
@@ -177,7 +174,8 @@
           </nz-form-item>
         </div>
       </div>
-      <div nz-row nzType="flex" nzJustify="start" *ngIf="priceApprovalData.getRawValue().currencySystem === 'CNY'" nzAlign="middle">
+      <div nz-row nzType="flex" nzJustify="start" *ngIf="priceApprovalData.getRawValue().currencySystem === 'CNY'"
+        nzAlign="middle">
         <div nz-col nzXs="24" nzSm="24" nzMd="8">
           <nz-form-item>
             <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true">
@@ -209,7 +207,8 @@
           </nz-form-item>
         </div>
       </div>
-      <div nz-row nzType="flex" nzJustify="start" nzAlign="middle" *ngIf="priceApprovalData.getRawValue().currencySystem === 'CNY'">
+      <div nz-row nzType="flex" nzJustify="start" nzAlign="middle"
+        *ngIf="priceApprovalData.getRawValue().currencySystem === 'CNY'">
         <div nz-col nzXs="24" nzSm="24" nzMd="8">
           <nz-form-item>
             <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true">
@@ -357,9 +356,11 @@
                 [title]="formValue.getRawValue().processStatus === 'ecos_oit_order_sign'?'上传合同文件':'更新合同文件'"
                 formControlName="contractFile">
               </shared-upload-file>
-              <nz-form-explain *ngIf="signFileForm.get('contractFile')?.dirty &&signFileForm.get('contractFile')?.errors">
+              <nz-form-explain
+                *ngIf="signFileForm.get('contractFile')?.dirty &&signFileForm.get('contractFile')?.errors">
                 <ng-container *ngIf="signFileForm.get('contractFile')?.hasError('required') ">此选项必填字段</ng-container>
-                <ng-container *ngIf="signFileForm.get('contractFile')?.hasError('contractFileform')">文件未上传完成!</ng-container>
+                <ng-container
+                  *ngIf="signFileForm.get('contractFile')?.hasError('contractFileform')">文件未上传完成!</ng-container>
               </nz-form-explain>
             </nz-form-control>
           </nz-form-item>
@@ -397,7 +398,8 @@
         </div>
         <div nz-col nzXs="24" nzSm="24" nzMd="8">
           <nz-form-item>
-            <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true"> {{"orderv3.components.contract-sign.remark" | translate}}
+            <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true"> {{"orderv3.components.contract-sign.remark"
+              | translate}}
             </nz-form-label>
             <nz-form-control nzXs="24" nzSm="24" nzMd="18">
               <textarea nz-input oninput="if(value.length>255)value=value.slice(0,255)" placeholder=""
@@ -413,12 +415,8 @@
               {{"orderv3.components.contract-sign.zslNot-signedFile" | translate}}
             </nz-form-label>
             <nz-form-control nzXs="24" nzSm="24" nzMd="18">
-              <signature-upload
-                formControlName="zslNotSignedFile"
-                [type]="null"
-                [title]="'上传'"
-                (fileDeleted)="handleSourceFileDeleted($event)"
-              >
+              <signature-upload formControlName="zslNotSignedFile" [type]="null" [title]="'上传'"
+                (fileDeleted)="handleSourceFileDeleted($event)">
               </signature-upload>
               <nz-form-explain style="color:red"
                 *ngIf="signFileForm.get('zslNotSignedFile')?.dirty && signFileForm.get('zslNotSignedFile')?.errors">
@@ -433,12 +431,8 @@
               {{"orderv3.components.contract-sign.zsl-SignedFile" | translate}}
             </nz-form-label>
             <nz-form-control nzXs="24" nzSm="24" nzMd="18">
-              <esign-button
-                formControlName="zslSignedFile"
-                [signFileForm]="signFileForm"
-                (fileSigned)="handleFileSigned($event)"
-                (fileDeleted)="handleFileDeleted($event)"
-              ></esign-button>
+              <esign-button formControlName="zslSignedFile" [signFileForm]="signFileForm"
+                (fileSigned)="handleFileSigned($event)" (fileDeleted)="handleFileDeleted($event)"></esign-button>
             </nz-form-control>
           </nz-form-item>
         </div>
@@ -452,9 +446,7 @@
             <nz-form-control nzXs="24" nzSm="24" nzMd="21">
               <ng-container>
                 <div *ngFor="let item of baseInfoFromData.getRawValue().templateList">
-                  <button class="down"
-                    nz-button nzType="link"
-                    (click)="contractTemplate(item)">
+                  <button class="down" nz-button nzType="link" (click)="contractTemplate(item)">
                     {{item.templateName}}
                   </button>
                 </div>

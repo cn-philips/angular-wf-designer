@@ -27,6 +27,9 @@
       "@app/*": ["app/*"]
     }
   },
+  "angularCompilerOptions": {
+    "strictTemplates": true
+  },
   "include": [
     "./src",
     "./node_modules/ng-autosize",

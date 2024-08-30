@@ -1,0 +1,23 @@
+@import "styles/media_query.scss";
+
+.suggest-wrap{
+  position: relative;
+
+  .suggest-list{
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-top: none;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 10;
+
+    .suggest-item{
+      padding: 5px 15px;
+      cursor: pointer;
+    }
+  }
+}

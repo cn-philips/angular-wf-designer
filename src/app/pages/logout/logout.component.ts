@@ -1,6 +1,6 @@
 import { Component, OnInit } from "@angular/core";
-import { CookieService } from "ngx-cookie-service";
 import { Router } from "@angular/router";
+import { CookieService } from "ngx-cookie-service";
 
 @Component({
   selector: "page-logout",
@@ -29,9 +29,9 @@ export class LogoutComponent implements OnInit {
     localStorage.removeItem("roles");
     localStorage.removeItem("permissions");
     localStorage.removeItem("ng_philips_username");
-    localStorage.removeItem("menuList")
-    localStorage.removeItem("permissions")
-    localStorage.removeItem("permissionsV3")
+    localStorage.removeItem("menuList");
+    localStorage.removeItem("permissions");
+    localStorage.removeItem("permissionsV3");
     localStorage.removeItem("routerInfo");
     localStorage.removeItem("ng_philips_email");
     localStorage.removeItem("roleAgents");
@@ -40,6 +40,7 @@ export class LogoutComponent implements OnInit {
     sessionStorage.removeItem("ng_philips_groups");
   }
   backToHome() {
-    this.router.navigate(["/"]);
+    this.router.navigateByUrl("/");
+    // this.router.navigate(["/"]);
   }
 }

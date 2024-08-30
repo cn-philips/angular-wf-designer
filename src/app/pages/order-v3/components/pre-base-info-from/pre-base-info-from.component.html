@@ -6,6 +6,7 @@
     </button>
   </div>
 </div>
+<!-- 基本信息 -->
 <app-form-section [form]="baseInfoFrom" title="{{
       'orderv3.components.pre-base-info-form.baseInfo.title' | translate
     }}">
@@ -840,12 +841,15 @@
   </form>
 </app-form-section>
 
+<!-- 产品信息 -->
 <app-form-section *ngIf="isContract" class="mtb1rem" title="{{
       'orderv3.components.pre-base-info-form.titleProduct' | translate
     }}">
   <pre-product-table [productGroup]="formValue" [baseInform]="formValue" [isContract]="isContract" [index]="i"
     [editPreTable]="editPreTable"></pre-product-table>
 </app-form-section>
+
+<!-- 经销商信息 -->
 <app-form-section *ngIf="baseInfoFrom.getRawValue().businessModel == 'DISTRIBUTOR'" class="mtb1rem dealer-info"
   [form]="dealerFrom" title="{{
       'orderv3.components.pre-base-info-form.dealerInfo.title' | translate
@@ -898,6 +902,7 @@
               | translate
               }}
             </nz-form-explain>
+            <nz-alert *ngIf="dealerCheckStatus" nzType="warning" [nzMessage]="dealerCheckStatus" nzShowIcon></nz-alert>
           </nz-form-control>
         </nz-form-item>
       </div>
@@ -1120,6 +1125,29 @@
           </nz-form-control>
         </nz-form-item>
       </div>
+      <!-- 电子签数据 -->
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzXl="8" nzXXl="6" nzRequired [nzNoColon]="true">
+            {{
+            "orderv3.components.pre-base-info-form.dealerInfo.dealerBestSignSignerAccount"
+            | translate
+            }}
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <input nz-input formControlName="dealerBestSignSignerAccount" maxlength="255" />
+            <nz-form-explain *ngIf="
+                  dealerFrom.get('dealerBestSignSignerAccount')?.dirty &&
+                  dealerFrom.get('dealerBestSignSignerAccount')?.errors
+                ">
+              {{
+              "orderv3.components.pre-base-info-form.commons.errorInfo"
+              | translate
+              }}
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
     </div>
     <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
       <div nz-col nzSpan="24">
@@ -1130,6 +1158,7 @@
   </form>
 </app-form-section>
 
+<!-- 合同买方 -->
 <app-form-section *ngIf="baseInfoFrom.getRawValue().businessModel == 'DIRECT'" dynamic="true" class="mtb1rem"
   [form]="contractBuyerFrom" title="{{
       'orderv3.components.pre-base-info-form.contractBuyer.title' | translate
@@ -1343,6 +1372,8 @@
     </div>
   </form>
 </app-form-section>
+
+<!-- VAT发票开票信息 -->
 <app-form-section *ngIf="priceApproval.getRawValue().currencySystem == 'CNY'" class="mtb1rem" [form]="accountFrom"
   title="{{
       'orderv3.components.pre-base-info-form.vatInfo.title' | translate
@@ -1563,6 +1594,8 @@
     </div>
   </form>
 </app-form-section>
+
+<!-- 外贸公司 -->
 <app-form-section *ngIf="foreignformShow()" class="mtb1rem" [form]="foreignFrom" title="{{
       'orderv3.components.pre-base-info-form.foreignCompany.title' | translate
     }}">
@@ -1631,6 +1664,8 @@
               | translate
               }}
             </nz-form-explain>
+            <nz-alert *ngIf="foreignerCheckStatus" nzType="warning" [nzMessage]="foreignerCheckStatus"
+              nzShowIcon></nz-alert>
           </nz-form-control>
         </nz-form-item>
       </div>
@@ -1884,8 +1919,35 @@
         </nz-form-item>
       </div>
     </div>
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <!-- 电子签数据 -->
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzXl="8" nzXXl="6" nzRequired [nzNoColon]="true">
+            {{
+            "orderv3.components.pre-base-info-form.foreignCompany.foreignBestSignSignerAccount"
+            | translate
+            }}
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <input nz-input formControlName="foreignBestSignSignerAccount" maxlength="255" />
+            <nz-form-explain *ngIf="
+                      dealerFrom.get('foreignBestSignSignerAccount')?.dirty &&
+                      dealerFrom.get('foreignBestSignSignerAccount')?.errors
+                    ">
+              {{
+              "orderv3.components.pre-base-info-form.commons.errorInfo"
+              | translate
+              }}
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
   </form>
 </app-form-section>
+
+<!-- 最终用户 -->
 <app-form-section class="mtb1rem" [form]="endUserFrom" title="{{
       'orderv3.components.pre-base-info-form.endUser.title' | translate
     }}">
@@ -2140,6 +2202,8 @@
     </div>
   </form>
 </app-form-section>
+
+<!-- 价格审批相关信息 -->
 <app-form-section class="mtb1rem" [form]="priceApproval" title="{{
       'orderv3.components.pre-base-info-form.priceApproval.title' | translate
     }}">

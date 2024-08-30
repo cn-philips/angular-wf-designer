@@ -11,6 +11,7 @@ import { NzMessageService, UploadFile } from "ng-zorro-antd";
 import { environment } from "../../../environments/environment";
 import { Router, ActivatedRoute } from "@angular/router";
 import { HttpService } from "@core/services";
+import { isTrue } from "@app/utils/StringUtils";
 @Component({
   selector: "app-mail-approval",
   templateUrl: "./mail-approval.component.html",
@@ -53,6 +54,9 @@ export class MailApprovalComponent implements OnInit {
     this.param.phaseTwo = this.activatedRouter.queryParams["_value"].phaseTwo;
     this.param.phaseThree =
       this.activatedRouter.queryParams["_value"].phaseThree;
+    this.param.bestSign = this.activatedRouter.snapshot.queryParams.bestSign;
+    this.param.flowId = this.activatedRouter.snapshot.queryParams.flowId;
+    this.param.roleName = this.activatedRouter.snapshot.queryParams.roleName;
   }
   goHome() {
     localStorage.removeItem("routerInfo");
@@ -72,10 +76,14 @@ export class MailApprovalComponent implements OnInit {
     }
     this.nzLoading = true;
     let url = "";
-    if (this.param.phaseThree === "true") {
+    if (isTrue(this.param.phaseThree)) {
       url = "/act/ecos/processflow/rapidApproval";
-    } else if (this.param.phaseTwo === "true") {
-        url = "/act/specialapprove/workflow/rapidApproval";
+    } else if (isTrue(this.param.phaseTwo)) {
+      url = "/act/specialapprove/workflow/rapidApproval";
+    }else if(isTrue(this.param.bestSign)){
+      url = `/act/contractSign/rejectNotification/${this.param.flowId}`;
+      this.param.reason = this.param.approvalComments;
+      this.param.role = this.param.roleName;
     } else {
       url = `/act/process/rapidApproval`;
     }

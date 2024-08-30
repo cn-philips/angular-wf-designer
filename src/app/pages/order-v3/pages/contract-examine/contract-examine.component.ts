@@ -157,9 +157,10 @@ export class ContractExamineComponent implements OnInit {
     dealerEmail: [{ value: null, disabled: !this.editBase }, [Validators.required]],//经销商邮箱
     dealerAddress: [{ value: null, disabled: !this.editBase }, [Validators.required]],//经销商地址
     dealerTaxNum: [{ value: null, disabled: !this.editBase }, [Validators.required]],//经销商纳税号
-    purchaseOrderSignatory: [{ value: null, disabled: !this.editBase }, [Validators.required]], //采购订单签署人
-    purchaseOrderSignatoryPosition: [{ value: null, disabled: !this.editBase }, [Validators.required]],//采购订单签署人职务
+    purchaseOrderSignatory: [{ value: null, disabled: !this.editBase }], //采购订单签署人
+    purchaseOrderSignatoryPosition: [{ value: null, disabled: !this.editBase }],//采购订单签署人职务
     subTierInfo: this.fb.array([]), // 次级经销商信息
+    dealerBestSignSignerAccount: [{ value: null, disabled: !this.editBase }, [Validators.required]], // 经销商上上签账号
   }
   accountFrom = {
     accountName: [{ value: null, disabled: !this.editBase }, [Validators.required]],//开户行名称
@@ -198,6 +199,7 @@ export class ContractExamineComponent implements OnInit {
     foreignTradeCorpEmail: [{ value: null, disabled: !this.editBase }, [Validators.required]],//外贸公司邮箱
     importAgreementSignName: [{ value: null, disabled: !this.editBase }, [Validators.required]],//进口协议签署人
     importAgreementSignPosition: [{ value: null, disabled: !this.editBase }, [Validators.required]], //进口协议签署人职务
+    foreignBestSignSignerAccount: [{ value: null, disabled: !this.editBase }, [Validators.required]], // 外贸公司签字人上上签账号
   }
   endUserFrom = {
     endUser: [{ value: null, disabled: true }, []],//最终终用户

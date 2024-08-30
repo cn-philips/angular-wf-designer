@@ -3,3 +3,6 @@ export function compareIgnoreSensitiveCase(str1:String, str2:String){
     str2 = !!str2?str2.toString().trim():"";
     return str1.toLowerCase() === str2.toLowerCase();
 }
+export function isTrue(value:any){
+    return value === true || compareIgnoreSensitiveCase(value, "true");
+}

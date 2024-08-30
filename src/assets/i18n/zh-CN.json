@@ -272,7 +272,7 @@
       },
       "cp-verify": {
         "auth-title": "授权发放校验结果",
-        "bidding-confirm-title":"中标确认校验结果",
+        "bidding-confirm-title": "中标确认校验结果",
         "type": "产品型号",
         "customer-bid": "客户名称（投标)",
         "customer-cp": "客户名称（cp）",
@@ -482,6 +482,7 @@
         "port-ch": "目的港(中文)",
         "port-en": "目的港(英文)",
         "zslNot-signedFile": "待签字的合同文件",
+        "zslNot-eSignedFile": "待签章的合同文件",
         "zsl-SignedFile": "合同签署人已添加水印签名的合同文件",
         "transport": "运输方式",
         "price-terms": "价格术语",
@@ -500,8 +501,19 @@
         "zsl-file": "已ZSL签署的合同文件",
         "confirmed-date": "合同确认日期",
         "contract-file": "合同文件",
+        "esigned-contract-file": "已签章合同文件",
         "uploaded": "正式合同已上传",
         "support-file": "补充文件",
+        "title3": "电子签章",
+        "flowName": "电子签章流程",
+        "dealerName": "经销商",
+        "dealerAccount": "经销商盖章人\"上上签\"账号",
+        "dealerRepresentativeName": "经销商签字人",
+        "dealerRepresentativeBestSignAccount": "经销商签字人\"上上签\"账号",
+        "foreignTradeCorpName": "外贸公司",
+        "foreignTradeCorpAccount": "外贸公司盖章人\"上上签\"账号",
+        "foreignTradeCorpRepresentativeName": "外贸公司签字人",
+        "foreignTradeCorpRepresentativeBestSignAccount": "外贸公司签字人\"上上签\"账号",
         "remark": "备注"
       },
       "oa-add-info": {
@@ -707,7 +719,8 @@
           "dealerEmail": "经销商邮箱",
           "dealerContact": "经销商联系人",
           "purchaseOrderSignatory": "采购订单签署人",
-          "purchaseOrderSignatoryPosition": "采购订单签署人职务"
+          "purchaseOrderSignatoryPosition": "采购订单签署人职务",
+          "dealerBestSignSignerAccount": "采购订单签字人上上签账号"
         },
         "vatInfo": {
           "title": "VAT发票开票信息",
@@ -748,7 +761,8 @@
           "foreignTradeCorpContact": "外贸公司联系人",
           "foreignTradeCorpEmail": "外贸公司邮箱",
           "importAgreementSignName": "进口协议签署人",
-          "importAgreementSignPosition": "进口协议签署人职务"
+          "importAgreementSignPosition": "进口协议签署人职务",
+          "foreignBestSignSignerAccount": "进口协议签字人上上签账号"
         },
         "endUser": {
           "title": "最终用户",
@@ -1466,7 +1480,13 @@
         "all": "全部",
         "valid": "有效",
         "invalid": "失效",
-        "need-attention": "需我关注"
+        "need-attention": "需我关注",
+        "tabs": {
+          "todo": "待办",
+          "done": "已办",
+          "waitingForEsign": "尚未发起电子签章",
+          "esigned": "已发起电子签章"
+        }
       }
     },
     "transfer": {
@@ -1495,6 +1515,10 @@
       "market-bundle-name": "产品名称",
       "bidder-name": "投标公司",
       "third-check": "第三方自采核查",
+      "file-name": "原始文件",
+      "support-file-name": "支持文件",
+      "file-type": "合同类型",
+      "file-status": "文件状态",
       "action": "操作"
     },
     "list-total": "总共 {{ total }} 条记录"

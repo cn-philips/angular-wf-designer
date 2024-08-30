@@ -133,9 +133,10 @@ export class PreorderexamineComponent implements OnInit {
     dealerEmail: [{ value: null, disabled: !this.editBase }, [Validators.required]],//经销商邮箱
     dealerAddress: [{ value: null, disabled: !this.editBase }, [Validators.required]],//经销商地址
     dealerTaxNum: [{ value: null, disabled: !this.editBase }, [Validators.required]],//经销商纳税号
-    purchaseOrderSignatory: [{ value: null, disabled: !this.editBase }, [Validators.required]], //采购订单签署人
-    purchaseOrderSignatoryPosition: [{ value: null, disabled: !this.editBase }, [Validators.required]],//采购订单签署人职务
+    purchaseOrderSignatory: [{ value: null, disabled: !this.editBase }], //采购订单签署人
+    purchaseOrderSignatoryPosition: [{ value: null, disabled: !this.editBase }],//采购订单签署人职务
     subTierInfo: this.fb.array([]), // 次级经销商信息
+    dealerBestSignSignerAccount: [{ value: null, disabled: !this.editBase }, [Validators.required]], // 经销商上上签账号
   }
   accountFrom = {
     accountName: [{ value: null, disabled: !this.editBase }, [Validators.required]],//开户行名称
@@ -174,20 +175,22 @@ export class PreorderexamineComponent implements OnInit {
     foreignTradeCorpEmail: [{ value: null, disabled: !this.editBase }, [Validators.required]],//外贸公司邮箱
     importAgreementSignName: [{ value: null, disabled: !this.editBase }, [Validators.required]],//进口协议签署人
     importAgreementSignPosition: [{ value: null, disabled: !this.editBase }, [Validators.required]], //进口协议签署人职务
+    foreignBestSignSignerAccount: [{ value: null, disabled: !this.editBase }, [Validators.required]], // 外贸公司签字人上上签账号
   }
   endUserFrom = {
     endUser: [{ value: null, disabled: true }, []],//最终终用户
     endUserId: [{ value: null, disabled: true }, []],//最终用户编号
     endUserSapCode: [{ value: null, disabled: true }, []],//最终用户SAP Code
     endUserTaxNum: [{ value: null, disabled: !this.editBase }, [Validators.required]],//最终用户税号
-    endUserActuallyDeliveryAddress: [{ value: null, disabled: !this.editBase }], //最终用户实际发货地址
     hospitalType: [{ value: null, disabled: true }],//医院性质
     segment: [{ value: null, disabled: true }],//segment
+    endUserActuallyDeliveryAddress: [{ value: null, disabled: !this.editBase }], //最终用户实际发货地址
     endUserAddress: [{ value: null, disabled: !this.editBase }],//最终用户地址
     endUserPhone: [{ value: null, disabled: !this.editBase }, [Validators.required]],//最终用户电话
     endUserEmail: [{ value: null, disabled: !this.editBase }, [Validators.required]],//最终用户邮箱
     endUserContact: [{ value: null, disabled: !this.editBase }, [Validators.required]],//最终用户联系人
     usHta: [{ value: null, disabled: true }], //是否HTA US
+    dealerBestSignSignerAccount: [{ value: null, disabled: !this.editBase }],
   }
   priceApproval = {
     currencySystem: [{ value: null, disabled: true }], //币制

@@ -263,9 +263,10 @@ export class OitcompleteComponent implements OnInit {
     dealerEmail: [{ value: null, disabled: !this.editBase }, [Validators.required]],//经销商邮箱
     dealerAddress: [{ value: null, disabled: !this.editBase }, [Validators.required]],//经销商地址
     dealerTaxNum: [{ value: null, disabled: !this.editBase }, [Validators.required]],//经销商纳税号
-    purchaseOrderSignatory: [{ value: null, disabled: !this.editBase }, [Validators.required]], //采购订单签署人
-    purchaseOrderSignatoryPosition: [{ value: null, disabled: !this.editBase }, [Validators.required]],//采购订单签署人职务
+    purchaseOrderSignatory: [{ value: null, disabled: !this.editBase }], //采购订单签署人
+    purchaseOrderSignatoryPosition: [{ value: null, disabled: !this.editBase }],//采购订单签署人职务
     subTierInfo: this.fb.array([]), // 次级经销商信息
+    dealerBestSignSignerAccount: [{ value: null, disabled: !this.editBase }, [Validators.required]], // 经销商上上签账号
   }
   accountFrom = {
     accountName: [{ value: null, disabled: !this.editBase }, [Validators.required]],//开户行名称
@@ -304,6 +305,7 @@ export class OitcompleteComponent implements OnInit {
     foreignTradeCorpEmail: [{ value: null, disabled: !this.editBase }, [Validators.required]],//外贸公司邮箱
     importAgreementSignName: [{ value: null, disabled: !this.editBase }, [Validators.required]],//进口协议签署人
     importAgreementSignPosition: [{ value: null, disabled: !this.editBase }, [Validators.required]], //进口协议签署人职务
+    foreignBestSignSignerAccount: [{ value: null, disabled: !this.editBase }, [Validators.required]], // 外贸公司签字人上上签账号
   }
   endUserFrom = {
     endUser: [{ value: null, disabled: true }, []],//最终终用户
@@ -635,6 +637,13 @@ export class OitcompleteComponent implements OnInit {
     this.priceApprovalData.get('recycle').valueChanges.subscribe(val => {
       this.priceData.recycle = val
     })
+
+       // FETR1576537-增加CC报表内容 开放OA在“合同签署”和“待OIT完成”可以填修改“PRODUCT_MODEL”和“实际发货地址”
+    if(['ecos_oit_order_done','ecos_oit_order_upload'].includes(this.status)){
+      // this.baseInfoFromData.get('endUserActuallyDeliveryAddress').enable();
+      this.endUserFromData.get('endUserActuallyDeliveryAddress').enable();
+      this.productModelInfoData.get("orderProductModel").enable();
+    }
   }
   handleCancel() {
     //this.location.back();
@@ -883,7 +892,8 @@ export class OitcompleteComponent implements OnInit {
       profitGrossRate,
       profitGross,
       dealerProfit,
-      biddingCurrency
+      biddingCurrency,
+      endUserActuallyDeliveryAddress
     } = contractInfo
     this.formValue.patchValue({
       applyId: contractInfo.applyId ? contractInfo.applyId : this.applyId,
@@ -965,7 +975,8 @@ export class OitcompleteComponent implements OnInit {
       profitGrossRate,
       profitGross,
       dealerProfit,
-      biddingCurrency
+      biddingCurrency,
+      endUserActuallyDeliveryAddress
     })
     this.productModelInfoData.patchValue({
       ...contractInfo
@@ -1416,7 +1427,7 @@ export class OitcompleteComponent implements OnInit {
 
   preSubmit(parm, isApprovalReject: boolean = false) {
     let data = this.formValue.getRawValue();
-    const { applyId, oaAddInfo, contractSignForm, oitInform, signFileForm, financialInform, deBookInform, marketBundleInfo, processInstanceTaskId, processStatus, modality, cycleGroup, bigArea, smallArea, accountFrom, baseInfoFrom, baseInfoTable, contractBuyerFrom, dealerFrom, endUserFrom, foreignFrom, orderInfo, priceApproval, remarkFrom, thirdCheckForm, soNoCheckForm } = data;
+    const { applyId, oaAddInfo, contractSignForm, oitInform, signFileForm, financialInform, deBookInform, marketBundleInfo, processInstanceTaskId, processStatus, modality, cycleGroup, bigArea, smallArea, accountFrom, baseInfoFrom, baseInfoTable, contractBuyerFrom, dealerFrom, endUserFrom, foreignFrom, orderInfo, priceApproval, remarkFrom, thirdCheckForm, soNoCheckForm, productModelInfo } = data;
     dealerFrom.dealerDdpValidityDate = dealerFrom.dealerDdpValidityDate != null && dealerFrom.dealerDdpValidityDate != '' ? moment(dealerFrom.dealerDdpValidityDate).format('YYYY-MM-DD hh:mm:ss') : null;
     foreignFrom.foreignTradeCorpDdpValidityDate = (foreignFrom.foreignTradeCorpDdpValidityDate != null && foreignFrom.foreignTradeCorpDdpValidityDate != "") ? moment(foreignFrom.foreignTradeCorpDdpValidityDate).format('YYYY-MM-DD hh:mm:ss') : null;
     oitInform.oitDate = (oitInform.oitDate != null && oitInform.oitDate != undefined && oitInform.oitDate != "") ? moment(oitInform.oitDate).format('YYYY-MM-DD hh:mm:ss') : null;
@@ -1451,7 +1462,11 @@ export class OitcompleteComponent implements OnInit {
       ...endUserFrom,
       ...this.priceData,
       ...foreignFrom,
-      marketBundleInfo: marketBundleInfo
+      marketBundleInfo: marketBundleInfo,
+      endUserActuallyDeliveryAddress: endUserFrom.endUserActuallyDeliveryAddress,
+      orderSalesPerformanceProvince: baseInfoFrom.orderSalesPerformanceProvince,
+      orderProductModel: productModelInfo.orderProductModel,
+
     }
     const orderSummaryInfo = {
       ...priceApproval,

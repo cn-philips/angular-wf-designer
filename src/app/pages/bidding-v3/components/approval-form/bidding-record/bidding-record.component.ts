@@ -56,6 +56,7 @@ export class BiddingRecordComponent implements OnChanges {
     distributorDdpDate: null,
     specialApprovalItems: null,
     referenceId: null,
+    fullDocumentFields: null
   };
   @Input() ddpDateExpired = false;
 
@@ -296,7 +297,7 @@ export class BiddingRecordComponent implements OnChanges {
       siteSurveyReportFiles.setValidators([Validators.required])
     }
 
-    
+
     if (this.applyDetail.businessModel === BUSINESS_MODEL_DIRECT) {
       const participationTenderLetterFiles = this.approvedForm.get('participationTenderLetterFiles')
       if (fieldSet.has('participationTenderLetterFiles')) {
@@ -318,7 +319,7 @@ export class BiddingRecordComponent implements OnChanges {
         fullDocumentFields.setValidators([Validators.required])
       }
     }
-    
+
   }
 
   initBiddingFilling() {
@@ -329,6 +330,7 @@ export class BiddingRecordComponent implements OnChanges {
       participationTenderLetterFiles,
       siteSurveyReportFiles,
       projectSolutionSupportReportFiles,
+      fullDocumentFields,
       biddingAwardPrice,
       biddingAwardCurrency,
       biddingAwardDate,
@@ -352,6 +354,7 @@ export class BiddingRecordComponent implements OnChanges {
           participationTenderLetterFiles,
           siteSurveyReportFiles,
           projectSolutionSupportReportFiles,
+          fullDocumentFields,
           biddingAwardPrice,
           biddingAwardCurrency,
           biddingAwardDate,
