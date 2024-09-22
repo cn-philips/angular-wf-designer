@@ -2,7 +2,7 @@ export const environment = {
   production: false,
   base_href: "/ecomdiigtdev",
   itop_href: "",
-  isProduction: true,
+  isProduction: false,
   hmr: false,
   showVersion: true,
   showPopupEntries: true, //是否开启申请入口弹框
