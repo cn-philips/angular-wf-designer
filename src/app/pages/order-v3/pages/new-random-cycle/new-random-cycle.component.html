@@ -1,0 +1,268 @@
+<nz-card class="title_warpper mtb1rem">
+  <form nz-form [nzLayout]="'inline'">
+    <nz-form-item>
+      <nz-form-label [nzSpan]="8">随机抽查周期数据时间范围</nz-form-label>
+      <nz-form-control [nzSpan]="14">
+        <nz-range-picker nzFormat="yyyy-MM-dd"></nz-range-picker>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-control>
+        <button nz-button nzType="primary">系统随机抽取</button>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+</nz-card>
+
+<div class="tabs-box" style="width: 100%; background-color: #ffffff; padding: 15px">
+  <app-form-section class="mtb1rem" title="系统随机抽取概要">
+    <nz-table #fixedTable [nzData]="listOfData" [nzFrontPagination]="false" [nzShowPagination]="false"
+      [nzScroll]="{ x: '1020px' }" nzBordered>
+      <thead>
+        <tr>
+          <th rowspan="2" nzAlign="center" style="width: 120px" nzLeft="0px">Teaam</th>
+          <th rowspan="2" nzAlign="center" style="width: 120px">系统随机抽取结果</th>
+          <th rowspan="2" nzAlign="center" style="width: 100px">总样本数量</th>
+          <th colspan="2" nzAlign="center" style="width: 200px">High Risk & Pre-Conclude（100%抽取）</th>
+          <th colspan="2" nzAlign="center" style="width: 200px">High Risk & Non Pre-Conclude（50% Random抽取）</th>
+          <th colspan="2" nzAlign="center" style="width: 140px">Medium Risk（20% Random抽取）</th>
+          <th colspan="2" nzAlign="center" style="width: 140px">Low Risk（10% Random抽取）</th>
+        </tr>
+        <tr>
+          <th nzAlign="center" style="width: 100px">抽取结果</th>
+          <th nzAlign="center" style="width: 100px">抽取样本</th>
+          <th nzAlign="center" style="width: 100px">抽取结果</th>
+          <th nzAlign="center" style="width: 100px">抽取样本</th>
+          <th nzAlign="center" style="width: 70px">抽取结果</th>
+          <th nzAlign="center" style="width: 70px">抽取样本</th>
+          <th nzAlign="center" style="width: 70px">抽取结果</th>
+          <th nzAlign="center" style="width: 70px">抽取样本</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let data of fixedTable.data">
+          <td class="tableData" style="width: 120px" nzLeft="0px">{{ data.a }}</td>
+          <td class="tableData" style="width: 120px">{{ data.b }}</td>
+          <td class="tableData" style="width: 100px">{{ data.c }}</td>
+          <td class="tableData" style="width: 100px">{{ data.d }}</td>
+          <td class="tableData" style="width: 100px">{{ data.e }}</td>
+          <td class="tableData" style="width: 100px">{{ data.f }}</td>
+          <td class="tableData" style="width: 100px">{{ data.g }}</td>
+          <td class="tableData" style="width: 70px">{{ data.h }}</td>
+          <td class="tableData" style="width: 70px">{{ data.i }}</td>
+          <td class="tableData" style="width: 70px">{{ data.j }}</td>
+          <td class="tableData" style="width: 70px">{{ data.k }}</td>
+        </tr>
+      </tbody>
+    </nz-table>
+  </app-form-section>
+
+  <app-form-section class="mtb1rem" title="系统随机抽取结果">
+    <div class="area-btn">
+      <button nz-button nzType="primary" (click)="showAddModal()">人工新增核查项目</button>
+      <button nz-button nzType="primary" style="margin-left: 10px">下载报表</button>
+      <button nz-button nzType="primary" style="margin-left: 10px" (click)="showModal()">锁定随机抽取结果</button>
+    </div>
+
+    <div style="width: 80%;">
+      <p style="font-weight: bold;margin-bottom: 10px;">被删除的抽取结果</p>
+      <nz-table #deleteTable [nzData]="listOfData" [nzFrontPagination]="false" [nzShowPagination]="false"
+        [nzScroll]="{ x: '1020px' }" nzBordered>
+        <thead>
+          <tr>
+            <th nzAlign="center" style="width: 120px" nzLeft="0px">DealFormID</th>
+            <th nzAlign="center" style="width: 120px">经销商名称</th>
+            <th nzAlign="center" style="width: 150px">COS Ref.</th>
+            <th nzAlign="center" style="width: 120px">OIT完成时间</th>
+            <th nzAlign="center" style="width: 120px">删除备注</th>
+            <th nzAlign="center" style="width: 140px">删除附件</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let data of deleteTable.data">
+            <td class="tableData" style="width: 120px" nzLeft="0px">{{ data.a }}</td>
+            <td class="tableData" style="width: 120px">{{ data.b }}</td>
+            <td class="tableData" style="width: 150px">{{ data.c }}</td>
+            <td class="tableData" style="width: 120px">{{ data.d }}</td>
+            <td class="tableData" style="width: 120px">{{ data.e }}</td>
+            <td class="tableData" style="width: 140px">{{ data.f }}</td>
+          </tr>
+        </tbody>
+      </nz-table>
+    </div>
+
+    <div style="margin-top: 24px;">
+      <p style="font-weight: bold;margin-bottom: 10px;">有效的抽取结果</p>
+      <nz-table nzVirtualScroll [nzVirtualItemSize]="54" [nzData]="listOfData" [nzFrontPagination]="false"
+        [nzShowPagination]="false" [nzScroll]="{ x: '2470px', y: '400px'}" nzBordered>
+        <thead>
+          <tr>
+            <th nzAlign="center" style="width: 200px" nzLeft="0px">操作</th>
+            <th nzAlign="center" style="width: 120px">核查报告</th>
+            <th nzAlign="center" style="width: 120px">核查报告上传时间</th>
+            <th nzAlign="center" style="width: 150px">经销商名称</th>
+            <th nzAlign="center" style="width: 150px">客户名称</th>
+            <th nzAlign="center" style="width: 120px">DealFormID</th>
+            <th nzAlign="center" style="width: 150px">COS Ref.</th>
+            <th nzAlign="center" style="width: 150px">关联的新的COS Ref.</th>
+            <th nzAlign="center" style="width: 120px">关联的新的DealFormID</th>
+            <th nzAlign="center" style="width: 150px">关联的新经销商</th>
+            <th nzAlign="center" style="width: 120px">OIT完成时间</th>
+            <th nzAlign="center" style="width: 120px">IFC登记时间</th>
+            <th nzAlign="center" style="width: 120px">IFC时间</th>
+            <th nzAlign="center" style="width: 120px">需要经销商提供核查材料截止时间</th>
+            <th nzAlign="center" style="width: 120px">经销商实际提供核查材料时间</th>
+            <th nzAlign="center" style="width: 100px">经销商是否超期提供核查材料</th>
+            <th nzAlign="center" style="width: 100px">数据来源</th>
+            <th nzAlign="center" style="width: 120px">备注</th>
+            <th nzAlign="center" style="width: 120px" nzLeft="0px">附件</th>
+          </tr>
+        </thead>
+        <tbody>
+          <ng-template nz-virtual-scroll let-data let-index="index">
+            <tr>
+              <td class="tableData" style="width: 200px" nzLeft="0px">{{ data.a }}</td>
+              <td class="tableData" style="width: 120px">{{ data.b }}</td>
+              <td class="tableData" style="width: 120px">{{ data.c }}</td>
+              <td class="tableData" style="width: 150px">{{ data.d }}</td>
+              <td class="tableData" style="width: 150px">{{ data.e }}</td>
+              <td class="tableData" style="width: 120px">{{ data.f }}</td>
+              <td class="tableData" style="width: 150px">{{ data.f }}</td>
+              <td class="tableData" style="width: 150px">{{ data.f }}</td>
+              <td class="tableData" style="width: 120px">{{ data.f }}</td>
+              <td class="tableData" style="width: 150px">{{ data.f }}</td>
+              <td class="tableData" style="width: 120px">{{ data.f }}</td>
+              <td class="tableData" style="width: 120px">{{ data.f }}</td>
+              <td class="tableData" style="width: 120px">{{ data.f }}</td>
+              <td class="tableData" style="width: 120px">{{ data.f }}</td>
+              <td class="tableData" style="width: 120px">{{ data.f }}</td>
+              <td class="tableData" style="width: 100px">{{ data.f }}</td>
+              <td class="tableData" style="width: 100px">{{ data.f }}</td>
+              <td class="tableData" style="width: 120px">{{ data.f }}</td>
+              <td class="tableData" style="width: 102px" nzLeft="0px">{{ data.f }}</td>
+            </tr>
+          </ng-template>
+        </tbody>
+      </nz-table>
+    </div>
+
+  </app-form-section>
+
+</div>
+
+<nz-modal [(nzVisible)]="addVisible" nzWidth="1000" [nzMaskClosable]="false" nzTitle="人工新增核查项目" [nzFooter]="null"
+  (nzOnCancel)="handleAddCancel()">
+  <div nz-row [nzGutter]="24">
+    <div nz-col [nzSpan]="10">
+      <nz-form-item>
+        <nz-form-label [nzSpan]="8">{{"orderv3.components.select-deal.deal-form" | translate}}</nz-form-label>
+        <nz-form-control [nzSpan]="10">
+          <input nz-input placeholder="请输入Deal From Id">
+        </nz-form-control>
+        <nz-form-control [nzSpan]="6">
+          <button nz-button class="ml3" nzType="primary" [nzSize]="6">
+            {{"orderv3.components.select-deal.search" | translate}}
+          </button>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+  <div>
+    <nz-table [nzData]="dealerInfos" [nzFrontPagination]="false" [nzShowPagination]="false" [nzScroll]="{ y: '300px' }"
+      nzBordered>
+      <thead>
+        <tr>
+          <th nzAlign="center" style="width: 120px" nzLeft="0px">DealForm ID</th>
+          <th nzAlign="center">医院名称</th>
+          <th nzAlign="center" style="width: 100px">操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let data of dealerInfos">
+          <td class="tableData" style="width: 120px">{{ data.CPdealFormId }}<i *ngIf="data.dealFormId==1" class="icon"
+              nz-icon nzType="check" nzTheme="outline"></i></td>
+          <td class="tableData">{{ data.dealerName }}</td>
+          <td class="tableData" style="width: 83px">
+            <button nz-button nzSize="small" nzType="primary" (click)="onSelect(item)">
+              选择
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </nz-table>
+  </div>
+</nz-modal>
+
+<nz-modal [(nzVisible)]="isVisible" nzWidth="1000" [nzMaskClosable]="false" nzTitle="锁定抽取周期，并通知相关经销商和OA"
+  [nzFooter]="modalFooter" (nzOnCancel)="handleCancel()">
+  <nz-alert nzType="warning" style="margin-bottom: 24px;"
+    nzMessage="点击确认后，系统将锁定抽取周期，并通过邮件通知相关经销商（如果DealForm存在改单情况并关联了新的DealForm,将仅通知DealForm所对应的经销商）" nzShowIcon></nz-alert>
+  <div>
+    <nz-table #dealerTable [nzData]="dealerInfos" [nzFrontPagination]="false" [nzShowPagination]="false"
+      [nzScroll]="{ x: '690px' }" nzBordered>
+      <thead>
+        <tr>
+          <th nzAlign="center" style="width: 120px" nzLeft="0px">CP DealForm ID</th>
+          <th nzAlign="center" style="width: 120px">经销商</th>
+          <th nzAlign="center" style="width: 150px">经销商下单员邮箱</th>
+          <th nzAlign="center" style="width: 150px">Sales邮箱</th>
+          <th nzAlign="center" style="width: 150px">DM邮箱</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let data of dealerTable.data">
+          <td class="tableData" style="width: 120px" nzLeft="0px">{{ data.CPdealFormId }}</td>
+          <td class="tableData" style="width: 120px">{{ data.dealerName }}</td>
+          <td class="tableData" style="width: 150px">
+            <!-- <nz-form-item class="margin0">
+              <nz-form-control>
+                <input nz-input formControlName="email1" maxlength="255" />
+                <nz-form-explain *ngIf="
+                      data.get('email1')?.dirty &&
+                      data.get('email1')?.errors
+                    ">
+                  此选项必填字段
+                </nz-form-explain>
+              </nz-form-control>
+            </nz-form-item> -->
+            {{ data.email1 }}
+          </td>
+          <td class="tableData" style="width: 150px">
+            <!-- <nz-form-item class="margin0">
+              <nz-form-control>
+                <input nz-input formControlName="salesEmail" maxlength="255" />
+                <nz-form-explain *ngIf="
+                      data.get('salesEmail')?.dirty &&
+                      data.get('salesEmail')?.errors
+                    ">
+                  此选项必填字段
+                </nz-form-explain>
+              </nz-form-control>
+            </nz-form-item> -->
+            {{ data.salesEmail }}
+          </td>
+          <td class="tableData" style="width: 150px">
+            <!-- <nz-form-item class="margin0">
+              <nz-form-control>
+                <input nz-input formControlName="dmEmail" maxlength="255" />
+                <nz-form-explain *ngIf="
+                      data.get('dmEmail')?.dirty &&
+                      data.get('dmEmail')?.errors
+                    ">
+                  此选项必填字段
+                </nz-form-explain>
+              </nz-form-control>
+            </nz-form-item> -->
+            {{ data.dmEmail }}
+          </td>
+        </tr>
+      </tbody>
+    </nz-table>
+
+  </div>
+  <ng-template #modalFooter>
+    <button nz-button nzType="default" (click)="handleCancel()">取消</button>
+    <button nz-button nzType="primary" (click)="handleOk()" [nzLoading]="isConfirmLoading">确认发送</button>
+  </ng-template>
+</nz-modal>

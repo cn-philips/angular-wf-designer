@@ -38,6 +38,7 @@ import {
   ContractExamineComponent,
   ContractSignComponent,
   ContractSignDetailComponent,
+  NewRandomCycleComponent,
   OitcompleteComponent,
   OrdersummaryBaseInfoComponent,
   PreOrderComponent,
@@ -57,6 +58,7 @@ export const PAGES = [
   ContractSignComponent,
   ContractSignDetailComponent,
   SelectPrebookComponent,
+  NewRandomCycleComponent
 ];
 
 export const COMPONENTS = [

@@ -5,5 +5,7 @@ export { ThirdPartySupplementComponent } from './third-party-supplement/third-pa
 export { ContractSupplementComponent } from './contract-supplement/contract-supplement.component'
 export{ContractSignatureWatermarkComponent}from './contract-signature-watermark/contract-signature-watermark.component';
 export{ContractElectronicSignatureComponent}from './contract-electronic-signature/contract-electronic-signature.component';
+export { DealerThirdPartySupplementComponent, DealerThirdPartyListComponent } from './dealer-third-party-supplement'
+export { RegisterICFComponent, RegisterICFListComponent } from './register-ICF'
 
 export * from './components'

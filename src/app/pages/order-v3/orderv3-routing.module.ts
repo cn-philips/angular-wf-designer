@@ -9,7 +9,8 @@ import {
   OrdersummaryBaseInfoComponent,
   PreOrderComponent,
   PreOrderoaComponent,
-  PreorderexamineComponent
+  PreorderexamineComponent,
+  NewRandomCycleComponent
 } from "./index";
 const routes: Routes = [
   {
@@ -56,7 +57,11 @@ const routes: Routes = [
     component: ContractSignDetailComponent,
     data: { breadcrumb: "合同签署" },
   },
-
+  {
+    path: "newRandomCycle",
+    component: NewRandomCycleComponent,
+    data: { breadcrumb: "新建随机抽查周期" },
+  },
   
 ];
 @NgModule({
