@@ -1,25 +1,25 @@
 <nz-table nzVirtualScroll [nzData]="tableData" [nzVirtualItemSize]="10" nzFrontPagination="false"
   [nzPageIndex]="pageParams.pageNo" [nzPageSize]="pageParams.pageSize" [nzTotal]="total" [nzLoading]="loading"
-  [nzScroll]="{ x: '2200px', y: '600px' }" (nzPageIndexChange)="changePageIndex($event)" [nzShowTotal]="totalTemplate"
+  [nzScroll]="{ x: '890px', y: '600px' }" (nzPageIndexChange)="changePageIndex($event)" [nzShowTotal]="totalTemplate"
   (nzPageSizeChange)="changePageSize($event)" style="margin-top: 16px">
   <thead>
     <tr>
-      <th class="tableHead" nzAlign="center" style="width: 220px">
+      <th class="tableHead" nzAlign="center" style="width: 140px">
         随机抽查ID
       </th>
-      <th class="tableHead" nzAlign="center" style="width: 200px">
+      <th class="tableHead" nzAlign="center" style="width: 160px">
         随机抽查周期状态
       </th>
-      <th class="tableHead" nzAlign="center" style="width: 220px">
+      <th class="tableHead" nzAlign="center" style="width: 150px">
         随机抽查周期的创建时间
       </th>
-      <th class="tableHead" nzAlign="center" style="width: 240px">
+      <th class="tableHead" nzAlign="center" style="width: 170px">
         随机抽查周期的数据开始时间（以OIT审批完成时间为准）
       </th>
-      <th class="tableHead" nzAlign="center" style="width: 240px">
+      <th class="tableHead" nzAlign="center" style="width: 170px">
         随机抽查周期的数据结束时间（以OIT审批完成时间为准）
       </th>
-      <th class="tableHead" nzAlign="center" nzRight="0px" style="width: 200px">
+      <th class="tableHead" nzAlign="center" nzRight="0px" style="width: 100px">
         {{"list-pages.table-header.action" | translate}}
       </th>
     </tr>
@@ -27,15 +27,14 @@
   <tbody>
     <ng-template nz-virtual-scroll let-data let-index="index">
       <tr>
-        <td class="tableData" style="width: 220px;" nzAlign="center">{{ data.checkDurationId }}</td>
-        <td class="tableData" style="width: 200px;" nzAlign="center">{{ data.status }}</td>
-        <td class="tableData" style="width: 220px;" nzAlign="center">{{ data.applicant }}</td>
-        <td class="tableData" style="width: 240px;" nzAlign="center">{{ data.checkDurationStartTime | TimeFormatePipeNow
+        <td class="tableData" style="width: 140px;" nzAlign="center">{{ data.checkDurationId }}</td>
+        <td class="tableData" style="width: 160px;" nzAlign="center">{{ transferStatus(data.status) }}</td>
+        <td class="tableData" style="width: 150px;" nzAlign="center">{{ data.createdTime | TimeFormatePipeNow}}</td>
+        <td class="tableData" style="width: 170px;" nzAlign="center">{{ data.checkDurationStartTime | TimeFormatePipeNow
           }}</td>
-        <td class="tableData" style="width: 240px;" nzAlign="center">{{ data.checkDurationEndTime | TimeFormatePipeNow
+        <td class="tableData" style="width: 170px;" nzAlign="center">{{ data.checkDurationEndTime | TimeFormatePipeNow
           }}</td>
-        <td class="tableData" style="width: 180px" nzAlign="center" nzRight="0px">
-          <!-- 三期操作 -->
+        <td class="tableData" style="width: 80px" nzAlign="center" nzRight="0px">
           <a style="display: block; color: #337FBF;" (click)="operate(data)">编辑</a>
         </td>
       </tr>

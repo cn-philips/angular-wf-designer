@@ -32,6 +32,7 @@ import {
   StandardTableComponent,
   ThirdCheckInfoComponent,
   WinCheckTableComponent,
+  SelectThirdDealerComponent,
 } from "./components";
 import {
   ContractComponent,
@@ -94,4 +95,5 @@ export const COMPONENTS = [
   ApprovalHistorySignatureComponent,
   EsignButtonComponent,
   SofonFileUploadComponent,
+  SelectThirdDealerComponent,
 ];

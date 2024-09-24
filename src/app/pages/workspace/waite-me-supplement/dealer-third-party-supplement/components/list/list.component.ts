@@ -24,6 +24,7 @@ export class DealerThirdPartyListComponent implements OnInit {
   @Input() type: any;
   @Input() flag: any;
   @Input() isHandle = 0;
+  @Input() randomStatus = []
 
   @Output() pageChange = new EventEmitter<any>();
   @Output() setLoading = new EventEmitter<boolean>();
@@ -39,13 +40,9 @@ export class DealerThirdPartyListComponent implements OnInit {
   constructor(
     private router: Router,
     private message: NzMessageService,
-    private dictService: DictService,
   ) {}
 
-  ngOnInit() {
-    // this.getTableData()
-    this.getEntryModeList();
-  }
+  ngOnInit() {}
 
   //重置分页
   resetPage() {
@@ -56,47 +53,13 @@ export class DealerThirdPartyListComponent implements OnInit {
   }
 
   operate(data: any) {
-    let applyType = data.applyType;
-    let orderType = ["OIT_MAIN", "OIT_SUB"];
-    let biddingType = ["BIDDING"];
-
-    if (orderType.includes(applyType)) {
-      const url = "/order-v3/oitcomplete";
-      this.router.navigate([url], {
-        queryParams: {
-          id: data.id,
-          needFileType: this.type,
-          processInstanceTaskId: data.processInstanceTaskId,
-          taskStatus: data.taskStatus,
-          procInstId: data.procInstId,
-          isHandle: this.isHandle
-        },
-      });
-    } else if (biddingType.includes(applyType)) {
-      this.router.navigate(["/bidding-v3", data.id], {
-        queryParams: {
-          processInstanceTaskId: data.processInstanceTaskId,
-          procInstId: data.procInstId,
-          processStatus: data.processStatus,
-          taskStatus: data.taskStatus,
-          fromSupplement: true,
-          isHandle: this.isHandle
-        },
-      });
-      return;
-    } else if (applyType === 'PREBOOK') {
-      this.router.navigate(["/prebook-v3", data.id], {
-        queryParams: {
-          processInstanceTaskId: data.processInstanceTaskId,
-          processStatus: data.processStatus,
-          taskStatus: data.taskStatus,
-          fromSupplement: this.isHandle,
-          procInstId: data.procInstId
-        },
-      });
-    } else {
-      this.message.create("error", "不支持的申请类型:" + applyType);
-    }
+    const url = "/order-v3/editRandomCycle";
+    this.router.navigate([url], {
+      queryParams: {
+        id: data.id,
+        type: 'edit',
+      },
+    });
   }
 
   changePageIndex(pageNo: number) {
@@ -117,124 +80,9 @@ export class DealerThirdPartyListComponent implements OnInit {
     this.pageChange.emit(this.pageParams);
   }
 
-  // 进单模式
-  public getEntryModeList() {
-    this.dictService.dictData('ENTRY_MODEL').subscribe((dictData) => {
-      this.entryModeList = dictData.map(({ code, label }) => ({ code, label }))
-    });
+  transferStatus(value) {
+    const label = this.randomStatus.filter(item => item.value === value).map(obj => obj.label)[0]
+    return label ? label : '-'
   }
 
-  //翻译进单模式
-  ProOitModeType(e: any) {
-    for (let i = 0; i < this.entryModeList.length; i++) {
-      if (this.entryModeList[i].code === e) {
-        return this.entryModeList[i].label;
-      }
-    }
-    return e;
-  }
-
-  /*********** 一期跳转操作 Start  *********/
-  //待oit文件上传 SO# 第三方自采
-  goCompleteOit(item, param) {
- 
-    this.router.navigate(["/pre-order/complete-oit"], {
-      skipLocationChange: false,
-      queryParams: {
-        id: codeString(item.id),
-        flag:  this.flag,
-        status: item.taskStatus,
-        param: param,
-        sale: item.applicant,
-        processInstanceTaskId: item.processInstanceTaskId,
-        procInstId: item.procInstId,
-      },
-    });
-  }
-
-  //待oit文件上传
-  goCompleteOitFile(item) {    
-      this.router.navigate(["/pre-order/supp-file"], {
-      skipLocationChange: false,
-      queryParams: {
-        id: codeString(item.id),
-        flag: this.isHandle,
-        status: item.taskStatus,
-        sale: item.applicant,
-        processInstanceTaskId: item.processInstanceTaskId,
-        procInstId: item.procInstId,
-      },
-    });
-  }
-
-  // 待补充文件上传
-  goSuppfile(item) {    
-    this.router.navigate(["/pre-order/supp-file"], {
-      skipLocationChange: false,
-      queryParams: {
-        id: codeString(item.id),
-        flag: this.flag,
-        status: item.taskStatus,
-        sale: item.applicant,
-        processInstanceTaskId: item.processInstanceTaskId,
-        procInstId: item.procInstId,
-      },
-    });
-  }
-  //中标确认文件待补充
-  goToSupportUp(item) {
-    this.router.navigate(["/bidding/support-up"], {
-      skipLocationChange: false,
-      queryParams: {
-        id: codeString(item.id),
-        flag: this.isHandle===0 ? this.flag : 1,
-        status: item.taskStatus,
-        processInstanceTaskId: item.processInstanceTaskId,
-        procInstId: item.procInstId,
-      },
-    });
-  }
-
-  // 合同签署
-  goConsign(item) {
-    this.router.navigate(["/pre-order/con-sign"], {
-      skipLocationChange: false,
-      queryParams: {
-        id: codeString(item.id),
-        flag: this.flag,
-        status: item.taskStatus,
-        sale: item.applicant,
-        processInstanceTaskId: item.processInstanceTaskId,
-        procInstId: item.procInstId,
-      },
-    });
-  }
-
-  //preboo-om回填
-  getPrebookom(item) {
-    this.router.navigate(["/pre-book/prebook-so"], {
-      skipLocationChange: false,
-      queryParams: {
-        id: codeString(item.id),
-        flag: this.flag,
-        status: item.taskStatus,
-        processInstanceTaskId: item.processInstanceTaskId,
-        procInstId: item.procInstId,
-      },
-    });
-  }
-
-  //prebook-oa补充文件上传
-  getPrebookSupplement(item) {
-    this.router.navigate(["/pre-book/supplement-oa"], {
-      skipLocationChange: false,
-      queryParams: {
-        id: codeString(item.id),
-        flag: this.flag,
-        status: item.taskStatus,
-        processInstanceTaskId: item.processInstanceTaskId,
-        procInstId: item.procInstId,
-      },
-    });
-  }
 }

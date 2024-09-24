@@ -62,6 +62,11 @@ const routes: Routes = [
     component: NewRandomCycleComponent,
     data: { breadcrumb: "新建随机抽查周期" },
   },
+  {
+    path: "editRandomCycle",
+    component: NewRandomCycleComponent,
+    data: { breadcrumb: "随机抽查周期" },
+  },
   
 ];
 @NgModule({

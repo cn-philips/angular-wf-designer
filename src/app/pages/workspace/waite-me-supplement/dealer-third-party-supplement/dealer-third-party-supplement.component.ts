@@ -115,7 +115,9 @@ export class DealerThirdPartySupplementComponent implements OnInit {
   toNewRandomCycle() {
     const url = "/order-v3/newRandomCycle";
     this.router.navigate([url], {
-      queryParams: {},
+      queryParams: {
+        type: 'add',
+      },
     });
   }
 
