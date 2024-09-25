@@ -1,0 +1,22 @@
+:host /deep/ {
+  .ant-input-group-addon {
+    border: none;
+    padding-right: 0;
+    background-color: #fff;
+  }
+
+  .ant-form-item-label {
+    white-space: normal;
+  }
+
+  .ant-form-item label {
+    line-height: 20px;
+  }
+
+}
+
+.form-control-center {
+  height: 40px;
+  display: flex;
+  align-items: center;
+}

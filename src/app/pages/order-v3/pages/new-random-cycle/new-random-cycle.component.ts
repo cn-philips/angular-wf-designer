@@ -39,12 +39,13 @@ export class NewRandomCycleComponent implements OnInit {
   dealerInfos = []
   unlockData = []
   randomPickTime = []
+  actType = null // del-删除 add-手动新增
   applyStatu = "UNLOCKED"
   routeType = 'add' // add-新建 edit-编辑
   public summaryData: any[] = []; // 随机抽取该概要
   public removedData: any[] = []; // 机抽取结果（删除）
   public detailData: any[] = []; // 随机抽取结果
-  public removeObj = {
+  public reasonObj = {
     id: null,
     dealFormId: null,
     reason: null,
@@ -101,7 +102,6 @@ export class NewRandomCycleComponent implements OnInit {
     this.load = true
     this.http.get(`/act/ecos/thirdParty/randomPick/detail/${id}`).subscribe((res => {
       if (res.code === '0000') {
-        console.log("data", res.data);
         const { status, summary, removed, detail} = res.data;
         if (!summary || !detail) {
           this.message.create('error', `没有数据！`);
@@ -127,14 +127,31 @@ export class NewRandomCycleComponent implements OnInit {
     this.selectDeal.show({}, true);
   }
 
-  async onDealFormSelect(val) {
-    console.log("s",val);
+  onDealFormSelect(val) {
+    this.resetReasonObj()
+    this.reasonObj.dealFormId = val.dealFormId
+    this.actType = 'add'
+    this.showRemove = true
+  }
+
+  confirmSelect() {
     this.load = true;
-    const params = {dealFormId: val.dealFormId}
+    const files = this.reasonObj.attachments.map(file => ({  
+      fileId: file.fileId,  
+      name: file.name  
+    }));  
+
+    const jsonString = JSON.stringify(files) 
+    const params = {
+      ...this.reasonObj,
+      attachments: jsonString 
+    }
 
     this.http.post(`/act/ecos/thirdParty//randomPick/add/${this.summaryId}`, params).subscribe((res => {
       this.load = false;
       if (res.code === '0000') {
+        this.message.create("success", "操作成功!")
+        this.showRemove = false
         this.queryDetails(this.summaryId)
       } else {
         this.message.create('error', `${res.msg}`);
@@ -143,7 +160,6 @@ export class NewRandomCycleComponent implements OnInit {
       this.load = false;
       this.message.create("error", "服务器异常")
     }));
-
   }
 
   showModal() {
@@ -185,6 +201,8 @@ export class NewRandomCycleComponent implements OnInit {
       if (res.code === '0000') {
         if (this.applyStatu === "UNLOCKED") {
           this.lockApply()
+        } else {
+          this.message.create("success", "操作成功!")
         }
       } else {
         this.message.create('error', `${res.msg}`);
@@ -200,6 +218,7 @@ export class NewRandomCycleComponent implements OnInit {
     this.http.post(`/act/ecos/thirdParty/randomPick/lock/${this.summaryId}`).subscribe((res => {
       this.load = false;
       if (res.code === '0000') {
+        this.message.create("success", "操作成功!")
         this.queryDetails(this.summaryId)
       } else {
         this.message.create('error', `${res.msg}`);
@@ -216,8 +235,10 @@ export class NewRandomCycleComponent implements OnInit {
 
   operate(data, act) {
     if(act === 'del') {
-      this.removeObj.id = data.id
-      this.removeObj.dealFormId = data.dealFormId
+      this.resetReasonObj()
+      this.reasonObj.id = data.id
+      this.reasonObj.dealFormId = data.dealFormId
+      this.actType = 'del'
       this.showRemove = true
     } else {
       this.unlockData = []
@@ -242,15 +263,38 @@ export class NewRandomCycleComponent implements OnInit {
     this.showRemove = false
   }
 
+  handleConfirm() {
+    const vaild = this.reasonObjVaild()
+    if (vaild) {
+      this.message.create("error", "请填写必填字段！")
+      return
+    }
+
+    if (this.actType === 'add') {
+      this.confirmSelect()
+    } else if (this.actType === 'del') {
+      this.remove()
+    }
+  }
+
   remove() {
     this.load = true;
+    const files = this.reasonObj.attachments.map(file => ({  
+      fileId: file.fileId,  
+      name: file.name  
+    }));  
+
+    const jsonString = JSON.stringify(files) 
     const params = {
-      ...this.removeObj
+      ...this.reasonObj,
+      attachments: jsonString 
     }
 
     this.http.post(`/act/ecos/thirdParty/randomPick/remove/${this.summaryId}`, params).subscribe((res => {
       this.load = false;
       if (res.code === '0000') {
+        this.message.create("success", "操作成功!")
+        this.showRemove = false
         this.queryDetails(this.summaryId)
       } else {
         this.message.create('error', `${res.msg}`);
@@ -270,10 +314,26 @@ export class NewRandomCycleComponent implements OnInit {
     return false
   }
 
+  resetReasonObj() {
+    this.reasonObj = {
+      id: null,
+      dealFormId: null,
+      reason: null,
+      attachments: []
+    }
+  }
+
+  reasonObjVaild() {
+    if (!this.reasonObj.reason || !this.reasonObj.attachments || this.reasonObj.attachments.length == 0) {
+      return true
+    }
+    return false
+  }
+
   // 关联的COS Ref
   getFields(list, field) {
     if (!list || list.length == 0) {
-      return '-'
+      return ''
     }
 
     let str = null
@@ -281,31 +341,31 @@ export class NewRandomCycleComponent implements OnInit {
       str = Array.from(new Set(list.map(item => item.referenceId)))
       return str.join(', '); 
     } else if (field == 'newDealer') {
-      str = Array.from(new Set(list.map(item => item.dealerName)))
+      str = Array.from(new Set(list.map(item => `${this.matchesNo(item.referenceId)}${item.dealerName}`)))
       return str.join(', '); 
     } else if (field == 'icfRe') {
-      str = Array.from(new Set(list.map(item => item.icfRegistrationTime)))
+      str = Array.from(new Set(list.map(item => `${this.matchesNo(item.referenceId)}${item.icfRegistrationTime}`)))
       let arr = []
       str.forEach(v => {
         arr.push(moment(new Date(v)).format('yyyy-MM-dd'))
       })
       return arr.join(', '); 
     } else if (field == 'icf') {
-      str = Array.from(new Set(list.map(item => item.icfSignTime)))
+      str = Array.from(new Set(list.map(item => `${this.matchesNo(item.referenceId)}${item.icfSignTime}`)))
       let arr = []
       str.forEach(v => {
         arr.push(moment(new Date(v)).format('yyyy-MM-dd'))
       })
       return arr.join(', '); 
     } else if (field == 'deadline') {
-      str = Array.from(new Set(list.map(item => item.dealerProvideMaterialDeadline)))
+      str = Array.from(new Set(list.map(item => `${this.matchesNo(item.referenceId)}${item.dealerProvideMaterialDeadline}`)))
       let arr = []
       str.forEach(v => {
         arr.push(moment(new Date(v)).format('yyyy-MM-dd'))
       })
       return arr.join(', '); 
     } else if (field == 'over') {
-      str = Array.from(new Set(list.map(item => item.isOverdue)))
+      str = Array.from(new Set(list.map(item => `${this.matchesNo(item.referenceId)}${item.isOverdue}`)))
       let arr = []
       str.forEach(v => {
         arr.push(v ? '是' : '否')
@@ -313,6 +373,27 @@ export class NewRandomCycleComponent implements OnInit {
       return arr.join(', '); 
     }
     
+  }
+
+  getFileNames(jsonString) {
+    if (!jsonString) {
+      return ''
+    }
+    const fileList = JSON.parse(jsonString)
+    if (Array.isArray(fileList)) {
+      const nameString = fileList.map(file => file.name).join(', ')
+      return nameString ? nameString : ''
+    }
+    return ''
+  }
+
+  // 获取referenceid的_后面数字
+  matchesNo(str) {
+    if (!str) return ''
+    const regex = /_([0-9]+)/g;
+    const matches = str.match(regex);
+    const numbers = matches.map(match => match.substring(1));
+    return numbers.length > 0 ? `(${numbers[0]})`:''
   }
 
 }

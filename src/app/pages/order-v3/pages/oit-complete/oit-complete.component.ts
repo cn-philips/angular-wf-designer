@@ -55,6 +55,7 @@ export class OitcompleteComponent implements OnInit {
   public allowChangOrder: any;
   public needFileType; // 待补充文件类型 'contract'-待上传正本合同 ，'oit'-OIT文件待补充，'om'-待OM上传SO#，'third'-第三方自采核查，'winningbid'-中标确认文件待补充
   public needFileTypeOff: boolean = false;
+  public thirdSave: boolean = false;
   public changeOrderOff: boolean = false;
   public needFileTypeShowOff: boolean = false; //是否可以查看om文件
   public changeName;
@@ -503,6 +504,7 @@ export class OitcompleteComponent implements OnInit {
   @ViewChild('changeOrderwin') changeOrderwin
   @ViewChild('approveChanges') approveChanges;
   @ViewChild('contractSign') contractSign;
+  @ViewChild('thirdCheck') thirdCheck;
   public formValue: FormGroup = this.fb.group({
     productModelInfo: this.fb.group({
       ...this.productModelInfo,
@@ -708,9 +710,12 @@ export class OitcompleteComponent implements OnInit {
 
 
     // 待补充文件类型 'contract'-待上传正本合同 ，'oit'-OIT文件待补充，'om'-待OM上传SO#，'third'-第三方自采核查
-    let needFileTypes = ['contract', 'oit', 'om', 'third'];
+    let needFileTypes = ['contract', 'oit', 'om'];
     if (needFileTypes.includes(this.needFileType)) {
       this.needFileTypeOff = true;
+    }
+    if (this.needFileType === 'third') {
+      this.thirdSave = true
     }
     //判断进入的页面是否可以进行改单
     this.allowChangOrder = this.activatedRouter.queryParams['value'].allowChangOrder
@@ -1750,6 +1755,12 @@ export class OitcompleteComponent implements OnInit {
     }
 
   }
+
+  // 三方自采核查保存
+  thirdCheckSubmit() {
+    this.thirdCheck.saveFormData()
+  }
+
   checkFormData = (paramForm) => {
     for (const i in paramForm.controls) {
       paramForm.controls[i].markAsDirty();

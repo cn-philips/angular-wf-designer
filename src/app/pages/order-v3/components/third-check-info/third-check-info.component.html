@@ -1,42 +1,364 @@
 <app-apploading [load]="load"></app-apploading>
-<form nz-form [formGroup]="thirdCheckFormData">
-  <div nz-row>
-    <div nz-col nzSpan="13">
-      <nz-form-item>
-        <nz-form-label [nzSpan]="6" style="width: 35%" nzRequired>{{"orderv3.components.third-check.status" |
-          translate}}</nz-form-label>
-        <nz-form-control [nzSpan]="14">
-          <nz-select nzShowSearch nzAllowClear nzPlaceHolder="请选择" formControlName="productVerificationInformation">
-            <nz-option *ngFor="let item of thirdPartyList" [nzValue]="item.label" [nzLabel]="item.label"></nz-option>
-          </nz-select>
-          <nz-form-explain
-            *ngIf="thirdCheckFormData.get('productVerificationInformation')?.dirty && thirdCheckFormData.get('productVerificationInformation')?.errors">
-            此选项必填字段
-          </nz-form-explain>
-        </nz-form-control>
-      </nz-form-item>
+<app-form-section class="mtb1rem" [title]="'orderv3.components.oit-form.general.title' | translate">
+  <form nz-form [formGroup]="formData">
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="10" [nzNoColon]="true">
+            此合同是否需要进行三方自采核查
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <nz-radio-group formControlName="needThirdPartyAudit">
+              <label nz-radio [nzValue]="true">是</label>
+              <label nz-radio [nzValue]="false">否</label>
+            </nz-radio-group>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="10" [nzNoColon]="true">
+            三方自采核查抽取周期
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <input nz-input formControlName="checkDurationId" placeholder="" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="10" [nzNoColon]="true">
+            订单需求编号
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <input nz-input formControlName="orderCode" placeholder="" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
     </div>
-    <div nz-col nzSpan="13" *ngIf="oaAddInfo.getRawValue().preConcludedItem===true">
-      <nz-form-item>
-        <nz-form-label [nzSpan]="6" style="width: 35%">
-          {{"orderv3.components.oa-add-info.third-check-info" | translate}}  
-        </nz-form-label>
-        <nz-form-control [nzSpan]="14">
-          preConcluded
-        </nz-form-control>
-      </nz-form-item>
+
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="10" [nzNoColon]="true">
+            CP DealForm ID
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <input nz-input formControlName="dealFormId" placeholder="" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="10" [nzNoColon]="true">
+            ICF登记时间
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <input nz-input formControlName="icfRegistrationTime" placeholder="" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="10" [nzNoColon]="true">
+            ICF时间
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <input nz-input formControlName="icfSignTime" placeholder="" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
     </div>
-  </div>
-  <div nz-row>
-    <div nz-col nzSpan="13">
-      <nz-form-item>
-        <nz-form-label style="width: 35%" [nzSpan]="6">{{"orderv3.components.third-check.attachment" | translate}}
-        </nz-form-label>
-        <nz-form-control [nzSpan]="14">
-          <shared-upload-file [title]="" [type]="null" formControlName="productVerificationFile">
-          </shared-upload-file>
-        </nz-form-control>
-      </nz-form-item>
+
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="10" [nzNoColon]="true">
+            需要经销商提供核查材料截止时间
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <input nz-input formControlName="dealerProvideMaterialDeadline" placeholder="" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="10" [nzNoColon]="true">
+            经销商实际提供核查材料时间
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <input nz-input formControlName="dealerProvideMaterialRealtime" placeholder="" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="10" [nzNoColon]="true">
+            经销商是否超期提供核查材料
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <nz-radio-group formControlName="isOverdue">
+              <label nz-radio [nzValue]="true">是</label>
+              <label nz-radio [nzValue]="false">否</label>
+            </nz-radio-group>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
     </div>
-  </div>
-</form>
+  </form>
+</app-form-section>
+
+<app-form-section class="mtb1rem" title="填写核查信息">
+  <form nz-form [formGroup]="formData">
+    <div style="padding: 12px 10px 24px 12px;">
+      <button nz-button nzType="primary">通知经销商上传核查材料</button>
+    </div>
+
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label nzRequired nzXs="24" nzSm="24" nzMd="10" [nzNoColon]="true">
+            开始三方核查时间
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <nz-date-picker formControlName="auditStartTime"></nz-date-picker>
+            <nz-form-explain *ngIf="formData.get('auditStartTime')?.dirty && formData.get('auditStartTime')?.errors">
+              此选项必填字段
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="10" [nzNoColon]="true">
+            经销商承诺延期时间
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <nz-date-picker formControlName="dealerDelayTime"></nz-date-picker>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label nzRequired nzXs="24" nzSm="24" nzMd="10" [nzNoColon]="true">
+            OA完成核查时间
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <nz-date-picker formControlName="oaAuditEndTime"></nz-date-picker>
+            <nz-form-explain *ngIf="formData.get('oaAuditEndTime')?.dirty && formData.get('oaAuditEndTime')?.errors">
+              此选项必填字段
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label nzRequired nzXs="24" nzSm="24" nzMd="10" [nzNoColon]="true">
+            三方核查要求备注
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <textarea formControlName="auditComments" rows="2" nz-input></textarea>
+            <nz-form-explain *ngIf="formData.get('auditComments')?.dirty && formData.get('auditComments')?.errors">
+              此选项必填字段
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label nzRequired nzXs="24" nzSm="24" nzMd="10" [nzNoColon]="true">
+            三方核查要求附件
+          </nz-form-label>
+          <nz-form-control class="form-control-center" nzXs="24" nzSm="24" nzMd="14">
+            <shared-upload-file [title]="" [type]="null" formControlName="auditAttachment">
+            </shared-upload-file>
+            <nz-form-explain *ngIf="formData.get('auditAttachment')?.dirty && formData.get('auditAttachment')?.errors">
+              此选项必填字段
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="10" [nzNoColon]="true">
+            CP评估三方总价
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <input nz-input formControlName="cpAuditTotalPrice" placeholder="" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label nzRequired nzXs="24" nzSm="24" nzMd="10" [nzNoColon]="true">
+            COS实际核查总三方价格含税（不含未评估三方）
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <nz-input-number style="width: 100%;" formControlName="cosAuditTotalPriceExclude" [nzMin]="0"
+              [nzMax]="99999999999999999.99" [nzStep]="0.0001" nzPlaceHolder=""></nz-input-number>
+            <nz-form-explain
+              *ngIf="formData.get('cosAuditTotalPriceExclude')?.dirty && formData.get('cosAuditTotalPriceExclude')?.errors">
+              此选项必填字段
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="10" [nzNoColon]="true">
+            Deviation Percentage（不含未评估三方）
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <input nz-input formControlName="deviationPercentageExclude" placeholder="" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label nzRequired nzXs="24" nzSm="24" nzMd="10" [nzNoColon]="true">
+            COS实际核查总三方价格含税（含未评估三方）
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <nz-input-number style="width: 100%;" formControlName="cosAuditTotalPriceInclude" [nzMin]="0"
+              [nzMax]="99999999999999999.99" [nzStep]="0.0001" nzPlaceHolder=""></nz-input-number>
+            <nz-form-explain
+              *ngIf="formData.get('cosAuditTotalPriceInclude')?.dirty && formData.get('cosAuditTotalPriceInclude')?.errors">
+              此选项必填字段
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="10" [nzNoColon]="true">
+            Deviation Percentage（含未评估三方）
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <input nz-input formControlName="deviationPercentageInclude" placeholder="" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label nzRequired nzXs="24" nzSm="24" nzMd="10" [nzNoColon]="true">
+            Deviation 类型（不含未评估三方）
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <nz-select nzShowSearch nzAllowClear nzPlaceHolder="" formControlName="deviationTypeExclude">
+              <nz-option *ngFor="let item of thirdPartyList" [nzValue]="item.label" [nzLabel]="item.label"></nz-option>
+            </nz-select>
+            <nz-form-explain
+              *ngIf="formData.get('deviationTypeExclude')?.dirty && formData.get('deviationTypeExclude')?.errors">
+              此选项必填字段
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label nzRequired nzXs="24" nzSm="24" nzMd="10" [nzNoColon]="true">
+            Deviation 类型（含未评估三方）
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <nz-select nzShowSearch nzAllowClear nzPlaceHolder="请选择" formControlName="deviationTypeInclude">
+              <nz-option *ngFor="let item of thirdPartyList" [nzValue]="item.label" [nzLabel]="item.label"></nz-option>
+            </nz-select>
+            <nz-form-explain
+              *ngIf="formData.get('deviationTypeInclude')?.dirty && formData.get('deviationTypeInclude')?.errors">
+              此选项必填字段
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label nzRequired nzXs="24" nzSm="24" nzMd="10" [nzNoColon]="true">
+            三方核查状态
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <nz-select nzShowSearch nzAllowClear nzPlaceHolder="请选择" formControlName="auditStatus">
+              <nz-option *ngFor="let item of thirdPartyList" [nzValue]="item.label" [nzLabel]="item.label"></nz-option>
+            </nz-select>
+            <nz-form-explain *ngIf="formData.get('auditStatus')?.dirty && formData.get('auditStatus')?.errors">
+              此选项必填字段
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label nzRequired nzXs="24" nzSm="24" nzMd="10" [nzNoColon]="true">
+            三方核查备注
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <textarea rows="2" nz-input formControlName="oaAuditComments"></textarea>
+            <nz-form-explain *ngIf="formData.get('oaAuditComments')?.dirty && formData.get('oaAuditComments')?.errors">
+              此选项必填字段
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label nzRequired nzXs="24" nzSm="24" nzMd="10" [nzNoColon]="true">
+            OA三方核查备注附件
+          </nz-form-label>
+          <nz-form-control class="form-control-center" nzXs="24" nzSm="24" nzMd="14">
+            <shared-upload-file [title]="" [type]="null" formControlName="oaAuditAttachments">
+            </shared-upload-file>
+            <nz-form-explain
+              *ngIf="formData.get('oaAuditAttachments')?.dirty && formData.get('oaAuditAttachments')?.errors">
+              此选项必填字段
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label nzRequired nzXs="24" nzSm="24" nzMd="10" [nzNoColon]="true">
+            <pre>&lt;&lt;核查报告&gt;&gt;附件</pre>
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <div style="display: flex;padding-bottom: 10px;">
+              <button nz-button nzType="primary" style="margin-right: 10px;">核查模板</button>
+              <button nz-button nzType="primary">同步核查报告至三方核查管理界面</button>
+            </div>
+            <shared-upload-file [title]="" [type]="null" formControlName="auditFiles">
+            </shared-upload-file>
+            <nz-form-explain *ngIf="formData.get('auditFiles')?.dirty && formData.get('auditFiles')?.errors">
+              此选项必填字段
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+  </form>
+</app-form-section>

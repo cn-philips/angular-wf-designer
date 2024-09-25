@@ -19,3 +19,11 @@
   display: flex;
   justify-content: center;
 }
+
+::ng-deep .tab-pad8 {
+
+  .ant-table-thead>tr>th,
+  .ant-table-tbody>tr>td {
+    padding: 16px 8px !important;
+  }
+}
