@@ -110,7 +110,7 @@
 
 <app-form-section class="mtb1rem" title="填写核查信息">
   <form nz-form [formGroup]="formData">
-    <div style="padding: 12px 10px 24px 12px;" *ngIf="!formData.get('oaAuditEndTime')?.value">
+    <div style="padding: 12px 10px 24px 12px;" *ngIf="!formData.get('auditStartTime')?.value">
       <button nz-button nzType="primary" (click)="noticeDealerUploadFile()">通知经销商上传核查材料</button>
     </div>
 
@@ -146,7 +146,7 @@
         </nz-form-item>
       </div>
     </div>
-    dd:{{formData.get('auditStartTime')?.value}}
+
     <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
       <div nz-col nzXs="24" nzSm="24" nzMd="8">
         <nz-form-item>
@@ -154,8 +154,7 @@
             三方核查要求备注
           </nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <textarea formControlName="auditComments" [disabled]="formData.get('auditStartTime')?.value" nzAutosize
-              nz-input></textarea>
+            <textarea formControlName="auditComments" nzAutosize nz-input></textarea>
             <nz-form-explain *ngIf="formData.get('auditComments')?.dirty && formData.get('auditComments')?.errors">
               此选项必填字段
             </nz-form-explain>
@@ -171,8 +170,7 @@
             三方核查要求附件
           </nz-form-label>
           <nz-form-control class="form-control-center" nzXs="24" nzSm="24" nzMd="14">
-            <shared-upload-file [title]="" [type]="null" [disabled]="formData.get('auditStartTime')?.value"
-              formControlName="auditAttachment">
+            <shared-upload-file [title]="" [type]="null" formControlName="auditAttachment">
             </shared-upload-file>
             <nz-form-explain *ngIf="formData.get('auditAttachment')?.dirty && formData.get('auditAttachment')?.errors">
               此选项必填字段
@@ -256,7 +254,7 @@
           </nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <nz-select nzShowSearch nzAllowClear nzPlaceHolder="" formControlName="deviationTypeExclude">
-              <nz-option *ngFor="let item of thirdPartyList" [nzValue]="item.label" [nzLabel]="item.label"></nz-option>
+              <nz-option *ngFor="let item of deviationTypes" [nzValue]="item" [nzLabel]="item"></nz-option>
             </nz-select>
           </nz-form-control>
         </nz-form-item>
@@ -267,8 +265,8 @@
             Deviation 类型（含未评估三方）
           </nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <nz-select nzShowSearch nzAllowClear nzPlaceHolder="请选择" formControlName="deviationTypeInclude">
-              <nz-option *ngFor="let item of thirdPartyList" [nzValue]="item.label" [nzLabel]="item.label"></nz-option>
+            <nz-select nzShowSearch nzAllowClear nzPlaceHolder="" formControlName="deviationTypeInclude">
+              <nz-option *ngFor="let item of deviationTypes" [nzValue]="item" [nzLabel]="item"></nz-option>
             </nz-select>
           </nz-form-control>
         </nz-form-item>
@@ -283,7 +281,7 @@
           </nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <nz-select nzShowSearch nzAllowClear nzPlaceHolder="请选择" formControlName="auditStatus">
-              <nz-option *ngFor="let item of thirdPartyList" [nzValue]="item.label" [nzLabel]="item.label"></nz-option>
+              <nz-option *ngFor="let item of checkStatus" [nzValue]="item" [nzLabel]="item"></nz-option>
             </nz-select>
           </nz-form-control>
         </nz-form-item>
@@ -326,10 +324,10 @@
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <div style="display: flex;padding-bottom: 10px;">
               <button nz-button nzType="primary" style="margin-right: 10px;">核查模板</button>
-              <button nz-button nzType="primary">同步核查报告至三方核查管理界面</button>
+              <button nz-button nzType="primary" (click)="syncAuditFileThirdParty()">同步核查报告至三方核查管理界面</button>
             </div>
-            <shared-upload-file [title]="" [type]="null" formControlName="auditFiles">
-            </shared-upload-file>
+            <upload-third-audit-file [applyId]="applyId" [title]="" [type]="null" formControlName="auditFiles">
+            </upload-third-audit-file>
             <nz-form-explain *ngIf="formData.get('auditFiles')?.dirty && formData.get('auditFiles')?.errors">
               此选项必填字段
             </nz-form-explain>

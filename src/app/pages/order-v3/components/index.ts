@@ -32,3 +32,4 @@ export * from "./standard-table/standard-table.component";
 export * from "./third-check-info/third-check-info.component";
 export * from "./win-check-table-v3/win-check-table-v3.component";
 export * from "./select-third-deal/select-third-deal";
+export * from "./upload-third-audit-file/upload-third-audit-file.component";

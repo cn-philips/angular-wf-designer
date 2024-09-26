@@ -37,7 +37,7 @@ export class ThirdCheckInfoComponent implements OnInit {
     auditComments: [{ value: null, disabled: false }], // 三方核查要求备注
     auditAttachment: [{ value: null, disabled: false }], // 三方核查要求附件
     dealerDelayTime: [{ value: null, disabled: false }], // dealer_delay_time
-    oaAuditEndTime: [{ value: null, disabled: false }], // OA完成核查时间
+    oaAuditEndTime: [{ value: null, disabled: true }], // OA完成核查时间
     cpAuditTotalPrice: [{ value: null, disabled: true }], // CP系统审核完成的三方审核总价
     cosAuditTotalPriceExclude: [{ value: null, disabled: false }], // COS实际核查总三方价格含税（不含未评估三方）
     // Deviation Percentage（不含未评估三方）：系统计算= 【COS实际核查总三方价格含税（不含未评估三方）- CP评估三方总价】(结果取绝对值）/ CP评估三方总价
@@ -54,6 +54,20 @@ export class ThirdCheckInfoComponent implements OnInit {
     auditFiles: [{ value: [], disabled: false }], // 核查报告
   })
 
+  public deviationTypes = [
+    "Non Significant differences", "Significant differences", "Serious circumstances"
+  ]
+
+  public checkStatus = [
+    "按时完成核查（无差异）",
+    "按时完成核查（有差异）",
+    "超期未提供文件[系统判断，可人工修改]",
+    "期限内跟催中[系统判断，可人工修改]",
+    "延期完成核查（无差异）",
+    "延期完成核查（有差异）",
+    "暂未签署ICF[系统判断，可人工修改]",
+   ]
+
   ngOnInit() {
     this.queryDetails(this.applyId) 
   }
@@ -63,11 +77,16 @@ export class ThirdCheckInfoComponent implements OnInit {
     this.http.post(`/act/ecos/thirdParty/detail/${applyId}`).subscribe((res => {
       if (res.code === '0000') {
         const data = res.data;
-        console.log("data", data);
         this.formData.patchValue({
           ...data,
           auditAttachment: data.auditAttachment ? JSON.parse(data.auditAttachment) : [],
+          oaAuditAttachments: data.oaAuditAttachments ? JSON.parse(data.oaAuditAttachments) : [],
         })
+
+        if (data.auditStartTime) {
+          this.formData.get('auditComments').disable()
+          this.formData.get('auditAttachment').disable()
+        }
         this.load = false;
       } else {
         this.message.create('error', `${res.msg}`);
@@ -79,19 +98,6 @@ export class ThirdCheckInfoComponent implements OnInit {
     }));
   }
   
-  public getEntryModeList() {
-    const params = {
-      dictGroup: 'thirdVerificationSelect',
-    };
-    this.http.get(`/act/ecom/dictData/queryDrop?dictGroup=${params.dictGroup}`).subscribe(rest => {
-      if (rest.code === '0000') {
-        this.thirdPartyList = rest.data;
-      } else {
-        this.message.create('error', `${rest.msg}`);
-      }
-    });
-  }
-
   setNoticeValid() {
     this.clearFormVaild()
     this.saveRequired = false
@@ -122,7 +128,6 @@ export class ThirdCheckInfoComponent implements OnInit {
       return
     }
 
-    debugger
     this.load = true
     let data = this.formData.getRawValue()
     const { tpcId, dealFormId, auditComments, auditAttachment } = data
@@ -209,8 +214,33 @@ export class ThirdCheckInfoComponent implements OnInit {
     const valid = this.checkFormData(this.formData);
     if (valid) {
       console.log("提交保存");
+
+      const data = this.formData.getRawValue()
+      const { auditAttachment, oaAuditAttachments } = data
+
+      let auditAttachStr = ""
+      let oaAuditAttachStr = ""
+      // 文件转为json存贮
+      if (auditAttachment && auditAttachment.length > 0) {
+        const auditAtts = auditAttachment.map(file => ({  
+          fileId: file.fileId,  
+          name: file.name  
+        }));  
+        auditAttachStr = JSON.stringify(auditAtts)
+      }
+      if (oaAuditAttachments && oaAuditAttachments.length > 0) {
+        const oaAuditAtts = oaAuditAttachments.map(file => ({  
+          fileId: file.fileId,  
+          name: file.name  
+        }));  
+        oaAuditAttachStr = JSON.stringify(oaAuditAtts) 
+      }
+      
       const parmas = {
-        ...this.formData.getRawValue
+        ...data,
+        auditAttachment: auditAttachStr ? auditAttachStr : null,
+        oaAuditAttachments: oaAuditAttachStr ? oaAuditAttachStr : null,
+        auditFiles: null,
       }
 
       this.load = true
