@@ -50,7 +50,7 @@
     <app-tab [title]="'orderv3.pages.oit-complete.third-tab' | translate" id="complete-third"
       *ngIf="needFileType == 'third'">
       <div class="card-body">
-        <ecos-thirdcheck-info #thirdCheck [formValue]="formValue" [applyId]="applyId"></ecos-thirdcheck-info>
+        <ecos-thirdcheck-info #thirdCheck [applyId]="applyId"></ecos-thirdcheck-info>
       </div>
     </app-tab>
     <app-tab [title]="'orderv3.pages.oit-complete.so-tab' | translate" id="complete-real"
@@ -251,6 +251,7 @@
     </div>
   </div>
 
+  <!-- 三方自查保存按钮 -->
   <div *ngIf="thirdSave" class="fixed-btn-group" nz-row nzType="flex" class="fixed-btn-group" nzJustify="center"
     nzAlign="middle">
     <div nz-col nzSpan="24">
@@ -259,8 +260,8 @@
           <button nz-button nzType="default" style="margin-right: 10px" (click)="handleCancel()">
             {{"orderv3.pages.oit-complete.cancel" | translate}}
           </button>
-          <button nz-button nzType="primary" nz-popconfirm nzTitle="你确定要执行提交的操作?" (nzOnConfirm)="thirdCheckSubmit()">
-            {{"orderv3.pages.oit-complete.submit" | translate}}
+          <button nz-button nzType="primary" nz-popconfirm nzTitle="你确定要执行保存的操作?" (nzOnConfirm)="thirdCheckSubmit()">
+            {{"orderv3.pages.oit-complete.save" | translate}}
           </button>
         </nz-form-control>
       </nz-form-item>

@@ -12,11 +12,12 @@ import { NzMessageService, UploadFile } from 'ng-zorro-antd';
 export class ThirdCheckInfoComponent implements OnInit {
 
   constructor(public activatedRouter: ActivatedRoute, private message: NzMessageService, private fb: FormBuilder, private http: HttpService) { }
-  @Input() formValue:FormGroup;
   @Input() applyId:string;
   thirdPartyList: any = [];
   load: any = false;
-
+  saveRequired = true
+  noticeRequired = false
+  auditFileRequired = false
 
   public formData: FormGroup = this.fb.group({
     id: [],
@@ -29,40 +30,31 @@ export class ThirdCheckInfoComponent implements OnInit {
     icfSignTime: [{ value: null, disabled: true }], // ICF签署时间
     dealerProvideMaterialDeadline: [{ value: null, disabled: true }], // 需要经销商提供核查的材料截止时间（签署时间+3个月）
     isOverdue: [{ value: false, disabled: true }], // 经销商是否超期提供核查材料
-    auditReport: [{ value: [], disabled: false }, [Validators.required]], // 核查报告
-    auditReportUploadTime: [{ value: null, disabled: false }, [Validators.required]], // 核查报告上传时间
+    auditReport: [{ value: [], disabled: false }], // 核查报告
+    auditReportUploadTime: [{ value: null, disabled: false }], // 核查报告上传时间
     dealerProvideMaterialRealtime: [{ value: null, disabled: true }], // 经销商提供核查的材料实际时间
-    auditStartTime: [{ value: null, disabled: false }, [Validators.required]], // 开始三方核查时间
-    auditComments: [{ value: null, disabled: false }, [Validators.required]], // 三方核查要求备注
-    auditAttachment: [{ value: null, disabled: false }, [Validators.required]], // 三方核查要求附件
+    auditStartTime: [{ value: null, disabled: true }], // 开始三方核查时间
+    auditComments: [{ value: null, disabled: false }], // 三方核查要求备注
+    auditAttachment: [{ value: null, disabled: false }], // 三方核查要求附件
     dealerDelayTime: [{ value: null, disabled: false }], // dealer_delay_time
-    oaAuditEndTime: [{ value: null, disabled: false }, [Validators.required]], // OA完成核查时间
+    oaAuditEndTime: [{ value: null, disabled: false }], // OA完成核查时间
     cpAuditTotalPrice: [{ value: null, disabled: true }], // CP系统审核完成的三方审核总价
-    cosAuditTotalPriceExclude: [{ value: null, disabled: false }, [Validators.required]], // COS实际核查总三方价格含税（不含未评估三方）
+    cosAuditTotalPriceExclude: [{ value: null, disabled: false }], // COS实际核查总三方价格含税（不含未评估三方）
     // Deviation Percentage（不含未评估三方）：系统计算= 【COS实际核查总三方价格含税（不含未评估三方）- CP评估三方总价】(结果取绝对值）/ CP评估三方总价
     deviationPercentageExclude: [{ value: null, disabled: true }],
-    cosAuditTotalPriceInclude: [{ value: null, disabled: false }, [Validators.required]], // COS实际核查总三方价格含税（含未评估三方）
-
+    cosAuditTotalPriceInclude: [{ value: null, disabled: false }], // COS实际核查总三方价格含税（含未评估三方）
     // Deviation Percentage （含未评估三方）：系统计算= 【COS实际核查总三方价格含税（含未评估三方）- CP评估三方总价】(如差值为负数-结果取绝对值，如差异为正数-结果为0）/ CP评估三方总价​
     deviationPercentageInclude: [{ value: null, disabled: true }],
-    deviationTypeExclude: [{ value: null, disabled: false }, [Validators.required]], // Deviation 类型（不含未评估三方）
-    deviationTypeInclude: [{ value: null, disabled: false }, [Validators.required]], // Deviation 类型（含未评估三方）
-    auditStatus: [{ value: null, disabled: false }, [Validators.required]], // 三方核查状态
-    oaAuditComments: [{ value: null, disabled: false }, [Validators.required]], // OA三方核查备注
-    oaAuditAttachments: [{ value: null, disabled: false }, [Validators.required]], // OA三方核查备注附件
+    deviationTypeExclude: [{ value: null, disabled: false }], // Deviation 类型（不含未评估三方）
+    deviationTypeInclude: [{ value: null, disabled: false }], // Deviation 类型（含未评估三方）
+    auditStatus: [{ value: null, disabled: false }], // 三方核查状态
+    oaAuditComments: [{ value: null, disabled: false }], // OA三方核查备注
+    oaAuditAttachments: [{ value: null, disabled: false }], // OA三方核查备注附件
     processStatus: [{ value: null, disabled: true }],
-    auditFiles: [{ value: [], disabled: false }, [Validators.required]], // 核查报告
+    auditFiles: [{ value: [], disabled: false }], // 核查报告
   })
 
   ngOnInit() {
-    console.log("applyId", this.applyId);
-    // let productVerification = this.thirdCheckFormData.get('productVerificationInformation').value;
-    // if(productVerification == '已经交付'){
-    //   this.thirdCheckFormData.get('productVerificationInformation').disable();
-    // } else {
-    //   this.thirdCheckFormData.get('productVerificationInformation').enable();
-    // }
-    // this.getEntryModeList();
     this.queryDetails(this.applyId) 
   }
 
@@ -71,12 +63,15 @@ export class ThirdCheckInfoComponent implements OnInit {
     this.http.post(`/act/ecos/thirdParty/detail/${applyId}`).subscribe((res => {
       if (res.code === '0000') {
         const data = res.data;
+        console.log("data", data);
         this.formData.patchValue({
-          ...data
+          ...data,
+          auditAttachment: data.auditAttachment ? JSON.parse(data.auditAttachment) : [],
         })
         this.load = false;
       } else {
         this.message.create('error', `${res.msg}`);
+        this.load = false;
       }
     }), (error => {
       this.load = false;
@@ -97,6 +92,69 @@ export class ThirdCheckInfoComponent implements OnInit {
     });
   }
 
+  setNoticeValid() {
+    this.clearFormVaild()
+    this.saveRequired = false
+    this.noticeRequired = true
+    this.auditFileRequired = false
+    this.formData.get('auditComments')!.setValidators(Validators.required);
+    this.formData.get('auditAttachment')!.setValidators(Validators.required);
+  }
+
+  clearFormVaild() {
+    for (let i in this.formData.controls) {
+      this.formData.controls[i].clearValidators()
+      this.formData.controls[i].markAsPristine()
+    }
+  }
+
+  resetRequired() {
+    this.saveRequired = true
+    this.noticeRequired = false
+    this.auditFileRequired = false
+  }
+
+  // 通知经销商上传核查材料
+  noticeDealerUploadFile() {
+    this.setNoticeValid()
+    const valid = this.checkFormData(this.formData);
+    if (!valid) {
+      return
+    }
+
+    debugger
+    this.load = true
+    let data = this.formData.getRawValue()
+    const { tpcId, dealFormId, auditComments, auditAttachment } = data
+
+    const files = auditAttachment.map(file => ({  
+      fileId: file.fileId,  
+      name: file.name  
+    }));  
+
+    const jsonString = JSON.stringify(files) 
+    const parmas = {
+      auditComments: auditComments,
+      auditAttachment: jsonString,
+    }
+
+    this.http.post(`/act/ecos/thirdParty/oaApproval/detail/notify/${tpcId}/${dealFormId}`, parmas).subscribe((res => {
+      if (res.code === '0000') {
+        this.resetRequired()
+        this.message.create("success", "操作成功！")
+        this.load = false;
+        this.queryDetails(this.applyId) 
+      } else {
+        this.message.create('error', `${res.msg}`);
+        this.load = false;
+      }
+    }), (error => {
+      this.load = false;
+      this.message.create("error", "服务器异常")
+    }));
+
+  }
+
   checkFormData = (paramForm) => {
     for (const i in paramForm.controls) {
       paramForm.controls[i].markAsDirty();
@@ -105,12 +163,70 @@ export class ThirdCheckInfoComponent implements OnInit {
     return paramForm.valid;
   };
 
-  public saveFormData() {
-    const valid = this.checkFormData(this.formData);
+  setAuditFileValid() {
+    this.clearFormVaild()
+    this.saveRequired = false
+    this.noticeRequired = false
+    this.auditFileRequired = true
+    this.formData.get('auditFiles')!.setValidators(Validators.required);
+  }
 
+  syncAuditFileThirdParty() {
+    this.setAuditFileValid()
+    const valid = this.checkFormData(this.formData);
+    if (!valid) {
+      this.message.create('error', `请先上传核查报告！`);
+      return
+    }
+
+    this.load = true
+    this.http.post(`/act/ecos/thirdParty/auditReport/sync/${this.applyId}`).subscribe((res => {
+      if (res.code === '0000') {
+        this.resetRequired()
+        this.message.create("success", "操作成功！")
+        this.load = false;
+        this.queryDetails(this.applyId) 
+      } else {
+        this.message.create('error', `${res.msg}`);
+      }
+    }), (error => {
+      this.load = false;
+      this.message.create("error", "服务器异常")
+    }));
+  }
+
+  setSaveValid() {
+    this.clearFormVaild()
+    this.saveRequired = true
+    this.noticeRequired = false
+    this.auditFileRequired = false
+    this.formData.get('cosAuditTotalPriceExclude')!.setValidators(Validators.required);
+    this.formData.get('cosAuditTotalPriceInclude')!.setValidators(Validators.required);
+  }
+
+  public saveFormData() {
+    this.setSaveValid()
+    const valid = this.checkFormData(this.formData);
     if (valid) {
       console.log("提交保存");
-      
+      const parmas = {
+        ...this.formData.getRawValue
+      }
+
+      this.load = true
+      this.http.post(`/act/ecos/thirdParty/doOaApprovalSave`, parmas).subscribe((res => {
+        if (res.code === '0000') {
+          this.message.create('success', `保存成功！`);
+          this.load = false;
+          this.queryDetails(this.applyId) 
+        } else {
+          this.message.create('error', `${res.msg}`);
+          this.load = false;
+        }
+      }), (error => {
+        this.load = false;
+        this.message.create("error", "服务器异常")
+      }));
     }
   }
 
