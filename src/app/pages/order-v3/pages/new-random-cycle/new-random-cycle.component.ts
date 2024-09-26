@@ -341,7 +341,7 @@ export class NewRandomCycleComponent implements OnInit {
       str = Array.from(new Set(list.map(item => `${this.matchesNo(item.referenceId)}${item.dealerName}`)))
       return str.join(', '); 
     } else if (field == 'icfRe') {
-      let arrs = list.map(item => item.icfRegistrationTime)
+      let arrs = list.map(item => item.icfRegistrationTime).filter(v => v !== null && v !== undefined)
       if (arrs.length == 0) {
         return ''
       }
@@ -352,7 +352,7 @@ export class NewRandomCycleComponent implements OnInit {
       })
       return arr.join(', '); 
     } else if (field == 'icf') {
-      let arrs = list.map(item => item.icfSignTime)
+      let arrs = list.map(item => item.icfSignTime).filter(v => v !== null && v !== undefined)
       if (arrs.length == 0) {
         return ''
       }
@@ -363,7 +363,7 @@ export class NewRandomCycleComponent implements OnInit {
       })
       return arr.join(', '); 
     } else if (field == 'deadline') {
-      let arrs = list.map(item => item.dealerProvideMaterialDeadline)
+      let arrs = list.map(item => item.dealerProvideMaterialDeadline).filter(v => v !== null && v !== undefined)
       if (arrs.length == 0) {
         return ''
       }
@@ -374,7 +374,7 @@ export class NewRandomCycleComponent implements OnInit {
       })
       return arr.join(', '); 
     } else if (field == 'over') {
-      let arrs = list.map(item => item.isOverdue)
+      let arrs = list.map(item => item.isOverdue).filter(v => v !== null && v !== undefined)
       if (arrs.length == 0) {
         return ''
       }

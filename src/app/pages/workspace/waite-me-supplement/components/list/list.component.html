@@ -1,6 +1,6 @@
 <nz-table nzVirtualScroll [nzData]="tableData" [nzVirtualItemSize]="10" nzFrontPagination="false"
   [nzPageIndex]="pageParams.pageNo" [nzPageSize]="pageParams.pageSize" [nzTotal]="total" [nzLoading]="loading"
-  [nzScroll]="{ x: '2200px', y: '600px' }" (nzPageIndexChange)="changePageIndex($event)" [nzShowTotal]="totalTemplate"
+  [nzScroll]="{ x: '2000px', y: '600px' }" (nzPageIndexChange)="changePageIndex($event)" [nzShowTotal]="totalTemplate"
   (nzPageSizeChange)="changePageSize($event)" style="margin-top: 16px">
   <thead>
     <tr>
@@ -37,9 +37,9 @@
       <th class="tableHead" nzAlign="center" style="width: 200px">
         {{"list-pages.table-header.bidder-name" | translate}}
       </th>
-      <th class="tableHead" nzAlign="center" style="width: 200px">
+      <!-- <th class="tableHead" nzAlign="center" style="width: 200px">
         {{"list-pages.table-header.third-check" | translate}}
-      </th>
+      </th> -->
       <th class="tableHead" nzAlign="center" nzRight="0px" style="width: 200px">
         {{"list-pages.table-header.action" | translate}}
       </th>
@@ -63,7 +63,7 @@
         <td class="tableData" style="width: 200px;" nzAlign="center">{{ data.biddingNumber }}</td>
         <td class="tableData" style="width: 200px;" nzAlign="center">{{ data.marketBundleName | ellipsis:50 }}</td>
         <td class="tableData" style="width: 200px;" nzAlign="center">{{ data.bidderName }}</td>
-        <td class="tableData" style="width: 200px;" nzAlign="center">{{ data.productVerificationInformation }}</td>
+        <!-- <td class="tableData" style="width: 200px;" nzAlign="center">{{ data.productVerificationInformation }}</td> -->
         <td class="tableData" style="width: 180px" nzAlign="center" nzRight="0px">
           <!-- 三期操作 -->
           <a *ngIf="data.procPhase === 'p3'" style="display: block; color: #337FBF;" (click)="operate(data)">
