@@ -169,7 +169,7 @@
           <nz-form-label [nzRequired]="noticeRequired" nzXs="24" nzSm="24" nzMd="10" [nzNoColon]="true">
             三方核查要求附件
           </nz-form-label>
-          <nz-form-control class="form-control-center" nzXs="24" nzSm="24" nzMd="14">
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <shared-upload-file [title]="" [type]="null" formControlName="auditAttachment">
             </shared-upload-file>
             <nz-form-explain *ngIf="formData.get('auditAttachment')?.dirty && formData.get('auditAttachment')?.errors">
@@ -307,7 +307,7 @@
           <nz-form-label nzXs="24" nzSm="24" nzMd="10" [nzNoColon]="true">
             OA三方核查备注附件
           </nz-form-label>
-          <nz-form-control class="form-control-center" nzXs="24" nzSm="24" nzMd="14">
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <shared-upload-file [title]="" [type]="null" formControlName="oaAuditAttachments">
             </shared-upload-file>
           </nz-form-control>

@@ -1,32 +1,25 @@
-import { Component, Input, OnInit, ViewChild } from "@angular/core";
-import { OrderV3Service } from "../../order-v3.service";
+import { Component, OnInit, ViewChild } from "@angular/core";
 import { Router, ActivatedRoute } from '@angular/router';
 import {
-  FormBuilder,
-  FormGroup,
-  FormControl,
-  FormArray,
-  Validators,
+  FormBuilder
 } from "@angular/forms";
-import { NzMessageService, NzModalService } from 'ng-zorro-antd';
+import { NzMessageService } from 'ng-zorro-antd';
 import * as moment from 'moment'
+import { saveAs } from 'file-saver';
 import { HttpService } from '@core/services';
-import { RouterExtendService } from "@app/modern-themes/services/router-extend.service";
-import { forEach } from "@angular/router/src/utils/collection";
+
 @Component({
   selector: "new-random-cycle",
   templateUrl: "./new-random-cycle.component.html",
   styleUrls: ["./new-random-cycle.component.scss"],
 })
 export class NewRandomCycleComponent implements OnInit {
-  constructor(private serveice: OrderV3Service,
+  constructor(
     private activatedRouter: ActivatedRoute,
     private fb: FormBuilder,
     private message: NzMessageService,
     private router: Router,
-    private modalService: NzModalService,
     private http: HttpService,
-    private routerExtend: RouterExtendService,
   ) {}
 
   @ViewChild("selectDeal") selectDeal;
@@ -147,7 +140,7 @@ export class NewRandomCycleComponent implements OnInit {
       attachments: jsonString 
     }
 
-    this.http.post(`/act/ecos/thirdParty//randomPick/add/${this.summaryId}`, params).subscribe((res => {
+    this.http.post(`/act/ecos/thirdParty/randomPick/add/${this.summaryId}`, params).subscribe((res => {
       this.load = false;
       if (res.code === '0000') {
         this.message.create("success", "操作成功!")
@@ -341,9 +334,17 @@ export class NewRandomCycleComponent implements OnInit {
       str = Array.from(new Set(list.map(item => item.referenceId)))
       return str.join(', '); 
     } else if (field == 'newDealer') {
+      let arrs = list.map(item => item.dealerName)
+      if (arrs.length == 0) {
+        return ''
+      }
       str = Array.from(new Set(list.map(item => `${this.matchesNo(item.referenceId)}${item.dealerName}`)))
       return str.join(', '); 
     } else if (field == 'icfRe') {
+      let arrs = list.map(item => item.icfRegistrationTime)
+      if (arrs.length == 0) {
+        return ''
+      }
       str = Array.from(new Set(list.map(item => `${this.matchesNo(item.referenceId)}${item.icfRegistrationTime}`)))
       let arr = []
       str.forEach(v => {
@@ -351,6 +352,10 @@ export class NewRandomCycleComponent implements OnInit {
       })
       return arr.join(', '); 
     } else if (field == 'icf') {
+      let arrs = list.map(item => item.icfSignTime)
+      if (arrs.length == 0) {
+        return ''
+      }
       str = Array.from(new Set(list.map(item => `${this.matchesNo(item.referenceId)}${item.icfSignTime}`)))
       let arr = []
       str.forEach(v => {
@@ -358,6 +363,10 @@ export class NewRandomCycleComponent implements OnInit {
       })
       return arr.join(', '); 
     } else if (field == 'deadline') {
+      let arrs = list.map(item => item.dealerProvideMaterialDeadline)
+      if (arrs.length == 0) {
+        return ''
+      }
       str = Array.from(new Set(list.map(item => `${this.matchesNo(item.referenceId)}${item.dealerProvideMaterialDeadline}`)))
       let arr = []
       str.forEach(v => {
@@ -365,6 +374,10 @@ export class NewRandomCycleComponent implements OnInit {
       })
       return arr.join(', '); 
     } else if (field == 'over') {
+      let arrs = list.map(item => item.isOverdue)
+      if (arrs.length == 0) {
+        return ''
+      }
       str = Array.from(new Set(list.map(item => `${this.matchesNo(item.referenceId)}${item.isOverdue}`)))
       let arr = []
       str.forEach(v => {
@@ -372,7 +385,6 @@ export class NewRandomCycleComponent implements OnInit {
       })
       return arr.join(', '); 
     }
-    
   }
 
   getFileNames(jsonString) {
@@ -396,4 +408,13 @@ export class NewRandomCycleComponent implements OnInit {
     return numbers.length > 0 ? `(${numbers[0]})`:''
   }
 
+  // 下载文件
+  fileDown(fileId, name) {
+    let uri = `/act/system/download/${fileId}`;
+    this.http.get(uri, {
+      responseType: 'blob'
+    }).subscribe(data => {
+      saveAs(data, name);
+    });
+  }
 }

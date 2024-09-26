@@ -128,7 +128,14 @@
                 <a style="display: block; color: #337FBF;" (click)="operate(data,'del')">删除</a>
                 <a style="display: block; color: #337FBF;" (click)="operate(data, 'send')">通知经销商需要被核查</a>
               </td>
-              <td class="tableData" style="width: 120px">{{ data.auditReport }}</td>
+              <td class="tableData" style="width: 120px">
+                <ng-container *ngIf="data.auditReport&&JSON.parse(data.auditReport).length>0">
+                  <div *ngFor="let item of JSON.parse(data.auditReport)">
+                    <a style="display: block; color: #337FBF;" href="javascript:"
+                      (click)="fileDown(item.fileId, item.fileName)">{{item.fileName}}</a>
+                  </div>
+                </ng-container>
+              </td>
               <td class="tableData" style="width: 120px">{{ data.auditReportUploadTime | TimeFormatePipeNow }}</td>
               <td class="tableData" style="width: 150px">{{ data.dealerName }}</td>
               <td class="tableData" style="width: 150px">{{ data.hospitalName }}</td>
