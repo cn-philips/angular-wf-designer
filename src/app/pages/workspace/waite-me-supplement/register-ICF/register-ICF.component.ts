@@ -1,7 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { HttpService, ServesiceService } from '@core/services';
+import { FileService, HttpService, ServesiceService } from '@core/services';
 import { FormBuilder } from '@angular/forms';
 import { UploadXHRArgs, NzMessageService } from 'ng-zorro-antd';
+import { saveAs } from 'file-saver';
 
 interface CommonResponse {
   code: string;
@@ -21,6 +22,7 @@ export class RegisterICFComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private http: HttpService,
+    private fileService: FileService,
     private message: NzMessageService,
     private servesiceService: ServesiceService
   ) { 
@@ -28,6 +30,7 @@ export class RegisterICFComponent implements OnInit {
 
   public total = 0;
   public loading = true;
+  public load = false
   public tableData = [];
   public isHandle = 0;
   public type = 'third'; // 待登记ICF
@@ -154,4 +157,28 @@ export class RegisterICFComponent implements OnInit {
       }
     );
   };
+
+  exportFile() {
+    this.load = true;
+    this.formValues.patchValue({
+      ...this.formValues.value,
+      hasRegistered: this.isHandle ? true : false,
+    })
+   
+    const params = {
+      ...this.formValues.value,
+    }
+    
+    this.http.postDownload(`/act/ecos/thirdParty/icf/export`, params).subscribe(
+      (rest) => {
+        this.fileService.downloadResponse("ICF-", rest);
+        this.load = false;
+      },
+      (error) => {
+        this.message.create("error", "请求错误");
+        this.load = false;
+      }
+    );
+  }
+
 }
