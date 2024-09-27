@@ -99,7 +99,7 @@
             <td class="tableData" style="width: 120px" nzLeft="0px">{{ data.dealFormId }}</td>
             <td class="tableData" style="width: 120px">{{ data.dealerName }}</td>
             <td class="tableData" style="width: 150px">{{ getFields(data.relatedContractSummaries,'ref') }}</td>
-            <td class="tableData" style="width: 120px">{{ data.oitCompleteTime }}</td>
+            <td class="tableData" style="width: 120px">{{ getFields(data.relatedContractSummaries, 'oitTime') }}</td>
             <td class="tableData" style="width: 120px">{{ data.remarks }}</td>
             <td class="tableData" style="width: 140px">{{ getFileNames(data.attachment) }}</td>
           </tr>
@@ -110,11 +110,11 @@
     <div>
       <p style="font-weight: bold;margin-bottom: 10px;">有效的抽取结果</p>
       <nz-table nzVirtualScroll [nzVirtualItemSize]="54" [nzData]="detailData" [nzFrontPagination]="false"
-        [nzShowPagination]="false" [nzScroll]="{ x: isOAAdmin?'2530px':'2330px', y: '400px'}" nzBordered>
+        [nzShowPagination]="false" [nzScroll]="{ x: isOAAdmin?'2610px':'2410px', y: '400px'}" nzBordered>
         <thead>
           <tr>
             <th *ngIf="isOAAdmin" nzAlign="center" style="width: 200px" nzLeft="0px">操作</th>
-            <th nzAlign="center" style="width: 120px">核查报告</th>
+            <th nzAlign="center" style="width: 200px">核查报告</th>
             <th nzAlign="center" style="width: 120px">核查报告上传时间</th>
             <th nzAlign="center" style="width: 150px">经销商名称</th>
             <th nzAlign="center" style="width: 150px">客户名称</th>
@@ -141,9 +141,9 @@
                 <a style="display: block; color: #337FBF;" (click)="operate(data,'del')">删除</a>
                 <a style="display: block; color: #337FBF;" (click)="operate(data, 'send')">通知经销商需要被核查</a>
               </td>
-              <td class="tableData" style="width: 120px">
-                <ng-container *ngIf="data.auditReport&&JSON.parse(data.auditReport).length>0">
-                  <div *ngFor="let item of JSON.parse(data.auditReport)">
+              <td class="tableData" style="width: 200px">
+                <ng-container *ngIf="data.auditFiles&&data.auditFiles.length>0">
+                  <div *ngFor="let item of data.auditFiles">
                     <a style="display: block; color: #337FBF;" href="javascript:"
                       (click)="fileDown(item.fileId, item.fileName)">{{item.fileName}}</a>
                   </div>
@@ -158,14 +158,14 @@
               <td class="tableData" style="width: 120px">{{ data.relatedNewDealFormId }}</td>
               <td class="tableData" style="width: 150px">{{ getFields(data.relatedNewContractSummaries, 'newDealer') }}
               </td>
-              <td class="tableData" style="width: 120px">{{ data.oitCompleteTime | TimeFormatePipeNow }}</td>
+              <td class="tableData" style="width: 120px">{{ getFields(data.relatedContractSummaries, 'oitTime') }}</td>
               <td class="tableData" style="width: 120px">{{ getFields(data.orderDetails, 'icfRe') }}</td>
               <td class="tableData" style="width: 120px">{{ getFields(data.orderDetails, 'icf') }}</td>
               <td class="tableData" style="width: 120px">{{ getFields(data.orderDetails, 'deadline') }}</td>
               <td class="tableData" style="width: 120px">{{ data.dealerProvideMaterialRealtime | TimeFormatePipeNow }}
               </td>
               <td class="tableData" style="width: 120px">{{ getFields(data.orderDetails, 'over') }}</td>
-              <td class="tableData" style="width: 100px">{{ data.type }}</td>
+              <td class="tableData" style="width: 100px">{{ data.type === 'MANUAL' ? '人工新增' : '系统抽取' }}</td>
               <td class="tableData" style="width: 120px">{{ data.remarks }}</td>
               <td class="tableData" style="width: 142px" nzLeft="0px">{{ getFileNames(data.attachment) }}</td>
             </tr>
