@@ -35,7 +35,7 @@
         <td class="tableData" style="width: 170px;" nzAlign="center">{{ data.checkDurationEndTime | TimeFormatePipeNow
           }}</td>
         <td class="tableData" style="width: 80px" nzAlign="center" nzRight="0px">
-          <a style="display: block; color: #337FBF;" (click)="operate(data)">编辑</a>
+          <a style="display: block; color: #337FBF;" (click)="operate(data)">{{ isOAAdmin ? '编辑' : '查看' }}</a>
         </td>
       </tr>
     </ng-template>

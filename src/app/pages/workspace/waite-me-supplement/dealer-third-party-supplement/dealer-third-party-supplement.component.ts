@@ -25,6 +25,7 @@ export class DealerThirdPartySupplementComponent implements OnInit {
   public loading = true;
   public tableData = [];
   public type = 'third'; // 补充文件类型-第三方自采核查
+  public isOAAdmin = false
 
   formValues = this.fb.group({
     status: null, // 抽查周期状态
@@ -76,6 +77,8 @@ export class DealerThirdPartySupplementComponent implements OnInit {
 
   ngOnInit() {
     this.getTableData();
+    const roleList = JSON.parse(localStorage.getItem("roles"));
+    this.isOAAdmin = roleList.includes("OA Admin")
   }
 
   getTableData() {

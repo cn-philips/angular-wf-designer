@@ -35,6 +35,8 @@ export class NewRandomCycleComponent implements OnInit {
   actType = null // del-删除 add-手动新增
   applyStatu = "UNLOCKED"
   routeType = 'add' // add-新建 edit-编辑
+  isOAAdmin = false
+  isAuditor = false
   public summaryData: any[] = []; // 随机抽取该概要
   public removedData: any[] = []; // 机抽取结果（删除）
   public detailData: any[] = []; // 随机抽取结果
@@ -48,6 +50,10 @@ export class NewRandomCycleComponent implements OnInit {
   ngOnInit() {
     this.routeType = this.activatedRouter.queryParams['_value'].type;
     if (this.routeType === 'edit') {
+      const roleList = JSON.parse(localStorage.getItem("roles"));
+      this.isOAAdmin = roleList.includes("OA Admin")
+      this.isAuditor = roleList.includes("Auditor")
+
       const id = this.activatedRouter.queryParams['_value'].id;
       this.summaryId = id
       this.queryDetails(id)
@@ -95,7 +101,7 @@ export class NewRandomCycleComponent implements OnInit {
     this.load = true
     this.http.get(`/act/ecos/thirdParty/randomPick/detail/${id}`).subscribe((res => {
       if (res.code === '0000') {
-        const { status, summary, removed, detail} = res.data;
+        const { checkDurationStartTime, checkDurationEndTime, status, summary, removed, detail} = res.data;
         if (!summary || !detail) {
           this.message.create('error', `没有数据！`);
           this.load = false;
@@ -105,6 +111,7 @@ export class NewRandomCycleComponent implements OnInit {
         this.summaryData = summary
         this.removedData = removed
         this.detailData = detail
+        this.randomPickTime = [checkDurationStartTime, checkDurationEndTime]
         
         this.load = false;
       } else {
@@ -157,30 +164,45 @@ export class NewRandomCycleComponent implements OnInit {
 
   showModal() {
     this.unlockData = []
-    this.detailData.forEach(item => {
-      const row = {
-        id: item.id,
-        tpcId: item.tpcId,
-        dealFormId: item.dealFormId,
-        dealerName: item.dealerName,
-        dealerEmail: null,
-        salesEmail: null,
-        dmEmail: null,
+
+    this.load = true;
+    const dealFormIds = this.detailData.map(item => item.dealFormId)
+    this.http.post(`/act/ecos/thirdParty/cp2/queryOperator`, dealFormIds).subscribe((res => {
+      this.load = false;
+      if (res.code === '0000') {
+        const operators = res.data
+        this.detailData.forEach(item => {
+          const operator = operators[item.dealFormId] ? operators[item.dealFormId] : null
+          const row = {
+            id: item.id,
+            tpcId: item.tpcId,
+            dealFormId: item.dealFormId,
+            dealerName: item.dealerName,
+            dealerEmail: operator ? operator.operatorEmail : null,
+            salesEmail: operator ? operator.salesEmail : null,
+            dmEmail: operator ? operator.dmEmail : null,
+          }
+          this.unlockData = [
+            ...this.unlockData,
+            row
+          ]
+        })
+        this.isVisible = true;
+      } else {
+        this.message.create('error', `${res.msg}`);
       }
-      this.unlockData = [
-        ...this.unlockData,
-        row
-      ]
-    })
-    this.isVisible = true;
+    }), (error => {
+      this.load = false;
+      this.message.create("error", "服务器异常")
+    }));
   }
 
   handleOk = async() =>{
-    // const vaild = this.unlockDataVaild()
-    // if (vaild) {
-    //   this.message.create("error", "请填写必填字段！")
-    //   return
-    // }
+    const vaild = this.unlockDataVaild()
+    if (vaild) {
+      this.message.create("error", "请填写必填字段！")
+      return
+    }
     await this.sendNotice()
     this.isVisible = false;
   }
@@ -234,21 +256,33 @@ export class NewRandomCycleComponent implements OnInit {
       this.actType = 'del'
       this.showRemove = true
     } else {
+      this.load = true;
       this.unlockData = []
-      const row = {
-        id: data.id,
-        tpcId: data.tpcId,
-        dealFormId: data.dealFormId,
-        dealerName: data.dealerName,
-        dealerEmail: null,
-        salesEmail: null,
-        dmEmail: null,
-      }
-      this.unlockData = [
-        ...this.unlockData,
-        row
-      ]
-      this.isVisible = true;
+      this.http.get(`/act/ecos/thirdParty/cp2/queryOperator?dealFormId=${data.dealFormId}`).subscribe((res => {
+        this.load = false;
+        if (res.code === '0000') {
+          const operator = res.data
+          const row = {
+            id: data.id,
+            tpcId: data.tpcId,
+            dealFormId: data.dealFormId,
+            dealerName: data.dealerName,
+            dealerEmail: operator ? operator.operatorEmail : null,
+            salesEmail: operator ? operator.salesEmail : null,
+            dmEmail: operator ? operator.dmEmail : null,
+          }
+          this.unlockData = [
+            ...this.unlockData,
+            row
+          ]
+          this.isVisible = true;
+        } else {
+          this.message.create('error', `${res.msg}`);
+        }
+      }), (error => {
+        this.load = false;
+        this.message.create("error", "服务器异常")
+      }));
     }
   }
 
@@ -334,7 +368,7 @@ export class NewRandomCycleComponent implements OnInit {
       str = Array.from(new Set(list.map(item => item.referenceId)))
       return str.join(', '); 
     } else if (field == 'newDealer') {
-      let arrs = list.map(item => item.dealerName)
+      let arrs = list.map(item => item.dealerName).filter(v => v !== null && v !== undefined)
       if (arrs.length == 0) {
         return ''
       }

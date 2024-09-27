@@ -36,13 +36,18 @@ export class DealerThirdPartyListComponent implements OnInit {
 
   public userList = [];
   public entryModeList = [];
+  public isOAAdmin = false
+  public isAuditor = false
 
   constructor(
     private router: Router,
     private message: NzMessageService,
   ) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    const roleList = JSON.parse(localStorage.getItem("roles"));
+    this.isOAAdmin = roleList.includes("OA Admin")
+  }
 
   //重置分页
   resetPage() {

@@ -46,7 +46,8 @@
     </div>
   </form>
 
-  <button nz-button nzType="primary" style="margin-top: 16px;" (click)="toNewRandomCycle()">新建随机抽查周期</button>
+  <button *ngIf="isOAAdmin" nz-button nzType="primary" style="margin-top: 16px;"
+    (click)="toNewRandomCycle()">新建随机抽查周期</button>
 
   <dealer-third-party-list #table [loading]="loading" [tableData]="tableData" [total]="total" [type]="type"
     [randomStatus]="randomPickStatus" (pageChange)="updateDataList($event)" (setLoading)="getLoading($event)"
