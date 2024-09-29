@@ -20,6 +20,7 @@ import {
   OmSupplementComponent,
   ThirdPartySupplementComponent,
   DealerThirdPartySupplementComponent,
+  NewRandomCycleComponent,
   WinningbidSupplementComponent,
   RegisterICFComponent,
 } from "@pages/workspace/waite-me-supplement";
@@ -86,6 +87,16 @@ const routes: Route[] = [
     path: "dealer-third-supplement",
     component: DealerThirdPartySupplementComponent,
     data: { breadcrumb: "经销商自采三方核查" },
+  },
+  {
+    path: "newRandomCycle",
+    component: NewRandomCycleComponent,
+    data: { breadcrumb: "新建随机抽查周期" },
+  },
+  {
+    path: "editRandomCycle",
+    component: NewRandomCycleComponent,
+    data: { breadcrumb: "随机抽查周期" },
   },
   {
     path: "contract-supplement",

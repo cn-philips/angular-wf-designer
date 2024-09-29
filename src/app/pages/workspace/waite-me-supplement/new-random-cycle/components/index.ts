@@ -1,0 +1,1 @@
+export * from "./select-third-deal/select-third-deal";

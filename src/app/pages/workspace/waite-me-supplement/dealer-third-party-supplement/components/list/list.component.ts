@@ -58,7 +58,7 @@ export class DealerThirdPartyListComponent implements OnInit {
   }
 
   operate(data: any) {
-    const url = "/order-v3/editRandomCycle";
+    const url = "/ecos/editRandomCycle";
     this.router.navigate([url], {
       queryParams: {
         id: data.id,

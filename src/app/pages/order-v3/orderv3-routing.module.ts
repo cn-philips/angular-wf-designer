@@ -10,7 +10,6 @@ import {
   PreOrderComponent,
   PreOrderoaComponent,
   PreorderexamineComponent,
-  NewRandomCycleComponent
 } from "./index";
 const routes: Routes = [
   {
@@ -56,16 +55,6 @@ const routes: Routes = [
     path: "contractSignDetail",
     component: ContractSignDetailComponent,
     data: { breadcrumb: "合同签署" },
-  },
-  {
-    path: "newRandomCycle",
-    component: NewRandomCycleComponent,
-    data: { breadcrumb: "新建随机抽查周期" },
-  },
-  {
-    path: "editRandomCycle",
-    component: NewRandomCycleComponent,
-    data: { breadcrumb: "随机抽查周期" },
   },
   
 ];

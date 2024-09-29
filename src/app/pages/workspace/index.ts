@@ -39,6 +39,8 @@ import {
   SignatureSearchItemComponent,
   ThirdPartySupplementComponent,
   DealerThirdPartySupplementComponent,
+  NewRandomCycleComponent,
+  SelectThirdDealerComponent,
   DealerThirdPartyListComponent,
   UploadFileImgComponent,
   WaiteMeSupplementListComponent,
@@ -71,7 +73,8 @@ export const COMPONENTS = [
   ElectronicSignatureSearchItemComponent,
   UploadFileImgComponent,
   DealerThirdPartyListComponent,
-  RegisterICFListComponent
+  RegisterICFListComponent,
+  SelectThirdDealerComponent,
 ];
 
 export const PAGES = [
@@ -93,6 +96,7 @@ export const PAGES = [
   OmSupplementComponent,
   ThirdPartySupplementComponent,
   DealerThirdPartySupplementComponent,
+  NewRandomCycleComponent,
   ContractSupplementComponent,
   MyReportComponent,
   RegisterICFComponent,

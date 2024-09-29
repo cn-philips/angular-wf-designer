@@ -1,9 +1,10 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-// import { decodeString, upLoadFileNew } from '@core/util/tools';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpService } from '@core/services';
 import { NzMessageService, UploadFile } from 'ng-zorro-antd';
+import * as moment from 'moment'
+
 @Component({
   selector: 'ecos-thirdcheck-info',
   templateUrl: './third-check-info.component.html',
@@ -18,6 +19,19 @@ export class ThirdCheckInfoComponent implements OnInit {
   saveRequired = true
   noticeRequired = false
   auditFileRequired = false
+  isVisible = false
+  noticeType = 'upload' // 通知经销商上传核查材料-upload 通知经销商补充核查材料-replenish
+  noticeTitle = ''
+  partyStatus = 'none'
+  noticeForms = {
+    orderCode: null, // 经销商下单ID(订单需求编号)
+    dealFormId: null,
+    dealerEmail:  null,
+    salesEmail: null,
+    dmEmail:  null,
+    explain: null,
+  }
+  CPSummary = {}
 
   public formData: FormGroup = this.fb.group({
     id: [],
@@ -54,6 +68,13 @@ export class ThirdCheckInfoComponent implements OnInit {
     auditFiles: [{ value: [], disabled: false }], // 核查报告
   })
 
+  public partyStatusOpt = [
+    {label: '待经销商补充申请材料', value: "pending_dealer"},
+    {label: '待经销商补充核查材料', value: "pending_dealer_audit"},
+    {label: '待销售补充申请材料', value: "pending_sales"},
+    {label: '无更新', value: "none"},
+  ]
+
   public deviationTypes = [
     "Non Significant differences", "Significant differences", "Serious circumstances"
   ]
@@ -66,7 +87,7 @@ export class ThirdCheckInfoComponent implements OnInit {
     "延期完成核查（无差异）",
     "延期完成核查（有差异）",
     "暂未签署ICF[系统判断，可人工修改]",
-   ]
+  ]
 
   ngOnInit() {
     this.queryDetails(this.applyId) 
@@ -79,11 +100,35 @@ export class ThirdCheckInfoComponent implements OnInit {
         const data = res.data;
         this.formData.patchValue({
           ...data,
+          icfRegistrationTime: data.icfRegistrationTime?moment(new Date(data.icfRegistrationTime)).format('YYYY-MM-DD'):null,
+          icfSignTime: data.icfSignTime?moment(new Date(data.icfSignTime)).format('YYYY-MM-DD'):null,
           auditAttachment: data.auditAttachment ? JSON.parse(data.auditAttachment) : [],
           oaAuditAttachments: data.oaAuditAttachments ? JSON.parse(data.oaAuditAttachments) : [],
         })
 
-        if (data.auditStartTime) {
+        this.load = false;
+        this.queryCPSummary('D-202409000018')
+      } else {
+        this.message.create('error', `${res.msg}`);
+        this.load = false;
+      }
+    }), (error => {
+      this.load = false;
+      this.message.create("error", "服务器异常")
+    }));
+  }
+  
+  queryCPSummary(dealFormId) {
+    this.load = true
+    this.http.post(`/act/ecos/thirdParty/cp2/queryThirdParty/${dealFormId}`).subscribe((res => {
+      if (res.code === '0000') {
+        this.CPSummary = res.data;
+        this.CPSummary = {
+          ...this.CPSummary,
+          materialSubmissionTime: res.data.materialSubmissionTime?moment(new Date(res.data.materialSubmissionTime.icfSignTime)).format('YYYY-MM-DD'):null,
+        }
+        this.partyStatus = res.data.thirdPartyStatus? res.data.thirdPartyStatus: 'none'
+        if (this.partyStatus != 'none') {
           this.formData.get('auditComments').disable()
           this.formData.get('auditAttachment').disable()
         }
@@ -97,7 +142,7 @@ export class ThirdCheckInfoComponent implements OnInit {
       this.message.create("error", "服务器异常")
     }));
   }
-  
+
   setNoticeValid() {
     this.clearFormVaild()
     this.saveRequired = false
@@ -120,14 +165,87 @@ export class ThirdCheckInfoComponent implements OnInit {
     this.auditFileRequired = false
   }
 
-  // 通知经销商上传核查材料
-  noticeDealerUploadFile() {
-    this.setNoticeValid()
-    const valid = this.checkFormData(this.formData);
-    if (!valid) {
+  resetNotice() {
+    const { orderCode, dealFormId } = this.formData.getRawValue()
+    this.noticeForms = {
+      orderCode: orderCode, 
+      dealFormId: dealFormId,
+      dealerEmail:  null,
+      salesEmail: null,
+      dmEmail:  null,
+      explain: null,
+    }
+  }
+
+  handleCancel() {
+    this.resetNotice()
+    this.isVisible = false
+  }
+
+  async showNoticeModel(val) {
+    this.resetNotice()
+    await this.queryOperator(this.noticeForms.dealFormId)
+    
+    if(val == 1) {
+      this.setNoticeValid()
+      const valid = this.checkFormData(this.formData);
+      if (!valid) {
+        return
+      }
+      this.noticeType = 'upload'
+      this.noticeTitle = '通知经销商上传核查材料'
+      this.isVisible = true
+    } else if(val == 2){
+      this.noticeType = 'replenish'
+      this.noticeTitle = '通知经销商补充自采三方核查材料'
+      this.isVisible = true
+    }
+  }
+
+  queryOperator(dealFormId) {
+    this.load = true;
+    this.http.get(`/act/ecos/thirdParty/cp2/queryOperator?dealFormId=${dealFormId}`).subscribe((res => {
+      this.load = false;
+      if (res.code === '0000') {
+        const operator = res.data
+        this.noticeForms.dealerEmail = operator ? operator.operatorEmail : null
+        this.noticeForms.salesEmail = operator ? operator.salesEmail : null
+        this.noticeForms.dmEmail = operator ? operator.dmEmail : null
+      } else {
+        this.message.create('error', `${res.msg}`);
+      }
+    }), (error => {
+      this.load = false;
+      this.message.create("error", "服务器异常")
+    }));
+  }
+
+  noticeFormsVaild() {
+    if (!this.noticeForms.dealerEmail || !this.noticeForms.salesEmail || !this.noticeForms.dmEmail) {
+      return true
+    }
+    if (this.noticeType === 'replenish' && !this.noticeForms.explain) {
+      return true
+    }
+    return false
+  }
+
+  handleOk = async() => {
+    const vaild = this.noticeFormsVaild()
+    if (vaild) {
+      this.message.create("error", "请填写必填字段！")
       return
     }
 
+    if (this.noticeType === 'upload') {
+      await this.noticeDealerUploadFile()
+    } else if (this.noticeType === 'replenish') {
+      await this.noticeDealerReplenishFile()
+    }
+  }
+
+  // 通知经销商上传核查材料
+  noticeDealerUploadFile() {
     this.load = true
     let data = this.formData.getRawValue()
     const { tpcId, dealFormId, auditComments, auditAttachment } = data
@@ -139,8 +257,36 @@ export class ThirdCheckInfoComponent implements OnInit {
 
     const jsonString = JSON.stringify(files) 
     const parmas = {
+      ...this.noticeForms,
       auditComments: auditComments,
       auditAttachment: jsonString,
+    }
+
+    this.http.post(`/act/ecos/thirdParty/oaApproval/detail/notify/${tpcId}/${dealFormId}`, parmas).subscribe((res => {
+      if (res.code === '0000') {
+        this.resetRequired()
+        this.message.create("success", "操作成功！")
+        this.load = false;
+        this.queryDetails(this.applyId) 
+      } else {
+        this.message.create('error', `${res.msg}`);
+        this.load = false;
+      }
+    }), (error => {
+      this.load = false;
+      this.message.create("error", "服务器异常")
+    }));
+
+  }
+
+  // 通知经销商补充核查材料
+  noticeDealerReplenishFile() {
+    this.load = true
+    let data = this.formData.getRawValue()
+    const { tpcId, dealFormId } = data
+
+    const parmas = {
+      ...this.noticeForms,
     }
 
     this.http.post(`/act/ecos/thirdParty/oaApproval/detail/notify/${tpcId}/${dealFormId}`, parmas).subscribe((res => {
@@ -258,6 +404,18 @@ export class ThirdCheckInfoComponent implements OnInit {
         this.message.create("error", "服务器异常")
       }));
     }
+  }
+
+  getFileNames(jsonString) {
+    if (!jsonString) {
+      return ''
+    }
+    const fileList = JSON.parse(jsonString)
+    if (Array.isArray(fileList)) {
+      const nameString = fileList.map(file => file.name).join(', ')
+      return nameString ? nameString : ''
+    }
+    return ''
   }
 
 }

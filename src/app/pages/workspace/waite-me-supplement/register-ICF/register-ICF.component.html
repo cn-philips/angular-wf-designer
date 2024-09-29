@@ -15,22 +15,22 @@
           </nz-form-control>
         </nz-form-item>
       </div>
-      <div nz-col nzXs="24" nzMd="12" nzXl="8">
+      <div nz-col nzXs="24" nzMd="12" nzXl="10">
         <nz-form-item>
-          <nz-form-label nzXs="10" nzMd="10" nzXl="8" nzXXl="6">
+          <nz-form-label nzXs="12" nzMd="12" nzXl="10">
             是否被抽取核查三方
           </nz-form-label>
-          <nz-form-control nzXs="14" nzMd="14">
+          <nz-form-control nzXs="12" nzMd="12" nzXl="14">
             <nz-select formControlName="status" style="width: 100%" nzPlaceHolder="">
               <nz-option *ngFor="let item of registerList" [nzValue]="item.value" [nzLabel]="item.label"></nz-option>
             </nz-select>
           </nz-form-control>
         </nz-form-item>
       </div>
-      <div nz-col nzXs="24" nzMd="12" nzXl="8">
+      <div nz-col nzXs="24" nzMd="12" nzXl="6">
         <nz-form-item class="btns-group" style="text-align: right">
           <div style="display: flex;justify-content: center;">
-            <button nz-button nzType="primary" nzXl="8" nzXXl="6" (click)="updateParams()">
+            <button nz-button nzType="primary" nzXl="10" nzXXl="6" (click)="updateParams()">
               <i nz-icon type="search"></i>{{"list-pages.search-form.form.search" | translate}}
             </button>
             <button nz-button nzType="default" style="margin-left: 10px;" (click)="resetForm()">

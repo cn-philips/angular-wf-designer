@@ -7,5 +7,6 @@ export{ContractSignatureWatermarkComponent}from './contract-signature-watermark/
 export{ContractElectronicSignatureComponent}from './contract-electronic-signature/contract-electronic-signature.component';
 export { DealerThirdPartySupplementComponent, DealerThirdPartyListComponent } from './dealer-third-party-supplement'
 export { RegisterICFComponent, RegisterICFListComponent } from './register-ICF'
+export { NewRandomCycleComponent, SelectThirdDealerComponent } from './new-random-cycle'
 
 export * from './components'

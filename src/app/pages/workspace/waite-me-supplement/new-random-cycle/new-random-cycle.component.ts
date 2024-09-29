@@ -1,8 +1,6 @@
 import { Component, OnInit, ViewChild } from "@angular/core";
 import { Router, ActivatedRoute } from '@angular/router';
-import {
-  FormBuilder
-} from "@angular/forms";
+import { FormBuilder } from "@angular/forms";
 import { NzMessageService } from 'ng-zorro-antd';
 import * as moment from 'moment'
 import { saveAs } from 'file-saver';

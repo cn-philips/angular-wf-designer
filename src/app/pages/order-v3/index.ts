@@ -32,7 +32,6 @@ import {
   StandardTableComponent,
   ThirdCheckInfoComponent,
   WinCheckTableComponent,
-  SelectThirdDealerComponent,
   UploadThirdAuditFileComponent,
 } from "./components";
 import {
@@ -40,7 +39,6 @@ import {
   ContractExamineComponent,
   ContractSignComponent,
   ContractSignDetailComponent,
-  NewRandomCycleComponent,
   OitcompleteComponent,
   OrdersummaryBaseInfoComponent,
   PreOrderComponent,
@@ -60,7 +58,6 @@ export const PAGES = [
   ContractSignComponent,
   ContractSignDetailComponent,
   SelectPrebookComponent,
-  NewRandomCycleComponent
 ];
 
 export const COMPONENTS = [
@@ -96,6 +93,5 @@ export const COMPONENTS = [
   ApprovalHistorySignatureComponent,
   EsignButtonComponent,
   SofonFileUploadComponent,
-  SelectThirdDealerComponent,
   UploadThirdAuditFileComponent,
 ];
