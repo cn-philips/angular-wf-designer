@@ -29,7 +29,7 @@ export class ThirdCheckInfoComponent implements OnInit {
     dealerEmail:  null,
     salesEmail: null,
     dmEmail:  null,
-    explain: null,
+    comments: null,
   }
   CPSummary = {}
 
@@ -173,7 +173,7 @@ export class ThirdCheckInfoComponent implements OnInit {
       dealerEmail:  null,
       salesEmail: null,
       dmEmail:  null,
-      explain: null,
+      comments: null,
     }
   }
 
@@ -224,7 +224,7 @@ export class ThirdCheckInfoComponent implements OnInit {
     if (!this.noticeForms.dealerEmail || !this.noticeForms.salesEmail || !this.noticeForms.dmEmail) {
       return true
     }
-    if (this.noticeType === 'replenish' && !this.noticeForms.explain) {
+    if (this.noticeType === 'replenish' && !this.noticeForms.comments) {
       return true
     }
     return false
@@ -242,6 +242,7 @@ export class ThirdCheckInfoComponent implements OnInit {
     } else if (this.noticeType === 'replenish') {
       await this.noticeDealerReplenishFile()
     }
+    this.isVisible = false
   }
 
   // 通知经销商上传核查材料
@@ -289,7 +290,7 @@ export class ThirdCheckInfoComponent implements OnInit {
       ...this.noticeForms,
     }
 
-    this.http.post(`/act/ecos/thirdParty/oaApproval/detail/notify/${tpcId}/${dealFormId}`, parmas).subscribe((res => {
+    this.http.post(`/act/ecos/thirdParty/oaApproval/detail/notifySupply/${tpcId}/${dealFormId}`, parmas).subscribe((res => {
       if (res.code === '0000') {
         this.resetRequired()
         this.message.create("success", "操作成功！")
