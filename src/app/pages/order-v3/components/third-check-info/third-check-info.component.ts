@@ -31,7 +31,29 @@ export class ThirdCheckInfoComponent implements OnInit {
     dmEmail:  null,
     comments: null,
   }
-  CPSummary = {}
+  CPSummary = {
+     //三方风险等级
+  thirdPartyRisk:null,
+  //三方风险等级变化
+  thirdPartyChange:null,
+  /* S&S三方风险等级(从CP来) */
+  ssPriceRisk:null,
+  /* S&S三方风险等级变化 */
+  ssPriceRiskChange:null,
+  /* Sales三方风险等级(从CP来) */
+  salesPriceRisk:null,
+  /* Sales三方风险等级变化 */
+  salesPriceRiskChange:null,
+  /* 待经销商补充申请材料(pending_delaer)/待经销商补充核查材料(pending_delaer_audit)/待销售补充申请材料(pending_sales)/无更新(none) */
+  thirdPartyStatus:null,
+  /* 是否需要核查（从COS来） */
+  requireVerification:null,
+  /* 核查材料提交时间（从COS来） */
+  materialSubmissionTime:null,
+  /* 核查要求（从COS来） */
+  verificationRequirements:null,
+  cpDealPurchaseList:[]
+  }
 
   public formData: FormGroup = this.fb.group({
     id: [],
@@ -90,7 +112,7 @@ export class ThirdCheckInfoComponent implements OnInit {
   ]
 
   ngOnInit() {
-    this.queryDetails(this.applyId) 
+    this.queryDetails(this.applyId)
   }
 
   queryDetails(applyId) {
@@ -117,7 +139,7 @@ export class ThirdCheckInfoComponent implements OnInit {
       this.message.create("error", "服务器异常")
     }));
   }
-  
+
   queryCPSummary(dealFormId) {
     this.load = true
     this.http.post(`/act/ecos/thirdParty/cp2/queryThirdParty/${dealFormId}`).subscribe((res => {
@@ -168,7 +190,7 @@ export class ThirdCheckInfoComponent implements OnInit {
   resetNotice() {
     const { orderCode, dealFormId } = this.formData.getRawValue()
     this.noticeForms = {
-      orderCode: orderCode, 
+      orderCode: orderCode,
       dealFormId: dealFormId,
       dealerEmail:  null,
       salesEmail: null,
@@ -185,7 +207,7 @@ export class ThirdCheckInfoComponent implements OnInit {
   async showNoticeModel(val) {
     this.resetNotice()
     await this.queryOperator(this.noticeForms.dealFormId)
-    
+
     if(val == 1) {
       this.setNoticeValid()
       const valid = this.checkFormData(this.formData);
@@ -251,12 +273,12 @@ export class ThirdCheckInfoComponent implements OnInit {
     let data = this.formData.getRawValue()
     const { tpcId, dealFormId, auditComments, auditAttachment } = data
 
-    const files = auditAttachment.map(file => ({  
-      fileId: file.fileId,  
-      name: file.name  
-    }));  
+    const files = auditAttachment.map(file => ({
+      fileId: file.fileId,
+      name: file.name
+    }));
 
-    const jsonString = JSON.stringify(files) 
+    const jsonString = JSON.stringify(files)
     const parmas = {
       ...this.noticeForms,
       auditComments: auditComments,
@@ -268,7 +290,7 @@ export class ThirdCheckInfoComponent implements OnInit {
         this.resetRequired()
         this.message.create("success", "操作成功！")
         this.load = false;
-        this.queryDetails(this.applyId) 
+        this.queryDetails(this.applyId)
       } else {
         this.message.create('error', `${res.msg}`);
         this.load = false;
@@ -295,7 +317,7 @@ export class ThirdCheckInfoComponent implements OnInit {
         this.resetRequired()
         this.message.create("success", "操作成功！")
         this.load = false;
-        this.queryDetails(this.applyId) 
+        this.queryDetails(this.applyId)
       } else {
         this.message.create('error', `${res.msg}`);
         this.load = false;
@@ -337,7 +359,7 @@ export class ThirdCheckInfoComponent implements OnInit {
         this.resetRequired()
         this.message.create("success", "操作成功！")
         this.load = false;
-        this.queryDetails(this.applyId) 
+        this.queryDetails(this.applyId)
       } else {
         this.message.create('error', `${res.msg}`);
       }
@@ -369,20 +391,20 @@ export class ThirdCheckInfoComponent implements OnInit {
       let oaAuditAttachStr = ""
       // 文件转为json存贮
       if (auditAttachment && auditAttachment.length > 0) {
-        const auditAtts = auditAttachment.map(file => ({  
-          fileId: file.fileId,  
-          name: file.name  
-        }));  
+        const auditAtts = auditAttachment.map(file => ({
+          fileId: file.fileId,
+          name: file.name
+        }));
         auditAttachStr = JSON.stringify(auditAtts)
       }
       if (oaAuditAttachments && oaAuditAttachments.length > 0) {
-        const oaAuditAtts = oaAuditAttachments.map(file => ({  
-          fileId: file.fileId,  
-          name: file.name  
-        }));  
-        oaAuditAttachStr = JSON.stringify(oaAuditAtts) 
+        const oaAuditAtts = oaAuditAttachments.map(file => ({
+          fileId: file.fileId,
+          name: file.name
+        }));
+        oaAuditAttachStr = JSON.stringify(oaAuditAtts)
       }
-      
+
       const parmas = {
         ...data,
         auditAttachment: auditAttachStr ? auditAttachStr : null,
@@ -395,7 +417,7 @@ export class ThirdCheckInfoComponent implements OnInit {
         if (res.code === '0000') {
           this.message.create('success', `保存成功！`);
           this.load = false;
-          this.queryDetails(this.applyId) 
+          this.queryDetails(this.applyId)
         } else {
           this.message.create('error', `${res.msg}`);
           this.load = false;
