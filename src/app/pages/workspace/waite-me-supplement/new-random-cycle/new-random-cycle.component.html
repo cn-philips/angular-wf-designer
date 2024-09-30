@@ -79,7 +79,8 @@
   <app-form-section class="mtb1rem" title="系统随机抽取结果">
     <div class="area-btn">
       <button *ngIf="isOAAdmin" nz-button nzType="primary" (click)="showAddModal()">人工新增核查项目</button>
-      <button *ngIf="isOAAdmin || isAuditor" nz-button nzType="primary" style="margin-left: 10px">导出</button>
+      <button *ngIf="isOAAdmin || isAuditor" nz-button nzType="primary" style="margin-left: 10px"
+        (click)="exportFile()">导出</button>
       <button *ngIf="isOAAdmin && applyStatu === 'UNLOCKED'" nz-button nzType="primary" style="margin-left: 10px"
         (click)="showModal()">锁定随机抽取结果</button>
     </div>

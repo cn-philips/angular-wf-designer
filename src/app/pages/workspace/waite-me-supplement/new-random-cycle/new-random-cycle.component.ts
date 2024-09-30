@@ -4,7 +4,7 @@ import { FormBuilder } from "@angular/forms";
 import { NzMessageService } from 'ng-zorro-antd';
 import * as moment from 'moment'
 import { saveAs } from 'file-saver';
-import { HttpService } from '@core/services';
+import { FileService, HttpService } from '@core/services';
 
 @Component({
   selector: "new-random-cycle",
@@ -15,6 +15,7 @@ export class NewRandomCycleComponent implements OnInit {
   constructor(
     private activatedRouter: ActivatedRoute,
     private fb: FormBuilder,
+    private fileService: FileService,
     private message: NzMessageService,
     private router: Router,
     private http: HttpService,
@@ -453,4 +454,19 @@ export class NewRandomCycleComponent implements OnInit {
       saveAs(data, name);
     });
   }
+
+  exportFile() {
+    this.load = true;
+    this.http.postDownload(`/act/ecos/thirdParty/randomPick/detail/export/${this.summaryId}`).subscribe(
+      (rest) => {
+        this.fileService.downloadResponse(`ThirdParty-ValidReport-${moment(this.randomPickTime[0]).format("YYYYMMDD")}-${moment(this.randomPickTime[1]).format("YYYYMMDD")}`, rest);
+        this.load = false;
+      },
+      (error) => {
+        this.message.create("error", "请求错误");
+        this.load = false;
+      }
+    );
+  }
+
 }
