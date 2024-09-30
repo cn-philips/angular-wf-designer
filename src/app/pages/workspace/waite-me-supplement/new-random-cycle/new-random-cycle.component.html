@@ -35,7 +35,7 @@
       nzBordered>
       <thead>
         <tr>
-          <th rowspan="2" nzAlign="center" style="width: 120px;" nzLeft="0px">Teaam</th>
+          <th rowspan="2" nzAlign="center" style="width: 120px;" nzLeft="0px">Team</th>
           <th rowspan="2" nzAlign="center" style="width: 120px;">系统随机抽取结果</th>
           <th rowspan="2" nzAlign="center" style="width: 100px">总样本数量</th>
           <th colspan="2" nzAlign="center" style="width: 180px">High Risk & Pre-Conclude<br>（100%抽取）</th>
@@ -79,7 +79,7 @@
   <app-form-section class="mtb1rem" title="系统随机抽取结果">
     <div class="area-btn">
       <button *ngIf="isOAAdmin" nz-button nzType="primary" (click)="showAddModal()">人工新增核查项目</button>
-      <button *ngIf="isOAAdmin || isAuditor" nz-button nzType="primary" style="margin-left: 10px">下载报表</button>
+      <button *ngIf="isOAAdmin || isAuditor" nz-button nzType="primary" style="margin-left: 10px">导出</button>
       <button *ngIf="isOAAdmin && applyStatu === 'UNLOCKED'" nz-button nzType="primary" style="margin-left: 10px"
         (click)="showModal()">锁定随机抽取结果</button>
     </div>
@@ -102,8 +102,8 @@
           <tr *ngFor="let data of deleteTable.data">
             <td class="tableData" nzAlign="center" style="width: 120px" nzLeft="0px">{{ data.dealFormId }}</td>
             <td class="tableData" nzAlign="center" style="width: 120px">{{ data.dealerName }}</td>
-            <td class="tableData" nzAlign="center" style="width: 150px">{{
-              getFields(data.relatedContractSummaries,'ref') }}</td>
+            <td class="tableData" nzAlign="center" style="width: 150px"
+              [innerHTML]="getFields(data.relatedContractSummaries,'ref')"></td>
             <td class="tableData" nzAlign="center" style="width: 120px">{{ getFields(data.relatedContractSummaries,
               'oitTime') }}</td>
             <td class="tableData" nzAlign="center" style="width: 120px">{{ data.remarks }}</td>
@@ -117,7 +117,7 @@
       <p style="font-weight: bold;margin-bottom: 10px;">有效的抽取结果</p>
       <nz-table class="tab-pa8" nzVirtualScroll [nzVirtualItemSize]="54" [nzData]="detailData"
         [nzFrontPagination]="false" [nzShowPagination]="false"
-        [nzScroll]="{ x: isOAAdmin?'2640px':'2440px', y: '400px'}">
+        [nzScroll]="{ x: isOAAdmin?'2660px':'2460px', y: '400px'}">
         <thead>
           <tr>
             <th *ngIf="isOAAdmin" nzAlign="center" style="width: 201px" nzLeft="0px">操作</th>
@@ -126,7 +126,7 @@
             <th nzAlign="center" style="width: 150px">经销商名称</th>
             <th nzAlign="center" style="width: 150px">客户名称</th>
             <th nzAlign="center" style="width: 130px">DealFormID</th>
-            <th nzAlign="center" style="width: 150px">COS Ref.</th>
+            <th nzAlign="center" style="width: 170px">COS Ref.</th>
             <th nzAlign="center" style="width: 150px">关联的新的COS Ref.</th>
             <th nzAlign="center" style="width: 120px">关联的新的DealFormID</th>
             <th nzAlign="center" style="width: 150px">关联的新经销商</th>
@@ -161,7 +161,9 @@
               <td class="tableData" nzAlign="center" style="width: 150px">{{ data.dealerName }}</td>
               <td class="tableData" nzAlign="center" style="width: 150px">{{ data.hospitalName }}</td>
               <td class="tableData" nzAlign="center" style="width: 130px">{{ data.dealFormId }}</td>
-              <td class="tableData" nzAlign="center" style="width: 150px">{{ data.referenceId }}</td>
+              <td class="tableData" nzAlign="center" style="width: 170px"
+                [innerHTML]="getFields(data.referenceId, 'split')">
+              </td>
               <td class="tableData" nzAlign="center" style="width: 150px">{{ data.relatedNewReferenceId }}</td>
               <td class="tableData" nzAlign="center" style="width: 120px">{{ data.relatedNewDealFormId }}</td>
               <td class="tableData" nzAlign="center" style="width: 150px">{{ getFields(data.relatedNewContractSummaries,
@@ -172,12 +174,14 @@
               <td class="tableData" nzAlign="center" style="width: 120px">{{ getFields(data.orderDetails, 'icfRe') }}
               </td>
               <td class="tableData" nzAlign="center" style="width: 120px">{{ getFields(data.orderDetails, 'icf') }}</td>
-              <td class="tableData" nzAlign="center" style="width: 140px">{{ getFields(data.orderDetails, 'deadline') }}
+              <td class="tableData" nzAlign="center" style="width: 140px"
+                [innerHTML]="getFields(data.orderDetails, 'deadline')">
               </td>
               <td class="tableData" nzAlign="center" style="width: 120px">{{ data.dealerProvideMaterialRealtime |
                 TimeFormatePipeNow }}
               </td>
-              <td class="tableData" nzAlign="center" style="width: 120px">{{ getFields(data.orderDetails, 'over') }}
+              <td class="tableData" nzAlign="center" style="width: 120px"
+                [innerHTML]="getFields(data.orderDetails, 'over')">
               </td>
               <td class="tableData" nzAlign="center" style="width: 100px">{{ data.type === 'MANUAL' ? '人工新增' : '系统抽取' }}
               </td>

@@ -362,9 +362,11 @@ export class NewRandomCycleComponent implements OnInit {
     }
 
     let str = null
-    if (field == 'ref') {
+    if (field == 'split') {
+      return list.split(',').join(',<br>');
+    } else if (field == 'ref') {
       str = Array.from(new Set(list.map(item => item.referenceId)))
-      return str.join(','); 
+      return str.join(',<br>'); 
     } else if (field == 'newDealer') {
       let arrs = list.map(item => item.dealerName).filter(v => v !== null && v !== undefined)
       if (arrs.length == 0) {
@@ -377,37 +379,45 @@ export class NewRandomCycleComponent implements OnInit {
       if (arrs.length == 0) {
         return ''
       }
-      str = Array.from(new Set(list.map(item => `${this.matchesNo(item.referenceId)}${moment(new Date(item.oitCompleteTime)).format("YYYY-MM-DD")}`)))
-      return str.join(','); 
+      let items = Array.from(new Set(list.map(item => `${this.matchesNo(item.referenceId)}${moment(new Date(item.oitCompleteTime)).format("YYYY-MM-DD")}`)))
+      return this.listSort(items).join(",");  
     } else if (field == 'icfRe') {
       let arrs = list.map(item => item.icfRegistrationTime).filter(v => v !== null && v !== undefined)
       if (arrs.length == 0) {
         return ''
       }
-      str = Array.from(new Set(list.map(item => `${this.matchesNo(item.referenceId)}${moment(new Date(item.icfRegistrationTime)).format("YYYY-MM-DD")}`)))
-      return str.join(','); 
+      let items = Array.from(new Set(list.map(item => `${this.matchesNo(item.referenceId)}${moment(new Date(item.icfRegistrationTime)).format("YYYY-MM-DD")}`)))
+      return this.listSort(items).join(",");
     } else if (field == 'icf') {
       let arrs = list.map(item => item.icfSignTime).filter(v => v !== null && v !== undefined)
       if (arrs.length == 0) {
         return ''
       }
-      str = Array.from(new Set(list.map(item => `${this.matchesNo(item.referenceId)}${moment(new Date(item.icfSignTime)).format("YYYY-MM-DD")}`)))
-      return str.join(','); 
+      let items = Array.from(new Set(list.map(item => `${this.matchesNo(item.referenceId)}${moment(new Date(item.icfSignTime)).format("YYYY-MM-DD")}`)))
+      return this.listSort(items).join(",");; 
     } else if (field == 'deadline') {
       let arrs = list.map(item => item.dealerProvideMaterialDeadline).filter(v => v !== null && v !== undefined)
       if (arrs.length == 0) {
         return ''
       }
-      str = Array.from(new Set(list.map(item => `${this.matchesNo(item.referenceId)}${moment(new Date(item.dealerProvideMaterialDeadline)).format("YYYY-MM-DD")}`)))
-      return str.join(','); 
+      let items = Array.from(new Set(list.map(item => `${this.matchesNo(item.referenceId)}${moment(new Date(item.dealerProvideMaterialDeadline)).format("YYYY-MM-DD")}`)))
+      return this.listSort(items).join(",<br>");
     } else if (field == 'over') {
       let arrs = list.map(item => item.isOverdue).filter(v => v !== null && v !== undefined)
       if (arrs.length == 0) {
         return ''
       }
-      str = Array.from(new Set(list.map(item => `${this.matchesNo(item.referenceId)}${item.isOverdue ?'是' : '否'}`)))
-      return str.join(','); 
+      let items = Array.from(new Set(list.map(item => `${this.matchesNo(item.referenceId)}${item.isOverdue ?'是' : '否'}`)))
+      return this.listSort(items).join(",<br>");
     }
+  }
+
+  listSort(list) {
+    return list.sort((a, b) => {
+      const numA = parseInt((a as string).match(/\((\d+)\)/)![1]);
+      const numB = parseInt((b as string).match(/\((\d+)\)/)![1]);
+      return numA - numB; 
+    })
   }
 
   getFileNames(jsonString) {
