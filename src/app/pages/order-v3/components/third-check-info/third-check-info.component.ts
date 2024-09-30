@@ -14,6 +14,7 @@ export class ThirdCheckInfoComponent implements OnInit {
 
   constructor(public activatedRouter: ActivatedRoute, private message: NzMessageService, private fb: FormBuilder, private http: HttpService) { }
   @Input() applyId:string;
+  @Input() cpDealId:any="";
   thirdPartyList: any = [];
   load: any = false;
   saveRequired = true
@@ -32,27 +33,29 @@ export class ThirdCheckInfoComponent implements OnInit {
     comments: null,
   }
   CPSummary = {
-     //三方风险等级
-  thirdPartyRisk:null,
-  //三方风险等级变化
-  thirdPartyChange:null,
-  /* S&S三方风险等级(从CP来) */
-  ssPriceRisk:null,
-  /* S&S三方风险等级变化 */
-  ssPriceRiskChange:null,
-  /* Sales三方风险等级(从CP来) */
-  salesPriceRisk:null,
-  /* Sales三方风险等级变化 */
-  salesPriceRiskChange:null,
-  /* 待经销商补充申请材料(pending_delaer)/待经销商补充核查材料(pending_delaer_audit)/待销售补充申请材料(pending_sales)/无更新(none) */
-  thirdPartyStatus:null,
-  /* 是否需要核查（从COS来） */
-  requireVerification:null,
-  /* 核查材料提交时间（从COS来） */
-  materialSubmissionTime:null,
-  /* 核查要求（从COS来） */
-  verificationRequirements:null,
-  cpDealPurchaseList:[]
+    //CP Deal ID
+    id:null,
+    //三方风险等级
+    thirdPartyRisk:null,
+    //三方风险等级变化
+    thirdPartyChange:null,
+    /* S&S三方风险等级(从CP来) */
+    ssPriceRisk:null,
+    /* S&S三方风险等级变化 */
+    ssPriceRiskChange:null,
+    /* Sales三方风险等级(从CP来) */
+    salesPriceRisk:null,
+    /* Sales三方风险等级变化 */
+    salesPriceRiskChange:null,
+    /* 待经销商补充申请材料(pending_delaer)/待经销商补充核查材料(pending_delaer_audit)/待销售补充申请材料(pending_sales)/无更新(none) */
+    thirdPartyStatus:null,
+    /* 是否需要核查（从COS来） */
+    requireVerification:null,
+    /* 核查材料提交时间（从COS来） */
+    materialSubmissionTime:null,
+    /* 核查要求（从COS来） */
+    verificationRequirements:null,
+    cpDealPurchaseList:[]
   }
 
   public formData: FormGroup = this.fb.group({

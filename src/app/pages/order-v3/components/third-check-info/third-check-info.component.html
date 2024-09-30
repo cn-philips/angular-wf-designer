@@ -363,8 +363,11 @@
             三方核查要求附件
           </nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <shared-upload-file [title]="" [type]="null" formControlName="auditAttachment">
-            </shared-upload-file>
+            <!-- <shared-upload-file [title]="" [type]="null" formControlName="auditAttachment">
+            </shared-upload-file> -->
+
+            <upload-third-audit-requirement-file-to-cp [cpDealId]="cpDealId" [applyId]="applyId" [title]="" [type]="null" formControlName="auditAttachment">
+            </upload-third-audit-requirement-file-to-cp>
             <nz-form-explain *ngIf="formData.get('auditAttachment')?.dirty && formData.get('auditAttachment')?.errors">
               此选项必填字段
             </nz-form-explain>

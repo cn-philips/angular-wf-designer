@@ -33,6 +33,7 @@ import {
   ThirdCheckInfoComponent,
   WinCheckTableComponent,
   UploadThirdAuditFileComponent,
+  UploadThirdAuditFileToCpComponent
 } from "./components";
 import {
   ContractComponent,
@@ -94,4 +95,5 @@ export const COMPONENTS = [
   EsignButtonComponent,
   SofonFileUploadComponent,
   UploadThirdAuditFileComponent,
+  UploadThirdAuditFileToCpComponent
 ];

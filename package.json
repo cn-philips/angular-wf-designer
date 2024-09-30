@@ -8,8 +8,7 @@
 		"build-prod": "node ./tag.dev.js && node --max_old_space_size=16384 ./node_modules/@angular/cli/bin/ng build --prod --configuration=production",
 		"build-uat": "node --max_old_space_size=16384 ./node_modules/@angular/cli/bin/ng build --prod --configuration=uat",
 		"build-dev": "node --max_old_space_size=16384 ./node_modules/@angular/cli/bin/ng build --prod --configuration=devpackage",
-		"build-devpackage": "node ./version.dev.js && node --max_old_space_size=8192 ./node_modules/@angular/cli/bin/ng build --prod --configuration=devpackage",
-		"serve": "node --max_old_space_size=8192 && ./node_modules/@angular/cli/bin/ng serve --host 0.0.0.0 --proxy-config  proxy.conf.json --disable-host-check -o"
+		"build-devpackage": "node ./version.dev.js && node --max_old_space_size=8192 ./node_modules/@angular/cli/bin/ng build --prod --configuration=devpackage"
 	},
 	"dependencies": {
 		"-": "0.0.1",
