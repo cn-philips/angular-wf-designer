@@ -107,7 +107,7 @@ export class ThirdCheckInfoComponent implements OnInit {
         })
 
         this.load = false;
-        this.queryCPSummary('D-202409000018')
+        this.queryCPSummary(res.data.dealFormId)
       } else {
         this.message.create('error', `${res.msg}`);
         this.load = false;
