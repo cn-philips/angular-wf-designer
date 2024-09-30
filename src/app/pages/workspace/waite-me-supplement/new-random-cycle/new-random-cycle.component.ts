@@ -78,7 +78,7 @@ export class NewRandomCycleComponent implements OnInit {
           return
         }
         this.load = false;
-        const url = "/order-v3/editRandomCycle";
+        const url = "/ecos/editRandomCycle";
         this.router.navigate([url], {
           queryParams: {
             id: id,
