@@ -108,7 +108,10 @@
             <td class="tableData" nzAlign="center" style="width: 120px">{{ getFields(data.relatedContractSummaries,
               'oitTime') }}</td>
             <td class="tableData" nzAlign="center" style="width: 120px">{{ data.remarks }}</td>
-            <td class="tableData" nzAlign="center" style="width: 140px">{{ getFileNames(data.attachment) }}</td>
+            <td class="tableData" nzAlign="center" style="width: 140px">
+              <a *ngFor="let file of getJson(data.attachment)" style="display: block; color: #337FBF;" href="javascript:"
+              (click)="fileDown(file.fileId, file.name)">{{file.name}}</a>
+            </td>
           </tr>
         </tbody>
       </nz-table>
@@ -147,7 +150,7 @@
             <tr>
               <td *ngIf="isOAAdmin" class="tableData" nzAlign="center" style="width: 200px" nzLeft="0px">
                 <a style="display: block; color: #337FBF;" (click)="operate(data,'del')">删除</a>
-                <a style="display: block; color: #337FBF;" (click)="operate(data, 'send')">通知经销商需要被核查</a>
+                <a *ngIf="applyStatu==='LOCKED'" style="display: block; color: #337FBF;" (click)="operate(data, 'send')">通知经销商需要被核查</a>
               </td>
               <td class="tableData" nzAlign="center" style="width: 200px">
                 <ng-container *ngIf="data.auditFiles&&data.auditFiles.length>0">
@@ -187,8 +190,10 @@
               <td class="tableData" nzAlign="center" style="width: 100px">{{ data.type === 'MANUAL' ? '人工新增' : '系统抽取' }}
               </td>
               <td class="tableData" nzAlign="center" style="width: 120px">{{ data.remarks }}</td>
-              <td class="tableData" nzAlign="center" style="width: 142px" nzLeft="0px">{{ getFileNames(data.attachment)
-                }}</td>
+              <td class="tableData" nzAlign="center" style="width: 142px" nzLeft="0px">
+                <a *ngFor="let file of getJson(data.attachment)" style="display: block; color: #337FBF;" href="javascript:"
+                (click)="fileDown(file.fileId, file.name)">{{file.name}}</a>
+              </td>
             </tr>
           </ng-template>
         </tbody>

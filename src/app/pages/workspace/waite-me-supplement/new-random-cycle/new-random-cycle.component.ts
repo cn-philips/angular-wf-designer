@@ -45,7 +45,7 @@ export class NewRandomCycleComponent implements OnInit {
     reason: null,
     attachments: null
   }
-  
+
   ngOnInit() {
     this.routeType = this.activatedRouter.queryParams['_value'].type;
     if (this.routeType === 'edit') {
@@ -93,7 +93,7 @@ export class NewRandomCycleComponent implements OnInit {
       this.load = false;
       this.message.create("error", "服务器异常")
     }));
-  
+
   }
 
   queryDetails(id) {
@@ -111,7 +111,7 @@ export class NewRandomCycleComponent implements OnInit {
         this.removedData = removed
         this.detailData = detail
         this.randomPickTime = [checkDurationStartTime, checkDurationEndTime]
-        
+
         this.load = false;
       } else {
         this.message.create('error', `${res.msg}`);
@@ -135,15 +135,15 @@ export class NewRandomCycleComponent implements OnInit {
 
   confirmSelect() {
     this.load = true;
-    const files = this.reasonObj.attachments.map(file => ({  
-      fileId: file.fileId,  
-      name: file.name  
-    }));  
+    const files = this.reasonObj.attachments.map(file => ({
+      fileId: file.fileId,
+      name: file.name
+    }));
 
-    const jsonString = JSON.stringify(files) 
+    const jsonString = JSON.stringify(files)
     const params = {
       ...this.reasonObj,
-      attachments: jsonString 
+      attachments: jsonString
     }
 
     this.http.post(`/act/ecos/thirdParty/randomPick/add/${this.summaryId}`, params).subscribe((res => {
@@ -305,15 +305,15 @@ export class NewRandomCycleComponent implements OnInit {
 
   remove() {
     this.load = true;
-    const files = this.reasonObj.attachments.map(file => ({  
-      fileId: file.fileId,  
-      name: file.name  
-    }));  
+    const files = this.reasonObj.attachments.map(file => ({
+      fileId: file.fileId,
+      name: file.name
+    }));
 
-    const jsonString = JSON.stringify(files) 
+    const jsonString = JSON.stringify(files)
     const params = {
       ...this.reasonObj,
-      attachments: jsonString 
+      attachments: jsonString
     }
 
     this.http.post(`/act/ecos/thirdParty/randomPick/remove/${this.summaryId}`, params).subscribe((res => {
@@ -332,11 +332,11 @@ export class NewRandomCycleComponent implements OnInit {
   }
 
   unlockDataVaild() {
-    for (const item of this.unlockData) {  
+    for (const item of this.unlockData) {
       if (!item.dealerEmail || !item.salesEmail || !item.dmEmail) {
         return true
       }
-    }  
+    }
     return false
   }
 
@@ -367,21 +367,21 @@ export class NewRandomCycleComponent implements OnInit {
       return list.split(',').join(',<br>');
     } else if (field == 'ref') {
       str = Array.from(new Set(list.map(item => item.referenceId)))
-      return str.join(',<br>'); 
+      return str.join(',<br>');
     } else if (field == 'newDealer') {
       let arrs = list.map(item => item.dealerName).filter(v => v !== null && v !== undefined)
       if (arrs.length == 0) {
         return ''
       }
       str = Array.from(new Set(list.map(item => `${this.matchesNo(item.referenceId)}${item.dealerName}`)))
-      return str.join(','); 
+      return str.join(',');
     } else if (field == 'oitTime') {
       let arrs = list.map(item => item.oitCompleteTime).filter(v => v !== null && v !== undefined)
       if (arrs.length == 0) {
         return ''
       }
       let items = Array.from(new Set(list.map(item => `${this.matchesNo(item.referenceId)}${moment(new Date(item.oitCompleteTime)).format("YYYY-MM-DD")}`)))
-      return this.listSort(items).join(",");  
+      return this.listSort(items).join(",");
     } else if (field == 'icfRe') {
       let arrs = list.map(item => item.icfRegistrationTime).filter(v => v !== null && v !== undefined)
       if (arrs.length == 0) {
@@ -395,7 +395,7 @@ export class NewRandomCycleComponent implements OnInit {
         return ''
       }
       let items = Array.from(new Set(list.map(item => `${this.matchesNo(item.referenceId)}${moment(new Date(item.icfSignTime)).format("YYYY-MM-DD")}`)))
-      return this.listSort(items).join(",");; 
+      return this.listSort(items).join(",");;
     } else if (field == 'deadline') {
       let arrs = list.map(item => item.dealerProvideMaterialDeadline).filter(v => v !== null && v !== undefined)
       if (arrs.length == 0) {
@@ -417,10 +417,19 @@ export class NewRandomCycleComponent implements OnInit {
     return list.sort((a, b) => {
       const numA = parseInt((a as string).match(/\((\d+)\)/)![1]);
       const numB = parseInt((b as string).match(/\((\d+)\)/)![1]);
-      return numA - numB; 
+      return numA - numB;
     })
   }
-
+  getJson(jsonString){
+    if (!jsonString) {
+      return []
+    }
+    const fileList = JSON.parse(jsonString)
+    if (Array.isArray(fileList)) {
+      return fileList
+    }
+    return []
+  }
   getFileNames(jsonString) {
     if (!jsonString) {
       return ''
