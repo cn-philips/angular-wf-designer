@@ -371,6 +371,20 @@ export class ThirdCheckInfoComponent implements OnInit {
       this.message.create("error", "服务器异常")
     }));
   }
+  downloadAuditTemplate(){
+
+    let data = this.formData.getRawValue()
+    const { tpcId, dealFormId } = data
+    this.http.post(`/act/ecos/thirdParty/exportThirdpartyDealerCheckReport?dealFormId=${dealFormId}`).subscribe((res => {
+      if (res.code === '0000') {
+        const url = res.data
+        window.open(url)
+      } else {
+        this.message.create('error', `${res.msg}`);
+      }
+
+    }))
+  }
 
   setSaveValid() {
     this.clearFormVaild()
