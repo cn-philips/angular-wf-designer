@@ -68,7 +68,7 @@ export class  UploadThirdAuditFileToCpComponent implements OnInit, ControlValueA
             .map((file) =>
               file.uid === newFile.uid ? {
                 ...file,
-                fileId: data,
+                ...data,
                 status: 'success',
               } : file
             )
@@ -154,12 +154,16 @@ export class  UploadThirdAuditFileToCpComponent implements OnInit, ControlValueA
   };
 
   onDownloadFile(file) {
-    const { fileId, fileName } = file
-    let uri = `/act/system/download/${fileId}`;
-    this.http.get(uri, {
-      responseType: 'blob'
-    }).subscribe(data => {
-      saveAs(data, fileName);
-    });
+    const { fileId, fileName,filePath } = file
+    if(filePath){
+      window.open(filePath);
+    }else{
+      let uri = `/act/system/download/${fileId}`;
+      this.http.get(uri, {
+        responseType: 'blob'
+      }).subscribe(data => {
+        saveAs(data, fileName);
+      });
+    }
   }
 }
