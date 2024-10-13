@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpService } from '@core/services';
 import { NzMessageService, UploadFile } from 'ng-zorro-antd';
 import * as moment from 'moment'
+import { saveAs } from "file-saver";
 
 @Component({
   selector: 'ecos-thirdcheck-info',
@@ -375,14 +376,11 @@ export class ThirdCheckInfoComponent implements OnInit {
 
     let data = this.formData.getRawValue()
     const { tpcId, dealFormId } = data
-    this.http.post(`/act/ecos/thirdParty/exportThirdpartyDealerCheckReport?dealFormId=${dealFormId}`).subscribe((res => {
-      if (res.code === '0000') {
-        const url = res.data
-        window.open(url)
-      } else {
-        this.message.create('error', `${res.msg}`);
-      }
-
+    this.http.post(`/act/push/cp/thirdparty/exportThirdpartyOaCheckReport?dealFormId=${dealFormId}`,{
+      responseType: "blob"
+    }).subscribe((res => {
+      console.log(res)
+      saveAs(res, "fileName.xlsx");
     }))
   }
 
