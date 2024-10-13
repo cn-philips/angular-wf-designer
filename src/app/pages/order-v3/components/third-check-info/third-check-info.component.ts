@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { HttpService } from '@core/services';
+import { FileService, HttpService } from '@core/services';
 import { NzMessageService, UploadFile } from 'ng-zorro-antd';
 import * as moment from 'moment'
 import { saveAs } from "file-saver";
@@ -13,7 +13,8 @@ import { saveAs } from "file-saver";
 })
 export class ThirdCheckInfoComponent implements OnInit {
 
-  constructor(public activatedRouter: ActivatedRoute, private message: NzMessageService, private fb: FormBuilder, private http: HttpService) { }
+  constructor(public activatedRouter: ActivatedRoute, private message: NzMessageService, private fb: FormBuilder, private http: HttpService,
+    private fileService: FileService,) { }
   @Input() applyId:string;
   @Input() cpDealId:any="";
   thirdPartyList: any = [];
@@ -376,12 +377,9 @@ export class ThirdCheckInfoComponent implements OnInit {
 
     let data = this.formData.getRawValue()
     const { tpcId, dealFormId } = data
-    this.http.post(`/act/push/cp/thirdparty/exportThirdpartyOaCheckReport?dealFormId=${dealFormId}`,{
-      responseType: "blob"
-    }).subscribe((res => {
-      console.log(res)
-      saveAs(res, "fileName.xlsx");
-    }))
+    this.http.postDownload(`/act/push/cp/thirdparty/exportThirdpartyOaCheckReport?dealFormId=${dealFormId}`).subscribe(res => {
+          this.fileService.downloadResponse('OA三方核查模板', res);
+    })
   }
 
   setSaveValid() {
