@@ -1,10 +1,18 @@
 <app-apploading [load]="load"></app-apploading>
 <nz-card class="title_warpper mtb1rem" *ngIf="routeType == 'add'">
-  <form nz-form [nzLayout]="'inline'">
+  <form nz-form [nzLayout]="'inline'" [formGroup]="formValues">
+
     <nz-form-item>
-      <nz-form-label [nzSpan]="8">随机抽查周期数据时间范围</nz-form-label>
-      <nz-form-control [nzSpan]="14">
-        <nz-range-picker [(ngModel)]="randomPickTime" name="randomPickTime" nzFormat="yyyy-MM-dd"></nz-range-picker>
+      <nz-form-label nzXs="12" nzMd="12" nzXl="10">
+        随机抽查周期数据时间范围
+      </nz-form-label>
+      <nz-form-control nzXs="12" nzMd="6" nzXl="7">
+        <nz-date-picker formControlName="startDay" nzFormat="yyyy-MM-dd" [nzPlaceHolder]="'开始日期'"
+        [nzDisabledDate]="disabledStartDate"></nz-date-picker>
+      </nz-form-control>
+      <nz-form-control nzXs="12" nzMd="6" nzXl="7">
+        <nz-date-picker formControlName="endDay" nzFormat="yyyy-MM-dd" [nzPlaceHolder]="'结束日期'"
+        [nzDisabledDate]="disabledEndDate"></nz-date-picker>
       </nz-form-control>
     </nz-form-item>
 
@@ -17,12 +25,19 @@
 </nz-card>
 
 <nz-card class="title_warpper mtb1rem" *ngIf="routeType == 'edit'">
-  <form nz-form [nzLayout]="'inline'">
+  <form nz-form [nzLayout]="'inline'" [formGroup]="formValues">
+
     <nz-form-item>
-      <nz-form-label [nzSpan]="8">随机抽查周期数据时间范围</nz-form-label>
-      <nz-form-control [nzSpan]="14">
-        <nz-range-picker disabled [(ngModel)]="randomPickTime" name="randomPickTime"
-          nzFormat="yyyy-MM-dd"></nz-range-picker>
+      <nz-form-label nzXs="12" nzMd="12" nzXl="10">
+        随机抽查周期数据时间范围
+      </nz-form-label>
+      <nz-form-control nzXs="12" nzMd="6" nzXl="7">
+        <nz-date-picker formControlName="startDay" nzFormat="yyyy-MM-dd" [nzPlaceHolder]="'开始日期'" disabled
+        [nzDisabledDate]="disabledStartDate"></nz-date-picker>
+      </nz-form-control>
+      <nz-form-control nzXs="12" nzMd="6" nzXl="7">
+        <nz-date-picker formControlName="endDay" nzFormat="yyyy-MM-dd" [nzPlaceHolder]="'结束日期'" disabled
+        [nzDisabledDate]="disabledEndDate"></nz-date-picker>
       </nz-form-control>
     </nz-form-item>
   </form>

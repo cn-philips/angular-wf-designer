@@ -18,16 +18,21 @@
         </nz-form-item>
       </div>
 
-      <div nz-col nzXs="24" nzMd="12" nzXl="10">
+      <div nz-col nzXs="24" nzMd="24" nzXl="9">
         <nz-form-item>
           <nz-form-label nzXs="12" nzMd="12" nzXl="10">
             随机抽查周期数据时间范围
           </nz-form-label>
-          <nz-form-control nzXs="12" nzMd="12" nzXl="14">
-            <nz-range-picker formControlName="checkDuration" nzFormat="yyyy-MM-dd"
-              [nzPlaceHolder]="['开始日期', '结束日期']"></nz-range-picker>
+          <nz-form-control nzXs="12" nzMd="6" nzXl="7">
+            <nz-date-picker formControlName="startDay" nzFormat="yyyy-MM-dd" [nzPlaceHolder]="'开始日期'"
+            [nzDisabledDate]="disabledStartDate"></nz-date-picker>
+          </nz-form-control>
+          <nz-form-control nzXs="12" nzMd="6" nzXl="7">
+            <nz-date-picker formControlName="endDay" nzFormat="yyyy-MM-dd" [nzPlaceHolder]="'结束日期'"
+            [nzDisabledDate]="disabledEndDate"></nz-date-picker>
           </nz-form-control>
         </nz-form-item>
+
       </div>
 
       <div nz-col nzXs="24" nzMd="12" nzXl="5">

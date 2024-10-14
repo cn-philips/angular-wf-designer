@@ -152,7 +152,7 @@ export class ThirdCheckInfoComponent implements OnInit {
         this.CPSummary = res.data;
         this.CPSummary = {
           ...this.CPSummary,
-          materialSubmissionTime: res.data.materialSubmissionTime?moment(new Date(res.data.materialSubmissionTime.icfSignTime)).format('YYYY-MM-DD'):null,
+          materialSubmissionTime: res.data.materialSubmissionTime?moment(new Date(res.data.materialSubmissionTime)).format('YYYY-MM-DD'):null,
         }
         this.partyStatus = res.data.thirdPartyStatus? res.data.thirdPartyStatus: 'none'
         if (this.partyStatus != 'none') {
@@ -297,7 +297,7 @@ export class ThirdCheckInfoComponent implements OnInit {
         this.load = false;
         this.queryDetails(this.applyId)
       } else {
-        this.message.create('error', `${res.msg}`);
+        this.message.create('error', `${res.data}`);
         this.load = false;
       }
     }), (error => {
@@ -324,7 +324,7 @@ export class ThirdCheckInfoComponent implements OnInit {
         this.load = false;
         this.queryDetails(this.applyId)
       } else {
-        this.message.create('error', `${res.msg}`);
+        this.message.create('error', `${res.data}`);
         this.load = false;
       }
     }), (error => {
@@ -453,5 +453,10 @@ export class ThirdCheckInfoComponent implements OnInit {
     }
     return ''
   }
-
+  getJsonArr(jsonString) {
+    if (!jsonString) {
+      return []
+    }
+    return JSON.parse(jsonString)
+  }
 }

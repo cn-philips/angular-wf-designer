@@ -124,89 +124,6 @@
       <div nz-col nzXs="24" nzSm="24" nzMd="8">
         <nz-form-item>
           <nz-form-label nzXs="24" nzSm="24" nzMd="10" [nzNoColon]="true">
-            三方风险等级变化
-          </nz-form-label>
-          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <input nz-input [(ngModel)]="CPSummary.thirdPartyChange" name="thirdPartyChange" disabled placeholder="" />
-          </nz-form-control>
-        </nz-form-item>
-      </div>
-      <div nz-col nzXs="24" nzSm="24" nzMd="8">
-        <nz-form-item>
-          <nz-form-label nzXs="24" nzSm="24" nzMd="10" [nzNoColon]="true">
-            S&S三方风险等级
-          </nz-form-label>
-          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <input nz-input [(ngModel)]="CPSummary.ssPriceRisk" name="ssPriceRisk" disabled placeholder="" />
-          </nz-form-control>
-        </nz-form-item>
-      </div>
-    </div>
-
-    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
-      <div nz-col nzXs="24" nzSm="24" nzMd="8">
-        <nz-form-item>
-          <nz-form-label nzXs="24" nzSm="24" nzMd="10" [nzNoColon]="true">
-            S&S三方风险等级变化
-          </nz-form-label>
-          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <input nz-input [(ngModel)]="CPSummary.ssPriceRiskChange" name="ssPriceRiskChange" disabled
-              placeholder="" />
-          </nz-form-control>
-        </nz-form-item>
-      </div>
-      <div nz-col nzXs="24" nzSm="24" nzMd="8">
-        <nz-form-item>
-          <nz-form-label nzXs="24" nzSm="24" nzMd="10" [nzNoColon]="true">
-            Sales三方风险等级(从CP来)
-          </nz-form-label>
-          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <input nz-input [(ngModel)]="CPSummary.salesPriceRisk" name="salesPriceRisk" disabled placeholder="" />
-          </nz-form-control>
-        </nz-form-item>
-      </div>
-      <div nz-col nzXs="24" nzSm="24" nzMd="8">
-        <nz-form-item>
-          <nz-form-label nzXs="24" nzSm="24" nzMd="10" [nzNoColon]="true">
-            Sales三方风险等级变化
-          </nz-form-label>
-          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <input nz-input [(ngModel)]="CPSummary.salesPriceRiskChange" name="salesPriceRiskChange" disabled
-              placeholder="" />
-          </nz-form-control>
-        </nz-form-item>
-      </div>
-    </div>
-
-    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
-      <div nz-col nzXs="24" nzSm="24" nzMd="8">
-        <nz-form-item>
-          <nz-form-label nzXs="24" nzSm="24" nzMd="10" [nzNoColon]="true">
-            状态
-          </nz-form-label>
-          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <nz-select nzPlaceHolder="" [(ngModel)]="CPSummary.thirdPartyStatus" name="thirdPartyStatus" nzDisabled>
-              <nz-option *ngFor="let item of partyStatusOpt" [nzValue]="item.value" [nzLabel]="item.label"></nz-option>
-            </nz-select>
-          </nz-form-control>
-        </nz-form-item>
-      </div>
-      <div nz-col nzXs="24" nzSm="24" nzMd="8">
-        <nz-form-item>
-          <nz-form-label nzXs="24" nzSm="24" nzMd="10" [nzNoColon]="true">
-            是否需要核查
-          </nz-form-label>
-          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <nz-radio-group [(ngModel)]="CPSummary.requireVerification" name="requireVerification" disabled>
-              <label nz-radio [nzValue]="true">是</label>
-              <label nz-radio [nzValue]="false">否</label>
-            </nz-radio-group>
-          </nz-form-control>
-        </nz-form-item>
-      </div>
-      <div nz-col nzXs="24" nzSm="24" nzMd="8">
-        <nz-form-item>
-          <nz-form-label nzXs="24" nzSm="24" nzMd="10" [nzNoColon]="true">
             核查材料提交时间
           </nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
@@ -215,9 +132,6 @@
           </nz-form-control>
         </nz-form-item>
       </div>
-    </div>
-
-    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
       <div nz-col nzXs="24" nzSm="24" nzMd="8">
         <nz-form-item>
           <nz-form-label nzXs="24" nzSm="24" nzMd="10" [nzNoColon]="true">
@@ -230,6 +144,7 @@
         </nz-form-item>
       </div>
     </div>
+
   </form>
 
   <div>
@@ -275,11 +190,26 @@
             <td class="tableData" nzAlign="center" style="width: 120px">{{ data.biddingOrNot ? '是' : '否' }}
             </td>
             <td class="tableData" nzAlign="center" style="width: 120px">{{ data.applicationMaterialRemarks }}</td>
-            <td class="tableData" nzAlign="center" style="width: 140px">{{
-              getFileNames(data.applicationMaterialAttachment) }}
+            <td class="tableData" nzAlign="center" style="width: 140px">
+              <div *ngFor="let item of getJsonArr(data.applicationMaterialAttachment)">
+                <a *ngIf="item.fileUrl; else otherLink" [href]="item.fileUrl" target="_blank">{{ item.name }}</a>
+                <ng-template #otherLink>
+                  <a *ngIf="item.source === 'CP'">CP Link</a>
+                  <a *ngIf="item.source === 'Other'">Other Link</a>
+                  <!-- 添加其他条件判断 -->
+                </ng-template>
+              </div>
             </td>
-            <td class="tableData" nzAlign="center" style="width: 160px" nzLeft="0px">{{ data.auditMaterialAttachment
-              }}</td>
+            <td class="tableData" nzAlign="center" style="width: 160px" nzLeft="0px">
+              <div *ngFor="let item of getJsonArr(data.auditMaterialAttachment)">
+                <a *ngIf="item.fileUrl; else otherLink" [href]="item.fileUrl" target="_blank">{{ item.name }}</a>
+                <ng-template #otherLink>
+                  <a *ngIf="item.source === 'CP'">CP Link</a>
+                  <a *ngIf="item.source === 'Other'">Other Link</a>
+                  <!-- 添加其他条件判断 -->
+                </ng-template>
+              </div>
+            </td>
             <td class="tableData" nzAlign="center" style="width: 122px" nzLeft="0px">{{ data.auditMaterialRemarks
               }}</td>
             <!-- <td class="tableData" nzAlign="center" style="width: 200px">

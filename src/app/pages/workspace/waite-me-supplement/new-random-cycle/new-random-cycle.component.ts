@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from "@angular/core";
 import { Router, ActivatedRoute } from '@angular/router';
-import { FormBuilder } from "@angular/forms";
+import { FormBuilder, Validators } from "@angular/forms";
 import { NzMessageService } from 'ng-zorro-antd';
 import * as moment from 'moment'
 import { saveAs } from 'file-saver';
@@ -30,7 +30,6 @@ export class NewRandomCycleComponent implements OnInit {
   isConfirmLoading = false;
   dealerInfos = []
   unlockData = []
-  randomPickTime = []
   actType = null // del-删除 add-手动新增
   applyStatu = "UNLOCKED"
   routeType = 'add' // add-新建 edit-编辑
@@ -46,6 +45,11 @@ export class NewRandomCycleComponent implements OnInit {
     attachments: null
   }
 
+  formValues = this.fb.group({
+    startDay: [null, Validators.required],
+    endDay: [null, Validators.required],
+  })
+
   ngOnInit() {
     this.routeType = this.activatedRouter.queryParams['_value'].type;
     if (this.routeType === 'edit') {
@@ -58,16 +62,29 @@ export class NewRandomCycleComponent implements OnInit {
       this.queryDetails(id)
     }
   }
+  disabledStartDate = (startValue: Date): boolean => {
+    if (!startValue || !this.formValues.controls['endDay'].value) {
+      return false;
+    }
+    return startValue.getTime() > this.formValues.controls['endDay'].value.getTime();
+  };
+
+  disabledEndDate = (endValue: Date): boolean => {
+    if (!endValue || !this.formValues.controls['startDay'].value) {
+      return false;
+    }
+    return endValue.getTime() < this.formValues.controls['startDay'].value.getTime() ;
+  };
 
   randomSelect() {
-    if (!this.randomPickTime || this.randomPickTime.length == 0) {
+    if (!this.formValues.controls['startDay'].value || !this.formValues.controls['endDay'].value) {
       this.message.create('error', `请先选择随机抽查周期数据时间范围！`);
       return
     }
     this.load = true
     const params = {
-      startTime: this.randomPickTime[0],
-      endTime: this.randomPickTime[1]
+      startTime: this.formValues.controls['startDay'].value.getTime(),
+      endTime: this.formValues.controls['endDay'].value.getTime()
     }
 
     this.http.post(`/act/ecos/thirdParty/randomPick`, params).subscribe((res => {
@@ -110,8 +127,10 @@ export class NewRandomCycleComponent implements OnInit {
         this.summaryData = summary
         this.removedData = removed
         this.detailData = detail
-        this.randomPickTime = [checkDurationStartTime, checkDurationEndTime]
-
+        this.formValues.patchValue({
+          startDay: new Date(checkDurationStartTime),
+          endDay: new Date(checkDurationEndTime),
+        })
         this.load = false;
       } else {
         this.message.create('error', `${res.msg}`);
@@ -468,7 +487,7 @@ export class NewRandomCycleComponent implements OnInit {
     this.load = true;
     this.http.postDownload(`/act/ecos/thirdParty/randomPick/detail/export/${this.summaryId}`).subscribe(
       (rest) => {
-        this.fileService.downloadResponse(`ThirdParty-ValidReport-${moment(this.randomPickTime[0]).format("YYYYMMDD")}-${moment(this.randomPickTime[1]).format("YYYYMMDD")}`, rest);
+        this.fileService.downloadResponse(`ThirdParty-ValidReport-${moment(this.formValues.controls['startDay'].value.getTime()).format("YYYYMMDD")}-${moment(this.formValues.controls['endDay'].value.getTime()).format("YYYYMMDD")}`, rest);
         this.load = false;
       },
       (error) => {

@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import {  HttpService, ServesiceService } from '@core/services';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from "@angular/router";
 import { NzMessageService } from 'ng-zorro-antd';
 
@@ -29,7 +29,8 @@ export class DealerThirdPartySupplementComponent implements OnInit {
 
   formValues = this.fb.group({
     status: null, // 抽查周期状态
-    checkDuration: [], // 抽查时间
+    startDay: [null, Validators.required],
+    endDay: [null, Validators.required],
   })
 
   public pageParams = {
@@ -74,30 +75,41 @@ export class DealerThirdPartySupplementComponent implements OnInit {
   getLoading(loading: boolean) {
     this.loading = loading;
   }
+  disabledStartDate = (startValue: Date): boolean => {
+    if (!startValue || !this.formValues.controls['endDay'].value) {
+      return false;
+    }
+    return startValue.getTime() > this.formValues.controls['endDay'].value.getTime();
+  };
 
+  disabledEndDate = (endValue: Date): boolean => {
+    if (!endValue || !this.formValues.controls['startDay'].value) {
+      return false;
+    }
+    return endValue.getTime() < this.formValues.controls['startDay'].value.getTime() ;
+  };
   ngOnInit() {
     this.getTableData();
     const roleList = JSON.parse(localStorage.getItem("roles"));
     this.isOAAdmin = roleList.includes("OA Admin")
   }
-
   getTableData() {
     this.loading = true;
-    const { status, checkDuration } = this.formValues.getRawValue();
+    const { status,startDay,endDay } = this.formValues.getRawValue();
     let startTime = null
     let endTime = null
-    if (checkDuration && checkDuration.length > 0) {
-      startTime = checkDuration[0]
-      endTime = checkDuration[1]
-    }
-    const params = {   
+    // if (checkDuration && checkDuration.length > 0) {
+    //   startTime = checkDuration[0]
+    //   endTime = checkDuration[1]
+    // }
+    const params = {
       ...this.pageParams,
       status: status,
-      checkDurationStartTime: startTime, // 抽查开始时间
-      checkDurationEndTime: endTime, // 抽查结束时间
+      checkDurationStartTime: startDay, // 抽查开始时间
+      checkDurationEndTime: endDay, // 抽查结束时间
       orderByClause: 'createTime desc',
     }
-  
+
     this.http.post(`/act/ecos/thirdParty/randomPick/query`, params).subscribe((rest => {
       if (rest.code === '0000') {
         const data = rest.data.rows;

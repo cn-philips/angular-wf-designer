@@ -25,7 +25,7 @@ export class RegisterICFComponent implements OnInit {
     private fileService: FileService,
     private message: NzMessageService,
     private servesiceService: ServesiceService
-  ) { 
+  ) {
   }
 
   public total = 0;
@@ -45,7 +45,7 @@ export class RegisterICFComponent implements OnInit {
     pageNo: 1,
     pageSize: 10,
   };
- 
+
   public registerList = [
     {label: '已抽取', value: 'picked'},
     {label: '未抽取', value: 'unpicked'},
@@ -98,12 +98,12 @@ export class RegisterICFComponent implements OnInit {
       hasRegistered: this.isHandle ? true : false,
       orderByClause: 'createTime desc',
     })
-   
+
     const params = {
       ...this.formValues.value,
       ...this.pageParams
     }
-    
+
     this.http.post(`/act/ecos/thirdParty/icf`, params).subscribe((rest => {
       if (rest.code === '0000') {
         this.tableData = rest.data.rows;
@@ -121,7 +121,7 @@ export class RegisterICFComponent implements OnInit {
   }
 
   onBeforeUpload = (file) => {
-    let type = file.name.split('.').pop();  
+    let type = file.name.split('.').pop();
     if ('xlsx' === type) {
       return true
     }
@@ -142,7 +142,7 @@ export class RegisterICFComponent implements OnInit {
     return this.uploadFile(formData).subscribe(
       (response: CommonResponse) => {
         const { data, code, msg } = response;
-        if ("9999" === code) {
+        if ("0000" === code) {
           item.onSuccess({ fileId: data }, file, response)
           this.message.create('success', `导入成功！`);
           this.getTableData();
@@ -164,11 +164,11 @@ export class RegisterICFComponent implements OnInit {
       ...this.formValues.value,
       hasRegistered: this.isHandle ? true : false,
     })
-   
+
     const params = {
       ...this.formValues.value,
     }
-    
+
     this.http.postDownload(`/act/ecos/thirdParty/icf/export`, params).subscribe(
       (rest) => {
         this.fileService.downloadResponse("ICF-", rest);
