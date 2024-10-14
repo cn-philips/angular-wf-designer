@@ -128,6 +128,8 @@ export class ThirdCheckInfoComponent implements OnInit {
         this.formData.patchValue({
           ...data,
           icfRegistrationTime: data.icfRegistrationTime?moment(new Date(data.icfRegistrationTime)).format('YYYY-MM-DD'):null,
+          dealerProvideMaterialDeadline: data.dealerProvideMaterialDeadline?moment(new Date(data.dealerProvideMaterialDeadline)).format('YYYY-MM-DD'):null,
+          dealerProvideMaterialRealtime: data.dealerProvideMaterialRealtime?moment(new Date(data.dealerProvideMaterialRealtime)).format('YYYY-MM-DD'):null,
           icfSignTime: data.icfSignTime?moment(new Date(data.icfSignTime)).format('YYYY-MM-DD'):null,
           auditAttachment: data.auditAttachment ? JSON.parse(data.auditAttachment) : [],
           oaAuditAttachments: data.oaAuditAttachments ? JSON.parse(data.oaAuditAttachments) : [],
