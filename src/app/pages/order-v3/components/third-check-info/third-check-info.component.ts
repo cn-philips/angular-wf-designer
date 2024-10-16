@@ -383,6 +383,14 @@ export class ThirdCheckInfoComponent implements OnInit {
           this.fileService.downloadResponse('OA三方核查模板', res);
     })
   }
+  downloadDealerAuditTemplate(){
+
+    let data = this.formData.getRawValue()
+    const { tpcId, dealFormId } = data
+    this.http.postDownload(`/act/push/cp/thirdparty/exportThirdpartyDealerCheckReport?dealFormId=${dealFormId}`).subscribe(res => {
+          this.fileService.downloadResponse('经销商自查表', res);
+    })
+  }
 
   setSaveValid() {
     this.clearFormVaild()
