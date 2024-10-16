@@ -288,7 +288,6 @@
 
     <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
       <div nz-col nzXs="24" nzSm="24" nzMd="8">
-        <button nz-button nzType="primary" (click)="downloadDealerAuditTemplate()" style="margin-right: 10px;">下载经销商自查表</button>
         <nz-form-item>
           <nz-form-label [nzRequired]="noticeRequired" nzXs="24" nzSm="24" nzMd="10" [nzNoColon]="true">
             三方核查要求附件
@@ -296,7 +295,7 @@
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <!-- <shared-upload-file [title]="" [type]="null" formControlName="auditAttachment">
             </shared-upload-file> -->
-
+            <button nz-button nzType="primary" (click)="downloadDealerAuditTemplate()" style="margin-right: 10px;">下载经销商自查表</button>
             <upload-third-audit-requirement-file-to-cp [cpDealId]="cpDealId" [applyId]="applyId" [title]="" [type]="null" formControlName="auditAttachment">
             </upload-third-audit-requirement-file-to-cp>
             <nz-form-explain *ngIf="formData.get('auditAttachment')?.dirty && formData.get('auditAttachment')?.errors">
