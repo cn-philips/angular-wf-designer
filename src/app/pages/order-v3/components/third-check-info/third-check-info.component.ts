@@ -126,6 +126,11 @@ export class ThirdCheckInfoComponent implements OnInit {
     this.http.post(`/act/ecos/thirdParty/detail/${applyId}`).subscribe((res => {
       if (res.code === '0000') {
         const data = res.data;
+        let riskArr = [data.salesPriceRisk,data.ssPriceRisk,data.thirdPartyRisk]
+        riskArr = riskArr.filter(item => item)
+        let risk = null;
+        if(riskArr.length>0)
+          risk = riskArr[riskArr.length-1]
         this.formData.patchValue({
           ...data,
           icfRegistrationTime: data.icfRegistrationTime?moment(new Date(data.icfRegistrationTime)).format('YYYY-MM-DD'):null,
@@ -134,6 +139,7 @@ export class ThirdCheckInfoComponent implements OnInit {
           icfSignTime: data.icfSignTime?moment(new Date(data.icfSignTime)).format('YYYY-MM-DD'):null,
           auditAttachment: data.auditAttachment ? JSON.parse(data.auditAttachment) : [],
           oaAuditAttachments: data.oaAuditAttachments ? JSON.parse(data.oaAuditAttachments) : [],
+          thirdPartyRisk:risk,
         })
 
         this.load = false;

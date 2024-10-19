@@ -168,6 +168,7 @@
           <th nzAlign="center" style="width: 140px">申请材料</th>
           <th nzAlign="center" style="width: 160px">核查材料</th>
           <th nzAlign="center" style="width: 140px">核查材料备注</th>
+          <th nzAlign="center" style="width: 122px">是否更新核查材料</th>
         </tr>
       </thead>
       <tbody>
@@ -211,6 +212,8 @@
               </div>
             </td>
             <td class="tableData" nzAlign="center" style="width: 122px" nzLeft="0px">{{ data.auditMaterialRemarks
+              }}</td>
+            <td class="tableData" nzAlign="center" style="width: 122px" nzLeft="0px">{{ data.isAuditAttachmentUpdated?"是":"否"
               }}</td>
             <!-- <td class="tableData" nzAlign="center" style="width: 200px">
               <ng-container *ngIf="data.auditFiles&&data.auditFiles.length>0">
