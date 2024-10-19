@@ -152,7 +152,7 @@
       [nzFrontPagination]="false" [nzShowPagination]="false" [nzScroll]="{ x: '2160px', y: '300px'}">
       <thead>
         <tr>
-          <th nzAlign="center" style="width: 201px" nzLeft="0px">品牌/生产商</th>
+          <th nzAlign="center" style="width: 200px" nzLeft="0px">品牌/生产商</th>
           <th nzAlign="center" style="width: 200px">具体型号</th>
           <th nzAlign="center" style="width: 200px">备注</th>
           <th nzAlign="center" style="width: 120px">质保和售后服务要求年月</th>
@@ -168,7 +168,7 @@
           <th nzAlign="center" style="width: 140px">申请材料</th>
           <th nzAlign="center" style="width: 160px">核查材料</th>
           <th nzAlign="center" style="width: 140px">核查材料备注</th>
-          <th nzAlign="center" style="width: 122px">是否更新核查材料</th>
+          <th nzAlign="center" style="width: 140px">是否更新核查材料</th>
         </tr>
       </thead>
       <tbody>
@@ -211,9 +211,9 @@
                 </ng-template>
               </div>
             </td>
-            <td class="tableData" nzAlign="center" style="width: 122px" nzLeft="0px">{{ data.auditMaterialRemarks
+            <td class="tableData" nzAlign="center" style="width: 140px" nzLeft="0px">{{ data.auditMaterialRemarks
               }}</td>
-            <td class="tableData" nzAlign="center" style="width: 122px" nzLeft="0px">{{ data.isAuditAttachmentUpdated?"是":"否"
+            <td class="tableData" nzAlign="center" style="width: 140px" nzLeft="0px">{{ data.isAuditAttachmentUpdated?"是":"否"
               }}</td>
             <!-- <td class="tableData" nzAlign="center" style="width: 200px">
               <ng-container *ngIf="data.auditFiles&&data.auditFiles.length>0">
