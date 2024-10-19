@@ -214,7 +214,8 @@ export class ThirdCheckInfoComponent implements OnInit {
 
   async showNoticeModel(val) {
     this.resetNotice()
-    await this.queryOperator(this.dealFormId)
+    const { orderCode, dealFormId } = this.formData.getRawValue()
+    await this.queryOperator(dealFormId)
 
     if(val == 1) {
       this.setNoticeValid()
