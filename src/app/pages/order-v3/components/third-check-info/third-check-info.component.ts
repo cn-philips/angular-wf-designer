@@ -17,6 +17,7 @@ export class ThirdCheckInfoComponent implements OnInit {
     private fileService: FileService,) { }
   @Input() applyId:string;
   @Input() cpDealId:any="";
+  @Input() dealFormId:any="";
   thirdPartyList: any = [];
   load: any = false;
   saveRequired = true
@@ -213,7 +214,7 @@ export class ThirdCheckInfoComponent implements OnInit {
 
   async showNoticeModel(val) {
     this.resetNotice()
-    await this.queryOperator(this.noticeForms.dealFormId)
+    await this.queryOperator(this.dealFormId)
 
     if(val == 1) {
       this.setNoticeValid()

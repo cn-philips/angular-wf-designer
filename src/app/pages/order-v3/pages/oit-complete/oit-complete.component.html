@@ -50,7 +50,7 @@
     <app-tab [title]="'orderv3.pages.oit-complete.third-tab' | translate" id="complete-third"
       *ngIf="needFileType == 'third'">
       <div class="card-body">
-        <ecos-thirdcheck-info #thirdCheck [applyId]="applyId"></ecos-thirdcheck-info>
+        <ecos-thirdcheck-info #thirdCheck [applyId]="applyId" [dealFormId]="baseInfoFromData.getRawValue().dealformId"></ecos-thirdcheck-info>
       </div>
     </app-tab>
     <app-tab [title]="'orderv3.pages.oit-complete.so-tab' | translate" id="complete-real"
