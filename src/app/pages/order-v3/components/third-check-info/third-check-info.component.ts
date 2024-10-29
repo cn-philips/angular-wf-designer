@@ -63,6 +63,7 @@ export class ThirdCheckInfoComponent implements OnInit {
 
   public formData: FormGroup = this.fb.group({
     id: [],
+    detailId:[],
     tpcId: [],
     needThirdPartyAudit: [{ value: false, disabled: true }], // 是否需要三方核查
     checkDurationId: [{ value: null, disabled: true }], // 抽查周期
@@ -241,6 +242,10 @@ export class ThirdCheckInfoComponent implements OnInit {
       this.noticeType = 'replenish'
       this.noticeTitle = '通知经销商补充自采三方核查材料'
       this.isVisible = true
+    } else if(val == 3){
+      this.noticeType = 'locked'
+      this.noticeTitle = '通知经销商需要被核查'
+      this.isVisible = true
     }
   }
 
@@ -283,6 +288,8 @@ export class ThirdCheckInfoComponent implements OnInit {
       await this.noticeDealerUploadFile()
     } else if (this.noticeType === 'replenish') {
       await this.noticeDealerReplenishFile()
+    } else if (this.noticeType === 'locked') {
+      await this.noticeDealerLocked()
     }
     this.isVisible = false
   }
@@ -306,6 +313,33 @@ export class ThirdCheckInfoComponent implements OnInit {
     }
 
     this.http.post(`/act/ecos/thirdParty/oaApproval/detail/notify/${tpcId}/${dealFormId}`, parmas).subscribe((res => {
+      if (res.code === '0000') {
+        this.resetRequired()
+        this.message.create("success", "操作成功！")
+        this.load = false;
+        this.queryDetails(this.applyId)
+      } else {
+        this.message.create('error', `${res.data}`);
+        this.load = false;
+      }
+    }), (error => {
+      this.load = false;
+      this.message.create("error", "服务器异常")
+    }));
+
+  }
+  // 通知经销商需要被核查
+  noticeDealerLocked(){
+    this.load = true
+    let data = this.formData.getRawValue()
+    const { detailId, tpcId, dealFormId, auditComments, auditAttachment } = data
+    const parmas = {
+      ...this.noticeForms,
+      id: detailId
+    }
+    console.log('detailId',detailId)
+    console.log('parmas',parmas)
+    this.http.post(`/act/ecos/thirdParty/randomPick/detail/notify/${tpcId}`, [parmas]).subscribe((res => {
       if (res.code === '0000') {
         this.resetRequired()
         this.message.create("success", "操作成功！")

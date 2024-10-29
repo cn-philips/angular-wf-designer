@@ -165,7 +165,7 @@
             <tr>
               <td *ngIf="isOAAdmin" class="tableData" nzAlign="center" style="width: 200px" nzLeft="0px">
                 <a style="display: block; color: #337FBF;" (click)="operate(data,'del')">删除</a>
-                <a *ngIf="applyStatu==='LOCKED'" style="display: block; color: #337FBF;" (click)="operate(data, 'send')">通知经销商需要被核查</a>
+                <a *ngIf="applyStatu!=='UNLOCKED'" style="display: block; color: #337FBF;" (click)="operate(data, 'send')">通知经销商需要被核查</a>
               </td>
               <td class="tableData" nzAlign="center" style="width: 200px">
                 <ng-container *ngIf="data.auditFiles&&data.auditFiles.length>0">

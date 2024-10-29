@@ -234,6 +234,7 @@
 <app-form-section class="mtb1rem" title="填写核查信息">
   <form nz-form [formGroup]="formData">
     <div style="padding: 12px 10px 24px 12px;">
+      <button nz-button nzType="primary" style="margin-left: 10px" (click)="showNoticeModel(3)">通知经销商需要被核查</button>
       <button *ngIf="!formData.get('auditStartTime')?.value" [disabled]="partyStatus != 'none'" nz-button nzType="primary"
         (click)="showNoticeModel(1)">通知经销商上传核查材料</button>
       <button *ngIf="formData.get('auditStartTime')?.value" [disabled]="partyStatus != 'none'" nz-button
