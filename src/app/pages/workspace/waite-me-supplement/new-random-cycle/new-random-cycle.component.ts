@@ -124,7 +124,35 @@ export class NewRandomCycleComponent implements OnInit {
           return
         }
         this.applyStatu = status
-        this.summaryData = summary
+        const totalSummaryRow = {
+          highRiskAndNonPreConcludePickCount:0,
+          highRiskAndNonPreConcludeTotal:0,
+          highRiskAndPreConcludePickCount:0,
+          highRiskAndPreConcludeTotal:0,
+          id:null,
+          lowRiskPickCount:0,
+          lowRiskTotal:0,
+          mediumRiskPickCount:0,
+          mediumRiskTotal:0,
+          pickCount:0,
+          team:"ALL",
+          total:0,
+          tpcId:null,
+        }
+        this.summaryData = summary||[]
+        this.summaryData.forEach(item => {
+          totalSummaryRow.highRiskAndNonPreConcludePickCount += item.highRiskAndNonPreConcludePickCount
+          totalSummaryRow.highRiskAndNonPreConcludeTotal += item.highRiskAndNonPreConcludeTotal
+          totalSummaryRow.highRiskAndPreConcludePickCount += item.highRiskAndPreConcludePickCount
+          totalSummaryRow.highRiskAndPreConcludeTotal += item.highRiskAndPreConcludeTotal
+          totalSummaryRow.lowRiskPickCount += item.lowRiskPickCount
+          totalSummaryRow.lowRiskTotal += item.lowRiskTotal
+          totalSummaryRow.mediumRiskPickCount += item.mediumRiskPickCount
+          totalSummaryRow.mediumRiskTotal += item.mediumRiskTotal
+          totalSummaryRow.pickCount += item.pickCount
+          totalSummaryRow.total += item.total
+        })
+        this.summaryData.unshift(totalSummaryRow)
         this.removedData = removed
         this.detailData = detail
         this.formValues.patchValue({
