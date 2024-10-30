@@ -5,6 +5,7 @@ import { FileService, HttpService } from '@core/services';
 import { NzMessageService, UploadFile } from 'ng-zorro-antd';
 import * as moment from 'moment'
 import { saveAs } from "file-saver";
+import { fomatFloat } from '@core/util/tools';
 
 @Component({
   selector: 'ecos-thirdcheck-info',
@@ -18,6 +19,7 @@ export class ThirdCheckInfoComponent implements OnInit {
   @Input() applyId:string;
   @Input() cpDealId:any="";
   @Input() dealFormId:any="";
+  @Input() formValue: FormGroup;
   thirdPartyList: any = [];
   load: any = false;
   saveRequired = true
@@ -27,6 +29,7 @@ export class ThirdCheckInfoComponent implements OnInit {
   noticeType = 'upload' // 通知经销商上传核查材料-upload 通知经销商补充核查材料-replenish
   noticeTitle = ''
   partyStatus = 'none'
+  esCnyStr = "";
   noticeForms = {
     orderCode: null, // 经销商下单ID(订单需求编号)
     dealFormId: null,
@@ -61,6 +64,29 @@ export class ThirdCheckInfoComponent implements OnInit {
     cpDealPurchaseList:[]
   }
 
+  get baseInfoFrom(): FormGroup {
+    return this.formValue.get("baseInfoFrom") as FormGroup;
+  }
+  get biddingAwardPriceModel()
+  {
+      const {biddingAwardPrice,biddingAwardCurrency}=this.baseInfoFrom.getRawValue();
+      let biddingPrice=fomatFloat(biddingAwardPrice,2)
+      if(biddingAwardPrice!=null&&biddingAwardPrice!=""&&biddingAwardPrice!=undefined)
+      {
+        return `${biddingPrice}`
+      }
+      else{
+        return ""
+      }
+  }
+  get rate(){
+    let esCny = this.esCny||0
+    let sum = this.CPSummary.cpDealPurchaseList.reduce((pre,next)=>{
+      return pre+next.purchasePrice
+    },0)
+    if(esCny == 0) return 0
+    return sum/esCny
+  }
   public formData: FormGroup = this.fb.group({
     id: [],
     detailId:[],
@@ -95,6 +121,9 @@ export class ThirdCheckInfoComponent implements OnInit {
     oaAuditAttachments: [{ value: null, disabled: false }], // OA三方核查备注附件
     processStatus: [{ value: null, disabled: true }],
     auditFiles: [{ value: [], disabled: false }], // 核查报告
+    esCny: [{ value: null, disabled: true }], // ES CNY
+    esCnyNet: [{ value: null, disabled: true }], // ES CNY Net
+    esUsd: [{ value: null, disabled: true }], // ES USD
   })
 
   public partyStatusOpt = [
@@ -117,7 +146,12 @@ export class ThirdCheckInfoComponent implements OnInit {
     "延期完成核查（有差异）",
     "暂未签署ICF[系统判断，可人工修改]",
   ]
-
+  get esCny(){
+    if(this.esCnyStr == null || this.esCnyStr == '') return 0
+    else{
+      return Number(this.esCnyStr.replace(/,/g, ''))
+    }
+  }
   ngOnInit() {
     this.queryDetails(this.applyId)
   }
@@ -162,6 +196,14 @@ export class ThirdCheckInfoComponent implements OnInit {
         if(riskArr.length>0)
           risk = riskArr[riskArr.length-1]
         console.log('risk',risk)
+
+        const {esCny,esCnyNet,esUsd} = data
+        this.formData.patchValue({
+          esCny: esCny?esCny:null,
+          esCnyNet: esCnyNet?esCnyNet:null,
+          esUsd: esUsd?esUsd:null,
+        })
+        this.esCnyStr = esCny?esCny:null
 
         this.CPSummary = data;
         this.CPSummary.thirdPartyRisk = risk
