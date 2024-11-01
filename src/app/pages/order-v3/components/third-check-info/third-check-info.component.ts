@@ -80,11 +80,12 @@ export class ThirdCheckInfoComponent implements OnInit {
       }
   }
   get rate(){
-    let esCny = this.esCny||0
-    let sum = this.CPSummary.cpDealPurchaseList.reduce((pre,next)=>{
-      return pre+next.purchasePrice
-    },0)
+    let esCny = this.esCny || 0
     if(esCny == 0) return 0
+    if(!this.CPSummary) return 0
+    let sum = this.CPSummary.cpDealPurchaseList.reduce((pre,next)=>{
+      return pre+(next.verifyCny*next.quantity)
+    },0)
     return sum/esCny
   }
   public formData: FormGroup = this.fb.group({
