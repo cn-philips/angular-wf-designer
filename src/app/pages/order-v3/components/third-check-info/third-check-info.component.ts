@@ -20,7 +20,7 @@ export class ThirdCheckInfoComponent implements OnInit {
   @Input() cpDealId:any="";
   @Input() dealFormId:any="";
   @Input() formValue: FormGroup;
-  dateFormat = 'yyyy-MM-dd HH:mm:ss';
+  dateFormat = 'yyyy-MM-dd';
   thirdPartyList: any = [];
   load: any = false;
   saveRequired = true
