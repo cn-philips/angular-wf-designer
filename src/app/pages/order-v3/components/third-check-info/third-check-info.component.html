@@ -248,7 +248,7 @@
             开始三方核查时间
           </nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <nz-date-picker formControlName="auditStartTime" nzPlaceHolder=""></nz-date-picker>
+            <nz-date-picker formControlName="auditStartTime" [nzFormat]="dateFormat" nzPlaceHolder=""></nz-date-picker>
           </nz-form-control>
         </nz-form-item>
       </div>
@@ -258,7 +258,7 @@
             经销商承诺延期时间
           </nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <nz-date-picker formControlName="dealerDelayTime"></nz-date-picker>
+            <nz-date-picker formControlName="dealerDelayTime" [nzFormat]="dateFormat"></nz-date-picker>
           </nz-form-control>
         </nz-form-item>
       </div>
@@ -268,7 +268,7 @@
             OA完成核查时间
           </nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <nz-date-picker formControlName="oaAuditEndTime"></nz-date-picker>
+            <nz-date-picker formControlName="oaAuditEndTime" [nzFormat]="dateFormat"></nz-date-picker>
           </nz-form-control>
         </nz-form-item>
       </div>
