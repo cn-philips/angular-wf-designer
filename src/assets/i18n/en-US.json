@@ -1478,7 +1478,8 @@
           "done": "Done",
           "waitingForEsign": "尚未发起电子签章",
           "esigned": "已发起电子签章"
-        }
+        },
+        "icf":"If registered ICF"
       }
     },
     "transfer": {

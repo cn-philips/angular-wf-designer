@@ -1486,7 +1486,8 @@
           "done": "已办",
           "waitingForEsign": "尚未发起电子签章",
           "esigned": "已发起电子签章"
-        }
+        },
+        "icf": "是否已经登记ICF"
       }
     },
     "transfer": {
