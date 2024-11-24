@@ -154,6 +154,8 @@
             <th nzAlign="center" style="width: 150px">关联的新经销商</th>
             <th nzAlign="center" style="width: 120px">OIT完成时间</th>
             <th nzAlign="center" style="width: 120px">ICF登记时间</th>
+            <th nzAlign="center" style="width: 120px">OA</th>
+            <th nzAlign="center" style="width: 120px">SO#</th>
             <th nzAlign="center" style="width: 120px">ICF时间</th>
             <th nzAlign="center" style="width: 140px">需要经销商提供核查材料截止时间</th>
             <th nzAlign="center" style="width: 120px">经销商实际提供核查材料时间</th>
@@ -196,6 +198,10 @@
               <td class="tableData" nzAlign="center" style="width: 120px">{{ getFields(data.relatedContractSummaries,
                 'oitTime') }}</td>
               <td class="tableData" nzAlign="center" style="width: 120px">{{ getFields(data.orderDetails, 'icfRe') }}
+              </td>
+              <td class="tableData" nzAlign="center" style="width: 120px">{{ getFields(data.orderDetails, 'oa') }}
+              </td>
+              <td class="tableData" nzAlign="center" style="width: 120px">{{ getFields(data.orderDetails, 'so') }}
               </td>
               <td class="tableData" nzAlign="center" style="width: 120px">{{ getFields(data.orderDetails, 'icf') }}</td>
               <td class="tableData" nzAlign="center" style="width: 140px"

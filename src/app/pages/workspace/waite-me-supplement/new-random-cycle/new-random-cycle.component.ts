@@ -436,6 +436,20 @@ export class NewRandomCycleComponent implements OnInit {
       }
       let items = Array.from(new Set(list.map(item => `${this.matchesNo(item.referenceId)}${moment(new Date(item.icfRegistrationTime)).format("YYYY-MM-DD")}`)))
       return this.listSort(items).join(",");
+    } else if (field == 'oa') {
+      let arrs = list.map(item => item.oa).filter(v => v !== null && v !== undefined)
+      if (arrs.length == 0) {
+        return ''
+      }
+      let items = Array.from(new Set(list.map(item => `${this.matchesNo(item.referenceId)}${item.oa}`)))
+      return this.listSort(items).join(",<br>");
+    } else if (field == 'so') {
+      let arrs = list.map(item => item.so).filter(v => v !== null && v !== undefined)
+      if (arrs.length == 0) {
+        return ''
+      }
+      let items = Array.from(new Set(list.map(item => `${this.matchesNo(item.referenceId)}${item.so}`)))
+      return this.listSort(items).join(",<br>");
     } else if (field == 'icf') {
       let arrs = list.map(item => item.icfSignTime).filter(v => v !== null && v !== undefined)
       if (arrs.length == 0) {
