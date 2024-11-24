@@ -38,6 +38,7 @@ export class RegisterICFComponent implements OnInit {
   formValues = this.fb.group({
     so: null,
     status: 'picked',
+    dealFormId: null,
     hasRegistered: 0 //是否登记 true-已登记 false未登记
   })
 
