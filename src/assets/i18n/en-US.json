@@ -1496,6 +1496,8 @@
     },
     "table-header": {
       "ref-no": "Ref No",
+      "icf-sign-time": "ICF Sign Time",
+      "icf-registration-time": "ICF Registration Time",
       "handle-node": "Task Status",
       "task-status": "Task Status",
       "applicant": "Sales",

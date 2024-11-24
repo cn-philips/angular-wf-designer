@@ -1504,6 +1504,8 @@
     },
     "table-header": {
       "ref-no": "Ref No",
+      "icf-sign-time": "ICF 时间",
+      "icf-registration-time": "ICF 登记时间",
       "handle-node": "任务状态",
       "task-status": "任务状态",
       "applicant": "销售",

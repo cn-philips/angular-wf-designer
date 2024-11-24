@@ -24,6 +24,7 @@ export class WaiteMeSupplementListComponent implements OnInit {
   @Input() type: any;
   @Input() flag: any;
   @Input() isHandle = 0;
+  @Input() isThirdParty = false;
 
   @Output() pageChange = new EventEmitter<any>();
   @Output() setLoading = new EventEmitter<boolean>();
@@ -137,7 +138,7 @@ export class WaiteMeSupplementListComponent implements OnInit {
   /*********** 一期跳转操作 Start  *********/
   //待oit文件上传 SO# 第三方自采
   goCompleteOit(item, param) {
- 
+
     this.router.navigate(["/pre-order/complete-oit"], {
       skipLocationChange: false,
       queryParams: {
@@ -153,7 +154,7 @@ export class WaiteMeSupplementListComponent implements OnInit {
   }
 
   //待oit文件上传
-  goCompleteOitFile(item) {    
+  goCompleteOitFile(item) {
       this.router.navigate(["/pre-order/supp-file"], {
       skipLocationChange: false,
       queryParams: {
@@ -168,7 +169,7 @@ export class WaiteMeSupplementListComponent implements OnInit {
   }
 
   // 待补充文件上传
-  goSuppfile(item) {    
+  goSuppfile(item) {
     this.router.navigate(["/pre-order/supp-file"], {
       skipLocationChange: false,
       queryParams: {
