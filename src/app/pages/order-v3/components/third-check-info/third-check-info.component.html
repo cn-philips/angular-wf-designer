@@ -321,21 +321,6 @@
           </nz-form-control>
         </nz-form-item>
       </div>
-      <div nz-col nzXs="24" nzSm="24" nzMd="8">
-        <nz-form-item>
-          <nz-form-label [nzRequired]="saveRequired" nzXs="24" nzSm="24" nzMd="10" [nzNoColon]="true">
-            COS实际核查总三方价格含税（不含未评估三方）
-          </nz-form-label>
-          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <nz-input-number style="width: 100%;" formControlName="cosAuditTotalPriceExclude" [nzMin]="0"
-              [nzMax]="99999999999999999.99" [nzStep]="0.0001" nzPlaceHolder=""></nz-input-number>
-            <nz-form-explain
-              *ngIf="formData.get('cosAuditTotalPriceExclude')?.dirty && formData.get('cosAuditTotalPriceExclude')?.errors">
-              此选项必填字段
-            </nz-form-explain>
-          </nz-form-control>
-        </nz-form-item>
-      </div>
     </div>
     <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
       <div nz-col nzXs="24" nzSm="24" nzMd="8">
@@ -370,6 +355,23 @@
       </div>
     </div>
     <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label [nzRequired]="saveRequired" nzXs="24" nzSm="24" nzMd="10" [nzNoColon]="true">
+            COS实际核查总三方价格含税（不含未评估三方）
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <nz-input-number style="width: 100%;" formControlName="cosAuditTotalPriceExclude" [nzMin]="0"
+              [nzMax]="99999999999999999.99" [nzStep]="0.0001" nzPlaceHolder=""></nz-input-number>
+            <nz-form-explain
+              *ngIf="formData.get('cosAuditTotalPriceExclude')?.dirty && formData.get('cosAuditTotalPriceExclude')?.errors">
+              此选项必填字段
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+
       <div nz-col nzXs="24" nzSm="24" nzMd="8">
         <nz-form-item>
           <nz-form-label nzXs="24" nzSm="24" nzMd="10" [nzNoColon]="true">
@@ -380,6 +382,22 @@
           </nz-form-control>
         </nz-form-item>
       </div>
+
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="10" [nzNoColon]="true">
+            Deviation 类型（不含未评估三方）
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <nz-select nzShowSearch nzAllowClear nzPlaceHolder="" formControlName="deviationTypeExclude">
+              <nz-option *ngFor="let item of deviationTypes" [nzValue]="item" [nzLabel]="item"></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
       <div nz-col nzXs="24" nzSm="24" nzMd="8">
         <nz-form-item>
           <nz-form-label [nzRequired]="saveRequired" nzXs="24" nzSm="24" nzMd="10" [nzNoColon]="true">
@@ -395,9 +413,6 @@
           </nz-form-control>
         </nz-form-item>
       </div>
-    </div>
-
-    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
       <div nz-col nzXs="24" nzSm="24" nzMd="8">
         <nz-form-item>
           <nz-form-label nzXs="24" nzSm="24" nzMd="10" [nzNoColon]="true">
@@ -405,18 +420,6 @@
           </nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <input nz-input formControlName="deviationPercentageInclude" placeholder="保存后系统自动计算" />
-          </nz-form-control>
-        </nz-form-item>
-      </div>
-      <div nz-col nzXs="24" nzSm="24" nzMd="8">
-        <nz-form-item>
-          <nz-form-label nzXs="24" nzSm="24" nzMd="10" [nzNoColon]="true">
-            Deviation 类型（不含未评估三方）
-          </nz-form-label>
-          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <nz-select nzShowSearch nzAllowClear nzPlaceHolder="" formControlName="deviationTypeExclude">
-              <nz-option *ngFor="let item of deviationTypes" [nzValue]="item" [nzLabel]="item"></nz-option>
-            </nz-select>
           </nz-form-control>
         </nz-form-item>
       </div>
