@@ -191,9 +191,10 @@ export class SpecialApprovalEntriesComponent implements OnInit {
         this.filteredTemplateList.push(i);
       });
   }
-  onNavigateToNewRequest({ type, item, bg, role }) {
+  onNavigateToNewRequest({ type, item, bg, role ,admin,owner}) {
     this.router.navigate(["/special-approval/new-request"], {
       queryParams: { type, item, bg, role },
+      fragment: JSON.stringify({admin,owner})
     });
   }
   handleTo(path) {

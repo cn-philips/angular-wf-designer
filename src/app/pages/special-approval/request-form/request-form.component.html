@@ -12,7 +12,7 @@
           nzTitle="如对流程有疑问请发邮件咨询Process Admin">Process Admin:
         </span>
         <ng-container *ngFor="let item of processAdminList">
-          <a href="mailto:{{item}}">{{item}}</a>;
+          <a href="mailto:{{item.email}}">{{item.email}}({{item.bg}})</a>;
         </ng-container>
       </li>
       <br/>
@@ -20,7 +20,7 @@
           nzTitle="如对流程有疑问请发邮件咨询Process Expert">Process Expert:
         </span>
         <ng-container *ngFor="let item of processExpertList">
-          <a href="mailto:{{item}}">{{item}}</a>;
+          <a href="mailto:{{item.email}}">{{item.email}}({{item.bg}})</a>;
         </ng-container>
       </li>
     </ul>

@@ -28,6 +28,7 @@ import { CooCcOrderInfoComponent } from "./widgets/order-info/coo-cc/coo-cc.comp
 import { ImportedInfoComponent } from "./widgets/order-info/imported-info/imported-info.component"
 import { RouterExtendService } from "@app/modern-themes/services/router-extend.service";
 import { compareIgnoreSensitiveCase } from "@app/utils/StringUtils";
+import { Location } from "@angular/common";
 
 enum TAB_TYPE {
   BASIC_INFO = "basic-info",
@@ -169,7 +170,8 @@ export class RequestFormComponent implements OnInit {
     private router: Router,
     private spService: SpecialApprovalService,
     private message: NzMessageService,
-    private routerExtend: RouterExtendService
+    private routerExtend: RouterExtendService,
+    private location: Location
   ) {}
 
   public acitveTabId: string = TAB_TYPE.BASIC_INFO;
@@ -626,6 +628,9 @@ export class RequestFormComponent implements OnInit {
       params: { requestId },
       queryParams: { type, item, taskId, bg, role },
     } = this.route.snapshot;
+    const fragment = this.location.subscribe((val)=>{
+      console.log('val',val)
+    });
     // detail page
     if (requestId) {
       this.taskId = taskId;
@@ -743,10 +748,10 @@ export class RequestFormComponent implements OnInit {
       processOwner = processOwnerAdmin.processOwner;
       processAdmin = processOwnerAdmin.processAdmin;
       if (processAdmin && processAdmin.length > 0) {
-        this.processAdminList = processAdmin.map(({ email }) => email);
+        this.processAdminList = processAdmin;
       }
       if (processOwner && processOwner.length > 0) {
-        this.processExpertList = processOwner.map(({ email }) => email);
+        this.processExpertList = processOwner;
       }
     }
   }

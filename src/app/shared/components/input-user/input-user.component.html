@@ -1,0 +1,20 @@
+<nz-select
+  style="width: 100%;"
+  [nzMode]="mode"
+  nzPlaceHolder="输入邮箱查询"
+  nzShowSearch
+  nzAllowClear
+  [nzServerSearch]="true"
+  (nzOnSearch)="onSearchUser($event)"
+  [(ngModel)]="selectedUsers"
+  (ngModelChange)="onModelChange($event)"
+>
+  <ng-container *ngFor="let user of userList">
+    <nz-option *ngIf="!isSearchLoading" [nzValue]="user.email" [nzLabel]="user.email" [nzCustomContent]="true">
+      {{ user.displayName || user.email }}
+    </nz-option>
+  </ng-container>
+  <nz-option *ngIf="isSearchLoading" nzDisabled nzCustomContent>
+    <i nz-icon type="loading" class="loading-icon"></i> 查询中...
+  </nz-option>
+</nz-select>
