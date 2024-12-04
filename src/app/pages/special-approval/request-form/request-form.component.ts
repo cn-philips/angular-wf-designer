@@ -661,7 +661,7 @@ export class RequestFormComponent implements OnInit {
 
       this.setPageTitle({ applyType: type, applyItem: item });
 
-      this.setProcessOwnerAdmin({ applyType: type });
+      this.setProcessOwnerAdmin({ applyType: type ,bg});
 
       if (bg) {
         switch (type) {
@@ -735,9 +735,9 @@ export class RequestFormComponent implements OnInit {
     this.pageTitle = isNew ? `新建特批-${title}` : title;
   }
 
-  public setProcessOwnerAdmin({ applyType = "" }) {
+  public setProcessOwnerAdmin({ applyType = "" ,bg = ""}) {
     if (applyType) {
-      let processOwnerAdmin = this.spService.getProcessOwnerAdmin(applyType);
+      let processOwnerAdmin = this.spService.getProcessOwnerAdmin(applyType,bg);
       let processOwner = [{ name: null, email: null }];
       let processAdmin = [{ name: null, email: null }];
       processOwner = processOwnerAdmin.processOwner;
