@@ -628,9 +628,13 @@ export class RequestFormComponent implements OnInit {
       params: { requestId },
       queryParams: { type, item, taskId, bg, role },
     } = this.route.snapshot;
-    const fragment = this.location.subscribe((val)=>{
-      console.log('val',val)
-    });
+    // const fragment = this.location.subscribe((val)=>{
+    //   console.log('val',val)
+    // });
+    this.route.params.subscribe((params) => {
+      const {owner,admin} = params;
+      this.setProcessOwnerAdmin(admin,owner);
+    })
     // detail page
     if (requestId) {
       this.taskId = taskId;
@@ -666,7 +670,7 @@ export class RequestFormComponent implements OnInit {
 
       this.setPageTitle({ applyType: type, applyItem: item });
 
-      this.setProcessOwnerAdmin({ applyType: type ,bg});
+
 
       if (bg) {
         switch (type) {
@@ -712,6 +716,18 @@ export class RequestFormComponent implements OnInit {
       this.initSaleRegions(role, true);
     }
   }
+  setProcessOwnerAdmin(admin: any, owner: any) {
+    if(typeof admin === 'string'){
+      admin = admin.split(',');
+    }
+    if(typeof owner === 'string'){
+      owner = owner.split(',');
+    }
+    console.log('admin',admin)
+    console.log('owner',owner)
+    this.processAdminList = admin;
+    this.processExpertList = owner;
+  }
 
   /*
    * @description: 公共判断表单方法
@@ -740,21 +756,21 @@ export class RequestFormComponent implements OnInit {
     this.pageTitle = isNew ? `新建特批-${title}` : title;
   }
 
-  public setProcessOwnerAdmin({ applyType = "" ,bg = ""}) {
-    if (applyType) {
-      let processOwnerAdmin = this.spService.getProcessOwnerAdmin(applyType,bg);
-      let processOwner = [{ name: null, email: null }];
-      let processAdmin = [{ name: null, email: null }];
-      processOwner = processOwnerAdmin.processOwner;
-      processAdmin = processOwnerAdmin.processAdmin;
-      if (processAdmin && processAdmin.length > 0) {
-        this.processAdminList = processAdmin;
-      }
-      if (processOwner && processOwner.length > 0) {
-        this.processExpertList = processOwner;
-      }
-    }
-  }
+  // public setProcessOwnerAdmin({ applyType = "" ,bg = ""}) {
+  //   if (applyType) {
+  //     let processOwnerAdmin = this.spService.getProcessOwnerAdmin(applyType,bg);
+  //     let processOwner = [{ name: null, email: null }];
+  //     let processAdmin = [{ name: null, email: null }];
+  //     processOwner = processOwnerAdmin.processOwner;
+  //     processAdmin = processOwnerAdmin.processAdmin;
+  //     if (processAdmin && processAdmin.length > 0) {
+  //       this.processAdminList = processAdmin;
+  //     }
+  //     if (processOwner && processOwner.length > 0) {
+  //       this.processExpertList = processOwner;
+  //     }
+  //   }
+  // }
 
   get orderInfo(): FormGroup {
     return this.formValues.get("orderInfo") as FormGroup;
@@ -2121,9 +2137,11 @@ export class RequestFormComponent implements OnInit {
         smallArea,
         isDeleted,
         lastBuyPlan,
+        admin,
+        owner
       } = data;
       this.setPageTitle({ applyType, applyItem }, false);
-      this.setProcessOwnerAdmin({ applyType });
+      this.setProcessOwnerAdmin(admin,owner);
       this.applyItem = applyItem;
       this.applyType = applyType;
       this.executed = executed;
