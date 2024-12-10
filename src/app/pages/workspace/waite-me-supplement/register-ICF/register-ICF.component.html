@@ -60,9 +60,9 @@
       <label nz-radio-button style="margin-left: 10px;" [nzValue]="1">已登记ICF
         <span *ngIf="isHandle == 1 && total>0">({{total}})</span></label>
     </nz-radio-group>
-    <div *ngIf="isHandle == 0">
+    <div>
       <button nz-button nzType="primary" nzXl="8" (click)="exportFile()" nzXXl="6"> 导出 </button>
-      <nz-upload style="margin-left: 10px;" nzAction="" [nzMultiple]="false" [nzCustomRequest]="onUploadFile"
+      <nz-upload *ngIf="isHandle == 0" style="margin-left: 10px;" nzAction="" [nzMultiple]="false" [nzCustomRequest]="onUploadFile"
         [nzBeforeUpload]="onBeforeUpload" [nzShowUploadList]="false" [nzLimit]="1" nzAccept=".xlsx">
         <button nz-button nzType="default"><i nz-icon nzType="upload"></i><span> 导入
           </span></button>
