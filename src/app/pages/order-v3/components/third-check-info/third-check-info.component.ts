@@ -116,8 +116,8 @@ export class ThirdCheckInfoComponent implements OnInit {
     cosAuditTotalPriceInclude: [{ value: null, disabled: false }], // COS实际核查总三方价格含税（含未评估三方）
     // Deviation Percentage （含未评估三方）：系统计算= 【COS实际核查总三方价格含税（含未评估三方）- CP评估三方总价】(如差值为负数-结果取绝对值，如差异为正数-结果为0）/ CP评估三方总价​
     deviationPercentageInclude: [{ value: null, disabled: true }],
-    deviationTypeExclude: [{ value: null, disabled: false }], // Deviation 类型（不含未评估三方）
-    deviationTypeInclude: [{ value: null, disabled: false }], // Deviation 类型（含未评估三方）
+    // deviationTypeExclude: [{ value: null, disabled: false }], // Deviation 类型（不含未评估三方）
+    // deviationTypeInclude: [{ value: null, disabled: false }], // Deviation 类型（含未评估三方）
     auditStatus: [{ value: null, disabled: false }], // 三方核查状态
     oaAuditComments: [{ value: null, disabled: false }], // OA三方核查备注
     oaAuditAttachments: [{ value: null, disabled: false }], // OA三方核查备注附件

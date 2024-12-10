@@ -141,8 +141,8 @@
           <tr>
             <th *ngIf="isOAAdmin" nzAlign="center" style="width: 201px" nzLeft="0px">操作</th>
             <th nzAlign="center" style="width: 200px">核查报告</th>
-            <th nzAlign="center" style="width: 200px">Deviation 类型（不含未评估三方）</th>
-            <th nzAlign="center" style="width: 200px">Deviation 类型（含未评估三方）</th>
+            <!-- <th nzAlign="center" style="width: 200px">Deviation 类型（不含未评估三方）</th>
+            <th nzAlign="center" style="width: 200px">Deviation 类型（含未评估三方）</th> -->
             <th nzAlign="center" style="width: 200px">三方核查状态</th>
             <th nzAlign="center" style="width: 120px">核查报告上传时间</th>
             <th nzAlign="center" style="width: 150px">经销商名称</th>
@@ -180,8 +180,8 @@
                   </div>
                 </ng-container>
               </td>
-              <td class="tableData" nzAlign="center" style="width: 200px">{{ data.deviationTypeExclude }}</td>
-              <td class="tableData" nzAlign="center" style="width: 200px">{{ data.deviationTypeInclude }}</td>
+              <!-- <td class="tableData" nzAlign="center" style="width: 200px">{{ data.deviationTypeExclude }}</td>
+              <td class="tableData" nzAlign="center" style="width: 200px">{{ data.deviationTypeInclude }}</td> -->
               <td class="tableData" nzAlign="center" style="width: 200px">{{ data.auditStatus }}</td>
               <td class="tableData" nzAlign="center" style="width: 120px">{{ data.auditReportUploadTime | TimeFormatePipeNow }}</td>
               <td class="tableData" nzAlign="center" style="width: 150px">{{ data.dealerName }}</td>
