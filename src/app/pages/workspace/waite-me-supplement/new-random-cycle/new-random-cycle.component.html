@@ -141,6 +141,7 @@
           <tr>
             <th *ngIf="isOAAdmin" nzAlign="center" style="width: 201px" nzLeft="0px">操作</th>
             <th nzAlign="center" style="width: 200px">核查报告</th>
+            <th nzAlign="center" style="width: 200px">核查详情</th>
             <!-- <th nzAlign="center" style="width: 200px">Deviation 类型（不含未评估三方）</th>
             <th nzAlign="center" style="width: 200px">Deviation 类型（含未评估三方）</th> -->
             <th nzAlign="center" style="width: 200px">三方核查状态</th>
@@ -179,6 +180,11 @@
                       (click)="fileDown(item.fileId, item.fileName)">{{item.fileName}}</a>
                   </div>
                 </ng-container>
+              </td>
+              <td class="tableData" nzAlign="center" style="width: 200px">
+                <div *ngFor="let urlObj of data.auditDetailsUrlList" >
+                  <a href="javascript:" (click)="jumpToAuditDetail(urlObj)">{{urlObj.referenceId}}</a><br/>
+                </div>
               </td>
               <!-- <td class="tableData" nzAlign="center" style="width: 200px">{{ data.deviationTypeExclude }}</td>
               <td class="tableData" nzAlign="center" style="width: 200px">{{ data.deviationTypeInclude }}</td> -->

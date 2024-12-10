@@ -112,7 +112,17 @@ export class NewRandomCycleComponent implements OnInit {
     }));
 
   }
+  jumpToAuditDetail({referenceId,applyId,url}){
+    this.router.navigate([url], {
+      queryParams: {
+        id: applyId,
+        needFileType: 'third',
+        taskStatus: 'ecos_oit_order_done',
+        isHandle: 0
+      },
+    });
 
+  }
   queryDetails(id) {
     this.load = true
     this.http.get(`/act/ecos/thirdParty/randomPick/detail/${id}`).subscribe((res => {
@@ -154,7 +164,18 @@ export class NewRandomCycleComponent implements OnInit {
         })
         this.summaryData.unshift(totalSummaryRow)
         this.removedData = removed
-        this.detailData = detail
+        let handledDetail = detail.map(d=>{
+          d.auditDetailsUrlList = []
+          d.orderDetails.map(order=>{
+            d.auditDetailsUrlList.push({
+              referenceId: order.referenceId,
+              applyId: order.applyId,
+              url: `/order-v3/oitcomplete`
+            })
+          })
+          return d;
+        });
+        this.detailData = handledDetail
         this.formValues.patchValue({
           startDay: new Date(checkDurationStartTime),
           endDay: new Date(checkDurationEndTime),
