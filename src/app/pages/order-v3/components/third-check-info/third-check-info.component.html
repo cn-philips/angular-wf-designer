@@ -143,6 +143,20 @@
           </nz-form-control>
         </nz-form-item>
       </div>
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="10" [nzNoColon]="true">
+            自查报告
+          </nz-form-label>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+            <ng-container *ngIf="selfInspectionReport&&selfInspectionReport.length>0">
+              <div *ngFor="let item of selfInspectionReport">
+                <a style="display: block; color: #337FBF;" [href]="item.filePath" target="_blank">{{item.name}}</a>
+              </div>
+            </ng-container>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
     </div>
 
   </form>

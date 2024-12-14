@@ -62,9 +62,13 @@ export class ThirdCheckInfoComponent implements OnInit {
     materialSubmissionTime:null,
     /* 核查要求（从COS来） */
     verificationRequirements:null,
-    cpDealPurchaseList:[]
+    cpDealPurchaseList:[],
+    // 自查报告
+    selfInspectionReport: null
   }
-
+  get selfInspectionReport():Array<any>{
+    return this.CPSummary.selfInspectionReport?JSON.parse(this.CPSummary.selfInspectionReport):[]
+  }
   get baseInfoFrom(): FormGroup {
     return this.formValue.get("baseInfoFrom") as FormGroup;
   }
