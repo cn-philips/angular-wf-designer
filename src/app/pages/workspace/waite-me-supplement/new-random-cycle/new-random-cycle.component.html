@@ -139,11 +139,9 @@
         [nzScroll]="{ x: isOAAdmin?'2660px':'2460px', y: '400px'}">
         <thead>
           <tr>
-            <th *ngIf="isOAAdmin" nzAlign="center" style="width: 201px" nzLeft="0px">操作</th>
+            <th *ngIf="isOAAdmin" nzAlign="center" style="width: 200px" nzLeft="0px">操作</th>
             <th nzAlign="center" style="width: 200px">核查报告</th>
             <th nzAlign="center" style="width: 200px">核查详情</th>
-            <!-- <th nzAlign="center" style="width: 200px">Deviation 类型（不含未评估三方）</th>
-            <th nzAlign="center" style="width: 200px">Deviation 类型（含未评估三方）</th> -->
             <th nzAlign="center" style="width: 200px">三方核查状态</th>
             <th nzAlign="center" style="width: 120px">核查报告上传时间</th>
             <th nzAlign="center" style="width: 150px">经销商名称</th>
@@ -187,14 +185,12 @@
                   <a href="javascript:" (click)="jumpToAuditDetail(urlObj)">{{urlObj.referenceId}}</a><br/>
                 </div>
               </td>
-              <!-- <td class="tableData" nzAlign="center" style="width: 200px">{{ data.deviationTypeExclude }}</td>
-              <td class="tableData" nzAlign="center" style="width: 200px">{{ data.deviationTypeInclude }}</td> -->
               <td class="tableData" nzAlign="center" style="width: 200px">{{ data.auditStatus }}</td>
               <td class="tableData" nzAlign="center" style="width: 120px">{{ data.auditReportUploadTime | TimeFormatePipeNow }}</td>
               <td class="tableData" nzAlign="center" style="width: 150px">{{ data.dealerName }}</td>
               <td class="tableData" nzAlign="center" style="width: 150px">{{ data.hospitalName }}</td>
-              <td class="tableData" nzAlign="center" style="width: 130px">{{ data.risk }}</td>
               <td class="tableData" nzAlign="center" style="width: 130px">{{ data.dealFormId }}</td>
+              <td class="tableData" nzAlign="center" style="width: 130px">{{ data.risk }}</td>
               <td class="tableData" nzAlign="center" style="width: 170px"
                 [innerHTML]="getFields(data.referenceId, 'split')">
               </td>
@@ -224,7 +220,7 @@
               <td class="tableData" nzAlign="center" style="width: 100px">{{ data.type === 'MANUAL' ? '人工新增' : '系统抽取' }}
               </td>
               <td class="tableData" nzAlign="center" style="width: 120px">{{ data.remarks }}</td>
-              <td class="tableData" nzAlign="center" style="width: 142px" nzLeft="0px">
+              <td class="tableData" nzAlign="center" style="width: 160px" nzLeft="0px">
                 <a *ngFor="let file of getJson(data.attachment)" style="display: block; color: #337FBF;" href="javascript:"
                 (click)="fileDown(file.fileId, file.name)">{{file.name}}</a>
               </td>
