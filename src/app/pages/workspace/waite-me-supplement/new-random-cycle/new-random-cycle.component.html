@@ -149,6 +149,7 @@
             <th nzAlign="center" style="width: 150px">经销商名称</th>
             <th nzAlign="center" style="width: 150px">客户名称</th>
             <th nzAlign="center" style="width: 130px">DealFormID</th>
+            <th nzAlign="center" style="width: 130px">Risk Category</th>
             <th nzAlign="center" style="width: 170px">COS Ref.</th>
             <th nzAlign="center" style="width: 150px">关联的新的COS Ref.</th>
             <th nzAlign="center" style="width: 120px">关联的新的DealFormID</th>
@@ -192,6 +193,7 @@
               <td class="tableData" nzAlign="center" style="width: 120px">{{ data.auditReportUploadTime | TimeFormatePipeNow }}</td>
               <td class="tableData" nzAlign="center" style="width: 150px">{{ data.dealerName }}</td>
               <td class="tableData" nzAlign="center" style="width: 150px">{{ data.hospitalName }}</td>
+              <td class="tableData" nzAlign="center" style="width: 130px">{{ data.risk }}</td>
               <td class="tableData" nzAlign="center" style="width: 130px">{{ data.dealFormId }}</td>
               <td class="tableData" nzAlign="center" style="width: 170px"
                 [innerHTML]="getFields(data.referenceId, 'split')">
