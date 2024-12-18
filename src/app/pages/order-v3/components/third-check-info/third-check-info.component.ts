@@ -137,6 +137,7 @@ export class ThirdCheckInfoComponent implements OnInit {
     {label: '待经销商补充核查材料', value: "pending_dealer_audit"},
     {label: '待销售补充申请材料', value: "pending_sales"},
     {label: '无更新', value: "none"},
+    {label: '无更新', value: "locked"},
   ]
 
   public deviationTypes = [
@@ -218,7 +219,7 @@ export class ThirdCheckInfoComponent implements OnInit {
           materialSubmissionTime: res.data.materialSubmissionTime?moment(new Date(res.data.materialSubmissionTime)).format('YYYY-MM-DD'):null,
         }
         this.partyStatus = res.data.thirdPartyStatus? res.data.thirdPartyStatus: 'none'
-        if (this.partyStatus != 'none') {
+        if (['none','locked'].map(i=>i.toLowerCase()).includes(this.partyStatus.toLowerCase())) {
           this.formData.get('auditComments').disable()
           this.formData.get('auditAttachment').disable()
         }
