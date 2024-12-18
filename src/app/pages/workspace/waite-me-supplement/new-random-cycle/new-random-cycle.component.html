@@ -139,40 +139,40 @@
         [nzScroll]="{ x: isOAAdmin?'2660px':'2460px', y: '400px'}">
         <thead>
           <tr>
-            <th *ngIf="isOAAdmin" nzAlign="center" style="width: 200px" nzLeft="0px">操作</th>
-            <th nzAlign="center" style="width: 200px">核查报告</th>
-            <th nzAlign="center" style="width: 200px">核查详情</th>
-            <th nzAlign="center" style="width: 200px">三方核查状态</th>
-            <th nzAlign="center" style="width: 120px">核查报告上传时间</th>
-            <th nzAlign="center" style="width: 150px">经销商名称</th>
-            <th nzAlign="center" style="width: 150px">客户名称</th>
-            <th nzAlign="center" style="width: 130px">DealFormID</th>
-            <th nzAlign="center" style="width: 130px">Risk Category</th>
-            <th nzAlign="center" style="width: 170px">COS Ref.</th>
-            <th nzAlign="center" style="width: 150px">关联的新的COS Ref.</th>
-            <th nzAlign="center" style="width: 120px">关联的新的DealFormID</th>
-            <th nzAlign="center" style="width: 150px">关联的新经销商</th>
-            <th nzAlign="center" style="width: 120px">OIT完成时间</th>
-            <th nzAlign="center" style="width: 120px">ICF登记时间</th>
-            <th nzAlign="center" style="width: 120px">OA</th>
-            <th nzAlign="center" style="width: 120px">SO#</th>
-            <th nzAlign="center" style="width: 120px">ICF时间</th>
-            <th nzAlign="center" style="width: 140px">需要经销商提供核查材料截止时间</th>
-            <th nzAlign="center" style="width: 120px">经销商实际提供核查材料时间</th>
-            <th nzAlign="center" style="width: 120px">经销商是否超期提供核查材料</th>
-            <th nzAlign="center" style="width: 100px">数据来源</th>
-            <th nzAlign="center" style="width: 120px">备注</th>
-            <th nzAlign="center" style="width: 160px" nzLeft="0px">附件</th>
+            <th *ngIf="isOAAdmin" nzAlign="center" nzWidth="264px" nzLeft="0px">操作</th>
+            <th nzAlign="center" nzWidth="200px">核查报告</th>
+            <th nzAlign="center" nzWidth="200px">核查详情</th>
+            <th nzAlign="center" nzWidth="200px">三方核查状态</th>
+            <th nzAlign="center" nzWidth="120px">核查报告上传时间</th>
+            <th nzAlign="center" nzWidth="150px">经销商名称</th>
+            <th nzAlign="center" nzWidth="150px">客户名称</th>
+            <th nzAlign="center" nzWidth="130px">DealFormID</th>
+            <th nzAlign="center" nzWidth="130px">Risk Category</th>
+            <th nzAlign="center" nzWidth="170px">COS Ref.</th>
+            <th nzAlign="center" nzWidth="150px">关联的新的COS Ref.</th>
+            <th nzAlign="center" nzWidth="120px">关联的新的DealFormID</th>
+            <th nzAlign="center" nzWidth="150px">关联的新经销商</th>
+            <th nzAlign="center" nzWidth="120px">OIT完成时间</th>
+            <th nzAlign="center" nzWidth="120px">ICF登记时间</th>
+            <th nzAlign="center" nzWidth="120px">OA</th>
+            <th nzAlign="center" nzWidth="120px">SO#</th>
+            <th nzAlign="center" nzWidth="120px">ICF时间</th>
+            <th nzAlign="center" nzWidth="140px">需要经销商提供核查材料截止时间</th>
+            <th nzAlign="center" nzWidth="120px">经销商实际提供核查材料时间</th>
+            <th nzAlign="center" nzWidth="120px">经销商是否超期提供核查材料</th>
+            <th nzAlign="center" nzWidth="100px">数据来源</th>
+            <th nzAlign="center" nzWidth="120px">备注</th>
+            <th nzAlign="center" nzWidth="160px" nzLeft="0px">附件</th>
           </tr>
         </thead>
         <tbody>
           <ng-template nz-virtual-scroll let-data let-index="index">
             <tr>
-              <td *ngIf="isOAAdmin" class="tableData" nzAlign="center" style="width: 200px" nzLeft="0px">
+              <td *ngIf="isOAAdmin" class="tableData" nzAlign="center" nzLeft="0px">
                 <a style="display: block; color: #337FBF;" (click)="operate(data,'del')">删除</a>
                 <a *ngIf="applyStatu!=='UNLOCKED'" style="display: block; color: #337FBF;" (click)="operate(data, 'send')">通知经销商需要被核查</a>
               </td>
-              <td class="tableData" nzAlign="center" style="width: 200px">
+              <td class="tableData" nzAlign="center" >
                 <ng-container *ngIf="data.auditFiles&&data.auditFiles.length>0">
                   <div *ngFor="let item of data.auditFiles">
                     <a style="display: block; color: #337FBF;" href="javascript:"
@@ -180,47 +180,47 @@
                   </div>
                 </ng-container>
               </td>
-              <td class="tableData" nzAlign="center" style="width: 200px">
+              <td class="tableData" nzAlign="center"  >
                 <div *ngFor="let urlObj of data.auditDetailsUrlList" >
                   <a href="javascript:" (click)="jumpToAuditDetail(urlObj)">{{urlObj.referenceId}}</a><br/>
                 </div>
               </td>
-              <td class="tableData" nzAlign="center" style="width: 200px">{{ data.auditStatus }}</td>
-              <td class="tableData" nzAlign="center" style="width: 120px">{{ data.auditReportUploadTime | TimeFormatePipeNow }}</td>
-              <td class="tableData" nzAlign="center" style="width: 150px">{{ data.dealerName }}</td>
-              <td class="tableData" nzAlign="center" style="width: 150px">{{ data.hospitalName }}</td>
-              <td class="tableData" nzAlign="center" style="width: 130px">{{ data.dealFormId }}</td>
-              <td class="tableData" nzAlign="center" style="width: 130px">{{ data.risk }}</td>
-              <td class="tableData" nzAlign="center" style="width: 170px"
+              <td class="tableData" nzAlign="center" >{{ data.auditStatus }}</td>
+              <td class="tableData" nzAlign="center" >{{ data.auditReportUploadTime | TimeFormatePipeNow }}</td>
+              <td class="tableData" nzAlign="center" >{{ data.dealerName }}</td>
+              <td class="tableData" nzAlign="center" >{{ data.hospitalName }}</td>
+              <td class="tableData" nzAlign="center" >{{ data.dealFormId }}</td>
+              <td class="tableData" nzAlign="center" >{{ data.risk }}</td>
+              <td class="tableData" nzAlign="center"
                 [innerHTML]="getFields(data.referenceId, 'split')">
               </td>
-              <td class="tableData" nzAlign="center" style="width: 150px">{{ data.relatedNewReferenceId }}</td>
-              <td class="tableData" nzAlign="center" style="width: 120px">{{ data.relatedNewDealFormId }}</td>
-              <td class="tableData" nzAlign="center" style="width: 150px">{{ getFields(data.relatedNewContractSummaries,
+              <td class="tableData" nzAlign="center" >{{ data.relatedNewReferenceId }}</td>
+              <td class="tableData" nzAlign="center" >{{ data.relatedNewDealFormId }}</td>
+              <td class="tableData" nzAlign="center" >{{ getFields(data.relatedNewContractSummaries,
                 'newDealer') }}
               </td>
-              <td class="tableData" nzAlign="center" style="width: 120px">{{ getFields(data.relatedContractSummaries,
+              <td class="tableData" nzAlign="center" >{{ getFields(data.relatedContractSummaries,
                 'oitTime') }}</td>
-              <td class="tableData" nzAlign="center" style="width: 120px">{{ getFields(data.orderDetails, 'icfRe') }}
+              <td class="tableData" nzAlign="center" >{{ getFields(data.orderDetails, 'icfRe') }}
               </td>
-              <td class="tableData" nzAlign="center" style="width: 120px">{{ getFields(data.orderDetails, 'oa') }}
+              <td class="tableData" nzAlign="center" >{{ getFields(data.orderDetails, 'oa') }}
               </td>
-              <td class="tableData" nzAlign="center" style="width: 120px">{{ getFields(data.orderDetails, 'so') }}
+              <td class="tableData" nzAlign="center" >{{ getFields(data.orderDetails, 'so') }}
               </td>
-              <td class="tableData" nzAlign="center" style="width: 120px">{{ getFields(data.orderDetails, 'icf') }}</td>
-              <td class="tableData" nzAlign="center" style="width: 140px"
+              <td class="tableData" nzAlign="center" >{{ getFields(data.orderDetails, 'icf') }}</td>
+              <td class="tableData" nzAlign="center"
                 [innerHTML]="getFields(data.orderDetails, 'deadline')">
               </td>
-              <td class="tableData" nzAlign="center" style="width: 120px">{{ data.dealerProvideMaterialRealtime |
+              <td class="tableData" nzAlign="center" >{{ data.dealerProvideMaterialRealtime |
                 TimeFormatePipeNow }}
               </td>
-              <td class="tableData" nzAlign="center" style="width: 120px"
+              <td class="tableData" nzAlign="center"
                 [innerHTML]="getFields(data.orderDetails, 'over')">
               </td>
-              <td class="tableData" nzAlign="center" style="width: 100px">{{ data.type === 'MANUAL' ? '人工新增' : '系统抽取' }}
+              <td class="tableData" nzAlign="center" >{{ data.type === 'MANUAL' ? '人工新增' : '系统抽取' }}
               </td>
-              <td class="tableData" nzAlign="center" style="width: 120px">{{ data.remarks }}</td>
-              <td class="tableData" nzAlign="center" style="width: 160px" nzLeft="0px">
+              <td class="tableData" nzAlign="center" >{{ data.remarks }}</td>
+              <td class="tableData" nzAlign="center"  nzLeft="0px">
                 <a *ngFor="let file of getJson(data.attachment)" style="display: block; color: #337FBF;" href="javascript:"
                 (click)="fileDown(file.fileId, file.name)">{{file.name}}</a>
               </td>
