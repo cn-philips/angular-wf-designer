@@ -35,6 +35,7 @@ export class NewRandomCycleComponent implements OnInit {
   routeType = 'add' // add-新建 edit-编辑
   isOAAdmin = false
   isAuditor = false
+  remarkable = true
   public summaryData: any[] = []; // 随机抽取该概要
   public removedData: any[] = []; // 机抽取结果（删除）
   public detailData: any[] = []; // 随机抽取结果
@@ -560,4 +561,21 @@ export class NewRandomCycleComponent implements OnInit {
     );
   }
 
+  saveComments(){
+    this.load = true;
+    this.http.post(`/act/ecos/thirdParty/randomPick/detail/remark/${this.summaryId}`,
+      this.detailData?this.detailData:[]
+    ).subscribe((res => {
+      this.load = false;
+      if (res.code === '0000') {
+        this.message.create("success", "操作成功!")
+        this.queryDetails(this.summaryId)
+      } else {
+        this.message.create('error', `${res.msg}`);
+      }
+    }), (error => {
+      this.load = false;
+      this.message.create("error", "服务器异常")
+    }));
+  }
 }

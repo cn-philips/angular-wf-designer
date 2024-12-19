@@ -142,6 +142,7 @@
             <th *ngIf="isOAAdmin" nzAlign="center" nzWidth="264px" nzLeft="0px">操作</th>
             <th nzAlign="center" nzWidth="200px">核查报告</th>
             <th nzAlign="center" nzWidth="200px">核查详情</th>
+            <th nzAlign="center" nzWidth="200px">核查人备注</th>
             <th nzAlign="center" nzWidth="200px">三方核查状态</th>
             <th nzAlign="center" nzWidth="120px">核查报告上传时间</th>
             <th nzAlign="center" nzWidth="150px">经销商名称</th>
@@ -183,6 +184,18 @@
               <td class="tableData" nzAlign="center"  >
                 <div *ngFor="let urlObj of data.auditDetailsUrlList" >
                   <a href="javascript:" (click)="jumpToAuditDetail(urlObj)">{{urlObj.referenceId}}</a><br/>
+                </div>
+              </td>
+              <td class="tableData" nzAlign="center" >
+                <div>
+                  <textarea
+                    nz-input
+                    placeholder=""
+                    [nzAutosize]="{ minRows: 1, maxRows: 6 }"
+                    [(ngModel)]="data.auditorComments"
+                    [ngModelOptions]="{standalone:true}"
+                    [disabled]="!remarkable"
+                  ></textarea>
                 </div>
               </td>
               <td class="tableData" nzAlign="center" >{{ data.auditStatus }}</td>
@@ -232,6 +245,14 @@
 
   </app-form-section>
 
+
+  <div *ngIf="remarkable" nz-row nzType="flex" nzJustify="center" nzAlign="middle">
+    <div nz-col>
+      <button nz-button nzType="primary" (click)="saveComments()">
+        保存
+      </button>
+    </div>
+  </div>
 </div>
 
 <select-third-deal #selectDeal (select)="onDealFormSelect($event)"></select-third-deal>
