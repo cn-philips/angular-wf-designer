@@ -318,9 +318,9 @@ export class ThirdCheckInfoComponent implements OnInit {
 
   formatterThousands = (value: number) => {
     if(null == value || undefined == value){
-      return '0'
+      return '0.00'
     }
-    return `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+    return `${value.toFixed(2)}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
   };
   parserThousands = (value: string) => value.replace(/\$\s?|(,*)/g, '');
 
