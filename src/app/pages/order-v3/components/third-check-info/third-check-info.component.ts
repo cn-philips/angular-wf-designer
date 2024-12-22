@@ -297,6 +297,32 @@ export class ThirdCheckInfoComponent implements OnInit {
       this.isVisible = true
     }
   }
+  formatterPercent = (value: number) =>{
+    let val:number = 0
+    if(null == value || undefined == value){
+      return "";
+    }else{
+      val = value * 100
+    }
+    return `${val.toFixed(2)} %`
+  };
+  parserPercent = (value: string) => {
+    let val = 0
+    if(null == value || undefined == value){
+      return 0;
+    }else{
+      val = parseFloat(value.replace('%', ''))
+    }
+    return val / 100
+  }
+
+  formatterThousands = (value: number) => {
+    if(null == value || undefined == value){
+      return '0'
+    }
+    return `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+  };
+  parserThousands = (value: string) => value.replace(/\$\s?|(,*)/g, '');
 
   queryOperator(dealFormId) {
     this.load = true;

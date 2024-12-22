@@ -331,7 +331,10 @@
             CP三方总价（审核价）
           </nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <input nz-input formControlName="cpAuditTotalPrice" placeholder="保存后系统自动计算" />
+            <nz-input-number  formControlName="cpAuditTotalPrice" placeholder="保存后系统自动计算"
+            [nzFormatter]="formatterThousands"
+            [nzParser]="parserThousands"
+            ></nz-input-number>
           </nz-form-control>
         </nz-form-item>
       </div>
@@ -343,8 +346,11 @@
             预计投标价(CNY)
           </nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <input nz-input disabled [ngModelOptions]="{ standalone: true }" [ngModel]="esCny"
-            maxlength="255" />
+            <nz-input-number disabled [ngModelOptions]="{ standalone: true }" [ngModel]="esCny"
+            maxlength="255"
+            [nzFormatter]="formatterThousands"
+            [nzParser]="parserThousands"
+            ></nz-input-number>
             <!-- <input disabled nz-input formControlName="esCny" /> -->
           </nz-form-control>
         </nz-form-item>
@@ -353,8 +359,11 @@
             中标金额(CNY)
           </nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <input nz-input disabled [ngModelOptions]="{ standalone: true }" [ngModel]="biddingAwardPriceModel"
-            maxlength="255" />
+            <nz-input-number disabled [ngModelOptions]="{ standalone: true }" [ngModel]="biddingAwardPriceModel"
+            maxlength="255"
+            [nzFormatter]="formatterThousands"
+            [nzParser]="parserThousands"
+            ></nz-input-number>
           </nz-form-control>
         </nz-form-item>
         <nz-form-item>
@@ -362,8 +371,11 @@
             采购审批总金额/中标金额
           </nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <input nz-input disabled [ngModelOptions]="{ standalone: true }" [ngModel]="rate"
-            maxlength="255" />
+            <nz-input-number disabled [ngModelOptions]="{ standalone: true }" [ngModel]="rate"
+            maxlength="255"
+            [nzFormatter]="formatterPercent"
+            [nzParser]="parserPercent"
+             ></nz-input-number>
           </nz-form-control>
         </nz-form-item>
       </div>
@@ -377,7 +389,10 @@
           </nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <nz-input-number style="width: 100%;" formControlName="cosAuditTotalPriceExclude" [nzMin]="0"
-              [nzMax]="99999999999999999.99" [nzStep]="0.0001" nzPlaceHolder=""></nz-input-number>
+              [nzMax]="99999999999999999.99" [nzStep]="0.0001" nzPlaceHolder=""
+              [nzFormatter]="formatterThousands"
+              [nzParser]="parserThousands"
+              ></nz-input-number>
             <nz-form-explain
               *ngIf="formData.get('cosAuditTotalPriceExclude')?.dirty && formData.get('cosAuditTotalPriceExclude')?.errors">
               此选项必填字段
@@ -386,13 +401,15 @@
         </nz-form-item>
       </div>
 
-      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+      <div nz-col nzXs="24" nzSm="24" nzMd="16">
         <nz-form-item>
-          <nz-form-label nzXs="24" nzSm="24" nzMd="10" [nzNoColon]="true">
-            Deviation Percentage（不含未评估三方）
+          <nz-form-label nzXs="24" nzSm="24" nzMd="8" [nzNoColon]="true">
+            Deviation Percentage<br/>（不含未评估三方）
           </nz-form-label>
-          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <input nz-input formControlName="deviationPercentageExclude" placeholder="保存后系统自动计算" />
+          <nz-form-control nzXs="24" nzSm="24" nzMd="8">
+            <nz-input-number style="width: 100%;"  formControlName="deviationPercentageExclude" nzPlaceHolder="保存后系统自动计算"
+            [nzFormatter]="formatterPercent"
+            [nzParser]="parserPercent" ></nz-input-number>
           </nz-form-control>
         </nz-form-item>
       </div>
@@ -419,7 +436,10 @@
           </nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
             <nz-input-number style="width: 100%;" formControlName="cosAuditTotalPriceInclude" [nzMin]="0"
-              [nzMax]="99999999999999999.99" [nzStep]="0.0001" nzPlaceHolder=""></nz-input-number>
+              [nzMax]="99999999999999999.99" [nzStep]="0.0001" nzPlaceHolder=""
+              [nzFormatter]="formatterThousands"
+              [nzParser]="parserThousands"
+              ></nz-input-number>
             <nz-form-explain
               *ngIf="formData.get('cosAuditTotalPriceInclude')?.dirty && formData.get('cosAuditTotalPriceInclude')?.errors">
               此选项必填字段
@@ -427,13 +447,15 @@
           </nz-form-control>
         </nz-form-item>
       </div>
-      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+      <div nz-col nzXs="24" nzSm="24" nzMd="16">
         <nz-form-item>
-          <nz-form-label nzXs="24" nzSm="24" nzMd="10" [nzNoColon]="true">
-            Deviation Percentage（含未评估三方）
+          <nz-form-label nzXs="24" nzSm="24" nzMd="8" [nzNoColon]="true">
+            Deviation Percentage<br/>（含未评估三方）
           </nz-form-label>
-          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <input nz-input formControlName="deviationPercentageInclude" placeholder="保存后系统自动计算" />
+          <nz-form-control nzXs="24" nzSm="24" nzMd="8">
+            <nz-input-number style="width: 100%;"  formControlName="deviationPercentageInclude" nzPlaceHolder="保存后系统自动计算"
+            [nzFormatter]="formatterPercent"
+            [nzParser]="parserPercent"></nz-input-number>
           </nz-form-control>
         </nz-form-item>
       </div>
