@@ -610,12 +610,15 @@ export class ThirdCheckInfoComponent implements OnInit {
     return this.formValue.get('oaAddInfo') as FormGroup
   }
   queeryHistory(){
-    let productVerification = this.thirdCheckFormData.get('productVerificationInformation').value;
-    if(productVerification == '已经交付'){
-      this.thirdCheckFormData.get('productVerificationInformation').disable();
-    } else {
-      this.thirdCheckFormData.get('productVerificationInformation').enable();
-    }
+    // let productVerification = this.thirdCheckFormData.get('productVerificationInformation').value;
+    // if(productVerification == '已经交付'){
+    //   this.thirdCheckFormData.get('productVerificationInformation').disable();
+    // } else {
+    //   this.thirdCheckFormData.get('productVerificationInformation').enable();
+    // }
+
+    this.thirdCheckFormData.get('productVerificationInformation').disable();
+    this.thirdCheckFormData.get('productVerificationFile').disable();
     this.getEntryModeList();
   }
   public getEntryModeList() {
