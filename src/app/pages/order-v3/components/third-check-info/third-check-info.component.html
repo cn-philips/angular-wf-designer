@@ -1,4 +1,47 @@
 <app-apploading [load]="load"></app-apploading>
+<app-form-section class="mtb1rem" title="历史信息">
+  <form nz-form [formGroup]="thirdCheckFormData">
+    <div nz-row>
+      <div nz-col nzSpan="13">
+        <nz-form-item>
+          <nz-form-label [nzSpan]="6" style="width: 35%" nzRequired>{{"orderv3.components.third-check.status" |
+            translate}}</nz-form-label>
+          <nz-form-control [nzSpan]="14">
+            <nz-select nzShowSearch nzAllowClear nzPlaceHolder="请选择" formControlName="productVerificationInformation">
+              <nz-option *ngFor="let item of thirdPartyList" [nzValue]="item.label" [nzLabel]="item.label"></nz-option>
+            </nz-select>
+            <nz-form-explain
+              *ngIf="thirdCheckFormData.get('productVerificationInformation')?.dirty && thirdCheckFormData.get('productVerificationInformation')?.errors">
+              此选项必填字段
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzSpan="13" *ngIf="oaAddInfo.getRawValue().preConcludedItem===true">
+        <nz-form-item>
+          <nz-form-label [nzSpan]="6" style="width: 35%">
+            {{"orderv3.components.oa-add-info.third-check-info" | translate}}
+          </nz-form-label>
+          <nz-form-control [nzSpan]="14">
+            preConcluded
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+    <div nz-row>
+      <div nz-col nzSpan="13">
+        <nz-form-item>
+          <nz-form-label style="width: 35%" [nzSpan]="6">{{"orderv3.components.third-check.attachment" | translate}}
+          </nz-form-label>
+          <nz-form-control [nzSpan]="14">
+            <shared-upload-file [title]="" [type]="null" formControlName="productVerificationFile">
+            </shared-upload-file>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+  </form>
+</app-form-section>
 <app-form-section class="mtb1rem" [title]="'orderv3.components.oit-form.general.title' | translate">
   <form nz-form [formGroup]="formData">
     <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">

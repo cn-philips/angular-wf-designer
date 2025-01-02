@@ -14,8 +14,13 @@ import { fomatFloat } from '@core/util/tools';
 })
 export class ThirdCheckInfoComponent implements OnInit {
 
-  constructor(public activatedRouter: ActivatedRoute, private message: NzMessageService, private fb: FormBuilder, private http: HttpService,
-    private fileService: FileService,) { }
+  constructor(
+    public activatedRouter: ActivatedRoute,
+    private message: NzMessageService,
+    private fb: FormBuilder,
+    private http: HttpService,
+    private fileService: FileService,
+  ) { }
   @Input() applyId:string;
   @Input() cpDealId:any="";
   @Input() dealFormId:any="";
@@ -161,6 +166,8 @@ export class ThirdCheckInfoComponent implements OnInit {
   }
   ngOnInit() {
     this.queryDetails(this.applyId)
+
+    this.queeryHistory()
   }
 
   queryDetails(applyId) {
@@ -590,5 +597,34 @@ export class ThirdCheckInfoComponent implements OnInit {
       return []
     }
     return JSON.parse(jsonString)
+  }
+
+  // 历史三方信息
+  get thirdCheckFormData(): FormGroup {
+    return this.formValue.get('thirdCheckForm') as FormGroup
+  }
+  get oaAddInfo():FormGroup{
+    return this.formValue.get('oaAddInfo') as FormGroup
+  }
+  queeryHistory(){
+    let productVerification = this.thirdCheckFormData.get('productVerificationInformation').value;
+    if(productVerification == '已经交付'){
+      this.thirdCheckFormData.get('productVerificationInformation').disable();
+    } else {
+      this.thirdCheckFormData.get('productVerificationInformation').enable();
+    }
+    this.getEntryModeList();
+  }
+  public getEntryModeList() {
+    const params = {
+      dictGroup: 'thirdVerificationSelect',
+    };
+    this.http.get(`/act/ecom/dictData/queryDrop?dictGroup=${params.dictGroup}`).subscribe(rest => {
+      if (rest.code === '0000') {
+        this.thirdPartyList = rest.data;
+      } else {
+        this.message.create('error', `${rest.msg}`);
+      }
+    });
   }
 }
