@@ -278,24 +278,32 @@ export class NewRandomCycleComponent implements OnInit {
   sendNotice() {
     this.load = true;
     const params = [...this.unlockData]
-
-    this.http.post(`/act/ecos/thirdParty/randomPick/detail/notify/${this.summaryId}`, params).subscribe((res => {
-      this.load = false;
-      if (res.code === '0000') {
-        if (this.applyStatu === "UNLOCKED") {
-          this.lockApply()
-        } else {
-          this.message.create("success", "操作成功!")
-        }
-      } else {
-        this.message.create('error', `${res.msg}`);
+    this.preLockApply().then((res) => {
+      if(res.data){
+        this.http.post(`/act/ecos/thirdParty/randomPick/detail/notify/${this.summaryId}`, params).subscribe((res => {
+          this.load = false;
+          if (res.code === '0000') {
+            if (this.applyStatu === "UNLOCKED") {
+              this.lockApply()
+            } else {
+              this.message.create("success", "操作成功!")
+            }
+          } else {
+            this.message.create('error', `${res.msg}`);
+          }
+        }), (error => {
+          this.load = false;
+          this.message.create("error", "服务器异常")
+        }));
+      } else{
+        this.load = false;
+        this.message.create("error", res.msg)
       }
-    }), (error => {
-      this.load = false;
-      this.message.create("error", "服务器异常")
-    }));
+    })
   }
-
+  preLockApply() {
+    return this.http.post(`/act/ecos/thirdParty/randomPick/prelock/${this.summaryId}`).toPromise()
+  }
   lockApply() {
     this.load = true;
     this.http.post(`/act/ecos/thirdParty/randomPick/lock/${this.summaryId}`).subscribe((res => {
