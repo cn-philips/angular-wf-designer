@@ -216,9 +216,9 @@
                 'oitTime') }}</td>
               <td class="tableData" nzAlign="center" >{{ getFields(data.orderDetails, 'icfRe') }}
               </td>
-              <td class="tableData" nzAlign="center" >{{ getFields(data.orderDetails, 'oa') }}
+              <td class="tableData" nzAlign="center" [innerHTML]="getFields(data.orderDetails, 'oa')">
               </td>
-              <td class="tableData" nzAlign="center" >{{ getFields(data.orderDetails, 'so') }}
+              <td class="tableData" nzAlign="center" [innerHTML]="getFields(data.orderDetails, 'so')">
               </td>
               <td class="tableData" nzAlign="center" >{{ getFields(data.orderDetails, 'icf') }}</td>
               <td class="tableData" nzAlign="center"
