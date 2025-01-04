@@ -282,8 +282,8 @@ export class ThirdCheckInfoComponent implements OnInit {
 
   async showNoticeModel(val) {
     this.resetNotice()
-    const { orderCode, dealFormId } = this.formData.getRawValue()
-    await this.queryOperator(dealFormId)
+    const { orderCode, dealFormId,tpcId } = this.formData.getRawValue()
+    await this.queryOperator(dealFormId,tpcId)
 
     if(val == 1) {
       this.setNoticeValid()
@@ -334,9 +334,9 @@ export class ThirdCheckInfoComponent implements OnInit {
   };
   parserThousands = (value: string) => value.replace(/\$\s?|(,*)/g, '');
 
-  queryOperator(dealFormId) {
+  queryOperator(dealFormId,tpcId) {
     this.load = true;
-    this.http.get(`/act/ecos/thirdParty/cp2/queryOperator?dealFormId=${dealFormId}`).subscribe((res => {
+    this.http.get(`/act/ecos/thirdParty/cp2/queryOperator?dealFormId=${dealFormId}&tpcId=${tpcId}`).subscribe((res => {
       this.load = false;
       if (res.code === '0000') {
         const operator = res.data
