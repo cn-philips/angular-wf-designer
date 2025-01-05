@@ -40,6 +40,7 @@ export class ThirdCheckInfoComponent implements OnInit {
     orderCode: null, // 经销商下单ID(订单需求编号)
     dealFormId: null,
     dealerEmail:  null,
+    additionalEmail:  null,
     salesEmail: null,
     dmEmail:  null,
     comments: null,
@@ -269,6 +270,7 @@ export class ThirdCheckInfoComponent implements OnInit {
       orderCode: orderCode,
       dealFormId: dealFormId,
       dealerEmail:  null,
+      additionalEmail:  null,
       salesEmail: null,
       dmEmail:  null,
       comments: null,
@@ -341,6 +343,7 @@ export class ThirdCheckInfoComponent implements OnInit {
       if (res.code === '0000') {
         const operator = res.data
         this.noticeForms.dealerEmail = operator ? operator.operatorEmail : null
+        this.noticeForms.additionalEmail = operator ? operator.additionalEmail : null
         this.noticeForms.salesEmail = operator ? operator.salesEmail : null
         this.noticeForms.dmEmail = operator ? operator.dmEmail : null
       } else {

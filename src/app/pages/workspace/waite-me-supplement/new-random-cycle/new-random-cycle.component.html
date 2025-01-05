@@ -269,6 +269,7 @@
           <th nzAlign="center" style="width: 120px" nzLeft="0px">CP DealForm ID</th>
           <th nzAlign="center" style="width: 120px">经销商</th>
           <th nzAlign="center" style="width: 150px">经销商下单员邮箱</th>
+          <th nzAlign="center" style="width: 150px">经销商补充邮箱</th>
           <th nzAlign="center" style="width: 150px">Sales邮箱</th>
           <th nzAlign="center" style="width: 161px">DSL邮箱</th>
         </tr>
@@ -284,6 +285,13 @@
                 <nz-form-explain *ngIf="!data.dealerEmail" style="color: red;">
                   此选项必填字段
                 </nz-form-explain>
+              </nz-form-control>
+            </nz-form-item>
+          </td>
+          <td class="tableData" nzAlign="center" style="width: 150px">
+            <nz-form-item class="margin0">
+              <nz-form-control>
+                <input nz-input [(ngModel)]="data.additionalEmail" maxlength="255" />
               </nz-form-control>
             </nz-form-item>
           </td>

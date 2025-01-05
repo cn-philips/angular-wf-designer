@@ -247,6 +247,7 @@ export class NewRandomCycleComponent implements OnInit {
             dealFormId: item.dealFormId,
             dealerName: item.dealerName,
             dealerEmail: operator ? operator.operatorEmail : null,
+            additionalEmail: operator ? operator.additionalEmail : null,
             salesEmail: operator ? operator.salesEmail : null,
             dmEmail: operator ? operator.dmEmail : null,
           }
@@ -344,6 +345,7 @@ export class NewRandomCycleComponent implements OnInit {
             dealFormId: data.dealFormId,
             dealerName: data.dealerName,
             dealerEmail: operator ? operator.operatorEmail : null,
+            additionalEmail: operator ? operator.additionalEmail : null,
             salesEmail: operator ? operator.salesEmail : null,
             dmEmail: operator ? operator.dmEmail : null,
           }

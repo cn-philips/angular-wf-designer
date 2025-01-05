@@ -607,6 +607,12 @@
       </nz-form-control>
     </nz-form-item>
     <nz-form-item>
+      <nz-form-label   [nzSpan]="8">经销商补充邮箱</nz-form-label>
+      <nz-form-control [nzSpan]="16">
+        <input nz-input [(ngModel)]="noticeForms.additionalEmail" name="additionalEmail" placeholder="" />
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
       <nz-form-label nzRequired [nzSpan]="8">Sales邮箱</nz-form-label>
       <nz-form-control [nzSpan]="16">
         <input nz-input [(ngModel)]="noticeForms.salesEmail" name="salesEmail" placeholder="" />
