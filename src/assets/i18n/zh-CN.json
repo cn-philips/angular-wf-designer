@@ -1487,7 +1487,8 @@
           "waitingForEsign": "尚未发起电子签章",
           "esigned": "已发起电子签章"
         },
-        "icf": "是否已经登记ICF"
+        "icf": "是否已经登记ICF",
+        "if_dealer_has_upload_audit_material": "经销商是否已经提交核查材料"
       }
     },
     "transfer": {

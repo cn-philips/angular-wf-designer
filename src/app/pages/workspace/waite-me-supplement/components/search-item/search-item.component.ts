@@ -67,6 +67,7 @@ export class WaiteMeSupplementSearchItemComponent implements OnInit {
     modality: [null], // modality
     submitTime: [null],
     ifIcf: [null], // 是否Icf
+    ifDistributorHasUploadMaterial: [null], // 是否Icf
   });
 
   ngOnInit() {
