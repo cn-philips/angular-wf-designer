@@ -368,13 +368,13 @@
     </div>
 
     <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
-      <div nz-col nzXs="24" nzSm="24" nzMd="12">
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
         <nz-form-item>
           <nz-form-label nzXs="24" nzSm="24" nzMd="10" [nzNoColon]="true">
             CP三方总价（审核价）
           </nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <nz-input-number  formControlName="cpAuditTotalPrice" placeholder="保存后系统自动计算"
+            <nz-input-number  style="width: 100%;" formControlName="cpAuditTotalPrice" placeholder="保存后系统自动计算"
             [nzFormatter]="formatterThousands"
             [nzParser]="parserThousands"
             ></nz-input-number>
@@ -383,13 +383,13 @@
       </div>
     </div>
     <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
-      <div nz-col nzXs="24" nzSm="24" nzMd="12">
+      <div nz-col nzXs="24" nzSm="24" nzMd="8">
         <nz-form-item>
           <nz-form-label nzXs="24" nzSm="24" nzMd="10" [nzNoColon]="true">
             预计投标价(CNY)
           </nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <nz-input-number disabled [ngModelOptions]="{ standalone: true }" [ngModel]="esCny"
+            <nz-input-number style="width: 100%;" disabled [ngModelOptions]="{ standalone: true }" [ngModel]="esCny"
             maxlength="255"
             [nzFormatter]="formatterThousands"
             [nzParser]="parserThousands"
@@ -402,7 +402,7 @@
             中标金额(CNY)
           </nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <nz-input-number disabled [ngModelOptions]="{ standalone: true }" [ngModel]="biddingAwardPriceModel"
+            <nz-input-number style="width: 100%;" disabled [ngModelOptions]="{ standalone: true }" [ngModel]="biddingAwardPriceModel"
             maxlength="255"
             [nzFormatter]="formatterThousands"
             [nzParser]="parserThousands"
@@ -414,7 +414,7 @@
             采购审批总金额/中标金额
           </nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <nz-input-number disabled [ngModelOptions]="{ standalone: true }" [ngModel]="rate"
+            <nz-input-number style="width: 100%;" disabled [ngModelOptions]="{ standalone: true }" [ngModel]="rate"
             maxlength="255"
             [nzFormatter]="formatterPercent"
             [nzParser]="parserPercent"
