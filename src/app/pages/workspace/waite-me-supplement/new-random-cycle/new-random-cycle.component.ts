@@ -57,7 +57,8 @@ export class NewRandomCycleComponent implements OnInit {
       const roleList = JSON.parse(localStorage.getItem("roles"));
       this.isOAAdmin = roleList.includes("OA Admin")
       this.isAuditor = roleList.includes("Auditor")
-
+      // 审核人员可编辑
+      this.remarkable = this.isAuditor
       const id = this.activatedRouter.queryParams['_value'].id;
       this.summaryId = id
       this.queryDetails(id)
