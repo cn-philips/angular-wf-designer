@@ -1505,6 +1505,7 @@
     "table-header": {
       "ref-no": "Ref No",
       "icf-sign-time": "ICF 时间",
+      "if_dealer_has_upload_audit_material": "经销商是否已经提交核查材料",
       "icf-registration-time": "ICF 登记时间",
       "handle-node": "任务状态",
       "task-status": "任务状态",

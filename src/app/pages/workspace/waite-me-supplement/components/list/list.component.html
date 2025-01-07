@@ -11,6 +11,9 @@
         {{"list-pages.table-header.icf-sign-time" | translate}}
       </th>
       <th class="tableHead" *ngIf="isThirdParty" nzAlign="center" style="width: 200px">
+        {{"list-pages.table-header.icf-sign-if_dealer_has_upload_audit_material" | translate}}
+      </th>
+      <th class="tableHead" *ngIf="isThirdParty" nzAlign="center" style="width: 200px">
         {{"list-pages.table-header.icf-registration-time" | translate}}
       </th>
       <th class="tableHead" nzAlign="center" style="width: 200px">
@@ -57,6 +60,7 @@
         <td class="tableData" style="width: 220px;" nzAlign="center">{{ data.referenceId }}</td>
 
         <td class="tableData" *ngIf="isThirdParty" style="width: 200px;" nzAlign="center">{{ (data.icfSignTime | TimeFormatePipeNow) || "-"}}</td>
+        <td class="tableData" *ngIf="isThirdParty" style="width: 200px;" nzAlign="center">{{ (data.ifDealerHasUploadAuditMaterial ? "是":"否")}}</td>
         <td class="tableData" *ngIf="isThirdParty" style="width: 200px;" nzAlign="center">{{ (data.icfRegistrationTime | TimeFormatePipeNow) || "-"}} </td>
 
         <td *ngIf="data.procPhase === 'p3'" class="tableData" style="width: 200px;" nzAlign="center">{{ data.taskStatus
