@@ -60,7 +60,7 @@
         <td class="tableData" style="width: 220px;" nzAlign="center">{{ data.referenceId }}</td>
 
         <td class="tableData" *ngIf="isThirdParty" style="width: 200px;" nzAlign="center">{{ (data.icfSignTime | TimeFormatePipeNow) || "-"}}</td>
-        <td class="tableData" *ngIf="isThirdParty" style="width: 200px;" nzAlign="center">{{ (data.ifDealerHasUploadAuditMaterial ? "是":"否")}}</td>
+        <td class="tableData" *ngIf="isThirdParty" style="width: 200px;" nzAlign="center">{{ (data.ifDistributorHasUploadMaterial ? "是":"否")}}</td>
         <td class="tableData" *ngIf="isThirdParty" style="width: 200px;" nzAlign="center">{{ (data.icfRegistrationTime | TimeFormatePipeNow) || "-"}} </td>
 
         <td *ngIf="data.procPhase === 'p3'" class="tableData" style="width: 200px;" nzAlign="center">{{ data.taskStatus
