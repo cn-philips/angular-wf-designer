@@ -209,7 +209,8 @@
       [nzFrontPagination]="false" [nzShowPagination]="false" [nzScroll]="{ x: '2160px', y: '300px'}">
       <thead>
         <tr>
-          <th nzAlign="center" style="width: 200px" nzLeft="0px">品牌/生产商</th>
+          <th nzAlign="center" style="width: 200px" nzLeft="0px">产品名称</th>
+          <th nzAlign="center" style="width: 200px">品牌/生产商</th>
           <th nzAlign="center" style="width: 200px">具体型号</th>
           <th nzAlign="center" style="width: 200px">备注</th>
           <th nzAlign="center" style="width: 120px">质保和售后服务要求年月</th>
@@ -232,6 +233,9 @@
         <ng-template nz-virtual-scroll let-data let-index="index">
           <tr>
             <td class="tableData" nzAlign="center" style="width: 200px" nzLeft="0px">
+              {{data.name}}
+            </td>
+            <td class="tableData" nzAlign="center" style="width: 200px">
               {{data.manufacturerName}}
             </td>
             <td class="tableData" nzAlign="center" style="width: 200px">{{ data.manufacturerType }}</td>
