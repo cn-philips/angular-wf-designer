@@ -420,6 +420,7 @@ export class ThirdCheckInfoComponent implements OnInit {
   }
 
   oaSave() {
+    console.log('save oa')
     this.load = true
     let data = this.formData.getRawValue()
     const { tpcId, dealFormId, auditComments, auditAttachment } = data

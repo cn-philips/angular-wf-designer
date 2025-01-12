@@ -85,18 +85,18 @@ export class  UploadThirdAuditFileToCpComponent implements OnInit, ControlValueA
           this.load=false;
           this.fileList=this.fileList = this.fileList.filter(({ status }) => status !=='uploading');
           this.onChange(this.fileList)
-          this.handleSave()
           this.message.create("error","请求异常");
           item.onError({}, file);
+          this.handleSave()
         }
       },
       (err) => {
         this.load=false;
         this.fileList=this.fileList = this.fileList.filter(({ status }) => status !=='uploading');
         this.onChange(this.fileList)
-        this.handleSave()
         this.message.create("error","请求异常");
         item.onError!(err, item.file!);
+        this.handleSave()
       }
     );
   };
@@ -135,6 +135,7 @@ export class  UploadThirdAuditFileToCpComponent implements OnInit, ControlValueA
   ngOnInit() {}
 
   onRemoveFile = (file) => {
+    console.log('file',file)
     this.modal.confirm({
       nzTitle: `确定移除文件${file.name}?`,
       nzOnOk: () => {
