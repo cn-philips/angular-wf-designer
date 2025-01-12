@@ -361,7 +361,7 @@
             <!-- <shared-upload-file [title]="" [type]="null" formControlName="auditAttachment">
             </shared-upload-file> -->
             <button nz-button nzType="primary" (click)="downloadDealerAuditTemplate()" style="margin-right: 10px;">下载经销商自查表</button>
-            <upload-third-audit-requirement-file-to-cp [cpDealId]="cpDealId" [applyId]="applyId" [title]="" [type]="null" formControlName="auditAttachment">
+            <upload-third-audit-requirement-file-to-cp [cpDealId]="cpDealId" [applyId]="applyId" [title]="" [type]="null" formControlName="auditAttachment" (fileChanged)="oaSave($event)">
             </upload-third-audit-requirement-file-to-cp>
             <nz-form-explain *ngIf="formData.get('auditAttachment')?.dirty && formData.get('auditAttachment')?.errors">
               此选项必填字段

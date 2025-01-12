@@ -1,10 +1,9 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { FileService, HttpService } from '@core/services';
 import { NzMessageService, UploadFile } from 'ng-zorro-antd';
 import * as moment from 'moment'
-import { saveAs } from "file-saver";
 import { fomatFloat } from '@core/util/tools';
 
 @Component({
@@ -390,7 +389,10 @@ export class ThirdCheckInfoComponent implements OnInit {
 
     const files = auditAttachment.map(file => ({
       fileId: file.fileId,
-      name: file.name
+      name: file.name,
+      fileName: file.fileName,
+      filePath: file.filePath,
+      source: file.source,
     }));
 
     const jsonString = JSON.stringify(files)
@@ -401,6 +403,43 @@ export class ThirdCheckInfoComponent implements OnInit {
     }
 
     this.http.post(`/act/ecos/thirdParty/oaApproval/detail/notify/${tpcId}/${dealFormId}`, parmas).subscribe((res => {
+      if (res.code === '0000') {
+        this.resetRequired()
+        this.message.create("success", "操作成功！")
+        this.load = false;
+        this.queryDetails(this.applyId)
+      } else {
+        this.message.create('error', `${res.data}`);
+        this.load = false;
+      }
+    }), (error => {
+      this.load = false;
+      this.message.create("error", "服务器异常")
+    }));
+
+  }
+
+  oaSave() {
+    this.load = true
+    let data = this.formData.getRawValue()
+    const { tpcId, dealFormId, auditComments, auditAttachment } = data
+
+    const files = auditAttachment.map(file => ({
+      fileId: file.fileId,
+      name: file.name,
+      fileName: file.fileName,
+      filePath: file.filePath,
+      source: file.source,
+    }));
+
+    const jsonString = JSON.stringify(files)
+    const parmas = {
+      ...this.noticeForms,
+      auditComments: auditComments,
+      auditAttachment: jsonString,
+    }
+
+    this.http.post(`/act/ecos/thirdParty/oaApproval/detail/${tpcId}/${dealFormId}`, parmas).subscribe((res => {
       if (res.code === '0000') {
         this.resetRequired()
         this.message.create("success", "操作成功！")

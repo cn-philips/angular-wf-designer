@@ -1,4 +1,4 @@
-import { Component, forwardRef, OnInit, Input, TemplateRef } from "@angular/core";
+import { Component, forwardRef, OnInit, Input, TemplateRef, Output, EventEmitter } from "@angular/core";
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
 import { UploadXHRArgs, NzModalService } from "ng-zorro-antd";
 import { HttpService } from "@core/services/http.service";
@@ -33,6 +33,7 @@ export class  UploadThirdAuditFileToCpComponent implements OnInit, ControlValueA
   @Input() cpDealId: string = ""
 
   @Input()disabled = false
+  @Output() fileChanged = new EventEmitter();
 
   fileList = []; // 文件列表
 
@@ -77,13 +78,14 @@ export class  UploadThirdAuditFileToCpComponent implements OnInit, ControlValueA
           {
             this.load=false;
           }
-
           this.onChange(this.fileList)
           item.onSuccess(newFile, file, response);
+          this.handleSave()
         } else {
           this.load=false;
           this.fileList=this.fileList = this.fileList.filter(({ status }) => status !=='uploading');
           this.onChange(this.fileList)
+          this.handleSave()
           this.message.create("error","请求异常");
           item.onError({}, file);
         }
@@ -92,6 +94,7 @@ export class  UploadThirdAuditFileToCpComponent implements OnInit, ControlValueA
         this.load=false;
         this.fileList=this.fileList = this.fileList.filter(({ status }) => status !=='uploading');
         this.onChange(this.fileList)
+        this.handleSave()
         this.message.create("error","请求异常");
         item.onError!(err, item.file!);
       }
@@ -111,6 +114,9 @@ export class  UploadThirdAuditFileToCpComponent implements OnInit, ControlValueA
 
   onChange: any = () => {};
   onTouch: any = () => {};
+  handleSave = () => {
+    this.fileChanged.emit(null);
+  };
 
   registerOnChange(fn: any): void {
     this.onChange = fn;
@@ -132,12 +138,13 @@ export class  UploadThirdAuditFileToCpComponent implements OnInit, ControlValueA
     this.modal.confirm({
       nzTitle: `确定移除文件${file.name}?`,
       nzOnOk: () => {
-        this.http.posts(`/act/ecos/thirdParty/auditReport/delete/${file.id}`).subscribe(
+        this.http.posts(`/act/ecos/thirdParty/auditReport/delete/${file.fileId}`).subscribe(
           (response: CommonResponse) => {
             const { data, code } = response;
             if ("0000" === code) {
               this.fileList = this.fileList.filter(({ fileId }) => fileId !== file.fileId);
               this.onChange(this.fileList);
+              this.handleSave()
               this.load=false;
             } else {
               this.load=false;
@@ -158,7 +165,7 @@ export class  UploadThirdAuditFileToCpComponent implements OnInit, ControlValueA
     if(filePath){
       window.open(filePath);
     }else{
-      let uri = `/act/system/download/${fileId}`;
+      let uri = `${filePath}`;
       this.http.get(uri, {
         responseType: 'blob'
       }).subscribe(data => {
