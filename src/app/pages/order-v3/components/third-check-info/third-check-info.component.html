@@ -233,7 +233,7 @@
         <ng-template nz-virtual-scroll let-data let-index="index">
           <tr>
             <td class="tableData" nzAlign="center" style="width: 200px" nzLeft="0px">
-              {{data.name}}
+              {{data.productName}}
             </td>
             <td class="tableData" nzAlign="center" style="width: 200px">
               {{data.manufacturerName}}
@@ -243,12 +243,12 @@
             <td class="tableData" nzAlign="center" style="width: 120px">{{ data.guarantee }}</td>
             <td class="tableData" nzAlign="center" style="width: 80px">{{ data.quantity }}</td>
             <td class="tableData" nzAlign="center" style="width: 100px">{{ data.currency }}</td>
-            <td class="tableData" nzAlign="center" style="width: 120px">{{ data.appPurCny }}</td>
-            <td class="tableData" nzAlign="center" style="width: 80px">{{ data.vat }}</td>
-            <td class="tableData" nzAlign="center" style="width: 130px">{{ data.appPurCnyTotal }}</td>
-            <td class="tableData" nzAlign="center" style="width: 120px">{{ data.appPurUsd }}
+            <td class="tableData" nzAlign="center" style="width: 120px">{{data.currency === 'CNY' ? formatterThousands(data.appPurCny) :'-'}}</td>
+            <td class="tableData" nzAlign="center" style="width: 80px">{{ data.vat }}%</td>
+            <td class="tableData" nzAlign="center" style="width: 130px">{{ data.currency === 'CNY' ? formatterThousands(data.appPurCnyTotal) : '-'}}</td>
+            <td class="tableData" nzAlign="center" style="width: 120px">{{ data.currency === 'USD' ?formatterThousands(data.appPurUsd): '-' }}
             </td>
-            <td class="tableData" nzAlign="center" style="width: 130px">{{ data.appPurUsdTotal }}</td>
+            <td class="tableData" nzAlign="center" style="width: 130px">{{ data.currency === 'USD' ? formatterThousands(data.appPurUsdTotal) :'-'}}</td>
             <td class="tableData" nzAlign="center" style="width: 120px">{{ data.biddingOrNot ? '是' : '否' }}
             </td>
             <td class="tableData" nzAlign="center" style="width: 120px">{{ data.applicationMaterialRemarks }}</td>
