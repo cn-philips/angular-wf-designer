@@ -244,7 +244,7 @@
             <td class="tableData" nzAlign="center" style="width: 80px">{{ data.quantity }}</td>
             <td class="tableData" nzAlign="center" style="width: 100px">{{ data.currency }}</td>
             <td class="tableData" nzAlign="center" style="width: 120px">{{data.currency === 'CNY' ? formatterThousands(data.appPurCny) :'-'}}</td>
-            <td class="tableData" nzAlign="center" style="width: 80px">{{ data.vat }}%</td>
+            <td class="tableData" nzAlign="center" style="width: 80px">{{ data.currency === 'CNY' ? data.vat +'%': '-' }}</td>
             <td class="tableData" nzAlign="center" style="width: 130px">{{ data.currency === 'CNY' ? formatterThousands(data.appPurCnyTotal) : '-'}}</td>
             <td class="tableData" nzAlign="center" style="width: 120px">{{ data.currency === 'USD' ?formatterThousands(data.appPurUsd): '-' }}
             </td>
