@@ -1,9 +1,20 @@
+<div style="line-height: 40px;margin-top: 16px;" *ngIf="isThirdParty">
+  <label style="margin: 0 2px 0 0">{{"list-pages.transfer.batch" | translate}}</label>
+  <nz-switch [(ngModel)]="openCheckbox" style="margin: 0 10px 0 0"></nz-switch>
+  <button *ngIf="openCheckbox" nz-button [nzType]="'primary'" (click)="openAssignShowoff()">
+    {{"list-pages.transfer.transfer" | translate}}
+  </button>
+</div>
 <nz-table nzVirtualScroll [nzData]="tableData" [nzVirtualItemSize]="10" nzFrontPagination="false"
   [nzPageIndex]="pageParams.pageNo" [nzPageSize]="pageParams.pageSize" [nzTotal]="total" [nzLoading]="loading"
   [nzScroll]="{ x: '2000px', y: '600px' }" (nzPageIndexChange)="changePageIndex($event)" [nzShowTotal]="totalTemplate"
   (nzPageSizeChange)="changePageSize($event)" style="margin-top: 16px">
   <thead>
     <tr>
+      <th nzWidth="50px" *ngIf="openCheckbox">
+        <label [nzChecked]="AllCheck()" (nzCheckedChange)="CheckAll($event)" nz-checkbox style="display: inline-block;">
+        </label>
+      </th>
       <th class="tableHead" nzAlign="center" style="width: 220px">
         {{"list-pages.table-header.ref-no" | translate}}
       </th>
@@ -57,6 +68,8 @@
   <tbody>
     <ng-template nz-virtual-scroll let-data let-index="index">
       <tr>
+        <td nzWidth="50px" *ngIf="openCheckbox"><label nz-checkbox [(ngModel)]="mapOfCheckedId[data.id]"></label></td>
+
         <td class="tableData" style="width: 220px;" nzAlign="center">{{ data.referenceId }}</td>
 
         <td class="tableData" *ngIf="isThirdParty" style="width: 200px;" nzAlign="center">{{ (data.icfSignTime | TimeFormatePipeNow) || "-"}}</td>
@@ -142,3 +155,38 @@
 
 </nz-table>
 <ng-template #totalTemplate let-total> {{"list-pages.list-total" | translate: { total: total} }} </ng-template>
+
+<!--转派弹出框-->
+<nz-modal *ngIf="flag == 0" [(nzVisible)]="assignShowoff" nzWidth="600px"
+  [nzTitle]="'list-pages.transfer.title' | translate" (nzOnCancel)="cancelModeal()" (nzOnOk)="subAssign()"
+  [nzFooter]="modalFooter_Task">
+  <ng-container>
+    <div>
+      <nz-form-label style="width: 20%" nzRequired>{{"list-pages.transfer.role" | translate}}</nz-form-label>
+      <nz-form-control style="width: 70%; display: inline-block">
+        <nz-select style="width: 100%" [(ngModel)]="role" (ngModelChange)="roleChange()">
+          <ng-container *ngFor="let item of roleList">
+            <nz-option [nzValue]="item.value" [nzLabel]="item.name"></nz-option>
+          </ng-container>
+        </nz-select>
+      </nz-form-control>
+    </div>
+    <div style="margin-top: 20px">
+      <nz-form-label style="width: 20%" nzRequired>{{"list-pages.transfer.receiver" | translate}}</nz-form-label>
+      <nz-form-control style="width: 70%; display: inline-block">
+        <nz-select style="width: 100%" [(ngModel)]="receiver" nzShowSearch>
+          <ng-container *ngFor="let item of receiverList">
+            <nz-option
+              *ngIf="item.role && role && item.role.toLowerCase().indexOf(role.toLowerCase()) != -1 && item.email != appUser"
+              [nzValue]="item.email" [nzLabel]="item.email"></nz-option>
+          </ng-container>
+        </nz-select>
+      </nz-form-control>
+    </div>
+    <ng-template #modalFooter_Task>
+      <button nz-button nzType="default" (click)="cancelModeal()">{{"list-pages.transfer.cancel" | translate}}</button>
+      <button nz-button nzType="primary" (click)="subAssign()" [nzLoading]="subAssignLoading">
+        {{"list-pages.transfer.ok" | translate}}</button>
+    </ng-template>
+  </ng-container>
+</nz-modal>

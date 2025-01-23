@@ -1,10 +1,14 @@
 {
   "/act/*": {
-    "target": "http://localhost:9091/"
+    "target": "https://www.portal.philips.com.cn/ecomdiigtuat/",
+    "secure": false,
+    "changeOrigin": true
   },
 
   "/saml/*": {
-    "target": "http://localhost:9091"
+    "target": "https://www.portal.philips.com.cn/ecomdiigtuat/",
+    "secure": false,
+    "changeOrigin": true
   }
 
 }

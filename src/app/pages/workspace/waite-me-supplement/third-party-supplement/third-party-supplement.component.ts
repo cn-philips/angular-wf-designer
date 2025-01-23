@@ -30,9 +30,9 @@ export class ThirdPartySupplementComponent implements OnInit {
     private message: NzMessageService,
     private fileService: FileService,
     private servesiceService: ServesiceService
-  ) { 
+  ) {
     this.userList = JSON.parse(localStorage.getItem("roleAgents"));
-   }
+  }
 
 
   updateParams(values: any) {
@@ -72,12 +72,12 @@ export class ThirdPartySupplementComponent implements OnInit {
       thirdPartyTodoTaskStatus: this.isHandle ? 'COMPLETED' : 'IN_PROGRESS', // 待处理-IN_PROGRESS  已处理-COMPLETED
       orderByClause: 'createTime desc',
     }
-   
+
     const params = {
       ...this.formValues,
       ...this.pageParams
     }
-  
+
     this.http.post(`/act/ecos/thirdParty/task`, params).subscribe((rest => {
       if (rest.code === '0000') {
         const data = rest.data.rows;

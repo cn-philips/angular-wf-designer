@@ -145,7 +145,20 @@ export class RegisterICFComponent implements OnInit {
         const { data, code, msg } = response;
         if ("0000" === code) {
           item.onSuccess({ fileId: data }, file, response)
-          this.message.create('success', `导入成功！`);
+          let {failure,update,add} = response.data
+          let arr= [
+          ]
+          if(add&&add.length){
+            arr.push(`新增${add.length}条`)
+          }
+          if(update&&update.length){
+            arr.push(`更新${update.length}条`)
+          }
+          if(failure&&failure.length){
+            arr.push(`失败${failure.length}条\r\n`)
+            arr.push(`失败原因：${failure.map((item:any)=>`SO:${item.so}-${item.comments}`).join(',\r\n')}`)
+          }
+          this.message.create('success', `导入成功！\r\n${arr.join(',\r\n')}`);
           this.getTableData();
         } else {
           item.onError({}, file);
