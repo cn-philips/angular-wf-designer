@@ -336,13 +336,13 @@
     </div>
 
     <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
-      <div nz-col nzXs="24" nzSm="24" nzMd="8">
+      <div nz-col nzXs="24" nzSm="24" nzMd="24">
         <nz-form-item>
-          <nz-form-label [nzRequired]="noticeRequired" nzXs="24" nzSm="24" nzMd="10" [nzNoColon]="true">
+          <nz-form-label [nzRequired]="noticeRequired" nzXs="24" nzSm="24" nzMd="3" [nzNoColon]="true" style="margin-left: 18px;">
             三方核查要求备注
           </nz-form-label>
-          <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <textarea formControlName="auditComments" nzAutosize nz-input></textarea>
+          <nz-form-control nzXs="24" nzSm="24" nzMd="18">
+            <textarea formControlName="auditComments" nzAutosize nz-input rows="20" style="min-height: 200px;"></textarea>
             <nz-form-explain *ngIf="formData.get('auditComments')?.dirty && formData.get('auditComments')?.errors">
               此选项必填字段
             </nz-form-explain>
@@ -635,12 +635,12 @@
       </nz-form-control>
     </nz-form-item>
     <nz-form-item *ngIf="noticeType === 'replenish'">
-      <nz-form-label nzRequired [nzSpan]="8">说明</nz-form-label>
+      <nz-form-label [nzSpan]="8">说明</nz-form-label>
       <nz-form-control [nzSpan]="16">
         <textarea rows="2" nz-input [(ngModel)]="noticeForms.comments" name="comments"></textarea>
-        <nz-form-explain *ngIf="!noticeForms.comments" style="color: red;">
+        <!-- <nz-form-explain *ngIf="!noticeForms.comments" style="color: red;">
           此选项必填字段
-        </nz-form-explain>
+        </nz-form-explain> -->
       </nz-form-control>
     </nz-form-item>
   </form>
