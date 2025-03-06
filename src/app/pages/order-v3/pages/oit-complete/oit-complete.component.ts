@@ -60,13 +60,24 @@ export class OitcompleteComponent implements OnInit {
   public changeName;
   public tabList = ['contract-tab', 'summary-tab', 'complete-tab', 'oit-tab', 'approval-record'];
   public isHandle: any;
-  public paymentProvisionList = ["10% TT before OIT, 80% TT before FP, 10% TT against AC",
-    "10% TT before OIT, 90% TT before FP",
-    "15% TT before OIT, 85% before FP",
-    "30% TT before OIT, 60% TT before FP, 10% TT against ICF",
+  public paymentProvisionList = [
+    // "10% TT before OIT, 80% TT before FP, 10% TT against AC",
+    // "10% TT before OIT, 90% TT before FP",
+    // "15% TT before OIT, 85% before FP",
+    // "30% TT before OIT, 60% TT before FP, 10% TT against ICF",
+    // "100% TT before OIT",
+    // "100% LC before OIT",
+    // "30%TT before OIT, 70% TT before FP",
+    "30% TT before OIT, 70% before shipment",
     "100% TT before OIT",
-    "100% LC before OIT",
-    "30%TT before OIT, 70% TT before FP",
+    "15% TT before OIT, 85% before FP(non-stock)",
+    "15% TT before OIT, 85% TT within 90 days after contract signed(Stock)",
+    "10% TT before OIT, 80% TT/LC before FP, 10% TT against AC(民营)",
+    "15% TT before OIT, 85% before FP",
+    "10% TT before OIT, 90% before FP(超千万PO)",
+    "30% TT before OIT, 60% TT before FP, 10% TT against ICF(CVI)",
+    "100% LC before OIT(MOS)",
+    "30%TT before OIT, 70% TT before FP(MOS)",
   ];
 
   //改单申请上一次的so
