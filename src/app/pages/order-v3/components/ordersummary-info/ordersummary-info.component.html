@@ -967,7 +967,7 @@
           </nz-form-item>
         </div>
         <div
-          *ngIf="priceApproval.getRawValue().currencySystem == 'CNY'&&baseInfoTable.getRawValue().paymentProvision=='其他（请在备注处描述实际付款方式）'"
+          *ngIf="priceApproval.getRawValue().currencySystem == 'CNY'&&  ['其他（请在备注处描述实际付款方式）','其他（将触发非标付款方式审批流）'].includes(baseInfoTable.getRawValue().paymentProvision)"
           nz-col nzXs="24" nzSm="24" nzMd="8">
           <nz-form-item>
             <nz-form-label nzXs="24" nzSm="24" nzMd="10" nzXl="8" nzXXl="6" [nzNoColon]="true">
@@ -984,7 +984,7 @@
           </nz-form-item>
         </div>
         <div
-          *ngIf="priceApproval.getRawValue().currencySystem == 'USD'&&baseInfoTable.getRawValue().paymentProvision=='其他（请在备注处描述实际付款方式）'"
+          *ngIf="priceApproval.getRawValue().currencySystem == 'USD'&&['其他（请在备注处描述实际付款方式）','其他（将触发非标付款方式审批流）'].includes(baseInfoTable.getRawValue().paymentProvision)"
           nz-col nzXs="24" nzSm="24" nzMd="8">
           <nz-form-item>
             <nz-form-label nzXs="24" nzSm="24" nzMd="10" nzXl="8" nzXXl="6" [nzNoColon]="true">
