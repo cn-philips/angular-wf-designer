@@ -677,7 +677,7 @@ export class PreBaseInfoTableComponent implements OnInit {
   }
   provisionChang() {
     const { paymentProvision } = this.baseInfoTable.getRawValue();
-    if (['其他（请在备注处描述实际付款方式）','其他（将触发非标付款方式审批流）'].includes(paymentProvision) ) {
+    if (['其他（请在备注处描述实际付款方式）','其他（将触发系统审批--请在备注处描述实际付款方式）'].includes(paymentProvision) ) {
       this.baseInfoTable.get('paymentProvisionRemarks').setValidators(Validators.required);
       this.baseInfoTable.get('paymentProvisionRemarks').markAsDirty();
       this.baseInfoTable.get('paymentProvisionRemarks').updateValueAndValidity();
