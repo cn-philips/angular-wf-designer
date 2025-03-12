@@ -370,7 +370,8 @@ export class ThirdCheckInfoComponent implements OnInit {
       this.message.create("error", "请填写必填字段！")
       return
     }
-
+    this.load = true
+    await this.doSave();
     if (this.noticeType === 'upload') {
       await this.noticeDealerUploadFile()
     } else if (this.noticeType === 'replenish') {
@@ -378,6 +379,7 @@ export class ThirdCheckInfoComponent implements OnInit {
     } else if (this.noticeType === 'locked') {
       await this.noticeDealerLocked()
     }
+    this.load = false
     this.isVisible = false
   }
 
@@ -418,13 +420,9 @@ export class ThirdCheckInfoComponent implements OnInit {
     }));
 
   }
-
-  oaSave() {
-    console.log('save oa')
-    this.load = true
+  async doSave (){
     let data = this.formData.getRawValue()
     const { tpcId, dealFormId, auditComments, auditAttachment } = data
-
     const files = auditAttachment.map(file => ({
       fileId: file.fileId,
       name: file.name,
@@ -439,8 +437,15 @@ export class ThirdCheckInfoComponent implements OnInit {
       auditComments: auditComments,
       auditAttachment: jsonString,
     }
-
-    this.http.post(`/act/ecos/thirdParty/oaApproval/detail/${tpcId}/${dealFormId}`, parmas).subscribe((res => {
+    return await this.saveThirdPartyVerification(tpcId,dealFormId,parmas);
+  }
+  async saveThirdPartyVerification(tpcId,dealFormId,parmas){
+    return this.http.post(`/act/ecos/thirdParty/oaApproval/detail/${tpcId}/${dealFormId}`, parmas).toPromise()
+  }
+  oaSave() {
+    console.log('save oa')
+    this.load = true
+    this.doSave().then((res => {
       if (res.code === '0000') {
         this.resetRequired()
         this.message.create("success", "操作成功！")
@@ -453,8 +458,7 @@ export class ThirdCheckInfoComponent implements OnInit {
     }), (error => {
       this.load = false;
       this.message.create("error", "服务器异常")
-    }));
-
+    }))
   }
   // 通知经销商需要被核查
   noticeDealerLocked(){
