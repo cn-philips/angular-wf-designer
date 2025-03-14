@@ -881,7 +881,7 @@ export class PreProductComponent implements OnInit {
       .get("orderBaseinfo") as FormGroup;
     const { currencySystem } = orderBaseinfo.getRawValue();
     const { paymentProvision } = mainTrems.getRawValue();
-    if (paymentProvision == "其他（请在备注处描述实际付款方式）") {
+    if (['其他（请在备注处描述实际付款方式）','其他（将触发系统审批--请在备注处描述实际付款方式）'].includes(paymentProvision) ) {
       if (currencySystem == "CNY") {
         orderBaseinfo.get("paymentNetCny").setValidators([Validators.required]);
         orderBaseinfo.get("paymentUsd").clearValidators();
@@ -2392,7 +2392,7 @@ export class PreProductComponent implements OnInit {
         paymentUsd: paymentUsdCp,
       });
     }
-    if (paymentProvision == "其他（请在备注处描述实际付款方式）") {
+    if (['其他（请在备注处描述实际付款方式）','其他（将触发系统审批--请在备注处描述实际付款方式）'].includes(paymentProvision) ) {
       orderBaseinfo.patchValue({
         creditCny: 0,
         creditCnyNet: 0,
@@ -2406,7 +2406,7 @@ export class PreProductComponent implements OnInit {
       });
     }
     if (
-      paymentProvision != "其他（请在备注处描述实际付款方式）" &&
+      !['其他（请在备注处描述实际付款方式）','其他（将触发系统审批--请在备注处描述实际付款方式）'].includes(paymentProvision)  &&
       paymentProvision != "远期信用证（请在备注处注明信用证期限及开证行）"
     ) {
       orderBaseinfo.patchValue({
@@ -2439,7 +2439,7 @@ export class PreProductComponent implements OnInit {
     mainTrems.get("paymentProvision").markAsDirty();
     mainTrems.get("paymentProvision").updateValueAndValidity();
     const { paymentProvision } = mainTrems.getRawValue();
-    if (paymentProvision == "其他（请在备注处描述实际付款方式）") {
+    if (['其他（请在备注处描述实际付款方式）','其他（将触发系统审批--请在备注处描述实际付款方式）'].includes(paymentProvision) ) {
       mainTrems
         .get("paymentProvisionRemarks")
         .setValidators(Validators.required);

@@ -1080,7 +1080,7 @@ export class PreOrderoaComponent implements OnInit {
           })
           const mainTrems = this.orderInfo.at(index).get('mainTrems') as FormGroup;
           const { paymentProvision } = mainTrems.getRawValue();
-          if (paymentProvision == '远期信用证（请在备注处注明信用证期限及开证行）' || paymentProvision == '其他（请在备注处描述实际付款方式）') {
+          if (paymentProvision == '远期信用证（请在备注处注明信用证期限及开证行）' || ['其他（请在备注处描述实际付款方式）','其他（将触发系统审批--请在备注处描述实际付款方式）'].includes(paymentProvision)) {
             orderBaseinfo.patchValue({
               paymentDisabled: false,
             })

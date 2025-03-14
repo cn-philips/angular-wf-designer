@@ -1378,14 +1378,14 @@ export class PreorderexamineComponent implements OnInit {
           paymentUsd: 0,
         })
       }
-      if (paymentProvision == '其他（请在备注处描述实际付款方式）') {
+      if (['其他（请在备注处描述实际付款方式）','其他（将触发系统审批--请在备注处描述实际付款方式）'].includes(paymentProvision) ) {
         orderBaseinfo.patchValue({
           creditCny: 0,
           creditCnyNet: 0,
           creditUsd: 0,
         })
       }
-      if (paymentProvision != '其他（请在备注处描述实际付款方式）' && paymentProvision != '远期信用证（请在备注处注明信用证期限及开证行）') {
+      if (!['其他（请在备注处描述实际付款方式）','其他（将触发系统审批--请在备注处描述实际付款方式）'].includes(paymentProvision)  && paymentProvision != '远期信用证（请在备注处注明信用证期限及开证行）') {
         orderBaseinfo.patchValue({
           creditCny: 0,
           creditCnyNet: 0,
