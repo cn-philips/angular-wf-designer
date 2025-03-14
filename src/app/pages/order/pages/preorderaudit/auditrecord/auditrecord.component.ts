@@ -337,7 +337,7 @@ export class AuditrecordComponent implements OnInit {
               prebookReferenceId == null ||
               prebookReferenceId == undefined
             ) {
-              this.message.create("error", "请填写prebook申请号!");
+              this.message.create("error", "请填写Slot Reservation申请号!");
               return;
             }
           } else {
@@ -551,7 +551,7 @@ export class AuditrecordComponent implements OnInit {
             return;
           }
         }
-      }     
+      }
       this.load = true;
       this.http.post(url, parm).subscribe(
         (res) => {

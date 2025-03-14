@@ -86,8 +86,8 @@ export const prebookForm = () => new FormGroup({
       dealerPhone: new FormControl(null, [Validators.required]), // 经销商电话
       dealerEmail: new FormControl(null, [Validators.required]), // 经销商邮箱
       dealerContact: new FormControl(null, [Validators.required]), // 经销商联系人
-      purchaseOrderSignatory: new FormControl(null, [Validators.required]), // 采购订单签署人
-      purchaseOrderSignatoryPosition: new FormControl(null, [Validators.required]), // 采购订单签署人职务
+      purchaseOrderSignatory: new FormControl(null), // 采购订单签署人
+      purchaseOrderSignatoryPosition: new FormControl(null), // 采购订单签署人职务
       subTierInfo: new FormArray([]), // 次级经销商信息
     }),
     contractBuyer: new FormGroup({

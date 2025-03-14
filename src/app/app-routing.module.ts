@@ -119,7 +119,7 @@ const routes: Routes = [
       {
         path: "pre-book",
         loadChildren: "./pages/pre-book/pre-book.module#PreBookModule",
-        data: { breadcrumb: "Pre-book", breadcrumbDisabled: true },
+        data: { breadcrumb: "Slot Reservation", breadcrumbDisabled: true },
       },
       {
         path: "order-v3",
@@ -129,7 +129,7 @@ const routes: Routes = [
       {
         path: "prebook-v3",
         loadChildren: "./pages/prebook-v3/prebook-v3.module#PrebookV3Module",
-        data: { breadcrumb: "Pre-book" },
+        data: { breadcrumb: "Slot Reservation" },
       },
       // {
       //  path:'order-v3',

@@ -32,6 +32,7 @@ export class SignatureUploadComponent implements OnInit {
   @Output() fileDeleted: EventEmitter<any> = new EventEmitter()
 
   @Input() disabled = false
+  @Input() ifShowPageNavigator=true
   constructor(private modal: NzModalService,
     private http: HttpService,
     private message: NzMessageService,
@@ -42,13 +43,18 @@ export class SignatureUploadComponent implements OnInit {
   fileFormGroup: FormGroup = this.fb.group({
     fileListFormGroup: this.fb.array([]),
   })
+  // 是否显示页面定位输入框
+  get showPageNavigator(){
+    return this.ifShowPageNavigator;
+  }
+
   get fileListFormGroup() {
     return this.fileFormGroup.get('fileListFormGroup') as FormArray;
   }
 
   load = false;
-  onBeforeUpload = (file) => {  
-    const fileType = getType(file);     
+  onBeforeUpload = (file) => {
+    const fileType = getType(file);
     if (fileType === "pdf") {
       this.load = true;
       return true;
@@ -150,7 +156,7 @@ export class SignatureUploadComponent implements OnInit {
     );
   };
 
-  writeValue(obj: any): void {    
+  writeValue(obj: any): void {
     if (obj&&obj.length>0) {
       this.clearFormArray(this.fileListFormGroup)
       this.fileList = obj.map((file) => ({
@@ -178,8 +184,8 @@ export class SignatureUploadComponent implements OnInit {
     this.onTouch = fn;
   }
 
-  setDisabledState(isDisabled: boolean): void {   
-    this.disabled = isDisabled   
+  setDisabledState(isDisabled: boolean): void {
+    this.disabled = isDisabled
     if(this.disabled)
     {
       this.fileListFormGroup.controls.forEach((item,index)=>{
@@ -194,7 +200,7 @@ export class SignatureUploadComponent implements OnInit {
       })
     }
   }
-  
+
   ngOnInit() {
   }
 

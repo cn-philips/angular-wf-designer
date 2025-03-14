@@ -12,6 +12,7 @@ import { TableShowComponent } from './table-show/table-show.component'
 import { DistributorListComponent } from './distributor-list/distributor-list.component'
 import { SelectDealerComponent } from './select-dealer/select-dealer.component'
 import { SelectHospitalComponent } from './select-hospital/select-hospital.component'
+import { SelectImportedProductComponent } from './select-imported-product/select-imported-product.component'
 import { SelectUserComponent } from './select-user/select-user.component'
 import { SelectForignCompanyComponent } from './select-foreign-company/select-foreign-company.component'
 import { SelectComponent } from './form/select/select.component'
@@ -34,6 +35,7 @@ export * from './table-show/table-show.component'
 export * from './distributor-list/distributor-list.component'
 export * from './select-dealer/select-dealer.component'
 export * from './select-hospital/select-hospital.component'
+export * from './select-imported-product/select-imported-product.component'
 export * from './select-user/select-user.component'
 export * from './select-foreign-company/select-foreign-company.component'
 export * from './form/select/select.component'
@@ -46,5 +48,5 @@ export const COMPONENTS = [
   TreeBoxComponent, TableShowComponent, DistributorListComponent,
   SelectDealerComponent, SelectHospitalComponent, SelectUserComponent,
   SelectForignCompanyComponent, SelectComponent, ApprovalHistoryComponent,
-  CheckboxComponent, RadioComponent, DealerTableComponent,
+  CheckboxComponent, RadioComponent, DealerTableComponent,SelectImportedProductComponent
 ]

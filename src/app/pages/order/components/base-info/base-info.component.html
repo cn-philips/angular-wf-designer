@@ -114,7 +114,7 @@
     <div nz-row nzType="flex" nzJustify="start" nzAlign="start">
        <div nz-col nzXs="24" nzSm="24" nzMd="12">
           <nz-form-item style="margin-bottom: 6px">
-            <nz-form-label nzSm="8" nzXl="8" nzXXl="8"><span>Related Pre-Book</span><br>有关联的Pre-Book</nz-form-label>
+            <nz-form-label nzSm="8" nzXl="8" nzXXl="8"><span>Related Slot Reservation</span><br>有关联的Slot Reservation</nz-form-label>
             <nz-form-control nzSm="14" nzXl="14" nzXXl="14">
               <nz-radio-group formControlName="isPrebookApply" (ngModelChange)="prebookChange($event)"  [(ngModel)]="dataBase.isPrebookApply" style="margin-top: 15px">
                 <label nz-radio disabled nzValue="1">Y 是</label>
@@ -125,7 +125,7 @@
        </div>
        <div nz-col nzXs="24" nzSm="24" nzMd="12" *ngIf="dataBase.detail.status!=''&&dataBase.detail.status!='DOACS'&&dataBase.isPrebookApply=='1'">
         <nz-form-label nzSm="8" nzXl="8" nzXXl="8" [nzRequired]="dataBase.isPrebookApply=='1'&&conTable">
-          Pre-book申请号
+          Slot Reservation申请号
         </nz-form-label>
           <nz-form-control nzSm="10" nzXl="10" nzXXl="10">
             <input type="text" class="form-control" readonly  formControlName="prebookReferenceId"
@@ -136,10 +136,10 @@
                 ">
                 此选项必填字段
               </nz-form-explain>
-              <div *ngIf="dataBase.prebookReferenceId" class="win-check-link down" (click)="gotoWin(dataBase.prebookMainId)" nz-button nzType="link">查看Pre-book</div>
+              <div *ngIf="dataBase.prebookReferenceId" class="win-check-link down" (click)="gotoWin(dataBase.prebookMainId)" nz-button nzType="link">查看Slot Reservation</div>
           </nz-form-control>
           <nz-form-control nzSm="4" nzXl="4" nzXXl="4">
-            <button nz-button [disabled]="prebookOff" class="ml6" nzType="primary" (click)="showPrebook()">Select 选择Pre-book申请
+            <button nz-button [disabled]="prebookOff" class="ml6" nzType="primary" (click)="showPrebook()">Select 选择Slot Reservation申请
             </button>
           </nz-form-control>
       </div>
@@ -247,7 +247,7 @@
                   注释：所选择的经销商不在经销商列表
                 </div>
                 <div *ngIf="distributorOffPrebook&&dataBase.isPrebookApply=='1'" class="warning" nzFor="email">
-                  注释：经销商数据和Pre-book申请记录不一致
+                  注释：经销商数据和Slot Reservation申请记录不一致
                 </div>
                 <nz-form-explain *ngIf="
                     validateForm.get('distributor')?.dirty &&
@@ -553,7 +553,7 @@
                 注释：所选择的外贸公司不在IE Pool
               </div>
               <div *ngIf="foreignTradeOffPrebook&&dataBase.isPrebookApply=='1'" class="warning nohide" nzFor="email">
-                外贸公司和Pre-book申请记录不一致，请注意外贸公司修改后slot可能被取消，请考虑后提交
+                外贸公司和Slot Reservation申请记录不一致，请注意外贸公司修改后slot可能被取消，请考虑后提交
               </div>
               <nz-form-explain *ngIf="
                   validateForm.get('foreignTradeCompany')?.dirty &&
@@ -2103,7 +2103,7 @@
   <app-table-show #child [data]="this.dealshow"></app-table-show>
 
 </nz-modal>
-<nz-modal [(nzVisible)]="isPrebook" nzWidth="1000px" nzTitle="Pre-book申请号"  [nzFooter]="modalFooterisPrebook" (nzOnCancel)="isPrebookCancel()">
+<nz-modal [(nzVisible)]="isPrebook" nzWidth="1000px" nzTitle="Slot Reservation申请号"  [nzFooter]="modalFooterisPrebook" (nzOnCancel)="isPrebookCancel()">
   <app-prebook-no #childs [dataBase]="dataBase" [pageParam]="pageParams"></app-prebook-no>
   <ng-template #modalFooterisPrebook>
     <button nz-button nzType="default" (click)="isPrebookCancel()">Cancel 取消</button>

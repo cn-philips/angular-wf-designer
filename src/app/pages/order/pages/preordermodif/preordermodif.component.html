@@ -117,10 +117,10 @@
   <!-- <button nz-button nzType="primary" class="save" (click)="saveContract()">保存</button>
   <button *ngIf="dataBase.entryMode !== 'stock'" class="save" nz-button nzType="primary" (click)="winningBid()">校验中标结果并提交</button>
   <button *ngIf="dataBase.entryMode === 'stock'" class="submit" nz-button nzType="primary" (click)="handleOkWinCheck()">提交进单准备表</button> -->
-  <nz-modal [(nzVisible)]="isVisiblePrebook" nzTitle="正在流转中的Pre-book" (nzOnCancel)="handleCancelPrebook()"
+  <nz-modal [(nzVisible)]="isVisiblePrebook" nzTitle="正在流转中的Slot Reservation" (nzOnCancel)="handleCancelPrebook()"
     (nzOnOk)="handleApply()">
     <p>
-      提交进单后将中止Pre-book申请，是否确认提交？
+      提交进单后将中止Slot Reservation申请，是否确认提交？
     </p>
   </nz-modal>
   <nz-modal [(nzVisible)]="isVisibleWinCheck" [nzOkDisabled]="verifiOff" nzTitle="中标确认校验结果" nzOkText="提交进单准备表"

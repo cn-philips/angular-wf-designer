@@ -1326,7 +1326,7 @@ export class PreOrderComponent implements OnInit {
         this.dataBase.isPrebookApply == "1"
       ) {
         if (this.dataBase.distributor != this.dataBase.preBook.distributor) {
-          this.message.create("warning", "经销商数据和Pre-book申请记录不一致");
+          this.message.create("warning", "经销商数据和Slot Reservation申请记录不一致");
         }
       }
 

@@ -1,27 +1,28 @@
 import { NgModule } from "@angular/core";
-import { RouterModule, Route } from "@angular/router";
+import { Route, RouterModule } from "@angular/router";
+import { } from "@pages/workspace/my-todo/my-todo.component";
 import {
   HomeComponent,
-  MyStartedComponent,
   MyDraftComponent,
-  MyViewComponent,
   MyReportComponent,
+  MyStartedComponent,
+  MyViewComponent,
 } from "./index";
-import {} from "@pages/workspace/my-todo/my-todo.component";
 // import {ListComponent, SearchItemComponent} from '@pages/workspace/my-todo';
-import { MyDoneComponent } from "@pages/workspace/my-done/my-done.component";
-import { NgZorroAntdModule } from "ng-zorro-antd";
 import { CommonModule } from "@angular/common";
-import { SharedModule } from "@shared/shared.module";
+import { MyDoneComponent } from "@pages/workspace/my-done/my-done.component";
 import { MyTodoComponent } from "@pages/workspace/my-todo/my-todo.component";
 import {
-  WinningbidSupplementComponent,
+  ContractElectronicSignatureComponent,
+  ContractSignatureWatermarkComponent,
+  ContractSupplementComponent,
   OitSupplementComponent,
   OmSupplementComponent,
   ThirdPartySupplementComponent,
-  ContractSupplementComponent,
-  ContractSignatureWatermarkComponent,
+  WinningbidSupplementComponent
 } from "@pages/workspace/waite-me-supplement";
+import { SharedModule } from "@shared/shared.module";
+import { NgZorroAntdModule } from "ng-zorro-antd";
 
 const routes: Route[] = [
   {
@@ -88,6 +89,11 @@ const routes: Route[] = [
     path:"contract-signature",
     component:ContractSignatureWatermarkComponent,
     data:{breadcrumb:"合同电子水印签章"}
+  },
+  {
+    path:"contract-electronic-signature",
+    component:ContractElectronicSignatureComponent,
+    data:{breadcrumb:"合同电子签章"}
   },
   { path: "", redirectTo: "home", pathMatch: "full" },
 ];

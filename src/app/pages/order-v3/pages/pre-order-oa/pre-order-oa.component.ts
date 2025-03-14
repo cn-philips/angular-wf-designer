@@ -18,6 +18,7 @@ import { BreadcrumbService } from "@app/modern-themes/services/breadcrumb.servic
 import { ProcessTaskStatusPipe } from "@app/shared/pipes/process-task-status.pipe"
 import { RouterExtendService } from "@app/modern-themes/services/router-extend.service";
 import { Subject } from "rxjs";
+import { compareIgnoreSensitiveCase } from "@app/utils/StringUtils";
 // const financialCompleted=(control:FormGroup):ValidationErrors|null=> {//金融方案价格是否等于总价
 //     console.log(control.getRawValue())
 //     const orderInfo=control.getRawValue()
@@ -169,9 +170,10 @@ export class PreOrderoaComponent implements OnInit {
     dealerEmail: [{ value: null, disabled: !this.editBase }, [Validators.required]],//经销商邮箱
     dealerAddress: [{ value: null, disabled: !this.editBase }, [Validators.required]],//经销商地址
     dealerTaxNum: [{ value: null, disabled: !this.editBase }, [Validators.required]],//经销商纳税号
-    purchaseOrderSignatory: [{ value: null, disabled: !this.editBase }, [Validators.required]], //采购订单签署人
-    purchaseOrderSignatoryPosition: [{ value: null, disabled: !this.editBase }, [Validators.required]],//采购订单签署人职务
+    purchaseOrderSignatory: [{ value: null, disabled: !this.editBase }], //采购订单签署人
+    purchaseOrderSignatoryPosition: [{ value: null, disabled: !this.editBase }],//采购订单签署人职务
     subTierInfo: this.fb.array([]), // 次级经销商信息
+    dealerBestSignSignerAccount: [{ value: null, disabled: !this.editBase }, [Validators.required]], // 经销商上上签账号
   }
   accountFrom = {
     accountName: [{ value: null, disabled: !this.editBase }, [Validators.required]],//开户行名称
@@ -210,20 +212,22 @@ export class PreOrderoaComponent implements OnInit {
     foreignTradeCorpEmail: [{ value: null, disabled: !this.editBase }, [Validators.required]],//外贸公司邮箱
     importAgreementSignName: [{ value: null, disabled: !this.editBase }, [Validators.required]],//进口协议签署人
     importAgreementSignPosition: [{ value: null, disabled: !this.editBase }, [Validators.required]], //进口协议签署人职务
+    foreignBestSignSignerAccount: [{ value: null, disabled: !this.editBase }, [Validators.required]], // 外贸公司签字人上上签账号
   }
   endUserFrom = {
     endUser: [{ value: null, disabled: true }, []],//最终终用户
     endUserId: [{ value: null, disabled: true }, []],//最终用户编号
     endUserSapCode: [{ value: null, disabled: true }, []],//最终用户SAP Code
     endUserTaxNum: [{ value: null, disabled: !this.editBase }, [Validators.required]],//最终用户税号
-    endUserActuallyDeliveryAddress: [{ value: null, disabled: !this.editBase }], //最终用户实际发货地址
     hospitalType: [{ value: null, disabled: true }],//医院性质
     segment: [{ value: null, disabled: true }],//segment
+    endUserActuallyDeliveryAddress: [{ value: null, disabled: !this.editBase }], //最终用户实际发货地址
     endUserAddress: [{ value: null, disabled: !this.editBase }],//最终用户地址
     endUserPhone: [{ value: null, disabled: !this.editBase }, [Validators.required]],//最终用户电话
     endUserEmail: [{ value: null, disabled: !this.editBase }, [Validators.required]],//最终用户邮箱
     endUserContact: [{ value: null, disabled: !this.editBase }, [Validators.required]],//最终用户联系人
     usHta: [{ value: null, disabled: true }], //是否HTA US
+    dealerBestSignSignerAccount: [{ value: null, disabled: !this.editBase }],
   }
   priceApproval = {
     currencySystem: [{ value: null, disabled: true }], //币制
@@ -345,8 +349,8 @@ export class PreOrderoaComponent implements OnInit {
     let orderInfo = [];
 
     if (orderInfos && orderInfos.length > 1) {
-      const firstArr = orderInfos.filter(vals => vals.orderOa == this.user)
-      const orderDiff = orderInfos.filter(vals => vals.orderOa != this.user);
+      const firstArr = orderInfos.filter(vals => compareIgnoreSensitiveCase(vals.orderOa,this.user))
+      const orderDiff = orderInfos.filter(vals => !compareIgnoreSensitiveCase(vals.orderOa,this.user));
 
       if (firstArr.length > 0) {
         firstArr.forEach(val => {
@@ -961,8 +965,8 @@ export class PreOrderoaComponent implements OnInit {
   }
   addProduct(orderList) {
     this.clearFormArray(this.orderInfo)
-    const orderOaDiff = orderList.every((item) => item.orderOa == this.user) //所有层级的oa与当前登录人是否相同
-    const orderOaAgentDiff = orderList.every((item) => item.orderOaAgent == this.user) //所有层级的代理oa与当前登录人是否相同
+    const orderOaDiff = orderList.every((item) => compareIgnoreSensitiveCase(item.orderOa,this.user) ) //所有层级的oa与当前登录人是否相同
+    const orderOaAgentDiff = orderList.every((item) => compareIgnoreSensitiveCase(item.orderOaAgent , this.user)) //所有层级的代理oa与当前登录人是否相同
     const currencyList = orderList.map(item => item.currencySystem);
     const orderModalityList=orderList.map(item=>item.orderModality);
     orderList.map((vals, index) => {
@@ -974,7 +978,7 @@ export class PreOrderoaComponent implements OnInit {
       vals.marketBundleInfo.map((a, index) => {
         marketBundleInfo.push(this.createProdut(a, index, currencySystem));
       });
-      if (vals.orderOa == this.user && this.flag == '0') {
+      if (compareIgnoreSensitiveCase(vals.orderOa, this.user) && this.flag == '0') {
         if (orderModality == 'PD&IGT' || orderModality == 'US') {
           orderBaseinfo.patchValue({
             isRequired: true,
@@ -1076,7 +1080,7 @@ export class PreOrderoaComponent implements OnInit {
           })
           const mainTrems = this.orderInfo.at(index).get('mainTrems') as FormGroup;
           const { paymentProvision } = mainTrems.getRawValue();
-          if (paymentProvision == '远期信用证（请在备注处注明信用证期限及开证行）' || paymentProvision == '其他（请在备注处描述实际付款方式）') {
+          if (paymentProvision == '远期信用证（请在备注处注明信用证期限及开证行）' || ['其他（请在备注处描述实际付款方式）','其他（将触发系统审批--请在备注处描述实际付款方式）'].includes(paymentProvision)) {
             orderBaseinfo.patchValue({
               paymentDisabled: false,
             })

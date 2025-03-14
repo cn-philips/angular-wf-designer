@@ -1,6 +1,6 @@
 <nz-card>
   <app-tabs>
-    <app-tab title="Bidding/OIT/Pre-book" [count]="total">
+    <app-tab title="Bidding/OIT/Slot Reservation" [count]="total">
       <div style="width: 100%; background-color: #ffffff; padding: 15px 0 15px 0">
         <cos-search-item [loading]="loading" [formData]="formValues" (search)="updateParams($event)"
           (setLoading)="getLoading($event)" (exportEvent)="exportData()" [exportLoading]="exportLoading">
@@ -14,6 +14,12 @@
     <app-tab title="Special Approval" [count]="spTable.tableData.count">
       <div style="width: 100%; background-color: #ffffff; padding: 15px 0 15px 0">
         <special-approval-waiting-approve #spTable></special-approval-waiting-approve>
+      </div>
+    </app-tab>
+
+    <app-tab title="电子签章" [count]="signTable.total">
+      <div style="width: 100%; background-color: #ffffff; padding: 15px 0 15px 0">
+        <contract-electronic-signature #signTable from="my-todo"></contract-electronic-signature>
       </div>
     </app-tab>
   </app-tabs>

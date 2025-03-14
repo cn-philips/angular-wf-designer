@@ -65,7 +65,7 @@
         <div class="card-body">
           <app-form-section class="mtb1rem" [title]="'orderv3.pages.contract-examine.history'| translate">
             <approval-history-signature [applyId]="applyId"></approval-history-signature>
-          </app-form-section>          
+          </app-form-section>
           <contract-remarks [formValue]="formValue" [attachmentOff]="attachmentOff" [remarkFrom]="remarkFromsignatureData"></contract-remarks>
         </div>
       </app-tab>
@@ -75,8 +75,6 @@
         </div>
       </app-tab>
     </app-tabs>
-    
-
     <div *ngIf="flag === '0'" nz-row nzType="flex" class="fixed-btn-group" nzJustify="start" nzAlign="middle">
       <div nz-col nzSpan="24">
         <nz-form-item>
@@ -89,7 +87,7 @@
             </button>
             <button nz-button nzType="default" style="margin-right: 10px" (click)="handleCancel()">
               {{"orderv3.pages.contract-sign.cancel" | translate}}
-            </button>          
+            </button>
             <button nz-button nzType="primary" (click)="orderSubmit('apply_save')">
               {{"orderv3.pages.contract-sign.save" | translate}}
             </button>
@@ -117,14 +115,14 @@
             </button>
             <button nz-button nzType="default" style="margin-right: 10px" (click)="handleCancel()">
               {{"orderv3.pages.contract-sign.cancel" | translate}}
-            </button>          
+            </button>
             <button nz-button nzType="primary" (click)="applySignatureSubmit('save','2')">
               {{"orderv3.pages.contract-sign.save" | translate}}
             </button>
             <button nz-button nzType="primary" nz-popconfirm nzTitle="你确定要执行提交的操作?"
               (nzOnConfirm)="applySignatureSubmit('submit','2')">
               {{"orderv3.pages.contract-sign.submit" | translate}}
-            </button>            
+            </button>
           </nz-form-control>
         </nz-form-item>
       </div>
@@ -141,18 +139,18 @@
             </button>
             <button nz-button nzType="default" style="margin-right: 10px" (click)="handleCancel()">
               {{"orderv3.pages.contract-sign.cancel" | translate}}
-            </button>          
+            </button>
             <button nz-button nzType="primary" (click)="applySignatureSubmit('save','4')">
               {{"orderv3.pages.contract-sign.save" | translate}}
             </button>
             <button nz-button nzType="primary" nz-popconfirm nzTitle="你确定要执行提交的操作?"
               (nzOnConfirm)="applySignatureSubmit('submit','4')">
               {{"orderv3.pages.contract-sign.submit" | translate}}
-            </button>  
+            </button>
             <button nz-button nzType="primary" nz-popconfirm nzTitle="你确定要执行退回的操作?"
               (nzOnConfirm)="applySignatureSubmit('submit','5',true)">
               {{"orderv3.pages.contract-sign.back" | translate}}
-            </button> 
+            </button>
           </nz-form-control>
         </nz-form-item>
       </div>
@@ -169,7 +167,7 @@
             </button>
             <button nz-button nzType="default" style="margin-right: 10px" (click)="handleCancel()">
               {{"orderv3.pages.contract-sign.cancel" | translate}}
-            </button>   
+            </button>
             <button *ngIf="zslSignSupplement==4" nz-button nzType="primary" nz-popconfirm nzTitle="你确定要执行签章完成的操作?"
              (nzOnConfirm)="applySignatureSubmit('submit','1')">
               {{"orderv3.pages.contract-sign.confirm" | translate}}
@@ -177,20 +175,20 @@
             <button nz-button nzType="primary" nz-popconfirm nzTitle="你确定要执行重新发起签章的操作?"
               (nzOnConfirm)="applySignatureSubmit('submit','2')">
               {{"orderv3.pages.contract-sign.resend" | translate}}
-            </button>  
+            </button>
             <button nz-button nzType="primary" nz-popconfirm nzTitle="你确定要执行取消签章申请的操作?"
               (nzOnConfirm)="applySignatureSubmit('submit','1')">
               {{"orderv3.pages.contract-sign.cancelApply" | translate}}
-            </button> 
+            </button>
           </nz-form-control>
         </nz-form-item>
       </div>
     </div>
-    
-    <nz-modal [(nzVisible)]="isdealerDdpStatus" nzWidth="650px" nzTitle="提醒" (nzOnOk)="dealerDdpStatusOk()" (nzOnCancel)="dealerDdpStatusCancel()">      
+
+    <nz-modal [(nzVisible)]="isdealerDdpStatus" nzWidth="650px" nzTitle="提醒" (nzOnOk)="dealerDdpStatusOk()" (nzOnCancel)="dealerDdpStatusCancel()">
       <div >
         经销商DDP有效期为{{dealerFromData.getRawValue().dealerDdpValidityDate}}日，当前已过有效期，确认是否提交
-      </div>    
+      </div>
     </nz-modal>
     <nz-modal [(nzVisible)]="isforeignTradeCorpDdpStatus" nzWidth="650px" nzTitle="提醒" (nzOnOk)="foreignTradeCorpDdpStatusOk()"  (nzOnCancel)="foreignTradeCorpDdpStatusCancels()">
       <div>

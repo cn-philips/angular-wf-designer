@@ -412,7 +412,7 @@ export class PreordermodifComponent implements OnInit {
             productList.prebookReferenceId == undefined ||
             productList.prebookReferenceId == null
           ) {
-            this.message.create("error", "请填写Prebook申请号");
+            this.message.create("error", "请填写Slot Reservation申请号");
             return;
           }
         }
@@ -644,7 +644,7 @@ export class PreordermodifComponent implements OnInit {
      */
     if (this.dataBase.preBook) {
       if (this.dataBase.isPrebookApply == "0") {
-        this.message.create("error", "请关联prebook");
+        this.message.create("error", "请关联Slot Reservation");
         return;
       }
     }
@@ -972,7 +972,7 @@ export class PreordermodifComponent implements OnInit {
             productList.prebookReferenceId == undefined ||
             productList.prebookReferenceId == null
           ) {
-            this.message.create("error", "请填写Prebook申请号");
+            this.message.create("error", "请填写Slot Reservation申请号");
             return;
           }
         }
@@ -1498,7 +1498,7 @@ export class PreordermodifComponent implements OnInit {
         this.dataBase.isPrebookApply == "1"
       ) {
         if (this.dataBase.distributor != this.dataBase.preBook.distributor) {
-          this.message.create("warning", "经销商数据和Pre-book申请记录不一致");
+          this.message.create("warning", "经销商数据和Slot Reservation申请记录不一致");
         }
       }
 

@@ -142,7 +142,7 @@ export class TaskListComponent implements OnInit {
         result = "新建投标";
         break;
       case "PREBOOK":
-        result = "新建PreBook";
+        result = "新建Slot Reservation";
         break;
       case "SPECIAL_APPROVAL":
         result = "新建特批";

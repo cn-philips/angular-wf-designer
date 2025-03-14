@@ -34,6 +34,7 @@ import { NzMessageService } from "ng-zorro-antd";
 import { areaList } from "@core/util/areajson";
 import { environment } from "@env";
 import { HttpService } from "@core/services";
+import { compareIgnoreSensitiveCase } from "@app/utils/StringUtils";
 @Component({
   selector: "pre-product",
   templateUrl: "./pre-product.component.html",
@@ -323,9 +324,10 @@ export class PreProductComponent implements OnInit {
             //   orderSales: `${orderSalesName}(${noworderSales})`
             // })
           }
+
           if (this.status == "ecos_oit_deal_oa" && this.flag == "0") {
             //如果是oa节点，判断某些按钮是否可用
-            if (orderOa == this.user || orderOaAgent == this.user) {
+            if (compareIgnoreSensitiveCase(orderOa,this.user) || compareIgnoreSensitiveCase(orderOaAgent, this.user)) {
               setTimeout(() => {
                 orderSalesinfo.patchValue({
                   prebookDisabled: false,
@@ -879,7 +881,7 @@ export class PreProductComponent implements OnInit {
       .get("orderBaseinfo") as FormGroup;
     const { currencySystem } = orderBaseinfo.getRawValue();
     const { paymentProvision } = mainTrems.getRawValue();
-    if (paymentProvision == "其他（请在备注处描述实际付款方式）") {
+    if (['其他（请在备注处描述实际付款方式）','其他（将触发系统审批--请在备注处描述实际付款方式）'].includes(paymentProvision) ) {
       if (currencySystem == "CNY") {
         orderBaseinfo.get("paymentNetCny").setValidators([Validators.required]);
         orderBaseinfo.get("paymentUsd").clearValidators();
@@ -1244,7 +1246,7 @@ export class PreProductComponent implements OnInit {
       };
       if (
         dealFormSalesModality == orderModality &&
-        this.user == val.email &&
+        compareIgnoreSensitiveCase(this.user , val.email) &&
         this.flag != "1"
       ) {
         parm.orderApprovalAreaConfiguration = orderApprovalAreaConfiguration;
@@ -1311,7 +1313,7 @@ export class PreProductComponent implements OnInit {
     }
 
     if (
-      this.user == param &&
+      compareIgnoreSensitiveCase(this.user , param) &&
       (this.status == "ecos_oit_deal_sales" ||
         this.status == "ecos_oit_deal_resubmit" ||
         this.status == "" ||
@@ -1448,7 +1450,7 @@ export class PreProductComponent implements OnInit {
       .get("endUserinfo") as FormGroup;
     const orderSameEndUser = endUserinfo.getRawValue().orderSameEndUser;
     if (
-      this.user == param &&
+      compareIgnoreSensitiveCase(this.user ,param) &&
       this.status == "ecos_oit_deal_sales" &&
       this.flag != "1"
     ) {
@@ -1464,7 +1466,7 @@ export class PreProductComponent implements OnInit {
     }
     // 如果选择用户与当前Deal Sales一致，则开放填选
     if (
-      this.user == param &&
+      compareIgnoreSensitiveCase(this.user, param) &&
       (this.status == undefined ||
         this.status == "" ||
         this.status == "ecos_oit_deal_sales" ||
@@ -1921,7 +1923,7 @@ export class PreProductComponent implements OnInit {
         endUserContact,
         usHta,
       });
-    } else if (orderSameEndUser == "0" && orderSales == this.user) {
+    } else if (orderSameEndUser == "0" && compareIgnoreSensitiveCase(orderSales , this.user)) {
       endUserinfo.get("endUserAddress").enable();
       endUserinfo.get("endUserPhone").enable();
       endUserinfo.get("endUserEmail").enable();
@@ -1979,7 +1981,7 @@ export class PreProductComponent implements OnInit {
     if (
       orderSameForeignTradeCorp == "0" &&
       this.flag != "1" &&
-      orderSales == this.user
+      compareIgnoreSensitiveCase(orderSales , this.user)
     ) {
       foreignInfo.get("foreignTradeCorpName").enable();
       foreignInfo.get("foreignTradeCorpSameDealer").enable();
@@ -2390,7 +2392,7 @@ export class PreProductComponent implements OnInit {
         paymentUsd: paymentUsdCp,
       });
     }
-    if (paymentProvision == "其他（请在备注处描述实际付款方式）") {
+    if (['其他（请在备注处描述实际付款方式）','其他（将触发系统审批--请在备注处描述实际付款方式）'].includes(paymentProvision) ) {
       orderBaseinfo.patchValue({
         creditCny: 0,
         creditCnyNet: 0,
@@ -2404,7 +2406,7 @@ export class PreProductComponent implements OnInit {
       });
     }
     if (
-      paymentProvision != "其他（请在备注处描述实际付款方式）" &&
+      !['其他（请在备注处描述实际付款方式）','其他（将触发系统审批--请在备注处描述实际付款方式）'].includes(paymentProvision)  &&
       paymentProvision != "远期信用证（请在备注处注明信用证期限及开证行）"
     ) {
       orderBaseinfo.patchValue({
@@ -2437,7 +2439,7 @@ export class PreProductComponent implements OnInit {
     mainTrems.get("paymentProvision").markAsDirty();
     mainTrems.get("paymentProvision").updateValueAndValidity();
     const { paymentProvision } = mainTrems.getRawValue();
-    if (paymentProvision == "其他（请在备注处描述实际付款方式）") {
+    if (['其他（请在备注处描述实际付款方式）','其他（将触发系统审批--请在备注处描述实际付款方式）'].includes(paymentProvision) ) {
       mainTrems
         .get("paymentProvisionRemarks")
         .setValidators(Validators.required);
@@ -2620,7 +2622,7 @@ export class PreProductComponent implements OnInit {
       const { foreignTradeCorpSameDealer } = foreignFrom.getRawValue();
       if (
         foreignTradeCorpSameDealer == true &&
-        this.user == orderSales &&
+        compareIgnoreSensitiveCase(this.user, orderSales) &&
         (this.status == "ecos_oit_deal_sales" ||
           this.status == "ecos_oit_deal_resubmit" ||
           this.status == "" ||
@@ -2966,7 +2968,7 @@ export class PreProductComponent implements OnInit {
     const { orderSameEndUser, hospitalType } = endUserinfo.getRawValue();
     if (
       orderSameEndUser == "0" &&
-      orderSales == this.user &&
+      compareIgnoreSensitiveCase(orderSales , this.user)&&
       this.flag != "1"
     ) {
       if (hospitalType == "公立医院" || hospitalType == "民营医院") {
@@ -3306,7 +3308,7 @@ export class PreProductComponent implements OnInit {
         }
 
         // 如果不相等，则启用手动填写
-        if (orderSameEndUser == "0" && orderSales == this.user) {
+        if (orderSameEndUser == "0" && compareIgnoreSensitiveCase(orderSales , this.user)) {
           endUserinfo.get("endUserAddress").enable();
           endUserinfo.get("endUserPhone").enable();
           endUserinfo.get("endUserEmail").enable();

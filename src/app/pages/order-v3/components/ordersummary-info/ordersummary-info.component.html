@@ -234,7 +234,7 @@
         <div nz-col nzXs="24" nzSm="24" nzMd="8" *ngIf="bg === 'PD&IGT'">
           <nz-form-item>
             <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true">
-              关联的Pre-book Order
+              关联的Slot Reservation Order
             </nz-form-label>
             <nz-form-control nzXs="24" nzSm="24" nzMd="18">
               <input nz-input formControlName="prebookReferenceId" maxlength="255" />
@@ -244,7 +244,7 @@
         <div nz-col nzXs="24" nzSm="24" nzMd="8" *ngIf="bg === 'PD&IGT'">
           <nz-form-item>
             <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true">
-              关联的Pre-book Order当前状态
+              关联的Slot Reservation Order当前状态
             </nz-form-label>
             <nz-form-control nzXs="24" nzSm="24" nzMd="18">
               <input nz-input formControlName="prebookStatus" maxlength="255" />
@@ -582,6 +582,27 @@
         </ng-container>
       </tbody>
     </nz-table>
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="top">
+      <div nz-col nzSpan="24" >
+        <form nz-form [formGroup]="productModelForm" [nzNoColon]="true">
+          <nz-form-item>
+            <nz-form-label nzXs="24"
+                           nzSm="24"
+                           nzMd="6"
+                           [nzNoColon]="true">
+              PRODUCT_MODEL
+            </nz-form-label>
+            <nz-form-control nzXs="24"
+                             nzSm="24"
+                             nzMd="6">
+              <input nz-input
+                     formControlName="orderProductModel"
+                     maxlength="255" />
+            </nz-form-control>
+          </nz-form-item>
+        </form>
+      </div>
+    </div>
     <!-- </form> -->
   </app-form-section>
   <app-form-section class="mtb1rem" [form]="dealerFrom"
@@ -619,6 +640,8 @@
                 ">
                 {{ 'orderv3.components.ordersummary-info.commons.errorInfo' | translate }}
               </nz-form-explain>
+              <nz-alert *ngIf="dealerCheckStatus" nzType="warning" [nzMessage]="dealerCheckStatus"
+                nzShowIcon></nz-alert>
             </nz-form-control>
           </nz-form-item>
         </div>
@@ -686,6 +709,30 @@
           </nz-form-item>
         </div>
       </div>
+      <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+        <div nz-col nzXs="24" nzSm="24" nzMd="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzXl="8" nzXXl="6" nzRequired [nzNoColon]="true">
+              {{
+              "orderv3.components.pre-base-info-form.dealerInfo.dealerBestSignSignerAccount"
+              | translate
+              }}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <input nz-input formControlName="dealerBestSignSignerAccount" maxlength="255" />
+              <nz-form-explain *ngIf="
+                    dealerFrom.get('dealerBestSignSignerAccount')?.dirty &&
+                    dealerFrom.get('dealerBestSignSignerAccount')?.errors
+                  ">
+                {{
+                "orderv3.components.pre-base-info-form.commons.errorInfo"
+                | translate
+                }}
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
     </form>
   </app-form-section>
   <app-form-section class="mtb1rem" [form]="contractBuyerFrom"
@@ -741,6 +788,8 @@
                 ">
                 {{ 'orderv3.components.ordersummary-info.commons.errorInfo' | translate }}
               </nz-form-explain>
+              <nz-alert *ngIf="foreignerCheckStatus" nzType="warning" [nzMessage]="foreignerCheckStatus"
+                nzShowIcon></nz-alert>
             </nz-form-control>
           </nz-form-item>
         </div>
@@ -771,6 +820,31 @@
                   foreignFrom.get('foreignTradeCorpDdpValidityDate')?.errors
                 ">
                 {{ 'orderv3.components.ordersummary-info.commons.errorInfo' | translate }}
+              </nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+      <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+        <!-- 电子签数据 -->
+        <div nz-col nzXs="24" nzSm="24" nzMd="8">
+          <nz-form-item>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzXl="8" nzXXl="6" nzRequired [nzNoColon]="true">
+              {{
+              "orderv3.components.pre-base-info-form.foreignCompany.foreignBestSignSignerAccount"
+              | translate
+              }}
+            </nz-form-label>
+            <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+              <input nz-input formControlName="foreignBestSignSignerAccount" maxlength="255" />
+              <nz-form-explain *ngIf="
+                  dealerFrom.get('foreignBestSignSignerAccount')?.dirty &&
+                  dealerFrom.get('foreignBestSignSignerAccount')?.errors
+                ">
+                {{
+                "orderv3.components.pre-base-info-form.commons.errorInfo"
+                | translate
+                }}
               </nz-form-explain>
             </nz-form-control>
           </nz-form-item>
@@ -893,7 +967,7 @@
           </nz-form-item>
         </div>
         <div
-          *ngIf="priceApproval.getRawValue().currencySystem == 'CNY'&&baseInfoTable.getRawValue().paymentProvision=='其他（请在备注处描述实际付款方式）'"
+          *ngIf="priceApproval.getRawValue().currencySystem == 'CNY'&&  ['其他（请在备注处描述实际付款方式）','其他（将触发系统审批--请在备注处描述实际付款方式）'].includes(baseInfoTable.getRawValue().paymentProvision)"
           nz-col nzXs="24" nzSm="24" nzMd="8">
           <nz-form-item>
             <nz-form-label nzXs="24" nzSm="24" nzMd="10" nzXl="8" nzXXl="6" [nzNoColon]="true">
@@ -910,7 +984,7 @@
           </nz-form-item>
         </div>
         <div
-          *ngIf="priceApproval.getRawValue().currencySystem == 'USD'&&baseInfoTable.getRawValue().paymentProvision=='其他（请在备注处描述实际付款方式）'"
+          *ngIf="priceApproval.getRawValue().currencySystem == 'USD'&&['其他（请在备注处描述实际付款方式）','其他（将触发系统审批--请在备注处描述实际付款方式）'].includes(baseInfoTable.getRawValue().paymentProvision)"
           nz-col nzXs="24" nzSm="24" nzMd="8">
           <nz-form-item>
             <nz-form-label nzXs="24" nzSm="24" nzMd="10" nzXl="8" nzXXl="6" [nzNoColon]="true">

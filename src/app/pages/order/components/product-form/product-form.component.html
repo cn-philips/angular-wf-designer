@@ -40,13 +40,13 @@
               formControlName="switchValid"
               (click)="changeupmode(upmode)"
             ></nz-switch> -->
-            
+
             <nz-switch
                [(ngModel)]="switchValid"
-               formControlName="switchValid"                          
+               formControlName="switchValid"
               (click)="changeupmode(upmode)"
-            ></nz-switch> 
-            
+            ></nz-switch>
+
             <span style="font-size: xx-small; padding-top: 10%"
               >&emsp;Select Sofon File From CP<br />
               从CP选择文件</span
@@ -218,8 +218,8 @@
     <div nz-col nzSpan="8">
       <nz-form-item>
         <nz-form-label nzXXl="10" nzXl="10" nzSm="10"
-          ><span>Apply for Pre-Book</span><br />
-          申请Pre-Book</nz-form-label
+          ><span>Apply for Slot Reservation</span><br />
+          申请Slot Reservation</nz-form-label
         >
         <nz-form-control [nzSm]="10" [nzXs]="24" style="margin-top: 15px">
           <nz-radio-group
@@ -239,7 +239,7 @@
     <div nz-col nzSpan="8" *ngIf="dataBase.isPrebookApply == '1'">
       <nz-form-item>
         <nz-form-label nzXXl="10" nzXl="10" nzSm="10" nzRequired
-          >Pre-book申请号</nz-form-label
+          >Slot Reservation申请号</nz-form-label
         >
         <nz-form-control
           [nzSm]="10"
@@ -267,7 +267,7 @@
             nzType="primary"
             (click)="showPrebook()"
           >
-            选择Pre-book申请
+            选择Slot Reservation申请
           </button>
           <div
             *ngIf="dataBase.prebookReferenceId"
@@ -276,7 +276,7 @@
             nz-button
             nzType="link"
           >
-            查看Pre-book
+            查看Slot Reservation
           </div>
         </nz-form-control>
       </nz-form-item>
@@ -1971,7 +1971,7 @@
 <nz-modal
   [(nzVisible)]="isPrebook"
   nzWidth="1000px"
-  nzTitle="Pre-book申请号"
+  nzTitle="Slot Reservation申请号"
   (nzOnCancel)="isPrebookCancel()"
   (nzOnOk)="isPrebookOk()"
 >

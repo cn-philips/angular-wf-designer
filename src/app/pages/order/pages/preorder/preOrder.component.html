@@ -78,9 +78,9 @@
     </ngb-tab>
   </ngb-tabset>
 </div>
-<nz-modal [(nzVisible)]="isVisiblePrebook" nzTitle="正在流转中的Pre-book" (nzOnCancel)="handleCancelPrebook()"
+<nz-modal [(nzVisible)]="isVisiblePrebook" nzTitle="正在流转中的Slot Reservation" (nzOnCancel)="handleCancelPrebook()"
   (nzOnOk)="handleApply()">
-  <p>提交进单后将中止Pre-book申请，是否确认提交？</p>
+  <p>提交进单后将中止Slot Reservation申请，是否确认提交？</p>
 </nz-modal>
 <nz-modal [(nzVisible)]="isVisibleWinCheck" [nzOkDisabled]="verifiOff"
   nzTitle="Bid-winning Confirmation Check Result 中标确认校验结果 " nzOkText="Submit 提交进单准备表" nzCancelText="Cancel 取消"

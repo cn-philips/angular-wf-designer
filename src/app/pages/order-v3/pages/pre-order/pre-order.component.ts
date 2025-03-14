@@ -153,9 +153,10 @@ export class PreOrderComponent implements OnInit {
     dealerEmail: [{ value: null, disabled: !this.editBase }, [Validators.required]],//经销商邮箱
     dealerAddress: [{ value: null, disabled: !this.editBase }, [Validators.required]],//经销商地址
     dealerTaxNum: [{ value: null, disabled: true }],//经销商纳税号
-    purchaseOrderSignatory: [{ value: null, disabled: !this.editBase }, [Validators.required]], //采购订单签署人
-    purchaseOrderSignatoryPosition: [{ value: null, disabled: !this.editBase }, [Validators.required]],//采购订单签署人职务
+    purchaseOrderSignatory: [{ value: null, disabled: !this.editBase }], //采购订单签署人
+    purchaseOrderSignatoryPosition: [{ value: null, disabled: !this.editBase }],//采购订单签署人职务
     subTierInfo: this.fb.array([]), // 次级经销商信息
+    dealerBestSignSignerAccount: [{ value: null, disabled: !this.editBase }, [Validators.required]], // 经销商上上签账号
   }
   accountFrom = {
     accountName: [{ value: null, disabled: !this.editBase }, [Validators.required]],//开户行名称
@@ -194,6 +195,7 @@ export class PreOrderComponent implements OnInit {
     foreignTradeCorpEmail: [{ value: null, disabled: !this.editBase }, [Validators.required]],//外贸公司邮箱
     importAgreementSignName: [{ value: null, disabled: !this.editBase }, [Validators.required]],//进口协议签署人
     importAgreementSignPosition: [{ value: null, disabled: !this.editBase }, [Validators.required]], //进口协议签署人职务
+    foreignBestSignSignerAccount: [{ value: null, disabled: !this.editBase }, [Validators.required]], // 外贸公司签字人上上签账号
   }
   endUserFrom = {
     endUser: [{ value: null, disabled: true }, []],//最终终用户
@@ -201,8 +203,8 @@ export class PreOrderComponent implements OnInit {
     endUserSapCode: [{ value: null, disabled: true }, []],//最终用户SAP Code
     endUserTaxNum: [{ value: null, disabled: true },],//最终用户税号
     hospitalType: [{ value: null, disabled: true }],//医院性质
-    endUserActuallyDeliveryAddress: [{ value: null, disabled: !this.editBase }], //最终用户实际发货地址
     segment: [{ value: null, disabled: false }],//segment
+    endUserActuallyDeliveryAddress: [{ value: null, disabled: !this.editBase }], //最终用户实际发货地址
     endUserAddress: [{ value: null, disabled: !this.editBase }, [Validators.required]],//最终用户地址
     endUserPhone: [{ value: null, disabled: !this.editBase }, [Validators.required]],//最终用户电话
     endUserEmail: [{ value: null, disabled: !this.editBase },],//最终用户邮箱
@@ -1145,45 +1147,77 @@ export class PreOrderComponent implements OnInit {
         }
 
       }
-
-      if (this.status == 'ecos_oit_deal_resubmit') { //重新提交
-        param.status = parm;
-        // param.id=id;
-        this.serveice.orderApproval(param).then(res => {
-          if (res.code == '0000') {
+      // FETR1572757-OIT不需要校验Contract-signatory角色是否缺失
+      console.log(`DealForm Sales:${baseInfoFrom.dealFormSales}`)
+      this.serveice.checkContractSignatory({
+        sales:baseInfoFrom.dealFormSales,
+        salesCycleGroup:cycleGroup,
+        salesModality:modality,
+        salesTeam:team,
+        salesBigArea:bigArea,
+        salesSmallArea:smallArea
+      }).subscribe(res=>{
+        if (res.code == '0000') {
+          if(res.data){
+            this.doSubmit(param,parm)
+          }else{
             this.pageLoading = false;
-            this.message.create('success', res.msg);
-            // this.router.navigate(['/ecos']);
-            this.routerExtendService.back();
+            this.modalService.error({
+              nzTitle: '提示',
+              nzContent: '此流程中的Contract Signatory角色缺失人员信息，请及时联系管理员进行补充，以免影响合同签署',
+              nzOnOk: ()=>{
+                this.pageLoading = true;
+                this.doSubmit(param,parm)
+                return true
+              },
+              nzOkText:"继续提交",
+              nzCancelText:"暂不提交"
+            })
           }
-          else {
-            this.message.error(res.msg);
-            this.pageLoading = false;
-          }
-        }).catch(error => {
-          this.message.error("请求失败");
+        } else {
+          this.message.error(res.msg);
           this.pageLoading = false;
-        })
-      }
-      else {
-        this.serveice.orderSubmit(param).then(res => {
-          if (res.code == '0000') {
-            this.pageLoading = false;
-            this.message.create('success', res.msg);
-            // this.router.navigate(['/ecos']);
-            this.routerExtendService.back();
-          }
-          else {
-            this.message.error(res.msg);
-            this.pageLoading = false;
-          }
-        }).catch(error => {
-          this.message.error("请求失败");
-          this.pageLoading = false;
-        })
-      }
+        }
+      })
     }
-
+  }
+  doSubmit(param,parm){
+    if (this.status == 'ecos_oit_deal_resubmit') { //重新提交
+      param.status = parm;
+      // param.id=id;
+      this.serveice.orderApproval(param).then(res => {
+        if (res.code == '0000') {
+          this.pageLoading = false;
+          this.message.create('success', res.msg);
+          // this.router.navigate(['/ecos']);
+          this.routerExtendService.back();
+        }
+        else {
+          this.message.error(res.msg);
+          this.pageLoading = false;
+        }
+      }).catch(error => {
+        this.message.error("请求失败");
+        this.pageLoading = false;
+      })
+    }
+    else {
+      this.serveice.orderSubmit(param).then(res => {
+        if (res.code == '0000') {
+          this.pageLoading = false;
+          this.message.create('success', res.msg);
+          // this.router.navigate(['/ecos']);
+          this.routerExtendService.back();
+        }
+        else {
+          this.message.error(res.msg);
+          this.pageLoading = false;
+        }
+      }).catch(error => {
+        this.message.error("请求失败");
+        this.pageLoading = false;
+      })
+    }
   }
   handleCancel() {
     //this.location.back();
@@ -1798,14 +1832,14 @@ export class PreOrderComponent implements OnInit {
           paymentUsd: 0,
         })
       }
-      if (paymentProvision == '其他（请在备注处描述实际付款方式）') {
+      if (['其他（请在备注处描述实际付款方式）','其他（将触发系统审批--请在备注处描述实际付款方式）'].includes(paymentProvision) ) {
         orderBaseinfo.patchValue({
           creditCny: 0,
           creditCnyNet: 0,
           creditUsd: 0,
         })
       }
-      if (paymentProvision != '其他（请在备注处描述实际付款方式）' && paymentProvision != '远期信用证（请在备注处注明信用证期限及开证行）') {
+      if (!['其他（请在备注处描述实际付款方式）','其他（将触发系统审批--请在备注处描述实际付款方式）'].includes(paymentProvision)  && paymentProvision != '远期信用证（请在备注处注明信用证期限及开证行）') {
         orderBaseinfo.patchValue({
           creditCny: 0,
           creditCnyNet: 0,

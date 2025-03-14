@@ -293,8 +293,12 @@ export class RegionUserFormComponent implements OnInit {
     this.userformModality.validateForm.get('cluster').enable();
     var arr = Object.assign(this.userformModality.validateForm.value, this.userformBase.validateForm.value);
     //过滤空值对象
-    arr.bmcMags = arr.bmcMags.filter((val) => val.dictValue !== null || val.mag !== null)
-    arr.serveTeams = arr.serveTeams.filter((val) => val.dictValue !== null)
+    if(arr.bmcMags){
+      arr.bmcMags = arr.bmcMags.filter((val) => val.dictValue !== null || val.mag !== null)
+    }
+    if(arr.serveTeams){
+      arr.serveTeams = arr.serveTeams.filter((val) => val.dictValue !== null)
+    }
     const id = this.userInform.id;
     this.userInform = arr;
     this.userInform.dataSource = 'COS';

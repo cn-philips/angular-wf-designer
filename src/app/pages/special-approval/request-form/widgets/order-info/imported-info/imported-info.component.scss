@@ -1,0 +1,12 @@
+.imported_equipment_form{
+  &::ng-deep.ant-input-group-addon{
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  &::ng-deep.upload-file-label{
+    label{
+      // text-align: left;
+      // display: block;
+    }
+  }
+}

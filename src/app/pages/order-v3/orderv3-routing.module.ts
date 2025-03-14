@@ -1,14 +1,15 @@
 import { NgModule } from "@angular/core";
-import { Routes, RouterModule } from "@angular/router";
+import { RouterModule, Routes } from "@angular/router";
 import {
-  PreOrderComponent,
-  PreorderexamineComponent,
-  PreOrderoaComponent,
   ContractComponent,
   ContractExamineComponent,
-  OrdersummaryBaseInfoComponent,
-  OitcompleteComponent,
   ContractSignComponent,
+  ContractSignDetailComponent,
+  OitcompleteComponent,
+  OrdersummaryBaseInfoComponent,
+  PreOrderComponent,
+  PreOrderoaComponent,
+  PreorderexamineComponent
 } from "./index";
 const routes: Routes = [
   {
@@ -50,6 +51,13 @@ const routes: Routes = [
     component: ContractSignComponent,
     data: { breadcrumb: "合同签署" },
   },
+  {
+    path: "contractSignDetail",
+    component: ContractSignDetailComponent,
+    data: { breadcrumb: "合同签署" },
+  },
+
+  
 ];
 @NgModule({
   imports: [RouterModule.forChild(routes)],

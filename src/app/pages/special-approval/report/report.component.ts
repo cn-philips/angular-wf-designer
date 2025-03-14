@@ -70,6 +70,10 @@ export class ReportComponent implements OnInit {
       label: "信用证管理",
       items: [{ value: "L/C amendment", type: "lcamendment" }],
     },
+    {
+      label: "进口设备申请",
+      items: [{ value: "进口设备申请", type: "importedequipment" }],
+    },
   ];
 
   constructor(

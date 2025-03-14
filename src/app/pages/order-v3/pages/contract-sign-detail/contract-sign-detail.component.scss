@@ -1,0 +1,7 @@
+/deep/ .card-body {
+  background-color: #fff;
+}
+@media screen and (max-width: 600px) { 
+  .wp-none{display:none !important}
+  .wp-show{display:block;max-width:300px;overflow-x:auto;}
+}

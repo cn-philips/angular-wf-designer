@@ -16,6 +16,8 @@ export class BasicInfoComponent implements OnInit {
   @Input() editable: boolean;
   @Input() executed: number = null;
   @Input() saleRegions = [];
+  @Input() needReason = true;
+  @Input() needUpdateFile = true;
 
   @Output() itemChange: EventEmitter<string> = new EventEmitter<string>();
 
@@ -27,7 +29,12 @@ export class BasicInfoComponent implements OnInit {
     private message: NzMessageService
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    if(!this.needReason){
+      this.formValues.get('reason').clearValidators();
+      this.formValues.updateValueAndValidity();
+    }
+  }
 
   onSelectSystemRegion(region) {
     if (!region) {
@@ -56,6 +63,13 @@ export class BasicInfoComponent implements OnInit {
           const transOrder = this.formValue.get('transferLibOrders').get('orders') as FormArray
           transOrder.at(1).patchValue({
             approvalConfigSecond: region
+          })
+          break;
+        case APPLY_TYPE.IMPORTED_EQUIPMENT:
+          const importedEquipmentForm = this.formValue.get('importedEquipmentInfo') as FormGroup
+          importedEquipmentForm.patchValue({
+            cycleGroup,
+            bigArea
           })
           break;
       }
@@ -90,4 +104,4 @@ export class BasicInfoComponent implements OnInit {
   applyItemChange(val: string) {
     this.itemChange.emit(val);
   }
-} 
+}

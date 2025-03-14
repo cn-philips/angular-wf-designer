@@ -1,60 +1,69 @@
-import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {OrderV3Service} from '@pages/order-v3/order-v3.service';
-import {areaList} from '@core/util/areajson';
-import {ActivatedRoute, Router} from '@angular/router';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  ViewChild,
+} from "@angular/core";
+import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { ActivatedRoute, Router } from "@angular/router";
 import { HttpService } from "@core/services/http.service";
-import { saveAs } from 'file-saver';
-import{fomatFloat} from '@core/util/tools'
-import { Subject } from 'rxjs';
+import { areaList } from "@core/util/areajson";
+import { fomatFloat } from "@core/util/tools";
+import { OrderV3Service } from "@pages/order-v3/order-v3.service";
+import { saveAs } from "file-saver";
 
 @Component({
-  selector: 'ecos-ordersummary-info',
-  templateUrl: './ordersummary-info.component.html',
-  styleUrls: ['./ordersummary-info.component.scss']
+  selector: "ecos-ordersummary-info",
+  templateUrl: "./ordersummary-info.component.html",
+  styleUrls: ["./ordersummary-info.component.scss"],
 })
 export class OrdersummaryVerificationComponent implements OnInit {
-
   @Input() formValue: FormGroup;
 
   @Input() bg: string;
-  
+
   flag:any;
   orderModeList: any;
   orderModeLists: any;
-  currOptionInfo: any=[];
+  currOptionInfo: any = [];
   provinceList: any = [];
   cityList: any = [];
   status: any = null; //流程状态
-  isShowOptionModal:any=false;
-
+  isShowOptionModal: any = false;
+  foreignerCheckStatus: any = "";
+  dealerCheckStatus: any = "";
   bidTypeModeList: any = [
     { code: "国内公开标", label: "国内公开标" },
     { code: "国际公开标", label: "国际公开标" },
     { code: "其他类型", label: "其他类型" },
   ];
   public style: any = { width: "100%" }; //控制日期控件样式
-  public switchValid:any=false;
+  public switchValid: any = false;
   @Input() editable: boolean = true;
-  @Input() editPreTable:boolean=true;
+  @Input() editPreTable: boolean = true;
   @Output() addProduct = new EventEmitter();
   @ViewChild("selectDealer") selectDealer;
   @ViewChild("selectHospital") selectHospital;
   @ViewChild("selectForign") selectForign;
   @ViewChild("selectDeal") selectDeal;
-  @Input() isContract:any=false;
+  @Input() isContract: any = false;
+
 
   public saleRegions;
 
-  public promotionPlanName: string
+  public promotionPlanName: string;
 
+  get productModelForm() {
+    return this.formValue.get("productModelInfo") as FormGroup;
+  }
   get baseInfoTable(): FormGroup
   {
     return this.formValue.get('baseInfoTable') as FormGroup;
   }
-  get baseInfoFrom(): FormGroup
-  {
-    return this.formValue.get('baseInfoFrom') as FormGroup;
+  get baseInfoFrom(): FormGroup {
+    return this.formValue.get("baseInfoFrom") as FormGroup;
   }
   get dealerFrom(): FormGroup {
     return this.formValue.get("dealerFrom") as FormGroup;
@@ -74,12 +83,12 @@ export class OrdersummaryVerificationComponent implements OnInit {
   get priceApproval(): FormGroup {
     return this.formValue.get("priceApproval") as FormGroup;
   }
-  get marketBundleInfo():FormGroup{
+  get marketBundleInfo(): FormGroup {
     return this.formValue.get("marketBundleInfo") as FormGroup;
   }
   get businessModelName()
   {
-     const {businessModel}= this.baseInfoFrom.getRawValue();    
+     const {businessModel}= this.baseInfoFrom.getRawValue();
      if(businessModel=='DIRECT')
      {
        return "Direct Deal"
@@ -91,7 +100,7 @@ export class OrdersummaryVerificationComponent implements OnInit {
   }
 
   get biddingAwardPriceModel()
-  {    
+  {
       const {biddingAwardPrice,biddingAwardCurrency}=this.baseInfoFrom.getRawValue();
       let biddingPrice=fomatFloat(biddingAwardPrice,2)
       if(biddingAwardPrice!=null&&biddingAwardPrice!=""&&biddingAwardPrice!=undefined)
@@ -105,21 +114,29 @@ export class OrdersummaryVerificationComponent implements OnInit {
 
   get orderSalesModel() {
     const { orderSales, orderSalesName } =
-      this.baseInfoFrom.getRawValue();    
+      this.baseInfoFrom.getRawValue();
     if (orderSales) {
       return `${orderSalesName}(${orderSales})`;
+    } else {
+      return "";
     }
-    else {
-      return ""
-    }
-
-  }
-  
-  get dealerSapCode()
-  {
-    return this.dealerFrom.getRawValue().dealerSapCode
   }
 
+  get dealerSapCode() {
+    return this.dealerFrom.getRawValue().dealerSapCode;
+  }
+
+  get dealerNameBestSign() {
+    const { dealerName } = this.dealerFrom.getRawValue();
+    return dealerName;
+  }
+
+  get foreignTradeCorpNameBestSign() {
+    const { foreignTradeCorpName } = this.foreignFrom.getRawValue();
+    return foreignTradeCorpName;
+  }
+  timer: any = null;
+  timer1: any = null;
 
   constructor(
     public serveic: OrderV3Service,
@@ -136,39 +153,116 @@ export class OrdersummaryVerificationComponent implements OnInit {
 
   ngOnInit() {
     this.status = this.activatedRouter.queryParams["value"].taskStatus;
-    this.flag=this.activatedRouter.queryParams["value"].flag;
-    this.serveic.orderEntryMode().then(res=>{
-      if(res.code=='0000')
-      {
-
-        this.orderModeList=res.data;
-        if(res.data&&res.data.length>0)
-        {
-          this.orderModeLists=JSON.parse(JSON.stringify(res.data));
+    this.flag = this.activatedRouter.queryParams["value"].flag;
+    this.serveic.orderEntryMode().then((res) => {
+      if (res.code == "0000") {
+        this.orderModeList = res.data;
+        if (res.data && res.data.length > 0) {
+          this.orderModeLists = JSON.parse(JSON.stringify(res.data));
         }
       }
     })
-    this.getPromPlan()   
+    this.getPromPlan()
     const sofonFileReOpen=['ecos_oit_order_os_input','ecos_oit_order_sign','ecos_oit_order_upload'];
     const roleoff=JSON.parse(localStorage.getItem('roles')).includes('OA')
     if(this.flag=='0'&&sofonFileReOpen.includes(this.status)&&roleoff)
     {
       this.switchValid=true;
       this.priceApproval.patchValue({
-        switchValid:false
-      })
-      this.priceApproval.get('sofonFile').enable();
-      this.priceApproval.get('sofonNo').enable();
-    }
-    else
-    {
-      this.switchValid=false;
-      this.priceApproval.get('sofonFile').disable();
-      this.priceApproval.get('sofonNo').disable();
+        switchValid: false,
+      });
+      this.priceApproval.get("sofonFile").enable();
+      this.priceApproval.get("sofonNo").enable();
+    } else {
+      this.switchValid = false;
+      this.priceApproval.get("sofonFile").disable();
+      this.priceApproval.get("sofonNo").disable();
       this.priceApproval.patchValue({
-        switchValid:true
-      })
+        switchValid: true,
+      });
     }
+
+    this.checkDealerByBestSign();
+    this.checkForeignerByBestSign();
+  }
+
+  checkDealerByBestSign() {
+    let num = 0;
+    this.timer = setInterval(async () => {
+      num++;
+      if (this.dealerNameBestSign) {
+        const result = await this.checkCompanyByBestSign(
+          this.dealerNameBestSign
+        );
+        this.dealerCheckStatus = result;
+        clearInterval(this.timer);
+        this.timer = null;
+      } else {
+        if (num > 10) {
+          clearInterval(this.timer);
+          this.timer = null;
+        }
+      }
+    }, 1000);
+  }
+
+  checkForeignerByBestSign() {
+    let num = 0;
+    this.timer1 = setInterval(async () => {
+      num++;
+      if (
+        this.priceApproval.getRawValue().currencySystem === "USD" &&
+        this.foreignTradeCorpNameBestSign
+      ) {
+        const result = await this.checkCompanyByBestSign(
+          this.foreignTradeCorpNameBestSign
+        );
+        this.foreignerCheckStatus = result;
+        clearInterval(this.timer1);
+        this.timer1 = null;
+      } else {
+        if (num > 10) {
+          clearInterval(this.timer);
+          this.timer = null;
+        }
+      }
+    }, 1000);
+  }
+
+  async checkCompanyByBestSign(name: any) {
+    const params = {
+      corpName: name,
+    };
+    let result: any = "";
+    let status: any = "";
+    let statusString: any = "";
+    const res = await this.serveic.checkDealer(params);
+    const { code, data } = res;
+    if (code === "0000") {
+      const { authStatus, satisfactoryAuth } = data;
+      // const { authStatus, satisfactoryAuth } = data;
+      // satisfactoryAuth 是否满足开发者配置的实名要求
+      if (!satisfactoryAuth) {
+        status = "不通过";
+        // statusString = "未满足开发者配置的实名要求";
+        statusString = "当前公司未完成上上签的实名认证";
+      }
+      // authStatus
+      // 0:未认证 （包含未去实名、实名被全部驳回的认证不通过）
+      // 1:认证中 （包含审核中、意愿性认证中）
+      // 2:已认证 ； -1:未获取实名授权
+      // if (authStatus !== 2) {
+      //   status = "不通过";
+      //   statusString = "当前公司未完成上上签的实名认证";
+      // }
+
+      // result = {
+      //   status,
+      //   statusString,
+      // };
+      result = statusString;
+    }
+    return result;
   }
 
   checkFormData = () => {
@@ -193,7 +287,9 @@ export class OrdersummaryVerificationComponent implements OnInit {
     if (currencySystem != "USD") {
       this.foreignFrom.get("foreignTradeCorpSapCode")!.clearValidators();
       this.foreignFrom.get("foreignTradeCorpDdpStatus")!.clearValidators();
-      this.foreignFrom.get("foreignTradeCorpDdpValidityDate")!.clearValidators();
+      this.foreignFrom
+        .get("foreignTradeCorpDdpValidityDate")!
+        .clearValidators();
       this.foreignFrom.get("foreignTradeCorpTaxNum")!.clearValidators();
       this.foreignFrom.get("foreignTradeCorpAddress")!.clearValidators();
       this.foreignFrom.get("foreignTradeCorpName")!.clearValidators();
@@ -202,6 +298,7 @@ export class OrdersummaryVerificationComponent implements OnInit {
       this.foreignFrom.get("foreignTradeCorpEmail")!.clearValidators();
       this.foreignFrom.get("importAgreementSignName")!.clearValidators();
       this.foreignFrom.get("importAgreementSignPosition")!.clearValidators();
+      this.foreignFrom.get("foreignBestSignSignerAccount")!.clearValidators();
     } else {
       this.foreignFrom
         .get("foreignTradeCorpSapCode")!
@@ -232,6 +329,9 @@ export class OrdersummaryVerificationComponent implements OnInit {
         .setValidators(Validators.required);
       this.foreignFrom
         .get("importAgreementSignPosition")!
+        .setValidators(Validators.required);
+      this.foreignFrom
+        .get("foreignBestSignSignerAccount")!
         .setValidators(Validators.required);
     }
   }
@@ -305,7 +405,9 @@ export class OrdersummaryVerificationComponent implements OnInit {
   onshowForeignCompanyDialog() {
     this.selectForign.show({}, true);
   }
-  onForignselect(val) {
+  async onForignselect(val) {
+    const result = await this.checkCompanyByBestSign(val.corporateName);
+    this.foreignerCheckStatus = result;
     this.baseInfoFrom.patchValue({
       foreignTradeCorpName: val.corporateName,
       foreignTradeCorpAddress: val.corporateAddress,
@@ -331,8 +433,10 @@ export class OrdersummaryVerificationComponent implements OnInit {
     });
     //最终用户回显
   }
-  onDealSelect(val) {
+  async onDealSelect(val) {
     //经销商选择回显
+    const result = await this.checkCompanyByBestSign(val.mdtdealername);
+    this.dealerCheckStatus = result;
     this.dealerFrom.patchValue({
       dealerName: val.mdtdealername,
       dealerPhone: val.dealeradmincellphone,
@@ -349,7 +453,6 @@ export class OrdersummaryVerificationComponent implements OnInit {
     this.serveic.productAction(this.formValue);
   }
   selectCity(param) {
-
     this.baseInfoFrom.patchValue({
       oldSalesProvince: param,
     });
@@ -434,18 +537,20 @@ export class OrdersummaryVerificationComponent implements OnInit {
     }
     return this.priceApproval.valid;
   };
-  approvalArea()
-  { //审批区域是列表还是文本框展示
-    if(this.status==''||this.status=='ecos_oit_order_submit'||this.status=='ecos_oit_order_resubmit')
-    {
+  approvalArea() {
+    //审批区域是列表还是文本框展示
+    if (
+      this.status == "" ||
+      this.status == "ecos_oit_order_submit" ||
+      this.status == "ecos_oit_order_resubmit"
+    ) {
       return true;
-    }
-    else{
+    } else {
       return false;
     }
   }
   initSaleRegions(role) {
-    
+
     if (this.status==""||this.status=="ecos_oit_order_submit"||this.status=="ecos_oit_order_resubmit") {
       const regions = (JSON.parse(window.localStorage.getItem("profiles")) || [])
         .filter(({ role: roleName }) => (role && role === roleName) || !role)
@@ -555,6 +660,11 @@ export class OrdersummaryVerificationComponent implements OnInit {
       businessModel,
       dealFormSales: dealFormSalesEmail,
     });
+    if (dealerName) {
+      const result = await this.checkCompanyByBestSign(dealerName);
+      this.dealerCheckStatus = result;
+    }
+
     this.dealerFrom.patchValue({
       dealerName,
       dealerDdpStatus: dealFormStatus,
@@ -569,6 +679,11 @@ export class OrdersummaryVerificationComponent implements OnInit {
       segment: hospitalSegment,
       hospitalType: hospitalType,
     });
+
+    if (currencySystem === "USD" && foreignTradeCorpName) {
+      const result1 = await this.checkCompanyByBestSign(foreignTradeCorpName);
+      this.foreignerCheckStatus = result1;
+    }
     this.foreignFrom.patchValue({
       foreignTradeCorpContact,
       foreignTradeCorpName,
@@ -584,12 +699,11 @@ export class OrdersummaryVerificationComponent implements OnInit {
     //this.serveic.productAction(data);
   }
 
-  showOptionInfo(optionInfo: any) {    
+  showOptionInfo(optionInfo: any) {
     this.currOptionInfo = optionInfo
     console.log(this.currOptionInfo)
     this.isShowOptionModal = true
   }
-
 
   handleOk(): void {
     this.isShowOptionModal = false;
@@ -599,26 +713,28 @@ export class OrdersummaryVerificationComponent implements OnInit {
     this.isShowOptionModal = false;
   }
 
-  getPromPlan(){
-    const currencySystem = this.priceApproval.getRawValue().currencySystem
-    const promotionPlan = this.priceApproval.getRawValue().promotionPlan
-    if (currencySystem === 'CNY') {
-      let cny = this.priceApproval.getRawValue().dealPriceCnyNet
-      return  promotionPlan ? promotionPlan + ' | '  + cny : cny
+  getPromPlan() {
+    const currencySystem = this.priceApproval.getRawValue().currencySystem;
+    const promotionPlan = this.priceApproval.getRawValue().promotionPlan;
+    if (currencySystem === "CNY") {
+      let cny = this.priceApproval.getRawValue().dealPriceCnyNet;
+      return promotionPlan ? promotionPlan + " | " + cny : cny;
     }
-    if (currencySystem === 'USD') {
-      let usd = this.priceApproval.getRawValue().dealPriceUsd
-      return  promotionPlan ? promotionPlan + ' | '  + usd : usd
+    if (currencySystem === "USD") {
+      let usd = this.priceApproval.getRawValue().dealPriceUsd;
+      return promotionPlan ? promotionPlan + " | " + usd : usd;
     }
-    return null
+    return null;
   }
 
   fileDown({ fileId, fileName }) {
     let uri = `/act/system/download/${fileId}`;
-    this.http.get(uri, {
-      responseType: 'blob'
-    }).subscribe(data => {
-      saveAs(data, fileName);
-    });
+    this.http
+      .get(uri, {
+        responseType: "blob",
+      })
+      .subscribe((data) => {
+        saveAs(data, fileName);
+      });
   }
 }

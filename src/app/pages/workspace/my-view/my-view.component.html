@@ -1,6 +1,6 @@
 <nz-card>
   <app-tabs>
-    <app-tab title="Bidding/OIT/Pre-book">
+    <app-tab title="Bidding/OIT/Slot Reservation">
       <div style="width: 100%; background-color: #ffffff; padding: 15px 0 15px 0">
         <cos-my-view-search-item [loading]="loading" [formData]="formValues" (search)="updateParams($event)"
           (setLoading)="getLoading($event)" (subSearch)="updateSubParams($event)" (reset)="reset($event)"
@@ -15,7 +15,7 @@
         <br>
         <div>
           <app-tabs>
-            <app-tab title="投标申请表/Pre-book申请表/进单准备表层级">
+            <app-tab title="投标申请表/Slot Reservation申请表/进单准备表层级">
               <cos-my-view-list #table [loading]="loading" [tableData]="tableData" [total]="total" [flag]="1"
                 (pageChange)="updateDataList($event)" (setLoading)="getLoading($event)" [isFirstLoad]="isFirstLoad">
               </cos-my-view-list>

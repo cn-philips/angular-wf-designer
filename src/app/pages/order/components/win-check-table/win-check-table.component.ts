@@ -6,6 +6,7 @@ import {
   clearSpaces,
   NumberThousandth
 } from '@core/util/tools';
+import { compareIgnoreSensitiveCase } from '@app/utils/StringUtils';
 
 @Component({
   selector: 'app-preOrderWinCheckTable',
@@ -40,7 +41,7 @@ export class WinCheckTableComponent implements OnInit {
     let search = this.bidData[index].searchResult[i]; //当前选中search;
     let bidSelect = this.bidData[index].select;
     const selectId = search.id;
-    let useState = search.useStatus; //中标产品是否使用   
+    let useState = search.useStatus; //中标产品是否使用
     let checkArr = []; //用于验证的数组
     this.bidData.map(res => {
       res.isCheak && checkArr.push(res);
@@ -82,9 +83,9 @@ export class WinCheckTableComponent implements OnInit {
       let person = false; //申请人
       let tenderingCompanyFlag = false; //投标公司
       let tenderNoFlag = false; //招标编号
-      let distributorFlag = false; //经销商 
+      let distributorFlag = false; //经销商
       let orderRsult: any = false;
-      let checkResultReasons = []; //失败原因      
+      let checkResultReasons = []; //失败原因
       const opportunityId = this.bidData[index].opportunityId;
       const opportunityIdNow = search.opportunityId;
       const makertBundleName = this.bidData[index].marketBundleName;
@@ -110,7 +111,7 @@ export class WinCheckTableComponent implements OnInit {
       oppResult = opportunityId == opportunityIdNow ? true : false;
       market = makertBundleName == makertBundleName ? true : false;
       hospitat = (orderByCustomerNameid == search.accountId) || (hospitalName.replace(/\s+/g, "") == orderByCustomerName.replace(/\s+/g, "")) ? true : false;
-      person = bidApplicant == appPerson ? true : false;
+      person = compareIgnoreSensitiveCase(bidApplicant,appPerson) ? true : false;
       tenderingCompanyFlag = tenderingCompany == biddingName ? true : false;
       tenderNoFlag = tenderNo == biddingNo ? true : false;
       distributorFlag = distributor == agreementAgenName ? true : false;

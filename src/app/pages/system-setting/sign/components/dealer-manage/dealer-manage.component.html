@@ -1,0 +1,237 @@
+<form nz-form [formGroup]="formValues">
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle" style="background-color: #F6F7F9;
+    color: #FFFFFF;
+    line-height: 22px;
+    padding-top: 24px">
+        <div nz-col nzXs="24" nzMd="12" nzXl="8">
+            <nz-form-item>
+                <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="8">
+                    公司名称
+                </nz-form-label>
+                <nz-form-control nzXs="24" nzMd="14">
+                    <input nz-input formControlName="dealerName" placeholder="" />
+                </nz-form-control>
+            </nz-form-item>
+        </div>
+        <div nz-col nzXs="24" nzMd="12" nzXl="8">
+            <nz-form-item>
+                <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="8">
+                    上上签账号
+                </nz-form-label>
+                <nz-form-control nzXs="24" nzMd="14">
+                    <input nz-input formControlName="dealerBestSignAccount" placeholder="" />
+                </nz-form-control>
+            </nz-form-item>
+        </div>
+        <div nz-col nzXs="24" nzMd="12" nzXl="8" [style.display]="isCollapse ? 'block' : 'none'">
+            <nz-form-item>
+                <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="8">
+                    公司类型
+                </nz-form-label>
+                <nz-form-control nzXs="24" nzMd="14">
+                    <nz-select style="width: 100%;" formControlName="dealerType" nzAllowClear>
+                        <nz-option nzValue="DEALER" nzLabel="经销商"></nz-option>
+                        <nz-option nzValue="FOREIGN_TRADE_CORP" nzLabel="外贸公司"></nz-option>
+                    </nz-select>
+                    <!-- <input nz-input formControlName="dealerType" placeholder="" /> -->
+                </nz-form-control>
+            </nz-form-item>
+        </div>
+        <div nz-col nzXs="24" nzMd="12" nzXl="8" [style.display]="isCollapse ? 'block' : 'none'">
+            <nz-form-item>
+                <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="8">
+                    公司签字人名称
+                </nz-form-label>
+                <nz-form-control nzXs="24" nzMd="14">
+                    <input nz-input formControlName="dealerContractorName" placeholder="" />
+                </nz-form-control>
+            </nz-form-item>
+        </div>
+        <div nz-col nzXs="24" nzMd="12" nzXl="8" [style.display]="isCollapse ? 'block' : 'none'">
+            <nz-form-item>
+                <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="8">
+                    签章类型
+                </nz-form-label>
+                <nz-form-control nzXs="24" nzMd="14">
+                    <nz-select style="width: 100%;" formControlName="signatoryType">
+                        <nz-option nzValue="SEAL" nzLabel="公司公章签章"></nz-option>
+                        <nz-option nzValue="SIGN" nzLabel="公司签字人签章"></nz-option>
+                    </nz-select>
+                </nz-form-control>
+            </nz-form-item>
+        </div>
+        <div nz-col nzXs="24" nzMd="12" nzXl="8">
+            <nz-form-item class="btns-group" style="text-align: right">
+                <div nz-col nzMd="20" nzXl="22" nzXXl="20">
+                    <button nz-button nzType="primary" nzXl="8" nzXXl="8" (click)="submitForm()">
+                        <i nz-icon type="search"></i>{{"list-pages.search-form.form.search" | translate}}
+                    </button>
+                    <button nz-button nzType="default" style="margin-left: 10px;" (click)="resetForm()">
+                        <i nz-icon nzType="undo" nzTheme="outline"></i>{{"list-pages.search-form.form.clear" |
+                        translate}}
+                    </button>
+                    <a class="btn-collapse" style="margin-left: 10px; color: #1890ff" (click)="toggleCollapse()">
+                        {{ (isCollapse ? 'list-pages.search-form.form.collapse' :
+                        'list-pages.search-form.form.expand')|translate }}
+                        <i nz-icon [type]="isCollapse ? 'up' : 'down'"></i>
+                    </a>
+                </div>
+            </nz-form-item>
+
+        </div>
+    </div>
+</form>
+
+<div style="margin-top: 16px;">
+    <button nz-button nzType="primary" (click)="handleAdd()">新增</button>
+    <button nz-button nzType="primary" (click)="handleAsync()">同步</button>
+    <nz-upload [nzBeforeUpload]="beforeUpload" [nzShowUploadList]="false" nzAccept=".xls,.xlsx">
+        <button nz-button nzType="primary">导入</button>
+    </nz-upload>
+    <!-- <button nz-button nzType="primary" (click)="handleImport()">导入</button> -->
+    <button nz-button nzType="primary" (click)="handleExport()">导出</button>
+</div>
+
+<nz-table #bestSignTable [nzData]="tableData" [nzFrontPagination]="false" [(nzPageIndex)]="pageParams.pageNum"
+    [(nzPageSize)]="pageParams.pageSize" [nzTotal]="total" [nzLoading]="loading" [nzScroll]="{x: '1200px'}"
+    (nzPageIndexChange)="changePageIndex($event)" style="margin-top: 16px">
+    <thead>
+        <tr>
+            <th class="tableHead" nzAlign="center" style="width: 250px">
+                <!-- {{"list-pages.table-header.applicant" | translate}} -->
+                公司名称
+            </th>
+            <th class="tableHead" nzAlign="center" style="width: 150px">
+                公司类型
+            </th>
+            <th class="tableHead" nzAlign="center" style="width: 150px">
+                公司签字人名称
+            </th>
+            <th class="tableHead" nzAlign="center" style="width: 150px">
+                签章类型
+            </th>
+            <th class="tableHead" nzAlign="center" style="width: 200px">
+                上上签账号
+            </th>
+            <th class="tableHead tableAction" nzAlign="center" style="width: 240px;" nzRight="0px">
+                {{"list-pages.table-header.action" | translate}}
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let data of bestSignTable.data; index as index">
+            <!--公司名称-->
+            <td class="tableData" style="width: 250px;" nzAlign="center">{{ data.dealerName }}</td>
+            <!--公司类型-->
+            <td class="tableData" style="width: 150px;" nzAlign="center">{{ data.dealerType === 'DEALER' ? '经销商' :
+                '外贸公司' }}</td>
+            <!--公司签字人名称-->
+            <td class="tableData" style="width: 150px;" nzAlign="center">{{ data.dealerContractorName }}</td>
+
+            <!--签章类型-->
+            <td class="tableData" style="width: 150px;" nzAlign="center">
+                <div *ngIf="data.signatoryType === 'SEAL'">公司公章签章</div>
+                <div *ngIf="data.signatoryType === 'SIGN'">公司签字人签章</div>
+            </td>
+
+            <!--上上签账号-->
+            <td class="tableData" style="width: 200px;" nzAlign="center">{{ data.dealerBestSignAccount }}</td>
+
+            <!--公司类型-->
+            <!-- <td class="tableData" style="width: 200px;" nzAlign="center">{{ data.dealerType === 'DEALER' ? '经销商' :
+                '外贸公司' }}</td> -->
+
+            <td class="tableData tableAction" nzAlign="center" style="white-space: nowrap;width: 240px;" nzRight="0px">
+                <button nz-button nzType="link" (click)="handleEdit(data)">
+                    编辑
+                </button>
+                <button nz-button nzType="link" (click)="handleDetail(data)">
+                    查看
+                </button>
+                <button nz-button nzType="link" (click)="handleDel(data)">
+                    删除
+                </button>
+            </td>
+        </tr>
+
+    </tbody>
+
+</nz-table>
+
+<nz-modal [(nzVisible)]="modalVisible" [nzTitle]="title" [nzContent]="modalContent" [nzFooter]="modalFooter"
+    [nzWidth]="800" (nzOnCancel)="modalVisible = false" [nzMaskClosable]="false" [nzKeyboard]="false"
+    (nzOnOk)="handleOk()" (nzAfterClose)="handleModalHide()">
+    <ng-template #modalContent>
+        <div style="overflow: auto;display: flex; justify-content: center;width: 600px;">
+            <form nz-form [formGroup]="modalFormValues">
+                <div nz-col nzXs="24" nzMd="24" nzXl="24">
+                    <nz-form-item>
+                        <nz-form-label nzRequired nzXs="24" nzMd="24" nzXl="24" nzXXl="24">
+                            公司名称
+                        </nz-form-label>
+                        <nz-form-control nzXs="24" nzMd="24" nzXl="24" nzXXl="24">
+                            <input nz-input formControlName="dealerName" placeholder="" />
+                        </nz-form-control>
+                    </nz-form-item>
+                </div>
+                <div nz-col nzXs="24" nzMd="24" nzXl="24">
+                    <nz-form-item>
+                        <nz-form-label nzRequired nzXs="24" nzMd="24" nzXl="24" nzXXl="24">
+                            公司类型
+                        </nz-form-label>
+                        <nz-form-control nzXs="24" nzMd="24" nzXl="24" nzXXl="24">
+                            <nz-select style="width: 100%;" formControlName="dealerType">
+                                <nz-option nzValue="DEALER" nzLabel="经销商"></nz-option>
+                                <nz-option nzValue="FOREIGN_TRADE_CORP" nzLabel="外贸公司"></nz-option>
+                            </nz-select>
+
+                        </nz-form-control>
+                    </nz-form-item>
+                </div>
+                <div nz-col nzXs="24" nzMd="24" nzXl="24">
+                    <nz-form-item>
+                        <nz-form-label nzXs="24" nzMd="24" nzXl="24" nzXXl="24">
+                            公司签字人名称
+                        </nz-form-label>
+                        <nz-form-control nzXs="24" nzMd="24" nzXl="24" nzXXl="24">
+                            <input nz-input formControlName="dealerContractorName" placeholder="" />
+                        </nz-form-control>
+                    </nz-form-item>
+                </div>
+                <div nz-col nzXs="24" nzMd="24" nzXl="24">
+                    <nz-form-item>
+                        <nz-form-label nzRequired nzXs="24" nzMd="24" nzXl="24" nzXXl="24">
+                            签章类型
+                        </nz-form-label>
+                        <nz-form-control nzXs="24" nzMd="24" nzXl="24" nzXXl="24">
+                            <nz-select style="width: 100%;" formControlName="signatoryType">
+                                <nz-option nzValue="SEAL" nzLabel="公司公章签章"></nz-option>
+                                <nz-option nzValue="SIGN" nzLabel="公司签字人签章"></nz-option>
+                            </nz-select>
+                        </nz-form-control>
+                    </nz-form-item>
+                </div>
+                <div nz-col nzXs="24" nzMd="24" nzXl="24">
+                    <nz-form-item>
+                        <nz-form-label nzRequired nzXs="24" nzMd="24" nzXl="24" nzXXl="24">
+                            上上签账号
+                        </nz-form-label>
+                        <nz-form-control nzXs="24" nzMd="24" nzXl="24" nzXXl="24">
+                            <input nz-input formControlName="dealerBestSignAccount" placeholder="" />
+                        </nz-form-control>
+                    </nz-form-item>
+                </div>
+
+            </form>
+        </div>
+    </ng-template>
+    <ng-template #modalFooter>
+        <ng-container *ngIf="modalType === 'view'">
+            <div></div>
+        </ng-container>
+        <ng-container *ngIf="modalType === 'add' || modalType === 'edit'">
+            <button nz-button nzType="default" [disabled]="uploadLoading" (click)="modalVisible = false">取消</button>
+            <button nz-button nzType="primary" [nzLoading]="uploadLoading" (click)="handleOk()">确定</button>
+        </ng-container>
+    </ng-template>
+</nz-modal>

@@ -1,0 +1,14 @@
+@import "styles/media_query.scss";
+
+@media screen and (max-width: $screen-xs-max) {
+    .contract-electronic-signature-wrap{
+        padding: 0;
+    }
+  }
+  
+  @media screen and (min-width: $screen-xs-max) {
+    .contract-electronic-signature-wrap{
+        padding: 15px;
+    }
+  }
+  

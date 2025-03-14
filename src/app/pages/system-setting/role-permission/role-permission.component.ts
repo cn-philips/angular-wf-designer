@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { PermissionService } from '@app/modern-themes/services/permission.service';
 import { HttpService } from '@core/services';
-import { NzTreeComponent, NzTreeNodeOptions, NzMessageService } from 'ng-zorro-antd';
+import { NzMessageService, NzTreeComponent, NzTreeNodeOptions } from 'ng-zorro-antd';
 
 @Component({
   templateUrl: './role-permission.component.html',
@@ -63,6 +63,7 @@ export class RolePermissionComponent implements OnInit {
         this.load = false;
         this.nodes = rest.data;
         this.treeDate(this.nodes)
+        console.log('this.nodes', this.nodes)
       }
     })
   }

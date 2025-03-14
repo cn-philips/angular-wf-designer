@@ -195,6 +195,8 @@
                   nzTheme="twotone"></i>Chapter Type</label>
               <label nz-radio-button nzValue="IePoolData" style="height: 46px;line-height:46px;padding-right: 20px;"><i
                   nz-icon nzType="file-excel" nzTheme="twotone"></i>IE Pool</label>
+              <label nz-radio-button nzValue="OpportunityOITProducts" style="height: 46px;line-height:46px;padding-right: 20px;"><i
+                nz-icon nzType="file-excel" nzTheme="twotone"></i>L4L进口产品清单</label>
             </nz-radio-group>
           </div> <br>
           <span style="font-size: 14px"><strong>上传Excel 文件，将其中的数据导入到表单</strong> </span>
@@ -287,6 +289,23 @@
                   <nz-upload nzAction="https://jsonplaceholder.typicode.com/posts/" [nzShowUploadList]="false"
                     [(nzFileList)]="fileNmpaList" [nzBeforeUpload]="ImportIePoolData">
                     <button nz-button><i nz-icon nzType="upload"></i><span>Import 导入IE Pool数据</span></button>
+                  </nz-upload>
+                </td>
+              </tr>
+            </b>
+
+
+            <!--商机产品和进单产品的导入导出-->
+            <b *ngIf="radioValue=='OpportunityOITProducts'">
+              <tr>
+                <td style="width:300px;height:50px;">
+                  <button nz-button (click)="ExportOITProductsData()"><i nz-icon
+                      [nzType]="OITProductsDownloadStatus"></i><span>下载L4L进口产品清单</span></button>
+                </td>
+                <td style="width:300px;height:50px;">
+                  <nz-upload nzAction="https://jsonplaceholder.typicode.com/posts/" [nzShowUploadList]="false"
+                    [(nzFileList)]="fileOITProducts" [nzBeforeUpload]="ImportOITProductsData">
+                    <button nz-button><i nz-icon nzType="upload"></i><span>上传L4L进口产品清单</span></button>
                   </nz-upload>
                 </td>
               </tr>

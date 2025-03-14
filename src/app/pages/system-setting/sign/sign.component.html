@@ -1,0 +1,22 @@
+<nz-card class="title_warpper mb-4">
+    <div>
+        <h4 class="font-weight-bold">
+            <span>电子签章维护管理</span>
+        </h4>
+    </div>
+</nz-card>
+<hr class="border-light container-m--x mt-0 mb-4">
+<nz-card>
+    <app-tabs>
+        <app-tab title="经销商维护">
+            <dealer-manage></dealer-manage>
+        </app-tab>
+        <app-tab title="合同模板维护">
+            <template-manage [bestSignTemplateList]="bestSignTemplateList"
+                (templateChange)="getBestSignTemplateList()"></template-manage>
+        </app-tab>
+        <app-tab title="签署节点维护">
+            <signer-manage [bestSignTemplateList]="bestSignTemplateList"></signer-manage>
+        </app-tab>
+    </app-tabs>
+</nz-card>

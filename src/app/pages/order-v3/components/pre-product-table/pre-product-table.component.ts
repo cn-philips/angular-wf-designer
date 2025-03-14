@@ -5,6 +5,7 @@ import { haveRolesArr, stringIndexof } from '@core/util/tools';
 import { Router, ActivatedRoute } from "@angular/router";
 import { HttpService } from "@core/services/http.service";
 import { saveAs } from 'file-saver';
+import { compareIgnoreSensitiveCase } from "@app/utils/StringUtils";
 @Component({
   selector: "pre-product-table",
   templateUrl: "./pre-product-table.component.html",
@@ -13,30 +14,30 @@ import { saveAs } from 'file-saver';
 
 export class PreProductTableComponent implements OnInit {
   constructor(private fb: FormBuilder,
-             private service: OrderV3Service, 
+             private service: OrderV3Service,
              private activatedRouter: ActivatedRoute,
              private http: HttpService,
              public changeDetectorRef: ChangeDetectorRef) {
 
-    // this.service.productReceive.subscribe((val) => {      
-    //   const ASYNS = async () => { 
+    // this.service.productReceive.subscribe((val) => {
+    //   const ASYNS = async () => {
 
     //     if (this.status == "ecos_oit_deal_resubmit" ||this.status=="ecos_oit_deal_sales"|| this.status == "ecos_oit_deal_submit"||this.status == "ecos_status_draft"||this.status == ""||this.status ==undefined) {
-    //     //this.departMent()        
+    //     //this.departMent()
     //     const baseInfoFrom=val.get("baseInfoFrom") as FormGroup
     //     const dealerFrom = val.get("dealerFrom") as FormGroup;
     //     const businessModel=baseInfoFrom.getRawValue().businessModel
-    //     const dealercode = dealerFrom.getRawValue().dealerCode;  
+    //     const dealercode = dealerFrom.getRawValue().dealerCode;
     //     if(businessModel=='DISTRIBUTOR')
     //     {
 
-    //       if(typeof dealercode=="string"&&dealercode != undefined && dealercode != null && dealercode != ""){            
-    //        const dealerCodeList = await this.service.dealAgreement(dealercode);          
+    //       if(typeof dealercode=="string"&&dealercode != undefined && dealercode != null && dealercode != ""){
+    //        const dealerCodeList = await this.service.dealAgreement(dealercode);
     //        this.dealerCodeList=dealerCodeList.map((item) => ({ ...item, label:item.agreementNo,value: item.agreementNo}))
-    //       } 
+    //       }
 
-    //     } 
-    //   }       
+    //     }
+    //   }
     //   };
     //   ASYNS();
     // });
@@ -220,7 +221,7 @@ export class PreProductTableComponent implements OnInit {
 
       const orderSales = this.orderSalesinfo.getRawValue().orderSales;
       //const noworderSales = filter.test(orderSales) ? stringIndexof(orderSales) : orderSales;
-      if (this.editable && orderSales == this.user) {
+      if (this.editable && compareIgnoreSensitiveCase(orderSales , this.user)) {
         const marketBundleInfo = this.marketBundleInfo.at(i) as FormGroup;
         this.marketBundleInfo.controls.map((val, index) => {
           const marketBundleInfos = this.marketBundleInfo.at(index) as FormGroup;
@@ -304,7 +305,7 @@ export class PreProductTableComponent implements OnInit {
   }
   onClearNmpa(i)
   {
-    const marketBundleInfo = this.marketBundleInfo.at(i) as FormGroup;    
+    const marketBundleInfo = this.marketBundleInfo.at(i) as FormGroup;
     marketBundleInfo.patchValue({
       nmpaNum:null,
       medicalDeviceName:null,

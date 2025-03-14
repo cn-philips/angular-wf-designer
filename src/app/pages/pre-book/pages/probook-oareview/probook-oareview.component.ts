@@ -24,7 +24,7 @@ export class ProbookOareviewComponent implements OnInit {
     this.getBase(mainId);
     switch (status) {
       case "prebook_oa_approval":
-        this.title = 'PREBOOK-OA Review PREBOOK-OA审核';
+        this.title = 'Slot Reservation-OA Review Slot Reservation-OA审核';
         break
       case "prebook_district_leader_approval":
         this.title = 'District Leader Review District Leader审核';

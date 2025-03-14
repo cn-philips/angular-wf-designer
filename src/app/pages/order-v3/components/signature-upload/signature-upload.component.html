@@ -18,10 +18,10 @@
     <div *ngFor="let item of fileListFormGroup.controls;let index=index" [formGroup]="item" class="file-item">
       <span class="file-name" [title]="item.getRawValue().name">
         <i nz-icon [nzType]=" item.getRawValue().status === 'uploading' ? 'loading' : 'paper-clip'"></i>
-        <div class="file-name-title">{{item.getRawValue().name }}</div> 
-        <nz-form-control nz-tooltip  [nzTitle]="item.controls.attachmentComment.disabled?'':'可输入需签章页码、用逗号分隔开'">          
+        <div class="file-name-title">{{item.getRawValue().name }}</div>
+        <nz-form-control nz-tooltip *ngIf="showPageNavigator" [nzTitle]="item.controls.attachmentComment.disabled?'':'可输入需签章页码、用逗号分隔开'">
           <input (blur)="inputBlur($event)" oninput ="if(!/^[0-9,]+$/.test(value)) value=value.replace(/[^0-9,]/g,'');if(value.length>255)value=value.slice(0,255)" nz-input formControlName="attachmentComment" [placeholder]="item.controls.attachmentComment.disabled?'':'可输入需签章页码、用逗号分隔开'"  maxlength="255" />
-          <nz-form-explain *ngIf="item.get('attachmentComment')?.dirty &&item.get('attachmentComment')?.errors">          
+          <nz-form-explain *ngIf="item.get('attachmentComment')?.dirty &&item.get('attachmentComment')?.errors">
             <ng-container *ngIf="item.get('attachmentComment')?.hasError('soform')">可输入需签章页码、用逗号分隔开</ng-container>
           </nz-form-explain>
        </nz-form-control>

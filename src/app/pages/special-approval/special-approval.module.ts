@@ -51,6 +51,7 @@ import { CooCcOrderInfoComponent } from "./request-form/widgets/order-info/coo-c
 import { ReferenceLinkComponent } from "./request-form/widgets/reference-link/reference-link.component";
 import { SelectForeignCompanyComponent } from "./request-form/widgets/select-foreign-company/select-foreign-company.component";
 import { ModernThemesModule } from "@app/modern-themes/modern-themes.module";
+import { ImportedInfoComponent } from './request-form/widgets/order-info/imported-info/imported-info.component';
 
 const COMPONENTS = [
   SpecialApprovalComponent,
@@ -99,6 +100,7 @@ const WIDGETS = [
   CooPdIgtOrderInfoComponent,
   CooCcOrderInfoComponent,
   SelectForeignCompanyComponent,
+  ImportedInfoComponent
 ];
 
 export {

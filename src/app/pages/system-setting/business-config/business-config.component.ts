@@ -87,12 +87,14 @@ export class BusinessConfigComponent implements OnInit {
 
   public radioValue = 'NMPA'; //默认导入文件按钮
   public fileNmpaList: any = [];//存放导入文件
+  public fileOITProducts: any =[];//存放导入商机产品和进单产品文件
 
   public nmpaDownloadStatus = 'download';
   public MBnmpaDownloadStatus = 'download';
   public RedFlagDownloadStatus = 'download';
   public ChapterDownloadStatus = 'download';
   public IePoolDownloadStatus = 'download';
+  public OITProductsDownloadStatus = 'download';
 
   ngOnInit() {
     this.getTabListShortData();
@@ -129,29 +131,29 @@ export class BusinessConfigComponent implements OnInit {
       if (!checkFormData()) {
         return;
       }
-      
+
       //const { id, roleCode, describe, roleName } = this.modalAttribute.modalForm.getRawValue();
       const obj = this.modalAttribute.modalForm.getRawValue();
       obj.status = obj.status == true ? 1 : 0;
-      obj.approver = obj.approver.join(",");      
+      obj.approver = obj.approver.join(",");
 
       if(obj.firstApproved&&obj.firstApproved.length>0)
       {
         obj.firstApproved= obj.firstApproved.filter((s) => {
-          return s && s.trim();     
+          return s && s.trim();
         });
         obj.firstApproved=obj.firstApproved.join(",")
-      }  
+      }
       else{
         obj.firstApproved="";
       }
       if(obj.secondApproved&&obj.secondApproved.length>0)
       {
         obj.secondApproved= obj.secondApproved.filter((s) => {
-          return s && s.trim();     
+          return s && s.trim();
         });
         obj.secondApproved=obj.secondApproved.join(",")
-      }  
+      }
       else{
         obj.secondApproved="";
       }
@@ -249,7 +251,7 @@ export class BusinessConfigComponent implements OnInit {
     });
 
   }
-  editScene(item) {        
+  editScene(item) {
     this.modalAttribute.title = 'Edit Configuration 编辑配置';
     this.modalAttribute.isVisible = true;
     (item.approver.constructor === String) && (item.approver = item.approver.split(","));
@@ -258,20 +260,20 @@ export class BusinessConfigComponent implements OnInit {
     if(item.approver.constructor==Array)
     {
       item.approver= item.approver.filter((s) => { //清除数组中的空值
-        return s && s.trim();     
+        return s && s.trim();
       });
     }
     if(item.firstApproved.constructor==Array)
     {
       item.firstApproved= item.firstApproved.filter((s) => {
-        return s && s.trim();     
+        return s && s.trim();
         });
 
     }
     if(item.secondApproved.constructor==Array)
     {
       item.secondApproved= item.secondApproved.filter((s) => {
-        return s && s.trim();     
+        return s && s.trim();
       });
     }
     const { id, orderChange, describes, approver,firstApproved,secondApproved,status, changeDealForm } = item;
@@ -547,6 +549,38 @@ export class BusinessConfigComponent implements OnInit {
       return false;
     }
     const url = `/act/sync/import/IePoolData`;
+    this.upload('fileUploadList', file, url);//上传参数
+    return false;
+  }
+
+
+  /**
+   * 导出商机产品和进单产品数据
+   * */
+  public ExportOITProductsData() {
+    this.IePoolDownloadStatus = 'loading';
+    const url = `/act/ecom/homepage/export/OITProductsData`;
+    this.http.postDownload(url).subscribe(rest => {
+      this.fileservice.downloadResponse('商机产品', rest);
+      this.IePoolDownloadStatus = 'download';
+    });
+  }
+  /**
+   * 导入商机产品和进单产品数据
+   * */
+  // tslint:disable-next-line:variable-name
+  public ImportOITProductsData = (file: UploadFile): boolean => {
+    const isLt2M = file.size / 1024 / 1024 < 100; // 文件大小不超过100M
+    const fileType = getType(file);
+    if (fileType !== 'xlsx' && fileType !== 'xls') {
+      this.message.create('error', '上传文件格式错误!');
+      return false;
+    }
+    if (!isLt2M) {
+      this.message.create('error', '上传数据大小过不超过100M');
+      return false;
+    }
+    const url = `/act/sync/import/OITProductsData`;
     this.upload('fileUploadList', file, url);//上传参数
     return false;
   }

@@ -1,52 +1,55 @@
-import { HomeComponent } from "./home";
 import {
-  MyStartedComponent,
-  MyStartedListComponent,
-  MyStartedSearchItemComponent,
-} from "./my-started";
-import { MyDraftComponent } from "./my-draft";
+  CardListComponent,
+  TaskListComponent,
+} from "@pages/workspace/home/components";
+import {
+  MyDoneComponent,
+  MyDoneListComponent,
+  MyDoneSearchItemComponent,
+} from "@pages/workspace/my-done";
 import {
   MyViewComponent,
-  myViewListComponent,
   MyViewSubListComponent,
+  myViewListComponent,
   myViewSearchItemComponent,
 } from "@pages/workspace/my-view";
 import {
   ListComponent,
   SearchItemComponent,
 } from "./components";
+import { HomeComponent } from "./home";
+import { MyDraftComponent } from "./my-draft";
 import {
-  CardListComponent,
-  TaskListComponent,
-} from "@pages/workspace/home/components";
+  MyStartedComponent,
+  MyStartedListComponent,
+  MyStartedSearchItemComponent,
+} from "./my-started";
 import { MyTodoComponent } from "./my-todo";
-import {
-  MyDoneComponent,
-  MyDoneListComponent,
-  MyDoneSearchItemComponent,
-} from "@pages/workspace/my-done";
 
+import { MyReportComponent } from "./my-report";
 import {
+  ContractElectronicSignatureComponent,
+  ContractSignatureWatermarkComponent,
+  ContractSupplementComponent,
+  ElectronicSignatureSearchItemComponent,
+  OitSupplementComponent,
+  OmSupplementComponent,
   SignatureListComponent,
+  ElectronicSignatureListComponent,
   SignatureSearchItemComponent,
+  ThirdPartySupplementComponent,
   UploadFileImgComponent,
   WaiteMeSupplementListComponent,
   WaiteMeSupplementSearchItemComponent,
-  WinningbidSupplementComponent,
-  OitSupplementComponent,
-  OmSupplementComponent,
-  ThirdPartySupplementComponent,
-  ContractSupplementComponent,
-  ContractSignatureWatermarkComponent
+  WinningbidSupplementComponent
 } from "./waite-me-supplement";
-import { MyReportComponent } from "./my-report";
 
-export * from "./home";
-export * from "./my-started";
-export * from "./my-draft";
-export * from "./my-view";
-export * from "./my-report";
 export * from "./components";
+export * from "./home";
+export * from "./my-draft";
+export * from "./my-report";
+export * from "./my-started";
+export * from "./my-view";
 export * from "./waite-me-supplement";
 
 export const COMPONENTS = [
@@ -57,8 +60,11 @@ export const COMPONENTS = [
   WaiteMeSupplementListComponent,
   WaiteMeSupplementSearchItemComponent,
   ContractSignatureWatermarkComponent,
+  ContractElectronicSignatureComponent,
   SignatureListComponent,
+  ElectronicSignatureListComponent,
   SignatureSearchItemComponent,
+  ElectronicSignatureSearchItemComponent,
   UploadFileImgComponent
 ];
 

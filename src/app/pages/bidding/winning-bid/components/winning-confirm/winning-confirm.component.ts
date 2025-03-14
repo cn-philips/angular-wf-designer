@@ -8,6 +8,7 @@ import { Observable, Observer } from 'rxjs';
 import { codeString, decodeString, getType, NumberThousandth } from '@core/util/tools';
 import { environment } from '@env';
 import { RouterExtendService } from '@app/modern-themes/services/router-extend.service';
+import { compareIgnoreSensitiveCase } from '@app/utils/StringUtils';
 
 @Component({
   selector: 'app-winningconfirm',
@@ -576,7 +577,7 @@ export class WinningConfirmComponent implements OnInit {
         this.mainid_winList = e.data;
         this.mainid_winList.map(vals => {
           if (roleOff) {
-            vals.winOff = vals.processOwner == user ? true : false
+            vals.winOff = compareIgnoreSensitiveCase(vals.processOwner , user )? true : false
           }
           else {
             vals.winOff = true;
