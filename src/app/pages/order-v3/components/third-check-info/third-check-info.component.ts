@@ -358,9 +358,9 @@ export class ThirdCheckInfoComponent implements OnInit {
     if (!this.noticeForms.dealerEmail || !this.noticeForms.salesEmail || !this.noticeForms.dmEmail) {
       return true
     }
-    if (this.noticeType === 'replenish' && !this.noticeForms.comments) {
-      return true
-    }
+    // if (this.noticeType === 'replenish' && !this.noticeForms.comments) {
+    //   return true
+    // }
     return false
   }
 
