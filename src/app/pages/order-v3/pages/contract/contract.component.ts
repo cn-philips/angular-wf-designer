@@ -1158,6 +1158,8 @@ export class ContractComponent implements OnInit {
       ...foreignFrom,
       marketBundleInfo: marketBundleInfo
     }
+    contractInfo['requiredArrivalDate'] = (contractInfo['requiredArrivalDate'] != null && contractInfo['requiredArrivalDate'] != "") ? moment(contractInfo['requiredArrivalDate']).format('YYYY-MM-DD hh:mm:ss') : null;
+    contractInfo['estimateInstallationDate'] = (contractInfo['estimateInstallationDate'] != null && contractInfo['estimateInstallationDate'] != "") ? moment(contractInfo['estimateInstallationDate']).format('YYYY-MM-DD hh:mm:ss') : null;
     const param = {
       ...remarkFrom,
       applyId: this.applyId,
