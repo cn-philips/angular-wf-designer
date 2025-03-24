@@ -224,6 +224,7 @@
           <th nzAlign="center" style="width: 120px">是否有招标文件</th>
           <th nzAlign="center" style="width: 120px">申请材料备注</th>
           <th nzAlign="center" style="width: 140px">申请材料</th>
+          <th nzAlign="center" style="width: 140px">盖章报价单</th>
           <th nzAlign="center" style="width: 160px">核查材料</th>
           <th nzAlign="center" style="width: 140px">核查材料备注</th>
           <th nzAlign="center" style="width: 140px">是否更新核查材料</th>
@@ -254,6 +255,16 @@
             <td class="tableData" nzAlign="center" style="width: 120px">{{ data.applicationMaterialRemarks }}</td>
             <td class="tableData" nzAlign="center" style="width: 140px">
               <div *ngFor="let item of getJsonArr(data.applicationMaterialAttachment)">
+                <a *ngIf="item.fileUrl; else otherLink" [href]="item.fileUrl" target="_blank">{{ item.name }}</a>
+                <ng-template #otherLink>
+                  <a *ngIf="item.source === 'CP'">CP Link</a>
+                  <a *ngIf="item.source === 'Other'">Other Link</a>
+                  <!-- 添加其他条件判断 -->
+                </ng-template>
+              </div>
+            </td>
+            <td class="tableData" nzAlign="center" style="width: 140px">
+              <div *ngFor="let item of getJsonArr(data.quotationAttachment)">
                 <a *ngIf="item.fileUrl; else otherLink" [href]="item.fileUrl" target="_blank">{{ item.name }}</a>
                 <ng-template #otherLink>
                   <a *ngIf="item.source === 'CP'">CP Link</a>
