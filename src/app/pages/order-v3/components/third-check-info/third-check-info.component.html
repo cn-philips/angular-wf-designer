@@ -645,15 +645,15 @@
         </nz-form-explain>
       </nz-form-control>
     </nz-form-item>
-    <nz-form-item *ngIf="noticeType === 'replenish'">
+    <!-- <nz-form-item *ngIf="noticeType === 'replenish'">
       <nz-form-label [nzSpan]="8">说明</nz-form-label>
       <nz-form-control [nzSpan]="16">
         <textarea rows="2" nz-input [(ngModel)]="noticeForms.comments" name="comments"></textarea>
-        <!-- <nz-form-explain *ngIf="!noticeForms.comments" style="color: red;">
+        <nz-form-explain *ngIf="!noticeForms.comments" style="color: red;">
           此选项必填字段
-        </nz-form-explain> -->
+        </nz-form-explain>
       </nz-form-control>
-    </nz-form-item>
+    </nz-form-item> -->
   </form>
   <ng-template #modalFooter>
     <button nz-button nzType="default" (click)="handleCancel()">取消</button>
