@@ -309,7 +309,7 @@
             开始三方核查时间
           </nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <nz-date-picker formControlName="auditStartTime" [nzFormat]="dateFormat" nzPlaceHolder=""></nz-date-picker>
+            <nz-date-picker formControlName="auditStartTime" nzPlaceHolder="系统自动填入，无需人工输入" [nzFormat]="dateFormat" nzPlaceHolder=""></nz-date-picker>
           </nz-form-control>
         </nz-form-item>
       </div>
@@ -329,7 +329,7 @@
             OA完成核查时间
           </nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-            <nz-date-picker formControlName="oaAuditEndTime" [nzFormat]="dateFormat"></nz-date-picker>
+            <nz-date-picker formControlName="oaAuditEndTime" nzPlaceHolder="系统自动填入，无需人工输入" [nzFormat]="dateFormat"></nz-date-picker>
           </nz-form-control>
         </nz-form-item>
       </div>
