@@ -118,7 +118,7 @@ export class ThirdCheckInfoComponent implements OnInit {
     auditAttachment: [{ value: null, disabled: false }], // 三方核查要求附件
     dealerDelayTime: [{ value: null, disabled: false }], // dealer_delay_time
     oaAuditEndTime: [{ value: null, disabled: true }], // OA完成核查时间
-    cpAuditTotalPrice: [{ value: null, disabled: true }], // CP系统审核完成的三方审核总价
+    cpAuditTotalPrice: [{ value: null, disabled: false }], // CP系统审核完成的三方审核总价
     cosAuditTotalPriceExclude: [{ value: null, disabled: false }], // COS实际核查总三方价格含税（不含未评估三方）
     // Deviation Percentage（不含未评估三方）：系统计算= 【COS实际核查总三方价格含税（不含未评估三方）- CP评估三方总价】(结果取绝对值）/ CP评估三方总价
     deviationPercentageExclude: [{ value: null, disabled: true }],
