@@ -1205,12 +1205,12 @@ export class ElectronicContractSignInfoComponent implements OnInit {
    */
   async signSign(index: any, id: any) {
     let item = this.signDataSource[index];
-    let contractCurrency = this.contractCurrency;
-    let contracts = item.contracts,
+    // let contractCurrency = this.contractCurrency;
+    let contracts = item.contracts||[],
       isCancelAgreement = item.isCancelAgreement,
-      agreements = item.agreements,
+      agreements = item.agreements||[],
       ifRelatedOrderSummary = item.ifRelatedOrderSummary,
-      relatedOrderSummaries = item.relatedOrderSummaries;
+      relatedOrderSummaries = item.relatedOrderSummaries||[];
     // let {
     //   dealerName,
     //   dealerBestSignAccount,
