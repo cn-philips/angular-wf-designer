@@ -36,6 +36,7 @@ export class NewRandomCycleComponent implements OnInit {
   isOAAdmin = false
   isAuditor = false
   remarkable = true
+  act = null // 操作类型
   public summaryData: any[] = []; // 随机抽取该概要
   public removedData: any[] = []; // 机抽取结果（删除）
   public detailData: any[] = []; // 随机抽取结果
@@ -268,12 +269,17 @@ export class NewRandomCycleComponent implements OnInit {
   }
 
   handleOk = async() =>{
+
     const vaild = this.unlockDataVaild()
     if (vaild) {
       this.message.create("error", "请填写必填字段！")
       return
     }
-    await this.sendNotice()
+    if(this.act === 'send') {
+      await this.doOnlySendNotice()
+    }else{
+      await this.sendNotice()
+    }
     this.isVisible = false;
   }
 
@@ -303,6 +309,20 @@ export class NewRandomCycleComponent implements OnInit {
       }
     })
   }
+  doOnlySendNotice() {
+    const params = [...this.unlockData]
+    this.http.post(`/act/ecos/thirdParty/randomPick/detail/notify/${this.summaryId}`, params).subscribe((res => {
+      this.load = false;
+      if (res.code === '0000') {
+        this.message.create("success", "操作成功!")
+      } else {
+        this.message.create('error', `${res.msg}`);
+      }
+    }), (error => {
+      this.load = false;
+      this.message.create("error", "服务器异常")
+    }));
+  }
   preLockApply() {
     return this.http.post(`/act/ecos/thirdParty/randomPick/prelock/${this.summaryId}`).toPromise()
   }
@@ -325,8 +345,11 @@ export class NewRandomCycleComponent implements OnInit {
   handleCancel() {
     this.isVisible = false;
   }
-
+  afterClose() {
+    this.act = null
+  }
   operate(data, act) {
+    this.act = act
     if(act === 'del') {
       this.resetReasonObj()
       this.reasonObj.id = data.id

@@ -258,7 +258,7 @@
 <select-third-deal #selectDeal (select)="onDealFormSelect($event)"></select-third-deal>
 
 <nz-modal [(nzVisible)]="isVisible" nzWidth="1000" [nzMaskClosable]="false" nzTitle="锁定抽取周期，并邮件通知相关经销商、Sales Line、OA等相关人员"
-  [nzFooter]="modalFooter" (nzOnCancel)="handleCancel()">
+  [nzFooter]="modalFooter" (nzOnCancel)="handleCancel()" (nzAfterClose)="afterClose($event)" >
   <nz-alert nzType="warning" style="margin-bottom: 24px;"
     nzMessage="点击确认后，系统将锁定抽取周期，并通过邮件通知相关经销商（如果DealForm存在改单情况并关联了新的DealForm,将仅通知新DealForm所对应的经销商）" nzShowIcon></nz-alert>
   <div>
