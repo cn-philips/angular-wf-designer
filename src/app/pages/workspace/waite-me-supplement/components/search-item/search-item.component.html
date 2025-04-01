@@ -17,7 +17,33 @@
         </nz-form-control>
       </nz-form-item>
     </div>
-    <div nz-col nzXs="24" nzMd="12" nzXl="8">
+    <div nz-col nzXs="24" nzMd="12" nzXl="8" *ngIf="isThirdParty">
+      <nz-form-item>
+        <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6">
+          {{"list-pages.search-form.form.icf" | translate}}
+        </nz-form-label>
+        <nz-form-control nzXs="24" nzMd="14">
+          <nz-select formControlName="ifIcf" nzShowSearch nzAllowClear nzPlaceHolder="">
+            <nz-option nzValue="1" nzLabel="是"></nz-option>
+            <nz-option nzValue="0" nzLabel="否"></nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzXs="24" nzMd="12" nzXl="8" *ngIf="isThirdParty">
+      <nz-form-item>
+        <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6" style="text-wrap: auto;line-height: 1.5em;">
+          {{"list-pages.search-form.form.if_dealer_has_upload_audit_material" | translate}}
+        </nz-form-label>
+        <nz-form-control nzXs="24" nzMd="14">
+          <nz-select formControlName="ifDistributorHasUploadMaterial" nzShowSearch nzAllowClear nzPlaceHolder="">
+            <nz-option nzValue="1" nzLabel="是"></nz-option>
+            <nz-option nzValue="0" nzLabel="否"></nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzXs="24" nzMd="12" nzXl="8" [style.display]="isCollapse ? 'block' : 'none'">
       <nz-form-item>
         <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6">
           {{"list-pages.search-form.form.hospital-name" | translate}}

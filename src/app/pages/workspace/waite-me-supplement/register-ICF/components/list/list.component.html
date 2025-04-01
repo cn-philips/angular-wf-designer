@@ -1,0 +1,43 @@
+<nz-table [nzData]="tableData" nzFrontPagination="false" [nzPageIndex]="pageParams.pageNo"
+  [nzPageSize]="pageParams.pageSize" [nzTotal]="total" [nzLoading]="loading" [nzScroll]="{ y: '600px' }"
+  (nzPageIndexChange)="changePageIndex($event)" [nzShowTotal]="totalTemplate"
+  (nzPageSizeChange)="changePageSize($event)" style="margin-top: 16px">
+  <thead>
+    <tr>
+      <th class="tableHead" nzAlign="center" style="width: 150px" nzLeft="0px">
+        Deal Form ID
+      </th>
+      <th class="tableHead" nzAlign="center" style="width: 150px">
+        Reference No
+      </th>
+      <th class="tableHead" nzAlign="center" style="width: 150px">
+        SO#
+      </th>
+      <th class="tableHead" nzAlign="center" style="width: 150px">
+        IFC时间
+      </th>
+      <th class="tableHead" nzAlign="center" style="width: 150px">
+        IFC登记时间
+      </th>
+      <th class="tableHead" nzAlign="center" nzRight="0px" style="width: 170px">
+        ICF备注
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <ng-template ngFor let-data [ngForOf]="tableData">
+      <tr>
+        <td class="tableData" style="width: 150px;" nzAlign="center" nzLeft="0px">{{ data.dealFormId }}</td>
+        <td class="tableData" style="width: 150px;" nzAlign="center">{{ data.referenceId }}</td>
+        <td class="tableData" style="width: 150px;" nzAlign="center">{{ data.so }}</td>
+        <td class="tableData" style="width: 150px;" nzAlign="center">{{ data.icfSignTime | TimeFormatePipeNow }}</td>
+        <td class="tableData" style="width: 150px;" nzAlign="center">{{ data.icfRegistrationTime | TimeFormatePipeNow}}
+        </td>
+        <td class="tableData" style="width: 150px" nzAlign="center" nzRight="0px">{{ data.comments }}</td>
+      </tr>
+    </ng-template>
+
+  </tbody>
+
+</nz-table>
+<ng-template #totalTemplate let-total> {{"list-pages.list-total" | translate: { total: total} }} </ng-template>

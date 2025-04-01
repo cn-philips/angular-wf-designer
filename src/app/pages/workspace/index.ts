@@ -38,10 +38,16 @@ import {
   ElectronicSignatureListComponent,
   SignatureSearchItemComponent,
   ThirdPartySupplementComponent,
+  DealerThirdPartySupplementComponent,
+  NewRandomCycleComponent,
+  SelectThirdDealerComponent,
+  DealerThirdPartyListComponent,
   UploadFileImgComponent,
   WaiteMeSupplementListComponent,
   WaiteMeSupplementSearchItemComponent,
-  WinningbidSupplementComponent
+  WinningbidSupplementComponent,
+  RegisterICFComponent,
+  RegisterICFListComponent
 } from "./waite-me-supplement";
 
 export * from "./components";
@@ -65,7 +71,10 @@ export const COMPONENTS = [
   ElectronicSignatureListComponent,
   SignatureSearchItemComponent,
   ElectronicSignatureSearchItemComponent,
-  UploadFileImgComponent
+  UploadFileImgComponent,
+  DealerThirdPartyListComponent,
+  RegisterICFListComponent,
+  SelectThirdDealerComponent,
 ];
 
 export const PAGES = [
@@ -86,6 +95,9 @@ export const PAGES = [
   OitSupplementComponent,
   OmSupplementComponent,
   ThirdPartySupplementComponent,
+  DealerThirdPartySupplementComponent,
+  NewRandomCycleComponent,
   ContractSupplementComponent,
   MyReportComponent,
+  RegisterICFComponent,
 ];

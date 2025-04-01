@@ -18,6 +18,7 @@ export class WaiteMeSupplementSearchItemComponent implements OnInit {
   @Input() loading: any = false;
   @Input() formData: [];
   @Input() total: number = 0;
+  @Input() isThirdParty: boolean = false;
 
   public controlArray: any[] = [];
   public isCollapse = false;
@@ -65,6 +66,8 @@ export class WaiteMeSupplementSearchItemComponent implements OnInit {
     oitEndMonth: [null], // Oit结束月份
     modality: [null], // modality
     submitTime: [null],
+    ifIcf: [null], // 是否Icf
+    ifDistributorHasUploadMaterial: [null], // 是否Icf
   });
 
   ngOnInit() {
