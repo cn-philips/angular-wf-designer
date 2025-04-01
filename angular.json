@@ -102,7 +102,7 @@
             },
             "devpackage": {
               "outputPath": "../dist/ui",
-              "baseHref": "/",
+              "baseHref": "/ecomdiigtdev/",
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",

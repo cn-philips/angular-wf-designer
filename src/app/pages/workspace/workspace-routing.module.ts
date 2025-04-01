@@ -19,7 +19,10 @@ import {
   OitSupplementComponent,
   OmSupplementComponent,
   ThirdPartySupplementComponent,
-  WinningbidSupplementComponent
+  DealerThirdPartySupplementComponent,
+  NewRandomCycleComponent,
+  WinningbidSupplementComponent,
+  RegisterICFComponent,
 } from "@pages/workspace/waite-me-supplement";
 import { SharedModule } from "@shared/shared.module";
 import { NgZorroAntdModule } from "ng-zorro-antd";
@@ -81,6 +84,21 @@ const routes: Route[] = [
     data: { breadcrumb: "第三方自采核检" },
   },
   {
+    path: "dealer-third-supplement",
+    component: DealerThirdPartySupplementComponent,
+    data: { breadcrumb: "经销商自采三方核查" },
+  },
+  {
+    path: "newRandomCycle",
+    component: NewRandomCycleComponent,
+    data: { breadcrumb: "新建随机抽查周期" },
+  },
+  {
+    path: "editRandomCycle",
+    component: NewRandomCycleComponent,
+    data: { breadcrumb: "随机抽查周期" },
+  },
+  {
     path: "contract-supplement",
     component: ContractSupplementComponent,
     data: { breadcrumb: "待上传正本合同" },
@@ -94,6 +112,11 @@ const routes: Route[] = [
     path:"contract-electronic-signature",
     component:ContractElectronicSignatureComponent,
     data:{breadcrumb:"合同电子签章"}
+  },
+  {
+    path: "register-ICF",
+    component: RegisterICFComponent,
+    data: { breadcrumb: "待登记ICF" },
   },
   { path: "", redirectTo: "home", pathMatch: "full" },
 ];

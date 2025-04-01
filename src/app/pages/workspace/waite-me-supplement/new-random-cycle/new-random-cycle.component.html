@@ -1,0 +1,352 @@
+<app-apploading [load]="load"></app-apploading>
+<nz-card class="title_warpper mtb1rem" *ngIf="routeType == 'add'">
+  <form nz-form [nzLayout]="'inline'" [formGroup]="formValues">
+
+    <nz-form-item>
+      <nz-form-label nzXs="12" nzMd="12" nzXl="10">
+        随机抽查周期数据时间范围
+      </nz-form-label>
+      <nz-form-control nzXs="12" nzMd="6" nzXl="7">
+        <nz-date-picker formControlName="startDay" nzFormat="yyyy-MM-dd" [nzPlaceHolder]="'开始日期'"
+        [nzDisabledDate]="disabledStartDate"></nz-date-picker>
+      </nz-form-control>
+      <nz-form-control nzXs="12" nzMd="6" nzXl="7">
+        <nz-date-picker formControlName="endDay" nzFormat="yyyy-MM-dd" [nzPlaceHolder]="'结束日期'"
+        [nzDisabledDate]="disabledEndDate"></nz-date-picker>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-control>
+        <button nz-button nzType="primary" (click)="randomSelect()">系统随机抽取</button>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+</nz-card>
+
+<nz-card class="title_warpper mtb1rem" *ngIf="routeType == 'edit'">
+  <form nz-form [nzLayout]="'inline'" [formGroup]="formValues">
+
+    <nz-form-item>
+      <nz-form-label nzXs="12" nzMd="12" nzXl="10">
+        随机抽查周期数据时间范围
+      </nz-form-label>
+      <nz-form-control nzXs="12" nzMd="6" nzXl="7">
+        <nz-date-picker formControlName="startDay" nzFormat="yyyy-MM-dd" [nzPlaceHolder]="'开始日期'" disabled
+        [nzDisabledDate]="disabledStartDate"></nz-date-picker>
+      </nz-form-control>
+      <nz-form-control nzXs="12" nzMd="6" nzXl="7">
+        <nz-date-picker formControlName="endDay" nzFormat="yyyy-MM-dd" [nzPlaceHolder]="'结束日期'" disabled
+        [nzDisabledDate]="disabledEndDate"></nz-date-picker>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+</nz-card>
+
+
+<div class="tabs-box" style="width: 100%; background-color: #ffffff; padding: 15px">
+  <app-form-section class="mtb1rem" title="系统随机抽取概要">
+    <nz-table #fixedTable class="tab-pad8" [nzData]="summaryData" [nzShowPagination]="false" [nzScroll]="{ y: '300px' }"
+      nzBordered>
+      <thead>
+        <tr>
+          <th rowspan="2" nzAlign="center" style="width: 120px;" nzLeft="0px">Team</th>
+          <th rowspan="2" nzAlign="center" style="width: 120px;">系统随机抽取结果</th>
+          <th rowspan="2" nzAlign="center" style="width: 100px">总样本数量</th>
+          <th colspan="2" nzAlign="center" style="width: 180px">High Risk & Pre-Conclude<br>（100%抽取）</th>
+          <th colspan="2" nzAlign="center" style="width: 220px">High Risk & Non Pre-Conclude<br>（50% Random抽取）</th>
+          <th colspan="2" nzAlign="center" style="width: 160px">Medium Risk<br>（20% Random抽取）</th>
+          <th colspan="2" nzAlign="center" style="width: 180px">Low Risk<br>（10% Random抽取）</th>
+        </tr>
+        <tr>
+          <th nzAlign="center" style="width: 80px">抽取结果</th>
+          <th nzAlign="center" style="width: 80px">抽取样本</th>
+          <th nzAlign="center" style="width: 100px">抽取结果</th>
+          <th nzAlign="center" style="width: 100px">抽取样本</th>
+          <th nzAlign="center" style="width: 80px">抽取结果</th>
+          <th nzAlign="center" style="width: 80px">抽取样本</th>
+          <th nzAlign="center" style="width: 90px">抽取结果</th>
+          <th nzAlign="center" style="width: 90px">抽取样本</th>
+        </tr>
+      </thead>
+      <tbody>
+        <ng-container *ngFor="let data of fixedTable.data">
+          <tr>
+            <td class="tableData" nzAlign="center" style="width: 120px" nzLeft="0px">{{ data.team }}</td>
+            <td class="tableData" nzAlign="center" style="width: 120px">{{ data.pickCount }}</td>
+            <td class="tableData" nzAlign="center" style="width: 100px">{{ data.total }}</td>
+            <td class="tableData" nzAlign="center" style="width: 90px">{{ data.highRiskAndPreConcludePickCount }}</td>
+            <td class="tableData" nzAlign="center" style="width: 90px">{{ data.highRiskAndPreConcludeTotal }}</td>
+            <td class="tableData" nzAlign="center" style="width: 110px">{{ data.highRiskAndNonPreConcludePickCount }}
+            </td>
+            <td class="tableData" nzAlign="center" style="width: 110px">{{ data.highRiskAndNonPreConcludeTotal }}</td>
+            <td class="tableData" nzAlign="center" style="width: 80px">{{ data.mediumRiskPickCount }}</td>
+            <td class="tableData" nzAlign="center" style="width: 80px">{{ data.mediumRiskTotal }}</td>
+            <td class="tableData" nzAlign="center" style="width: 90px">{{ data.lowRiskPickCount }}</td>
+            <td class="tableData" nzAlign="center" style="width: 75px">{{ data.lowRiskTotal }}</td>
+          </tr>
+        </ng-container>
+
+      </tbody>
+    </nz-table>
+  </app-form-section>
+
+  <app-form-section class="mtb1rem" title="系统随机抽取结果">
+    <div class="area-btn">
+      <button *ngIf="isOAAdmin" nz-button nzType="primary" (click)="showAddModal()">人工新增核查项目</button>
+      <button *ngIf="isOAAdmin || isAuditor" nz-button nzType="primary" style="margin-left: 10px"
+        (click)="exportFile()">导出</button>
+      <button *ngIf="isOAAdmin && applyStatu === 'UNLOCKED'" nz-button nzType="primary" style="margin-left: 10px"
+        (click)="showModal()">锁定随机抽取结果</button>
+    </div>
+
+    <div *ngIf="removedData && removedData.length > 0" style="width: 80%;margin-bottom: 24px;">
+      <p style="font-weight: bold;margin-bottom: 10px;">被删除的抽取结果</p>
+      <nz-table #deleteTable class="tab-pa8" [nzData]="removedData" [nzFrontPagination]="false"
+        [nzShowPagination]="false" [nzScroll]="{ x: '1020px' }" nzBordered>
+        <thead>
+          <tr>
+            <th nzAlign="center" style="width: 120px" nzLeft="0px">DealFormID</th>
+            <th nzAlign="center" style="width: 120px">经销商名称</th>
+            <th nzAlign="center" style="width: 150px">COS Ref.</th>
+            <th nzAlign="center" style="width: 120px">OIT完成时间</th>
+            <th nzAlign="center" style="width: 120px">删除备注</th>
+            <th nzAlign="center" style="width: 140px">删除附件</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let data of deleteTable.data">
+            <td class="tableData" nzAlign="center" style="width: 120px" nzLeft="0px">{{ data.dealFormId }}</td>
+            <td class="tableData" nzAlign="center" style="width: 120px">{{ data.dealerName }}</td>
+            <td class="tableData" nzAlign="center" style="width: 150px"
+              [innerHTML]="getFields(data.relatedContractSummaries,'ref')"></td>
+            <td class="tableData" nzAlign="center" style="width: 120px">{{ getFields(data.relatedContractSummaries,
+              'oitTime') }}</td>
+            <td class="tableData" nzAlign="center" style="width: 120px">{{ data.remarks }}</td>
+            <td class="tableData" nzAlign="center" style="width: 140px">
+              <a *ngFor="let file of getJson(data.attachment)" style="display: block; color: #337FBF;" href="javascript:"
+              (click)="fileDown(file.fileId, file.name)">{{file.name}}</a>
+            </td>
+          </tr>
+        </tbody>
+      </nz-table>
+    </div>
+
+    <div>
+      <p style="font-weight: bold;margin-bottom: 10px;">有效的抽取结果</p>
+      <nz-table class="tab-pa8" nzVirtualScroll [nzVirtualItemSize]="54" [nzData]="detailData"
+        [nzFrontPagination]="false" [nzShowPagination]="false"
+        [nzScroll]="{ x: isOAAdmin?'2660px':'2460px', y: '400px'}">
+        <thead>
+          <tr>
+            <th *ngIf="isOAAdmin" nzAlign="center" nzWidth="264px" nzLeft="0px">操作</th>
+            <th nzAlign="center" nzWidth="200px">核查报告</th>
+            <th nzAlign="center" nzWidth="200px">核查详情</th>
+            <th nzAlign="center" nzWidth="200px">核查人备注</th>
+            <th nzAlign="center" nzWidth="200px">三方核查状态</th>
+            <th nzAlign="center" nzWidth="120px">核查报告上传时间</th>
+            <th nzAlign="center" nzWidth="150px">经销商名称</th>
+            <th nzAlign="center" nzWidth="150px">客户名称</th>
+            <th nzAlign="center" nzWidth="130px">DealFormID</th>
+            <th nzAlign="center" nzWidth="130px">Risk Category</th>
+            <th nzAlign="center" nzWidth="170px">COS Ref.</th>
+            <th nzAlign="center" nzWidth="150px">关联的新的COS Ref.</th>
+            <th nzAlign="center" nzWidth="120px">关联的新的DealFormID</th>
+            <th nzAlign="center" nzWidth="150px">关联的新经销商</th>
+            <th nzAlign="center" nzWidth="120px">OIT完成时间</th>
+            <th nzAlign="center" nzWidth="120px">ICF登记时间</th>
+            <th nzAlign="center" nzWidth="120px">OA</th>
+            <th nzAlign="center" nzWidth="120px">SO#</th>
+            <th nzAlign="center" nzWidth="120px">ICF时间</th>
+            <th nzAlign="center" nzWidth="140px">需要经销商提供核查材料截止时间</th>
+            <th nzAlign="center" nzWidth="120px">经销商实际提供核查材料时间</th>
+            <th nzAlign="center" nzWidth="120px">经销商是否超期提供核查材料</th>
+            <th nzAlign="center" nzWidth="100px">数据来源</th>
+            <th nzAlign="center" nzWidth="120px">备注</th>
+            <th nzAlign="center" nzWidth="160px" nzLeft="0px">附件</th>
+          </tr>
+        </thead>
+        <tbody>
+          <ng-template nz-virtual-scroll let-data let-index="index">
+            <tr>
+              <td *ngIf="isOAAdmin" class="tableData" nzAlign="center" nzLeft="0px">
+                <a style="display: block; color: #337FBF;" (click)="operate(data,'del')">删除</a>
+                <a *ngIf="applyStatu!=='UNLOCKED'" style="display: block; color: #337FBF;" (click)="operate(data, 'send')">通知经销商需要被核查</a>
+              </td>
+              <td class="tableData" nzAlign="center" >
+                <ng-container *ngIf="data.auditFiles&&data.auditFiles.length>0">
+                  <div *ngFor="let item of data.auditFiles">
+                    <a style="display: block; color: #337FBF;" href="javascript:"
+                      (click)="fileDown(item.fileId, item.fileName)">{{item.fileName}}</a>
+                  </div>
+                </ng-container>
+              </td>
+              <td class="tableData" nzAlign="center"  >
+                <div *ngFor="let urlObj of data.auditDetailsUrlList" >
+                  <a href="javascript:" (click)="jumpToAuditDetail(urlObj)">{{urlObj.referenceId}}</a><br/>
+                </div>
+              </td>
+              <td class="tableData" nzAlign="center" >
+                <div>
+                  <textarea
+                    nz-input
+                    placeholder=""
+                    [nzAutosize]="{ minRows: 1, maxRows: 6 }"
+                    [(ngModel)]="data.auditorComments"
+                    [ngModelOptions]="{standalone:true}"
+                    [disabled]="!remarkable"
+                  ></textarea>
+                </div>
+              </td>
+              <td class="tableData" nzAlign="center" >{{ data.auditStatus }}</td>
+              <td class="tableData" nzAlign="center" >{{ data.auditReportUploadTime | TimeFormatePipeNow }}</td>
+              <td class="tableData" nzAlign="center" >{{ data.dealerName }}</td>
+              <td class="tableData" nzAlign="center" >{{ data.hospitalName }}</td>
+              <td class="tableData" nzAlign="center" >{{ data.dealFormId }}</td>
+              <td class="tableData" nzAlign="center" >{{ data.risk }}</td>
+              <td class="tableData" nzAlign="center"
+                [innerHTML]="getFields(data.referenceId, 'split')">
+              </td>
+              <td class="tableData" nzAlign="center" >{{ data.relatedNewReferenceId }}</td>
+              <td class="tableData" nzAlign="center" >{{ data.relatedNewDealFormId }}</td>
+              <td class="tableData" nzAlign="center" >{{ getFields(data.relatedNewContractSummaries,
+                'newDealer') }}
+              </td>
+              <td class="tableData" nzAlign="center" >{{ getFields(data.relatedContractSummaries,
+                'oitTime') }}</td>
+              <td class="tableData" nzAlign="center" >{{ getFields(data.orderDetails, 'icfRe') }}
+              </td>
+              <td class="tableData" nzAlign="center" [innerHTML]="getFields(data.orderDetails, 'oa')">
+              </td>
+              <td class="tableData" nzAlign="center" [innerHTML]="getFields(data.orderDetails, 'so')">
+              </td>
+              <td class="tableData" nzAlign="center" >{{ getFields(data.orderDetails, 'icf') }}</td>
+              <td class="tableData" nzAlign="center"
+                [innerHTML]="getFields(data.orderDetails, 'deadline')">
+              </td>
+              <td class="tableData" nzAlign="center" >{{ data.dealerProvideMaterialRealtime |
+                TimeFormatePipeNow }}
+              </td>
+              <td class="tableData" nzAlign="center"
+                [innerHTML]="getFields(data.orderDetails, 'over')">
+              </td>
+              <td class="tableData" nzAlign="center" >{{ data.type === 'MANUAL' ? '人工新增' : '系统抽取' }}
+              </td>
+              <td class="tableData" nzAlign="center" >{{ data.remarks }}</td>
+              <td class="tableData" nzAlign="center"  nzLeft="0px">
+                <a *ngFor="let file of getJson(data.attachment)" style="display: block; color: #337FBF;" href="javascript:"
+                (click)="fileDown(file.fileId, file.name)">{{file.name}}</a>
+              </td>
+            </tr>
+          </ng-template>
+        </tbody>
+      </nz-table>
+    </div>
+
+  </app-form-section>
+
+
+  <div *ngIf="remarkable" nz-row nzType="flex" nzJustify="center" nzAlign="middle">
+    <div nz-col>
+      <button nz-button nzType="primary" (click)="saveComments()">
+        保存
+      </button>
+    </div>
+  </div>
+</div>
+
+<select-third-deal #selectDeal (select)="onDealFormSelect($event)"></select-third-deal>
+
+<nz-modal [(nzVisible)]="isVisible" nzWidth="1000" [nzMaskClosable]="false" nzTitle="锁定抽取周期，并邮件通知相关经销商、Sales Line、OA等相关人员"
+  [nzFooter]="modalFooter" (nzOnCancel)="handleCancel()" (nzAfterClose)="afterClose()" >
+  <nz-alert nzType="warning" style="margin-bottom: 24px;"
+    nzMessage="点击确认后，系统将锁定抽取周期，并通过邮件通知相关经销商（如果DealForm存在改单情况并关联了新的DealForm,将仅通知新DealForm所对应的经销商）" nzShowIcon></nz-alert>
+  <div>
+    <nz-table [nzData]="unlockData" [nzFrontPagination]="false" [nzShowPagination]="false"
+      [nzScroll]="{ x: '700px', y: '400px' }" nzBordered>
+      <thead>
+        <tr>
+          <th nzAlign="center" style="width: 120px" nzLeft="0px">CP DealForm ID</th>
+          <th nzAlign="center" style="width: 120px">经销商</th>
+          <th nzAlign="center" style="width: 150px">经销商下单员邮箱</th>
+          <th nzAlign="center" style="width: 150px">经销商补充邮箱</th>
+          <th nzAlign="center" style="width: 150px">Sales邮箱</th>
+          <th nzAlign="center" style="width: 161px">DSL邮箱</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let data of unlockData">
+          <td class="tableData" nzAlign="center" style="width: 120px" nzLeft="0px">{{ data.dealFormId }}</td>
+          <td class="tableData" nzAlign="center" style="width: 120px">{{ data.dealerName }}</td>
+          <td class="tableData" nzAlign="center" style="width: 150px">
+            <nz-form-item class="margin0">
+              <nz-form-control>
+                <input nz-input [(ngModel)]="data.dealerEmail" maxlength="255" />
+                <nz-form-explain *ngIf="!data.dealerEmail" style="color: red;">
+                  此选项必填字段
+                </nz-form-explain>
+              </nz-form-control>
+            </nz-form-item>
+          </td>
+          <td class="tableData" nzAlign="center" style="width: 150px">
+            <nz-form-item class="margin0">
+              <nz-form-control>
+                <input nz-input [(ngModel)]="data.additionalEmail" maxlength="255" />
+              </nz-form-control>
+            </nz-form-item>
+          </td>
+          <td class="tableData" nzAlign="center" style="width: 150px">
+            <nz-form-item class="margin0">
+              <nz-form-control>
+                <input nz-input [(ngModel)]="data.salesEmail" maxlength="255" />
+                <nz-form-explain *ngIf="!data.salesEmail" style="color: red;">
+                  此选项必填字段
+                </nz-form-explain>
+              </nz-form-control>
+            </nz-form-item>
+          </td>
+          <td class="tableData" nzAlign="center" style="width: 150px">
+            <nz-form-item class="margin0">
+              <nz-form-control>
+                <input nz-input [(ngModel)]="data.dmEmail" maxlength="255" />
+                <nz-form-explain *ngIf="!data.dmEmail" style="color: red;">
+                  此选项必填字段
+                </nz-form-explain>
+              </nz-form-control>
+            </nz-form-item>
+          </td>
+        </tr>
+      </tbody>
+    </nz-table>
+
+  </div>
+  <ng-template #modalFooter>
+    <button nz-button nzType="default" (click)="handleCancel()">取消</button>
+    <button nz-button nzType="primary" (click)="handleOk()">确认发送</button>
+  </ng-template>
+</nz-modal>
+
+<nz-modal [(nzVisible)]="showRemove" [nzMaskClosable]="false" nzTitle="填写备注及附件" (nzOnCancel)="closeRemove()"
+  (nzOnOk)="handleConfirm()">
+  <form nz-form>
+    <nz-form-item>
+      <nz-form-label [nzSpan]="5" nzFor="note">备注</nz-form-label>
+      <nz-form-control [nzSpan]="12">
+        <textarea rows="2" nz-input [(ngModel)]="reasonObj.reason" name="reason"></textarea>
+        <nz-form-explain *ngIf="!reasonObj.reason" style="color: red;">
+          此选项必填字段
+        </nz-form-explain>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSpan]="5" nzFor="gender">附件</nz-form-label>
+      <nz-form-control [nzSpan]="12">
+        <shared-upload-file [title]="" [type]="null" [(ngModel)]="reasonObj.attachments" name="attachments">
+        </shared-upload-file>
+        <nz-form-explain *ngIf="!reasonObj.attachments || reasonObj.attachments.length == 0" style="color: red;">
+          此选项必填字段
+        </nz-form-explain>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+</nz-modal>

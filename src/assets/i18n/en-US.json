@@ -1478,7 +1478,8 @@
           "done": "Done",
           "waitingForEsign": "尚未发起电子签章",
           "esigned": "已发起电子签章"
-        }
+        },
+        "icf":"If registered ICF"
       }
     },
     "transfer": {
@@ -1495,6 +1496,9 @@
     },
     "table-header": {
       "ref-no": "Ref No",
+      "icf-sign-time": "ICF Sign Time",
+      "icf-registration-time": "ICF Registration Time",
+      "if_dealer_has_upload_audit_material": "If Dealer Has Upload Audit Material",
       "handle-node": "Task Status",
       "task-status": "Task Status",
       "applicant": "Sales",

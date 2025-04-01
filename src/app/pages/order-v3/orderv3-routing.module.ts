@@ -9,7 +9,7 @@ import {
   OrdersummaryBaseInfoComponent,
   PreOrderComponent,
   PreOrderoaComponent,
-  PreorderexamineComponent
+  PreorderexamineComponent,
 } from "./index";
 const routes: Routes = [
   {
@@ -56,7 +56,6 @@ const routes: Routes = [
     component: ContractSignDetailComponent,
     data: { breadcrumb: "合同签署" },
   },
-
   
 ];
 @NgModule({

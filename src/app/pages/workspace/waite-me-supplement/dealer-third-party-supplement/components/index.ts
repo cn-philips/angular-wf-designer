@@ -1,0 +1,1 @@
+export { DealerThirdPartyListComponent } from './list/list.component';
