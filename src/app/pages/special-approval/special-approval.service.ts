@@ -66,7 +66,7 @@ export class SpecialApprovalService {
       this.omUserMap['US'] = usOmRes.data
       this.omUserMap['CC'] = ccOmRes.data
       console.log(this.omUserMap);
-      
+
     })
   }
 
@@ -130,7 +130,10 @@ export class SpecialApprovalService {
     });
   }
 
-  getProcessOwnerAdmin(applyType) {
+  getProcessOwnerAdmin(applyType,bg) {
+    // console.log('this.processOwnerAdminMap',this.processOwnerAdminMap)
+    // console.log('bg',bg)
+    bg = bg||'';
     let processOwnerAdmin = this.processOwnerAdminMap[applyType];
     if (processOwnerAdmin && Object.keys(processOwnerAdmin).length > 0) {
       return processOwnerAdmin;
@@ -138,8 +141,8 @@ export class SpecialApprovalService {
       const list = this.processOwnerAdminList.filter( (item) => { return item.applyType === applyType });
       if(list.length > 0) {
         processOwnerAdmin =  {
-          processOwner: list[0].owner,
-          processAdmin: list[0].admin
+          processOwner: this.ownerOrAdminListHandler(list[0].owner,bg),
+          processAdmin: this.ownerOrAdminListHandler(list[0].admin,bg),
         }
         this.processOwnerAdminMap[applyType] = processOwnerAdmin;
       } else {
@@ -148,10 +151,19 @@ export class SpecialApprovalService {
           processAdmin: []
         }
       }
+      // console.log('this.processOwnerAdminMap2',this.processOwnerAdminMap)
       return processOwnerAdmin;
     }
   }
-
+  ownerOrAdminListHandler(list,bg) {
+    let validBgList = ['all',bg.toLowerCase()];
+    let pdigtBgList = ['PD&IGT'.toLowerCase()]
+    if(pdigtBgList.includes(bg.toLowerCase())) {
+      validBgList = ['all','PD&IGT'.toLowerCase(),'DI'.toLowerCase(),'PD'.toLowerCase(),'IGT'.toLowerCase]
+    }
+    list = list.filter( (item) => validBgList.includes(item.bg.toLowerCase()));
+    return list.filter((item,index,self) => self.findIndex((t) => t.email === item.email) === index)
+  }
   async getForeignCompany() {
     if (this.foreignCompanyList.length > 0) {
       return this.foreignCompanyList

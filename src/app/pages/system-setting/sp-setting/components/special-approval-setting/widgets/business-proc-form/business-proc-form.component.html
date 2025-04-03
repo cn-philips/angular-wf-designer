@@ -200,6 +200,34 @@
     </div>
 
     <div nz-row>
+      <div nz-col [nzMd]="16" [nzSm]="16" [nzXs]="24">
+        <nz-form-item>
+          <nz-form-label nzRequired [nzSm]="6" [nzXs]="24"
+            >Admin</nz-form-label
+          >
+          <nz-form-control [nzSm]="18" [nzXs]="24">
+            <shared-input-user formControlName="admin" [mode]="'multiple'">
+
+            </shared-input-user>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+    <div nz-row>
+      <div nz-col [nzMd]="16" [nzSm]="16" [nzXs]="24">
+        <nz-form-item>
+          <nz-form-label nzRequired [nzSm]="6" [nzXs]="24"
+            >Owner</nz-form-label
+          >
+          <nz-form-control [nzSm]="18" [nzXs]="24">
+            <shared-input-user formControlName="owner" (select)="onSelecUser($event)"  [mode]="'multiple'">
+
+            </shared-input-user>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+    <div nz-row>
       <nz-spin [nzSpinning]="previewLoading">
         <div class="preview-container">
           <header>审批流预览</header>

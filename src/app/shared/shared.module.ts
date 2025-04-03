@@ -19,9 +19,10 @@ import { DIRECTIVES } from "./directives";
 // 全局管道
 import { PIPES } from "./pipes";
 import { TranslateModule } from "@ngx-translate/core";
+import { InputUserComponent } from './components/input-user/input-user.component';
 
 @NgModule({
-  declarations: [...COMPONENTS, ...PIPES, ...DIRECTIVES],
+  declarations: [...COMPONENTS, ...PIPES, ...DIRECTIVES, InputUserComponent],
   imports: [
     ClipboardModule,
     NgZorroAntdModule,
@@ -46,6 +47,7 @@ import { TranslateModule } from "@ngx-translate/core";
     RouterModule,
     HttpClientModule,
     TranslateModule,
+    InputUserComponent,
   ],
   providers: [PIPES],
 })

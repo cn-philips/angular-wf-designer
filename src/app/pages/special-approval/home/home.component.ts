@@ -305,7 +305,7 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  onNavigateToNewRequest({ type, item, bg, role }) {
+  onNavigateToNewRequest({ type, item, bg, role ,admin,owner}) {
     this.router.navigate(["/special-approval/new-request"], {
       queryParams: { type, item, bg, role },
     });

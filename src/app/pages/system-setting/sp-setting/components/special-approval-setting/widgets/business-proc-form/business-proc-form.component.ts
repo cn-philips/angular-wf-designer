@@ -56,6 +56,8 @@ export class BusinessProcFormComponent implements OnInit {
     maxWarrantyMonths: [null],
     maxWarrantyMonthsComparator: [null],
     remark: [null], // 说明
+    admin: [[]], // 管理员
+    owner: [[]], // 负责人
   })
 
   constructor(
@@ -85,10 +87,11 @@ export class BusinessProcFormComponent implements OnInit {
   }
 
   showModal(mode: FORM_MODE, data: BusinessProc = null) {
+    console.log('showModal', data)
     this.modalTitle = FORM_MODE_MAP[mode]
     this.formMode = mode
     if (mode === FORM_MODE.EDIT || mode === FORM_MODE.CLONE) {
-      const { id, status, bg, applyType, applyItem, processId, minWarrantyMonths, minWarrantyMonthsComparator, maxWarrantyMonths, maxWarrantyMonthsComparator, remark } = data
+      const { id, status, bg, applyType, applyItem, processId, minWarrantyMonths, minWarrantyMonthsComparator, maxWarrantyMonths, maxWarrantyMonthsComparator, remark, admin, owner } = data
       // this.onApplyTypeChange(applyType)
       this.formValues.patchValue({
         status,
@@ -101,6 +104,8 @@ export class BusinessProcFormComponent implements OnInit {
         maxWarrantyMonths,
         maxWarrantyMonthsComparator,
         remark,
+        admin,
+        owner
       })
       if (mode === FORM_MODE.EDIT) {
         this.businessProcId = id
@@ -156,7 +161,10 @@ export class BusinessProcFormComponent implements OnInit {
       maxWarrantyMonths: null,
       maxWarrantyMonthsComparator: null,
       remark: null,
+      admin:[],
+      owner:[],
     })
     this.approveProcNodeList = []
   }
+
 }
