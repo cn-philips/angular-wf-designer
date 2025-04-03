@@ -15,6 +15,8 @@ interface Template {
   desc: string;
   bg: string;
   path?: string;
+  owner?:string[];
+  admin?:string[];
 }
 
 interface Tab {
@@ -65,6 +67,7 @@ export class SpecialApprovalEntriesComponent implements OnInit {
     this.spService
       .getTemplateList()
       .then((templateList) => {
+        console.log('templateList',templateList);
         if (templateList.length > 0) {
           this.showQuickLink = true;
         }
@@ -93,7 +96,7 @@ export class SpecialApprovalEntriesComponent implements OnInit {
               return true;
             }
           })
-          .map(({ bg, applyType, applyItem, remark, applyNodeApproveRole }) => {
+          .map(({ bg, applyType, applyItem, remark, applyNodeApproveRole, owner,admin }) => {
             if (!tabSet.has(applyType)) {
               this.tabList.push({
                 title: APPLY_TYPE_MAP[applyType].label,
@@ -109,6 +112,8 @@ export class SpecialApprovalEntriesComponent implements OnInit {
               desc: remark,
               bg,
               role: applyNodeApproveRole,
+              owner,
+              admin
             };
           });
         this.filteredTemplateList = Object.assign([], this.allTemplateList);
@@ -118,60 +123,6 @@ export class SpecialApprovalEntriesComponent implements OnInit {
         console.error(`获取template列表失败, ${message}`);
         this.pageLoading = ++this.reqSuccessCount !== this.reqTotalCount;
       });
-    // }
-    // if (this.type === "bid") {
-    //   this.filteredTemplateList = [
-    //     {
-    //       name: "导入<span style='color:var(--COLOR_PRIMARY);'>CP1</span>数据发起",
-    //       typeIndex: 1,
-    //       type: "string",
-    //       typeName: "string",
-    //       item: 1,
-    //       sample: "我的deal form ID/Simulation ID形如2132",
-    //       desc: "CP1 deal form/Simulation ID:纯数字",
-    //       bg: "string",
-    //       path: "bidding/apply-tender",
-    //     },
-    //     {
-    //       name: "导入<span  style='color:var(--COLOR_PRIMARY);'>CP2</span>数据发起",
-    //       typeIndex: 2,
-    //       type: "string",
-    //       typeName: "string",
-    //       item: 1,
-    //       sample:
-    //         "我的deal form ID/Simulation ID形如 D-202208000007, S-MR-202207000157",
-    //       desc: `CP2 deal form ID/Simulation ID:D/S-BMC-YYYYMM（年月）-5位顺序号`,
-    //       bg: "string",
-    //       path: "bidding-v3",
-    //     },
-    //   ];
-    // }
-    // if (this.type === "order") {
-    //   this.filteredTemplateList = [
-    //     {
-    //       name: "导入<span style='color:var(--COLOR_PRIMARY);'>CP1</span>数据发起",
-    //       typeIndex: 1,
-    //       type: "string",
-    //       typeName: "string",
-    //       item: 1,
-    //       sample: "我的deal form ID形如2132",
-    //       desc: "CP1 deal form:纯数字",
-    //       bg: "string",
-    //       path: "pre-order",
-    //     },
-    //     {
-    //       name: "导入<span style='color:var(--COLOR_PRIMARY);'>CP2</span>数据发起",
-    //       typeIndex: 2,
-    //       type: "string",
-    //       typeName: "string",
-    //       item: 1,
-    //       sample: "我的deal form ID形如D-202208000007",
-    //       desc: "CP2 deal form ID:D-BMC-YYYYMM（年月）-5位顺序号",
-    //       bg: "string",
-    //       path: "order-v3",
-    //     },
-    //   ];
-    // }
   }
   formatApplyTypeItem({ applyType, applyItem = "" }) {
     const { label } = APPLY_TYPE_MAP[applyType];
@@ -191,9 +142,9 @@ export class SpecialApprovalEntriesComponent implements OnInit {
         this.filteredTemplateList.push(i);
       });
   }
-  onNavigateToNewRequest({ type, item, bg, role }) {
-    this.router.navigate(["/special-approval/new-request"], {
-      queryParams: { type, item, bg, role },
+  onNavigateToNewRequest({ type, item, bg, role ,admin,owner}) {
+    this.router.navigate(["/special-approval/new-request",{owner,admin}], {
+      queryParams: { type, item, bg, role }
     });
   }
   handleTo(path) {
