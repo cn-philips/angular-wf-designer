@@ -1,4 +1,4 @@
-<div style="line-height: 40px;margin-top: 16px;" *ngIf="isThirdParty">
+<div style="line-height: 40px;margin-top: 16px;" *ngIf="isThirdParty && !isLegancy">
   <label style="margin: 0 2px 0 0">{{"list-pages.transfer.batch" | translate}}</label>
   <nz-switch [(ngModel)]="openCheckbox" style="margin: 0 10px 0 0"></nz-switch>
   <button *ngIf="openCheckbox" nz-button [nzType]="'primary'" (click)="openAssignShowoff()">
@@ -18,13 +18,13 @@
       <th class="tableHead" nzAlign="center" style="width: 220px">
         {{"list-pages.table-header.ref-no" | translate}}
       </th>
-      <th class="tableHead" *ngIf="isThirdParty" nzAlign="center" style="width: 200px">
+      <th class="tableHead" *ngIf="isThirdParty && !isLegancy" nzAlign="center" style="width: 200px">
         {{"list-pages.table-header.icf-sign-time" | translate}}
       </th>
-      <th class="tableHead" *ngIf="isThirdParty" nzAlign="center" style="width: 200px">
+      <th class="tableHead" *ngIf="isThirdParty && !isLegancy" nzAlign="center" style="width: 200px">
         {{"list-pages.table-header.if_dealer_has_upload_audit_material" | translate}}
       </th>
-      <th class="tableHead" *ngIf="isThirdParty" nzAlign="center" style="width: 200px">
+      <th class="tableHead" *ngIf="isThirdParty && !isLegancy" nzAlign="center" style="width: 200px">
         {{"list-pages.table-header.icf-registration-time" | translate}}
       </th>
       <th class="tableHead" nzAlign="center" style="width: 200px">
@@ -72,9 +72,9 @@
 
         <td class="tableData" style="width: 220px;" nzAlign="center">{{ data.referenceId }}</td>
 
-        <td class="tableData" *ngIf="isThirdParty" style="width: 200px;" nzAlign="center">{{ (data.icfSignTime | TimeFormatePipeNow) || "-"}}</td>
-        <td class="tableData" *ngIf="isThirdParty" style="width: 200px;" nzAlign="center">{{ (data.ifDistributorHasUploadMaterial ? "是":"否")}}</td>
-        <td class="tableData" *ngIf="isThirdParty" style="width: 200px;" nzAlign="center">{{ (data.icfRegistrationTime | TimeFormatePipeNow) || "-"}} </td>
+        <td class="tableData" *ngIf="isThirdParty && !isLegancy" style="width: 200px;" nzAlign="center">{{ (data.icfSignTime | TimeFormatePipeNow) || "-"}}</td>
+        <td class="tableData" *ngIf="isThirdParty && !isLegancy" style="width: 200px;" nzAlign="center">{{ (data.ifDistributorHasUploadMaterial ? "是":"否")}}</td>
+        <td class="tableData" *ngIf="isThirdParty && !isLegancy" style="width: 200px;" nzAlign="center">{{ (data.icfRegistrationTime | TimeFormatePipeNow) || "-"}} </td>
 
         <td *ngIf="data.procPhase === 'p3'" class="tableData" style="width: 200px;" nzAlign="center">{{ data.taskStatus
           | ProcessTaskStatusPipe | async}}</td>

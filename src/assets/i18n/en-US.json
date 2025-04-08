@@ -1465,6 +1465,8 @@
         "collapse": "Collapse",
         "todo": "Todo",
         "done": "Done",
+        "legacyThirdTodo":"Legacy ThirdPatry Todo",
+        "legacyThirdDone":"Lack ThirdPatry Done",
         "waitForOaHandle": "To be processed by OA",
         "waitForOaDone": "OA processed/not needed",
         "waitForZSLHandle": "To be handled by ZSL",

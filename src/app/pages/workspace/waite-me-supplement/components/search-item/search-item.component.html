@@ -286,5 +286,9 @@
       <span *ngIf="isHandle == 0 && total>0">({{total}})</span></label>
     <label nz-radio-button style="margin-left: 10px;" [nzValue]="1">{{"list-pages.search-form.form.done" | translate}}
       <span *ngIf="isHandle == 1 && total>0">({{total}})</span></label>
+    <label nz-radio-button *ngIf="isThirdParty" style="margin-left: 10px;" [nzValue]="2">{{"list-pages.search-form.form.legacyThirdTodo" | translate}}
+      <span *ngIf="isHandle == 1 && total>0">({{total}})</span></label>
+    <label nz-radio-button *ngIf="isThirdParty" style="margin-left: 10px;" [nzValue]="3">{{"list-pages.search-form.form.legacyThirdDone" | translate}}
+      <span *ngIf="isHandle == 1 && total>0">({{total}})</span></label>
   </nz-radio-group>
 </div>

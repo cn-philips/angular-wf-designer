@@ -56,6 +56,9 @@ export class WaiteMeSupplementListComponent implements OnInit {
     private modalService: NzModalService
   ) {}
 
+  get isLegancy(): Boolean {
+    return [2,3].includes(this.isHandle)
+  }
   ngOnInit() {
     // this.getTableData()
     this.getEntryModeList();

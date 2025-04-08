@@ -1473,6 +1473,8 @@
         "collapse": "收起",
         "todo": "待处理",
         "done": "已处理",
+        "legacyThirdTodo":"历史三方待处理",
+        "legacyThirdDone":"历史三方已处理",
         "waitForOaHandle": "待OA处理",
         "waitForOaDone": "OA尚未发起申请/无需处理",
         "waitForZSLHandle": "待合同签署人处理",
