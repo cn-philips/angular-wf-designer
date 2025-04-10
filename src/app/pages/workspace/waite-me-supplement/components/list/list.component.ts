@@ -56,7 +56,7 @@ export class WaiteMeSupplementListComponent implements OnInit {
     private modalService: NzModalService
   ) {}
 
-  get isLegancy(): Boolean {
+  public get isLegancy(): Boolean {
     return [2,3].includes(this.isHandle)
   }
   ngOnInit() {
@@ -154,18 +154,27 @@ export class WaiteMeSupplementListComponent implements OnInit {
   /*********** 一期跳转操作 Start  *********/
   //待oit文件上传 SO# 第三方自采
   goCompleteOit(item, param) {
+    // if(this.isThirdParty)
+    // isLegancy
+    let params = {
+      id: codeString(item.id),
+      flag:  this.flag,
+      status: item.taskStatus,
+      param: param,
+      sale: item.applicant,
+      processInstanceTaskId: item.processInstanceTaskId,
+      procInstId: item.procInstId,
+    }
+    if (this.isThirdParty) {
+      params['isThirdParty'] = this.isThirdParty
+      if (this.isLegancy) {
+        params['isLegancy'] = this.isLegancy
+      }
+    }
 
     this.router.navigate(["/pre-order/complete-oit"], {
       skipLocationChange: false,
-      queryParams: {
-        id: codeString(item.id),
-        flag:  this.flag,
-        status: item.taskStatus,
-        param: param,
-        sale: item.applicant,
-        processInstanceTaskId: item.processInstanceTaskId,
-        procInstId: item.procInstId,
-      },
+      queryParams: params,
     });
   }
 
