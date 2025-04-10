@@ -79,16 +79,21 @@ export class WaiteMeSupplementListComponent implements OnInit {
 
     if (orderType.includes(applyType)) {
       const url = "/order-v3/oitcomplete";
-      this.router.navigate([url], {
-        queryParams: {
-          id: data.id,
-          needFileType: this.type,
-          processInstanceTaskId: data.processInstanceTaskId,
-          taskStatus: data.taskStatus,
-          procInstId: data.procInstId,
-          isHandle: this.isHandle
-        },
-      });
+      let queryParams = {
+        id: data.id,
+        needFileType: this.type,
+        processInstanceTaskId: data.processInstanceTaskId,
+        taskStatus: data.taskStatus,
+        procInstId: data.procInstId,
+        isHandle: this.isHandle
+      }
+      if (this.isThirdParty) {
+        queryParams['isThirdParty'] = this.isThirdParty
+        if (this.isLegancy) {
+          queryParams['isLegancy'] = this.isLegancy
+        }
+      }
+      this.router.navigate([url], {queryParams});
     } else if (biddingType.includes(applyType)) {
       this.router.navigate(["/bidding-v3", data.id], {
         queryParams: {
@@ -164,12 +169,6 @@ export class WaiteMeSupplementListComponent implements OnInit {
       sale: item.applicant,
       processInstanceTaskId: item.processInstanceTaskId,
       procInstId: item.procInstId,
-    }
-    if (this.isThirdParty) {
-      params['isThirdParty'] = this.isThirdParty
-      if (this.isLegancy) {
-        params['isLegancy'] = this.isLegancy
-      }
     }
 
     this.router.navigate(["/pre-order/complete-oit"], {
