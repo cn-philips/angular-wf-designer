@@ -24,6 +24,7 @@ export class ThirdCheckInfoComponent implements OnInit {
   @Input() cpDealId:any="";
   @Input() dealFormId:any="";
   @Input() formValue: FormGroup;
+  @Input() isLegancy: boolean;
   dateFormat = 'yyyy-MM-dd';
   thirdPartyList: any = [];
   load: any = false;
@@ -175,15 +176,17 @@ export class ThirdCheckInfoComponent implements OnInit {
     this.http.post(`/act/ecos/thirdParty/detail/${applyId}`).subscribe((res => {
       if (res.code === '0000') {
         const data = res.data;
-        this.formData.patchValue({
-          ...data,
-          icfRegistrationTime: data.icfRegistrationTime?moment(new Date(data.icfRegistrationTime)).format('YYYY-MM-DD'):null,
-          dealerProvideMaterialDeadline: data.dealerProvideMaterialDeadline?moment(new Date(data.dealerProvideMaterialDeadline)).format('YYYY-MM-DD'):null,
-          dealerProvideMaterialRealtime: data.dealerProvideMaterialRealtime?moment(new Date(data.dealerProvideMaterialRealtime)).format('YYYY-MM-DD'):null,
-          icfSignTime: data.icfSignTime?moment(new Date(data.icfSignTime)).format('YYYY-MM-DD'):null,
-          auditAttachment: data.auditAttachment ? JSON.parse(data.auditAttachment) : [],
-          oaAuditAttachments: data.oaAuditAttachments ? JSON.parse(data.oaAuditAttachments) : [],
-        })
+        if(data){
+          this.formData.patchValue({
+            ...data,
+            icfRegistrationTime: data.icfRegistrationTime?moment(new Date(data.icfRegistrationTime)).format('YYYY-MM-DD'):null,
+            dealerProvideMaterialDeadline: data.dealerProvideMaterialDeadline?moment(new Date(data.dealerProvideMaterialDeadline)).format('YYYY-MM-DD'):null,
+            dealerProvideMaterialRealtime: data.dealerProvideMaterialRealtime?moment(new Date(data.dealerProvideMaterialRealtime)).format('YYYY-MM-DD'):null,
+            icfSignTime: data.icfSignTime?moment(new Date(data.icfSignTime)).format('YYYY-MM-DD'):null,
+            auditAttachment: data.auditAttachment ? JSON.parse(data.auditAttachment) : [],
+            oaAuditAttachments: data.oaAuditAttachments ? JSON.parse(data.oaAuditAttachments) : [],
+          })
+        }
 
         this.load = false;
         this.queryCPSummary(res.data.dealFormId)
@@ -202,33 +205,35 @@ export class ThirdCheckInfoComponent implements OnInit {
     this.http.post(`/act/ecos/thirdParty/cp2/queryThirdParty/${dealFormId}`).subscribe((res => {
       if (res.code === '0000') {
         let data = res.data
-        let riskArr = [data.salesPriceRisk,data.ssPriceRisk,data.thirdPartyRisk]
-        console.log('data',data)
-        console.log('riskArr',riskArr)
-        riskArr = riskArr.filter(item => item)
-        let risk = null;
-        if(riskArr.length>0)
-          risk = riskArr[riskArr.length-1]
-        console.log('risk',risk)
+        if(data){
+          let riskArr = [data.salesPriceRisk,data.ssPriceRisk,data.thirdPartyRisk]
+          console.log('data',data)
+          console.log('riskArr',riskArr)
+          riskArr = riskArr.filter(item => item)
+          let risk = null;
+          if(riskArr.length>0)
+            risk = riskArr[riskArr.length-1]
+          console.log('risk',risk)
 
-        const {esCny,esCnyNet,esUsd} = data
-        this.formData.patchValue({
-          esCny: esCny?esCny:null,
-          esCnyNet: esCnyNet?esCnyNet:null,
-          esUsd: esUsd?esUsd:null,
-        })
-        this.esCnyStr = esCny?esCny:null
+          const {esCny,esCnyNet,esUsd} = data
+          this.formData.patchValue({
+            esCny: esCny?esCny:null,
+            esCnyNet: esCnyNet?esCnyNet:null,
+            esUsd: esUsd?esUsd:null,
+          })
+          this.esCnyStr = esCny?esCny:null
 
-        this.CPSummary = data;
-        this.CPSummary.thirdPartyRisk = risk
-        this.CPSummary = {
-          ...this.CPSummary,
-          materialSubmissionTime: res.data.materialSubmissionTime?moment(new Date(res.data.materialSubmissionTime)).format('YYYY-MM-DD'):null,
-        }
-        this.partyStatus = res.data.thirdPartyStatus? res.data.thirdPartyStatus: 'none'
-        if (!['none','locked'].map(i=>i.toLowerCase()).includes(this.partyStatus.toLowerCase())) {
-          this.formData.get('auditComments').disable()
-          this.formData.get('auditAttachment').disable()
+          this.CPSummary = data;
+          this.CPSummary.thirdPartyRisk = risk
+          this.CPSummary = {
+            ...this.CPSummary,
+            materialSubmissionTime: res.data.materialSubmissionTime?moment(new Date(res.data.materialSubmissionTime)).format('YYYY-MM-DD'):null,
+          }
+          this.partyStatus = res.data.thirdPartyStatus? res.data.thirdPartyStatus: 'none'
+          if (!['none','locked'].map(i=>i.toLowerCase()).includes(this.partyStatus.toLowerCase())) {
+            this.formData.get('auditComments').disable()
+            this.formData.get('auditAttachment').disable()
+          }
         }
         this.load = false;
       } else {
@@ -657,15 +662,18 @@ export class ThirdCheckInfoComponent implements OnInit {
     return this.formValue.get('oaAddInfo') as FormGroup
   }
   queeryHistory(){
-    // let productVerification = this.thirdCheckFormData.get('productVerificationInformation').value;
-    // if(productVerification == '已经交付'){
-    //   this.thirdCheckFormData.get('productVerificationInformation').disable();
-    // } else {
-    //   this.thirdCheckFormData.get('productVerificationInformation').enable();
-    // }
+    if(this.isLegancy){
+      let productVerification = this.thirdCheckFormData.get('productVerificationInformation').value;
+      if(productVerification == '已经交付'){
+        this.thirdCheckFormData.get('productVerificationInformation').disable();
+      } else {
+        this.thirdCheckFormData.get('productVerificationInformation').enable();
+      }
+    }else{
+      this.thirdCheckFormData.get('productVerificationInformation').disable();
+      this.thirdCheckFormData.get('productVerificationFile').disable();
+    }
 
-    this.thirdCheckFormData.get('productVerificationInformation').disable();
-    this.thirdCheckFormData.get('productVerificationFile').disable();
     this.getEntryModeList();
   }
   public getEntryModeList() {

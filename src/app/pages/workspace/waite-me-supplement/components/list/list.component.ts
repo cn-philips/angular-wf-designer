@@ -56,6 +56,9 @@ export class WaiteMeSupplementListComponent implements OnInit {
     private modalService: NzModalService
   ) {}
 
+  public get isLegancy(): Boolean {
+    return [2,3].includes(this.isHandle)
+  }
   ngOnInit() {
     // this.getTableData()
     this.getEntryModeList();
@@ -76,16 +79,21 @@ export class WaiteMeSupplementListComponent implements OnInit {
 
     if (orderType.includes(applyType)) {
       const url = "/order-v3/oitcomplete";
-      this.router.navigate([url], {
-        queryParams: {
-          id: data.id,
-          needFileType: this.type,
-          processInstanceTaskId: data.processInstanceTaskId,
-          taskStatus: data.taskStatus,
-          procInstId: data.procInstId,
-          isHandle: this.isHandle
-        },
-      });
+      let queryParams = {
+        id: data.id,
+        needFileType: this.type,
+        processInstanceTaskId: data.processInstanceTaskId,
+        taskStatus: data.taskStatus,
+        procInstId: data.procInstId,
+        isHandle: this.isHandle
+      }
+      if (this.isThirdParty) {
+        queryParams['isThirdParty'] = this.isThirdParty
+        if (this.isLegancy) {
+          queryParams['isLegancy'] = this.isLegancy
+        }
+      }
+      this.router.navigate([url], {queryParams});
     } else if (biddingType.includes(applyType)) {
       this.router.navigate(["/bidding-v3", data.id], {
         queryParams: {
@@ -151,18 +159,21 @@ export class WaiteMeSupplementListComponent implements OnInit {
   /*********** 一期跳转操作 Start  *********/
   //待oit文件上传 SO# 第三方自采
   goCompleteOit(item, param) {
+    // if(this.isThirdParty)
+    // isLegancy
+    let params = {
+      id: codeString(item.id),
+      flag:  this.flag,
+      status: item.taskStatus,
+      param: param,
+      sale: item.applicant,
+      processInstanceTaskId: item.processInstanceTaskId,
+      procInstId: item.procInstId,
+    }
 
     this.router.navigate(["/pre-order/complete-oit"], {
       skipLocationChange: false,
-      queryParams: {
-        id: codeString(item.id),
-        flag:  this.flag,
-        status: item.taskStatus,
-        param: param,
-        sale: item.applicant,
-        processInstanceTaskId: item.processInstanceTaskId,
-        procInstId: item.procInstId,
-      },
+      queryParams: params,
     });
   }
 

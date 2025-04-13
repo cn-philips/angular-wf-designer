@@ -61,6 +61,8 @@ export class OitcompleteComponent implements OnInit {
   public changeName;
   public tabList = ['contract-tab', 'summary-tab', 'complete-tab', 'oit-tab', 'approval-record'];
   public isHandle: any;
+  public isThirdParty : boolean;
+  public isLegancy: boolean;
   public paymentProvisionList = [
     // "10% TT before OIT, 80% TT before FP, 10% TT against AC",
     // "10% TT before OIT, 90% TT before FP",
@@ -675,6 +677,11 @@ export class OitcompleteComponent implements OnInit {
     this.procInstId = this.activatedRouter.queryParams['value'].procInstId;
     this.needFileType = this.activatedRouter.queryParams['value'].needFileType;
     this.isHandle = this.activatedRouter.queryParams['value'].isHandle;
+
+    this.isThirdParty = this.activatedRouter.queryParams['value'].isThirdParty;
+    this.isLegancy = this.activatedRouter.queryParams['value'].isLegancy;
+
+
     this.pageLoading = true;
     if (this.status == 'ecos_oit_order_done' || this.status == 'ecos_oit_order_upload') {
       this.serveice.changeOrder(this.applyId).then(res => {
@@ -1529,16 +1536,16 @@ export class OitcompleteComponent implements OnInit {
         }
     }
 
-    if (this.needFileType === 'third') {
-      for (let i in this.thirdCheckFormData.controls) {
-        this.thirdCheckFormData.controls[i].markAsDirty()
-        this.thirdCheckFormData.controls[i].updateValueAndValidity()
-      }
-      if (!this.thirdCheckFormData.valid) {
-        this.message.error('请填写第三方自采核查状态后再提交')
-        return
-      }
-    }
+    // if (this.needFileType === 'third') {
+    //   for (let i in this.thirdCheckFormData.controls) {
+    //     this.thirdCheckFormData.controls[i].markAsDirty()
+    //     this.thirdCheckFormData.controls[i].updateValueAndValidity()
+    //   }
+    //   if (!this.thirdCheckFormData.valid) {
+    //     this.message.error('请填写第三方自采核查状态后再提交')
+    //     return
+    //   }
+    // }
     // const valid = this.baseInfoFromChild.checkbaseInfoFromData()
     // if (!valid) {
     //   this.tabIndex == 0
@@ -1770,7 +1777,12 @@ export class OitcompleteComponent implements OnInit {
 
   // 三方自采核查保存
   thirdCheckSubmit() {
-    this.thirdCheck.saveFormData()
+    if(this.isLegancy){
+      this.preSubmit('apply_save');
+    }else{
+      this.thirdCheck.saveFormData()
+    }
+
   }
 
   checkFormData = (paramForm) => {

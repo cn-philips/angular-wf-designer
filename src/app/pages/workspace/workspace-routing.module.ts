@@ -81,7 +81,7 @@ const routes: Route[] = [
   {
     path: "third-supplement",
     component: ThirdPartySupplementComponent,
-    data: { breadcrumb: "第三方自采核检" },
+    data: { breadcrumb: "第三方自采核查" },
   },
   {
     path: "dealer-third-supplement",

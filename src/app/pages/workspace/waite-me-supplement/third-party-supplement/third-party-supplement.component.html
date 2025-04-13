@@ -2,7 +2,7 @@
   <cos-waite-me-supplement-search-item [loading]="loading" [formData]="formValues" [total]="total"
     (search)="updateParams($event)" (setLoading)="getLoading($event)" [isThirdParty]="true">
   </cos-waite-me-supplement-search-item>
-  <cos-waite-me-supplement-list [isThirdParty]="true" #table [loading]="loading" [tableData]="tableData" [total]="total" [type]="type"
+  <cos-waite-me-supplement-list [isThirdParty]="true" #table [loading]="loading" [tableData]="tableData" [total]="total" [type]="type" [isHandle]="isHandle"
     (pageChange)="updateDataList($event)" (setLoading)="getLoading($event)" [flag]="0">
   </cos-waite-me-supplement-list>
 </div>
