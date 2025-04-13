@@ -1,7 +1,7 @@
 <div style="line-height: 40px;margin-top: 16px;" *ngIf="isThirdParty && !isLegancy">
   <label style="margin: 0 2px 0 0">{{"list-pages.transfer.batch" | translate}}</label>
   <nz-switch [(ngModel)]="openCheckbox" style="margin: 0 10px 0 0"></nz-switch>
-  <button *ngIf="openCheckbox" nz-button [nzType]="'primary'" (click)="openAssignShowoff()">
+  <button *ngIf="openCheckbox" [disabled]="!anyChecked" nz-button [nzType]="'primary'" (click)="openAssignShowoff()">
     {{"list-pages.transfer.transfer" | translate}}
   </button>
 </div>
