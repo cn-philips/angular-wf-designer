@@ -62,8 +62,31 @@ export class WaiteMeSupplementListComponent implements OnInit {
   ngOnInit() {
     // this.getTableData()
     this.getEntryModeList();
+    this.addSales();
+    const roleCode = JSON.parse(localStorage.getItem("roles"));
+    if (roleCode) {
+      roleCode.map((e) => {
+        if (e.toLowerCase() === "oa" || e.toLowerCase() === "oa leader") {
+          this.isOA = true;
+        }
+        if (e.toLowerCase() === "bidding") {
+          this.isBidding = true;
+        }
+        if (e.toLowerCase() === "win confirm") {
+          this.isWinConfirm = true;
+        }
+      });
+    }
   }
-
+  public addSales() {
+    const url = "/act/ecom/homepage/querySalesByRole";
+    const par = ["OA"];
+    this.http.post(url, par).subscribe((res) => {
+      if (res && res.data) {
+        this.receiverList = res.data;
+      }
+    });
+  }
   //重置分页
   resetPage() {
     this.pageParams = {
@@ -444,4 +467,15 @@ export class WaiteMeSupplementListComponent implements OnInit {
       this.tableData.forEach((item) => (this.mapOfCheckedId[item.id] = value));
     }
   }
+  get anyChecked() {
+    if (this.tableData) {
+      for (const i in this.mapOfCheckedId) {
+        if (this.mapOfCheckedId[i]) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
 }
