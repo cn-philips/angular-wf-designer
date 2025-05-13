@@ -53,10 +53,12 @@
                         </nz-dropdown>
                       </ng-template>
                     </ng-container> -->
-                    <button nz-button *ngIf="item.showsend" [disabled]="item.allDisable"
-                      (click)="signSign(indx, item.id)" nzType="primary">
-                      发起电子签章
-                    </button>
+                    <span nz-tooltip [nzTitle]="item.contracts.length === 0?'合同文件为空，无法发起电子签章，请上传文件！':(item.contracts.length >1?'合同文件数量大于1，无法发起电子签章，请调整文件数量！':null)" nzPlacement="top">
+                      <button nz-button *ngIf="item.showsend" [disabled]="item.allDisable || item.contracts.length === 0 || item.contracts.length >1"
+                        (click)="signSign(indx, item.id)" nzType="primary">
+                        发起电子签章
+                      </button>
+                    </span>
                     <button nz-button *ngIf="item.showsignbutton"
                       (click)="signAdminSign(indx, item.currentUserRole, item.id)" [disabled]="item.allDisable"
                       nzType="primary">
