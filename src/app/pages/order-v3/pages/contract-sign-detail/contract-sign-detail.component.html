@@ -96,7 +96,7 @@
             (nzOnConfirm)="orderSubmit('approved')">
             {{"orderv3.pages.contract-sign.submit" | translate}}
           </button>
-          <button nz-button nzType="primary" nz-popconfirm nzTitle="你确定要执行退回到合同概要表的操作?"
+          <button nz-button nzType="primary" nz-popconfirm [disabled]="isRaisedFlow" nzTitle="你确定要执行退回到合同概要表的操作?"
             (nzOnConfirm)="orderSubmit('rejected')">
             {{"orderv3.pages.contract-sign.reject" | translate}}
           </button>

@@ -53,6 +53,7 @@ export class OrdersummaryBaseInfoComponent implements OnInit {
   public changeItem
   public tabIndex: any = 1
   public tabList = ['contract-tab', 'pending-tab', 'complete-tab'];
+  public isRaisedFlow:boolean = false; //是否是raised flow
   priceData: any = {}
   productModelInfo = {
     orderProductModel: [{ value: null, disabled: !this.editBase }],
@@ -475,7 +476,6 @@ export class OrdersummaryBaseInfoComponent implements OnInit {
     })
   }
   async init() {
-
     this.applyId = this.activatedRouter.queryParams['_value'].id;
     this.status = this.activatedRouter.queryParams['value'].taskStatus;
     this.processInstanceTaskId = this.activatedRouter.queryParams['_value'].processInstanceTaskId;
@@ -520,6 +520,14 @@ export class OrdersummaryBaseInfoComponent implements OnInit {
       this.priceApprovalData.get('recycle').enable()
     }
 
+    // 合同签署节点，如果已经合同电子签署完成，不能退回之前的节点
+    let result = await this.serveice.ifRaisedFlow(this.applyId)
+    console.log('this.serveice.ifRaisedFlow',result)
+    if (result.code == '0000' && result.data) {
+      this.isRaisedFlow = true;
+    } else {
+      this.isRaisedFlow = false;
+    }
   }
   handleCancel() {
     // this.location.back();

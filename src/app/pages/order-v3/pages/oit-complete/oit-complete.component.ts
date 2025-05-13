@@ -84,6 +84,7 @@ export class OitcompleteComponent implements OnInit {
     "30%TT before OIT, 70% TT before FP(MOS)",
   ];
 
+  public isRaisedFlow:boolean = false; //是否是raised flow
   //改单申请上一次的so
   lastSo: any = {
     isExist: false,
@@ -838,6 +839,14 @@ export class OitcompleteComponent implements OnInit {
       this.myskip('oit-tab')
     }
 
+    // 合同签署节点，如果已经合同电子签署完成，不能退回之前的节点
+    let result = await this.serveice.ifRaisedFlow(this.applyId)
+    console.log('this.serveice.ifRaisedFlow',result)
+    if (result.code == '0000' && result.data) {
+      this.isRaisedFlow = true;
+    } else {
+      this.isRaisedFlow = false;
+    }
   }
   reName() {
     if (this.status == 'ecos_oit_order_submit') {

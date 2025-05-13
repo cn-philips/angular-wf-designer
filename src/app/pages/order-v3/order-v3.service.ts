@@ -533,5 +533,10 @@ export class OrderV3Service {
     return this.http.get(url).toPromise();
   }
 
+  ifRaisedFlow(applyId: any) {
+    const url = "/act/contractSign/ifRaisedFlow/" + applyId;
+    return this.http.get(url).toPromise();
+  }
+
   // ===================================电子签章模块接口========================================
 }
