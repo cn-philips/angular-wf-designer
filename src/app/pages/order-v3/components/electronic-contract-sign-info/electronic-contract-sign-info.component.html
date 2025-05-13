@@ -414,8 +414,9 @@
     <nz-table #rowSelectionTable [nzData]="contractSignFileList" [nzShowPagination]="false"
       (nzCurrentPageDataChange)="currentPageDataChange($event)" [nzScroll]="{x: isMobile ? '600px' : 0}">
       <thead>
-        <th nzShowCheckbox [(nzChecked)]="isAllDisplayDataChecked" [nzIndeterminate]="isIndeterminate"
-          (nzCheckedChange)="checkAll($event)" nzAlign="center"></th>
+        <!-- <th nzShowCheckbox [(nzChecked)]="isAllDisplayDataChecked" [nzIndeterminate]="isIndeterminate"
+          (nzCheckedChange)="checkAll($event)" nzAlign="center"></th> -->
+        <th nzAlign="center"></th>
         <th nzAlign="center">文件名称</th>
         <th nzAlign="center">文件类型</th>
         <th nzAlign="center">操作</th>
@@ -423,7 +424,8 @@
       <tbody>
         <tr *ngFor="let data of rowSelectionTable.data">
           <td nzAlign="center" nzShowCheckbox [(nzChecked)]="mapOfCheckedId[data.id]"
-            (nzCheckedChange)="refreshStatus()"></td>
+              (nzCheckedChange)="onSingleCheck(data.id)">
+          </td>
           <td nzAlign="center">{{ data.fileName }}</td>
           <td nzAlign="center">未签署文件</td>
           <!-- <td nzAlign="center">{{ data.fileType }}</td> -->

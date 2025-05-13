@@ -249,9 +249,22 @@ export class ElectronicContractSignInfoComponent implements OnInit {
 
   currentPageDataChange($event: any): void {
     this.listOfDisplayData = $event;
+    this.listOfDisplayData.forEach((item: any) => {
+      if (this.mapOfCheckedId[item.id] === undefined) {
+        this.mapOfCheckedId[item.id] = false;
+      }
+    })
     this.refreshStatus();
   }
-
+  onSingleCheck(id: string): void {
+    // 只允许单选
+    console.log('this.mapOfCheckedId1',this.mapOfCheckedId)
+    Object.keys(this.mapOfCheckedId).forEach(key => {
+      this.mapOfCheckedId[key] = (key == id);
+    });
+    console.log('this.mapOfCheckedId2',this.mapOfCheckedId)
+    this.refreshStatus();
+  }
   refreshStatus(): void {
     let listOfDisplayData = this.listOfDisplayData;
     let mapOfCheckedId = this.mapOfCheckedId;
