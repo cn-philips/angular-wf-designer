@@ -48,7 +48,6 @@ export class ScheduleComponent implements OnInit {
   userList: User[] = [];
   scriptTypeList = [];
   reportFormTypeList = [];
-
   config = {
     toolbar: [
     ['bold', 'italic', 'underline', 'strike'],        // 加粗，斜体，下划线，删除线
@@ -165,13 +164,18 @@ export class ScheduleComponent implements OnInit {
 
   classifyList = [
     { code: "BOP", label: "Bidding/OIT/Slot Reservation" },
-    { code: "special", label: "Special Aproval" },
+    { code: "special", label: "Special Approval" },
+    { code: "lead-time", label: "Lead Time" },
   ]
 
   bopFormTypeList = [
     { code: "oit-finance", label: "OIT Report(金融方案)" },
     { code: "pre-book", label: "Slot Reservation Report" },
     { code: "pos", label: "POS Report" },
+    { code: "oit-diigt", label: "OIT Report(DIIGT)" },
+    { code: "oit-us", label: "OIT Report(US)" },
+    { code: "oit-cc-hpm_ec", label: "OIT Report(CC-HPC&EC)" },
+    { code: "oit-cc-hrc", label: "OIT Report(CC-HRC)" }
   ]
 
   bgList = [
@@ -196,6 +200,13 @@ export class ScheduleComponent implements OnInit {
     { code: "lastMonth", label: "任务执行上一月" },
     { code: "quarter", label: "任务执行当前季度" },
     { code: "lastQuarter", label: "任务执行上一季度" },
+    { code: "year", label: "任务执行当前年" },
+    { code: "lastYear", label: "任务执行上一年" },
+  ];
+
+  leadTimeScopeList = [
+    { code: "month", label: "任务执行当前月" },
+    { code: "lastMonth", label: "任务执行上一月" },
     { code: "year", label: "任务执行当前年" },
     { code: "lastYear", label: "任务执行上一年" },
   ];
@@ -992,7 +1003,7 @@ export class ScheduleComponent implements OnInit {
     const bopTyep = this.bopFormType; // bidding/oit/pre-book 报表类型
     const spType = this.reportFormType; // special spproval 报表类型
     if (this.emailType == "reportForm" && fre && classify) {
-      if( (classify == 'BOP' && bopTyep) || (classify != 'BOP' && spType) ){
+      if( (classify == 'BOP' && bopTyep) || (classify == 'special' && spType) || ('lead-time' == classify) ){
         if (fre == "month") {
           if (this.day && this.time) {
             this.scopeEnable = true;

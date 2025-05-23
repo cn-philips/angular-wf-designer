@@ -370,6 +370,21 @@
               </nz-form-control>
             </nz-form-item>
           </div>
+          <div *ngIf="this.emailType=='reportForm' && this.classify == 'lead-time'" nz-col nzXs="24" nzSm="24" nzMd="8">
+            <nz-form-item>
+              <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzXl="8" nzXXl="6" [nzNoColon]="true" nzRequired>
+                {{ "schedule.page.schedule-form.data-scope" | translate }}
+              </nz-form-label>
+              <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                <nz-select  formControlName="dataScope" (ngModelChange)="scopeChange()"
+                  [nzDisabled]="!scopeEnable" nz-tooltip [nzTitle]="(!scopeEnable) ? '请先选择执行时间和报表类型':''"
+                  nzPlaceHolder="须选择">
+                    <nz-option *ngFor="let item of leadTimeScopeList" [nzValue]="item.code" [nzLabel]="item.label">
+                    </nz-option>
+                </nz-select>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
           <div *ngIf="this.emailType=='reportForm' && this.classify == 'special'" nz-col nzXs="24" nzSm="24" nzMd="8">
             <nz-form-item>
               <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzXl="8" nzXXl="6" [nzNoColon]="true" nzRequired>
