@@ -312,9 +312,11 @@ export class ScheduleComponent implements OnInit {
         this.formValue.get("classify").setValidators([Validators.required]);
         if(this.classify == 'BOP'){
           this.formValue.get("bopFormType").setValidators([Validators.required]);
-        } else {
+        } else if(this.classify == 'special') {
           this.formValue.get("bg").setValidators([Validators.required]);
           this.formValue.get("reportFormType").setValidators([Validators.required]);
+        }else if(this.classify == 'lead-time') {
+          this.formValue.get("bopFormType").clearValidators();
         }
         this.formValue.get("fileName").setValidators([Validators.required]);
         if(this.isCustomRange){
@@ -451,7 +453,7 @@ export class ScheduleComponent implements OnInit {
         this.scopeEnable = true;
     }
 
-    if(this.emailType == "reportForm" && this.bopFormType){
+    if((this.emailType == "reportForm" && this.bopFormType )|| this.classify == 'lead-time'){
       //初始化报表范围提示
       this.setScopeAndFileName(data.params.dataScopeTime);
       this.scopeEnable = true;
@@ -1040,6 +1042,8 @@ export class ScheduleComponent implements OnInit {
       type = this.reportFormType;
     } else if(classify == 'BOP') {
       type = this.bopFormType;
+    } else if (classify == 'lead-time') {
+      type = 'lead-time';
     }
     const customRange = this.isCustomRange;
     const customTime = customRange ? this.customTime : [];
@@ -1086,6 +1090,9 @@ export class ScheduleComponent implements OnInit {
         typeLabel = formType ? formType.label : null;
       } else if(classify == 'BOP') {
         const formType = this.bopFormTypeList.filter((val) => val.code == type)[0];
+        typeLabel = formType? formType.label : null;
+      } else if (classify == 'lead-time') {
+        const formType = this.leadTimeScopeList.filter((val) => val.code == type)[0];
         typeLabel = formType? formType.label : null;
       }
       this.getFileName(count, dateTime, unit, when, typeLabel, customRange, customTime, classify);
