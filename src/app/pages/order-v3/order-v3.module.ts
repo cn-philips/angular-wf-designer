@@ -10,5 +10,5 @@ import{OrderV3Service}from'./order-v3.service'
   declarations: [...PAGES, ...COMPONENTS],
   providers:[OrderV3Service]
 })
-export class orderv3Module { }
+export class OrderV3Module  { }
 

@@ -46,6 +46,7 @@ export class ContractSignComponent implements OnInit {
   public zslSignSupplement: any;
   public attachmentOff: any = true; //是否显示附件;
   public signaturePageOff: any = false; //是否是签章邮件
+  public isRaisedFlow:boolean = false; //是否是raised flow
   constructor(
     private serveice: OrderV3Service,
     private activatedRouter: ActivatedRoute,
@@ -549,7 +550,7 @@ export class ContractSignComponent implements OnInit {
     return this.formValue.get("contractBuyerFrom") as FormGroup
   }
 
-  init() {
+  async init() {
     this.applyId = this.activatedRouter.queryParams['_value'].id;
     this.status = this.activatedRouter.queryParams['value'].taskStatus;
     this.processInstanceTaskId = this.activatedRouter.queryParams['value'].processInstanceTaskId;
@@ -666,6 +667,14 @@ export class ContractSignComponent implements OnInit {
       }
       this.changOrderFromData.get('changeOrderFile').disable();
     })
+    // 合同签署节点，如果已经合同电子签署完成，不能退回之前的节点
+    let result = await this.serveice.ifRaisedFlow(this.applyId)
+    console.log('this.serveice.ifRaisedFlow',result)
+    if (result.code == '0000' && result.data) {
+      this.isRaisedFlow = true;
+    } else {
+      this.isRaisedFlow = false;
+    }
 
     setTimeout(() => {
       this.tabIndex = 2

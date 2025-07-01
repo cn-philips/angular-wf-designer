@@ -53,10 +53,12 @@
                         </nz-dropdown>
                       </ng-template>
                     </ng-container> -->
-                    <button nz-button *ngIf="item.showsend" [disabled]="item.allDisable"
-                      (click)="signSign(indx, item.id)" nzType="primary">
-                      发起电子签章
-                    </button>
+                    <span nz-tooltip [nzTitle]="item.contracts.length === 0?'合同文件为空，无法发起电子签章，请上传文件！':(item.contracts.length >1?'合同文件数量大于1，无法发起电子签章，请调整文件数量！':null)" nzPlacement="top">
+                      <button nz-button *ngIf="item.showsend" [disabled]="item.allDisable || item.contracts.length === 0 || item.contracts.length >1"
+                        (click)="signSign(indx, item.id)" nzType="primary">
+                        发起电子签章
+                      </button>
+                    </span>
                     <button nz-button *ngIf="item.showsignbutton"
                       (click)="signAdminSign(indx, item.currentUserRole, item.id)" [disabled]="item.allDisable"
                       nzType="primary">
@@ -414,8 +416,9 @@
     <nz-table #rowSelectionTable [nzData]="contractSignFileList" [nzShowPagination]="false"
       (nzCurrentPageDataChange)="currentPageDataChange($event)" [nzScroll]="{x: isMobile ? '600px' : 0}">
       <thead>
-        <th nzShowCheckbox [(nzChecked)]="isAllDisplayDataChecked" [nzIndeterminate]="isIndeterminate"
-          (nzCheckedChange)="checkAll($event)" nzAlign="center"></th>
+        <!-- <th nzShowCheckbox [(nzChecked)]="isAllDisplayDataChecked" [nzIndeterminate]="isIndeterminate"
+          (nzCheckedChange)="checkAll($event)" nzAlign="center"></th> -->
+        <th nzAlign="center"></th>
         <th nzAlign="center">文件名称</th>
         <th nzAlign="center">文件类型</th>
         <th nzAlign="center">操作</th>
@@ -423,7 +426,8 @@
       <tbody>
         <tr *ngFor="let data of rowSelectionTable.data">
           <td nzAlign="center" nzShowCheckbox [(nzChecked)]="mapOfCheckedId[data.id]"
-            (nzCheckedChange)="refreshStatus()"></td>
+              (nzCheckedChange)="onSingleCheck(data.id)">
+          </td>
           <td nzAlign="center">{{ data.fileName }}</td>
           <td nzAlign="center">未签署文件</td>
           <!-- <td nzAlign="center">{{ data.fileType }}</td> -->

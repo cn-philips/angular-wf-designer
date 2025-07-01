@@ -123,7 +123,7 @@ const routes: Routes = [
       },
       {
         path: "order-v3",
-        loadChildren: "./pages/order-v3/order-v3.module#orderv3Module",
+        loadChildren: "./pages/order-v3/order-v3.module#OrderV3Module",
         data: { breadcrumb: "进单", breadcrumbDisabled: true },
       },
       {
