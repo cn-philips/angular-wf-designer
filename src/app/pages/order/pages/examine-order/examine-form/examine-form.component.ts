@@ -61,9 +61,9 @@ export class ExamineFormComponent implements OnInit {
   public DfbshObj = {
     paymentProvision: "待C&C Leader审核",
     installationWarranty: "待S&SD Marketing Leader审核",
-    shipmentDelivery: "待CFC Distributor leader审核",
+    shipmentDelivery: "待ISC Distributor leader审核",
     amountDifference: "待OIT committee审核",
-    sitePreparation: "待CFC PM Leader审核",
+    sitePreparation: "待ISC PM Leader审核",
     performanceBond: "待Cluster BP审核",
   };
   //弹窗的数据
