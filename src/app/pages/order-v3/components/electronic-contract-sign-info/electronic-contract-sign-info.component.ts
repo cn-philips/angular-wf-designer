@@ -968,7 +968,7 @@ export class ElectronicContractSignInfoComponent implements OnInit {
     }, 100);
   }
 
-  agreementChange($event: any, index: any) {
+  async agreementChange($event: any, index: any) {
     const item = this.signDataSource[index];
     let params = {
       id: item.id,
@@ -976,10 +976,11 @@ export class ElectronicContractSignInfoComponent implements OnInit {
       agreementApplyId: "",
     };
     this.signDataSource[index].agreementApplyIdArray = [];
-    this.http.createEditSign(params);
+    await this.http.createEditSign(params);
+    await this.getContractSignList();
   }
 
-  agreementSelectChange($event: any, index: any) {
+  async agreementSelectChange($event: any, index: any) {
     const item = this.signDataSource[index];
     let params = {
       id: item.id,
@@ -987,10 +988,11 @@ export class ElectronicContractSignInfoComponent implements OnInit {
       agreementApplyId: $event.join(","),
     };
     this.signDataSource[index].agreementApplyIdArray = $event;
-    this.http.createEditSign(params);
+    await this.http.createEditSign(params);
+    await this.getContractSignList();
   }
 
-  summaryChange($event: any, index: any) {
+  async summaryChange($event: any, index: any) {
     const item = this.signDataSource[index];
     let params = {
       id: item.id,
@@ -998,10 +1000,11 @@ export class ElectronicContractSignInfoComponent implements OnInit {
       relatedOrderSummaryIds: "",
     };
     this.signDataSource[index].relatedOrderSummaryIdsArray = [];
-    this.http.createEditSign(params);
+    await this.http.createEditSign(params);
+    await this.getContractSignList();
   }
 
-  summarySelectChange($event: any, index: any) {
+  async summarySelectChange($event: any, index: any) {
     const item = this.signDataSource[index];
     let params = {
       id: item.id,
@@ -1009,7 +1012,8 @@ export class ElectronicContractSignInfoComponent implements OnInit {
       relatedOrderSummaryIds: $event.join(","),
     };
     this.signDataSource[index].relatedOrderSummaryIdsArray = $event;
-    this.http.createEditSign(params);
+    await this.http.createEditSign(params);
+    await this.getContractSignList();
   }
 
   async getAcount(type: any) {
@@ -1236,7 +1240,7 @@ export class ElectronicContractSignInfoComponent implements OnInit {
     if (contracts.length <= 0) {
       return this.notification.error("请选择需要签署的文件", "");
     }
-
+    console.log(`signSign - item:${item} - contracts :${contracts}`);
     if (isCancelAgreement && agreements.length <= 0) {
       return this.notification.error(
         "请选择取消/赔偿协议，如果不选择协议，请选择否",
