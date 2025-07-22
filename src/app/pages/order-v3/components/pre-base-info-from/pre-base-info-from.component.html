@@ -664,7 +664,7 @@
     </div>
     <div *ngIf="
           isContract &&
-          baseInfoFrom.getRawValue().orderModality == 'PD&IGT' &&
+          (baseInfoFrom.getRawValue().orderModality == 'PD&IGT'||baseInfoFrom.getRawValue().orderModality == 'US') &&
           isContract
         " nz-row nzType="flex" nzJustify="start" nzAlign="middle">
       <div nz-col nzXs="24" nzSm="24" nzMd="8">

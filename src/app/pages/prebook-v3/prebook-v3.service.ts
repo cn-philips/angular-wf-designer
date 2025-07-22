@@ -101,6 +101,10 @@ export class PrebookV3Service {
     const url = `/act/ecos/prebook/order/oit/matchedOrders?marketBundleAmount=${marketBundleAmount}&marketBundleName=${marketBundleName}&opportunityId=${opportunityId}`
     return this.http.get(url)
   }
+  linkedOitOrders4UsOrder(primaryOpp) {
+    const url = `/act/ecos/prebook/order/oit/matchedOrders4Us`
+    return this.http.post(url, primaryOpp)
+  }
 
   selectSofonFlie(param) {
     //查询sofon文件列表

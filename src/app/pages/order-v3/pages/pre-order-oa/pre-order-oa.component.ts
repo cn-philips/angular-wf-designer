@@ -1033,6 +1033,32 @@ export class PreOrderoaComponent implements OnInit {
 
         })
       }
+      if (orderModality == 'US') {
+        const marketBundleInfoArr = marketBundleInfo.getRawValue();
+        const SearchParams = {
+          pageNo: 1,
+          pageSize: 10,
+          marketBundleList: marketBundleInfoArr,
+        }
+        this.serveice.searchPrebookByMarketBundle(SearchParams).subscribe(res => {
+          if (res.code == '0000') {
+            orderBaseinfo.patchValue({
+              prebookQuantity: res.data.rows.length,
+            })
+            if (res.data.rows.length == 1) {
+              const rows = res.data.rows
+              orderBaseinfo.patchValue({
+                prebookReferenceId: rows[0].referenceId,
+                prebookApplyId: rows[0].prebookApplyId,
+                prebookOrderId: rows[0].prebookOrderId,
+                prebookStatus: rows[0].prebookStatus,
+                prebookSo: rows[0].prebookSo,
+              })
+            }
+          }
+
+        })
+      }
     });
     const {currencySystem}=this.priceApprovalData.getRawValue()
     const currencyDiff=currencyList.every(item=>item==currencySystem); //deal层级和order层级币相同的情况才能改价格

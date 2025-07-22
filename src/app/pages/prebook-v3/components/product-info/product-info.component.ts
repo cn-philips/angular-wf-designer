@@ -49,6 +49,9 @@ export class ProductInfoComponent implements OnInit {
   isPDIGTOrder(order: FormGroup) {
     return order.get('orderModality').value == 'PD&IGT'
   }
+  isUsOrder(order: FormGroup) {
+    return order.get('orderModality').value == 'US'
+  }
 
   hasValidMarketBundle(order: FormGroup) {
     let result = false
@@ -88,6 +91,31 @@ export class ProductInfoComponent implements OnInit {
       }
     })
   }
+  checkHasLinkedOitOrder4UsOrder(order: FormGroup,allMarketBundleInfo:Array<any>) {
+    order.patchValue({ hasLinkedOitOrder: 0 })
+    let originMarketBundleMap = {}
+    const seperator = '___'
+    allMarketBundleInfo.map((data) => {
+      const { marketBundleName, marketBundleAmount } = data
+      let key = `${marketBundleName}${seperator}${marketBundleAmount}`
+      if(!originMarketBundleMap[key]){
+        originMarketBundleMap[key] = []
+      }
+      originMarketBundleMap[key].push(data)
+    })
+    this.prebookV3Service.linkedOitOrders4UsOrder(allMarketBundleInfo).subscribe(({ data }) => {
+      let hasLinkedOitOrder = true;
+      for(var key in data){
+        hasLinkedOitOrder = hasLinkedOitOrder && originMarketBundleMap[key] && originMarketBundleMap[key].length > 0 && originMarketBundleMap[key].length === data[key].length
+      }
+      // if (data && data.length > 0) {
+      //   order.patchValue({ hasLinkedOitOrder: 1 })
+      // } else {
+      //   order.patchValue({ hasLinkedOitOrder: 2 })
+      // }
+      order.patchValue({ hasLinkedOitOrder: hasLinkedOitOrder ? 1 : 2 })
+    })
+  }
 
   onIsDeletedChange(order: FormGroup, value) {
     if (!this.showLinkBtn) { return }
@@ -102,9 +130,15 @@ export class ProductInfoComponent implements OnInit {
           }
         })
       }
-      const primaryOpp = this.getPrimaryOpp(order)
-      if (primaryOpp) {
-        this.checkHasLinkedOitOrder(order, primaryOpp)
+
+      if(this.isUsOrder(order)) {
+        const marketBundleInfo = order.get('marketBundleInfo') as FormArray
+        this.checkHasLinkedOitOrder4UsOrder(order, marketBundleInfo.getRawValue())
+      }else{
+        const primaryOpp = this.getPrimaryOpp(order)
+        if (primaryOpp) {
+          this.checkHasLinkedOitOrder(order, primaryOpp)
+        }
       }
     } else {
       order.patchValue({
@@ -138,15 +172,20 @@ export class ProductInfoComponent implements OnInit {
 
   onShowLinkOit(order) {
     this.activeOrder = order
-    const primaryOpp = this.getPrimaryOpp(order)
-    if (!primaryOpp) {
-      this.message.warning('请先选择主机')
-      return
+    if(this.isUsOrder(order)) {
+      const marketBundleInfo = order.get('marketBundleInfo') as FormArray
+      this.linkOit.showByList(marketBundleInfo.getRawValue())
+    }else{
+      const primaryOpp = this.getPrimaryOpp(order)
+      if (!primaryOpp) {
+        this.message.warning('请先选择主机')
+        return
+      }
+      const { marketBundleName, marketBundleAmount, opportunityId } = primaryOpp
+      this.linkOit.show({
+        marketBundleName, marketBundleAmount, opportunityId
+      })
     }
-    const { marketBundleName, marketBundleAmount, opportunityId } = primaryOpp
-    this.linkOit.show({
-      marketBundleName, marketBundleAmount, opportunityId
-    })
   }
 
   // 设置主机

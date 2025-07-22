@@ -2,7 +2,7 @@
   <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
     <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
       <nz-form-item>
-        <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired>外贸公司出口管制</nz-form-label>
+        <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired>{{isUsProcess?"出口管制":"外贸公司出口管制"}}</nz-form-label>
         <nz-form-control nzXs="24" nzSm="24" nzMd="14">
           <shared-upload-file type="button" title="上传附件" formControlName="exportControl"></shared-upload-file>
           <nz-form-explain
@@ -17,7 +17,7 @@
   <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
     <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
       <nz-form-item>
-        <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired>备货协议草稿</nz-form-label>
+        <nz-form-label nzXs="24" nzSm="24" nzMd="8"  [nzRequired]="!isUsProcess">备货协议草稿</nz-form-label>
         <nz-form-control nzXs="24" nzSm="24" nzMd="14">
           <shared-upload-file type="button" title="上传附件" formControlName="stockingAgreementDraft"></shared-upload-file>
           <nz-form-explain
@@ -30,7 +30,7 @@
 
     <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
       <nz-form-item>
-        <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired>备货协议正本</nz-form-label>
+        <nz-form-label nzXs="24" nzSm="24" nzMd="8"  [nzRequired]="!isUsProcess">备货协议正本</nz-form-label>
         <nz-form-control nzXs="24" nzSm="24" nzMd="14">
           <shared-upload-file type="button" title="上传附件" formControlName="stockingAgreementBody"></shared-upload-file>
           <nz-form-explain
@@ -63,7 +63,7 @@
             ></shared-upload-file>
           </ng-container>
           <ng-container *ngIf="disabled">
-            <shared-upload-file 
+            <shared-upload-file
               *appPermissionsIf="'sofon_file'"
               type="button"
               title="上传本地文件"
@@ -72,7 +72,7 @@
               [ngModel]="oaSupplement.get('sofonFile').value"
             ></shared-upload-file>
           </ng-container>
-          
+
           <nz-form-explain
             style="color: #f5222d;"
             *ngIf="oaSupplement.get('sofonFile')?.dirty && oaSupplement.get('sofonFile')?.errors">
@@ -102,7 +102,7 @@
   <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
     <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
       <nz-form-item>
-        <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired>付款凭证</nz-form-label>
+        <nz-form-label nzXs="24" nzSm="24" nzMd="8"  [nzRequired]="!isUsProcess">付款凭证</nz-form-label>
         <nz-form-control nzXs="24" nzSm="24" nzMd="14">
           <shared-upload-file type="button" title="上传附件" formControlName="paymentVoucher"></shared-upload-file>
           <nz-form-explain

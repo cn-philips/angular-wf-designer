@@ -254,6 +254,10 @@ export class OrderV3Service {
     //查询prebook
     return this.http.post("/act/ecos/oit/findPrebookOrder", param);
   }
+  searchPrebookByMarketBundle(param) {
+    //查询prebook
+    return this.http.post("/act/ecos/oit/findPrebookOrderByMarketBundleList", param);
+  }
   deletOrder(param) {
     //删除进单
     return this.http.get(`/act/ecos/oit/deleteDraft/${param}`);

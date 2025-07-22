@@ -123,9 +123,11 @@ export class PrebookDetailComponent implements OnInit {
   }
 
   get showZpmApprovalTab(): boolean {
-    return !['ecos_prebook_resubmit', 'ecos_prebook_zpm'].includes(this.processStatus)
+    return !['ecos_prebook_resubmit', 'ecos_prebook_zpm'].includes(this.processStatus) && !this.isUsProcess
   }
-
+  get isUsProcess(): boolean {
+    return this.originData.modality && this.originData.modality.toLowerCase() === 'us'
+  }
   get showOaApprovalTab(): boolean {
     return ['ecos_prebook_dm', 'ecos_prebook_zsl'].includes(this.processStatus)
   }
@@ -294,16 +296,30 @@ export class PrebookDetailComponent implements OnInit {
         break
       case 'ecos_prebook_oa':
         this.oaApproval.enable()
+        if(this.isUsProcess){
+          // 备货协议草稿
+          this.oaApproval.get('stockingAgreementDraft')!.clearValidators();
+          this.oaApproval.get('stockingAgreementDraft')!.markAsPristine();
+        }
         break
       case 'ecos_prebook_oa_supplemental':
         this.oaSupplement.enable()
+        if(this.isUsProcess){
+          // 备货协议草稿
+          this.oaSupplement.get('stockingAgreementDraft')!.clearValidators();
+          this.oaSupplement.get('stockingAgreementDraft')!.markAsPristine();
+          this.oaSupplement.get('stockingAgreementBody')!.clearValidators();
+          this.oaSupplement.get('stockingAgreementBody')!.markAsPristine();
+          this.oaSupplement.get('paymentVoucher')!.clearValidators();
+          this.oaSupplement.get('paymentVoucher')!.markAsPristine();
+        }
         break
       case 'ecos_prebook_om':
         if (this.fromTask || this.fromSupplement) {
           this.orderInfo.controls.forEach((item: FormGroup) => {
             item.get('isDeleted').disable()
             const { isDeleted, orderModality } = item.getRawValue()
-            if (isDeleted === 0 && orderModality === 'PD&IGT') {
+            if (isDeleted === 0 && (orderModality === 'PD&IGT'|| orderModality === 'US')) {
               const so = item.get('so')
               so.enable()
               so.setValidators([Validators.required, soValidators])

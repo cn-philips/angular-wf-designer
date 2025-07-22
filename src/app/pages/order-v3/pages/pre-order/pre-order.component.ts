@@ -1335,6 +1335,36 @@ export class PreOrderComponent implements OnInit {
           const departmentListFirst = rest
           this.departMent(marketBundleInfo, departmentListFirst)
         })
+        const marketBundleInfoArr = marketBundleInfo.getRawValue();
+        if (marketBundleInfoArr && marketBundleInfoArr.length >0) {
+          const SearchParams = {
+            pageNo: 1,
+            pageSize: 10,
+            marketBundleList: marketBundleInfoArr
+          }
+
+          this.serveice.searchPrebookByMarketBundle(SearchParams).subscribe(res => {
+            if (res.code == '0000') {
+              orderBaseinfo.patchValue({
+                prebookQuantity: res.data.rows.length,
+              })
+              if (res.data.rows.length == 1) {
+                const { rows } = res.data;
+                orderBaseinfo.patchValue({
+                  prebookReferenceId: rows[0].referenceId,
+                  prebookApplyId: rows[0].applyId,
+                  prebookOrderId: rows[0].orderId,
+                  prebookStatus: rows[0].processStatus,
+                  prebookSo: rows[0].so,
+                })
+              }
+              else if (res.data.rows.length > 0) {
+                orderBaseinfo.get('prebookReferenceId').setValidators(Validators.required);
+                orderBaseinfo.get('prebookReferenceId').updateValueAndValidity();
+              }
+            }
+          })
+        }
       }
       if (orderModality == 'PD&IGT') {
 

@@ -36,13 +36,13 @@
 
         <app-tab [title]="'prebookv3.pages.prebook-detail.oa-approval' | translate" *ngIf="showOaApprovalTab">
           <div class="card-body">
-            <prebook-v3-oa-approval [oaApproval]="oaApproval"></prebook-v3-oa-approval>
+            <prebook-v3-oa-approval [oaApproval]="oaApproval"  [isUsProcess]="isUsProcess"></prebook-v3-oa-approval>
           </div>
         </app-tab>
 
         <app-tab [title]="'prebookv3.pages.prebook-detail.oa-supplement' | translate" *ngIf="showOaSupplementTab">
           <div class="card-body">
-            <prebook-v3-oa-supplement [oaSupplement]="oaSupplement" [disabled]="true"></prebook-v3-oa-supplement>
+            <prebook-v3-oa-supplement [oaSupplement]="oaSupplement" [disabled]="true" [isUsProcess]="isUsProcess"></prebook-v3-oa-supplement>
           </div>
         </app-tab>
 
@@ -56,10 +56,10 @@
           <div class="card-body">
             <prebook-v3-zpm-approval *ngIf="processStatus == 'ecos_prebook_zpm'" [zpmApproval]="zpmApproval">
             </prebook-v3-zpm-approval>
-            <prebook-v3-oa-approval *ngIf="processStatus == 'ecos_prebook_oa'" [oaApproval]="oaApproval">
+            <prebook-v3-oa-approval *ngIf="processStatus == 'ecos_prebook_oa'" [oaApproval]="oaApproval" [isUsProcess]="isUsProcess">
             </prebook-v3-oa-approval>
             <prebook-v3-oa-supplement *ngIf="processStatus == 'ecos_prebook_oa_supplemental'"
-              [oaSupplement]="oaSupplement" [applyDetail]="originData"></prebook-v3-oa-supplement>
+              [oaSupplement]="oaSupplement" [applyDetail]="originData"  [isUsProcess]="isUsProcess"></prebook-v3-oa-supplement>
 
             <prebook-v3-product-info *ngIf="processStatus === 'ecos_prebook_om'" [showSOField]="true"
               [showLinkBtn]="showLinkBtn" [prebookForm]="prebookForm"></prebook-v3-product-info>

@@ -9,6 +9,7 @@ import { FormGroup } from '@angular/forms';
 export class OaApprovalComponent implements OnInit {
 
   @Input() oaApproval: FormGroup
+  @Input() isUsProcess: boolean = false;
 
   constructor() { }
 

@@ -19,6 +19,8 @@ export class OaSupplementComponent implements OnInit {
     }
   }
 
+  @Input() isUsProcess: boolean = false;
+
   omList = []
 
   constructor(
