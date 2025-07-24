@@ -168,7 +168,9 @@ export class PrebookDetailComponent implements OnInit {
   get isOAPorcessNode(): boolean {
     return this.fromTask && ['ecos_prebook_oa', 'ecos_prebook_oa_supplemental', ].includes(this.processStatus)
   }
-
+  get allSelectedOrderIsInSameModality(): boolean {
+    return this.orderInfo.controls.filter((order) => order.enabled&&!order.get('isDeleted').value).map(order=>order.get('orderModality').value).length === 1;
+  }
   constructor(
     private fb: FormBuilder,
     private activatedRoute: ActivatedRoute,

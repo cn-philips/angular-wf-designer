@@ -93,27 +93,12 @@ export class ProductInfoComponent implements OnInit {
   }
   checkHasLinkedOitOrder4UsOrder(order: FormGroup,allMarketBundleInfo:Array<any>) {
     order.patchValue({ hasLinkedOitOrder: 0 })
-    let originMarketBundleMap = {}
-    const seperator = '___'
-    allMarketBundleInfo.map((data) => {
-      const { marketBundleName, marketBundleAmount } = data
-      let key = `${marketBundleName}${seperator}${marketBundleAmount}`
-      if(!originMarketBundleMap[key]){
-        originMarketBundleMap[key] = []
-      }
-      originMarketBundleMap[key].push(data)
-    })
     this.prebookV3Service.linkedOitOrders4UsOrder(allMarketBundleInfo).subscribe(({ data }) => {
-      let hasLinkedOitOrder = true;
-      for(var key in data){
-        hasLinkedOitOrder = hasLinkedOitOrder && originMarketBundleMap[key] && originMarketBundleMap[key].length > 0 && originMarketBundleMap[key].length === data[key].length
+      if (data && data.length > 0) {
+        order.patchValue({ hasLinkedOitOrder: 1 })
+      } else {
+        order.patchValue({ hasLinkedOitOrder: 2 })
       }
-      // if (data && data.length > 0) {
-      //   order.patchValue({ hasLinkedOitOrder: 1 })
-      // } else {
-      //   order.patchValue({ hasLinkedOitOrder: 2 })
-      // }
-      order.patchValue({ hasLinkedOitOrder: hasLinkedOitOrder ? 1 : 2 })
     })
   }
 

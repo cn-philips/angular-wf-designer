@@ -118,9 +118,15 @@
   </button>
 
   <ng-container *ngIf="fromTask || fromSupplement">
-    <button *ngIf="fromTask || fromSupplement" nz-button nzType="primary" nz-popconfirm [nzTitle]="popconfirmTitle"
+    <button *ngIf="!showSubmitBtn" nz-button nzType="primary" nz-popconfirm [nzTitle]="popconfirmTitle"
       (nzOnConfirm)="handleAction('approved')">
-      <ng-container *ngIf="!showSubmitBtn">{{"biddingv3.pages.bidding-detail.approved" | translate}}</ng-container>
+      <ng-container  >{{"biddingv3.pages.bidding-detail.approved" | translate}}</ng-container>
+    </button>
+    <button *ngIf="showSubmitBtn&&allSelectedOrderIsInSameModality" nz-button nzType="primary" nz-popconfirm [nzTitle]="popconfirmTitle"
+      (nzOnConfirm)="handleAction('approved')">
+      <ng-container *ngIf="showSubmitBtn">{{"biddingv3.pages.bidding-detail.submit" | translate}}</ng-container>
+    </button>
+    <button *ngIf="showSubmitBtn&&!allSelectedOrderIsInSameModality" nz-popover  [nzContent]="contentTemplate" nz-button nzType="primary" [disabled]="true">
       <ng-container *ngIf="showSubmitBtn">{{"biddingv3.pages.bidding-detail.submit" | translate}}</ng-container>
     </button>
 
@@ -134,5 +140,10 @@
     </button>
   </ng-container>
 
+  <ng-template #contentTemplate>
+    <span>
+      仅限同一Modality类型的Order可以同时提交
+    </span>
+  </ng-template>
 
 </footer>

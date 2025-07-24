@@ -73,12 +73,8 @@ export class LinkOitComponent implements OnInit {
       .post(url,params)
       .subscribe(({ code, data }) => {
         if (code === "0000") {
-          // let result = new Array()
-          for(let key in data){
-            if(data[key]){
-              this.tableData.rows.push(...data[key])
-            }
-          }
+
+          this.tableData.rows = data
           // this.tableData.rows = result
           this.tableData.loading = false
         } else {
