@@ -1692,11 +1692,6 @@ export class OitcompleteComponent implements OnInit {
           Object.assign(param.contractSignInfo, contractSignInfoExtra)
         }
 
-        //第三方自采核查
-        if (this.needFileType == 'third') {
-          completionInfo.oaSupplementProductVerification = '1';
-        }
-
         //om上传SO#
         if (this.needFileType == 'om') {
           completionInfo.omFillSo = '1';
@@ -1725,6 +1720,13 @@ export class OitcompleteComponent implements OnInit {
             return;
           }
         }
+      }
+
+        //第三方自采核查
+      // console.log('第三方自采核查 before')
+      if (this.thirdSave && this.needFileType == 'third' && this.isLegancy) {
+        // console.log('第三方自采核查')
+        completionInfo.oaSupplementProductVerification = '1';
       }
 
       this.pageLoading = true;
