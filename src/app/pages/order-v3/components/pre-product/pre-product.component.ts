@@ -1532,9 +1532,6 @@ export class PreProductComponent implements OnInit {
       (val) =>
         val.primaryOpportunity == "true" || val.primaryOpportunity == true
     );
-    const opportunityId = marketBundleHost[0].opportunityId;
-    const marketBundleName = marketBundleHost[0].marketBundleName;
-    const marketBundleAmount = marketBundleHost[0].marketBundleAmount;
     const { orderModality } = orderBaseinfo.getRawValue();
     if("US" === orderModality){
       this.selectPreBook.showByList(
@@ -1546,6 +1543,9 @@ export class PreProductComponent implements OnInit {
         true
       );
     }else{
+      const opportunityId = marketBundleHost[0].opportunityId;
+      const marketBundleName = marketBundleHost[0].marketBundleName;
+      const marketBundleAmount = marketBundleHost[0].marketBundleAmount;
       this.selectPreBook.show(
         {
           opportunityId: opportunityId,

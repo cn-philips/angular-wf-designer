@@ -2063,10 +2063,7 @@ export class PreBaseInfoFromComponent implements OnInit {
       (val) =>
         val.primaryOpportunity == "true" || val.primaryOpportunity == true
     );
-    const opportunityId = marketBundleHost[0].opportunityId;
-    const marketBundleName = marketBundleHost[0].marketBundleName;
-    const marketBundleAmount = marketBundleHost[0].marketBundleAmount;
-     if("US" === orderModality){
+    if("US" === orderModality){
       this.selectPreBook.showByList(
         {
           pageNo: 1,
@@ -2076,6 +2073,9 @@ export class PreBaseInfoFromComponent implements OnInit {
         true
       );
     }else{
+      const opportunityId = marketBundleHost[0].opportunityId;
+      const marketBundleName = marketBundleHost[0].marketBundleName;
+      const marketBundleAmount = marketBundleHost[0].marketBundleAmount;
       this.selectPreBook.show(
         {
           opportunityId: opportunityId,
