@@ -106,7 +106,7 @@ export class SupplementInfoComponent implements OnInit {
   get afterSaleTermsDesc(): FormControl {
     return this.biddingTerm
       ? (this.biddingTerm.get("afterSaleTermsDesc") as FormControl)
-      : null; 
+      : null;
   }
 
   get biddingAmount(): FormGroup {
@@ -124,8 +124,8 @@ export class SupplementInfoComponent implements OnInit {
   get specificationTermsDesc(): FormControl {
     return this.biddingTerm
       ? (this.biddingTerm.get("specificationTermsDesc") as FormControl)
-      : null; 
-  } 
+      : null;
+  }
 
   get biddingFile(): FormGroup {
     return this.supplementInfo
@@ -307,7 +307,7 @@ export class SupplementInfoComponent implements OnInit {
     params.templateCode = templateCode;
     const {
       basicInfo: {
-        baseInfo: { biddingProgramName, biddingOpenDate, biddingValidDate, biddingNumber },
+        baseInfo: { biddingProgramName, biddingOpenDate, biddingValidDate, biddingNumber,biddingOrgName },
         applicant: { biddingOwner },
         finalUser: { hospitalName, customerCity }
       },
@@ -319,7 +319,7 @@ export class SupplementInfoComponent implements OnInit {
     } = this.biddingForm.getRawValue();
 
      // 销售经理投标委托函模板
-     if (templateCode === 'XSJLTBWT') {
+    if (templateCode === 'XSJLTBWT') {
       params.saleManagerName = ''
       params.saleManagerNo = ''
       params.saleNo = ''
@@ -340,7 +340,7 @@ export class SupplementInfoComponent implements OnInit {
     params.biddingNames = biddingCompany
     params.biddingComRegAddress = bidderRegistAddress
 
-    params.biddinOrgName = biddingCompany
+    params.biddinOrgName = biddingOrgName
 
     params.HospitalName = hospitalName
 
@@ -452,7 +452,7 @@ export class SupplementInfoComponent implements OnInit {
     if (params.biddingProName) {
       params.biddingN = params.biddingProName.replace(/\+/g, '%2B');
     }
-   
+
     params.productModels = '';
     if (ano != null && ano !== '') {
       params.agreementNo = ano;
