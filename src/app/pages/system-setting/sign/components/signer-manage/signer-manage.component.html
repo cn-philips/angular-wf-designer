@@ -87,6 +87,9 @@
             <th class="tableHead" nzAlign="center" style="width: 120px">
                 Modality
             </th>
+            <th class="tableHead" nzAlign="center" style="width: 120px">
+                是否自动签署
+            </th>
             <th class="tableHead tableAction" nzAlign="center" style="width: 240px;" nzRight="0px">
                 {{"list-pages.table-header.action" | translate}}
             </th>
@@ -107,10 +110,13 @@
             <td class="tableData" style="width: 200px;" nzAlign="center">{{ data.currency }}</td>
 
             <!--上上签模板-->
-            <td class="tableData" style="width: 200px;" nzAlign="center">{{ data.templateId }}</td>
+            <td class="tableData" style="width: 200px;" nzAlign="center">{{ getTemplateName(data.templateId) }}</td>
 
             <!--modality-->
             <td class="tableData" style="width: 200px;" nzAlign="center">{{ data.modality }}</td>
+
+            <!--是否自动签署-->
+            <td class="tableData" style="width: 200px;" nzAlign="center">{{ getIsAutoSign(data.autoSign) }}</td>
 
             <td class="tableData tableAction" nzAlign="center" style="white-space: nowrap;width: 240px;" nzRight="0px">
                 <button nz-button nzType="link" (click)="handleEdit(data)">
@@ -141,10 +147,9 @@
                             上上签模板
                         </nz-form-label>
                         <nz-form-control nzXs="24" nzMd="24" nzXl="24" nzXXl="24">
-                            <nz-select style="width: 100%;" formControlName="templateId">
+                            <nz-select style="width: 100%;" formControlName="templateId" (ngModelChange)="templateChange($event)">
                                 <nz-option [nzValue]="item.templateId" [nzLabel]="item.templateName"
-                                    *ngFor="let item of bestSignTemplateList; index as inx;"
-                                    (ngModelChange)="templateChange($event)"></nz-option>
+                                    *ngFor="let item of bestSignTemplateList; index as inx;"></nz-option>
                             </nz-select>
                         </nz-form-control>
                     </nz-form-item>
@@ -155,7 +160,7 @@
                             签署节点名称
                         </nz-form-label>
                         <nz-form-control nzXs="24" nzMd="24" nzXl="24" nzXXl="24">
-                            <nz-select style="width: 100%;" [nzShowSearch]="true" formControlName="nodeName">
+                            <nz-select style="width: 100%;" [nzShowSearch]="true" formControlName="nodeName" clearable>
                                 <nz-option [nzValue]="item" [nzLabel]="item"
                                     *ngFor="let item of nodes; index as inx;"></nz-option>
                             </nz-select>
@@ -164,10 +169,10 @@
                 </div>
                 <div nz-col nzXs="24" nzMd="24" nzXl="24">
                     <nz-form-item>
-                        <nz-form-label nzRequired nzXs="24" nzMd="24" nzXl="24" nzXXl="24">
+                        <nz-form-label nzXs="24" nzMd="24" nzXl="24" nzXXl="24">
                             职位名称
                         </nz-form-label>
-                        <nz-form-control nzXs="24" nzMd="24" nzXl="24" nzXXl="24">
+                        <nz-form-control nzXs="24" nzMd="24" nzXl="24" nzXXl="24" clearable>
                             <input nz-input formControlName="positionName" placeholder="" />
                         </nz-form-control>
                     </nz-form-item>
@@ -178,7 +183,7 @@
                             签署角色名称
                         </nz-form-label>
                         <nz-form-control nzXs="24" nzMd="24" nzXl="24" nzXXl="24">
-                            <nz-select style="width: 100%;" [nzShowSearch]="true" formControlName="roleName">
+                            <nz-select style="width: 100%;" [nzShowSearch]="true" formControlName="roleName" clearable>
                                 <nz-option [nzValue]="item" [nzLabel]="item"
                                     *ngFor="let item of allRoles; index as inx;"></nz-option>
                             </nz-select>
@@ -187,11 +192,11 @@
                 </div>
                 <div nz-col nzXs="24" nzMd="24" nzXl="24">
                     <nz-form-item>
-                        <nz-form-label nzRequired nzXs="24" nzMd="24" nzXl="24" nzXXl="24">
+                        <nz-form-label nzXs="24" nzMd="24" nzXl="24" nzXXl="24">
                             币种
                         </nz-form-label>
                         <nz-form-control nzXs="24" nzMd="24" nzXl="24" nzXXl="24">
-                            <nz-select style="width: 100%;" formControlName="currency">
+                            <nz-select style="width: 100%;" formControlName="currency" clearable>
                                 <nz-option nzValue="CNY" nzLabel="CNY"></nz-option>
                                 <nz-option nzValue="USD" nzLabel="USD"></nz-option>
                             </nz-select>
@@ -201,15 +206,25 @@
 
                 <div nz-col nzXs="24" nzMd="24" nzXl="24">
                     <nz-form-item>
-                        <nz-form-label nzRequired nzXs="24" nzMd="24" nzXl="24" nzXXl="24">
+                        <nz-form-label nzXs="24" nzMd="24" nzXl="24" nzXXl="24">
                             Modality
                         </nz-form-label>
                         <nz-form-control nzXs="24" nzMd="24" nzXl="24" nzXXl="24">
-                            <nz-select style="width: 100%;" formControlName="modality">
+                            <nz-select style="width: 100%;" formControlName="modality" clearable>
                                 <nz-option nzValue="PD&IGT" nzLabel="PD&IGT"></nz-option>
                                 <nz-option nzValue="US" nzLabel="US"></nz-option>
                                 <nz-option nzValue="CC" nzLabel="CC"></nz-option>
                             </nz-select>
+                        </nz-form-control>
+                    </nz-form-item>
+                </div>
+                <div nz-col nzXs="24" nzMd="24" nzXl="24">
+                    <nz-form-item>
+                        <nz-form-label nzXs="24" nzMd="24" nzXl="24" nzXXl="24">
+                            自动签署
+                        </nz-form-label>
+                        <nz-form-control nzXs="24" nzMd="24" nzXl="24" nzXXl="24">
+                          <nz-switch formControlName="autoSign"  nzCheckedChildren="开启自动签署" nzUnCheckedChildren="关闭自动签署"></nz-switch>
                         </nz-form-control>
                     </nz-form-item>
                 </div>

@@ -60,6 +60,7 @@ export class SignerManageComponent implements OnInit {
         [Validators.required],
       ],
       modality: [{ value: "", disabled: this.disabled }],
+      autoSign: [{ value: false, disabled: this.disabled }],
     });
     this.getAllRoles();
     this.getTableData();
@@ -77,7 +78,15 @@ export class SignerManageComponent implements OnInit {
     this.loading = true;
     this.getTableData();
   }
-
+  getTemplateName(templateId: any) {
+    const template = this.bestSignTemplateList.find(
+      (item: any) => String(item.templateId) == String(templateId)
+    );
+    return template ? template.templateName : "N/A";
+  }
+  getIsAutoSign(autoSign: any) {
+    return autoSign ? "是" : "否";
+  }
   getTableData() {
     // 待我补充
     let formValues = this.formValues.getRawValue();
@@ -98,7 +107,7 @@ export class SignerManageComponent implements OnInit {
   }
 
   getAllRoles() {
-    this.http.get("/act//signer-config/roles").subscribe((res) => {
+    this.http.get("/act/signer-config/roles").subscribe((res) => {
       console.log(res);
       const { code, data, msg } = res;
       if (code === "0000") {
@@ -192,6 +201,7 @@ export class SignerManageComponent implements OnInit {
   }
 
   templateChange(templateId: any) {
+    console.log("templateId", templateId);
     this.getNodes(templateId);
   }
 
