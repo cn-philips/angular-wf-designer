@@ -22,6 +22,7 @@ export class ProductInfoComponent implements OnInit {
   @Input() dealerAgreementList = []
   @Input() showSOField: boolean
   @Input() isOAPorcessNode = false // 是不是OA处理的节点, 如果是, 可以编辑NMPA信息
+  @Input() isOMFillSO = false
 
   @ViewChild('linkOit') linkOit: LinkOitComponent
   @ViewChild('selectNmpa') selectNmpa: SelectNmpaComponent;
@@ -40,7 +41,8 @@ export class ProductInfoComponent implements OnInit {
     private prebookV3Service: PrebookV3Service,
   ) { }
 
-  ngOnInit() { }
+  ngOnInit() {
+  }
 
   orderTitle(index, order: FormGroup) {
     return `进单单位${index+1}-${order.get('orderModality').value}`

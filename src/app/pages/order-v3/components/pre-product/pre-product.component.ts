@@ -1538,7 +1538,7 @@ export class PreProductComponent implements OnInit {
         {
           pageNo: 1,
           pageSize: 100,
-          marketBundleList: marketBundleInfo.getRawValue(),
+          marketBundleList: marketBundleInfoArr
         },
         true
       );

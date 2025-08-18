@@ -173,7 +173,7 @@ export function createMarketBundle({
   medicalDeviceName, medicalDevice, dtcDealerAgreementNo, agreementNum, newDealerAgreementNo,
   nmpaNum, nmpaValidityDate, simulationId, marketBundleId,
   opportunityId, crmOpId, businessOpportunityHierarchyLink, opportunityHierarchyLink,
-  authorizedProduct, authorizedArea,
+  authorizedProduct, authorizedArea,wbsNo
 }, disabled = false) {
   const primaryOpportunityDisabled = disabled ? disabled : validBmcList.includes(marketBundleBmc)
   return new FormGroup({
@@ -186,6 +186,7 @@ export function createMarketBundle({
     marketBundleBmc: new FormControl(marketBundleBmc),
     marketBundleAmount: new FormControl(qty || marketBundleAmount),
     productModel: new FormControl(productModel),
+    wbsNo: new FormControl(wbsNo),
     medicalDeviceName: new FormControl(medicalDevice || medicalDeviceName),
     dtcDealerAgreementNo: new FormControl(agreementNum || dtcDealerAgreementNo),
     newDealerAgreementNo: new FormControl({ value: newDealerAgreementNo, disabled }),

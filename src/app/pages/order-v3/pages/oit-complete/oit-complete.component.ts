@@ -1128,7 +1128,7 @@ export class OitcompleteComponent implements OnInit {
         const SearchParams = {
           pageNo: 1,
           pageSize: 10,
-          marketBundleList: marketBundleInfo.getRawValue()
+          marketBundleList: marketBundleInfo
         }
         this.serveice.searchPrebookByMarketBundle(SearchParams).subscribe(res => {
           if (res.code == '0000') {

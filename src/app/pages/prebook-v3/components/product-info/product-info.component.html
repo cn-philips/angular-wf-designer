@@ -1,7 +1,7 @@
 <form nz-form [formGroup]="prebookForm">
   <div class="mb10" nz-row nzType="flex" nzJustify="start" nzAlign="middle" >
     <div class="warning inline warning-wrap" nz-row nzXs="12" nzSm="12" nzMd="6">
-      注意：仅CT,MR,DXR,AMI,IGT-S,PDS-RadOnc,IGT-MoS产品可作为主机发起Slot Reservation申请
+      注意：仅CT,MR,DXR,AMI,IGT-S,PDS-RadOnc,IGT-MoS,US产品可作为主机发起Slot Reservation申请
     </div>
   </div>
   <div formArrayName="orderInfo">
@@ -97,7 +97,7 @@
         </div>
 
         <div *ngIf="(isPDIGTOrder(item) && !hasValidMarketBundle(item))&&!isUsOrder(item)">
-          <nz-alert nzShowIcon nzType="warning" nzMessage="此Order没有可以发起Slot Reservation申请的主机，仅CT,MR,DXR,AMI,IGT-S,PDS-RadOnc,IGT-MoS产品可作为主机发起Slot Reservation申请"></nz-alert>
+          <nz-alert nzShowIcon nzType="warning" nzMessage="此Order没有可以发起Slot Reservation申请的主机，仅CT,MR,DXR,AMI,IGT-S,PDS-RadOnc,IGT-MoS,US产品可作为主机发起Slot Reservation申请"></nz-alert>
         </div>
 
         <!-- 产品列表 -->
@@ -118,6 +118,7 @@
                 <th style="width:150px" nzAlign="center">{{"orderv3.components.real-time.bmc" | translate}}</th>
                 <th style="width:150px" nzAlign="center">{{"orderv3.components.real-time.qty" | translate}}</th>
                 <th style="width:300px" nzAlign="center">{{"orderv3.components.real-time.product-model" | translate}}</th>
+                <th style="width:150px" *ngIf="isUsOrder(item)" nzAlign="center">WBS</th>
                 <th style="width:300px" nzAlign="center">{{"orderv3.components.real-time.device-name" | translate}}</th>
                 <th
                   style="width:200px"
@@ -158,9 +159,11 @@
                 <td nzAlign="center">
                   {{ marketBundle.getRawValue().marketBundleName }}
                 </td>
+
                 <td nzAlign="center">
                   {{ marketBundle.getRawValue().marketBundleBmc }}
                 </td>
+
                 <td nzAlign="center">
                   {{ marketBundle.getRawValue().marketBundleAmount }}
                 </td>
@@ -175,6 +178,21 @@
                     {{ marketBundle.getRawValue().productModel }}
                   </ng-container>
                 </td>
+
+                <td nzAlign="center" *ngIf="isUsOrder(item)">
+                  <input nz-input *ngIf="isOMFillSO" maxlength="100" style="width:100%" formControlName="wbsNo" placeholder="请输入" >
+                    <nz-form-explain *ngIf="
+                      marketBundle.get('wbsNo')?.dirty &&
+                      marketBundle.get('wbsNo')?.errors
+                    ">
+                      此选项必填字段
+                    </nz-form-explain>
+
+                  <ng-container *ngIf="!isOMFillSO">
+                    {{ marketBundle.getRawValue().wbsNo }}
+                  </ng-container>
+                </td>
+
                 <td nzAlign="center">
                   <input
                     *ngIf="isOAPorcessNode"
