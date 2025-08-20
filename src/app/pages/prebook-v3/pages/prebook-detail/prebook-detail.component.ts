@@ -169,7 +169,8 @@ export class PrebookDetailComponent implements OnInit {
     return this.fromTask && ['ecos_prebook_oa', 'ecos_prebook_oa_supplemental', ].includes(this.processStatus)
   }
   get allSelectedOrderIsInSameModality(): boolean {
-    return this.orderInfo.controls.filter((order) => order.enabled&&!order.get('isDeleted').value).map(order=>order.get('orderModality').value).length === 1;
+    let modalityArr = this.orderInfo.controls.filter((order) => order.enabled&&!order.get('isDeleted').value).map(order=>order.get('orderModality').value);
+    return new Set(modalityArr).size === 1;
   }
   constructor(
     private fb: FormBuilder,
