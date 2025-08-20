@@ -353,7 +353,7 @@
                         <span nz-tooltip [nzTitle]="tooltipTitleTemplate" *ngIf="history.comments; else tooltipBlock"
                           nzPlacement="left">
                           <nz-badge [nzDot]="true" nzColor="blue">
-                            <b>{{ convertSignStatusText(history.action, history.contractType) }}</b>
+                            <b>{{ convertSignStatusText(history.action, history.contractType,history.isAutoSigned) }}</b>
                           </nz-badge>
                         </span>
                         <ng-template #tooltipTitleTemplate>
