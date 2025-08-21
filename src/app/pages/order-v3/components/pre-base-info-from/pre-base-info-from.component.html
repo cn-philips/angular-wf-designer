@@ -698,8 +698,8 @@
               <button [disabled]="
                     prebookDisabled ||
                     baseInfoFrom.getRawValue().prebookQuantity == 0 ||
-                      baseInfoFrom.getRawValue().prebookReferenceId != '' ||
-                      baseInfoFrom.getRawValue().prebookReferenceId != null
+                      (baseInfoFrom.getRawValue().prebookReferenceId != '' &&
+                      baseInfoFrom.getRawValue().prebookReferenceId != null)
                   " nz-button nzType="primary" class="ml-md" (click)="onShowSelectPrebookModal()">
                 {{
                 "orderv3.components.pre-product.common.select" | translate
