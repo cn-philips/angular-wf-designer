@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { FormGroup, Validators } from '@angular/forms';
 import { PROVINCES, BUSINESS_MODEL_DIRECT } from '@pages/bidding-v3/bidding-v3.constants'
 import { setBasicInfoValidators } from '@pages/prebook-v3/prebook-v3.utils'
 
@@ -113,8 +113,20 @@ export class BasicInfoComponent implements OnInit {
   ngOnInit() {
     this.initSystemRegion()
     this.initSelectOption()
+    this.resetValidation()
   }
-
+  resetValidation(){
+    if(this.isUSDeal){
+      this.prebookInfo.get('downpaymentDate')!.clearValidators();
+      this.prebookInfo.get('finalPaymentDate')!.clearValidators();
+      this.prebookInfo.get('transportationMode')!.clearValidators();
+      this.prebookInfo.get('requestedArrivalDate')!.setValidators(Validators.required);
+      this.prebookInfo.get('downpaymentDate')!.updateValueAndValidity();
+      this.prebookInfo.get('finalPaymentDate')!.updateValueAndValidity();
+      this.prebookInfo.get('transportationMode')!.updateValueAndValidity();
+      this.prebookInfo.get('requestedArrivalDate')!.updateValueAndValidity();
+    }
+  }
   initSelectOption() {
     this.dictService.dictDatas(['preReason']).subscribe(([preReasons]) => {
       this.selectOption.prebookReason = preReasons.map(({ label, code }) => ({ label, value: code }))
