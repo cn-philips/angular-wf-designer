@@ -87,6 +87,10 @@ export class BasicInfoComponent implements OnInit {
 
     return modalityList.length > 0 ? modalityList : ['PD&IGT']
   }
+  get isUSDeal(): boolean {
+    const { modality, dealFormSalesModality } = this.baseInfo.getRawValue()
+    return modality.toLowerCase() === 'us'
+  }
 
   BUSINESS_MODEL_DIRECT = BUSINESS_MODEL_DIRECT
 
