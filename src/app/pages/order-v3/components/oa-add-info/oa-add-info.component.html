@@ -49,7 +49,7 @@
       </div>
       <div nz-col nzXs="24" nzSm="24" nzMd="12" *ngIf="isThirdShow()">
         <nz-form-item>
-          <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true" nzRequired>
+          <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true">
             {{"orderv3.components.oa-add-info.third-check" | translate}}
           </nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="18">
@@ -62,12 +62,12 @@
               此选项必填字段
             </nz-form-explain>
           </nz-form-control>
-        </nz-form-item>        
+        </nz-form-item>
       </div>
       <div nz-col nzXs="24" nzSm="24" nzMd="12" *ngIf="oaAddInfo.getRawValue().preConcludedItem===true">
         <nz-form-item>
           <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true">
-            {{"orderv3.components.oa-add-info.third-check-info" | translate}}            
+            {{"orderv3.components.oa-add-info.third-check-info" | translate}}
           </nz-form-label>
           <nz-form-control nzXs="24" nzSm="24" nzMd="18">
             preConcluded

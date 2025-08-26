@@ -57,7 +57,7 @@ export class OaAddInfoComponent implements OnInit {
     const oitMode = this.baseInfoFrom.getRawValue().oitMode
     const sampleCheck = this.priceApproval.getRawValue().sampleCheck
     if ((businessModel === 'DISTRIBUTOR') && (modality === 'PD&IGT' ? oitMode === 'BIDDING' : true) && sampleCheck === '1') {
-      this.oaAddInfo.get('purchaseVerification').setValidators([Validators.required])
+      // this.oaAddInfo.get('purchaseVerification').setValidators([Validators.required])
       return true
     } else {
       return false
