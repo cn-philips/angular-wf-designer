@@ -714,12 +714,12 @@ export class OrdersummaryBaseInfoComponent implements OnInit {
       ocap: orderSummaryInfo.ocap ? orderSummaryInfo.ocap : '0',
     })
 
-    if (orderSummaryInfo.preConcludedItem == true) {
-      this.oaAddInfoData.patchValue({
-        purchaseVerification: '1'
-      })
-      this.oaAddInfoData.get("purchaseVerification").disable();
-    }
+    // if (orderSummaryInfo.preConcludedItem == true) {
+    //   this.oaAddInfoData.patchValue({
+    //     purchaseVerification: '1'
+    //   })
+    //   this.oaAddInfoData.get("purchaseVerification").disable();
+    // }
     this.remarkFromData.patchValue({
       comments: data.comments,
       attachmentIds: data.attachmentIds
