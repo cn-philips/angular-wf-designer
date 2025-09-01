@@ -36,13 +36,13 @@
 
         <app-tab [title]="'prebookv3.pages.prebook-detail.oa-approval' | translate" *ngIf="showOaApprovalTab">
           <div class="card-body">
-            <prebook-v3-oa-approval [oaApproval]="oaApproval"></prebook-v3-oa-approval>
+            <prebook-v3-oa-approval [oaApproval]="oaApproval"  [isUsProcess]="isUsProcess"></prebook-v3-oa-approval>
           </div>
         </app-tab>
 
         <app-tab [title]="'prebookv3.pages.prebook-detail.oa-supplement' | translate" *ngIf="showOaSupplementTab">
           <div class="card-body">
-            <prebook-v3-oa-supplement [oaSupplement]="oaSupplement" [disabled]="true"></prebook-v3-oa-supplement>
+            <prebook-v3-oa-supplement [oaSupplement]="oaSupplement" [disabled]="true" [isUsProcess]="isUsProcess"></prebook-v3-oa-supplement>
           </div>
         </app-tab>
 
@@ -56,12 +56,12 @@
           <div class="card-body">
             <prebook-v3-zpm-approval *ngIf="processStatus == 'ecos_prebook_zpm'" [zpmApproval]="zpmApproval">
             </prebook-v3-zpm-approval>
-            <prebook-v3-oa-approval *ngIf="processStatus == 'ecos_prebook_oa'" [oaApproval]="oaApproval">
+            <prebook-v3-oa-approval *ngIf="processStatus == 'ecos_prebook_oa'" [oaApproval]="oaApproval" [isUsProcess]="isUsProcess">
             </prebook-v3-oa-approval>
             <prebook-v3-oa-supplement *ngIf="processStatus == 'ecos_prebook_oa_supplemental'"
-              [oaSupplement]="oaSupplement" [applyDetail]="originData"></prebook-v3-oa-supplement>
+              [oaSupplement]="oaSupplement" [applyDetail]="originData"  [isUsProcess]="isUsProcess"></prebook-v3-oa-supplement>
 
-            <prebook-v3-product-info *ngIf="processStatus === 'ecos_prebook_om'" [showSOField]="true"
+            <prebook-v3-product-info *ngIf="processStatus === 'ecos_prebook_om'" [showSOField]="true" [isOMFillSO]="true"
               [showLinkBtn]="showLinkBtn" [prebookForm]="prebookForm"></prebook-v3-product-info>
             <!-- 审批通用字段 -->
             <form nz-form [formGroup]="commonApproval" *ngIf="processStatus !== 'ecos_prebook_om'">
@@ -118,9 +118,15 @@
   </button>
 
   <ng-container *ngIf="fromTask || fromSupplement">
-    <button *ngIf="fromTask || fromSupplement" nz-button nzType="primary" nz-popconfirm [nzTitle]="popconfirmTitle"
+    <button *ngIf="!showSubmitBtn" nz-button nzType="primary" nz-popconfirm [nzTitle]="popconfirmTitle"
       (nzOnConfirm)="handleAction('approved')">
-      <ng-container *ngIf="!showSubmitBtn">{{"biddingv3.pages.bidding-detail.approved" | translate}}</ng-container>
+      <ng-container  >{{"biddingv3.pages.bidding-detail.approved" | translate}}</ng-container>
+    </button>
+    <button *ngIf="showSubmitBtn&&allSelectedOrderIsInSameModality" nz-button nzType="primary" nz-popconfirm [nzTitle]="popconfirmTitle"
+      (nzOnConfirm)="handleAction('approved')">
+      <ng-container *ngIf="showSubmitBtn">{{"biddingv3.pages.bidding-detail.submit" | translate}}</ng-container>
+    </button>
+    <button *ngIf="showSubmitBtn&&!allSelectedOrderIsInSameModality" nz-popover  [nzContent]="contentTemplate" nz-button nzType="primary" [disabled]="true">
       <ng-container *ngIf="showSubmitBtn">{{"biddingv3.pages.bidding-detail.submit" | translate}}</ng-container>
     </button>
 
@@ -134,5 +140,10 @@
     </button>
   </ng-container>
 
+  <ng-template #contentTemplate>
+    <span>
+      仅限同一Modality类型的Order可以同时提交
+    </span>
+  </ng-template>
 
 </footer>

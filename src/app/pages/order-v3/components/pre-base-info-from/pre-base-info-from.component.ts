@@ -172,6 +172,7 @@ export class PreBaseInfoFromComponent implements OnInit {
       return "";
     }
   }
+
   get iSusHta() {
     const { segment } = this.endUserFrom.getRawValue();
     if (segment) {
@@ -2055,23 +2056,35 @@ export class PreBaseInfoFromComponent implements OnInit {
     }
   }
   onShowSelectPrebookModal() {
+    const { orderModality } =  this.baseInfoFrom.getRawValue();
     //弹出prebook弹窗口
     const marketBundleInfoArr = this.marketBundleInfo.getRawValue();
     const marketBundleHost = marketBundleInfoArr.filter(
       (val) =>
         val.primaryOpportunity == "true" || val.primaryOpportunity == true
     );
-    const opportunityId = marketBundleHost[0].opportunityId;
-    const marketBundleName = marketBundleHost[0].marketBundleName;
-    const marketBundleAmount = marketBundleHost[0].marketBundleAmount;
-    this.selectPreBook.show(
-      {
-        opportunityId: opportunityId,
-        marketBundleName: marketBundleName,
-        marketBundleAmount: marketBundleAmount,
-      },
-      true
-    );
+    if("US" === orderModality){
+      this.selectPreBook.showByList(
+        {
+          pageNo: 1,
+          pageSize: 10,
+          marketBundleList: marketBundleInfoArr,
+        },
+        true
+      );
+    }else{
+      const opportunityId = marketBundleHost[0].opportunityId;
+      const marketBundleName = marketBundleHost[0].marketBundleName;
+      const marketBundleAmount = marketBundleHost[0].marketBundleAmount;
+      this.selectPreBook.show(
+        {
+          opportunityId: opportunityId,
+          marketBundleName: marketBundleName,
+          marketBundleAmount: marketBundleAmount,
+        },
+        true
+      );
+    }
   }
   onPrebookselect(val) {
     this.baseInfoFrom.patchValue({

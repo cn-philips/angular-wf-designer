@@ -820,9 +820,11 @@
               </div>
             </div>
             <div nz-row nzType="flex" nzJustify="start" nzAlign="top">
-              <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8" *ngIf="
+              <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8" *ngIf="(
                   item.controls.orderBaseinfo.getRawValue().orderModality ==
-                  'PD&IGT'
+                  'PD&IGT'||
+                  item.controls.orderBaseinfo.getRawValue().orderModality ==
+                  'US')
                 ">
                 <nz-form-item>
                   <nz-form-label nzXs="24" nzSm="24" nzMd="10" nzXl="8" nzXXl="6" [nzNoColon]="true"
@@ -863,8 +865,9 @@
                 </nz-form-item>
               </div>
               <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8" *ngIf="
-                  item.controls.orderBaseinfo.getRawValue().orderModality ==
-                  'PD&IGT'
+                  (item.controls.orderBaseinfo.getRawValue().orderModality ==
+                  'PD&IGT' || item.controls.orderBaseinfo.getRawValue().orderModality ==
+                  'US')
                 ">
                 <nz-form-item>
                   <nz-form-label nzXs="24" nzSm="24" nzMd="10" nzXl="8" nzXXl="6" [nzNoColon]="true">
@@ -879,7 +882,8 @@
               </div>
               <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8" *ngIf="
                   item.controls.orderBaseinfo.getRawValue().orderModality ==
-                  'PD&IGT'
+                  'PD&IGT'||item.controls.orderBaseinfo.getRawValue().orderModality ==
+                  'US'
                 ">
                 <nz-form-item>
                   <nz-form-label nzXs="24" nzSm="24" nzMd="10" nzXl="8" nzXXl="6" [nzNoColon]="true">

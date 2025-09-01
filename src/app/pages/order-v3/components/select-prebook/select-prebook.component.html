@@ -6,8 +6,8 @@
     <nz-table [nzData]="tableData.rows" [nzShowTotal]="totalTemplate" [nzTotal]="tableData.total"
       [nzLoading]="tableData.loading" [nzPageSizeOptions]="[5, 10, 20, 30, 40, 50 ]" [nzShowQuickJumper]="true"
       [nzShowSizeChanger]="true" [nzFrontPagination]="false" [nzScroll]="{ x:'800px',y:'300px'}"
-      [(nzPageIndex)]="searchParams.pageNo" [(nzPageSize)]="searchParams.pageSize" (nzPageIndexChange)="getTableData()"
-      (nzPageSizeChange)="getTableData()">
+      [(nzPageIndex)]="searchParams.pageNo" [(nzPageSize)]="searchParams.pageSize" (nzPageIndexChange)="query()"
+      (nzPageSizeChange)="query()">
       <thead>
         <tr>
           <th nzWidth="160px" style="width:160px" nzAlign="center">{{"orderv3.components.select-deal.deal-form-id" | translate}}</th>

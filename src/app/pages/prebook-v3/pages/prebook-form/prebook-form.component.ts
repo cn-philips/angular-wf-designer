@@ -40,7 +40,10 @@ export class PrebookFormComponent implements OnInit {
   get orderInfo(): FormArray {
     return this.prebookForm.get('orderInfo') as FormArray
   }
-
+  get allSelectedOrderIsInSameModality(): boolean {
+    let modalityArr = this.orderInfo.controls.filter((order) => order.enabled&&!order.get('isDeleted').value).map(order=>order.get('orderModality').value);
+    return new Set(modalityArr).size === 1;
+  }
   constructor(
     private activatedRoute: ActivatedRoute,
     private message: NzMessageService,

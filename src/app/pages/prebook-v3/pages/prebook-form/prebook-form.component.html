@@ -50,7 +50,15 @@
   <button nz-button nz-popconfirm nzTitle="你确定要执行保存的操作?" (nzOnConfirm)="onSave()">
     {{"biddingv3.pages.bidding-form.save" | translate }}
   </button>
-  <button nz-button nzType="primary" nz-popconfirm nzTitle="你确定要执行提交的操作?" (nzOnConfirm)="onSubmit()">
+  <button nz-button nzType="primary" nz-popconfirm nzTitle="你确定要执行提交的操作?" *ngIf="allSelectedOrderIsInSameModality" (nzOnConfirm)="onSubmit()" [disabled]="!allSelectedOrderIsInSameModality">
     {{"biddingv3.pages.bidding-form.submit" | translate }}
   </button>
+  <button nz-button nzType="primary" nz-popover  [nzContent]="contentTemplate" *ngIf="!allSelectedOrderIsInSameModality" [disabled]="true">
+    {{"biddingv3.pages.bidding-form.submit" | translate }}
+  </button>
+  <ng-template #contentTemplate>
+    <span>
+      仅限同一Modality类型的Order可以同时提交
+    </span>
+  </ng-template>
 </footer>

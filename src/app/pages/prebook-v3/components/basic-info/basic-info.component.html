@@ -1038,7 +1038,7 @@
 
         <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
           <nz-form-item>
-            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" [nzRequired]="!isUSDeal">
               {{"prebookv3.components.basic-info.transport" | translate}}
             </nz-form-label>
             <nz-form-control nzXs="24" nzSm="24" nzMd="14">
@@ -1054,11 +1054,15 @@
 
         <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
           <nz-form-item>
-            <nz-form-label nzXs="24" nzSm="24" nzMd="8">
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8"  [nzRequired]="isUSDeal">
               {{"prebookv3.components.basic-info.arrival" | translate}}
             </nz-form-label>
             <nz-form-control nzXs="24" nzSm="24" nzMd="16">
               <shared-date-picker formControlName="requestedArrivalDate"></shared-date-picker>
+              <nz-form-explain
+                *ngIf="prebookInfo.get('requestedArrivalDate')?.dirty && prebookInfo.get('requestedArrivalDate')?.errors">
+                {{"biddingv3.components.basic-info.required" | translate}}
+              </nz-form-explain>
             </nz-form-control>
           </nz-form-item>
         </div>
@@ -1078,9 +1082,9 @@
           </nz-form-item>
         </div>
 
-        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8" *ngIf="!isUSDeal">
           <nz-form-item>
-            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" [nzRequired]="!isUSDeal">
               {{"prebookv3.components.basic-info.payment-date" | translate}}
             </nz-form-label>
             <nz-form-control nzXs="24" nzSm="24" nzMd="14">
@@ -1093,9 +1097,9 @@
           </nz-form-item>
         </div>
 
-        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
+        <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8" *ngIf="!isUSDeal">
           <nz-form-item>
-            <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired>
+            <nz-form-label nzXs="24" nzSm="24" nzMd="8" [nzRequired]="!isUSDeal">
               {{"prebookv3.components.basic-info.final-date" | translate}}
             </nz-form-label>
             <nz-form-control nzXs="24" nzSm="24" nzMd="16">

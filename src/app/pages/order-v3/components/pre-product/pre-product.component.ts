@@ -710,6 +710,10 @@ export class PreProductComponent implements OnInit {
   get foreignFrom(): FormGroup {
     return this.formValue.get("foreignFrom") as FormGroup;
   }
+  isUsProcess(order): boolean {
+    const { dealFormSalesModality } = this.baseInfoFrom.getRawValue();
+    return dealFormSalesModality && dealFormSalesModality.toLowerCase() === 'us'
+  }
 
   handleSwitch(index, $event) {
     console.log($event, index);
@@ -1528,17 +1532,29 @@ export class PreProductComponent implements OnInit {
       (val) =>
         val.primaryOpportunity == "true" || val.primaryOpportunity == true
     );
-    const opportunityId = marketBundleHost[0].opportunityId;
-    const marketBundleName = marketBundleHost[0].marketBundleName;
-    const marketBundleAmount = marketBundleHost[0].marketBundleAmount;
-    this.selectPreBook.show(
-      {
-        opportunityId: opportunityId,
-        marketBundleName: marketBundleName,
-        marketBundleAmount: marketBundleAmount,
-      },
-      true
-    );
+    const { orderModality } = orderBaseinfo.getRawValue();
+    if("US" === orderModality){
+      this.selectPreBook.showByList(
+        {
+          pageNo: 1,
+          pageSize: 100,
+          marketBundleList: marketBundleInfoArr
+        },
+        true
+      );
+    }else{
+      const opportunityId = marketBundleHost[0].opportunityId;
+      const marketBundleName = marketBundleHost[0].marketBundleName;
+      const marketBundleAmount = marketBundleHost[0].marketBundleAmount;
+      this.selectPreBook.show(
+        {
+          opportunityId: opportunityId,
+          marketBundleName: marketBundleName,
+          marketBundleAmount: marketBundleAmount,
+        },
+        true
+      );
+    }
     this.index = i;
   }
   onPrebookselect(val) {

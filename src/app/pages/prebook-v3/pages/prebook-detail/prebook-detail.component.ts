@@ -123,9 +123,11 @@ export class PrebookDetailComponent implements OnInit {
   }
 
   get showZpmApprovalTab(): boolean {
-    return !['ecos_prebook_resubmit', 'ecos_prebook_zpm'].includes(this.processStatus)
+    return !['ecos_prebook_resubmit', 'ecos_prebook_zpm'].includes(this.processStatus) && !this.isUsProcess
   }
-
+  get isUsProcess(): boolean {
+    return this.originData.modality && this.originData.modality.toLowerCase() === 'us'
+  }
   get showOaApprovalTab(): boolean {
     return ['ecos_prebook_dm', 'ecos_prebook_zsl'].includes(this.processStatus)
   }
@@ -166,7 +168,10 @@ export class PrebookDetailComponent implements OnInit {
   get isOAPorcessNode(): boolean {
     return this.fromTask && ['ecos_prebook_oa', 'ecos_prebook_oa_supplemental', ].includes(this.processStatus)
   }
-
+  get allSelectedOrderIsInSameModality(): boolean {
+    let modalityArr = this.orderInfo.controls.filter((order) => order.enabled&&!order.get('isDeleted').value).map(order=>order.get('orderModality').value);
+    return new Set(modalityArr).size === 1;
+  }
   constructor(
     private fb: FormBuilder,
     private activatedRoute: ActivatedRoute,
@@ -294,16 +299,30 @@ export class PrebookDetailComponent implements OnInit {
         break
       case 'ecos_prebook_oa':
         this.oaApproval.enable()
+        if(this.isUsProcess){
+          // 备货协议草稿
+          this.oaApproval.get('stockingAgreementDraft')!.clearValidators();
+          this.oaApproval.get('stockingAgreementDraft')!.markAsPristine();
+        }
         break
       case 'ecos_prebook_oa_supplemental':
         this.oaSupplement.enable()
+        if(this.isUsProcess){
+          // 备货协议草稿
+          this.oaSupplement.get('stockingAgreementDraft')!.clearValidators();
+          this.oaSupplement.get('stockingAgreementDraft')!.markAsPristine();
+          this.oaSupplement.get('stockingAgreementBody')!.clearValidators();
+          this.oaSupplement.get('stockingAgreementBody')!.markAsPristine();
+          this.oaSupplement.get('paymentVoucher')!.clearValidators();
+          this.oaSupplement.get('paymentVoucher')!.markAsPristine();
+        }
         break
       case 'ecos_prebook_om':
         if (this.fromTask || this.fromSupplement) {
           this.orderInfo.controls.forEach((item: FormGroup) => {
             item.get('isDeleted').disable()
             const { isDeleted, orderModality } = item.getRawValue()
-            if (isDeleted === 0 && orderModality === 'PD&IGT') {
+            if (isDeleted === 0 && (orderModality === 'PD&IGT'|| orderModality === 'US')) {
               const so = item.get('so')
               so.enable()
               so.setValidators([Validators.required, soValidators])
@@ -312,6 +331,12 @@ export class PrebookDetailComponent implements OnInit {
             }
             const marketBundleInfo = item.get('marketBundleInfo') as FormArray
             marketBundleInfo.controls.forEach(bundle => bundle.disable())
+            marketBundleInfo.controls.forEach(bundle => {
+              bundle.get('wbsNo').enable()
+              bundle.get('wbsNo').setValidators([Validators.required, Validators.maxLength(100)])
+              bundle.get('wbsNo').updateValueAndValidity()
+              bundle.get('wbsNo').markAsPristine()
+            })
           })
         }
         break

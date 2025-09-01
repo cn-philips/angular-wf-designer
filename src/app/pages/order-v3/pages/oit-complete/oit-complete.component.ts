@@ -1090,7 +1090,7 @@ export class OitcompleteComponent implements OnInit {
       })
       const { orderModality } = this.baseInfoFromData.getRawValue();
 
-      if (orderModality == 'PD&IGT' && (this.status == 'ecos_oit_order_upload' || this.needFileType == 'om')) {
+      if ((orderModality == 'PD&IGT') && (this.status == 'ecos_oit_order_upload' || this.needFileType == 'om')) {
         const marketBundelhost = marketBundleInfo.filter(val => val.primaryOpportunity == 'true' || val.primaryOpportunity == true);
         const { marketBundleName, opportunityId, marketBundleAmount } = marketBundelhost[0];
         const SearchParams = {
@@ -1103,6 +1103,35 @@ export class OitcompleteComponent implements OnInit {
         this.serveice.searchPrebook(SearchParams).subscribe(res => {
           if (res.code == '0000') {
 
+            this.baseInfoFromData.patchValue({
+              prebookQuantity: res.data.rows.length,
+            })
+            if (res.data.rows.length == 1) {
+              const { rows } = res.data;
+              this.baseInfoFromData.patchValue({
+                prebookReferenceId: rows[0].referenceId,
+                prebookApplyId: rows[0].applyId,
+                prebookOrderId: rows[0].orderId,
+                prebookStatus: rows[0].processStatus,
+                prebookSo: rows[0].so,
+              })
+            }
+            if (res.data.rows.length > 0) {
+              this.baseInfoFromData.get("prebookReferenceId").enable();
+              this.baseInfoFromData.get("prebookReferenceId").setValidators(Validators.required);
+              this.baseInfoFromData.get("prebookReferenceId").updateValueAndValidity();
+            }
+          }
+        })
+      }
+      if ((orderModality == 'US') && (this.status == 'ecos_oit_order_upload' || this.needFileType == 'om')) {
+        const SearchParams = {
+          pageNo: 1,
+          pageSize: 10,
+          marketBundleList: marketBundleInfo
+        }
+        this.serveice.searchPrebookByMarketBundle(SearchParams).subscribe(res => {
+          if (res.code == '0000') {
             this.baseInfoFromData.patchValue({
               prebookQuantity: res.data.rows.length,
             })

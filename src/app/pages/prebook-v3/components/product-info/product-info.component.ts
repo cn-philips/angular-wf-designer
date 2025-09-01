@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
-import { FormArray, FormGroup } from '@angular/forms';
+import { FormArray, FormGroup, Validators } from '@angular/forms';
 import { Router } from "@angular/router";
 import { PrebookV3Service } from '@pages/prebook-v3/prebook-v3.service';
 import { NzMessageService } from 'ng-zorro-antd'
@@ -22,6 +22,7 @@ export class ProductInfoComponent implements OnInit {
   @Input() dealerAgreementList = []
   @Input() showSOField: boolean
   @Input() isOAPorcessNode = false // 是不是OA处理的节点, 如果是, 可以编辑NMPA信息
+  @Input() isOMFillSO = false
 
   @ViewChild('linkOit') linkOit: LinkOitComponent
   @ViewChild('selectNmpa') selectNmpa: SelectNmpaComponent;
@@ -40,7 +41,25 @@ export class ProductInfoComponent implements OnInit {
     private prebookV3Service: PrebookV3Service,
   ) { }
 
-  ngOnInit() { }
+  ngOnInit() {
+    this.setValidator4WbsNo();
+  }
+
+  setValidator4WbsNo(){
+    if(this.isOMFillSO){
+      this.orderInfo.controls.forEach(order => {
+        if(this.isUsOrder(order as FormGroup)){
+          const marketBundleInfo = order.get('marketBundleInfo') as FormArray
+          marketBundleInfo.controls.forEach(bundle => {
+            bundle.get('wbsNo').enable()
+            bundle.get('wbsNo').setValidators([Validators.required, Validators.maxLength(100)])
+            bundle.get('wbsNo').markAsDirty()
+            bundle.get('wbsNo').updateValueAndValidity()
+          })
+        }
+      });
+    }
+  }
 
   orderTitle(index, order: FormGroup) {
     return `进单单位${index+1}-${order.get('orderModality').value}`
@@ -48,6 +67,9 @@ export class ProductInfoComponent implements OnInit {
 
   isPDIGTOrder(order: FormGroup) {
     return order.get('orderModality').value == 'PD&IGT'
+  }
+  isUsOrder(order: FormGroup) {
+    return order.get('orderModality').value == 'US'
   }
 
   hasValidMarketBundle(order: FormGroup) {
@@ -58,7 +80,6 @@ export class ProductInfoComponent implements OnInit {
         result = true
       }
     })
-
     return result
   }
 
@@ -88,6 +109,16 @@ export class ProductInfoComponent implements OnInit {
       }
     })
   }
+  checkHasLinkedOitOrder4UsOrder(order: FormGroup,allMarketBundleInfo:Array<any>) {
+    order.patchValue({ hasLinkedOitOrder: 0 })
+    this.prebookV3Service.linkedOitOrders4UsOrder(allMarketBundleInfo).subscribe(({ data }) => {
+      if (data && data.length > 0) {
+        order.patchValue({ hasLinkedOitOrder: 1 })
+      } else {
+        order.patchValue({ hasLinkedOitOrder: 2 })
+      }
+    })
+  }
 
   onIsDeletedChange(order: FormGroup, value) {
     if (!this.showLinkBtn) { return }
@@ -102,9 +133,15 @@ export class ProductInfoComponent implements OnInit {
           }
         })
       }
-      const primaryOpp = this.getPrimaryOpp(order)
-      if (primaryOpp) {
-        this.checkHasLinkedOitOrder(order, primaryOpp)
+
+      if(this.isUsOrder(order)) {
+        const marketBundleInfo = order.get('marketBundleInfo') as FormArray
+        this.checkHasLinkedOitOrder4UsOrder(order, marketBundleInfo.getRawValue())
+      }else{
+        const primaryOpp = this.getPrimaryOpp(order)
+        if (primaryOpp) {
+          this.checkHasLinkedOitOrder(order, primaryOpp)
+        }
       }
     } else {
       order.patchValue({
@@ -138,15 +175,20 @@ export class ProductInfoComponent implements OnInit {
 
   onShowLinkOit(order) {
     this.activeOrder = order
-    const primaryOpp = this.getPrimaryOpp(order)
-    if (!primaryOpp) {
-      this.message.warning('请先选择主机')
-      return
+    if(this.isUsOrder(order)) {
+      const marketBundleInfo = order.get('marketBundleInfo') as FormArray
+      this.linkOit.showByList(marketBundleInfo.getRawValue())
+    }else{
+      const primaryOpp = this.getPrimaryOpp(order)
+      if (!primaryOpp) {
+        this.message.warning('请先选择主机')
+        return
+      }
+      const { marketBundleName, marketBundleAmount, opportunityId } = primaryOpp
+      this.linkOit.show({
+        marketBundleName, marketBundleAmount, opportunityId
+      })
     }
-    const { marketBundleName, marketBundleAmount, opportunityId } = primaryOpp
-    this.linkOit.show({
-      marketBundleName, marketBundleAmount, opportunityId
-    })
   }
 
   // 设置主机

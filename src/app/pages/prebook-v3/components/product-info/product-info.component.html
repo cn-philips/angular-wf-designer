@@ -1,13 +1,13 @@
 <form nz-form [formGroup]="prebookForm">
-  <div class="mb10" nz-row nzType="flex" nzJustify="start" nzAlign="middle">
+  <div class="mb10" nz-row nzType="flex" nzJustify="start" nzAlign="middle" >
     <div class="warning inline warning-wrap" nz-row nzXs="12" nzSm="12" nzMd="6">
-      注意：仅CT,MR,DXR,AMI,IGT-S,PDS-RadOnc,IGT-MoS产品可作为主机发起Slot Reservation申请
+      注意：仅CT,MR,DXR,AMI,IGT-S,PDS-RadOnc,IGT-MoS,US产品可作为主机发起Slot Reservation申请
     </div>
   </div>
   <div formArrayName="orderInfo">
     <div class="selection-wrap" *ngFor="let item of orderInfo.controls;let index=index" [formGroup]="item">
       <app-form-section [title]="orderTitle(index, item)" [form]="item">
-        <ng-container *ngIf="isPDIGTOrder(item) && hasValidMarketBundle(item)">
+        <ng-container *ngIf="(isPDIGTOrder(item) && hasValidMarketBundle(item))||(isUsOrder(item))">
           <ng-container *ngIf="!item.get('isUsed').value">
             <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
               <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
@@ -92,12 +92,12 @@
           </div>
         </ng-container>
 
-        <div *ngIf="!isPDIGTOrder(item)">
-          <nz-alert nzShowIcon nzType="warning" nzMessage="此Order的Modality类型≠PD&IGT，无法参与本次Slot Reservation申请"></nz-alert>
+        <div *ngIf="!isPDIGTOrder(item)&&!isUsOrder(item)">
+          <nz-alert nzShowIcon nzType="warning" nzMessage="此Order的Modality类型≠PD&IGT或≠US，无法参与本次Slot Reservation申请"></nz-alert>
         </div>
 
-        <div *ngIf="isPDIGTOrder(item) && !hasValidMarketBundle(item)">
-          <nz-alert nzShowIcon nzType="warning" nzMessage="此Order没有可以发起Slot Reservation申请的主机，仅CT,MR,DXR,AMI,IGT-S,PDS-RadOnc,IGT-MoS产品可作为主机发起Slot Reservation申请"></nz-alert>
+        <div *ngIf="(isPDIGTOrder(item) && !hasValidMarketBundle(item))&&!isUsOrder(item)">
+          <nz-alert nzShowIcon nzType="warning" nzMessage="此Order没有可以发起Slot Reservation申请的主机，仅CT,MR,DXR,AMI,IGT-S,PDS-RadOnc,IGT-MoS,US产品可作为主机发起Slot Reservation申请"></nz-alert>
         </div>
 
         <!-- 产品列表 -->
@@ -112,12 +112,13 @@
           >
             <thead>
               <tr>
-                <th style="width:300px" nzAlign="center">{{"orderv3.components.real-time.main-article" | translate}}</th>
+                <th style="width:300px" nzAlign="center" *ngIf="!isUsOrder(item)">{{"orderv3.components.real-time.main-article" | translate}}</th>
                 <th style="width:300px" nzAlign="center">{{"orderv3.components.real-time.product-config" | translate}}</th>
                 <th style="width:300px" nzAlign="center">Market Bundle Name</th>
                 <th style="width:150px" nzAlign="center">{{"orderv3.components.real-time.bmc" | translate}}</th>
                 <th style="width:150px" nzAlign="center">{{"orderv3.components.real-time.qty" | translate}}</th>
                 <th style="width:300px" nzAlign="center">{{"orderv3.components.real-time.product-model" | translate}}</th>
+                <th style="width:150px" *ngIf="isUsOrder(item)" nzAlign="center">WBS<b *ngIf="isOMFillSO" style="color:red"> *</b></th>
                 <th style="width:300px" nzAlign="center">{{"orderv3.components.real-time.device-name" | translate}}</th>
                 <th
                   style="width:200px"
@@ -143,7 +144,7 @@
             </thead>
             <tbody formArrayName="marketBundleInfo">
               <tr *ngFor="let marketBundle of item.get('marketBundleInfo').controls;let i=index" [formGroup]="marketBundle">
-                <td nzAlign="center">
+                <td nzAlign="center" *ngIf="!isUsOrder(item)">
                   <shared-radio
                     formControlName="primaryOpportunity"
                     trueValue="true"
@@ -158,9 +159,11 @@
                 <td nzAlign="center">
                   {{ marketBundle.getRawValue().marketBundleName }}
                 </td>
+
                 <td nzAlign="center">
                   {{ marketBundle.getRawValue().marketBundleBmc }}
                 </td>
+
                 <td nzAlign="center">
                   {{ marketBundle.getRawValue().marketBundleAmount }}
                 </td>
@@ -175,6 +178,18 @@
                     {{ marketBundle.getRawValue().productModel }}
                   </ng-container>
                 </td>
+
+                <td nzAlign="center" *ngIf="isUsOrder(item)">
+                  <input nz-input *ngIf="isOMFillSO" maxlength="100" style="width:100%" formControlName="wbsNo" placeholder="请输入" nzRequired/>
+                  <nz-form-explain *ngIf="marketBundle.get('wbsNo')?.dirty && marketBundle.get('wbsNo')?.errors?.required" style="color: red;">
+                    此选项必填字段
+                  </nz-form-explain>
+
+                  <ng-container *ngIf="!isOMFillSO">
+                    {{ marketBundle.getRawValue().wbsNo }}
+                  </ng-container>
+                </td>
+
                 <td nzAlign="center">
                   <input
                     *ngIf="isOAPorcessNode"
@@ -260,7 +275,7 @@
         </span>
 
         <!-- 补充SO号 -->
-        <div *ngIf="isPDIGTOrder(item) && showSOField && item.get('isDeleted').value === 0" class="mt10">
+        <div *ngIf="(isPDIGTOrder(item)||isUsOrder(item)) && showSOField && item.get('isDeleted').value === 0" class="mt10">
           <div nz-row nzType="flex" nzJustify="start" nzAlign="middle">
             <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="8">
               <nz-form-item>

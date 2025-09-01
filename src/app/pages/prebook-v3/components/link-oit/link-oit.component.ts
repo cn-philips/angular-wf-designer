@@ -10,7 +10,7 @@ interface SearchParams {
 }
 interface TableData {
   loading: boolean;
-  rows: [];
+  rows: any[];
   total: number;
 }
 
@@ -65,11 +65,33 @@ export class LinkOitComponent implements OnInit {
         }
       });
   }
+  getTableDataByList(params){
+    const url =
+      `/act/ecos/prebook/order/oit/matchedOrders4Us`
+    this.tableData.loading = true;
+    this.http
+      .post(url,params)
+      .subscribe(({ code, data }) => {
+        if (code === "0000") {
+
+          this.tableData.rows = data
+          // this.tableData.rows = result
+          this.tableData.loading = false
+        } else {
+          this.handleRequestError();
+        }
+      });
+  }
 
   show(params) {
     this.visible = true
     this.searchParams = params
     this.getTableData()
+  }
+  showByList(params) {
+    this.visible = true
+    this.searchParams = params
+    this.getTableDataByList(params)
   }
 
   onHide() {
