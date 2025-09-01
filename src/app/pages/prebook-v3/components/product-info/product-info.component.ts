@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
-import { FormArray, FormGroup } from '@angular/forms';
+import { FormArray, FormGroup, Validators } from '@angular/forms';
 import { Router } from "@angular/router";
 import { PrebookV3Service } from '@pages/prebook-v3/prebook-v3.service';
 import { NzMessageService } from 'ng-zorro-antd'
@@ -42,6 +42,23 @@ export class ProductInfoComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.setValidator4WbsNo();
+  }
+
+  setValidator4WbsNo(){
+    if(this.isOMFillSO){
+      this.orderInfo.controls.forEach(order => {
+        if(this.isUsOrder(order as FormGroup)){
+          const marketBundleInfo = order.get('marketBundleInfo') as FormArray
+          marketBundleInfo.controls.forEach(bundle => {
+            bundle.get('wbsNo').enable()
+            bundle.get('wbsNo').setValidators([Validators.required, Validators.maxLength(100)])
+            bundle.get('wbsNo').markAsDirty()
+            bundle.get('wbsNo').updateValueAndValidity()
+          })
+        }
+      });
+    }
   }
 
   orderTitle(index, order: FormGroup) {
@@ -63,7 +80,6 @@ export class ProductInfoComponent implements OnInit {
         result = true
       }
     })
-
     return result
   }
 

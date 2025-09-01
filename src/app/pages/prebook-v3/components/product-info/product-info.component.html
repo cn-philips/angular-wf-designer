@@ -118,7 +118,7 @@
                 <th style="width:150px" nzAlign="center">{{"orderv3.components.real-time.bmc" | translate}}</th>
                 <th style="width:150px" nzAlign="center">{{"orderv3.components.real-time.qty" | translate}}</th>
                 <th style="width:300px" nzAlign="center">{{"orderv3.components.real-time.product-model" | translate}}</th>
-                <th style="width:150px" *ngIf="isUsOrder(item)" nzAlign="center">WBS</th>
+                <th style="width:150px" *ngIf="isUsOrder(item)" nzAlign="center">WBS<b *ngIf="isOMFillSO" style="color:red"> *</b></th>
                 <th style="width:300px" nzAlign="center">{{"orderv3.components.real-time.device-name" | translate}}</th>
                 <th
                   style="width:200px"
@@ -180,13 +180,10 @@
                 </td>
 
                 <td nzAlign="center" *ngIf="isUsOrder(item)">
-                  <input nz-input *ngIf="isOMFillSO" maxlength="100" style="width:100%" formControlName="wbsNo" placeholder="请输入" >
-                    <nz-form-explain *ngIf="
-                      marketBundle.get('wbsNo')?.dirty &&
-                      marketBundle.get('wbsNo')?.errors
-                    ">
-                      此选项必填字段
-                    </nz-form-explain>
+                  <input nz-input *ngIf="isOMFillSO" maxlength="100" style="width:100%" formControlName="wbsNo" placeholder="请输入" nzRequired/>
+                  <nz-form-explain *ngIf="marketBundle.get('wbsNo')?.dirty && marketBundle.get('wbsNo')?.errors?.required" style="color: red;">
+                    此选项必填字段
+                  </nz-form-explain>
 
                   <ng-container *ngIf="!isOMFillSO">
                     {{ marketBundle.getRawValue().wbsNo }}
