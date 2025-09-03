@@ -43,6 +43,7 @@ enum TAB_TYPE {
   EXCHANGE_INFO = "exchange-info",
   DIFFERENCE_AND_COST_INFO = "difference-and-cost-info",
   SUPPLEMENT_INFO = "supplement-info",
+  ADVANCED_PAYMENT = "advanced-payment"
 }
 const oitProductsValidator = (control: FormArray): ValidationErrors => {
   // model: [null, [Validators.required]], // 产品型号
@@ -292,6 +293,57 @@ export class RequestFormComponent implements OnInit {
     expectedOitDate: [null, [Validators.required]], // 预计OIT日期
   }
 
+  public advancedPaymentInit = {
+    dealformId:[null, [Validators.required]],
+    dealerName:[null, [Validators.required]],
+    dealerCode: [null, [Validators.required]], // 经销商编号
+    hospitalName:[null, [Validators.required]],
+    businessModel:[null, [Validators.required]],
+    systemRegion: [{ value: null, disabled: true }, [Validators.required]],
+    // bg: [null],
+    // cycleGroup: [null],
+    // bigArea: [null],
+    // smallArea: [null],
+    // team: [null],
+    sales:[null, [Validators.required]],
+    orderInfo :this.fb.array([
+      this.fb.group({
+        orderId: [null], // 订单ID
+        referenceId: [null], // Reference Id
+        bmc: [null], // 产品线
+        productModel: [null],
+        so: [null],
+      })
+    ]),
+    financeInfo : this.fb.group({
+      currency:[null, [Validators.required]],
+      dealPriceCny:[null],
+      dealPriceCnyNet:[null],
+      dealPriceUsd:[null],
+      ratioAsContracted:[null, [Validators.required]], // 合同约定的OIT支付比率
+      dealPriceAsContracted:[null, [Validators.required]], //合同约定的OIT支付金额
+      actualRatio:[null, [Validators.required]],//实际OIT支付比率
+      actualDealPrice:[null, [Validators.required]],//实际OIT支付金额
+      gapRadio:[null, [Validators.required]],//差额比率
+      gapPrice:[null, [Validators.required]],//差额金额
+      // 事前审批邮件或证明文件
+      approvalFiles:[[] , [Validators.required]],
+    }),
+    gapPaymentPlan : this.fb.array([
+      this.fb.group({
+        //期数
+        sequenceNo:[1],
+        paymentDate:[null, [Validators.required]], // 差额付款日期
+        paymentRatio:[null, [Validators.required]], // 差额付款比率
+        paymentAmount:[null, [Validators.required]], // 差额付款金额
+        // 实际付款日期
+        actualPaymentDate:[null],
+        // 实际付款证明文件
+        actualPaymentFiles:[[]],
+      })
+    ])
+  }
+
   // 订单替换form表单信息单独配置
   orderReplacementInit = {
     orderType: [null, [Validators.required]], // 订单类型
@@ -527,6 +579,9 @@ export class RequestFormComponent implements OnInit {
       applyId: null,
       id: null,
       isDeleted: 0,
+    }),
+    advancedPaymentInfo: this.fb.group({
+      ...this.advancedPaymentInit,
     })
 
   });
@@ -830,6 +885,9 @@ export class RequestFormComponent implements OnInit {
 
   get importedEquipmentForm(): FormGroup {
     return this.formValues.get("importedEquipmentInfo") as FormGroup;
+  }
+  get advancedPaymentForm(): FormGroup {
+    return this.formValues.get("advancedPaymentInfo") as FormGroup;
   }
 
   public setFormValidators(type, item, bg) {
@@ -2456,6 +2514,8 @@ export class RequestFormComponent implements OnInit {
           oitProductsControl.push(groupInst)
         }
         this.formValues.controls.importedEquipmentInfo.patchValue({bmcs:this.getBMCsString(order.oitProducts)})
+      } else if (applyType === APPLY_TYPE.ADVANCED_PAYMENT) {
+        // TODO
       }
 
       const userSet = new Set<string>();

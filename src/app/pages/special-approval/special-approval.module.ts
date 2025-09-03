@@ -35,6 +35,7 @@ import { MachineComponent } from "./request-form/widgets/order-info/machine/mach
 import { AdditionalInstallationCostComponent } from "./request-form/widgets/order-info/additional-installation-cost/additional-installation-cost.component";
 import { TransferLibComponent } from "./request-form/widgets/order-info/transfer-lib/transfer-lib.component";
 import { ExchangeInfoComponent } from "./request-form/widgets/exchange-info/exchange-info.component";
+import { AdvancedPayComponent } from "./request-form/widgets/order-info/advanced-pay/advanced-pay.component";
 import { DifferenceAndCostInfoComponent } from "./request-form/widgets/difference-and-cost-info/difference-and-cost-info.component";
 import { LcAmendmentOrderInfoComponent } from "./request-form/widgets/order-info/lc-amendment/lc-amendment.component";
 import { RddOitOrderInfoComponent } from "./request-form/widgets/order-info/rdd-oit/rdd-oit.component";
@@ -52,6 +53,7 @@ import { ReferenceLinkComponent } from "./request-form/widgets/reference-link/re
 import { SelectForeignCompanyComponent } from "./request-form/widgets/select-foreign-company/select-foreign-company.component";
 import { ModernThemesModule } from "@app/modern-themes/modern-themes.module";
 import { ImportedInfoComponent } from './request-form/widgets/order-info/imported-info/imported-info.component';
+import { SelectDealformComponent } from "./request-form/widgets/select-dealform/select-dealform.component";
 
 const COMPONENTS = [
   SpecialApprovalComponent,
@@ -100,7 +102,9 @@ const WIDGETS = [
   CooPdIgtOrderInfoComponent,
   CooCcOrderInfoComponent,
   SelectForeignCompanyComponent,
-  ImportedInfoComponent
+  SelectDealformComponent,
+  ImportedInfoComponent,
+  AdvancedPayComponent
 ];
 
 export {

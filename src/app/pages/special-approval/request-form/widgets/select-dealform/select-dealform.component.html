@@ -1,0 +1,75 @@
+<nz-modal
+  [(nzVisible)]="visible"
+  nzWidth="1000px"
+  nzTitle="选择DealForm"
+  [nzFooter]="null"
+  (nzOnCancel)="onHideModal()"
+>
+  <div nz-row class="search-form" style="margin-bottom: 16px;">
+    <div nz-col [nzSpan]="8">
+      <nz-form-item>
+        <nz-form-label nzFor="dealformId">DealForm Id</nz-form-label>
+        <nz-form-control>
+          <input nz-input [(ngModel)]="searchParams.dealformId">
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col [nzSpan]="8">
+      <nz-form-item>
+        <nz-form-label nzFor="dealerName">经销商名称</nz-form-label>
+        <nz-form-control>
+          <input nz-input [(ngModel)]="searchParams.dealerName">
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col [nzSpan]="8">
+      <nz-form-item>
+        <nz-form-label nzFor="hospitalName">医院名称</nz-form-label>
+        <nz-form-control>
+          <input nz-input [(ngModel)]="searchParams.hospitalName">
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col [nzSpan]="3" style="display: flex; align-items: center;">
+      <button nz-button nzType="primary" (click)="getDealFormList(true)">搜索</button>
+    </div>
+  </div>
+
+  <div class="table-container">
+    <nz-table
+      [nzData]="tableData.list"
+      [nzShowTotal]="totalTemplate"
+      [nzTotal]="tableData.totalCount"
+      [nzLoading]="tableLoading"
+      [nzPageSizeOptions]="[5, 10, 20, 30, 40, 50 ]"
+      [nzShowQuickJumper]="true"
+      [nzShowSizeChanger]="true"
+      [nzFrontPagination]="false"
+      [(nzPageIndex)]="searchParams.pageNo"
+      [(nzPageSize)]="searchParams.pageSize"
+      (nzPageIndexChange)="getDealFormList()"
+      (nzPageSizeChange)="getDealFormList()"
+    >
+      <thead>
+        <tr>
+          <th nzWidth="100px" nzAlign="left">DealForm</th>
+          <th nzWidth="180px" nzAlign="left">经销商名称</th>
+          <th nzWidth="180px" nzAlign="left">医院</th>
+          <th nzWidth="40px">操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let dealForm of tableData.list">
+          <td nzAlign="left">{{ dealForm.dealFormId }}</td>
+          <td nzAlign="left">{{ dealForm.dealerName }}</td>
+          <td nzAlign="left">{{ dealForm.hospitalName }}</td>
+          <td nzAlign="left">
+            <button nz-button nzSize="small" nzType="primary" (click)="onSelectDealform(dealForm)">选择</button>
+          </td>
+        </tr>
+      </tbody>
+    </nz-table>
+
+    <ng-template #totalTemplate let-total> 数据总条数 {{ tableData.totalCount }} </ng-template>
+  </div>
+</nz-modal>

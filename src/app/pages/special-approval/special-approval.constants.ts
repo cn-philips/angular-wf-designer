@@ -66,7 +66,8 @@ const APPLY_TYPE = {
   COO_PDIGT: 'coopdigt',
   COO_CC: 'coocc',
   PRE_BOOK_LASTBUY:'lastbuy', // 订单替换
-  IMPORTED_EQUIPMENT:'importedequipment' // 进口设备
+  IMPORTED_EQUIPMENT:'importedequipment', // 进口设备
+  ADVANCED_PAYMENT:'advancedpayment', // 预付款
 }
 
 const APPLY_TYPE_MAP = {
@@ -88,6 +89,7 @@ const APPLY_TYPE_MAP = {
   [APPLY_TYPE.COO_CC]: { label: "COO-CC", dictGroup: 'sp_coocc_apply_item' },
   [APPLY_TYPE.IMPORTED_EQUIPMENT]: { label: "进口设备销售申请", dictGroup: 'sp_importedequipment_apply_item' },
   [APPLY_TYPE.PRE_BOOK_LASTBUY]: { label: "Slot Reservation特批生产", dictGroup: 'sp_lastbuy_apply_item' },
+  [APPLY_TYPE.ADVANCED_PAYMENT]: { label: "OIT 预付款", dictGroup: 'sp_advanced_pay_apply_item' },
 
 };
 
@@ -111,6 +113,7 @@ const APPLY_TYPES = [
   { label: "COO-CC", value: APPLY_TYPE.COO_CC },
   { label: "进口设备销售申请", value: APPLY_TYPE.IMPORTED_EQUIPMENT },
   { label: "Slot Reservation特批生产", value: APPLY_TYPE.PRE_BOOK_LASTBUY },
+  { label: "OIT 预付款", value: APPLY_TYPE.ADVANCED_PAYMENT },
 ];
 
 const STAND_WARRANTY_MONTH = {

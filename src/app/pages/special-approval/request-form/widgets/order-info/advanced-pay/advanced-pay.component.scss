@@ -1,0 +1,71 @@
+::ng-deep .ant-input-group-addon{
+    border: none;
+    padding: 0 0 0 10px;
+    background: none;
+}
+.mt20 {
+  margin-top: 20px;
+}
+
+.mtb1rem {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+// 表格样式
+.ant-table-tbody > tr > td {
+  padding: 8px 16px;
+
+  .ant-input-group {
+    width: 100%;
+  }
+
+  .ant-input {
+    text-align: center;
+  }
+
+  .ant-btn {
+    margin: 0 4px;
+  }
+}
+
+// 表单项样式
+.ant-form-item {
+  margin-bottom: 16px;
+}
+
+.ant-form-explain {
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+// 文件上传样式
+.file-upload-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .file-name {
+    color: #1890ff;
+    font-size: 12px;
+  }
+}
+
+// 备注样式
+.remark-text {
+  color: #ff4d4f;
+  font-size: 12px;
+  margin-top: 16px;
+}
+
+// 响应式布局
+@media (max-width: 768px) {
+  .ant-col {
+    margin-bottom: 16px;
+  }
+
+  .ant-table-tbody > tr > td {
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+}

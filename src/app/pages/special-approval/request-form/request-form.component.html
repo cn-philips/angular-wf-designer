@@ -145,6 +145,9 @@
           [editable]="editable" [formValues]="importedEquipmentForm" [baseInfo]="basicInfo"
           [applicantEmail]="applicantEmail">
         </app-imported-info>
+        <special-approval-advanced-pay *ngIf="applyType === APPLY_TYPE.ADVANCED_PAYMENT"
+          [editable]="editable" [formValues]="advancedPaymentForm" [baseInfo]="basicInfo">
+        </special-approval-advanced-pay>
       </div>
     </ng-template>
   </ngb-tab>
