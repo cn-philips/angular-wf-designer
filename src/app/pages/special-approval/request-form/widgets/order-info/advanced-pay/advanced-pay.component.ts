@@ -29,28 +29,6 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
   private actualRatioSubscription: Subscription;
   private actualDealPriceSubscription: Subscription;
 
-  // 模拟订单数据
-
-  // 付款计划数据
-  paymentPlanList = [
-    {
-      amount: 3000.00,
-      ratio: 3,
-      executionDate: new Date('2025-09-03'),
-      policyExecutionDate: new Date('2025-09-11'),
-      fileName: null,
-      file: null
-    },
-    {
-      amount: 2000.00,
-      ratio: 2,
-      executionDate: new Date('2025-09-11'),
-      policyExecutionDate: new Date('2025-09-18'),
-      fileName: null,
-      file: null
-    }
-  ];
-
   // 事前审批文件列表
   approvalFileList = [];
 
@@ -92,6 +70,23 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
 
   get orderList() {
     return this.orderInfoArray.getRawValue();
+  }
+
+  initData(data: any) {
+    console.log('advanced-pay initData', data);
+    const {orderInfo,oitAdvancedPayInfos} = data
+    if(oitAdvancedPayInfos.financeInfo){
+      let approvalFilesStr = oitAdvancedPayInfos.financeInfo.approvalFiles || '[]'
+      oitAdvancedPayInfos.financeInfo.approvalFiles = JSON.parse(approvalFilesStr)
+      if(oitAdvancedPayInfos.gapPaymentPlan){
+        oitAdvancedPayInfos.gapPaymentPlan = oitAdvancedPayInfos.gapPaymentPlan.map(plan => {
+          plan.actualPaymentFiles = JSON.parse(plan.actualPaymentFiles||'[]')
+          return plan
+        })
+      }
+    }
+    this.formValues.patchValue(oitAdvancedPayInfos);
+    // this.orderInfoArray.patchValue(orderInfo);
   }
 
   // 自定义验证器：验证OIT比率不超过100%

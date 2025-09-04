@@ -29,6 +29,7 @@ import { ImportedInfoComponent } from "./widgets/order-info/imported-info/import
 import { RouterExtendService } from "@app/modern-themes/services/router-extend.service";
 import { compareIgnoreSensitiveCase } from "@app/utils/StringUtils";
 import { Location } from "@angular/common";
+import { AdvancedPayComponent } from "./widgets/order-info/advanced-pay/advanced-pay.component";
 
 enum TAB_TYPE {
   BASIC_INFO = "basic-info",
@@ -101,6 +102,7 @@ export class RequestFormComponent implements OnInit {
   @ViewChild("importedInfo") public importedInfo: ImportedInfoComponent;
   @ViewChild("lastBuyOrderInfo") public lastBuyOrderInfo: LastbuyComponent;
   @ViewChild("importedEquipmentInfo") public importedEquipmentInfo: ImportedInfoComponent;
+  @ViewChild("advancedPayInfo") public advancedPayInfo: AdvancedPayComponent;
 
   get needReason(){
     let noNeedReasonType=[APPLY_TYPE.IMPORTED_EQUIPMENT]
@@ -294,6 +296,8 @@ export class RequestFormComponent implements OnInit {
   }
 
   public advancedPaymentInit = {
+    id: [null],
+    applyId: [null],
     dealformId:[null, [Validators.required]],
     dealerName:[null, [Validators.required]],
     dealerCode: [null, [Validators.required]], // 经销商编号
@@ -308,6 +312,8 @@ export class RequestFormComponent implements OnInit {
     sales:[null, [Validators.required]],
     orderInfo :this.fb.array([
       this.fb.group({
+        id: [null],
+        applyId: [null],
         orderId: [null], // 订单ID
         referenceId: [null], // Reference Id
         bmc: [null], // 产品线
@@ -331,6 +337,8 @@ export class RequestFormComponent implements OnInit {
     }),
     gapPaymentPlan : this.fb.array([
       this.fb.group({
+        id: [null],
+        applyId: [null],
         //期数
         sequenceNo:[1],
         paymentDate:[null, [Validators.required]], // 差额付款日期
@@ -1539,7 +1547,14 @@ export class RequestFormComponent implements OnInit {
             actualPaymentFiles: JSON.stringify(item.actualPaymentFiles || [])
           }
         });
-        advancedPaymentForm = {...advancedPaymentForm,financeInfo:{...advancedPaymentForm,approvalFiles:JSON.stringify(advancedPaymentForm.approvalFiles)}}
+        const { financeInfo } = advancedPaymentForm;
+        if(financeInfo){
+          financeInfo.approvalFiles = JSON.stringify(financeInfo.approvalFiles || []);
+        }
+        advancedPaymentForm = {
+          ...advancedPaymentForm,
+          financeInfo
+        }
         data.oitAdvancedPayInfos = advancedPaymentForm;
       break;
         default:
@@ -2528,6 +2543,13 @@ export class RequestFormComponent implements OnInit {
         this.formValues.controls.importedEquipmentInfo.patchValue({bmcs:this.getBMCsString(order.oitProducts)})
       } else if (applyType === APPLY_TYPE.ADVANCED_PAYMENT) {
         // TODO
+        const intervalId = setInterval(() => {
+          if (this.advancedPayInfo) {
+            this.advancedPayInfo.initData(data);
+            clearInterval(intervalId);
+          }
+        }, 1000);
+
       }
 
       const userSet = new Set<string>();
