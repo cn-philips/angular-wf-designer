@@ -16,6 +16,7 @@
 
                     <ng-template #selectDealFormBtn>
                       <button *ngIf="editable" nz-button nzType="primary" class="ml-md addonBtn"
+                        [disabled]="shouldDisableImportButton"
                         (click)="onShowSelectDealFormModal()">导入</button>
                     </ng-template>
                 </nz-form-item>

@@ -6,6 +6,7 @@ import { SpecialApprovalService } from "@pages/special-approval/special-approval
 import { NzMessageService, NzModalService } from "ng-zorro-antd";
 import { DealForm, SelectDealformComponent } from "../../select-dealform/select-dealform.component";
 import { Subscription } from "rxjs";
+import { PROCESS_STATUS } from "@pages/special-approval/special-approval.constants";
 
 @Component({
   selector: 'special-approval-advanced-pay',
@@ -19,6 +20,9 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
   @Input() editable = true;
   @Input() formValues: FormGroup;
   @Input() baseInfo: FormGroup;
+  @Input() processStatus; // 用于判断当前申请的流程状态
+  @Input() isApplicant; // 是否是申请人
+  @Input() requestId: string; // 用于判断是否是从草稿进入的申请
 
   // 订阅管理
   private systemRegionSubscription: Subscription;
@@ -28,6 +32,9 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
   // 新增：实际OIT字段的订阅
   private actualRatioSubscription: Subscription;
   private actualDealPriceSubscription: Subscription;
+
+  // 数据初始化标志
+  private isDataInitialized = false;
 
   // 事前审批文件列表
   approvalFileList = [];
@@ -72,6 +79,16 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
     return this.orderInfoArray.getRawValue();
   }
 
+  // 判断是否应该禁用导入按钮（如果是从草稿进入的申请）
+  get shouldDisableImportButton(): boolean {
+    return !this.isNewForm ;
+  }
+  // && !(this.isApplicant && [PROCESS_STATUS.DRAFT,PROCESS_STATUS.REJECTED,PROCESS_STATUS.WITHDRAW].includes(this.processStatus.trim()))
+
+  get isNewForm(): boolean {
+    return !(this.requestId && this.requestId.trim());
+  }
+
   initData(data: any) {
     console.log('advanced-pay initData', data);
     const {orderInfo,oitAdvancedPayInfos} = data
@@ -90,6 +107,9 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
     }
     this.formValues.patchValue(oitAdvancedPayInfos);
     // this.orderInfoArray.patchValue(orderInfo);
+
+    // 标记数据已初始化
+    this.isDataInitialized = true;
   }
 
   // 自定义验证器：验证OIT比率不超过100%
@@ -520,7 +540,10 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
     if (basePrice && !isNaN(ratio)) {
       // 验证比率不大于100%
       if (ratio > 100) {
-        this.message.warning('合同约定的OIT支付比率不能大于100%');
+        // 只在数据初始化完成后显示警告
+        if (this.isDataInitialized) {
+          this.message.warning('合同约定的OIT支付比率不能大于100%');
+        }
         // 重置比率为100%
         const ratioControl = this.financeInfoForm.get('ratioAsContracted');
         if (ratioControl) {
@@ -533,7 +556,10 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
 
       // 验证金额不超过DealForm含税总金额
       if (calculatedAmount > basePrice) {
-        this.message.warning('合同约定的OIT金额不能超过DealForm含税总金额');
+        // 只在数据初始化完成后显示警告
+        if (this.isDataInitialized) {
+          this.message.warning('合同约定的OIT金额不能超过DealForm含税总金额');
+        }
         // 重新计算符合限制的金额
         const maxAmount = basePrice;
 
@@ -571,7 +597,10 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
     if (basePrice && !isNaN(amount)) {
       // 验证金额不超过DealForm含税总金额
       if (amount > basePrice) {
-        this.message.warning('合同约定的OIT金额不能超过DealForm含税总金额');
+        // 只在数据初始化完成后显示警告
+        if (this.isDataInitialized) {
+          this.message.warning('合同约定的OIT金额不能超过DealForm含税总金额');
+        }
         // 重置金额为最大允许值
         const dealPriceAsContractedControl = this.financeInfoForm.get('dealPriceAsContracted');
         if (dealPriceAsContractedControl) {
@@ -584,7 +613,10 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
 
       // 验证比率不大于100%
       if (calculatedRatio > 100) {
-        this.message.warning('合同约定的OIT支付比率不能大于100%');
+        // 只在数据初始化完成后显示警告
+        if (this.isDataInitialized) {
+          this.message.warning('合同约定的OIT支付比率不能大于100%');
+        }
         // 重新计算符合限制的比率
         const maxRatio = 100;
 
@@ -622,7 +654,10 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
     if (basePrice && !isNaN(ratio)) {
       // 验证比率不大于100%
       if (ratio > 100) {
-        this.message.warning('实际OIT支付比率不能大于100%');
+        // 只在数据初始化完成后显示警告
+        if (this.isDataInitialized) {
+          this.message.warning('实际OIT支付比率不能大于100%');
+        }
         // 重置比率为100%
         const ratioControl = this.financeInfoForm.get('actualRatio');
         if (ratioControl) {
@@ -635,7 +670,10 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
 
       // 验证金额不超过DealForm含税总金额
       if (calculatedAmount > basePrice) {
-        this.message.warning('实际OIT支付金额不能超过DealForm含税总金额');
+        // 只在数据初始化完成后显示警告
+        if (this.isDataInitialized) {
+          this.message.warning('实际OIT支付金额不能超过DealForm含税总金额');
+        }
         // 重新计算符合限制的金额
         const maxAmount = basePrice;
 
@@ -673,7 +711,10 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
     if (basePrice && !isNaN(amount)) {
       // 验证金额不超过DealForm含税总金额
       if (amount > basePrice) {
-        this.message.warning('实际OIT支付金额不能超过DealForm含税总金额');
+        // 只在数据初始化完成后显示警告
+        if (this.isDataInitialized) {
+          this.message.warning('实际OIT支付金额不能超过DealForm含税总金额');
+        }
         // 重置金额为最大允许值
         const actualDealPriceControl = this.financeInfoForm.get('actualDealPrice');
         if (actualDealPriceControl) {
@@ -686,7 +727,10 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
 
       // 验证比率不大于100%
       if (calculatedRatio > 100) {
-        this.message.warning('实际OIT支付比率不能大于100%');
+        // 只在数据初始化完成后显示警告
+        if (this.isDataInitialized) {
+          this.message.warning('实际OIT支付比率不能大于100%');
+        }
         // 重新计算符合限制的比率
         const maxRatio = 100;
 
@@ -1222,5 +1266,139 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
     }, 100);
 
     console.log(this.formValues.value);
+  }
+
+  /**
+   * 保存时的验证：只验证Deal Form No是否为空
+   */
+  validateForSave(): { isValid: boolean; errorMessage?: string } {
+    const dealformId = this.formValues.get('dealformId').value;
+
+    if (!dealformId || dealformId.trim() === '') {
+      return {
+        isValid: false,
+        errorMessage: 'Deal Form 不能为空，请先导入Deal Form'
+      };
+    }
+
+    return { isValid: true };
+  }
+
+  /**
+   * 提交时的验证：验证所有必填项
+   */
+  validateForSubmit(): { isValid: boolean; errorMessage?: string } {
+    // 首先检查Deal Form No
+    const saveValidation = this.validateForSave();
+    if (!saveValidation.isValid) {
+      return saveValidation;
+    }
+
+    // 验证财务信息必填项
+    const financeValidation = this.validateFinanceInfo();
+    if (!financeValidation.isValid) {
+      return financeValidation;
+    }
+
+    // 验证付款计划
+    const paymentPlanValidation = this.validatePaymentPlans();
+    if (!paymentPlanValidation.isValid) {
+      return paymentPlanValidation;
+    }
+
+    return { isValid: true };
+  }
+
+  /**
+   * 验证财务信息必填项
+   */
+  private validateFinanceInfo(): { isValid: boolean; errorMessage?: string } {
+    const financeInfo = this.financeInfoForm.value;
+
+    // 验证合同约定的OIT支付比率
+    if (!financeInfo.ratioAsContracted || financeInfo.ratioAsContracted <= 0) {
+      return {
+        isValid: false,
+        errorMessage: '合同约定的OIT支付比率不能为空且必须大于0'
+      };
+    }
+
+    // 验证合同约定的OIT金额
+    if (!financeInfo.dealPriceAsContracted || financeInfo.dealPriceAsContracted <= 0) {
+      return {
+        isValid: false,
+        errorMessage: '合同约定的OIT金额不能为空且必须大于0'
+      };
+    }
+
+    // 验证实际OIT支付比率
+    if (!financeInfo.actualRatio || financeInfo.actualRatio <= 0) {
+      return {
+        isValid: false,
+        errorMessage: '实际OIT支付比率不能为空且必须大于0'
+      };
+    }
+
+    // 验证实际OIT支付金额
+    if (!financeInfo.actualDealPrice || financeInfo.actualDealPrice <= 0) {
+      return {
+        isValid: false,
+        errorMessage: '实际OIT支付金额不能为空且必须大于0'
+      };
+    }
+
+    // 验证审批文件
+    if (!financeInfo.approvalFiles || financeInfo.approvalFiles.length === 0) {
+      return {
+        isValid: false,
+        errorMessage: '请上传实际OIT支付的"事前审批邮件或证明文件"'
+      };
+    }
+
+    return { isValid: true };
+  }
+
+  /**
+   * 验证付款计划
+   */
+  private validatePaymentPlans(): { isValid: boolean; errorMessage?: string } {
+    const paymentPlans = this.gapPaymentPlanInfoForm.value;
+
+    if (!paymentPlans || paymentPlans.length === 0) {
+      return {
+        isValid: false,
+        errorMessage: '至少需要添加一条差额付款计划'
+      };
+    }
+
+    for (let i = 0; i < paymentPlans.length; i++) {
+      const plan = paymentPlans[i];
+
+      // 验证差额付款比率
+      if (!plan.paymentRatio || plan.paymentRatio <= 0) {
+        return {
+          isValid: false,
+          errorMessage: `第${i + 1}期付款计划的差额付款比率不能为空且必须大于0`
+        };
+      }
+
+      // 验证差额付款金额
+      if (!plan.paymentAmount || plan.paymentAmount <= 0) {
+        return {
+          isValid: false,
+          errorMessage: `第${i + 1}期付款计划的差额付款金额不能为空且必须大于0`
+        };
+      }
+
+      // 验证承诺付款时间
+      if (!plan.paymentDate) {
+        return {
+          isValid: false,
+          errorMessage: `第${i + 1}期付款计划的承诺付款时间不能为空`
+        };
+      }
+    }
+
+    return { isValid: true };
   }
 }

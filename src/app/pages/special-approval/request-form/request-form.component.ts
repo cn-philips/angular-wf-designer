@@ -112,8 +112,10 @@ export class RequestFormComponent implements OnInit {
     let needUpdateFileType=[APPLY_TYPE.IMPORTED_EQUIPMENT]
     return !needUpdateFileType.includes(this.applyType)
   }
-  isSupplementNode = false;
 
+
+  isSupplementNode = false;
+  public processStatus;
   public pageTitle: string;
   public requestId;
   public requestInfo = {
@@ -1856,6 +1858,15 @@ export class RequestFormComponent implements OnInit {
           const isImportedEquipmentValid = this.importedEquipmentInfo.validate();
           hasError = this.basicInfo.invalid || !isImportedEquipmentValid;
           break;
+        case APPLY_TYPE.ADVANCED_PAYMENT:
+          // 验证提前付款申请的所有必填项
+          const advancedPaymentValidation = this.advancedPayInfo.validateForSubmit();
+          if (!advancedPaymentValidation.isValid) {
+            this.message.error(advancedPaymentValidation.errorMessage);
+            return;
+          }
+          hasError = this.basicInfo.invalid;
+          break;
       default:
         for (const i in this.orderInfo.controls) {
           this.orderInfo.controls[i].markAsDirty();
@@ -1937,6 +1948,16 @@ export class RequestFormComponent implements OnInit {
         this.message.error("请选择系统区域配置!");
         return;
       }
+
+      // 提前付款申请的保存验证
+      if (this.applyType === APPLY_TYPE.ADVANCED_PAYMENT) {
+        const validation = this.advancedPayInfo.validateForSave();
+        if (!validation.isValid) {
+          this.message.error(validation.errorMessage);
+          return;
+        }
+      }
+
       if (this.applyType === APPLY_TYPE.MACHINE_EXCHANGE) {
         if (
           data.extInfo.exchangeMethod == null ||
@@ -2626,6 +2647,7 @@ export class RequestFormComponent implements OnInit {
         nodeAction !== APPROVE_NODE_ACTION.FEEDBACK;
       this.approveNodeList = nodeInfoList;
       this.approveHistory = taskList;
+      this.processStatus = processStatus;
       this.setEditable(status, processStatus);
     } catch ({ message }) {
       this.message.error(DEFAULT_ERROR_MESSAGE);

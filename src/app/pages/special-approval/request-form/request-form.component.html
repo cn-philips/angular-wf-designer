@@ -146,7 +146,7 @@
           [applicantEmail]="applicantEmail">
         </app-imported-info>
         <special-approval-advanced-pay #advancedPayInfo *ngIf="applyType === APPLY_TYPE.ADVANCED_PAYMENT"
-          [editable]="editable" [formValues]="advancedPaymentForm" [baseInfo]="basicInfo">
+          [editable]="editable" [formValues]="advancedPaymentForm" [baseInfo]="basicInfo" [requestId]="requestId" [processStatus]="processStatus" [isApplicant]="isApplicant">
         </special-approval-advanced-pay>
       </div>
     </ng-template>
