@@ -76,8 +76,11 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
     console.log('advanced-pay initData', data);
     const {orderInfo,oitAdvancedPayInfos} = data
     if(oitAdvancedPayInfos.financeInfo){
-      let approvalFilesStr = oitAdvancedPayInfos.financeInfo.approvalFiles || '[]'
-      oitAdvancedPayInfos.financeInfo.approvalFiles = JSON.parse(approvalFilesStr)
+      let approvalFiles = oitAdvancedPayInfos.financeInfo.approvalFiles || '[]'
+      if(typeof approvalFiles === 'string'){
+        approvalFiles = JSON.parse(approvalFiles)
+      }
+      oitAdvancedPayInfos.financeInfo.approvalFiles = approvalFiles
       if(oitAdvancedPayInfos.gapPaymentPlan){
         oitAdvancedPayInfos.gapPaymentPlan = oitAdvancedPayInfos.gapPaymentPlan.map(plan => {
           plan.actualPaymentFiles = JSON.parse(plan.actualPaymentFiles||'[]')
@@ -871,8 +874,15 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
   }
 
   // 删除付款计划从FormArray
-  removePaymentPlan(index: number) {
+  async removePaymentPlan(index: number) {
     if (this.gapPaymentPlanInfoForm.length > 1) {
+      let id = this.gapPaymentPlanInfoForm.at(index).get('id').value;
+      let applyId = this.formValues.get('applyId').value
+      console.log('removePaymentPlan -> ', {applyId, id})
+      if(!!id){
+        await this.spService.removeOitAdvancedPayPlan(applyId,id)
+        this.message.success('删除成功！');
+      }
       this.gapPaymentPlanInfoForm.removeAt(index);
       // 重新编号
       this.gapPaymentPlanInfoForm.controls.forEach((control, i) => {

@@ -1600,6 +1600,7 @@ export class RequestFormComponent implements OnInit {
       // 添加订单替换 orderReplacement disabbled
       this.formValues.controls.orderReplacementInfo.disable();
       this.formValues.controls.importedEquipmentInfo.disable();
+      this.formValues.controls.advancedPaymentInfo.disable();
     }
     this.editable = editable;
   }

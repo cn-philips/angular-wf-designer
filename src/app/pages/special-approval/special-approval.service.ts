@@ -523,5 +523,11 @@ export class SpecialApprovalService {
     const data = formatResponse(res);
     return data;
   }
+  async removeOitAdvancedPayPlan(applyId: string,id: string) {
+    const uri = `/act/spAdvancedPay/removePlanRecord/${id}`;
+    const res = await this.http.post(uri,applyId).toPromise();
+    const data = formatResponse(res);
+    return data;
+  }
 
 }
