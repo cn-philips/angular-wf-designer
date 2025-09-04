@@ -517,5 +517,11 @@ export class SpecialApprovalService {
     const data = formatResponse(res);
     return data;
   }
+  async queryOitOrderByDealFormId(dealFormId: string) {
+    const uri = `/act/spAdvancedPay/getDealformOitOrder4OitAdvancedPay`;
+    const res = await this.http.post(uri,dealFormId).toPromise();
+    const data = formatResponse(res);
+    return data;
+  }
 
 }

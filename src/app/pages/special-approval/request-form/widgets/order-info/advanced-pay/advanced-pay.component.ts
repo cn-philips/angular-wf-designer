@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, OnDestroy, ViewChild } from "@angular/core";
-import { FormArray, FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { FormArray, FormBuilder, FormGroup, Validators, AbstractControl } from "@angular/forms";
 import { DictService } from "@core/services";
 import { SelectDealFormComponent } from "@pages/prebook-v3/components";
 import { SpecialApprovalService } from "@pages/special-approval/special-approval.service";
@@ -30,11 +30,6 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
   private actualDealPriceSubscription: Subscription;
 
   // 模拟订单数据
-  orderList = [
-    { refNo: 'Ref No 1', bmc: 'BMC1', productName: 'Product Name 1', so: 'SO#1' },
-    { refNo: 'Ref No 2', bmc: 'BMC2', productName: 'Product Name 2', so: 'SO#2' },
-    { refNo: 'Ref No 3', bmc: 'BMC3', productName: 'Product Name 3', so: 'SO#3' }
-  ];
 
   // 付款计划数据
   paymentPlanList = [
@@ -68,6 +63,11 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
 
     // 监听财务信息字段变化，实现自动计算
     this.subscribeToFinanceFieldChanges();
+
+    // 使用setTimeout确保FormArray已经初始化
+    setTimeout(() => {
+      this.initializePaymentPlanValidation();
+    }, 0);
   }
 
   constructor(
@@ -88,6 +88,10 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
 
   get orderInfoArray(): FormArray {
     return this.formValues.get('orderInfo') as FormArray;
+  }
+
+  get orderList() {
+    return this.orderInfoArray.getRawValue();
   }
 
   // 自定义验证器：验证OIT比率不超过100%
@@ -125,6 +129,29 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
     return null;
   }
 
+  // 自定义验证器：验证实际OIT比率不大于合同约定的OIT比率
+  private actualOitRatioMaxValidator = (control: any) => {
+    if (!control.value) return null;
+    const actualRatio = Number(control.value);
+    if (isNaN(actualRatio)) return null;
+
+    // 获取合同约定的OIT比率
+    const contractedRatioControl = this.financeInfoForm ? this.financeInfoForm.get('ratioAsContracted') : null;
+    const contractedRatio = contractedRatioControl ? contractedRatioControl.value : null;
+
+    if (contractedRatio && !isNaN(Number(contractedRatio))) {
+      const maxRatio = Number(contractedRatio);
+      if (actualRatio > maxRatio) {
+        return { actualRatioExceedsContracted: { current: actualRatio, max: maxRatio } };
+      }
+    }
+    return null;
+  }
+
+  private async loadOrderByDealFormId(dealFormId: string) {
+    return this.spService.queryOitOrderByDealFormId(dealFormId)
+  }
+
   // 自定义验证器：验证实际OIT金额不超过基础金额
   private actualOitAmountValidator = (control: any) => {
     if (!control.value) return null;
@@ -136,7 +163,136 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
       return { maxAmount: true };
     }
     return null;
-  }  // 初始化表单数据
+  }
+
+  // 自定义验证器：验证实际OIT金额不大于合同约定的OIT金额
+  private actualOitAmountMaxValidator = (control: any) => {
+    if (!control.value) return null;
+    const actualAmount = Number(control.value);
+    if (isNaN(actualAmount)) return null;
+
+    // 获取合同约定的OIT金额
+    const contractedAmountControl = this.financeInfoForm ? this.financeInfoForm.get('dealPriceAsContracted') : null;
+    const contractedAmount = contractedAmountControl ? contractedAmountControl.value : null;
+
+    if (contractedAmount && !isNaN(Number(contractedAmount))) {
+      const maxAmount = Number(contractedAmount);
+      if (actualAmount > maxAmount) {
+        return { actualAmountExceedsContracted: { current: actualAmount, max: maxAmount } };
+      }
+    }
+    return null;
+  }
+
+  // 单个比率验证器（包含动态最大值限制）
+  private singleRatioValidator = (control: AbstractControl) => {
+    const value = control.value;
+    if (!value || isNaN(Number(value))) return null;
+
+    const numValue = Number(value);
+
+    // 基本验证：不能大于100%
+    if (numValue > 100) {
+      return { maxRatio: { current: value, max: 100 } };
+    }
+
+    // 动态验证：不能大于当前项允许的最大值
+    if (this.gapPaymentPlanInfoForm) {
+      // 找到当前控件在FormArray中的索引
+      const planIndex = this.gapPaymentPlanInfoForm.controls.findIndex(planControl =>
+        planControl.get('paymentRatio') === control
+      );
+
+      if (planIndex >= 0) {
+        const maxAllowed = this.getMaxAllowedRatio(planIndex);
+        if (numValue > maxAllowed) {
+          return { maxRatioExceeded: { current: value, max: maxAllowed.toFixed(2) } };
+        }
+      }
+    }
+
+    return null;
+  }
+
+  // 单个金额验证器（包含动态最大值限制）
+  private singleAmountValidator = (control: AbstractControl) => {
+    const value = control.value;
+    if (!value || isNaN(Number(value))) return null;
+
+    const numValue = Number(value);
+
+    // 基本验证：不能为负数
+    if (numValue < 0) {
+      return { minAmount: { current: value, min: 0 } };
+    }
+
+    // 动态验证：不能大于当前项允许的最大值
+    if (this.gapPaymentPlanInfoForm) {
+      // 找到当前控件在FormArray中的索引
+      const planIndex = this.gapPaymentPlanInfoForm.controls.findIndex(planControl =>
+        planControl.get('paymentAmount') === control
+      );
+
+      if (planIndex >= 0) {
+        const maxAllowed = this.getMaxAllowedAmount(planIndex);
+        if (numValue > maxAllowed) {
+          return { maxAmountExceeded: { current: value, max: maxAllowed.toFixed(2) } };
+        }
+      }
+    }
+
+    return null;
+  }
+
+  // 差额付款计划比率总和验证器（用于单个控件）
+  private gapPaymentRatioSumValidator = (control: AbstractControl) => {
+    // 使用箭头函数确保this上下文正确
+    if (!this.gapPaymentPlanInfoForm || !this.financeInfoForm) return null;
+
+    // 获取所有付款计划的比率总和
+    const totalRatio = this.gapPaymentPlanInfoForm.controls.reduce((sum, planControl) => {
+      const ratioControl = planControl.get('paymentRatio');
+      const ratio = ratioControl ? ratioControl.value : null;
+      return sum + (ratio && !isNaN(Number(ratio)) ? Number(ratio) : 0);
+    }, 0);
+
+    // 验证比率总和不大于100%
+    if (totalRatio > 100) {
+      return { ratioSumExceeded: { current: totalRatio.toFixed(2), max: '100.00' } };
+    }
+
+    // 验证比率总和不大于差额比例的绝对值
+    const gapRadioControl = this.financeInfoForm.get('gapRadio');
+    const gapRatio = gapRadioControl ? gapRadioControl.value : null;
+    const maxRatio = gapRatio && !isNaN(Number(gapRatio)) ? Math.abs(Number(gapRatio)) : 0;
+
+    if (maxRatio > 0 && totalRatio > maxRatio) {
+      return { ratioSumExceeded: { current: totalRatio.toFixed(2), max: maxRatio.toFixed(2) } };
+    }
+    return null;
+  }
+
+  // 差额付款计划金额总和验证器
+  private gapPaymentAmountSumValidator = (control: AbstractControl) => {
+    if (!this.gapPaymentPlanInfoForm || !this.financeInfoForm) return null;
+
+    const totalAmount = this.gapPaymentPlanInfoForm.controls.reduce((sum, planControl) => {
+      const amountControl = planControl.get('paymentAmount');
+      const amount = amountControl ? amountControl.value : null;
+      return sum + (amount && !isNaN(Number(amount)) ? Number(amount) : 0);
+    }, 0);
+
+    const gapPriceControl = this.financeInfoForm.get('gapPrice');
+    const gapPrice = gapPriceControl ? gapPriceControl.value : null;
+    const maxAmount = gapPrice && !isNaN(Number(gapPrice)) ? Math.abs(Number(gapPrice)) : 0;
+
+    if (maxAmount > 0 && totalAmount > maxAmount) {
+      return { amountSumExceeded: { current: totalAmount.toFixed(2), max: maxAmount.toFixed(2) } };
+    }
+    return null;
+  }
+
+  // 初始化表单数据
   initFormData() {
     // 初始化时同步系统区域值
     this.syncSystemRegion();
@@ -144,6 +300,19 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
     // 初始计算差额字段
     this.calculateGapRatio();
     this.calculateGapPrice();
+
+    // 为已有的付款计划项添加日期验证器和监听器
+    this.initExistingPaymentPlans();
+  }
+
+  // 为已有的付款计划项初始化验证器和监听器
+  initExistingPaymentPlans() {
+    if (this.gapPaymentPlanInfoForm && this.gapPaymentPlanInfoForm.controls.length > 0) {
+      this.gapPaymentPlanInfoForm.controls.forEach((control, index) => {
+        // 设置监听器
+        this.subscribeToPaymentPlanChanges(index);
+      });
+    }
   }
 
   // 同步系统区域值
@@ -211,8 +380,17 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
         if (ratio !== null && ratio !== undefined && ratio !== '') {
           this.calculateOitAmountFromRatio(Number(ratio));
         }
+
+        // 重新验证实际OIT比率字段
+        const actualRatioControl = this.financeInfoForm.get('actualRatio');
+        if (actualRatioControl) {
+          actualRatioControl.updateValueAndValidity({ emitEvent: false });
+        }
+
         // 计算差额比例
         this.calculateGapRatio();
+        // 计算差额含税金额
+        this.calculateGapPrice();
       });
     }
 
@@ -223,6 +401,13 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
         if (amount !== null && amount !== undefined && amount !== '') {
           this.calculateOitRatioFromAmount(Number(amount));
         }
+
+        // 重新验证实际OIT金额字段
+        const actualAmountControl = this.financeInfoForm.get('actualDealPrice');
+        if (actualAmountControl) {
+          actualAmountControl.updateValueAndValidity({ emitEvent: false });
+        }
+
         // 计算差额含税金额
         this.calculateGapPrice();
         // 计算差额比例（因为金额变化可能影响比例）
@@ -239,6 +424,8 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
         }
         // 计算差额比例
         this.calculateGapRatio();
+        // 计算差额含税金额
+        this.calculateGapPrice();
       });
     }
 
@@ -261,6 +448,7 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
   private addValidatorsToFinanceFields() {
     const ratioControl = this.financeInfoForm.get('ratioAsContracted');
     const actualRatioControl = this.financeInfoForm.get('actualRatio');
+    const actualAmountControl = this.financeInfoForm.get('actualDealPrice');
 
     if (ratioControl) {
       const currentValidators = ratioControl.validator ? [ratioControl.validator] : [];
@@ -270,8 +458,22 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
 
     if (actualRatioControl) {
       const currentValidators = actualRatioControl.validator ? [actualRatioControl.validator] : [];
-      actualRatioControl.setValidators([...currentValidators, this.actualOitRatioValidator]);
+      actualRatioControl.setValidators([
+        ...currentValidators,
+        this.actualOitRatioValidator,
+        this.actualOitRatioMaxValidator
+      ]);
       actualRatioControl.updateValueAndValidity({ emitEvent: false });
+    }
+
+    if (actualAmountControl) {
+      const currentValidators = actualAmountControl.validator ? [actualAmountControl.validator] : [];
+      actualAmountControl.setValidators([
+        ...currentValidators,
+        this.actualOitAmountValidator,
+        this.actualOitAmountMaxValidator
+      ]);
+      actualAmountControl.updateValueAndValidity({ emitEvent: false });
     }
 
     // 暂时不在表单初始化时添加金额验证器，避免循环依赖
@@ -542,6 +744,9 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
         // 两个字段都为空时，清空差额字段
         gapRadioControl.setValue('', { emitEvent: false });
       }
+
+      // 重新验证付款计划
+      this.validateAllPaymentPlans();
     }
   }
 
@@ -569,6 +774,9 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
         // 两个字段都为空时，清空差额字段
         gapPriceControl.setValue('', { emitEvent: false });
       }
+
+      // 重新验证付款计划
+      this.validateAllPaymentPlans();
     }
   }
 
@@ -645,16 +853,17 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
     const newPlanGroup = this.fb.group({
       sequenceNo: [this.gapPaymentPlanInfoForm.length + 1],
       paymentDate: [null, [Validators.required]],
-      paymentRatio: [null, [Validators.required]],
-      paymentAmount: [null, [Validators.required]],
+      paymentRatio: [null, [Validators.required, this.singleRatioValidator, this.gapPaymentRatioSumValidator]],
+      paymentAmount: [null, [Validators.required, this.singleAmountValidator, this.gapPaymentAmountSumValidator]],
       actualPaymentDate: [null],
       actualPaymentFiles: [[]]
     });
 
     this.gapPaymentPlanInfoForm.push(newPlanGroup);
-  }
 
-  // 文件上传处理
+    // 为新添加的计划项设置验证监听
+    this.subscribeToPaymentPlanChanges(this.gapPaymentPlanInfoForm.length - 1);
+  }  // 文件上传处理
   onFileChange(event: any, index: number) {
     const file = event.target.files[0];
     if (file && this.gapPaymentPlanInfoForm.at(index)) {
@@ -674,15 +883,316 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
       this.gapPaymentPlanInfoForm.controls.forEach((control, i) => {
         control.get('sequenceNo').setValue(i + 1);
       });
+      // 重新验证所有计划项
+      this.validateAllPaymentPlans();
     } else {
       this.message.warning('至少保留一条付款计划');
+    }
+  }
+
+  // 订阅单个付款计划项的变化
+  subscribeToPaymentPlanChanges(index: number) {
+    const planControl = this.gapPaymentPlanInfoForm.at(index);
+    if (!planControl) return;
+
+    // 监听比率变化
+    const ratioControl = planControl.get('paymentRatio');
+    if (ratioControl) {
+      ratioControl.valueChanges.subscribe(ratio => {
+        if (ratio !== null && ratio !== undefined && ratio !== '' && !isNaN(Number(ratio))) {
+          // 自动计算对应的金额
+          this.calculatePaymentAmountFromRatio(index, Number(ratio));
+        }
+        // 重新验证所有付款计划
+        this.validateAllPaymentPlans();
+      });
+    }
+
+    // 监听金额变化
+    const amountControl = planControl.get('paymentAmount');
+    if (amountControl) {
+      amountControl.valueChanges.subscribe(amount => {
+        if (amount !== null && amount !== undefined && amount !== '' && !isNaN(Number(amount))) {
+          // 自动计算对应的比率
+          this.calculatePaymentRatioFromAmount(index, Number(amount));
+        }
+        // 重新验证所有付款计划
+        this.validateAllPaymentPlans();
+      });
+    }
+  }
+
+  // 验证所有付款计划项
+  validateAllPaymentPlans() {
+    if (!this.gapPaymentPlanInfoForm) return;
+
+    this.gapPaymentPlanInfoForm.controls.forEach(control => {
+      const ratioControl = control.get('paymentRatio');
+      const amountControl = control.get('paymentAmount');
+
+      if (ratioControl) {
+        ratioControl.updateValueAndValidity({ emitEvent: false });
+      }
+      if (amountControl) {
+        amountControl.updateValueAndValidity({ emitEvent: false });
+      }
+    });
+  }
+
+  // 计算差额付款金额（基于比率）
+  calculatePaymentAmountFromRatio(planIndex: number, ratio: number) {
+    if (!this.financeInfoForm || !this.gapPaymentPlanInfoForm) return;
+
+    const planControl = this.gapPaymentPlanInfoForm.at(planIndex);
+    if (!planControl) return;
+
+    // 获取差额含税金额
+    const gapPriceControl = this.financeInfoForm.get('gapPrice');
+    const gapPrice = gapPriceControl ? gapPriceControl.value : null;
+
+    if (gapPrice && !isNaN(Number(gapPrice))) {
+      const baseAmount = Math.abs(Number(gapPrice));
+      const calculatedAmount = (baseAmount * ratio) / 100;
+
+      // 更新金额字段，不触发事件以避免循环
+      const amountControl = planControl.get('paymentAmount');
+      if (amountControl) {
+        amountControl.setValue(calculatedAmount.toFixed(2), { emitEvent: false });
+      }
+    }
+  }
+
+  // 计算差额付款比率（基于金额）
+  calculatePaymentRatioFromAmount(planIndex: number, amount: number) {
+    if (!this.financeInfoForm || !this.gapPaymentPlanInfoForm) return;
+
+    const planControl = this.gapPaymentPlanInfoForm.at(planIndex);
+    if (!planControl) return;
+
+    // 获取差额含税金额
+    const gapPriceControl = this.financeInfoForm.get('gapPrice');
+    const gapPrice = gapPriceControl ? gapPriceControl.value : null;
+
+    if (gapPrice && !isNaN(Number(gapPrice)) && Number(gapPrice) !== 0) {
+      const baseAmount = Math.abs(Number(gapPrice));
+      const calculatedRatio = (Math.abs(amount) / baseAmount) * 100;
+
+      // 更新比率字段，不触发事件以避免循环
+      const ratioControl = planControl.get('paymentRatio');
+      if (ratioControl) {
+        ratioControl.setValue(calculatedRatio.toFixed(2), { emitEvent: false });
+      }
+    }
+  }
+
+  // 获取单个付款计划的最大允许比率
+  getMaxAllowedRatio(planIndex: number): number {
+    if (!this.gapPaymentPlanInfoForm || !this.financeInfoForm) return 0;
+
+    // 获取差额比例
+    const gapRadioControl = this.financeInfoForm.get('gapRadio');
+    const gapRatio = gapRadioControl ? gapRadioControl.value : null;
+    const maxTotalRatio = gapRatio && !isNaN(Number(gapRatio)) ? Math.abs(Number(gapRatio)) : 0;
+
+    // 计算其他付款计划已使用的比率总和
+    const usedRatio = this.gapPaymentPlanInfoForm.controls.reduce((sum, control, index) => {
+      if (index === planIndex) return sum; // 排除当前项
+      const ratioControl = control.get('paymentRatio');
+      const ratio = ratioControl ? ratioControl.value : null;
+      return sum + (ratio && !isNaN(Number(ratio)) ? Number(ratio) : 0);
+    }, 0);
+
+    // 返回剩余可用的最大比率（差额比例 - 其他计划已使用的比率）
+    return Math.max(0, maxTotalRatio - usedRatio);
+  }
+
+  // 获取单个付款计划的最大允许金额
+  getMaxAllowedAmount(planIndex: number): number {
+    if (!this.financeInfoForm || !this.gapPaymentPlanInfoForm) return 0;
+
+    // 获取差额含税金额
+    const gapPriceControl = this.financeInfoForm.get('gapPrice');
+    const gapPrice = gapPriceControl ? gapPriceControl.value : null;
+    const maxGapAmount = gapPrice && !isNaN(Number(gapPrice)) ? Math.abs(Number(gapPrice)) : 0;
+
+    // 计算其他付款计划已使用的金额总和
+    const usedAmount = this.gapPaymentPlanInfoForm.controls.reduce((sum, control, index) => {
+      if (index === planIndex) return sum; // 排除当前项
+      const amountControl = control.get('paymentAmount');
+      const amount = amountControl ? amountControl.value : null;
+      return sum + (amount && !isNaN(Number(amount)) ? Number(amount) : 0);
+    }, 0);
+
+    // 返回剩余可用的最大金额
+    return maxGapAmount - usedAmount;
+  }
+
+  // 获取比率字段的placeholder文本
+  getPaymentRatioPlaceholder(planIndex: number): string {
+    if (!this.gapPaymentPlanInfoForm || !this.financeInfoForm) return '';
+
+    // 获取差额比例
+    const gapRadioControl = this.financeInfoForm.get('gapRadio');
+    const gapRatio = gapRadioControl ? gapRadioControl.value : null;
+    const maxTotalRatio = gapRatio && !isNaN(Number(gapRatio)) ? Math.abs(Number(gapRatio)) : 0;
+
+    // 计算其他付款计划已使用的比率
+    const usedRatio = this.gapPaymentPlanInfoForm.controls.reduce((sum, control, index) => {
+      if (index === planIndex) return sum; // 排除当前项
+      const ratioControl = control.get('paymentRatio');
+      const ratio = ratioControl ? ratioControl.value : null;
+      return sum + (ratio && !isNaN(Number(ratio)) ? Number(ratio) : 0);
+    }, 0);
+
+    // 计算剩余比率（差额比例 - 其他计划已使用的比率）
+    const remainingRatio = Math.max(0, maxTotalRatio - usedRatio);
+
+    return `剩余：${remainingRatio.toFixed(2)}%`;
+  }
+
+  // 获取金额字段的placeholder文本
+  getPaymentAmountPlaceholder(planIndex: number): string {
+    if (!this.financeInfoForm || !this.gapPaymentPlanInfoForm) return '';
+
+    // 获取差额含税金额
+    const gapPriceControl = this.financeInfoForm.get('gapPrice');
+    const gapPrice = gapPriceControl ? gapPriceControl.value : null;
+    const totalGapAmount = gapPrice && !isNaN(Number(gapPrice)) ? Math.abs(Number(gapPrice)) : 0;
+
+    // 计算其他付款计划已使用的金额
+    const usedAmount = this.gapPaymentPlanInfoForm.controls.reduce((sum, control, index) => {
+      if (index === planIndex) return sum; // 排除当前项
+      const amountControl = control.get('paymentAmount');
+      const amount = amountControl ? amountControl.value : null;
+      return sum + (amount && !isNaN(Number(amount)) ? Number(amount) : 0);
+    }, 0);
+
+    const remainingAmount = totalGapAmount - usedAmount;
+    return `剩余：${remainingAmount.toFixed(2)}`;
+  }
+
+  // 获取付款日期的禁用日期函数
+  getDisabledDate = (planIndex: number) => {
+    return (current: Date): boolean => {
+      if (!current || !this.gapPaymentPlanInfoForm) {
+        return false;
+      }
+
+      // 如果是第一个计划项，不禁用任何日期
+      if (planIndex <= 0) {
+        return false;
+      }
+
+      // 获取上一个计划项的日期
+      const previousPlanControl = this.gapPaymentPlanInfoForm.at(planIndex - 1);
+      const previousDateControl = previousPlanControl ? previousPlanControl.get('paymentDate') : null;
+      const previousDate = previousDateControl ? previousDateControl.value : null;
+
+      if (previousDate) {
+        const prevDate = new Date(previousDate);
+        if (!isNaN(prevDate.getTime())) {
+          // 禁用早于或等于上一个计划日期的所有日期
+          return current.getTime() <= prevDate.getTime();
+        }
+      }
+
+      return false;
+    };
+  }
+  debugValidationStatus() {
+    if (!this.gapPaymentPlanInfoForm) {
+      console.log('gapPaymentPlanInfoForm is null');
+      return;
+    }
+
+    console.log('Payment plan validation status:');
+    console.log('Gap ratio:', this.financeInfoForm.get('gapRadio') ? this.financeInfoForm.get('gapRadio').value : 'N/A');
+    console.log('Gap price:', this.financeInfoForm.get('gapPrice') ? this.financeInfoForm.get('gapPrice').value : 'N/A');
+
+    this.gapPaymentPlanInfoForm.controls.forEach((control, index) => {
+      const ratioControl = control.get('paymentRatio');
+      const amountControl = control.get('paymentAmount');
+
+      console.log(`Plan ${index + 1}:`);
+      console.log('  Ratio:', ratioControl ? ratioControl.value : null, 'Valid:', ratioControl ? ratioControl.valid : null, 'Errors:', ratioControl ? ratioControl.errors : null);
+      console.log('  Amount:', amountControl ? amountControl.value : null, 'Valid:', amountControl ? amountControl.valid : null, 'Errors:', amountControl ? amountControl.errors : null);
+      console.log('  Max allowed ratio:', this.getMaxAllowedRatio(index));
+      console.log('  Max allowed amount:', this.getMaxAllowedAmount(index));
+    });
+  }
+
+  // 初始化付款计划验证
+  initializePaymentPlanValidation() {
+    if (!this.gapPaymentPlanInfoForm) return;
+
+    // 如果没有付款计划项，添加一个默认项
+    if (this.gapPaymentPlanInfoForm.length === 0) {
+      this.addPaymentPlan();
+      return;
+    }
+
+    // 为现有的付款计划项添加验证器和监听
+    for (let i = 0; i < this.gapPaymentPlanInfoForm.length; i++) {
+      const planControl = this.gapPaymentPlanInfoForm.at(i);
+      if (planControl) {
+        // 为比率字段添加验证器
+        const ratioControl = planControl.get('paymentRatio');
+        if (ratioControl) {
+          ratioControl.setValidators([Validators.required, this.singleRatioValidator, this.gapPaymentRatioSumValidator]);
+          ratioControl.updateValueAndValidity();
+        }
+
+        // 为金额字段添加验证器
+        const amountControl = planControl.get('paymentAmount');
+        if (amountControl) {
+          amountControl.setValidators([Validators.required, this.singleAmountValidator, this.gapPaymentAmountSumValidator]);
+          amountControl.updateValueAndValidity();
+        }
+
+        // 设置监听
+        this.subscribeToPaymentPlanChanges(i);
+      }
     }
   }
 
   onShowSelectDealFormModal(){
     this.selectDealFormDialog.showModal();
   }
-  onSelectDealForm(dealForm: DealForm) {
+
+  // 更新SO号码（仅更新临时值）
+  // 更新SO字段值（直接更新FormControl）
+  updateSoValue(index: number, event: any): void {
+    const value = (event.target as HTMLInputElement).value;
+    const control = this.orderInfoArray.at(index).get('so');
+    control.setValue(value, { emitEvent: false });
+  }
+
+  // 验证SO字段格式（在失去焦点时调用）
+  validateSoField(index: number, event: any) {
+    const value = (event.target as HTMLInputElement).value;
+    const control = this.orderInfoArray.at(index).get('so');
+
+    // 验证只包含数字和分号
+    const isValid = /^[0-9;]*$/.test(value);
+
+    if (isValid) {
+      // 清除错误状态
+      control.setErrors(null);
+    } else {
+      // 设置错误状态
+      control.setErrors({ invalidSo: true });
+    }
+
+    control.markAsTouched();
+  }
+
+  // 获取SO字段的验证错误状态
+  getSoValidationError(index: number): boolean {
+    const control = this.orderInfoArray.at(index).get('so');
+    return !!(control && control.errors && control.touched);
+  }
+
+  async onSelectDealForm(dealForm: DealForm) {
     console.log('Selected DealForm:', dealForm);
     this.formValues.patchValue({
       dealformId: dealForm.dealFormId,
@@ -698,7 +1208,9 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
       dealPriceCny: dealForm.dealPriceCny,
       dealPriceUsd: dealForm.dealPriceUsd
     })
-
+    let res =  await this.loadOrderByDealFormId(dealForm.dealFormId);
+    this.orderInfoArray.patchValue(res);
+    console.log('Loaded orders for DealForm:', res);
     // 重新建立财务字段监听，确保使用新的基础数据进行计算
     setTimeout(() => {
       this.subscribeToFinanceFieldChanges();

@@ -1530,7 +1530,19 @@ export class RequestFormComponent implements OnInit {
         importedEquipmentOrder.bmcs = this.getBMCsString(arr);
         data.orderInfos = [importedEquipmentOrder];
         break;
-      default:
+      case APPLY_TYPE.ADVANCED_PAYMENT:
+        let advancedPaymentForm = this.advancedPaymentForm.getRawValue();
+        advancedPaymentForm.financeInfo.approvalFiles = (advancedPaymentForm.financeInfo.approvalFiles || []);
+        advancedPaymentForm.gapPaymentPlan = advancedPaymentForm.gapPaymentPlan.map(item=>{
+          return {
+            ...item,
+            actualPaymentFiles: JSON.stringify(item.actualPaymentFiles || [])
+          }
+        });
+        advancedPaymentForm = {...advancedPaymentForm,financeInfo:{...advancedPaymentForm,approvalFiles:JSON.stringify(advancedPaymentForm.approvalFiles)}}
+        data.oitAdvancedPayInfos = advancedPaymentForm;
+      break;
+        default:
         break;
     }
     return data;
