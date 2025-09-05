@@ -760,7 +760,7 @@ export class ElectronicContractSignInfoComponent implements OnInit {
     return dic[val] || val;
   }
 
-  convertSignStatusText(val: any, contractType: any) {
+  convertSignStatusText(val: any, contractType: any,isAutoSigned: boolean) {
     if (!!!val) return "";
     const dicGroup = {
       NORMAL: {
@@ -780,6 +780,9 @@ export class ElectronicContractSignInfoComponent implements OnInit {
         COMPLETE: "已签署作废申明",
       },
     };
+    if(isAutoSigned && dicGroup[contractType][val] =='已签署'){
+      return '已自动签署';
+    }
     return dicGroup[contractType][val] || val;
   }
 
