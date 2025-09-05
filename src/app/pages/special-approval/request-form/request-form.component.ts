@@ -158,6 +158,7 @@ export class RequestFormComponent implements OnInit {
   public pageLoading = true;
 
   public nodeCode: string;
+  public currentTask: any;
 
   public isComplete: boolean = false;
 
@@ -2244,6 +2245,7 @@ export class RequestFormComponent implements OnInit {
       this.applyType = applyType;
       this.executed = executed;
       this.nodeCode = nodeCode;
+      this.currentTask = taskList.find(item=>item.taskName === nodeCode);
       this.formValues.patchValue({
         basicInfo: {
           applyCode,

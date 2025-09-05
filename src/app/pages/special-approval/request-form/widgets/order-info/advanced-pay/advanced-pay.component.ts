@@ -24,6 +24,8 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
   @Input() isApplicant; // 是否是申请人
   @Input() requestId: string; // 用于判断是否是从草稿进入的申请
   @Input() nodeAction: string; // 节点动作
+  @Input() nodeCode:string
+  @Input() currentTask:any
 
   // 订阅管理
   private systemRegionSubscription: Subscription;
@@ -94,6 +96,9 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
   get isNewForm(): boolean {
     return !(this.requestId && this.requestId.trim());
   }
+  get isOaFeedbackNode(): boolean {
+    return this.processStatus== 'START' && this.nodeAction === 'feedback' ;
+  }
 
   initData(data: any) {
     console.log('advanced-pay initData', data);
@@ -115,14 +120,21 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
     }
     this.formValues.patchValue(oitAdvancedPayInfos);
     const {orderInfo} = oitAdvancedPayInfos
-    console.log('orderInfos extracted:', orderInfo);
     this.initOitAdvancedPayOrder(orderInfo)
     // this.orderInfoArray.patchValue(orderInfo);
+
+    if(this.isOaFeedbackNode){
+      this.initApprovalForm()
+    }
 
     // 标记数据已初始化
     this.isDataInitialized = true;
   }
-
+  private initApprovalForm(){
+    this.orderInfoArray.controls.forEach(orderControl => {
+      orderControl.get('so').enable()
+    })
+  }
   // 自定义验证器：验证OIT比率不超过100%
   private oitRatioValidator = (control: any) => {
     if (!control.value) return null;
@@ -197,9 +209,10 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
             referenceId: [orderData.referenceId || null],
             bmc: [orderData.bmc || null],
             productModel: [orderData.productModel || null],
-            so: [orderData.so || null],
+            so: [{value:orderData.so || null,disabled:!this.editable}]
           });
           this.orderInfoArray.push(orderFormGroup);
+          // orderFormGroup.get('so').setValidators
         });
 
         console.log('initOitAdvancedPayOrder - orderInfoArray length after initialization:', this.orderInfoArray.length);
@@ -947,7 +960,11 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
   // 删除付款计划从FormArray
   async removePaymentPlan(index: number) {
     if (this.gapPaymentPlanInfoForm.length > 1) {
-      let id = this.gapPaymentPlanInfoForm.at(index).get('id').value;
+      let id ;
+      if(this.gapPaymentPlanInfoForm.at(index).get('id')){
+        id = this.gapPaymentPlanInfoForm.at(index).get('id').value;
+      }
+
       let applyId = this.formValues.get('applyId').value
       console.log('removePaymentPlan -> ', {applyId, id})
       if(!!id){

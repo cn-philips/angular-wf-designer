@@ -1,7 +1,6 @@
 <!-- 基本信息 -->
 <nz-card class="mtb1rem" nzTitle="基本信息">
   <p>调试信息：{{processStatus}}-{{nodeAction}}-{{editable}}</p>
-  <p>OrderInfoArray length: {{orderInfoArray.controls.length}}</p>
     <form nz-form [formGroup]="formValues" nzLayout="horizontal">
         <div nz-row>
             <div nz-col nzXs="24" nzSm="24" nzMd="8">
@@ -91,7 +90,6 @@
                         <td nzAlign="center">{{ orderControl.get('bmc')?.value }}</td>
                         <td nzAlign="center">{{ orderControl.get('productModel')?.value }}</td>
                         <td nzAlign="center">
-                          editable:{{editable}}
                             <form nz-form [formGroup]="orderControl" style="margin: 0; padding: 0;">
                                 <input nz-input
                                        formControlName="so"
