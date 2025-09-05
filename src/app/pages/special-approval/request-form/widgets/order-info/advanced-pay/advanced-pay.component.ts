@@ -23,6 +23,7 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
   @Input() processStatus; // 用于判断当前申请的流程状态
   @Input() isApplicant; // 是否是申请人
   @Input() requestId: string; // 用于判断是否是从草稿进入的申请
+  @Input() nodeAction: string; // 节点动作
 
   // 订阅管理
   private systemRegionSubscription: Subscription;
@@ -40,7 +41,7 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
   approvalFileList = [];
 
   ngOnInit(): void {
-    // 初始化表单数据
+    // 初始化表单数据（异步）
     this.initFormData();
 
     // 监听申请详情tab中的系统区域变化
@@ -79,6 +80,11 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
     return this.orderInfoArray.getRawValue();
   }
 
+  // trackBy函数用于优化ngFor性能和变更检测
+  trackByIndex(index: number, item: any): number {
+    return index;
+  }
+
   // 判断是否应该禁用导入按钮（如果是从草稿进入的申请）
   get shouldDisableImportButton(): boolean {
     return !this.isNewForm ;
@@ -91,7 +97,9 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
 
   initData(data: any) {
     console.log('advanced-pay initData', data);
-    const {orderInfo,oitAdvancedPayInfos} = data
+    const {oitAdvancedPayInfos} = data
+    console.log('oitAdvancedPayInfos:', oitAdvancedPayInfos);
+
     if(oitAdvancedPayInfos.financeInfo){
       let approvalFiles = oitAdvancedPayInfos.financeInfo.approvalFiles || '[]'
       if(typeof approvalFiles === 'string'){
@@ -106,6 +114,9 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
       }
     }
     this.formValues.patchValue(oitAdvancedPayInfos);
+    const {orderInfo} = oitAdvancedPayInfos
+    console.log('orderInfos extracted:', orderInfo);
+    this.initOitAdvancedPayOrder(orderInfo)
     // this.orderInfoArray.patchValue(orderInfo);
 
     // 标记数据已初始化
@@ -168,6 +179,32 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
 
   private async loadOrderByDealFormId(dealFormId: string) {
     return this.spService.queryOitOrderByDealFormId(dealFormId)
+  }
+
+  private async initOitAdvancedPayOrder(data: any[]) {
+    console.log('initOitAdvancedPayOrder', data);
+      // 先清空现有的orderInfoArray
+      while(this.orderInfoArray.length > 0) {
+        this.orderInfoArray.removeAt(0);
+      }
+      // 如果有订单数据则动态添加FormGroup
+      if(data && data.length > 0) {
+        data.forEach(orderData => {
+          const orderFormGroup = this.fb.group({
+            id: [orderData.id || null],
+            applyId: [orderData.applyId || null],
+            orderId: [orderData.orderId || null],
+            referenceId: [orderData.referenceId || null],
+            bmc: [orderData.bmc || null],
+            productModel: [orderData.productModel || null],
+            so: [orderData.so || null],
+          });
+          this.orderInfoArray.push(orderFormGroup);
+        });
+
+        console.log('initOitAdvancedPayOrder - orderInfoArray length after initialization:', this.orderInfoArray.length);
+        console.log('initOitAdvancedPayOrder - orderInfoArray controls:', this.orderInfoArray.controls);
+      }
   }
 
   // 自定义验证器：验证实际OIT金额不超过基础金额
@@ -311,7 +348,7 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
   }
 
   // 初始化表单数据
-  initFormData() {
+  async initFormData() {
     // 初始化时同步系统区域值
     this.syncSystemRegion();
 
@@ -905,16 +942,6 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
 
     // 为新添加的计划项设置验证监听
     this.subscribeToPaymentPlanChanges(this.gapPaymentPlanInfoForm.length - 1);
-  }  // 文件上传处理
-  onFileChange(event: any, index: number) {
-    const file = event.target.files[0];
-    if (file && this.gapPaymentPlanInfoForm.at(index)) {
-      const fileArray = this.gapPaymentPlanInfoForm.at(index).get('actualPaymentFiles');
-      if (fileArray) {
-        fileArray.setValue([file]);
-        this.message.success('文件上传成功');
-      }
-    }
   }
 
   // 删除付款计划从FormArray
@@ -1209,12 +1236,7 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
   }
 
   // 更新SO号码（仅更新临时值）
-  // 更新SO字段值（直接更新FormControl）
-  updateSoValue(index: number, event: any): void {
-    const value = (event.target as HTMLInputElement).value;
-    const control = this.orderInfoArray.at(index).get('so');
-    control.setValue(value, { emitEvent: false });
-  }
+  // 已删除updateSoValue方法，现在使用标准FormControl绑定
 
   // 验证SO字段格式（在失去焦点时调用）
   validateSoField(index: number, event: any) {
@@ -1258,8 +1280,32 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
       dealPriceUsd: dealForm.dealPriceUsd
     })
     let res =  await this.loadOrderByDealFormId(dealForm.dealFormId);
-    this.orderInfoArray.patchValue(res);
+
+    // 先清空现有的orderInfoArray
+    while(this.orderInfoArray.length > 0) {
+      this.orderInfoArray.removeAt(0);
+    }
+
+    // 如果有订单数据则动态添加FormGroup
+    if(res && res.length > 0) {
+      res.forEach(orderData => {
+        const orderFormGroup = this.fb.group({
+          id: [orderData.id || null],
+          applyId: [orderData.applyId || null],
+          orderId: [orderData.orderId || null],
+          referenceId: [orderData.referenceId || null],
+          bmc: [orderData.bmc || null],
+          productModel: [orderData.productModel || null],
+          so: [orderData.so || null],
+        });
+        this.orderInfoArray.push(orderFormGroup);
+      });
+    }
+
     console.log('Loaded orders for DealForm:', res);
+    console.log('OrderInfoArray controls length after loading:', this.orderInfoArray.controls.length);
+    console.log('OrderInfoArray controls:', this.orderInfoArray.controls);
+
     // 重新建立财务字段监听，确保使用新的基础数据进行计算
     setTimeout(() => {
       this.subscribeToFinanceFieldChanges();

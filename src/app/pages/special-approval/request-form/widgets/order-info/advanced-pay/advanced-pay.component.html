@@ -1,5 +1,7 @@
 <!-- 基本信息 -->
 <nz-card class="mtb1rem" nzTitle="基本信息">
+  <p>调试信息：{{processStatus}}-{{nodeAction}}-{{editable}}</p>
+  <p>OrderInfoArray length: {{orderInfoArray.controls.length}}</p>
     <form nz-form [formGroup]="formValues" nzLayout="horizontal">
         <div nz-row>
             <div nz-col nzXs="24" nzSm="24" nzMd="8">
@@ -71,8 +73,8 @@
         </div>
 
         <!-- 订单表格 -->
-        <div class="mt20" *ngIf="orderList.length > 0">
-            <nz-table nzSize="small" [nzData]="orderList" [nzShowPagination]="false" nzBordered>
+        <div class="mt20" *ngIf="orderInfoArray.controls.length > 0">
+            <nz-table nzSize="small" [nzData]="orderInfoArray.getRawValue()" [nzShowPagination]="false" nzBordered>
                 <thead>
                     <tr>
                         <th nzAlign="center" style="width: 80px;">Order No</th>
@@ -83,26 +85,25 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let orderControl of orderInfoArray.controls; let i = index">
+                    <tr *ngFor="let orderControl of orderInfoArray.controls; let i = index; trackBy: trackByIndex">
                         <td nzAlign="center">{{ i + 1 }}</td>
                         <td nzAlign="center">{{ orderControl.get('referenceId')?.value }}</td>
                         <td nzAlign="center">{{ orderControl.get('bmc')?.value }}</td>
                         <td nzAlign="center">{{ orderControl.get('productModel')?.value }}</td>
                         <td nzAlign="center">
-                            <div style="position: relative;">
+                          editable:{{editable}}
+                            <form nz-form [formGroup]="orderControl" style="margin: 0; padding: 0;">
                                 <input nz-input
-                                       [value]="orderControl.get('so')?.value || ''"
-                                       (input)="updateSoValue(i, $event)"
+                                       formControlName="so"
                                        (blur)="validateSoField(i, $event)"
                                        [disabled]="!editable"
-                                       [style.border]="getSoValidationError(i) ? '1px solid #ff4d4f' : 'none'"
-                                       [style.background]="getSoValidationError(i) ? '#fff2f0' : 'transparent'"
-                                       style="text-align: center;"
+                                       style="text-align: center; border: none; background: transparent;"
+                                       [class.error-input]="getSoValidationError(i)"
                                        placeholder="请输入SO#" />
-                                <div *ngIf="getSoValidationError(i)" class="error-message" style="position: absolute; top: 100%; left: 0; font-size: 12px; color: #ff4d4f; white-space: nowrap; z-index: 1000;">
+                                <div *ngIf="getSoValidationError(i)" class="error-tooltip">
                                     SO#只能包含数字和分号
                                 </div>
-                            </div>
+                            </form>
                         </td>
                     </tr>
                 </tbody>
@@ -229,7 +230,7 @@
                 <nz-form-item>
                     <nz-form-label [nzSpan]="24" nzRequired>实际OIT支付的“事前审批邮件或证明文件”</nz-form-label>
                     <nz-form-control [nzSpan]="24">
-                        <shared-upload-file formControlName="approvalFiles"></shared-upload-file>
+                        <shared-upload-file formControlName="approvalFiles" type="file"></shared-upload-file>
                         <nz-form-explain *ngIf="financeInfoForm.get('approvalFiles')?.dirty && financeInfoForm.get('approvalFiles')?.errors">
                             请上传审批邮件、付款承诺函等证明文件
                         </nz-form-explain>
@@ -355,16 +356,7 @@
                         </nz-date-picker>
                     </td>
                     <td nzAlign="center">
-                        <nz-upload
-                            nzAction="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-                            nzListType="text"
-                            [nzFileList]="control.get('actualPaymentFiles')?.value || []"
-                            (nzChange)="onFileChange($event, i)"
-                            nzMultiple="false">
-                            <button nz-button nzSize="small">
-                                <i nz-icon nzType="upload"></i>上传
-                            </button>
-                        </nz-upload>
+                        <shared-upload-file formControlName="actualPaymentFiles" type="file"></shared-upload-file>
                     </td>
                     <td nzAlign="center">
                         <button nz-button nzType="danger" nzSize="small" (click)="removePaymentPlan(i)" *ngIf="editable">

@@ -116,6 +116,7 @@ export class RequestFormComponent implements OnInit {
 
   isSupplementNode = false;
   public processStatus;
+  public nodeAction;
   public pageTitle: string;
   public requestId;
   public requestInfo = {
@@ -312,17 +313,7 @@ export class RequestFormComponent implements OnInit {
     // smallArea: [null],
     // team: [null],
     sales:[null, [Validators.required]],
-    orderInfo :this.fb.array([
-      this.fb.group({
-        id: [null],
-        applyId: [null],
-        orderId: [null], // 订单ID
-        referenceId: [null], // Reference Id
-        bmc: [null], // 产品线
-        productModel: [null],
-        so: [null],
-      })
-    ]),
+    orderInfo :this.fb.array([]),
     financeInfo : this.fb.group({
       currency:[null, [Validators.required]],
       dealPriceCny:[null],
@@ -2564,7 +2555,6 @@ export class RequestFormComponent implements OnInit {
         }
         this.formValues.controls.importedEquipmentInfo.patchValue({bmcs:this.getBMCsString(order.oitProducts)})
       } else if (applyType === APPLY_TYPE.ADVANCED_PAYMENT) {
-        // TODO
         const intervalId = setInterval(() => {
           if (this.advancedPayInfo) {
             this.advancedPayInfo.initData(data);
@@ -2648,6 +2638,7 @@ export class RequestFormComponent implements OnInit {
       this.approveNodeList = nodeInfoList;
       this.approveHistory = taskList;
       this.processStatus = processStatus;
+      this.nodeAction = nodeAction;
       this.setEditable(status, processStatus);
     } catch ({ message }) {
       this.message.error(DEFAULT_ERROR_MESSAGE);
