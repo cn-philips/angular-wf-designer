@@ -18,6 +18,7 @@ import {
   LOADING_MESSAGE,
   SUCCESS_MESSAGE,
   ERROR_MESSAGE,
+  APPLY_TYPE,
 } from "../../../special-approval.constants";
 
 interface CommonResponse {
@@ -43,8 +44,10 @@ export class FeedbackComponent implements OnInit {
   @Input() requestId;
   @Input() taskId;
   @Input() formValues: FormGroup;
+  @Input() applyType: string;
 
   @Output() onFbSubmit = new EventEmitter<number>();
+  @Output() onSubmitAdvancePayment = new EventEmitter<string>();
 
   // formValues: FormGroup = this.fb.group({
   //   remark: [null], // 备注
@@ -69,7 +72,9 @@ export class FeedbackComponent implements OnInit {
     private message: NzMessageService,
     private router: Router
   ) {}
-
+  get isAdvancedPaymentFeedBack(){
+    return this.applyType === APPLY_TYPE.ADVANCED_PAYMENT
+  }
   ngOnInit(): void {
     const getUserList = (keyword: string) => {
       if (!keyword) {
@@ -167,5 +172,29 @@ export class FeedbackComponent implements OnInit {
       return;
     }
     this.onFbSubmit.emit(action);
+  }
+
+  async onAdvancedPaymentSubmit() {
+    const { remark, attachments, notify, notifier } =
+      this.formValues.getRawValue();
+    if ((!remark || !remark.trim())) {
+      this.message.error("请填写备注");
+      return;
+    }
+    if (notify == 1 && !notifier) {
+      this.message.error("请选择指定用户");
+      return;
+    }
+    this.onSubmitAdvancePayment.emit("APPROVED");
+  }
+  async onAdvancedPaymentReject() {
+
+    const { remark, attachments, notify, notifier } =
+      this.formValues.getRawValue();
+    if (notify == 1 && !notifier) {
+      this.message.error("请选择指定用户");
+      return;
+    }
+    this.onSubmitAdvancePayment.emit("REJECTED");
   }
 }

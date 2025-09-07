@@ -535,5 +535,11 @@ export class SpecialApprovalService {
     const data = formatResponse(res);
     return data;
   }
+  async savePaymentPlanInfo(data) {
+    const uri = `/act/spAdvancedPay/savePaymentPlanInfo`;
+    const res = await this.http.post(uri,data).toPromise();
+    const dataRes = formatResponse(res);
+    return dataRes;
+  }
 
 }

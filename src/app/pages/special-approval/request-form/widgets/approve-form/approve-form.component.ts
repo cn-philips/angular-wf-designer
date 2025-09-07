@@ -54,8 +54,9 @@ export class ApproveFormComponent implements OnInit, OnChanges {
   @Input() processUsers;
   @Input() applicantEmail;
   @Input() basicInfo: FormGroup;
+  @Input() applyType: string;
 
-  formValues: FormGroup = this.fb.group({
+  public formValues: FormGroup = this.fb.group({
     remark: [""], // 备注
     attachments: [[]], // 支持文件
     notify: [0], // 是否通知用户

@@ -7,6 +7,7 @@ import { NzMessageService, NzModalService } from "ng-zorro-antd";
 import { DealForm, SelectDealformComponent } from "../../select-dealform/select-dealform.component";
 import { Subscription } from "rxjs";
 import { PROCESS_STATUS } from "@pages/special-approval/special-approval.constants";
+import { APPROVE_NODE_ACTION } from "@pages/special-approval/special-approval-setting.constants";
 
 @Component({
   selector: 'special-approval-advanced-pay',
@@ -17,7 +18,7 @@ import { PROCESS_STATUS } from "@pages/special-approval/special-approval.constan
 export class AdvancedPayComponent implements OnInit, OnDestroy {
 
   @ViewChild('selectDealFormDialog') selectDealFormDialog: SelectDealformComponent
-  @Input() editable = true;
+  @Input() editable = false;
   @Input() formValues: FormGroup;
   @Input() baseInfo: FormGroup;
   @Input() processStatus; // 用于判断当前申请的流程状态
@@ -26,6 +27,8 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
   @Input() nodeAction: string; // 节点动作
   @Input() nodeCode:string
   @Input() currentTask:any
+  @Input() nodeInfoList:any[]
+  @Input() isCurrentUserApprover:boolean
 
   // 订阅管理
   private systemRegionSubscription: Subscription;
@@ -96,8 +99,45 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
   get isNewForm(): boolean {
     return !(this.requestId && this.requestId.trim());
   }
-  get isOaFeedbackNode(): boolean {
-    return this.processStatus== 'START' && this.nodeAction === 'feedback' ;
+  public get isOaFeedbackNode(): boolean {
+    let taskName = this.currentTask? this.currentTask.taskName:null
+    let node = this.nodeInfoList.filter(item=>item.code===taskName) || []
+    let currentNodeApprovers =node&&node.length>0 ? node[0].approverList : [];
+    let isOANode = currentNodeApprovers.filter(item=>item.role.toLowerCase() === 'oa') .length > 0 || false;
+    console.log('taskName',taskName)
+    console.log('node',node)
+    console.log('currentNodeApprovers',currentNodeApprovers)
+    console.log('isOANode',isOANode)
+    console.log('this.nodeAction',this.nodeAction)
+    console.log('this.isCurrentUserApprover',this.isCurrentUserApprover)
+    console.log('this.processStatus== PROCESS_STATUS.START',this.processStatus== PROCESS_STATUS.START)
+    console.log('this.nodeAction === APPROVE_NODE_ACTION.FEEDBACK',this.nodeAction === APPROVE_NODE_ACTION.FEEDBACK)
+    return this.isCurrentUserApprover && this.processStatus== PROCESS_STATUS.START && this.nodeAction === APPROVE_NODE_ACTION.FEEDBACK && isOANode;
+  }
+  async confirmAndSave(index: number){
+    let id ;
+    let plan = this.gapPaymentPlanInfoForm.at(index);
+    if(plan.get('id')){
+      id = this.gapPaymentPlanInfoForm.at(index).get('id').value;
+    }
+    if(!id){
+      this.message.error('当前记录没有ID，无法保存。请联系管理员。');
+      return;
+    }
+    if(null == plan.get('actualPaymentDate').value){
+      this.message.error('实际付款日期不能为空。');
+      return;
+    }
+    let result = await this.spService.savePaymentPlanInfo({...plan.value,actualPaymentFiles: JSON.stringify(plan.get('actualPaymentFiles').value)||[]});
+    if(result){
+      this.gapPaymentPlanInfoForm.at(index).get('saved').patchValue(true);
+      this.gapPaymentPlanInfoForm.at(index).get('actualPaymentDate').disable();
+      this.gapPaymentPlanInfoForm.at(index).get('actualPaymentFiles').disable();
+      this.gapPaymentPlanInfoForm.at(index).get('actualPaymentComments').disable();
+      this.message.success('保存成功，并已通知相关人员。');
+    }else{
+      this.message.error('保存失败，请稍后重试或联系管理员。');
+    }
   }
 
   initData(data: any) {
@@ -112,16 +152,93 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
       }
       oitAdvancedPayInfos.financeInfo.approvalFiles = approvalFiles
       if(oitAdvancedPayInfos.gapPaymentPlan){
-        oitAdvancedPayInfos.gapPaymentPlan = oitAdvancedPayInfos.gapPaymentPlan.map(plan => {
+        // 先清空现有的gapPaymentPlan FormArray
+        while(this.gapPaymentPlanInfoForm.length > 0) {
+          this.gapPaymentPlanInfoForm.removeAt(0);
+        }
+
+        oitAdvancedPayInfos.gapPaymentPlan.forEach((plan, index) => {
           plan.actualPaymentFiles = JSON.parse(plan.actualPaymentFiles||'[]')
-          return plan
-        })
+
+          // 确保actualPaymentComments是字符串类型
+          if (plan.actualPaymentComments === null || plan.actualPaymentComments === undefined) {
+            plan.actualPaymentComments = '';
+          }
+
+          // 处理日期格式，确保ng-zorro能正确解析
+          if (plan.paymentDate && typeof plan.paymentDate === 'string') {
+            const date = new Date(plan.paymentDate);
+            // 只有当日期有效时才赋值，否则保持null
+            plan.paymentDate = isNaN(date.getTime()) ? null : date;
+          } else if (plan.paymentDate && !(plan.paymentDate instanceof Date)) {
+            // 如果不是字符串也不是Date对象，设为null
+            plan.paymentDate = null;
+          }
+
+          if (plan.actualPaymentDate && typeof plan.actualPaymentDate === 'string') {
+            const date = new Date(plan.actualPaymentDate);
+            // 只有当日期有效时才赋值，否则保持null
+            plan.actualPaymentDate = isNaN(date.getTime()) ? null : date;
+          } else if (plan.actualPaymentDate && !(plan.actualPaymentDate instanceof Date)) {
+            // 如果不是字符串也不是Date对象，设为null
+            plan.actualPaymentDate = null;
+          }
+
+          // 为每个付款计划创建FormGroup并添加到FormArray
+          const planFormGroup = this.fb.group({
+            id: [plan.id || null],
+            sequenceNo: [plan.sequenceNo || index + 1],
+            paymentDate: [plan.paymentDate, [Validators.required]],
+            paymentRatio: [plan.paymentRatio, [Validators.required, this.singleRatioValidator, this.gapPaymentRatioSumValidator]],
+            paymentAmount: [plan.paymentAmount, [Validators.required, this.singleAmountValidator, this.gapPaymentAmountSumValidator]],
+            actualPaymentDate: [plan.actualPaymentDate],
+            actualPaymentFiles: [plan.actualPaymentFiles || []],
+            actualPaymentComments: [plan.actualPaymentComments || ''],
+            saved: [plan.saved || false],
+          });
+
+          // 如果是可编辑状态（创建/编辑），禁用实际付款相关字段
+          planFormGroup.get('sequenceNo').disable();
+          planFormGroup.get('paymentDate').disable();
+          planFormGroup.get('paymentRatio').disable();
+          planFormGroup.get('paymentAmount').disable();
+          planFormGroup.get('actualPaymentDate').disable();
+          planFormGroup.get('actualPaymentFiles').disable();
+          planFormGroup.get('actualPaymentComments').disable();
+          if(this.editable){
+            planFormGroup.get('paymentDate').enable();
+            planFormGroup.get('paymentRatio').enable();
+            planFormGroup.get('paymentAmount').enable();
+          }
+
+          if(this.isOaFeedbackNode && !planFormGroup.get('saved').value){
+            planFormGroup.get('actualPaymentDate').enable();
+            planFormGroup.get('actualPaymentFiles').enable();
+            planFormGroup.get('actualPaymentComments').enable();
+          }
+
+          this.gapPaymentPlanInfoForm.push(planFormGroup);
+        });
+        // 为所有付款计划设置监听
+        for (let i = 0; i < this.gapPaymentPlanInfoForm.length; i++) {
+          this.subscribeToPaymentPlanChanges(i);
+        }
       }
     }
-    this.formValues.patchValue(oitAdvancedPayInfos);
+
+    // 设置其他字段值（排除gapPaymentPlan，因为已经手动处理）
+    const { gapPaymentPlan, ...otherFields } = oitAdvancedPayInfos;
+    this.formValues.patchValue(otherFields);
+
+
     const {orderInfo} = oitAdvancedPayInfos
     this.initOitAdvancedPayOrder(orderInfo)
-    // this.orderInfoArray.patchValue(orderInfo);
+
+
+    // 如果是可编辑状态（创建/编辑），禁用差额付款计划中的实际付款相关字段
+    if (this.editable) {
+      this.disableActualPaymentFields();
+    }
 
     if(this.isOaFeedbackNode){
       this.initApprovalForm()
@@ -134,6 +251,15 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
     this.orderInfoArray.controls.forEach(orderControl => {
       orderControl.get('so').enable()
     })
+
+
+    this.gapPaymentPlanInfoForm.controls.forEach((control) => {
+      if(control.get('saved').value){
+        control.get('actualPaymentDate').disable();
+        control.get('actualPaymentFiles').disable();
+        control.get('actualPaymentComments').disable();
+      }
+    });
   }
   // 自定义验证器：验证OIT比率不超过100%
   private oitRatioValidator = (control: any) => {
@@ -948,13 +1074,31 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
       paymentRatio: [null, [Validators.required, this.singleRatioValidator, this.gapPaymentRatioSumValidator]],
       paymentAmount: [null, [Validators.required, this.singleAmountValidator, this.gapPaymentAmountSumValidator]],
       actualPaymentDate: [null],
-      actualPaymentFiles: [[]]
+      actualPaymentFiles: [[]],
+      actualPaymentComments: [''],
+      saved: [false],
     });
+
+    // 如果是可编辑状态（创建/编辑），禁用实际付款相关字段
+    if (this.editable) {
+      newPlanGroup.get('actualPaymentDate').disable();
+      newPlanGroup.get('actualPaymentFiles').disable();
+      newPlanGroup.get('actualPaymentComments').disable();
+    }
 
     this.gapPaymentPlanInfoForm.push(newPlanGroup);
 
     // 为新添加的计划项设置验证监听
     this.subscribeToPaymentPlanChanges(this.gapPaymentPlanInfoForm.length - 1);
+  }
+
+  // 禁用所有差额付款计划中的实际付款相关字段
+  private disableActualPaymentFields() {
+    this.gapPaymentPlanInfoForm.controls.forEach((control) => {
+      control.get('actualPaymentDate').disable();
+      control.get('actualPaymentFiles').disable();
+      control.get('actualPaymentComments').disable();
+    });
   }
 
   // 删除付款计划从FormArray

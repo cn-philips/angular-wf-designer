@@ -41,6 +41,10 @@
             (nzOnConfirm)="onCancelRequest()">取消申请</button>
           <button nz-button nz-popconfirm nzDanger nzTitle="确定删除草稿?" *ngIf="showDeleteBtn"
             (nzOnConfirm)="onDeleteRequest()">删除</button>
+          <button nz-button nz-popconfirm nzDanger nzTitle="确定驳回申请?" *ngIf="showRejectBtn"
+            (nzOnConfirm)="onRejectRequest()">驳回</button>
+          <button nz-button nz-popconfirm nzDanger nzTitle="确定完成全部流程?" *ngIf="showRejectBtn"
+            (nzOnConfirm)="onCompleteAllNodeRequest()">完成全部流程</button>
 
           <!-- 补充信息，反馈节点order 保存 -->
           <ng-container *ngIf="isSupplementNode || showFeedbackTab">
@@ -146,7 +150,18 @@
           [applicantEmail]="applicantEmail">
         </app-imported-info>
         <special-approval-advanced-pay #advancedPayInfo *ngIf="applyType === APPLY_TYPE.ADVANCED_PAYMENT"
-          [editable]="editable" [formValues]="advancedPaymentForm" [baseInfo]="basicInfo" [requestId]="requestId" [processStatus]="processStatus" [isApplicant]="isApplicant" [nodeAction]="nodeAction" [nodeCode]="nodeCode" [currentTask]="currentTask">
+          [editable]="editable"
+          [formValues]="advancedPaymentForm"
+          [baseInfo]="basicInfo"
+          [requestId]="requestId"
+          [processStatus]="processStatus"
+          [isApplicant]="isApplicant"
+          [nodeAction]="nodeAction"
+          [nodeCode]="nodeCode"
+          [currentTask]="currentTask"
+          [nodeInfoList]="approveNodeList"
+          [isCurrentUserApprover]="isCurrentUserApprover"
+        >
         </special-approval-advanced-pay>
       </div>
     </ng-template>
@@ -203,8 +218,8 @@
     </ng-template>
     <ng-template ngbTabContent>
       <div class="card-body">
-        <special-approval-approve-form [basicInfo]="basicInfo" [applicantEmail]="applicantEmail"
-          [processUsers]="processUsers" [taskId]="taskId" [requestId]="requestId"></special-approval-approve-form>
+        <special-approval-approve-form #approvalForm [basicInfo]="basicInfo" [applicantEmail]="applicantEmail"
+          [processUsers]="processUsers" [taskId]="taskId" [requestId]="requestId" [applyType]="applyType"></special-approval-approve-form>
       </div>
     </ng-template>
   </ngb-tab>
@@ -227,8 +242,8 @@
     </ng-template>
     <ng-template ngbTabContent>
       <div class="card-body">
-        <special-approval-feedback (onFbSubmit)="onFeedBackSubmit($event)" [taskId]="taskId" [requestId]="requestId"
-          [formValues]="feedBackFormValues">
+        <special-approval-feedback #feedbackForm (onFbSubmit)="onFeedBackSubmit($event)" [taskId]="taskId" [requestId]="requestId"
+          [formValues]="feedBackFormValues" [applyType]="applyType">
         </special-approval-feedback>
       </div>
     </ng-template>

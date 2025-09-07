@@ -1,6 +1,5 @@
 <!-- 基本信息 -->
 <nz-card class="mtb1rem" nzTitle="基本信息">
-  <p>调试信息：{{processStatus}}-{{nodeAction}}-{{editable}}</p>
     <form nz-form [formGroup]="formValues" nzLayout="horizontal">
         <div nz-row>
             <div nz-col nzXs="24" nzSm="24" nzMd="8">
@@ -274,9 +273,10 @@
     <div class="table-container">
         <nz-table
             nzSize="small"
-            [nzData]="gapPaymentPlanInfoForm?.controls"
             [nzShowPagination]="false"
             nzBordered
+            [nzNoResult]="null"
+            [nzData]="[]"
             class="payment-table">
             <thead>
                 <tr>
@@ -286,13 +286,14 @@
                     <th nzAlign="center" style="width: 150px;"><b color="red">*</b> 承诺付款时间</th>
                     <th nzAlign="center" style="width: 150px;">实际付款时间</th>
                     <th nzAlign="center" style="width: 150px;">实际付款证明文件</th>
-                    <th nzAlign="center" style="width: 80px;">操作</th>
+                    <th nzAlign="center" style="width: 150px;" *ngIf="isOaFeedbackNode">实际付款备注</th>
+                    <th nzAlign="center" style="width: 80px;" *ngIf="editable || isOaFeedbackNode">操作</th>
                 </tr>
             </thead>
             <tbody>
                 <tr *ngFor="let control of gapPaymentPlanInfoForm?.controls; let i = index" [formGroup]="control">
                     <td nzAlign="center">
-                        <input nz-input formControlName="sequenceNo" style="text-align: center;" disabled />
+                        <input nz-input formControlName="sequenceNo" style="text-align: center;" readonly />
                     </td>
                     <td nzAlign="center">
                         <nz-input-group nzSuffix="%">
@@ -356,14 +357,17 @@
                     <td nzAlign="center">
                         <shared-upload-file formControlName="actualPaymentFiles" type="file"></shared-upload-file>
                     </td>
-                    <td nzAlign="center">
+                    <td nzAlign="center" *ngIf="isOaFeedbackNode">
+                        <textarea rows="4" formControlName="actualPaymentComments" nz-input></textarea>
+                    </td>
+                    <td *ngIf="editable || isOaFeedbackNode" nzAlign="center">
                         <button nz-button nzType="danger" nzSize="small" (click)="removePaymentPlan(i)" *ngIf="editable">
                             <i nz-icon nzType="delete"></i>
                         </button>
+                        <button nz-button nzType="success" nz-popconfirm nzTitle="确定保存此条记录？" (nzOnConfirm)="confirmAndSave(i)" *ngIf="isOaFeedbackNode && !control.get('saved')?.value" >
+                            保存记录并通知相关人员{{control.get('saved')?.value}}
+                        </button>
                     </td>
-                </tr>
-                <tr *ngIf="!gapPaymentPlanInfoForm?.controls || gapPaymentPlanInfoForm?.controls.length === 0">
-                    <td nzAlign="center" colspan="7">暂无付款计划</td>
                 </tr>
             </tbody>
         </nz-table>

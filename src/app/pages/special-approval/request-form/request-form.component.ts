@@ -30,6 +30,8 @@ import { RouterExtendService } from "@app/modern-themes/services/router-extend.s
 import { compareIgnoreSensitiveCase } from "@app/utils/StringUtils";
 import { Location } from "@angular/common";
 import { AdvancedPayComponent } from "./widgets/order-info/advanced-pay/advanced-pay.component";
+import { ApproveFormComponent } from "./widgets/approve-form/approve-form.component";
+import { FeedbackComponent } from "./widgets/feedback/feedback.component";
 
 enum TAB_TYPE {
   BASIC_INFO = "basic-info",
@@ -103,6 +105,8 @@ export class RequestFormComponent implements OnInit {
   @ViewChild("lastBuyOrderInfo") public lastBuyOrderInfo: LastbuyComponent;
   @ViewChild("importedEquipmentInfo") public importedEquipmentInfo: ImportedInfoComponent;
   @ViewChild("advancedPayInfo") public advancedPayInfo: AdvancedPayComponent;
+  @ViewChild("approvalForm") public approvalForm: ApproveFormComponent;
+  @ViewChild("feedbackForm") public feedbackForm: FeedbackComponent;
 
   get needReason(){
     let noNeedReasonType=[APPLY_TYPE.IMPORTED_EQUIPMENT]
@@ -138,6 +142,10 @@ export class RequestFormComponent implements OnInit {
   public showFeedbackTab = false;
   public showWithdrawBtn = false;
   public showCancelBtn = false;
+  get showRejectBtn(){
+    if(!this.advancedPayInfo) return false
+    return this.applyType === APPLY_TYPE.ADVANCED_PAYMENT && this.advancedPayInfo.isOaFeedbackNode && this.isCurrentUserApprover;
+  };
 
   public processAdminList = [];
   public processExpertList = [];
@@ -163,6 +171,7 @@ export class RequestFormComponent implements OnInit {
   public isComplete: boolean = false;
 
   isApplicant = false;
+  isCurrentUserApprover = false; // 当前登录用户是当前审批节点的审批人
 
   districtLeader: string[] = [];
   salesLeader: string[] = [];
@@ -329,21 +338,7 @@ export class RequestFormComponent implements OnInit {
       // 事前审批邮件或证明文件
       approvalFiles:[[] , [Validators.required]],
     }),
-    gapPaymentPlan : this.fb.array([
-      this.fb.group({
-        id: [null],
-        applyId: [null],
-        //期数
-        sequenceNo:[1],
-        paymentDate:[null, [Validators.required]], // 差额付款日期
-        paymentRatio:[null, [Validators.required]], // 差额付款比率
-        paymentAmount:[null, [Validators.required]], // 差额付款金额
-        // 实际付款日期
-        actualPaymentDate:[null],
-        // 实际付款证明文件
-        actualPaymentFiles:[[]],
-      })
-    ])
+    gapPaymentPlan : this.fb.array([])
   }
 
   // 订单替换form表单信息单独配置
@@ -2245,7 +2240,7 @@ export class RequestFormComponent implements OnInit {
       this.applyType = applyType;
       this.executed = executed;
       this.nodeCode = nodeCode;
-      this.currentTask = taskList.find(item=>item.taskName === nodeCode);
+      this.currentTask = taskList.find(item=>item.taskInstId === this.taskId);
       this.formValues.patchValue({
         basicInfo: {
           applyCode,
@@ -2593,7 +2588,10 @@ export class RequestFormComponent implements OnInit {
         : [];
 
       this.isApplicant = compareIgnoreSensitiveCase(applicant , localStorage.getItem("ecom_ng_philips_code1"));
-
+      if(this.currentTask){
+        console.log('this.currentTask.approveUser',this.currentTask.approveUser)
+      }
+      this.isCurrentUserApprover = this.currentTask ? compareIgnoreSensitiveCase(this.currentTask.approveUser, localStorage.getItem("ecom_ng_philips_code1")) : false;
       const isDraft =
         processStatus === PROCESS_STATUS.DRAFT && this.isApplicant;
       if (isDraft) {
@@ -2647,6 +2645,67 @@ export class RequestFormComponent implements OnInit {
       console.error(`初始化失败, ${message}`);
     } finally {
       this.pageLoading = false;
+    }
+  }
+  public async onRejectRequest() {
+    if(this.applyType === APPLY_TYPE.ADVANCED_PAYMENT){
+      const id = this.message.loading(LOADING_MESSAGE.REJECT_REQUEST, {
+        nzDuration: 0,
+      }).messageId;
+      try {
+        await this.onSubmitAdvancePayment('REJECTED');
+      } catch ({ message }) {
+        this.message.error(ERROR_MESSAGE.REJECT_REQUEST);
+        console.error(`驳回失败, ${message}`);
+      } finally {
+        this.submitLoading = false;
+        this.message.remove(id);
+      }
+    }
+  }
+  public async onCompleteAllNodeRequest() {
+    if(this.applyType === APPLY_TYPE.ADVANCED_PAYMENT){
+      const id = this.message.loading(LOADING_MESSAGE.REJECT_REQUEST, {
+        nzDuration: 0,
+      }).messageId;
+      try {
+        await this.onSubmitAdvancePayment('APPROVED');
+      } catch ({ message }) {
+        this.message.error(ERROR_MESSAGE.REJECT_REQUEST);
+        console.error(`审批失败, ${message}`);
+      } finally {
+        this.submitLoading = false;
+        this.message.remove(id);
+      }
+    }
+  }
+
+  async onSubmitAdvancePayment(action) {
+    try {
+      const { remark, attachments, notify, notifier } =
+        this.feedbackForm.formValues.getRawValue();
+      const id = this.message.loading(LOADING_MESSAGE.FEEDBACK, {
+        nzDuration: 0,
+      }).messageId;
+      this.submitLoading = true;
+      const data = {
+        applyId: this.requestId,
+        attachments: attachments,
+        result: action,
+        notify,
+        notifier: notify ? notifier.join(",") : "",
+        remark,
+        taskInstId: this.taskId,
+      };
+      await this.spService.approveRequest(data);
+      this.message.remove(id);
+      this.message.success(SUCCESS_MESSAGE.FEEDBACK);
+      this.routerExtend.back();
+    } catch ({ message }) {
+      this.message.error(ERROR_MESSAGE.FEEDBACK);
+      console.error(`审批失败, ${message}`);
+    } finally {
+      this.submitLoading = false;
     }
   }
 
