@@ -1043,7 +1043,7 @@
             </nz-form-label>
             <nz-form-control nzXs="24" nzSm="24" nzMd="14">
               <shared-select formControlName="transportationMode" placeholder="请选择"
-                [options]="selectOption.transportationMode"></shared-select>
+                [options]="selectOption.transportationMode" [allowClear]="true"></shared-select>
               <nz-form-explain
                 *ngIf="prebookInfo.get('transportationMode')?.dirty && prebookInfo.get('transportationMode')?.errors">
                 {{"biddingv3.components.basic-info.required" | translate}}
