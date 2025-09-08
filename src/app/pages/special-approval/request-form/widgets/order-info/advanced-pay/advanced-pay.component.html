@@ -365,7 +365,7 @@
                             <i nz-icon nzType="delete"></i>
                         </button>
                         <button nz-button nzType="success" nz-popconfirm nzTitle="确定保存此条记录？" (nzOnConfirm)="confirmAndSave(i)" *ngIf="isOaFeedbackNode && !control.get('saved')?.value" >
-                            保存记录并通知相关人员{{control.get('saved')?.value}}
+                            保存记录并通知相关人员
                         </button>
                     </td>
                 </tr>
