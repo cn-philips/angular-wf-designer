@@ -154,8 +154,8 @@ export const prebookForm = () => new FormGroup({
       transportationMode: new FormControl(null, [Validators.required]), // 运输方式
       requestedArrivalDate: new FormControl(null), // 客户要求到货日期(RDD)
       expectedIcfMonth: new FormControl(null, [Validators.required]), // 预计ICF月份
-      downpaymentDate: new FormControl(null, [Validators.required]), // Downpayment(5%)支付日期
-      finalPaymentDate: new FormControl(null, [Validators.required]), // 尾款支付日期
+      downpaymentDate: new FormControl(null), // Downpayment(5%)支付日期
+      finalPaymentDate: new FormControl(null), // 尾款支付日期
       latePaymentFines: new FormControl(null), // 是否有晚交罚款
       supportFiles: new FormControl(null), // 支持文件
     }),
@@ -434,6 +434,7 @@ export function initBasicInfo(formGroup: FormGroup, data, subTierSubject, disabl
     }
   })
 
+  // setPrebookInfoValidators(basicInfo, modality)
   setTimeout(() => {
     subTierSubject.next({ type: 'add', data: subTierInfo, disabled })
   }, 0);
@@ -468,7 +469,7 @@ const contractBuyerControlNames = [
   'contractBuyerAddress', 'contractBuyerPhone', 'contractBuyerContact',
   'contractBuyerEmail', 'contractBuyerSignatory', 'contractBuyerSignatoryPosition',
 ]
-export function setBasicInfoValidators(basicInfo: FormGroup, { currency, businessModel }) {
+export function setBasicInfoValidators(basicInfo: FormGroup, { currency, businessModel,dealFormModality }) {
   const foreignCompany = basicInfo.get('foreignCompany') as FormGroup
   if (currency === 'USD') {
     setRequiredValidators(foreignCompany, foreignCompanyControlNames)
@@ -485,6 +486,7 @@ export function setBasicInfoValidators(basicInfo: FormGroup, { currency, busines
     setRequiredValidators(dealerInfo, dealerInfoControlNames)
     clearValidators(contractBuyer, contractBuyerControlNames)
   }
+  setPrebookInfoValidators(basicInfo, dealFormModality )
 }
 
 function clearValidators(formGroup: FormGroup, clearedControls: string[]) {
@@ -495,12 +497,40 @@ function setRequiredValidators(formGroup: FormGroup, requiredControls: string[])
   requiredControls.forEach((controlName) => formGroup.get(controlName).setValidators([Validators.required]))
 }
 
+// 根据modality动态设置prebookInfo的验证器
+export function setPrebookInfoValidators(basicInfo: FormGroup, modality: string) {
+  const prebookInfo = basicInfo.get('prebookInfo') as FormGroup
+
+  if (modality && modality.toLowerCase() === 'us') {
+    // US modality时，这些字段不是必填
+    prebookInfo.get('downpaymentDate').clearValidators()
+    prebookInfo.get('finalPaymentDate').clearValidators()
+    prebookInfo.get('transportationMode').clearValidators()
+    prebookInfo.get('latePaymentFines').clearValidators()
+    // RDD变为必填
+    prebookInfo.get('requestedArrivalDate').setValidators([Validators.required])
+  } else {
+    // 非US modality时，这些字段是必填
+    prebookInfo.get('downpaymentDate').setValidators([Validators.required])
+    prebookInfo.get('finalPaymentDate').setValidators([Validators.required])
+    prebookInfo.get('transportationMode').setValidators([Validators.required])
+    // RDD不是必填
+    prebookInfo.get('requestedArrivalDate').clearValidators()
+  }
+
+  // 更新验证状态
+  Object.keys(prebookInfo.controls).forEach(key => {
+    prebookInfo.get(key).updateValueAndValidity()
+  })
+}
+
 
 export function validateForm(form, tabs) {
   const {
     basicInfo: {
       baseInfo: {
-        businessModel
+        businessModel,
+        modality
       },
       priceApprovaInfo: {
         currencySystem
@@ -577,6 +607,19 @@ export function validateForm(form, tabs) {
   } else {
     latePaymentFinesControl.clearValidators()
   }
+  if(modality && modality.toLowerCase() === 'us'){
+    prebookInfo.get('downpaymentDate').clearValidators()
+    prebookInfo.get('finalPaymentDate').clearValidators()
+    prebookInfo.get('latePaymentFines').clearValidators()
+    prebookInfo.get('transportationMode').clearValidators()
+    prebookInfo.get('requestedArrivalDate').setValidators([Validators.required])
+  } else {
+    // 当modality不是US时，设置为必填
+    prebookInfo.get('downpaymentDate').setValidators([Validators.required])
+    prebookInfo.get('finalPaymentDate').setValidators([Validators.required])
+    prebookInfo.get('transportationMode').setValidators([Validators.required])
+    prebookInfo.get('requestedArrivalDate').clearValidators()
+  }
   for(let i in prebookInfo.controls) {
     prebookInfo.controls[i].markAsDirty()
     prebookInfo.controls[i].updateValueAndValidity()
@@ -587,6 +630,13 @@ export function validateForm(form, tabs) {
   const basicInfoValid =
     baseInfoValid && dealerInfoValid && contractBuyerValid &&
     foreignCompanyValid && finalUserValid && prebookInfoValid
+    console.log("prebookInfoValid",prebookInfoValid)
+    console.log("baseInfoValid",baseInfoValid)
+    console.log("dealerInfoValid",dealerInfoValid)
+    console.log("contractBuyerValid",contractBuyerValid)
+    console.log("foreignCompanyValid",foreignCompanyValid)
+    console.log("finalUserValid",finalUserValid)
+    console.log("prebookInfoValid",prebookInfoValid)
   if (basicInfoValid) {
     if (tabs.clearError) {
       tabs.clearError('basic-info')

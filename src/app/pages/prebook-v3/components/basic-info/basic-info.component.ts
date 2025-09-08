@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormGroup, Validators } from '@angular/forms';
 import { PROVINCES, BUSINESS_MODEL_DIRECT } from '@pages/bidding-v3/bidding-v3.constants'
-import { setBasicInfoValidators } from '@pages/prebook-v3/prebook-v3.utils'
+import { setBasicInfoValidators, setPrebookInfoValidators } from '@pages/prebook-v3/prebook-v3.utils'
 
 import { isadopt, standardTime } from "@core/util/tools";
 import { DictService } from '@core/services';
@@ -274,7 +274,6 @@ export class BasicInfoComponent implements OnInit {
         dealerEmail: dealerDMSData.mailingaddress,
         dealerContact: dealerDMSData.companylegalrep,
       })
-
       if (dealerCode) {
         this.dealerChange.emit(dealerCode)
       }
@@ -320,7 +319,7 @@ export class BasicInfoComponent implements OnInit {
       endUserContact,
     })
 
-    setBasicInfoValidators(this.basicInfo, { currency: currencySystem, businessModel })
+    setBasicInfoValidators(this.basicInfo, { currency: currencySystem, businessModel,dealFormModality:Array.from(new Set(orderInfo.map((val) => val.orderModality))).join("+") })
 
     this.contractBuyer.markAsDirty()
 
