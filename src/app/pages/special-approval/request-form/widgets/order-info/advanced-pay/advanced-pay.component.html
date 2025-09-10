@@ -117,7 +117,7 @@
                 <nz-form-item>
                     <nz-form-label nzXl="8" nzXXl="6">DealForm 币种</nz-form-label>
                     <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-                      <input   nz-input formControlName="currency" readonly/>
+                      <input nz-input formControlName="currency" readonly/>
                     </nz-form-control>
                 </nz-form-item>
             </div>
@@ -126,20 +126,24 @@
                 <nz-form-item>
                     <nz-form-label nzXl="8" nzXXl="6">DealForm含税总金额</nz-form-label>
                     <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-                        <nz-input-group>
-                            <input type="number" nz-input formControlName="dealPriceCny" readonly/>
-                        </nz-input-group>
+                      <money-input formControlName="dealPriceCny"
+                                [readonly]="true"
+                                [precision]="2"
+                                [showThousandsSeparator]="true">
+                                </money-input>
                     </nz-form-control>
                 </nz-form-item>
             </div>
 
             <div nz-col nzXs="24" nzSm="24" nzMd="8" *ngIf="financeInfoForm.get('currency')?.value === 'USD'">
                 <nz-form-item>
-                    <nz-form-label nzXl="8" nzXXl="6">DealForm含税总金额</nz-form-label>
+                    <nz-form-label nzXl="8" nzXXl="6">DealForm总金额（美金）</nz-form-label>
                     <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-                        <nz-input-group>
-                            <input type="number" nz-input formControlName="dealPriceUsd" readonly/>
-                        </nz-input-group>
+                      <money-input formControlName="dealPriceUsd"
+                              [readonly]="true"
+                              [precision]="2"
+                              [showThousandsSeparator]="true">
+                              </money-input>
                     </nz-form-control>
                 </nz-form-item>
             </div>
@@ -168,9 +172,12 @@
                 <nz-form-item>
                     <nz-form-label nzXl="8" nzXXl="6" nzRequired>合同约定的OIT金额</nz-form-label>
                     <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-                        <nz-input-group>
-                            <input type="number" nz-input formControlName="dealPriceAsContracted" />
-                        </nz-input-group>
+                        <money-input formControlName="dealPriceAsContracted"
+                                   [readonly]="!editable"
+                                   [precision]="2"
+                                   [showThousandsSeparator]="true"
+                                   placeholder="请输入金额">
+                        </money-input>
                         <nz-form-explain *ngIf="financeInfoForm.get('dealPriceAsContracted')?.dirty && financeInfoForm.get('dealPriceAsContracted')?.hasError('required')">
                             此选项必填字段
                         </nz-form-explain>
@@ -207,9 +214,12 @@
                 <nz-form-item>
                     <nz-form-label nzXl="8" nzXXl="6" nzRequired>实际OIT支付金额</nz-form-label>
                     <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-                        <nz-input-group>
-                            <input type="number" nz-input formControlName="actualDealPrice" />
-                        </nz-input-group>
+                        <money-input formControlName="actualDealPrice"
+                                   [readonly]="!editable"
+                                   [precision]="2"
+                                   [showThousandsSeparator]="true"
+                                   placeholder="请输入金额">
+                        </money-input>
                         <nz-form-explain *ngIf="financeInfoForm.get('actualDealPrice')?.dirty && financeInfoForm.get('actualDealPrice')?.hasError('required')">
                             此选项必填字段
                         </nz-form-explain>
@@ -255,9 +265,12 @@
                 <nz-form-item>
                     <nz-form-label nzXl="8" nzXXl="6" nzRequired>差额含税金额</nz-form-label>
                     <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-                        <nz-input-group>
-                            <input type="number" nz-input formControlName="gapPrice" readonly/>
-                        </nz-input-group>
+                        <money-input formControlName="gapPrice"
+                                   readonly="true"
+                                   [precision]="2"
+                                   [showThousandsSeparator]="true"
+                                   placeholder="自动计算">
+                        </money-input>
                         <nz-form-explain *ngIf="financeInfoForm.get('gapPrice')?.dirty && financeInfoForm.get('gapPrice')?.errors">
                             此选项必填字段
                         </nz-form-explain>

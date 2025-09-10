@@ -1,0 +1,24 @@
+<div class="money-input-container">
+  <div class="money-input-wrapper" [class.disabled]="disabled" [class.readonly]="readonly">
+    <span class="prefix" *ngIf="prefix">{{ prefix }}</span>
+
+    <input
+      #inputRef
+      type="text"
+      class="money-input"
+      [placeholder]="placeholder"
+      [disabled]="disabled"
+      [readonly]="readonly"
+      [value]="_focused ? '' : displayValue"
+      (input)="onInput($event)"
+      (focus)="onFocus($event)"
+      (blur)="onBlur($event)"
+      (keydown)="onKeyDown($event)"
+      (paste)="onPaste($event)"
+      autocomplete="off"
+      spellcheck="false"
+    />
+
+    <span class="suffix" *ngIf="suffix">{{ suffix }}</span>
+  </div>
+</div>

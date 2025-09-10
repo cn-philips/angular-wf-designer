@@ -812,7 +812,7 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
         // 重置金额为最大允许值
         const dealPriceAsContractedControl = this.financeInfoForm.get('dealPriceAsContracted');
         if (dealPriceAsContractedControl) {
-          dealPriceAsContractedControl.setValue(basePrice.toFixed(2), { emitEvent: false });
+          dealPriceAsContractedControl.setValue(basePrice, { emitEvent: false });
         }
         amount = basePrice;
       }
@@ -926,7 +926,7 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
         // 重置金额为最大允许值
         const actualDealPriceControl = this.financeInfoForm.get('actualDealPrice');
         if (actualDealPriceControl) {
-          actualDealPriceControl.setValue(basePrice.toFixed(2), { emitEvent: false });
+          actualDealPriceControl.setValue(basePrice, { emitEvent: false });
         }
         amount = basePrice;
       }
@@ -989,10 +989,10 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
         const actualValue = hasActualRatio ? Number(actualRatio) : 0;
         const gapRatio = contractedValue - actualValue;
 
-        gapRadioControl.setValue(gapRatio.toFixed(2), { emitEvent: false });
+        gapRadioControl.setValue(gapRatio, { emitEvent: false });
       } else {
         // 两个字段都为空时，清空差额字段
-        gapRadioControl.setValue('', { emitEvent: false });
+        gapRadioControl.setValue(null, { emitEvent: false });
       }
 
       // 重新验证付款计划
@@ -1019,10 +1019,11 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
         const actualValue = hasActualPrice ? Number(actualDealPrice) : 0;
         const gapPrice = contractedValue - actualValue;
 
-        gapPriceControl.setValue(gapPrice.toFixed(2), { emitEvent: false });
+        // 设置数字值而不是字符串值，让money-input组件处理格式化
+        gapPriceControl.setValue(gapPrice, { emitEvent: false });
       } else {
         // 两个字段都为空时，清空差额字段
-        gapPriceControl.setValue('', { emitEvent: false });
+        gapPriceControl.setValue(null, { emitEvent: false });
       }
 
       // 重新验证付款计划
@@ -1226,7 +1227,7 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
       // 更新金额字段，不触发事件以避免循环
       const amountControl = planControl.get('paymentAmount');
       if (amountControl) {
-        amountControl.setValue(calculatedAmount.toFixed(2), { emitEvent: false });
+        amountControl.setValue(calculatedAmount, { emitEvent: false });
       }
     }
   }
@@ -1249,7 +1250,7 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
       // 更新比率字段，不触发事件以避免循环
       const ratioControl = planControl.get('paymentRatio');
       if (ratioControl) {
-        ratioControl.setValue(calculatedRatio.toFixed(2), { emitEvent: false });
+        ratioControl.setValue(calculatedRatio, { emitEvent: false });
       }
     }
   }
@@ -1470,9 +1471,9 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
     let dealPriceUsd = dealForm.dealPriceUsd || 0;
     this.financeInfoForm.patchValue({
       currency: dealForm.currency || 'CNY',
-      dealPriceCnyNet: dealPriceCnyNet.toFixed(2),
-      dealPriceCny: dealPriceCny.toFixed(2),
-      dealPriceUsd: dealPriceUsd.toFixed(2)
+      dealPriceCnyNet: dealPriceCnyNet,
+      dealPriceCny: dealPriceCny,
+      dealPriceUsd: dealPriceUsd
     })
     let res =  await this.loadOrderByDealFormId(dealForm.dealFormId);
 
