@@ -155,9 +155,15 @@
                 <nz-form-item>
                     <nz-form-label nzXl="8" nzXXl="6" nzRequired>合同约定的OIT支付比率</nz-form-label>
                     <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-                        <nz-input-group nzSuffix="%">
-                            <input type="number" nz-input formControlName="ratioAsContracted" min="0" max="100" />
-                        </nz-input-group>
+                        <nz-input-number [nzPrecision]="2"
+                                       formControlName="ratioAsContracted"
+                                       [nzMin]="0"
+                                       [nzMax]="100"
+                                       [nzDisabled]="!editable && !isCCFeedbackNode"
+                                       [nzFormatter]="formatPercent"
+                                       [nzParser]="parsePercent"
+                                       style="width: 100%;">
+                        </nz-input-number>
                         <nz-form-explain *ngIf="financeInfoForm.get('ratioAsContracted')?.dirty && financeInfoForm.get('ratioAsContracted')?.hasError('required')">
                             此选项必填字段
                         </nz-form-explain>
@@ -173,7 +179,7 @@
                     <nz-form-label nzXl="8" nzXXl="6" nzRequired>合同约定的OIT金额</nz-form-label>
                     <nz-form-control nzXs="24" nzSm="24" nzMd="14">
                         <money-input formControlName="dealPriceAsContracted"
-                                   [readonly]="!editable"
+                                   [readonly]="!editable && !isCCFeedbackNode"
                                    [precision]="2"
                                    [showThousandsSeparator]="true"
                                    placeholder="请输入金额">
@@ -194,9 +200,15 @@
                 <nz-form-item>
                     <nz-form-label nzXl="8" nzXXl="6" nzRequired>实际OIT支付比率</nz-form-label>
                     <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-                        <nz-input-group nzSuffix="%">
-                            <input type="number" nz-input formControlName="actualRatio" min="0" max="100" />
-                        </nz-input-group>
+                        <nz-input-number [nzPrecision]="2"
+                                       formControlName="actualRatio"
+                                       [nzMin]="0"
+                                       [nzMax]="100"
+                                       [nzDisabled]="!editable && !isCCFeedbackNode"
+                                       [nzFormatter]="formatPercent"
+                                       [nzParser]="parsePercent"
+                                       style="width: 100%;">
+                        </nz-input-number>
                         <nz-form-explain *ngIf="financeInfoForm.get('actualRatio')?.dirty && financeInfoForm.get('actualRatio')?.hasError('required')">
                             此选项必填字段
                         </nz-form-explain>
@@ -215,7 +227,7 @@
                     <nz-form-label nzXl="8" nzXXl="6" nzRequired>实际OIT支付金额</nz-form-label>
                     <nz-form-control nzXs="24" nzSm="24" nzMd="14">
                         <money-input formControlName="actualDealPrice"
-                                   [readonly]="!editable"
+                                   [readonly]="!editable && !isCCFeedbackNode"
                                    [precision]="2"
                                    [showThousandsSeparator]="true"
                                    placeholder="请输入金额">
@@ -252,9 +264,15 @@
                 <nz-form-item>
                     <nz-form-label nzXl="8" nzXXl="6" nzRequired>差额比例</nz-form-label>
                     <nz-form-control nzXs="24" nzSm="24" nzMd="14">
-                        <nz-input-group nzSuffix="%">
-                            <input type="number" nz-input formControlName="gapRadio" min="0" max="100" readonly />
-                        </nz-input-group>
+                        <nz-input-number [nzPrecision]="2"
+                                       formControlName="gapRadio"
+                                       [nzMin]="0"
+                                       [nzMax]="100"
+                                       [nzFormatter]="formatPercent"
+                                       [nzParser]="parsePercent"
+                                       readonly
+                                       style="width: 100%;">
+                        </nz-input-number>
                         <nz-form-explain *ngIf="financeInfoForm.get('gapRadio')?.dirty && financeInfoForm.get('gapRadio')?.errors">
                             此选项必填字段
                         </nz-form-explain>
@@ -308,11 +326,16 @@
                         <input nz-input formControlName="sequenceNo" style="text-align: center;" readonly />
                     </td>
                     <td nzAlign="center">
-                        <nz-input-group nzSuffix="%">
-                            <input type="number" nz-input formControlName="paymentRatio" min="0" max="100" style="text-align: center;"
-                                   [placeholder]="getPaymentRatioPlaceholder(i)"
-                                   [class.error-input]="control.get('paymentRatio')?.invalid && control.get('paymentRatio')?.touched" />
-                        </nz-input-group>
+                        <nz-input-number [nzPrecision]="2"
+                                       formControlName="paymentRatio"
+                                       [nzMin]="0"
+                                       [nzMax]="100"
+                                       style="text-align: center; width: 100%;"
+                                       placeholder="请输入比率"
+                                       [nzFormatter]="formatPercent"
+                                       [nzParser]="parsePercent"
+                                       [class.error-input]="control.get('paymentRatio')?.invalid && control.get('paymentRatio')?.touched">
+                        </nz-input-number>
                         <div *ngIf="control.get('paymentRatio')?.invalid && control.get('paymentRatio')?.touched" class="error-message">
                             <div *ngIf="control.get('paymentRatio')?.errors?.required">差额付款比率必填</div>
                             <div *ngIf="control.get('paymentRatio')?.errors?.maxRatio">
@@ -335,7 +358,7 @@
                                    [precision]="2"
                                    [showThousandsSeparator]="true"
                                    [min]="0"
-                                   [placeholder]="getPaymentAmountPlaceholder(i)"
+                                   placeholder="请输入金额"
                                    style="text-align: center;">
                         </money-input>
                         <div *ngIf="control.get('paymentAmount')?.invalid && control.get('paymentAmount')?.touched" class="error-message">
@@ -395,6 +418,30 @@
                 </tr>
             </tbody>
         </nz-table>
+
+        <!-- 汇总信息 -->
+        <div class="mt20 payment-summary">
+            <div class="summary-card">
+                <div class="summary-content">
+                    <div class="summary-item">
+                        <span class="summary-label">差额比例汇总：</span>
+                        <span class="summary-value">
+                            已分配：<strong>{{getRemainingRatioInfo().used.toFixed(2)}}%</strong> /
+                            总计：<strong>{{getRemainingRatioInfo().total.toFixed(2)}}%</strong> /
+                            剩余：<strong class="{{getRemainingRatioInfo().remaining > 0 ? 'text-danger' : 'text-success'}}">{{getRemainingRatioInfo().remaining.toFixed(2)}}%</strong>
+                        </span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">差额金额汇总：</span>
+                        <span class="summary-value">
+                            已分配：<strong>{{getRemainingAmountInfo().used.toFixed(2)}} 元</strong> /
+                            总计：<strong>{{getRemainingAmountInfo().total.toFixed(2)}} 元</strong> /
+                            剩余：<strong class="{{getRemainingAmountInfo().remaining > 0 ? 'text-danger' : 'text-success'}}">{{getRemainingAmountInfo().remaining.toFixed(2)}} 元</strong>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <div class="mt20">
             <button nz-button nzType="dashed" (click)="addPaymentPlan()" *ngIf="editable">

@@ -49,6 +49,19 @@ export class MoneyInputComponent implements ControlValueAccessor, Validator, OnI
 
   ngOnDestroy() {}
 
+  // 精度处理工具函数
+  private roundToPrecision(value: number, precision: number = 2): number {
+    if (isNaN(value) || !isFinite(value)) return 0;
+
+    // 使用Number.EPSILON来处理浮点数精度问题
+    const factor = Math.pow(10, precision);
+    const shifted = value * factor;
+
+    // 处理浮点数精度误差
+    const rounded = Math.round(shifted + Number.EPSILON);
+    return rounded / factor;
+  }
+
   // ControlValueAccessor 实现
   writeValue(value: any): void {
     // 确保值是正确的类型
@@ -58,9 +71,9 @@ export class MoneyInputComponent implements ControlValueAccessor, Validator, OnI
       // 如果是字符串，先去除千分位分隔符再尝试转换为数字
       const cleanedValue = value.replace(/,/g, ''); // 去除千分位逗号
       const numValue = parseFloat(cleanedValue);
-      this._value = isNaN(numValue) ? null : numValue;
+      this._value = isNaN(numValue) ? null : this.roundToPrecision(numValue, this.precision);
     } else if (typeof value === 'number') {
-      this._value = isNaN(value) ? null : value;
+      this._value = isNaN(value) ? null : this.roundToPrecision(value, this.precision);
     } else {
       this._value = null;
     }
@@ -122,8 +135,8 @@ export class MoneyInputComponent implements ControlValueAccessor, Validator, OnI
     // 更新显示值（在获得焦点时保持纯数字格式）
     this.displayValue = inputValue;
 
-    // 转换为数字
-    const numValue = inputValue === '' ? null : parseFloat(inputValue);
+    // 转换为数字并应用精度处理
+    const numValue = inputValue === '' ? null : this.roundToPrecision(parseFloat(inputValue), this.precision);
 
     if (this._value !== numValue) {
       this._value = numValue;
@@ -160,14 +173,17 @@ export class MoneyInputComponent implements ControlValueAccessor, Validator, OnI
       return;
     }
 
+    // 确保应用精度处理
+    const processedValue = this.roundToPrecision(this._value, this.precision);
+
     if (this._focused) {
       // 获得焦点时显示纯数字
-      this.displayValue = this._value.toString();
+      this.displayValue = processedValue.toString();
       return;
     }
 
     // 失去焦点时显示格式化的值
-    let formattedValue = this._value.toFixed(this.precision);
+    let formattedValue = processedValue.toFixed(this.precision);
 
     if (this.showThousandsSeparator) {
       // 添加千分位分隔符

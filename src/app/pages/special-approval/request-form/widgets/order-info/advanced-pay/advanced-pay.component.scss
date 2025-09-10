@@ -110,3 +110,50 @@
     font-size: 12px;
   }
 }
+
+// 汇总信息样式
+.payment-summary {
+  .summary-card {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    padding: 16px;
+    margin-top: 16px;
+  }
+
+  .summary-content {
+    .summary-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 8px;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      .summary-label {
+        color: #666;
+        font-weight: 500;
+        min-width: 120px;
+        margin-right: 12px;
+      }
+
+      .summary-value {
+        flex: 1;
+
+        strong {
+          &.text-warning {
+            color: #faad14;
+          }
+          &.text-danger {
+            color: red;
+          }
+
+          &.text-success {
+            color: #52c41a;
+          }
+        }
+      }
+    }
+  }
+}

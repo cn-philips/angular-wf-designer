@@ -39,10 +39,17 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
   private actualRatioSubscription: Subscription;
   private actualDealPriceSubscription: Subscription;
 
-  // 精度处理工具函数
+  // 精度处理工具函数 - 更加健壮的版本
   private roundToPrecision(value: number, precision: number = 2): number {
+    if (isNaN(value) || !isFinite(value)) return 0;
+
+    // 使用Number.EPSILON来处理浮点数精度问题
     const factor = Math.pow(10, precision);
-    return Math.round(value * factor) / factor;
+    const shifted = value * factor;
+
+    // 处理浮点数精度误差
+    const rounded = Math.round(shifted + Number.EPSILON);
+    return rounded / factor;
   }
 
   // 安全的浮点数减法
@@ -241,10 +248,20 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
         });
 
         if(this.isCCFeedbackNode){
+          console.log('isCCFeedbackNode: 启用字段');
+          console.log('dealPriceAsContracted disabled before:', this.financeInfoForm.get('dealPriceAsContracted').disabled);
+
           this.financeInfoForm.get('ratioAsContracted').enable();
           this.financeInfoForm.get('dealPriceAsContracted').enable();
           this.financeInfoForm.get('actualRatio').enable();
           this.financeInfoForm.get('actualDealPrice').enable();
+
+          console.log('dealPriceAsContracted disabled after:', this.financeInfoForm.get('dealPriceAsContracted').disabled);
+
+          // 重新设置字段变化监听器以启用自动计算
+          console.log('重新设置字段变化监听器');
+          this.subscribeToFinanceFieldChanges();
+
           for (let i = 0; i < this.gapPaymentPlanInfoForm.length; i++) {
             this.gapPaymentPlanInfoForm.at(i).get('paymentRatio').enable();
             this.gapPaymentPlanInfoForm.at(i).get('paymentAmount').enable();
@@ -431,7 +448,12 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
 
       if (planIndex >= 0) {
         const maxAllowed = this.getMaxAllowedRatio(planIndex);
-        if (numValue > maxAllowed) {
+        // 使用精度处理和容差，避免浮点数精度问题
+        const tolerance = 0.001; // 允许0.001%的误差
+        const roundedValue = this.roundToPrecision(numValue, 3);
+        const roundedMax = this.roundToPrecision(maxAllowed, 3);
+
+        if (roundedValue > roundedMax + tolerance) {
           return { maxRatioExceeded: { current: value, max: maxAllowed.toFixed(2) } };
         }
       }
@@ -461,7 +483,12 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
 
       if (planIndex >= 0) {
         const maxAllowed = this.getMaxAllowedAmount(planIndex);
-        if (numValue > maxAllowed) {
+        // 使用精度处理和容差，避免浮点数精度问题
+        const tolerance = 0.01; // 允许0.01元的误差
+        const roundedValue = this.roundToPrecision(numValue, 2);
+        const roundedMax = this.roundToPrecision(maxAllowed, 2);
+
+        if (roundedValue > roundedMax + tolerance) {
           return { maxAmountExceeded: { current: value, max: maxAllowed.toFixed(2) } };
         }
       }
@@ -482,8 +509,11 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
       return sum + (ratio && !isNaN(Number(ratio)) ? Number(ratio) : 0);
     }, 0);
 
+    // 使用精度处理
+    const roundedTotalRatio = this.roundToPrecision(totalRatio, 3);
+
     // 验证比率总和不大于100%
-    if (totalRatio > 100) {
+    if (roundedTotalRatio > 100) {
       return { ratioSumExceeded: { current: totalRatio.toFixed(2), max: '100.00' } };
     }
 
@@ -491,15 +521,16 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
     const gapRadioControl = this.financeInfoForm.get('gapRadio');
     const gapRatio = gapRadioControl ? gapRadioControl.value : null;
     const maxRatio = gapRatio && !isNaN(Number(gapRatio)) ? Math.abs(Number(gapRatio)) : 0;
+    const roundedMaxRatio = this.roundToPrecision(maxRatio, 3);
 
-    if (maxRatio > 0 && totalRatio > maxRatio) {
-      return { ratioSumExceeded: { current: totalRatio.toFixed(2), max: maxRatio.toFixed(2) } };
-    }
-
-    // 提交时验证：比率总和必须等于差额比例（允许小的误差）
     if (maxRatio > 0) {
-      const tolerance = 0.01; // 允许0.01%的误差
-      const shortfall = maxRatio - totalRatio;
+      const tolerance = 0.001; // 允许0.001%的误差
+      if (roundedTotalRatio > roundedMaxRatio + tolerance) {
+        return { ratioSumExceeded: { current: totalRatio.toFixed(2), max: maxRatio.toFixed(2) } };
+      }
+
+      // 提交时验证：比率总和必须等于差额比例（允许小的误差）
+      const shortfall = roundedMaxRatio - roundedTotalRatio;
 
       if (shortfall > tolerance) {
         return { ratioSumShortfall: { current: totalRatio.toFixed(2), required: maxRatio.toFixed(2), shortfall: shortfall.toFixed(2) } };
@@ -519,18 +550,23 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
       return sum + (amount && !isNaN(Number(amount)) ? Number(amount) : 0);
     }, 0);
 
+    // 使用差额含税金额字段的值作为基准，保持一致性
     const gapPriceControl = this.financeInfoForm.get('gapPrice');
     const gapPrice = gapPriceControl ? gapPriceControl.value : null;
     const maxAmount = gapPrice && !isNaN(Number(gapPrice)) ? Math.abs(Number(gapPrice)) : 0;
 
-    if (maxAmount > 0 && totalAmount > maxAmount) {
-      return { amountSumExceeded: { current: totalAmount.toFixed(2), max: maxAmount.toFixed(2) } };
-    }
+    // 使用精度处理
+    const roundedTotalAmount = this.roundToPrecision(totalAmount, 2);
+    const roundedMaxAmount = this.roundToPrecision(maxAmount, 2);
 
-    // 提交时验证：金额总和必须等于差额含税金额（允许小的误差）
     if (maxAmount > 0) {
-      const tolerance = 0.01; // 允许0.01的误差
-      const shortfall = maxAmount - totalAmount;
+      const tolerance = 0.01; // 允许0.01元的误差
+      if (roundedTotalAmount > roundedMaxAmount + tolerance) {
+        return { amountSumExceeded: { current: totalAmount.toFixed(2), max: maxAmount.toFixed(2) } };
+      }
+
+      // 提交时验证：金额总和必须等于差额含税金额（允许小的误差）
+      const shortfall = roundedMaxAmount - roundedTotalAmount;
 
       if (shortfall > tolerance) {
         return { amountSumShortfall: { current: totalAmount.toFixed(2), required: maxAmount.toFixed(2), shortfall: shortfall.toFixed(2) } };
@@ -551,6 +587,7 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
 
     // 为已有的付款计划项添加日期验证器和监听器
     this.initExistingPaymentPlans();
+
   }
 
   // 为已有的付款计划项初始化验证器和监听器
@@ -591,7 +628,7 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
 
   // 监听财务信息字段变化，实现自动计算
   subscribeToFinanceFieldChanges() {
-    if (!this.financeInfoForm || !this.editable) {
+    if (!this.financeInfoForm || (!this.editable && !this.isCCFeedbackNode)) {
       return;
     }
 
@@ -782,7 +819,7 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
         ratio = 100;
       }
 
-      const calculatedAmount = this.safeDivide(this.safeMultiply(basePrice, ratio, 6), 100, 2);
+      const calculatedAmount = this.safeDivide(this.safeMultiply(basePrice, ratio, 10), 100, 2);
 
       // 验证金额不超过DealForm含税总金额
       if (calculatedAmount > basePrice) {
@@ -1242,7 +1279,8 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
     const basePrice = this.getBasePriceForCalculation();
 
     if (basePrice && !isNaN(ratio)) {
-      const calculatedAmount = this.safeDivide(this.safeMultiply(basePrice, ratio, 6), 100, 2);
+      // 使用更高精度进行中间计算，最后结果使用2位小数
+      const calculatedAmount = this.safeDivide(this.safeMultiply(basePrice, ratio, 10), 100, 2);
 
       // 更新金额字段，不触发事件以避免循环
       const amountControl = planControl.get('paymentAmount');
@@ -1263,7 +1301,8 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
     const basePrice = this.getBasePriceForCalculation();
 
     if (basePrice && !isNaN(amount) && basePrice !== 0) {
-      const calculatedRatio = this.safeMultiply(this.safeDivide(Math.abs(amount), basePrice, 6), 100, 2);
+      // 使用更高精度进行中间计算，最后结果使用2位小数
+      const calculatedRatio = this.safeMultiply(this.safeDivide(Math.abs(amount), basePrice, 10), 100, 2);
 
       // 更新比率字段，不触发事件以避免循环
       const ratioControl = planControl.get('paymentRatio');
@@ -1298,10 +1337,12 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
   getMaxAllowedAmount(planIndex: number): number {
     if (!this.financeInfoForm || !this.gapPaymentPlanInfoForm) return 0;
 
-    // 获取差额含税金额
+    // 使用差额含税金额字段作为基准
     const gapPriceControl = this.financeInfoForm.get('gapPrice');
     const gapPrice = gapPriceControl ? gapPriceControl.value : null;
-    const maxGapAmount = gapPrice && !isNaN(Number(gapPrice)) ? Math.abs(Number(gapPrice)) : 0;
+    const totalGapAmount = gapPrice && !isNaN(Number(gapPrice)) ? Math.abs(Number(gapPrice)) : 0;
+
+    if (!totalGapAmount) return 0;
 
     // 计算其他付款计划已使用的金额总和
     const usedAmount = this.gapPaymentPlanInfoForm.controls.reduce((sum, control, index) => {
@@ -1312,51 +1353,71 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
     }, 0);
 
     // 返回剩余可用的最大金额
-    return maxGapAmount - usedAmount;
+    return Math.max(0, totalGapAmount - usedAmount);
   }
 
   // 获取比率字段的placeholder文本
   getPaymentRatioPlaceholder(planIndex: number): string {
-    if (!this.gapPaymentPlanInfoForm || !this.financeInfoForm) return '';
+    return '请输入比率';
+  }
+
+  // 获取金额字段的placeholder文本
+  getPaymentAmountPlaceholder(planIndex: number): string {
+    return '请输入金额';
+  }
+
+  // 获取剩余比率信息
+  getRemainingRatioInfo(): { total: number, used: number, remaining: number } {
+    if (!this.gapPaymentPlanInfoForm || !this.financeInfoForm) {
+      return { total: 0, used: 0, remaining: 0 };
+    }
 
     // 获取差额比例
     const gapRadioControl = this.financeInfoForm.get('gapRadio');
     const gapRatio = gapRadioControl ? gapRadioControl.value : null;
-    const maxTotalRatio = gapRatio && !isNaN(Number(gapRatio)) ? Math.abs(Number(gapRatio)) : 0;
+    const total = gapRatio && !isNaN(Number(gapRatio)) ? Math.abs(Number(gapRatio)) : 0;
 
-    // 计算其他付款计划已使用的比率
-    const usedRatio = this.gapPaymentPlanInfoForm.controls.reduce((sum, control, index) => {
-      if (index === planIndex) return sum; // 排除当前项
+    // 计算所有付款计划已使用的比率
+    const used = this.gapPaymentPlanInfoForm.controls.reduce((sum, control) => {
       const ratioControl = control.get('paymentRatio');
       const ratio = ratioControl ? ratioControl.value : null;
       return sum + (ratio && !isNaN(Number(ratio)) ? Number(ratio) : 0);
     }, 0);
 
-    // 计算剩余比率（差额比例 - 其他计划已使用的比率）
-    const remainingRatio = Math.max(0, maxTotalRatio - usedRatio);
-
-    return `剩余：${remainingRatio.toFixed(2)}%`;
+    const remaining = Math.max(0, total - used);
+    return { total, used, remaining };
   }
 
-  // 获取金额字段的placeholder文本
-  getPaymentAmountPlaceholder(planIndex: number): string {
-    if (!this.financeInfoForm || !this.gapPaymentPlanInfoForm) return '';
+  // 获取剩余金额信息
+  getRemainingAmountInfo(): { total: number, used: number, remaining: number } {
+    if (!this.financeInfoForm || !this.gapPaymentPlanInfoForm) {
+      return { total: 0, used: 0, remaining: 0 };
+    }
 
-    // 获取差额含税金额
+    // 使用差额含税金额字段的值，保持与界面显示一致
     const gapPriceControl = this.financeInfoForm.get('gapPrice');
     const gapPrice = gapPriceControl ? gapPriceControl.value : null;
-    const totalGapAmount = gapPrice && !isNaN(Number(gapPrice)) ? Math.abs(Number(gapPrice)) : 0;
+    const total = gapPrice && !isNaN(Number(gapPrice)) ? Math.abs(Number(gapPrice)) : 0;
 
-    // 计算其他付款计划已使用的金额
-    const usedAmount = this.gapPaymentPlanInfoForm.controls.reduce((sum, control, index) => {
-      if (index === planIndex) return sum; // 排除当前项
+    // 计算所有付款计划已使用的金额
+    const used = this.gapPaymentPlanInfoForm.controls.reduce((sum, control) => {
       const amountControl = control.get('paymentAmount');
       const amount = amountControl ? amountControl.value : null;
       return sum + (amount && !isNaN(Number(amount)) ? Number(amount) : 0);
     }, 0);
 
-    const remainingAmount = totalGapAmount - usedAmount;
-    return `剩余：${remainingAmount.toFixed(2)}`;
+    const remaining = Math.max(0, total - used);
+    return { total, used, remaining };
+  }
+
+  // 百分号格式化函数
+  formatPercent = (value: number): string => {
+    return value ? `${value}%` : '';
+  }
+
+  // 百分号解析函数
+  parsePercent = (value: string): string => {
+    return value.replace('%', '');
   }
 
   // 获取付款日期的禁用日期函数
