@@ -104,15 +104,14 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
     let node = this.nodeInfoList.filter(item=>item.code===taskName) || []
     let currentNodeApprovers =node&&node.length>0 ? node[0].approverList : [];
     let isOANode = currentNodeApprovers.filter(item=>item.role.toLowerCase() === 'oa') .length > 0 || false;
-    console.log('taskName',taskName)
-    console.log('node',node)
-    console.log('currentNodeApprovers',currentNodeApprovers)
-    console.log('isOANode',isOANode)
-    console.log('this.nodeAction',this.nodeAction)
-    console.log('this.isCurrentUserApprover',this.isCurrentUserApprover)
-    console.log('this.processStatus== PROCESS_STATUS.START',this.processStatus== PROCESS_STATUS.START)
-    console.log('this.nodeAction === APPROVE_NODE_ACTION.FEEDBACK',this.nodeAction === APPROVE_NODE_ACTION.FEEDBACK)
     return this.isCurrentUserApprover && this.processStatus== PROCESS_STATUS.START && this.nodeAction === APPROVE_NODE_ACTION.FEEDBACK && isOANode;
+  }
+  public get isCCFeedbackNode(): boolean {
+    let taskName = this.currentTask? this.currentTask.taskName:null
+    let node = this.nodeInfoList.filter(item=>item.code===taskName) || []
+    let currentNodeApprovers =node&&node.length>0 ? node[0].approverList : [];
+    let isCCNode = currentNodeApprovers.filter(item=>item.role.toLowerCase() === 'C&C Leader'.toLowerCase()) .length > 0 || false;
+    return this.isCurrentUserApprover && this.processStatus== PROCESS_STATUS.START && this.nodeAction === APPROVE_NODE_ACTION.APPROVE && isCCNode;
   }
   async confirmAndSave(index: number){
     let id ;
@@ -216,9 +215,20 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
             planFormGroup.get('actualPaymentFiles').enable();
             planFormGroup.get('actualPaymentComments').enable();
           }
-
           this.gapPaymentPlanInfoForm.push(planFormGroup);
         });
+
+        if(this.isCCFeedbackNode){
+          this.financeInfoForm.get('ratioAsContracted').enable();
+          this.financeInfoForm.get('dealPriceAsContracted').enable();
+          this.financeInfoForm.get('actualRatio').enable();
+          this.financeInfoForm.get('actualDealPrice').enable();
+          for (let i = 0; i < this.gapPaymentPlanInfoForm.length; i++) {
+            this.gapPaymentPlanInfoForm.at(i).get('paymentRatio').enable();
+            this.gapPaymentPlanInfoForm.at(i).get('paymentAmount').enable();
+            this.gapPaymentPlanInfoForm.at(i).get('paymentDate').enable();
+          }
+        }
         // 为所有付款计划设置监听
         for (let i = 0; i < this.gapPaymentPlanInfoForm.length; i++) {
           this.subscribeToPaymentPlanChanges(i);
@@ -463,6 +473,17 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
     if (maxRatio > 0 && totalRatio > maxRatio) {
       return { ratioSumExceeded: { current: totalRatio.toFixed(2), max: maxRatio.toFixed(2) } };
     }
+
+    // 提交时验证：比率总和必须等于差额比例（允许小的误差）
+    if (maxRatio > 0) {
+      const tolerance = 0.01; // 允许0.01%的误差
+      const shortfall = maxRatio - totalRatio;
+
+      if (shortfall > tolerance) {
+        return { ratioSumShortfall: { current: totalRatio.toFixed(2), required: maxRatio.toFixed(2), shortfall: shortfall.toFixed(2) } };
+      }
+    }
+
     return null;
   }
 
@@ -483,6 +504,17 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
     if (maxAmount > 0 && totalAmount > maxAmount) {
       return { amountSumExceeded: { current: totalAmount.toFixed(2), max: maxAmount.toFixed(2) } };
     }
+
+    // 提交时验证：金额总和必须等于差额含税金额（允许小的误差）
+    if (maxAmount > 0) {
+      const tolerance = 0.01; // 允许0.01的误差
+      const shortfall = maxAmount - totalAmount;
+
+      if (shortfall > tolerance) {
+        return { amountSumShortfall: { current: totalAmount.toFixed(2), required: maxAmount.toFixed(2), shortfall: shortfall.toFixed(2) } };
+      }
+    }
+
     return null;
   }
 
@@ -1433,12 +1465,14 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
       businessModel: dealForm.businessType || '',
       sales: dealForm.sales || ''
     });
-
+    let dealPriceCnyNet = dealForm.dealPriceCnyNet || 0;
+    let dealPriceCny = dealForm.dealPriceCny || 0;
+    let dealPriceUsd = dealForm.dealPriceUsd || 0;
     this.financeInfoForm.patchValue({
       currency: dealForm.currency || 'CNY',
-      dealPriceCnyNet: dealForm.dealPriceCnyNet,
-      dealPriceCny: dealForm.dealPriceCny,
-      dealPriceUsd: dealForm.dealPriceUsd
+      dealPriceCnyNet: dealPriceCnyNet.toFixed(2),
+      dealPriceCny: dealPriceCny.toFixed(2),
+      dealPriceUsd: dealPriceUsd.toFixed(2)
     })
     let res =  await this.loadOrderByDealFormId(dealForm.dealFormId);
 
@@ -1578,6 +1612,13 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
       };
     }
 
+    // 获取差额比例和差额含税金额用于总和验证
+    const gapRatio = this.financeInfoForm.get('gapRadio').value;
+    const gapPrice = this.financeInfoForm.get('gapPrice').value;
+
+    let totalPaymentRatio = 0;
+    let totalPaymentAmount = 0;
+
     for (let i = 0; i < paymentPlans.length; i++) {
       const plan = paymentPlans[i];
 
@@ -1602,6 +1643,36 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
         return {
           isValid: false,
           errorMessage: `第${i + 1}期付款计划的承诺付款时间不能为空`
+        };
+      }
+
+      // 累计比率和金额
+      totalPaymentRatio += Number(plan.paymentRatio);
+      totalPaymentAmount += Number(plan.paymentAmount);
+    }
+
+    // 验证差额付款比率总和是否等于差额比例
+    if (gapRatio !== null && gapRatio !== undefined && gapRatio !== '') {
+      const expectedRatio = Math.abs(Number(gapRatio));
+      const tolerance = 0.01; // 允许0.01%的误差
+
+      if (Math.abs(totalPaymentRatio - expectedRatio) > tolerance) {
+        return {
+          isValid: false,
+          errorMessage: `差额付款比率总和(${totalPaymentRatio.toFixed(2)}%)必须等于差额比例(${expectedRatio.toFixed(2)}%)`
+        };
+      }
+    }
+
+    // 验证差额付款金额总和是否等于差额含税金额
+    if (gapPrice !== null && gapPrice !== undefined && gapPrice !== '') {
+      const expectedAmount = Math.abs(Number(gapPrice));
+      const tolerance = 0.01; // 允许0.01的误差
+
+      if (Math.abs(totalPaymentAmount - expectedAmount) > tolerance) {
+        return {
+          isValid: false,
+          errorMessage: `差额付款金额总和(${totalPaymentAmount.toFixed(2)})必须等于差额含税金额(${expectedAmount.toFixed(2)})`
         };
       }
     }

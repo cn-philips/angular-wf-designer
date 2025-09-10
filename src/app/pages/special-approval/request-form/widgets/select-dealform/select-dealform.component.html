@@ -8,24 +8,24 @@
   <div nz-row class="search-form" style="margin-bottom: 16px;">
     <div nz-col [nzSpan]="8">
       <nz-form-item>
-        <nz-form-label nzFor="dealformId">DealForm Id</nz-form-label>
-        <nz-form-control>
+        <nz-form-label nzFor="dealformId" [nzSpan]="8">DealForm Id</nz-form-label>
+        <nz-form-control [nzSpan]="16">
           <input nz-input [(ngModel)]="searchParams.dealFormId">
         </nz-form-control>
       </nz-form-item>
     </div>
     <div nz-col [nzSpan]="8">
       <nz-form-item>
-        <nz-form-label nzFor="dealerName">经销商名称</nz-form-label>
-        <nz-form-control>
+        <nz-form-label nzFor="dealerName" [nzSpan]="8">经销商名称</nz-form-label>
+        <nz-form-control [nzSpan]="16">
           <input nz-input [(ngModel)]="searchParams.dealerName">
         </nz-form-control>
       </nz-form-item>
     </div>
     <div nz-col [nzSpan]="8">
       <nz-form-item>
-        <nz-form-label nzFor="hospitalName">医院名称</nz-form-label>
-        <nz-form-control>
+        <nz-form-label nzFor="hospitalName" [nzSpan]="8">医院名称</nz-form-label>
+        <nz-form-control [nzSpan]="16">
           <input nz-input [(ngModel)]="searchParams.hospitalName">
         </nz-form-control>
       </nz-form-item>

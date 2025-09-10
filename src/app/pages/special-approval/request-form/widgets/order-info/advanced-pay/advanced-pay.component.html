@@ -281,9 +281,9 @@
             <thead>
                 <tr>
                     <th nzAlign="center" style="width: 80px;">期数</th>
-                    <th nzAlign="center" style="width: 120px;"><b color="red">*</b> 差额付款比率</th>
-                    <th nzAlign="center" style="width: 120px;"><b color="red">*</b> 差额付款金额</th>
-                    <th nzAlign="center" style="width: 150px;"><b color="red">*</b> 承诺付款时间</th>
+                    <th nzAlign="center" style="width: 120px;"><span style="color: red;">*</span> 差额付款比率</th>
+                    <th nzAlign="center" style="width: 120px;"><span style="color: red;">*</span> 差额付款金额</th>
+                    <th nzAlign="center" style="width: 150px;"><span style="color: red;">*</span> 承诺付款时间</th>
                     <th nzAlign="center" style="width: 150px;">实际付款时间</th>
                     <th nzAlign="center" style="width: 150px;">实际付款证明文件</th>
                     <th nzAlign="center" style="width: 150px;" *ngIf="isOaFeedbackNode">实际付款备注</th>
@@ -312,6 +312,9 @@
                             <div *ngIf="control.get('paymentRatio')?.errors?.ratioSumExceeded">
                                 比率总和超出限制：当前{{control.get('paymentRatio')?.errors?.ratioSumExceeded?.current}}%，最大{{control.get('paymentRatio')?.errors?.ratioSumExceeded?.max}}%
                             </div>
+                            <div *ngIf="control.get('paymentRatio')?.errors?.ratioSumShortfall">
+                                比率总和不足：当前{{control.get('paymentRatio')?.errors?.ratioSumShortfall?.current}}%，需要{{control.get('paymentRatio')?.errors?.ratioSumShortfall?.required}}%，还需{{control.get('paymentRatio')?.errors?.ratioSumShortfall?.shortfall}}%
+                            </div>
                         </div>
                     </td>
                     <td nzAlign="center">
@@ -330,6 +333,9 @@
                             </div>
                             <div *ngIf="control.get('paymentAmount')?.errors?.amountSumExceeded">
                                 金额总和超出限制：当前{{control.get('paymentAmount')?.errors?.amountSumExceeded?.current}}，最大{{control.get('paymentAmount')?.errors?.amountSumExceeded?.max}}
+                            </div>
+                            <div *ngIf="control.get('paymentAmount')?.errors?.amountSumShortfall">
+                                金额总和不足：当前{{control.get('paymentAmount')?.errors?.amountSumShortfall?.current}}，需要{{control.get('paymentAmount')?.errors?.amountSumShortfall?.required}}，还需{{control.get('paymentAmount')?.errors?.amountSumShortfall?.shortfall}}
                             </div>
                         </div>
                     </td>
@@ -364,9 +370,12 @@
                         <button nz-button nzType="danger" nzSize="small" (click)="removePaymentPlan(i)" *ngIf="editable">
                             <i nz-icon nzType="delete"></i>
                         </button>
-                        <button nz-button nzType="success" nz-popconfirm nzTitle="确定保存此条记录？" (nzOnConfirm)="confirmAndSave(i)" *ngIf="isOaFeedbackNode && !control.get('saved')?.value" >
-                            保存记录并通知相关人员
+                        <button nz-button nzType="primary" nz-popconfirm nzTitle="确定保存此条记录？" (nzOnConfirm)="confirmAndSave(i)" *ngIf="isOaFeedbackNode && !control.get('saved')?.value" >
+                            确认本期付款记录
                         </button>
+                        <span *ngIf="isOaFeedbackNode && control.get('saved')?.value">
+                          已由OA确认
+                        </span>
                     </td>
                 </tr>
             </tbody>
