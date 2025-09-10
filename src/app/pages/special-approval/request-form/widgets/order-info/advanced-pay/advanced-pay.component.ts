@@ -799,7 +799,7 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
         }
 
         this.financeInfoForm.patchValue({
-          dealPriceAsContracted: maxAmount.toFixed(2)
+          dealPriceAsContracted: maxAmount
         }, { emitEvent: false });
 
         // 重新订阅金额字段
@@ -813,7 +813,7 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
       }
 
       this.financeInfoForm.patchValue({
-        dealPriceAsContracted: calculatedAmount.toFixed(2)
+        dealPriceAsContracted: calculatedAmount
       }, { emitEvent: false });
 
       // 重新订阅金额字段
@@ -856,7 +856,7 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
         }
 
         this.financeInfoForm.patchValue({
-          ratioAsContracted: maxRatio.toFixed(2)
+          ratioAsContracted: maxRatio
         }, { emitEvent: false });
 
         // 重新订阅比率字段
@@ -870,7 +870,7 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
       }
 
       this.financeInfoForm.patchValue({
-        ratioAsContracted: calculatedRatio.toFixed(2)
+        ratioAsContracted: calculatedRatio
       }, { emitEvent: false });
 
       // 重新订阅比率字段
@@ -913,7 +913,7 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
         }
 
         this.financeInfoForm.patchValue({
-          actualDealPrice: maxAmount.toFixed(2)
+          actualDealPrice: maxAmount
         }, { emitEvent: false });
 
         // 重新订阅金额字段
@@ -927,7 +927,7 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
       }
 
       this.financeInfoForm.patchValue({
-        actualDealPrice: calculatedAmount.toFixed(2)
+        actualDealPrice: calculatedAmount
       }, { emitEvent: false });
 
       // 重新订阅金额字段
@@ -1238,13 +1238,11 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
     const planControl = this.gapPaymentPlanInfoForm.at(planIndex);
     if (!planControl) return;
 
-    // 获取差额含税金额
-    const gapPriceControl = this.financeInfoForm.get('gapPrice');
-    const gapPrice = gapPriceControl ? gapPriceControl.value : null;
+    // 获取DealForm含税总金额作为基础计算金额
+    const basePrice = this.getBasePriceForCalculation();
 
-    if (gapPrice && !isNaN(Number(gapPrice))) {
-      const baseAmount = Math.abs(Number(gapPrice));
-      const calculatedAmount = this.safeDivide(this.safeMultiply(baseAmount, ratio, 6), 100, 2);
+    if (basePrice && !isNaN(ratio)) {
+      const calculatedAmount = this.safeDivide(this.safeMultiply(basePrice, ratio, 6), 100, 2);
 
       // 更新金额字段，不触发事件以避免循环
       const amountControl = planControl.get('paymentAmount');
@@ -1261,13 +1259,11 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
     const planControl = this.gapPaymentPlanInfoForm.at(planIndex);
     if (!planControl) return;
 
-    // 获取差额含税金额
-    const gapPriceControl = this.financeInfoForm.get('gapPrice');
-    const gapPrice = gapPriceControl ? gapPriceControl.value : null;
+    // 获取DealForm含税总金额作为基础计算金额
+    const basePrice = this.getBasePriceForCalculation();
 
-    if (gapPrice && !isNaN(Number(gapPrice)) && Number(gapPrice) !== 0) {
-      const baseAmount = Math.abs(Number(gapPrice));
-      const calculatedRatio = this.safeMultiply(this.safeDivide(Math.abs(amount), baseAmount, 6), 100, 2);
+    if (basePrice && !isNaN(amount) && basePrice !== 0) {
+      const calculatedRatio = this.safeMultiply(this.safeDivide(Math.abs(amount), basePrice, 6), 100, 2);
 
       // 更新比率字段，不触发事件以避免循环
       const ratioControl = planControl.get('paymentRatio');

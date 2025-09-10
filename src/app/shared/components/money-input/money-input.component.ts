@@ -50,8 +50,20 @@ export class MoneyInputComponent implements ControlValueAccessor, Validator, OnI
   ngOnDestroy() {}
 
   // ControlValueAccessor 实现
-  writeValue(value: number | null): void {
-    this._value = value;
+  writeValue(value: any): void {
+    // 确保值是正确的类型
+    if (value === null || value === undefined || value === '') {
+      this._value = null;
+    } else if (typeof value === 'string') {
+      // 如果是字符串，先去除千分位分隔符再尝试转换为数字
+      const cleanedValue = value.replace(/,/g, ''); // 去除千分位逗号
+      const numValue = parseFloat(cleanedValue);
+      this._value = isNaN(numValue) ? null : numValue;
+    } else if (typeof value === 'number') {
+      this._value = isNaN(value) ? null : value;
+    } else {
+      this._value = null;
+    }
     this.updateDisplayValue();
   }
 
@@ -143,7 +155,7 @@ export class MoneyInputComponent implements ControlValueAccessor, Validator, OnI
 
   // 更新显示值
   private updateDisplayValue(): void {
-    if (this._value === null || this._value === undefined || isNaN(this._value)) {
+    if (this._value === null || this._value === undefined || isNaN(this._value) || typeof this._value !== 'number') {
       this.displayValue = '';
       return;
     }
