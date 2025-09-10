@@ -39,6 +39,28 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
   private actualRatioSubscription: Subscription;
   private actualDealPriceSubscription: Subscription;
 
+  // 精度处理工具函数
+  private roundToPrecision(value: number, precision: number = 2): number {
+    const factor = Math.pow(10, precision);
+    return Math.round(value * factor) / factor;
+  }
+
+  // 安全的浮点数减法
+  private safeMinus(a: number, b: number, precision: number = 2): number {
+    return this.roundToPrecision(a - b, precision);
+  }
+
+  // 安全的浮点数乘法
+  private safeMultiply(a: number, b: number, precision: number = 2): number {
+    return this.roundToPrecision(a * b, precision);
+  }
+
+  // 安全的浮点数除法
+  private safeDivide(a: number, b: number, precision: number = 2): number {
+    if (b === 0) return 0;
+    return this.roundToPrecision(a / b, precision);
+  }
+
   // 数据初始化标志
   private isDataInitialized = false;
 
@@ -760,7 +782,7 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
         ratio = 100;
       }
 
-      const calculatedAmount = (basePrice * ratio / 100);
+      const calculatedAmount = this.safeDivide(this.safeMultiply(basePrice, ratio, 6), 100, 2);
 
       // 验证金额不超过DealForm含税总金额
       if (calculatedAmount > basePrice) {
@@ -817,7 +839,7 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
         amount = basePrice;
       }
 
-      const calculatedRatio = (amount / basePrice * 100);
+      const calculatedRatio = this.safeMultiply(this.safeDivide(amount, basePrice, 6), 100, 2);
 
       // 验证比率不大于100%
       if (calculatedRatio > 100) {
@@ -874,7 +896,7 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
         ratio = 100;
       }
 
-      const calculatedAmount = (basePrice * ratio / 100);
+      const calculatedAmount = this.safeDivide(this.safeMultiply(basePrice, ratio, 6), 100, 2);
 
       // 验证金额不超过DealForm含税总金额
       if (calculatedAmount > basePrice) {
@@ -931,7 +953,7 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
         amount = basePrice;
       }
 
-      const calculatedRatio = (amount / basePrice * 100);
+      const calculatedRatio = this.safeMultiply(this.safeDivide(amount, basePrice, 6), 100, 2);
 
       // 验证比率不大于100%
       if (calculatedRatio > 100) {
@@ -987,7 +1009,7 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
       if (hasContractedRatio || hasActualRatio) {
         const contractedValue = hasContractedRatio ? Number(ratioAsContracted) : 0;
         const actualValue = hasActualRatio ? Number(actualRatio) : 0;
-        const gapRatio = contractedValue - actualValue;
+        const gapRatio = this.safeMinus(contractedValue, actualValue, 2);
 
         gapRadioControl.setValue(gapRatio, { emitEvent: false });
       } else {
@@ -1017,7 +1039,7 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
       if (hasContractedPrice || hasActualPrice) {
         const contractedValue = hasContractedPrice ? Number(dealPriceAsContracted) : 0;
         const actualValue = hasActualPrice ? Number(actualDealPrice) : 0;
-        const gapPrice = contractedValue - actualValue;
+        const gapPrice = this.safeMinus(contractedValue, actualValue, 2);
 
         // 设置数字值而不是字符串值，让money-input组件处理格式化
         gapPriceControl.setValue(gapPrice, { emitEvent: false });
@@ -1222,7 +1244,7 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
 
     if (gapPrice && !isNaN(Number(gapPrice))) {
       const baseAmount = Math.abs(Number(gapPrice));
-      const calculatedAmount = (baseAmount * ratio) / 100;
+      const calculatedAmount = this.safeDivide(this.safeMultiply(baseAmount, ratio, 6), 100, 2);
 
       // 更新金额字段，不触发事件以避免循环
       const amountControl = planControl.get('paymentAmount');
@@ -1245,7 +1267,7 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
 
     if (gapPrice && !isNaN(Number(gapPrice)) && Number(gapPrice) !== 0) {
       const baseAmount = Math.abs(Number(gapPrice));
-      const calculatedRatio = (Math.abs(amount) / baseAmount) * 100;
+      const calculatedRatio = this.safeMultiply(this.safeDivide(Math.abs(amount), baseAmount, 6), 100, 2);
 
       // 更新比率字段，不触发事件以避免循环
       const ratioControl = planControl.get('paymentRatio');
