@@ -268,8 +268,7 @@
                         <money-input formControlName="gapPrice"
                                    readonly="true"
                                    [precision]="2"
-                                   [showThousandsSeparator]="true"
-                                   placeholder="自动计算">
+                                   [showThousandsSeparator]="true" >
                         </money-input>
                         <nz-form-explain *ngIf="financeInfoForm.get('gapPrice')?.dirty && financeInfoForm.get('gapPrice')?.errors">
                             此选项必填字段
@@ -331,11 +330,14 @@
                         </div>
                     </td>
                     <td nzAlign="center">
-                        <nz-input-group nzSuffix="¥">
-                            <input type="number" nz-input formControlName="paymentAmount" min="0" style="text-align: center;"
+                        <money-input formControlName="paymentAmount"
+                                   suffix="¥"
+                                   [precision]="2"
+                                   [showThousandsSeparator]="true"
+                                   [min]="0"
                                    [placeholder]="getPaymentAmountPlaceholder(i)"
-                                   [class.error-input]="control.get('paymentAmount')?.invalid && control.get('paymentAmount')?.touched" />
-                        </nz-input-group>
+                                   style="text-align: center;">
+                        </money-input>
                         <div *ngIf="control.get('paymentAmount')?.invalid && control.get('paymentAmount')?.touched" class="error-message">
                             <div *ngIf="control.get('paymentAmount')?.errors?.required">差额付款金额必填</div>
                             <div *ngIf="control.get('paymentAmount')?.errors?.minAmount">

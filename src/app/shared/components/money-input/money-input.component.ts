@@ -90,10 +90,6 @@ export class MoneyInputComponent implements ControlValueAccessor, Validator, OnI
 
   // 输入事件处理
   onInput(event: Event): void {
-    // if (this.readonly || this.disabled) {
-    //   return;
-    // }
-
     const target = event.target as HTMLInputElement;
     let inputValue = target.value;
 
@@ -111,8 +107,8 @@ export class MoneyInputComponent implements ControlValueAccessor, Validator, OnI
       inputValue = parts[0] + '.' + parts[1].substring(0, this.precision);
     }
 
-    // 更新输入框的值（不带千分位）
-    target.value = inputValue;
+    // 更新显示值（在获得焦点时保持纯数字格式）
+    this.displayValue = inputValue;
 
     // 转换为数字
     const numValue = inputValue === '' ? null : parseFloat(inputValue);
@@ -128,11 +124,10 @@ export class MoneyInputComponent implements ControlValueAccessor, Validator, OnI
     this._focused = true;
 
     // 获得焦点时显示纯数字（无千分位）
-    const target = event.target as HTMLInputElement;
-    if (this._value !== null) {
-      target.value = this._value.toString();
+    if (this._value !== null && this._value !== undefined && !isNaN(this._value)) {
+      this.displayValue = this._value.toString();
     } else {
-      target.value = '';
+      this.displayValue = '';
     }
 
     this.focus.emit(event);
@@ -148,19 +143,18 @@ export class MoneyInputComponent implements ControlValueAccessor, Validator, OnI
 
   // 更新显示值
   private updateDisplayValue(): void {
+    if (this._value === null || this._value === undefined || isNaN(this._value)) {
+      this.displayValue = '';
+      return;
+    }
+
     if (this._focused) {
-      return; // 获得焦点时不更新显示值
-    }
-
-    if (this._value === null || this._value === undefined) {
-      this.displayValue = '';
-      return;
-    }
-    if(String(this._value)=== "") {
-      this.displayValue = '';
+      // 获得焦点时显示纯数字
+      this.displayValue = this._value.toString();
       return;
     }
 
+    // 失去焦点时显示格式化的值
     let formattedValue = this._value.toFixed(this.precision);
 
     if (this.showThousandsSeparator) {
