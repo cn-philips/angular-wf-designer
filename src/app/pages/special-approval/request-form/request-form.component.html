@@ -219,7 +219,8 @@
     <ng-template ngbTabContent>
       <div class="card-body">
         <special-approval-approve-form #approvalForm [basicInfo]="basicInfo" [applicantEmail]="applicantEmail"
-          [processUsers]="processUsers" [taskId]="taskId" [requestId]="requestId" [applyType]="applyType"></special-approval-approve-form>
+          [processUsers]="processUsers" [taskId]="taskId" [requestId]="requestId" [applyType]="applyType"
+          (beforeApprove)="onBeforeApprove($event)"></special-approval-approve-form>
       </div>
     </ng-template>
   </ngb-tab>

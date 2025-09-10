@@ -2709,6 +2709,45 @@ export class RequestFormComponent implements OnInit {
     }
   }
 
+  /**
+   * 处理审批前的保存逻辑（CC Feedback节点，AdvancePayment类型）
+   */
+  async onBeforeApprove(event: {action: string, callback: (success: boolean) => void}) {
+    try {
+      console.log('处理审批前保存事件，action:', event.action);
+
+      // 检查是否是CC Feedback节点的AdvancePayment特批
+      if (this.applyType === APPLY_TYPE.ADVANCED_PAYMENT && this.advancedPayInfo && this.advancedPayInfo.isCCFeedbackNode) {
+        console.log('CC Feedback节点，开始保存finance和plan信息');
+
+        // 获取当前的finance和plan数据
+        const advancedPaymentData = this.getFormData();
+        if (advancedPaymentData.oitAdvancedPayInfos) {
+          // 保存整个AdvancedPayment数据
+          const saveData = {
+            ...advancedPaymentData,
+            id: this.requestId,
+            applyType: this.applyType
+          };
+          await this.spService.saveRequest(saveData);
+          console.log('CC Feedback节点finance和plan信息保存成功');
+          event.callback(true);
+        } else {
+          console.log('没有找到oitAdvancedPayInfos数据');
+          event.callback(false);
+        }
+      } else {
+        // 不是CC Feedback节点或不是AdvancePayment类型，直接继续
+        console.log('不需要保存，直接继续审批');
+        event.callback(true);
+      }
+    } catch (saveError) {
+      console.error('保存finance和plan信息失败:', saveError);
+      this.message.error('保存finance和plan信息失败');
+      event.callback(false);
+    }
+  }
+
   public async onDeleteRequest() {
     const id = this.message.loading(LOADING_MESSAGE.DELETE_DRAFT, {
       nzDuration: 0,

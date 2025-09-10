@@ -1759,4 +1759,31 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
 
     return { isValid: true };
   }
+
+  /**
+   * 获取当前表单数据，用于CC Feedback节点审批前保存
+   */
+  public getFormData() {
+    const rawValue = this.formValues.getRawValue();
+    const financeInfo = rawValue.financeInfo;
+    const gapPaymentPlan = rawValue.gapPaymentPlan;
+
+    // 处理文件数据
+    if (financeInfo) {
+      financeInfo.approvalFiles = JSON.stringify(financeInfo.approvalFiles || []);
+    }
+
+    const processedGapPaymentPlan = gapPaymentPlan.map(item => {
+      return {
+        ...item,
+        actualPaymentFiles: JSON.stringify(item.actualPaymentFiles || [])
+      };
+    });
+
+    return {
+      financeInfo,
+      gapPaymentPlan: processedGapPaymentPlan,
+      orderInfo: rawValue.orderInfo || []
+    };
+  }
 }
