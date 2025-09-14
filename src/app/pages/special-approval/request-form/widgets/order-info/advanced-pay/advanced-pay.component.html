@@ -314,8 +314,8 @@
                     <th nzAlign="center" style="width: 120px;"><span style="color: red;">*</span> 差额付款比率</th>
                     <th nzAlign="center" style="width: 120px;"><span style="color: red;">*</span> 差额付款金额</th>
                     <th nzAlign="center" style="width: 150px;"><span style="color: red;">*</span> 承诺付款时间</th>
-                    <th nzAlign="center" style="width: 150px;">实际付款时间</th>
-                    <th nzAlign="center" style="width: 150px;">实际付款证明文件</th>
+                    <th nzAlign="center" style="width: 150px;" *ngIf="!editable && !isCCFeedbackNode">实际付款时间</th>
+                    <th nzAlign="center" style="width: 150px;" *ngIf="!editable && !isCCFeedbackNode">实际付款证明文件</th>
                     <th nzAlign="center" style="width: 150px;" *ngIf="isOaFeedbackNode">实际付款备注</th>
                     <th nzAlign="center" style="width: 80px;" *ngIf="editable || isOaFeedbackNode">操作</th>
                 </tr>
@@ -390,7 +390,7 @@
                             <div *ngIf="control.get('paymentDate')?.errors?.required">付款日期必填</div>
                         </div>
                     </td>
-                    <td nzAlign="center">
+                    <td nzAlign="center" *ngIf="!editable && !isCCFeedbackNode">
                         <nz-date-picker
                             formControlName="actualPaymentDate"
                             nzFormat="yyyy-MM-dd"
@@ -398,7 +398,7 @@
                             style="width: 100%;">
                         </nz-date-picker>
                     </td>
-                    <td nzAlign="center">
+                    <td nzAlign="center" *ngIf="!editable && !isCCFeedbackNode">
                         <shared-upload-file formControlName="actualPaymentFiles" type="file"></shared-upload-file>
                     </td>
                     <td nzAlign="center" *ngIf="isOaFeedbackNode">
