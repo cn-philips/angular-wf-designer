@@ -79,11 +79,11 @@
       <div nz-col nzXs="24" nzSm="24" nzMd="12">
         <nz-form-item>
           <nz-form-label nzXl="8" nzXXl="6" nzNoColon></nz-form-label>
-          <nz-form-control nzXs="24" nzSm="24" nzMd="14" style="text-align: right;" *ngIf="isAdvancedPaymentFeedBack">
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14" style="text-align: right;" *ngIf="!isAdvancedPaymentFeedBack">
             <button nz-button nz-popconfirm nzType="primary" nzTitle="确定已按审批结果执行?" (nzOnConfirm)="onSubmit(1)" [disabled]="submitLoading">已按审批结果执行</button>
             <button nz-button nz-popconfirm nzType="default" nzTitle="确定未按审批结果执行?" (nzOnConfirm)="onSubmit(0)" [disabled]="submitLoading">未按审批结果执行</button>
           </nz-form-control>
-          <nz-form-control nzXs="24" nzSm="24" nzMd="14" style="text-align: right;" *ngIf="!isAdvancedPaymentFeedBack">
+          <nz-form-control nzXs="24" nzSm="24" nzMd="14" style="text-align: right;" *ngIf="isAdvancedPaymentFeedBack">
             <button nz-button nz-popconfirm nzType="primary" nzTitle="确定已按审批结果执行?" (nzOnConfirm)="onAdvancedPaymentSubmit()" [disabled]="submitLoading">完成全部流程</button>
             <button nz-button nz-popconfirm nzType="default" nzTitle="确定未按审批结果执行?" (nzOnConfirm)="onAdvancedPaymentReject()" [disabled]="submitLoading">驳回</button>
           </nz-form-control>

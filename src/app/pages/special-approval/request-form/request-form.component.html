@@ -243,8 +243,9 @@
     </ng-template>
     <ng-template ngbTabContent>
       <div class="card-body">
-        <special-approval-feedback #feedbackForm (onFbSubmit)="onFeedBackSubmit($event)" [taskId]="taskId" [requestId]="requestId"
-          [formValues]="feedBackFormValues" [applyType]="applyType">
+        <special-approval-feedback #feedbackForm (onFbSubmit)="onFeedBackSubmit($event)"  [taskId]="taskId" [requestId]="requestId"
+          [formValues]="feedBackFormValues" [applyType]="applyType"
+          (onSubmitAdvancePayment)="onBeforeApprove($event)">
         </special-approval-feedback>
       </div>
     </ng-template>

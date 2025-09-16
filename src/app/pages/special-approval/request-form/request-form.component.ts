@@ -333,8 +333,8 @@ export class RequestFormComponent implements OnInit {
       dealPriceAsContracted:[null, [Validators.required]], //合同约定的OIT支付金额
       actualRatio:[null, [Validators.required]],//实际OIT支付比率
       actualDealPrice:[null, [Validators.required]],//实际OIT支付金额
-      gapRadio:[null, [Validators.required]],//差额比率
-      gapPrice:[null, [Validators.required]],//差额金额
+      gapRadio:[{ value: null, disabled: true }, [Validators.required]],//差额比率
+      gapPrice:[{ value: null, disabled: true }, [Validators.required]],//差额金额
       // 事前审批邮件或证明文件
       approvalFiles:[[] , [Validators.required]],
     }),
@@ -2669,7 +2669,16 @@ export class RequestFormComponent implements OnInit {
         nzDuration: 0,
       }).messageId;
       try {
-        await this.onSubmitAdvancePayment('APPROVED');
+        let isSaved = false;
+        await this.onBeforeApprove({action:'APPROVED', callback: (success: boolean) => {
+          isSaved = success;
+        }});
+        if(!isSaved){
+          this.message.error('保存提前付款申请信息失败，无法完成审批');
+          return;
+        }else{
+          await this.onSubmitAdvancePayment('APPROVED');
+        }
       } catch ({ message }) {
         this.message.error(ERROR_MESSAGE.REJECT_REQUEST);
         console.error(`审批失败, ${message}`);
