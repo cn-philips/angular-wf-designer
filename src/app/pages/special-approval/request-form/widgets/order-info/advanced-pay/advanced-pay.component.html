@@ -75,7 +75,7 @@
             <nz-table nzSize="small" [nzData]="orderInfoArray.getRawValue()" [nzShowPagination]="false" nzBordered>
                 <thead>
                     <tr>
-                        <th nzAlign="center" style="width: 80px;">Order No</th>
+                        <th nzAlign="center" style="width: 80px;">Order Name</th>
                         <th nzAlign="center" style="width: 120px;">COS Reference No</th>
                         <th nzAlign="center" style="width: 80px;">BMC</th>
                         <th nzAlign="center" style="width: 150px;">产品型号</th>
@@ -84,7 +84,7 @@
                 </thead>
                 <tbody>
                     <tr *ngFor="let orderControl of orderInfoArray.controls; let i = index; trackBy: trackByIndex">
-                        <td nzAlign="center">{{ i + 1 }}</td>
+                        <td nzAlign="center">{{ orderControl.get('orderName')?.value }}</td>
                         <td nzAlign="center">{{ orderControl.get('referenceId')?.value }}</td>
                         <td nzAlign="center">{{ orderControl.get('bmc')?.value }}</td>
                         <td nzAlign="center">{{ orderControl.get('productModel')?.value }}</td>

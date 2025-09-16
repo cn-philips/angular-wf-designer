@@ -379,6 +379,7 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
         data.forEach(orderData => {
           const orderFormGroup = this.fb.group({
             id: [orderData.id || null],
+            orderName:[orderData.orderName || null],
             applyId: [orderData.applyId || null],
             orderId: [orderData.orderId || null],
             referenceId: [orderData.referenceId || null],
@@ -1566,6 +1567,7 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
       res.forEach(orderData => {
         const orderFormGroup = this.fb.group({
           id: [orderData.id || null],
+          orderName:[orderData.orderName || null],
           applyId: [orderData.applyId || null],
           orderId: [orderData.orderId || null],
           referenceId: [orderData.referenceId || null],
