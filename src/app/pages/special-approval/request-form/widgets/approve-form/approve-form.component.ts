@@ -203,27 +203,27 @@ export class ApproveFormComponent implements OnInit, OnChanges {
         return;
       }
 
-      // 在审批前触发保存事件（仅针对AdvancePayment类型的特批）
-      if (this.applyType === APPLY_TYPE.ADVANCED_PAYMENT) {
-        console.log('触发审批前保存事件');
-        let saveSuccess = false;
+      // // 在审批前触发保存事件（仅针对AdvancePayment类型的特批）
+      // if (this.applyType === APPLY_TYPE.ADVANCED_PAYMENT) {
+      //   console.log('触发审批前保存事件');
+      //   let saveSuccess = false;
 
-        // 等待父组件处理保存逻辑
-        await new Promise<void>((resolve) => {
-          this.beforeApprove.emit({
-            action,
-            callback: (success: boolean) => {
-              saveSuccess = success;
-              resolve();
-            }
-          });
-        });
+      //   // 等待父组件处理保存逻辑
+      //   await new Promise<void>((resolve) => {
+      //     this.beforeApprove.emit({
+      //       action,
+      //       callback: (success: boolean) => {
+      //         saveSuccess = success;
+      //         resolve();
+      //       }
+      //     });
+      //   });
 
-        if (!saveSuccess) {
-          this.message.error('保存finance和plan信息失败，审批终止');
-          return;
-        }
-      }
+      //   if (!saveSuccess) {
+      //     this.message.error('保存finance和plan信息失败，审批终止');
+      //     return;
+      //   }
+      // }
 
       const id = this.message.loading(LOADING_MESSAGE.APPROVE, {
         nzDuration: 0,

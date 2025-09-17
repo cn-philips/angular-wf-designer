@@ -336,6 +336,11 @@ export class SpecialApprovalService {
     return formatResponse(res);
   }
 
+  async editRequest(data) {
+    const uri = `/act/specialapprove/apply`;
+    const res = await this.http.put(uri, data).toPromise();
+    return formatResponse(res);
+  }
   // 获取审批统计数据
   async getApproveCount() {
     const uri = `/act/specialapprove/process/instance/task/statusCount`;

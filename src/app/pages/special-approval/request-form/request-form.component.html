@@ -41,10 +41,10 @@
             (nzOnConfirm)="onCancelRequest()">取消申请</button>
           <button nz-button nz-popconfirm nzDanger nzTitle="确定删除草稿?" *ngIf="showDeleteBtn"
             (nzOnConfirm)="onDeleteRequest()">删除</button>
-          <button nz-button nz-popconfirm nzDanger nzTitle="确定驳回申请?" *ngIf="showRejectBtn"
+          <!-- <button nz-button nz-popconfirm nzDanger nzTitle="确定驳回申请?" *ngIf="showRejectBtn"
             (nzOnConfirm)="onRejectRequest()">驳回</button>
           <button nz-button nz-popconfirm nzDanger nzTitle="确定完成全部流程?" *ngIf="showRejectBtn"
-            (nzOnConfirm)="onCompleteAllNodeRequest()">完成全部流程</button>
+            (nzOnConfirm)="onCompleteAllNodeRequest()">完成全部流程</button> -->
 
           <!-- 补充信息，反馈节点order 保存 -->
           <ng-container *ngIf="isSupplementNode || showFeedbackTab">
@@ -219,8 +219,7 @@
     <ng-template ngbTabContent>
       <div class="card-body">
         <special-approval-approve-form #approvalForm [basicInfo]="basicInfo" [applicantEmail]="applicantEmail"
-          [processUsers]="processUsers" [taskId]="taskId" [requestId]="requestId" [applyType]="applyType"
-          (beforeApprove)="onBeforeApprove($event)"></special-approval-approve-form>
+          [processUsers]="processUsers" [taskId]="taskId" [requestId]="requestId" [applyType]="applyType" ></special-approval-approve-form>
       </div>
     </ng-template>
   </ngb-tab>
@@ -245,7 +244,7 @@
       <div class="card-body">
         <special-approval-feedback #feedbackForm (onFbSubmit)="onFeedBackSubmit($event)"  [taskId]="taskId" [requestId]="requestId"
           [formValues]="feedBackFormValues" [applyType]="applyType"
-          (onSubmitAdvancePayment)="onBeforeApprove($event)">
+          (onSubmitAdvancePayment)="onSubmitAdvancePayment($event)">
         </special-approval-feedback>
       </div>
     </ng-template>

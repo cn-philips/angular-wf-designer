@@ -2647,55 +2647,48 @@ export class RequestFormComponent implements OnInit {
       this.pageLoading = false;
     }
   }
-  public async onRejectRequest() {
-    if(this.applyType === APPLY_TYPE.ADVANCED_PAYMENT){
-      const id = this.message.loading(LOADING_MESSAGE.REJECT_REQUEST, {
-        nzDuration: 0,
-      }).messageId;
-      try {
-        await this.onSubmitAdvancePayment('REJECTED');
-      } catch ({ message }) {
-        this.message.error(ERROR_MESSAGE.REJECT_REQUEST);
-        console.error(`驳回失败, ${message}`);
-      } finally {
-        this.submitLoading = false;
-        this.message.remove(id);
-      }
-    }
-  }
-  public async onCompleteAllNodeRequest() {
-    if(this.applyType === APPLY_TYPE.ADVANCED_PAYMENT){
-      const id = this.message.loading(LOADING_MESSAGE.REJECT_REQUEST, {
-        nzDuration: 0,
-      }).messageId;
-      try {
-        let isSaved = false;
-        await this.onBeforeApprove({action:'APPROVED', callback: (success: boolean) => {
-          isSaved = success;
-        }});
-        if(!isSaved){
-          this.message.error('保存提前付款申请信息失败，无法完成审批');
-          return;
-        }else{
-          await this.onSubmitAdvancePayment('APPROVED');
-        }
-      } catch ({ message }) {
-        this.message.error(ERROR_MESSAGE.REJECT_REQUEST);
-        console.error(`审批失败, ${message}`);
-      } finally {
-        this.submitLoading = false;
-        this.message.remove(id);
-      }
-    }
-  }
 
   async onSubmitAdvancePayment(action) {
+      if(this.applyType === APPLY_TYPE.ADVANCED_PAYMENT){
+        let msgType = LOADING_MESSAGE.REJECT_REQUEST
+        let errorMsg = ERROR_MESSAGE.REJECT_REQUEST
+        if(action === 'APPROVED'){
+          msgType = LOADING_MESSAGE.APPROVE
+          errorMsg = ERROR_MESSAGE.APPROVE
+        }else{
+          msgType = LOADING_MESSAGE.REJECT_REQUEST
+          errorMsg = ERROR_MESSAGE.REJECT_REQUEST
+        }
+        const id = this.message.loading(msgType, {
+          nzDuration: 0,
+        }).messageId;
+        try {
+          let isSaved = false;
+            await this.onBeforeApprove({action, callback: (success: boolean) => {
+            isSaved = success;
+          }});
+          if(!isSaved){
+            this.message.error('保存提前付款申请信息失败，无法完成审批');
+            return;
+          }else{
+            await this.doSubmitAdvancePayment(action);
+          }
+        } catch ({ message }) {
+          this.message.error(errorMsg);
+          console.error(`审批失败, ${message}`);
+        } finally {
+          this.message.remove(id);
+        }
+      }
+  }
+
+  async doSubmitAdvancePayment(action) {
     try {
       const { remark, attachments, notify, notifier } =
         this.feedbackForm.formValues.getRawValue();
-      const id = this.message.loading(LOADING_MESSAGE.FEEDBACK, {
-        nzDuration: 0,
-      }).messageId;
+      // const id = this.message.loading(LOADING_MESSAGE.FEEDBACK, {
+      //   nzDuration: 0,
+      // }).messageId;
       this.submitLoading = true;
       const data = {
         applyId: this.requestId,
@@ -2707,11 +2700,11 @@ export class RequestFormComponent implements OnInit {
         taskInstId: this.taskId,
       };
       await this.spService.approveRequest(data);
-      this.message.remove(id);
-      this.message.success(SUCCESS_MESSAGE.FEEDBACK);
+      // this.message.remove(id);
+      this.message.success(SUCCESS_MESSAGE.APPROVE);
       this.routerExtend.back();
     } catch ({ message }) {
-      this.message.error(ERROR_MESSAGE.FEEDBACK);
+      this.message.error(ERROR_MESSAGE.APPROVE);
       console.error(`审批失败, ${message}`);
     } finally {
       this.submitLoading = false;
@@ -2722,6 +2715,7 @@ export class RequestFormComponent implements OnInit {
    * 处理审批前的保存逻辑（CC Feedback节点，AdvancePayment类型）
    */
   async onBeforeApprove(event: {action: string, callback: (success: boolean) => void}) {
+    console.log('触发审批前保存事件,event',event);
     try {
       console.log('处理审批前保存事件，action:', event.action);
 
@@ -2738,7 +2732,7 @@ export class RequestFormComponent implements OnInit {
             id: this.requestId,
             applyType: this.applyType
           };
-          await this.spService.saveRequest(saveData);
+          await this.spService.editRequest(saveData);
           console.log('CC Feedback节点finance和plan信息保存成功');
           event.callback(true);
         } else {
