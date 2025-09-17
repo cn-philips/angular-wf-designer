@@ -2655,6 +2655,12 @@ export class RequestFormComponent implements OnInit {
         if(action === 'APPROVED'){
           msgType = LOADING_MESSAGE.APPROVE
           errorMsg = ERROR_MESSAGE.APPROVE
+
+          // 校验所有plan是否已保存
+          if (!this.validateAllPlansSaved()) {
+            this.message.error('所有付款计划必须保存后才能完成全部流程');
+            return;
+          }
         }else{
           msgType = LOADING_MESSAGE.REJECT_REQUEST
           errorMsg = ERROR_MESSAGE.REJECT_REQUEST
@@ -2720,7 +2726,7 @@ export class RequestFormComponent implements OnInit {
       console.log('处理审批前保存事件，action:', event.action);
 
       // 检查是否是CC Feedback节点的AdvancePayment特批
-      if (this.applyType === APPLY_TYPE.ADVANCED_PAYMENT && this.advancedPayInfo && this.advancedPayInfo.isCCFeedbackNode) {
+      if (this.applyType === APPLY_TYPE.ADVANCED_PAYMENT && this.advancedPayInfo) {
         console.log('CC Feedback节点，开始保存finance和plan信息');
 
         // 获取当前的finance和plan数据
@@ -2749,6 +2755,33 @@ export class RequestFormComponent implements OnInit {
       this.message.error('保存finance和plan信息失败');
       event.callback(false);
     }
+  }
+
+  /**
+   * 校验所有付款计划是否已保存
+   */
+  private validateAllPlansSaved(): boolean {
+    if (this.applyType !== APPLY_TYPE.ADVANCED_PAYMENT || !this.advancedPaymentForm) {
+      return true; // 不是提前付款类型或表单不存在时跳过校验
+    }
+
+    const gapPaymentPlanArray = this.advancedPaymentForm.get('gapPaymentPlan') as FormArray;
+    if (!gapPaymentPlanArray || gapPaymentPlanArray.length === 0) {
+      return true; // 没有付款计划时跳过校验
+    }
+
+    // 检查每个付款计划是否已保存
+    for (let i = 0; i < gapPaymentPlanArray.length; i++) {
+      const planFormGroup = gapPaymentPlanArray.at(i);
+      const saved = planFormGroup.get('saved').value;
+      if (!saved) {
+        console.log(`付款计划 ${i + 1} 尚未保存`);
+        return false;
+      }
+    }
+
+    console.log('所有付款计划都已保存');
+    return true;
   }
 
   public async onDeleteRequest() {
