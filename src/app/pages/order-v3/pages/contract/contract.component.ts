@@ -674,6 +674,9 @@ export class ContractComponent implements OnInit {
 
   getBiddingIsSpecial() {//bidding模式是否是特批
     let { biddingApplyList } = this.baseInfoFromData.getRawValue();
+    if(!biddingApplyList){
+      return;
+    }
     biddingApplyList.map(val => {
       this.serveice.getBiddingIsSpecial(val.id).subscribe(item => {
         if (item.code == '0000' && item.data == true) {

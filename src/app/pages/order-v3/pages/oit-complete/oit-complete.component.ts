@@ -1326,6 +1326,9 @@ export class OitcompleteComponent implements OnInit {
   }
   getBiddingIsSpecial() {//bidding模式是否是特批
     let { biddingApplyList } = this.baseInfoFromData.getRawValue();
+    if(!biddingApplyList){
+      return;
+    }
     if(biddingApplyList && biddingApplyList.length > 0){
       biddingApplyList.map(val => {
         this.serveice.getBiddingIsSpecial(val.id).subscribe(item => {
