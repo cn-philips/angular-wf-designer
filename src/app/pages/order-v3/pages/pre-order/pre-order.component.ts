@@ -773,6 +773,22 @@ export class PreOrderComponent implements OnInit {
     })
   }
   async preSubmit(parm) {
+    const { baseInfoFrom, dealerFrom } = this.formValue.getRawValue();
+    if (parm != 'apply_save' && baseInfoFrom.businessModel == 'DISTRIBUTOR' && dealerFrom.subTierInfo.length === 0) {
+      this.modalService.confirm({
+        nzTitle: '提示',
+        nzContent: '商机中经销商信息未导入，是否继续提交',
+        nzOnOk: () => {
+          this.continuePreSubmit(parm);
+        },
+        nzOnCancel: () => {
+        }
+      });
+    } else {
+      this.continuePreSubmit(parm);
+    }
+  }
+  async continuePreSubmit(parm) {
     this.computContral();
     let data = this.formValue.getRawValue();
     const { applyId, processInstanceTaskId, productModelInfo, processStatus, modality, province, role, cluster, bmc, team, cycleGroup, bigArea, smallArea, accountFrom, baseInfoFrom, baseInfoTable, contractBuyerFrom, dealerFrom, endUserFrom, foreignFrom, orderInfo, priceApproval, remarkFrom, id } = data;
@@ -1126,7 +1142,7 @@ export class PreOrderComponent implements OnInit {
                   })
                   this.tabIndex = 0;
                   this.myskip(this.tabList[this.tabIndex])
-                  this.message.create("error", `外贸易公司DDP Status未通过`);
+                  this.message.create("error", `外贸公司DDP Status未通过`);
                   this.pageLoading = false;
                   return
                 }
