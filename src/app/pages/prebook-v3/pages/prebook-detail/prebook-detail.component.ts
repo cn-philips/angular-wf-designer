@@ -331,12 +331,14 @@ export class PrebookDetailComponent implements OnInit {
             }
             const marketBundleInfo = item.get('marketBundleInfo') as FormArray
             marketBundleInfo.controls.forEach(bundle => bundle.disable())
-            marketBundleInfo.controls.forEach(bundle => {
-              bundle.get('wbsNo').enable()
-              bundle.get('wbsNo').setValidators([Validators.required, Validators.maxLength(100)])
-              bundle.get('wbsNo').updateValueAndValidity()
-              bundle.get('wbsNo').markAsPristine()
-            })
+            if(orderModality === 'US'){
+              marketBundleInfo.controls.forEach(bundle => {
+                bundle.get('wbsNo').enable()
+                bundle.get('wbsNo').setValidators([Validators.required, Validators.maxLength(100)])
+                bundle.get('wbsNo').updateValueAndValidity()
+                bundle.get('wbsNo').markAsPristine()
+              })
+            }
           })
         }
         break
