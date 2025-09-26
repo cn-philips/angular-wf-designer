@@ -607,17 +607,20 @@ export function validateForm(form, tabs) {
   } else {
     latePaymentFinesControl.clearValidators()
   }
-  if(modality && modality.toLowerCase() === 'us'){
+  if (modality && modality.toLowerCase() === 'us') {
+    // US modality时，这些字段不是必填
     prebookInfo.get('downpaymentDate').clearValidators()
     prebookInfo.get('finalPaymentDate').clearValidators()
-    prebookInfo.get('latePaymentFines').clearValidators()
     prebookInfo.get('transportationMode').clearValidators()
+    prebookInfo.get('latePaymentFines').clearValidators()
+    // RDD变为必填
     prebookInfo.get('requestedArrivalDate').setValidators([Validators.required])
   } else {
-    // 当modality不是US时，设置为必填
+    // 非US modality时，这些字段是必填
     prebookInfo.get('downpaymentDate').setValidators([Validators.required])
     prebookInfo.get('finalPaymentDate').setValidators([Validators.required])
     prebookInfo.get('transportationMode').setValidators([Validators.required])
+    // RDD不是必填
     prebookInfo.get('requestedArrivalDate').clearValidators()
   }
   for(let i in prebookInfo.controls) {
@@ -666,7 +669,7 @@ export function validateForm(form, tabs) {
     }
   }
   // 产品信息 end
-  return basicInfoValid && orderInfoValid
+  return basicInfoValid && orderInfoValid && prebookInfoValid
 }
 
 // 整合表单数据
