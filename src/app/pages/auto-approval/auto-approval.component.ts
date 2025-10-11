@@ -62,17 +62,21 @@ export class AutoApprovalComponent implements OnInit {
     if (this.param.approvalResult == "REJECTED") {
       const { processInstanceTaskId, approvalResult, phaseTwo, phaseThree,bestSign,roleName ,flowId} =
         this.param;
-      this.router.navigate(["/mailApproval"], {
-        queryParams: {
-          processInstanceTaskId,
-          approvalResult,
-          phaseTwo,
-          phaseThree,
-          bestSign,
-          roleName,
-          flowId
-        },
-      });
+        let queryParams = {
+          queryParams: {
+            processInstanceTaskId,
+            approvalResult,
+            phaseTwo,
+            phaseThree,
+            bestSign,
+            roleName,
+            flowId
+          },
+        }
+        if(bestSign){
+          queryParams.queryParams['idemKey'] = this.activatedRouter.snapshot.queryParams.idemKey
+        }
+      this.router.navigate(["/mailApproval"], queryParams);
     } else {
       let url = "";
       if (isTrue(this.param.phaseThree)) {
@@ -80,6 +84,7 @@ export class AutoApprovalComponent implements OnInit {
       } else if (isTrue(this.param.phaseTwo)) {
         url = "/act/specialapprove/workflow/rapidApproval";
       } else if(isTrue(this.param.bestSign)){
+        this.param.idemKey = this.activatedRouter.snapshot.queryParams.idemKey;
         url = `act/contractSign/${this.param.flowId}/${this.param.roleName}/sign`;
       } else {
         url = `/act/process/rapidApproval`;
