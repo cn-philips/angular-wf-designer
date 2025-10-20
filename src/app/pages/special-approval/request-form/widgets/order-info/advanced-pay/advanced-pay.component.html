@@ -1,0 +1,454 @@
+<!-- 基本信息 -->
+<nz-card class="mtb1rem" nzTitle="基本信息">
+    <form nz-form [formGroup]="formValues" nzLayout="horizontal">
+        <div nz-row>
+            <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                <nz-form-item>
+                    <nz-form-label nzXl="8" nzXXl="6" nzRequired>Deal Form No</nz-form-label>
+                    <nz-form-control nzXs="24" nzSm="24" nzMd="14" disabled>
+                      <nz-input-group style="width: 100%" [nzAddOnAfter]="selectDealFormBtn">
+                        <input nz-input formControlName="dealformId" placeholder="请选择Deal Form" maxlength="100" disabled/>
+                        <nz-form-explain *ngIf="formValues.get('dealformId')?.dirty && formValues.get('dealformId')?.errors">
+                            此选项必填字段
+                        </nz-form-explain>
+                      </nz-input-group>
+                    </nz-form-control>
+
+                    <ng-template #selectDealFormBtn>
+                      <button *ngIf="editable" nz-button nzType="primary" class="ml-md addonBtn"
+                        [disabled]="shouldDisableImportButton"
+                        (click)="onShowSelectDealFormModal()">导入</button>
+                    </ng-template>
+                </nz-form-item>
+            </div>
+
+            <div nz-col nzXs="24" nzSm="24" nzMd="8" >
+                <nz-form-item>
+                    <nz-form-label nzXl="8" nzXXl="6">经销商</nz-form-label>
+                    <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                        <input nz-input formControlName="dealerName" maxlength="100" disabled/>
+                    </nz-form-control>
+                </nz-form-item>
+            </div>
+
+            <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                <nz-form-item>
+                    <nz-form-label nzXl="8" nzXXl="6" >医院</nz-form-label>
+                    <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                        <input nz-input formControlName="hospitalName" maxlength="100" disabled/>
+                    </nz-form-control>
+                </nz-form-item>
+            </div>
+        </div>
+
+        <div nz-row>
+            <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                <nz-form-item>
+                    <nz-form-label nzXl="8" nzXXl="6" >业务模式</nz-form-label>
+                    <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                        <input nz-input formControlName="businessModel" maxlength="100" disabled/>
+                    </nz-form-control>
+                </nz-form-item>
+            </div>
+
+            <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                <nz-form-item>
+                    <nz-form-label nzXl="8" nzXXl="6">销售</nz-form-label>
+                    <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                        <input nz-input formControlName="sales" maxlength="100" disabled/>
+                    </nz-form-control>
+                </nz-form-item>
+            </div>
+
+            <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                <nz-form-item>
+                    <nz-form-label nzXl="8" nzXXl="6">区域</nz-form-label>
+                    <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                        <input nz-input formControlName="systemRegion" maxlength="100" disabled/>
+                    </nz-form-control>
+                </nz-form-item>
+            </div>
+        </div>
+
+        <!-- 订单表格 -->
+        <div class="mt20" *ngIf="orderInfoArray.controls.length > 0">
+            <nz-table nzSize="small" [nzData]="orderInfoArray.getRawValue()" [nzShowPagination]="false" nzBordered>
+                <thead>
+                    <tr>
+                        <th nzAlign="center" style="width: 80px;">Order Name</th>
+                        <th nzAlign="center" style="width: 120px;">COS Reference No</th>
+                        <th nzAlign="center" style="width: 80px;">BMC</th>
+                        <th nzAlign="center" style="width: 150px;">产品型号</th>
+                        <th nzAlign="center" style="width: 80px;">SO#</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let orderControl of orderInfoArray.controls; let i = index; trackBy: trackByIndex">
+                        <td nzAlign="center">{{ orderControl.get('orderName')?.value }}</td>
+                        <td nzAlign="center">{{ orderControl.get('referenceId')?.value }}</td>
+                        <td nzAlign="center">{{ orderControl.get('bmc')?.value }}</td>
+                        <td nzAlign="center">{{ orderControl.get('productModel')?.value }}</td>
+                        <td nzAlign="center">
+                            <form nz-form [formGroup]="orderControl" style="margin: 0; padding: 0;">
+                                <input nz-input
+                                       formControlName="so"
+                                       (blur)="validateSoField(i, $event)"
+                                       [disabled]="!editable"
+                                       style="text-align: center; border: none; background: transparent;"
+                                       [class.error-input]="getSoValidationError(i)"
+                                       placeholder="请输入SO#" />
+                                <div *ngIf="getSoValidationError(i)" class="error-tooltip">
+                                    SO#只能包含数字和分号
+                                </div>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </nz-table>
+        </div>
+    </form>
+</nz-card>
+
+<!-- 财务信息 -->
+<nz-card class="mtb1rem" nzTitle="财务信息">
+    <form nz-form [formGroup]="financeInfoForm">
+        <div nz-row>
+            <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                <nz-form-item>
+                    <nz-form-label nzXl="8" nzXXl="6">DealForm 币种</nz-form-label>
+                    <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                      <input nz-input formControlName="currency" readonly/>
+                    </nz-form-control>
+                </nz-form-item>
+            </div>
+
+            <div nz-col nzXs="24" nzSm="24" nzMd="8" *ngIf="financeInfoForm.get('currency')?.value === 'CNY'">
+                <nz-form-item>
+                    <nz-form-label nzXl="8" nzXXl="6">DealForm含税总金额</nz-form-label>
+                    <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                      <money-input formControlName="dealPriceCny"
+                                [readonly]="true"
+                                [precision]="2"
+                                [showThousandsSeparator]="true">
+                                </money-input>
+                    </nz-form-control>
+                </nz-form-item>
+            </div>
+
+            <div nz-col nzXs="24" nzSm="24" nzMd="8" *ngIf="financeInfoForm.get('currency')?.value === 'USD'">
+                <nz-form-item>
+                    <nz-form-label nzXl="8" nzXXl="6">DealForm总金额（美金）</nz-form-label>
+                    <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                      <money-input formControlName="dealPriceUsd"
+                              [readonly]="true"
+                              [precision]="2"
+                              [showThousandsSeparator]="true">
+                              </money-input>
+                    </nz-form-control>
+                </nz-form-item>
+            </div>
+        </div>
+
+
+        <div nz-row>
+            <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                <nz-form-item>
+                    <nz-form-label nzXl="8" nzXXl="6" nzRequired>合同约定的OIT支付比率</nz-form-label>
+                    <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                        <nz-input-number [nzPrecision]="2"
+                                       formControlName="ratioAsContracted"
+                                       [nzMin]="0"
+                                       [nzMax]="100"
+                                       [nzDisabled]="!editable && !isCCFeedbackNode"
+                                       [nzFormatter]="formatPercent"
+                                       [nzParser]="parsePercent"
+                                       style="width: 100%;">
+                        </nz-input-number>
+                        <nz-form-explain *ngIf="financeInfoForm.get('ratioAsContracted')?.dirty && financeInfoForm.get('ratioAsContracted')?.hasError('required')">
+                            此选项必填字段
+                        </nz-form-explain>
+                        <nz-form-explain *ngIf="financeInfoForm.get('ratioAsContracted')?.hasError('maxRatio')">
+                            OIT支付比率不能大于100%
+                        </nz-form-explain>
+                    </nz-form-control>
+                </nz-form-item>
+            </div>
+
+            <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                <nz-form-item>
+                    <nz-form-label nzXl="8" nzXXl="6" nzRequired>合同约定的OIT金额</nz-form-label>
+                    <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                        <money-input formControlName="dealPriceAsContracted"
+                                   [readonly]="!editable && !isCCFeedbackNode"
+                                   [precision]="2"
+                                   [showThousandsSeparator]="true"
+                                   placeholder="请输入金额">
+                        </money-input>
+                        <nz-form-explain *ngIf="financeInfoForm.get('dealPriceAsContracted')?.dirty && financeInfoForm.get('dealPriceAsContracted')?.hasError('required')">
+                            此选项必填字段
+                        </nz-form-explain>
+                        <nz-form-explain *ngIf="financeInfoForm.get('dealPriceAsContracted')?.hasError('maxAmount')">
+                            OIT金额不能超过DealForm含税总金额
+                        </nz-form-explain>
+                    </nz-form-control>
+                </nz-form-item>
+            </div>
+        </div>
+
+        <div nz-row>
+            <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                <nz-form-item>
+                    <nz-form-label nzXl="8" nzXXl="6" nzRequired>实际OIT支付比率</nz-form-label>
+                    <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                        <nz-input-number [nzPrecision]="2"
+                                       formControlName="actualRatio"
+                                       [nzMin]="0"
+                                       [nzMax]="100"
+                                       [nzDisabled]="!editable && !isCCFeedbackNode"
+                                       [nzFormatter]="formatPercent"
+                                       [nzParser]="parsePercent"
+                                       style="width: 100%;">
+                        </nz-input-number>
+                        <nz-form-explain *ngIf="financeInfoForm.get('actualRatio')?.dirty && financeInfoForm.get('actualRatio')?.hasError('required')">
+                            此选项必填字段
+                        </nz-form-explain>
+                        <nz-form-explain *ngIf="financeInfoForm.get('actualRatio')?.hasError('maxRatio')">
+                            实际OIT支付比率不能大于100%
+                        </nz-form-explain>
+                        <nz-form-explain *ngIf="financeInfoForm.get('actualRatio')?.hasError('actualRatioExceedsContracted')">
+                            实际OIT支付比率不能大于合同约定的OIT支付比率
+                        </nz-form-explain>
+                    </nz-form-control>
+                </nz-form-item>
+            </div>
+
+            <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                <nz-form-item>
+                    <nz-form-label nzXl="8" nzXXl="6" nzRequired>实际OIT支付金额</nz-form-label>
+                    <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                        <money-input formControlName="actualDealPrice"
+                                   [readonly]="!editable && !isCCFeedbackNode"
+                                   [precision]="2"
+                                   [showThousandsSeparator]="true"
+                                   placeholder="请输入金额">
+                        </money-input>
+                        <nz-form-explain *ngIf="financeInfoForm.get('actualDealPrice')?.dirty && financeInfoForm.get('actualDealPrice')?.hasError('required')">
+                            此选项必填字段
+                        </nz-form-explain>
+                        <nz-form-explain *ngIf="financeInfoForm.get('actualDealPrice')?.hasError('maxAmount')">
+                            实际OIT支付金额不能超过DealForm含税总金额
+                        </nz-form-explain>
+                        <nz-form-explain *ngIf="financeInfoForm.get('actualDealPrice')?.hasError('actualAmountExceedsContracted')">
+                            实际OIT支付金额不能大于合同约定的OIT金额
+                        </nz-form-explain>
+                    </nz-form-control>
+                </nz-form-item>
+            </div>
+
+            <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                <nz-form-item>
+                    <nz-form-label [nzSpan]="24" nzRequired>实际OIT支付的“事前审批邮件或证明文件”</nz-form-label>
+                    <nz-form-control [nzSpan]="24">
+                        <shared-upload-file formControlName="approvalFiles" type="file"></shared-upload-file>
+                        <nz-form-explain *ngIf="financeInfoForm.get('approvalFiles')?.dirty && financeInfoForm.get('approvalFiles')?.errors">
+                            请上传审批邮件、付款承诺函等证明文件
+                        </nz-form-explain>
+                    </nz-form-control>
+                </nz-form-item>
+            </div>
+        </div>
+
+        <div nz-row>
+
+            <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                <nz-form-item>
+                    <nz-form-label nzXl="8" nzXXl="6" nzRequired>差额比例</nz-form-label>
+                    <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                        <nz-input-number [nzPrecision]="2"
+                                       formControlName="gapRadio"
+                                       [nzMin]="0"
+                                       [nzMax]="100"
+                                       [nzFormatter]="formatPercent"
+                                       [nzParser]="parsePercent"
+                                       readonly
+                                       style="width: 100%;">
+                        </nz-input-number>
+                        <nz-form-explain *ngIf="financeInfoForm.get('gapRadio')?.dirty && financeInfoForm.get('gapRadio')?.errors">
+                            此选项必填字段
+                        </nz-form-explain>
+                    </nz-form-control>
+                </nz-form-item>
+            </div>
+            <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                <nz-form-item>
+                    <nz-form-label nzXl="8" nzXXl="6" nzRequired>差额含税金额</nz-form-label>
+                    <nz-form-control nzXs="24" nzSm="24" nzMd="14">
+                        <money-input formControlName="gapPrice"
+                                   readonly="true"
+                                   [precision]="2"
+                                   [showThousandsSeparator]="true" >
+                        </money-input>
+                        <nz-form-explain *ngIf="financeInfoForm.get('gapPrice')?.dirty && financeInfoForm.get('gapPrice')?.errors">
+                            此选项必填字段
+                        </nz-form-explain>
+                    </nz-form-control>
+                </nz-form-item>
+            </div>
+        </div>
+    </form>
+</nz-card>
+
+<!-- 差额付款计划 -->
+<nz-card class="mtb1rem" nzTitle="差额付款计划">
+    <div class="table-container">
+        <nz-table
+            nzSize="small"
+            [nzShowPagination]="false"
+            nzBordered
+            [nzNoResult]="null"
+            [nzData]="[]"
+            class="payment-table">
+            <thead>
+                <tr>
+                    <th nzAlign="center" style="width: 80px;">期数</th>
+                    <th nzAlign="center" style="width: 120px;"><span style="color: red;">*</span> 差额付款比率</th>
+                    <th nzAlign="center" style="width: 120px;"><span style="color: red;">*</span> 差额付款金额</th>
+                    <th nzAlign="center" style="width: 150px;"><span style="color: red;">*</span> 承诺付款时间</th>
+                    <th nzAlign="center" style="width: 150px;" *ngIf="!editable && !isCCFeedbackNode">实际付款时间</th>
+                    <th nzAlign="center" style="width: 150px;" *ngIf="!editable && !isCCFeedbackNode">实际付款证明文件</th>
+                    <th nzAlign="center" style="width: 150px;" *ngIf="isOaFeedbackNode">实际付款备注</th>
+                    <th nzAlign="center" style="width: 80px;" *ngIf="editable || isOaFeedbackNode">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let control of gapPaymentPlanInfoForm?.controls; let i = index" [formGroup]="control">
+                    <td nzAlign="center">
+                        <input nz-input formControlName="sequenceNo" style="text-align: center;" readonly />
+                    </td>
+                    <td nzAlign="center">
+                        <nz-input-number [nzPrecision]="2"
+                                       formControlName="paymentRatio"
+                                       [nzMin]="0"
+                                       [nzMax]="100"
+                                       style="text-align: center; width: 100%;"
+                                       placeholder="请输入比率"
+                                       [nzFormatter]="formatPercent"
+                                       [nzParser]="parsePercent"
+                                       [class.error-input]="control.get('paymentRatio')?.invalid && control.get('paymentRatio')?.touched">
+                        </nz-input-number>
+                        <div *ngIf="control.get('paymentRatio')?.invalid && control.get('paymentRatio')?.touched" class="error-message">
+                            <div *ngIf="control.get('paymentRatio')?.errors?.required">差额付款比率必填</div>
+                            <div *ngIf="control.get('paymentRatio')?.errors?.maxRatio">
+                                单个付款比率不能大于100%
+                            </div>
+                            <div *ngIf="control.get('paymentRatio')?.errors?.maxRatioExceeded">
+                                付款比率超出可用额度：当前{{control.get('paymentRatio')?.errors?.maxRatioExceeded?.current}}%，最大{{control.get('paymentRatio')?.errors?.maxRatioExceeded?.max}}%
+                            </div>
+                            <div *ngIf="control.get('paymentRatio')?.errors?.ratioSumExceeded">
+                                比率总和超出限制：当前{{control.get('paymentRatio')?.errors?.ratioSumExceeded?.current}}%，最大{{control.get('paymentRatio')?.errors?.ratioSumExceeded?.max}}%
+                            </div>
+                            <div *ngIf="control.get('paymentRatio')?.errors?.ratioSumShortfall">
+                                比率总和不足：当前{{control.get('paymentRatio')?.errors?.ratioSumShortfall?.current}}%，需要{{control.get('paymentRatio')?.errors?.ratioSumShortfall?.required}}%，还需{{control.get('paymentRatio')?.errors?.ratioSumShortfall?.shortfall}}%
+                            </div>
+                        </div>
+                    </td>
+                    <td nzAlign="center">
+                        <money-input formControlName="paymentAmount"
+                                   suffix="¥"
+                                   [precision]="2"
+                                   [showThousandsSeparator]="true"
+                                   [min]="0"
+                                   placeholder="请输入金额"
+                                   style="text-align: center;">
+                        </money-input>
+                        <div *ngIf="control.get('paymentAmount')?.invalid && control.get('paymentAmount')?.touched" class="error-message">
+                            <div *ngIf="control.get('paymentAmount')?.errors?.required">差额付款金额必填</div>
+                            <div *ngIf="control.get('paymentAmount')?.errors?.minAmount">
+                                付款金额不能为负数
+                            </div>
+                            <div *ngIf="control.get('paymentAmount')?.errors?.maxAmountExceeded">
+                                付款金额超出可用额度：当前{{control.get('paymentAmount')?.errors?.maxAmountExceeded?.current}}，最大{{control.get('paymentAmount')?.errors?.maxAmountExceeded?.max}}
+                            </div>
+                            <div *ngIf="control.get('paymentAmount')?.errors?.amountSumExceeded">
+                                金额总和超出限制：当前{{control.get('paymentAmount')?.errors?.amountSumExceeded?.current}}，最大{{control.get('paymentAmount')?.errors?.amountSumExceeded?.max}}
+                            </div>
+                            <div *ngIf="control.get('paymentAmount')?.errors?.amountSumShortfall">
+                                金额总和不足：当前{{control.get('paymentAmount')?.errors?.amountSumShortfall?.current}}，需要{{control.get('paymentAmount')?.errors?.amountSumShortfall?.required}}，还需{{control.get('paymentAmount')?.errors?.amountSumShortfall?.shortfall}}
+                            </div>
+                        </div>
+                    </td>
+                    <td nzAlign="center">
+                        <nz-date-picker
+                            formControlName="paymentDate"
+                            nzFormat="yyyy-MM-dd"
+                            nzPlaceHolder="选择日期"
+                            [nzDisabledDate]="getDisabledDate(i)"
+                            [class.error-input]="control.get('paymentDate')?.invalid && control.get('paymentDate')?.touched"
+                            style="width: 100%;">
+                        </nz-date-picker>
+                        <div *ngIf="control.get('paymentDate')?.invalid && control.get('paymentDate')?.touched" class="error-message">
+                            <div *ngIf="control.get('paymentDate')?.errors?.required">付款日期必填</div>
+                        </div>
+                    </td>
+                    <td nzAlign="center" *ngIf="!editable && !isCCFeedbackNode">
+                        <nz-date-picker
+                            formControlName="actualPaymentDate"
+                            nzFormat="yyyy-MM-dd"
+                            nzPlaceHolder="选择日期"
+                            style="width: 100%;">
+                        </nz-date-picker>
+                    </td>
+                    <td nzAlign="center" *ngIf="!editable && !isCCFeedbackNode">
+                        <shared-upload-file formControlName="actualPaymentFiles" type="file"></shared-upload-file>
+                    </td>
+                    <td nzAlign="center" *ngIf="isOaFeedbackNode">
+                        <textarea rows="4" formControlName="actualPaymentComments" nz-input></textarea>
+                    </td>
+                    <td *ngIf="editable || isOaFeedbackNode" nzAlign="center">
+                        <button nz-button nzType="danger" nzSize="small" (click)="removePaymentPlan(i)" *ngIf="editable">
+                            <i nz-icon nzType="delete"></i>
+                        </button>
+                        <button nz-button nzType="primary" nz-popconfirm nzTitle="确定保存此条记录？" (nzOnConfirm)="confirmAndSave(i)" *ngIf="isOaFeedbackNode && !control.get('saved')?.value" >
+                            确认本期付款记录
+                        </button>
+                        <span *ngIf="isOaFeedbackNode && control.get('saved')?.value">
+                          已由OA确认
+                        </span>
+                    </td>
+                </tr>
+            </tbody>
+        </nz-table>
+
+        <!-- 汇总信息 -->
+        <div class="mt20 payment-summary">
+            <div class="summary-card">
+                <div class="summary-content">
+                    <div class="summary-item">
+                        <span class="summary-label">差额比例汇总：</span>
+                        <span class="summary-value">
+                            已分配：<strong>{{getRemainingRatioInfo().used.toFixed(2)}}%</strong> /
+                            总计：<strong>{{getRemainingRatioInfo().total.toFixed(2)}}%</strong> /
+                            剩余：<strong class="{{getRemainingRatioInfo().remaining > 0 ? 'text-danger' : 'text-success'}}">{{getRemainingRatioInfo().remaining.toFixed(2)}}%</strong>
+                        </span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">差额金额汇总：</span>
+                        <span class="summary-value">
+                            已分配：<strong>{{getRemainingAmountInfo().used.toFixed(2)}} 元</strong> /
+                            总计：<strong>{{getRemainingAmountInfo().total.toFixed(2)}} 元</strong> /
+                            剩余：<strong class="{{getRemainingAmountInfo().remaining > 0 ? 'text-danger' : 'text-success'}}">{{getRemainingAmountInfo().remaining.toFixed(2)}} 元</strong>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt20">
+            <button nz-button nzType="dashed" (click)="addPaymentPlan()" *ngIf="editable">
+                <i nz-icon nzType="plus"></i>
+                添加付款计划
+            </button>
+        </div>
+    </div>
+  <app-select-dealform #selectDealFormDialog (select)="onSelectDealForm($event)"></app-select-dealform>
+</nz-card>

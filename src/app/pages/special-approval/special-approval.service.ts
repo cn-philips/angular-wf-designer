@@ -336,6 +336,11 @@ export class SpecialApprovalService {
     return formatResponse(res);
   }
 
+  async editRequest(data) {
+    const uri = `/act/specialapprove/apply`;
+    const res = await this.http.put(uri, data).toPromise();
+    return formatResponse(res);
+  }
   // 获取审批统计数据
   async getApproveCount() {
     const uri = `/act/specialapprove/process/instance/task/statusCount`;
@@ -516,6 +521,30 @@ export class SpecialApprovalService {
     const res = await this.http.get(uri).toPromise();
     const data = formatResponse(res);
     return data;
+  }
+  async queryOitOrderByDealFormId(dealFormId: string) {
+    const uri = `/act/spAdvancedPay/getDealformOitOrder4OitAdvancedPay`;
+    const res = await this.http.post(uri,dealFormId).toPromise();
+    const data = formatResponse(res);
+    return data;
+  }
+  async removeOitAdvancedPayPlan(applyId: string,id: string) {
+    const uri = `/act/spAdvancedPay/removePlanRecord/${id}`;
+    const res = await this.http.post(uri,applyId).toPromise();
+    const data = formatResponse(res);
+    return data;
+  }
+  async getOitAdvancedPayOrder(applyId: string) {
+    const uri = `/act/spAdvancedPay/getAdvancedPayOrder/${applyId}`;
+    const res = await this.http.post(uri).toPromise();
+    const data = formatResponse(res);
+    return data;
+  }
+  async savePaymentPlanInfo(data) {
+    const uri = `/act/spAdvancedPay/savePaymentPlanInfo`;
+    const res = await this.http.post(uri,data).toPromise();
+    const dataRes = formatResponse(res);
+    return dataRes;
   }
 
 }

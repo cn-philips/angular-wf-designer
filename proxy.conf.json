@@ -1,6 +1,6 @@
 {
   "/act/*": {
-    "target": "https://www.portal.philips.com.cn/ecomdiigtuat/",
+    "target": "http://localhost:9091/",
     "secure": false,
     "changeOrigin": true
   },

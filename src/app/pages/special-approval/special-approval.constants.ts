@@ -5,6 +5,7 @@ const SUCCESS_MESSAGE = {
   DELETE_DRAFT: "删除成功",
   CANCEL_REQUEST: "取消成功",
   WITHDRAW_REQUEST: "撤回成功",
+  REJECT_REQUEST: "驳回成功",
   SUBMIT: "提交成功",
   SAVE_DRAFT: "保存成功",
   FEEDBACK: "反馈成功",
@@ -15,6 +16,7 @@ const DEFAULT_LOADING_MESSAGE = "正在加载...";
 const LOADING_MESSAGE = {
   DELETE_DRAFT: "正在删除...",
   CANCEL_REQUEST: "正在取消...",
+  REJECT_REQUEST: "正在驳回...",
   WITHDRAW_REQUEST: "正在撤回..",
   SUBMIT: "正在提交...",
   SAVE_DRAFT: "正在保存...",
@@ -27,6 +29,7 @@ const ERROR_MESSAGE = {
   DELETE_DRAFT: "删除失败, 请稍候重试",
   CANCEL_REQUEST: "取消失败, 请稍候重试",
   WITHDRAW_REQUEST: "撤回失败, 请稍候重试",
+  REJECT_REQUEST: "驳回失败, 请稍候重试",
   SUBMIT: "提交失败, 请稍候重试",
   SAVE_DRAFT: "保存失败, 请稍候重试",
   FEEDBACK: "反馈失败, 请稍候重试",
@@ -66,7 +69,8 @@ const APPLY_TYPE = {
   COO_PDIGT: 'coopdigt',
   COO_CC: 'coocc',
   PRE_BOOK_LASTBUY:'lastbuy', // 订单替换
-  IMPORTED_EQUIPMENT:'importedequipment' // 进口设备
+  IMPORTED_EQUIPMENT:'importedequipment', // 进口设备
+  ADVANCED_PAYMENT:'advancedpayment', // 预付款
 }
 
 const APPLY_TYPE_MAP = {
@@ -88,6 +92,7 @@ const APPLY_TYPE_MAP = {
   [APPLY_TYPE.COO_CC]: { label: "COO-CC", dictGroup: 'sp_coocc_apply_item' },
   [APPLY_TYPE.IMPORTED_EQUIPMENT]: { label: "进口设备销售申请", dictGroup: 'sp_importedequipment_apply_item' },
   [APPLY_TYPE.PRE_BOOK_LASTBUY]: { label: "Slot Reservation特批生产", dictGroup: 'sp_lastbuy_apply_item' },
+  [APPLY_TYPE.ADVANCED_PAYMENT]: { label: "OIT 预付款", dictGroup: 'sp_advanced_pay_apply_item' },
 
 };
 
@@ -111,6 +116,7 @@ const APPLY_TYPES = [
   { label: "COO-CC", value: APPLY_TYPE.COO_CC },
   { label: "进口设备销售申请", value: APPLY_TYPE.IMPORTED_EQUIPMENT },
   { label: "Slot Reservation特批生产", value: APPLY_TYPE.PRE_BOOK_LASTBUY },
+  { label: "OIT 预付款", value: APPLY_TYPE.ADVANCED_PAYMENT },
 ];
 
 const STAND_WARRANTY_MONTH = {

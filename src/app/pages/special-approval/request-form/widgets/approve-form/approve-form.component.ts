@@ -2,6 +2,8 @@ import {
   Component,
   OnInit,
   Input,
+  Output,
+  EventEmitter,
   OnChanges,
   SimpleChanges,
 } from "@angular/core";
@@ -24,6 +26,7 @@ import {
   LOADING_MESSAGE,
   SUCCESS_MESSAGE,
   ERROR_MESSAGE,
+  APPLY_TYPE,
 } from "../../../special-approval.constants";
 import { RouterExtendService } from "@app/modern-themes/services/router-extend.service";
 
@@ -54,8 +57,11 @@ export class ApproveFormComponent implements OnInit, OnChanges {
   @Input() processUsers;
   @Input() applicantEmail;
   @Input() basicInfo: FormGroup;
+  @Input() applyType: string;
 
-  formValues: FormGroup = this.fb.group({
+  @Output() beforeApprove = new EventEmitter<{action: string, callback: (success: boolean) => void}>();
+
+  public formValues: FormGroup = this.fb.group({
     remark: [""], // 备注
     attachments: [[]], // 支持文件
     notify: [0], // 是否通知用户
@@ -196,6 +202,29 @@ export class ApproveFormComponent implements OnInit, OnChanges {
         this.message.error("请选择指定用户");
         return;
       }
+
+      // // 在审批前触发保存事件（仅针对AdvancePayment类型的特批）
+      // if (this.applyType === APPLY_TYPE.ADVANCED_PAYMENT) {
+      //   console.log('触发审批前保存事件');
+      //   let saveSuccess = false;
+
+      //   // 等待父组件处理保存逻辑
+      //   await new Promise<void>((resolve) => {
+      //     this.beforeApprove.emit({
+      //       action,
+      //       callback: (success: boolean) => {
+      //         saveSuccess = success;
+      //         resolve();
+      //       }
+      //     });
+      //   });
+
+      //   if (!saveSuccess) {
+      //     this.message.error('保存finance和plan信息失败，审批终止');
+      //     return;
+      //   }
+      // }
+
       const id = this.message.loading(LOADING_MESSAGE.APPROVE, {
         nzDuration: 0,
       }).messageId;

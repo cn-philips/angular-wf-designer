@@ -20,9 +20,10 @@ import { DIRECTIVES } from "./directives";
 import { PIPES } from "./pipes";
 import { TranslateModule } from "@ngx-translate/core";
 import { InputUserComponent } from './components/input-user/input-user.component';
+import { MoneyInputComponent } from './components/money-input/money-input.component';
 
 @NgModule({
-  declarations: [...COMPONENTS, ...PIPES, ...DIRECTIVES, InputUserComponent],
+  declarations: [...COMPONENTS, ...PIPES, ...DIRECTIVES, InputUserComponent, MoneyInputComponent],
   imports: [
     ClipboardModule,
     NgZorroAntdModule,
@@ -48,6 +49,7 @@ import { InputUserComponent } from './components/input-user/input-user.component
     HttpClientModule,
     TranslateModule,
     InputUserComponent,
+    MoneyInputComponent,
   ],
   providers: [PIPES],
 })

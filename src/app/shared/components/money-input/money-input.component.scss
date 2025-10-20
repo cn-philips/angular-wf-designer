@@ -1,0 +1,116 @@
+.money-input-container {
+  position: relative;
+  width: 100%;
+}
+
+.money-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border-radius: 6px;
+  padding: 4px 11px;
+  transition: all 0.3s;
+
+  color: #337fbf !important;
+  background-color: #fcfcfd !important;
+  border: unset;
+  border-bottom: 0.125rem #112b40 solid;
+
+  &:hover {
+    border-color: #40a9ff;
+  }
+
+  &:focus-within {
+    border-color: #40a9ff;
+    box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+    outline: 0;
+  }
+
+  &.disabled {
+    background-color: #f5f5f5;
+    border-color: #d9d9d9;
+    cursor: not-allowed;
+
+    .money-input {
+      cursor: not-allowed;
+    }
+
+    &:hover {
+      border-color: #d9d9d9;
+    }
+  }
+
+  &.readonly {
+    background-color: #fafafa;
+
+    .money-input {
+      cursor: default;
+    }
+  }
+}
+
+.money-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 14px;
+  line-height: 1.5715;
+  color: rgba(0, 0, 0, 0.85);
+  min-width: 0;
+  border-bottom:none !important;
+
+  &::placeholder {
+    color: #bfbfbf;
+  }
+}
+
+.prefix,
+.suffix {
+  color: rgba(0, 0, 0, 0.85);
+  font-size: 14px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.prefix {
+  margin-right: 4px;
+}
+
+.suffix {
+  margin-left: 4px;
+}
+
+// 错误状态样式（会被 Angular 自动添加的 ng-invalid 类触发）
+:host.ng-invalid.ng-touched {
+  .money-input-wrapper {
+    border-color: #ff4d4f;
+
+    &:hover,
+    &:focus-within {
+      border-color: #ff4d4f;
+    }
+
+    &:focus-within {
+      box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.2);
+    }
+  }
+}
+
+// 与 ng-zorro 表单样式保持一致
+:host {
+  .ant-form-item-has-error & {
+    .money-input-wrapper {
+      border-color: #ff4d4f;
+
+      &:hover,
+      &:focus-within {
+        border-color: #ff4d4f;
+      }
+
+      &:focus-within {
+        box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.2);
+      }
+    }
+  }
+}

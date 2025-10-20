@@ -29,6 +29,9 @@ import { ImportedInfoComponent } from "./widgets/order-info/imported-info/import
 import { RouterExtendService } from "@app/modern-themes/services/router-extend.service";
 import { compareIgnoreSensitiveCase } from "@app/utils/StringUtils";
 import { Location } from "@angular/common";
+import { AdvancedPayComponent } from "./widgets/order-info/advanced-pay/advanced-pay.component";
+import { ApproveFormComponent } from "./widgets/approve-form/approve-form.component";
+import { FeedbackComponent } from "./widgets/feedback/feedback.component";
 
 enum TAB_TYPE {
   BASIC_INFO = "basic-info",
@@ -43,6 +46,7 @@ enum TAB_TYPE {
   EXCHANGE_INFO = "exchange-info",
   DIFFERENCE_AND_COST_INFO = "difference-and-cost-info",
   SUPPLEMENT_INFO = "supplement-info",
+  ADVANCED_PAYMENT = "advanced-payment"
 }
 const oitProductsValidator = (control: FormArray): ValidationErrors => {
   // model: [null, [Validators.required]], // 产品型号
@@ -100,6 +104,9 @@ export class RequestFormComponent implements OnInit {
   @ViewChild("importedInfo") public importedInfo: ImportedInfoComponent;
   @ViewChild("lastBuyOrderInfo") public lastBuyOrderInfo: LastbuyComponent;
   @ViewChild("importedEquipmentInfo") public importedEquipmentInfo: ImportedInfoComponent;
+  @ViewChild("advancedPayInfo") public advancedPayInfo: AdvancedPayComponent;
+  @ViewChild("approvalForm") public approvalForm: ApproveFormComponent;
+  @ViewChild("feedbackForm") public feedbackForm: FeedbackComponent;
 
   get needReason(){
     let noNeedReasonType=[APPLY_TYPE.IMPORTED_EQUIPMENT]
@@ -109,8 +116,11 @@ export class RequestFormComponent implements OnInit {
     let needUpdateFileType=[APPLY_TYPE.IMPORTED_EQUIPMENT]
     return !needUpdateFileType.includes(this.applyType)
   }
-  isSupplementNode = false;
 
+
+  isSupplementNode = false;
+  public processStatus;
+  public nodeAction;
   public pageTitle: string;
   public requestId;
   public requestInfo = {
@@ -132,6 +142,10 @@ export class RequestFormComponent implements OnInit {
   public showFeedbackTab = false;
   public showWithdrawBtn = false;
   public showCancelBtn = false;
+  get showRejectBtn(){
+    if(!this.advancedPayInfo) return false
+    return this.applyType === APPLY_TYPE.ADVANCED_PAYMENT && this.advancedPayInfo.isOaFeedbackNode && this.isCurrentUserApprover;
+  };
 
   public processAdminList = [];
   public processExpertList = [];
@@ -152,10 +166,12 @@ export class RequestFormComponent implements OnInit {
   public pageLoading = true;
 
   public nodeCode: string;
+  public currentTask: any;
 
   public isComplete: boolean = false;
 
   isApplicant = false;
+  isCurrentUserApprover = false; // 当前登录用户是当前审批节点的审批人
 
   districtLeader: string[] = [];
   salesLeader: string[] = [];
@@ -290,6 +306,39 @@ export class RequestFormComponent implements OnInit {
     attachments: [[]], // 附件
     expectedOpenBiddingDate: [null, [Validators.required]], // 预计开标/合同谈判日期
     expectedOitDate: [null, [Validators.required]], // 预计OIT日期
+  }
+
+  public advancedPaymentInit = {
+    id: [null],
+    applyId: [null],
+    dealformId:[null, [Validators.required]],
+    dealerName:[null, [Validators.required]],
+    dealerCode: [null, [Validators.required]], // 经销商编号
+    hospitalName:[null, [Validators.required]],
+    businessModel:[null, [Validators.required]],
+    systemRegion: [{ value: null, disabled: true }, [Validators.required]],
+    // bg: [null],
+    // cycleGroup: [null],
+    // bigArea: [null],
+    // smallArea: [null],
+    // team: [null],
+    sales:[null, [Validators.required]],
+    orderInfo :this.fb.array([]),
+    financeInfo : this.fb.group({
+      currency:[null, [Validators.required]],
+      dealPriceCny:[null],
+      dealPriceCnyNet:[null],
+      dealPriceUsd:[null],
+      ratioAsContracted:[null, [Validators.required]], // 合同约定的OIT支付比率
+      dealPriceAsContracted:[null, [Validators.required]], //合同约定的OIT支付金额
+      actualRatio:[null, [Validators.required]],//实际OIT支付比率
+      actualDealPrice:[null, [Validators.required]],//实际OIT支付金额
+      gapRadio:[{ value: null, disabled: true }, [Validators.required]],//差额比率
+      gapPrice:[{ value: null, disabled: true }, [Validators.required]],//差额金额
+      // 事前审批邮件或证明文件
+      approvalFiles:[[] , [Validators.required]],
+    }),
+    gapPaymentPlan : this.fb.array([])
   }
 
   // 订单替换form表单信息单独配置
@@ -527,6 +576,9 @@ export class RequestFormComponent implements OnInit {
       applyId: null,
       id: null,
       isDeleted: 0,
+    }),
+    advancedPaymentInfo: this.fb.group({
+      ...this.advancedPaymentInit,
     })
 
   });
@@ -830,6 +882,9 @@ export class RequestFormComponent implements OnInit {
 
   get importedEquipmentForm(): FormGroup {
     return this.formValues.get("importedEquipmentInfo") as FormGroup;
+  }
+  get advancedPaymentForm(): FormGroup {
+    return this.formValues.get("advancedPaymentInfo") as FormGroup;
   }
 
   public setFormValidators(type, item, bg) {
@@ -1472,7 +1527,26 @@ export class RequestFormComponent implements OnInit {
         importedEquipmentOrder.bmcs = this.getBMCsString(arr);
         data.orderInfos = [importedEquipmentOrder];
         break;
-      default:
+      case APPLY_TYPE.ADVANCED_PAYMENT:
+        let advancedPaymentForm = this.advancedPaymentForm.getRawValue();
+        advancedPaymentForm.financeInfo.approvalFiles = (advancedPaymentForm.financeInfo.approvalFiles || []);
+        advancedPaymentForm.gapPaymentPlan = advancedPaymentForm.gapPaymentPlan.map(item=>{
+          return {
+            ...item,
+            actualPaymentFiles: JSON.stringify(item.actualPaymentFiles || [])
+          }
+        });
+        const { financeInfo } = advancedPaymentForm;
+        if(financeInfo){
+          financeInfo.approvalFiles = JSON.stringify(financeInfo.approvalFiles || []);
+        }
+        advancedPaymentForm = {
+          ...advancedPaymentForm,
+          financeInfo
+        }
+        data.oitAdvancedPayInfos = advancedPaymentForm;
+      break;
+        default:
         break;
     }
     return data;
@@ -1515,6 +1589,7 @@ export class RequestFormComponent implements OnInit {
       // 添加订单替换 orderReplacement disabbled
       this.formValues.controls.orderReplacementInfo.disable();
       this.formValues.controls.importedEquipmentInfo.disable();
+      this.formValues.controls.advancedPaymentInfo.disable();
     }
     this.editable = editable;
   }
@@ -1770,6 +1845,15 @@ export class RequestFormComponent implements OnInit {
           const isImportedEquipmentValid = this.importedEquipmentInfo.validate();
           hasError = this.basicInfo.invalid || !isImportedEquipmentValid;
           break;
+        case APPLY_TYPE.ADVANCED_PAYMENT:
+          // 验证提前付款申请的所有必填项
+          const advancedPaymentValidation = this.advancedPayInfo.validateForSubmit();
+          if (!advancedPaymentValidation.isValid) {
+            this.message.error(advancedPaymentValidation.errorMessage);
+            return;
+          }
+          hasError = this.basicInfo.invalid;
+          break;
       default:
         for (const i in this.orderInfo.controls) {
           this.orderInfo.controls[i].markAsDirty();
@@ -1851,6 +1935,16 @@ export class RequestFormComponent implements OnInit {
         this.message.error("请选择系统区域配置!");
         return;
       }
+
+      // 提前付款申请的保存验证
+      if (this.applyType === APPLY_TYPE.ADVANCED_PAYMENT) {
+        const validation = this.advancedPayInfo.validateForSave();
+        if (!validation.isValid) {
+          this.message.error(validation.errorMessage);
+          return;
+        }
+      }
+
       if (this.applyType === APPLY_TYPE.MACHINE_EXCHANGE) {
         if (
           data.extInfo.exchangeMethod == null ||
@@ -2146,6 +2240,7 @@ export class RequestFormComponent implements OnInit {
       this.applyType = applyType;
       this.executed = executed;
       this.nodeCode = nodeCode;
+      this.currentTask = taskList.find(item=>item.taskInstId === this.taskId);
       this.formValues.patchValue({
         basicInfo: {
           applyCode,
@@ -2456,6 +2551,14 @@ export class RequestFormComponent implements OnInit {
           oitProductsControl.push(groupInst)
         }
         this.formValues.controls.importedEquipmentInfo.patchValue({bmcs:this.getBMCsString(order.oitProducts)})
+      } else if (applyType === APPLY_TYPE.ADVANCED_PAYMENT) {
+        const intervalId = setInterval(() => {
+          if (this.advancedPayInfo) {
+            this.advancedPayInfo.initData(data);
+            clearInterval(intervalId);
+          }
+        }, 1000);
+
       }
 
       const userSet = new Set<string>();
@@ -2485,7 +2588,10 @@ export class RequestFormComponent implements OnInit {
         : [];
 
       this.isApplicant = compareIgnoreSensitiveCase(applicant , localStorage.getItem("ecom_ng_philips_code1"));
-
+      if(this.currentTask){
+        console.log('this.currentTask.approveUser',this.currentTask.approveUser)
+      }
+      this.isCurrentUserApprover = this.currentTask ? compareIgnoreSensitiveCase(this.currentTask.approveUser, localStorage.getItem("ecom_ng_philips_code1")) : false;
       const isDraft =
         processStatus === PROCESS_STATUS.DRAFT && this.isApplicant;
       if (isDraft) {
@@ -2531,6 +2637,8 @@ export class RequestFormComponent implements OnInit {
         nodeAction !== APPROVE_NODE_ACTION.FEEDBACK;
       this.approveNodeList = nodeInfoList;
       this.approveHistory = taskList;
+      this.processStatus = processStatus;
+      this.nodeAction = nodeAction;
       this.setEditable(status, processStatus);
     } catch ({ message }) {
       this.message.error(DEFAULT_ERROR_MESSAGE);
@@ -2538,6 +2646,142 @@ export class RequestFormComponent implements OnInit {
     } finally {
       this.pageLoading = false;
     }
+  }
+
+  async onSubmitAdvancePayment(action) {
+      if(this.applyType === APPLY_TYPE.ADVANCED_PAYMENT){
+        let msgType = LOADING_MESSAGE.REJECT_REQUEST
+        let errorMsg = ERROR_MESSAGE.REJECT_REQUEST
+        if(action === 'APPROVED'){
+          msgType = LOADING_MESSAGE.APPROVE
+          errorMsg = ERROR_MESSAGE.APPROVE
+
+          // 校验所有plan是否已保存
+          if (!this.validateAllPlansSaved()) {
+            this.message.error('所有付款计划必须保存后才能完成全部流程');
+            return;
+          }
+        }else{
+          msgType = LOADING_MESSAGE.REJECT_REQUEST
+          errorMsg = ERROR_MESSAGE.REJECT_REQUEST
+        }
+        const id = this.message.loading(msgType, {
+          nzDuration: 0,
+        }).messageId;
+        try {
+          let isSaved = false;
+            await this.onBeforeApprove({action, callback: (success: boolean) => {
+            isSaved = success;
+          }});
+          if(!isSaved){
+            this.message.error('保存提前付款申请信息失败，无法完成审批');
+            return;
+          }else{
+            await this.doSubmitAdvancePayment(action);
+          }
+        } catch ({ message }) {
+          this.message.error(errorMsg);
+          console.error(`审批失败, ${message}`);
+        } finally {
+          this.message.remove(id);
+        }
+      }
+  }
+
+  async doSubmitAdvancePayment(action) {
+    try {
+      const { remark, attachments, notify, notifier } =
+        this.feedbackForm.formValues.getRawValue();
+      // const id = this.message.loading(LOADING_MESSAGE.FEEDBACK, {
+      //   nzDuration: 0,
+      // }).messageId;
+      this.submitLoading = true;
+      const data = {
+        applyId: this.requestId,
+        attachments: attachments,
+        result: action,
+        notify,
+        notifier: notify ? notifier.join(",") : "",
+        remark,
+        taskInstId: this.taskId,
+      };
+      await this.spService.approveRequest(data);
+      // this.message.remove(id);
+      this.message.success(SUCCESS_MESSAGE.APPROVE);
+      this.routerExtend.back();
+    } catch ({ message }) {
+      this.message.error(ERROR_MESSAGE.APPROVE);
+      console.error(`审批失败, ${message}`);
+    } finally {
+      this.submitLoading = false;
+    }
+  }
+
+  /**
+   * 处理审批前的保存逻辑（CC Feedback节点，AdvancePayment类型）
+   */
+  async onBeforeApprove(event: {action: string, callback: (success: boolean) => void}) {
+    console.log('触发审批前保存事件,event',event);
+    try {
+      console.log('处理审批前保存事件，action:', event.action);
+
+      // 检查是否是CC Feedback节点的AdvancePayment特批
+      if (this.applyType === APPLY_TYPE.ADVANCED_PAYMENT && this.advancedPayInfo) {
+        console.log('CC Feedback节点，开始保存finance和plan信息');
+
+        // 获取当前的finance和plan数据
+        const advancedPaymentData = this.getFormData();
+        if (advancedPaymentData.oitAdvancedPayInfos) {
+          // 保存整个AdvancedPayment数据
+          const saveData = {
+            ...advancedPaymentData,
+            id: this.requestId,
+            applyType: this.applyType
+          };
+          await this.spService.editRequest(saveData);
+          console.log('CC Feedback节点finance和plan信息保存成功');
+          event.callback(true);
+        } else {
+          console.log('没有找到oitAdvancedPayInfos数据');
+          event.callback(false);
+        }
+      } else {
+        // 不是CC Feedback节点或不是AdvancePayment类型，直接继续
+        console.log('不需要保存，直接继续审批');
+        event.callback(true);
+      }
+    } catch (saveError) {
+      console.error('保存finance和plan信息失败:', saveError);
+      this.message.error('保存finance和plan信息失败');
+      event.callback(false);
+    }
+  }
+
+  /**
+   * 校验所有付款计划是否已保存
+   */
+  private validateAllPlansSaved(): boolean {
+    if (this.applyType !== APPLY_TYPE.ADVANCED_PAYMENT || !this.advancedPaymentForm) {
+      return true; // 不是提前付款类型或表单不存在时跳过校验
+    }
+
+    const gapPaymentPlanArray = this.advancedPaymentForm.get('gapPaymentPlan') as FormArray;
+    if (!gapPaymentPlanArray || gapPaymentPlanArray.length === 0) {
+      return true; // 没有付款计划时跳过校验
+    }
+
+    // 检查每个付款计划是否已保存
+    for (let i = 0; i < gapPaymentPlanArray.length; i++) {
+      const planFormGroup = gapPaymentPlanArray.at(i);
+      const saved = planFormGroup.get('saved').value;
+      if (!saved) {
+        console.log(`付款计划 ${i + 1} 尚未保存`);
+        return false;
+      }
+    }
+
+    console.log('所有付款计划都已保存');
+    return true;
   }
 
   public async onDeleteRequest() {

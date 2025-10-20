@@ -74,6 +74,10 @@ export class ReportComponent implements OnInit {
       label: "进口设备申请",
       items: [{ value: "进口设备申请", type: "importedequipment" }],
     },
+    {
+      label: "OIT预付款",
+      items: [{ value: "OIT预付款", type: "advancedpayment" }],
+    }
   ];
 
   constructor(
