@@ -47,7 +47,8 @@ import {
   WaiteMeSupplementSearchItemComponent,
   WinningbidSupplementComponent,
   RegisterICFComponent,
-  RegisterICFListComponent
+  RegisterICFListComponent,
+  PodContractElectronicSignatureComponent
 } from "./waite-me-supplement";
 
 export * from "./components";
@@ -67,6 +68,7 @@ export const COMPONENTS = [
   WaiteMeSupplementSearchItemComponent,
   ContractSignatureWatermarkComponent,
   ContractElectronicSignatureComponent,
+  PodContractElectronicSignatureComponent,
   SignatureListComponent,
   ElectronicSignatureListComponent,
   SignatureSearchItemComponent,

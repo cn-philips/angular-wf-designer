@@ -23,6 +23,7 @@ import {
   NewRandomCycleComponent,
   WinningbidSupplementComponent,
   RegisterICFComponent,
+  PodContractElectronicSignatureComponent,
 } from "@pages/workspace/waite-me-supplement";
 import { SharedModule } from "@shared/shared.module";
 import { NgZorroAntdModule } from "ng-zorro-antd";
@@ -112,6 +113,11 @@ const routes: Route[] = [
     path:"contract-electronic-signature",
     component:ContractElectronicSignatureComponent,
     data:{breadcrumb:"合同电子签章"}
+  },
+  {
+    path:"pod-contract-electronic-signature",
+    component:PodContractElectronicSignatureComponent,
+    data:{breadcrumb:"POD电子签章"}
   },
   {
     path: "register-ICF",

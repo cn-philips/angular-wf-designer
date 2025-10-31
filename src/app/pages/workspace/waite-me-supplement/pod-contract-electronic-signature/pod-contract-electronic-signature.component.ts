@@ -10,11 +10,11 @@ import { NzMessageService } from "ng-zorro-antd";
 import { forkJoin } from "rxjs";
 
 @Component({
-  selector: "contract-electronic-signature",
-  templateUrl: "./contract-electronic-signature.component.html",
-  styleUrls: ["./contract-electronic-signature.component.scss"],
+  selector: "pod-contract-electronic-signature",
+  templateUrl: "./pod-contract-electronic-signature.component.html",
+  styleUrls: ["./pod-contract-electronic-signature.component.scss"],
 })
-export class ContractElectronicSignatureComponent implements OnInit {
+export class PodContractElectronicSignatureComponent implements OnInit {
   //待上传正本合同
 
   @Input() from = "";
@@ -27,7 +27,7 @@ export class ContractElectronicSignatureComponent implements OnInit {
   public pageParams = {
     pageNo: 1,
     pageSize: 10,
-    signType:'COMMON'
+    signType:'POD'
   };
   public total = 0; //统计数量
   public totalOne = 0; //oa无需处理
@@ -63,7 +63,7 @@ export class ContractElectronicSignatureComponent implements OnInit {
     this.pageParams = {
       pageNo: 1,
       pageSize: 10,
-      signType:'COMMON'
+      signType:'POD'
     };
     this.getTableData();
     this.table.resetPage();
@@ -78,7 +78,7 @@ export class ContractElectronicSignatureComponent implements OnInit {
       this.pageParams = {
         pageNo: 1,
         pageSize: 10,
-        signType:'COMMON'
+      signType:'POD'
       };
     }
     this.pageParams["pageNo"] = pagination.pageNo;
