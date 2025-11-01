@@ -48,6 +48,7 @@ export class ElectronicSignatureSearchItemComponent implements OnInit {
   @Input() queryType: any = "todo";
   @Input() isWatermark: any = false;
   @Input() from: any;
+  @Input() signType: any = 'COMMON';
 
   public showSign: boolean = false;
   public authorizationload: boolean = false;
@@ -85,7 +86,9 @@ export class ElectronicSignatureSearchItemComponent implements OnInit {
     private router: Router,
     private fileService: FileService
   ) {}
-
+  get isPodContract() {
+    return this.signType === 'POD';
+  }
   public formValues = this.fb.group({
     referenceId: [null], //Reference No
     applicant: [null], // 销售邮箱
@@ -129,11 +132,7 @@ export class ElectronicSignatureSearchItemComponent implements OnInit {
     this.getEntryModeList();
     // this.getTaskStatusList();
     this.getModalityList();
-    //this.setTabChange();
     this.init();
-  }
-  public setTabChange() {
-    this.submitForm(null, this.formValues.getRawValue());
   }
   ngOnDestroy() {}
   init() {
@@ -338,61 +337,6 @@ export class ElectronicSignatureSearchItemComponent implements OnInit {
   authorizationCancels() {
     this.isAuthorizationMail = false;
   }
-  watermarCancels() {
-    this.isWatermark = false;
-  }
-  async isWatermarkOk() {
-    //水印维护确认页面
-    this.watermarkForm.get("fileId").setValidators(Validators.required);
-    const valid = this.checkFormValid(this.watermarkForm);
-    if (!valid) {
-      return;
-    }
-    const { fileId } = this.watermarkForm.getRawValue();
-    const fileList = fileId.map((val) => val.fileId);
-    this.watermarkload = true;
-    await this.service.saveImage(fileList);
-    const getImageData: any = await this.getImage();
-    if (getImageData.code == "0000") {
-      this.watermarkload = false;
-      this.message.create("success", getImageData.msg);
-    } else {
-      this.message.create("error", getImageData.msg);
-      this.watermarkload = false;
-    }
-    this.isWatermark = false;
-  }
-  authorizationOk() {
-    //zsl admin人员维护确认页面
-    const valid = this.checkFormValid(this.authorizationForm);
-    if (!valid) {
-      return;
-    }
-    const { userListId } = this.authorizationForm.getRawValue();
-    this.authorizationload = true;
-    this.service.saveZsladmin(userListId).subscribe(
-      (res) => {
-        this.authorizationload = false;
-        if (res.code == "0000") {
-          this.message.create("success", res.msg);
-          this.isAuthorizationMail = false;
-        } else {
-          this.message.create("error", res.msg);
-          this.isAuthorizationMail = false;
-        }
-      },
-      (error) => {
-        console.log(error);
-      }
-    );
-  }
-  handleAuthorizationMail() {
-    this.isAuthorizationMail = true;
-    const searchParams = this.DEFAULT_SEARCH_PARAMS;
-    this.authorizationload = true;
-    this.getCduser(searchParams);
-    this.getZsladmin();
-  }
   async handleBatchSignContract() {
     this.batchSign.emit();
   }
@@ -413,7 +357,6 @@ export class ElectronicSignatureSearchItemComponent implements OnInit {
 
   async getImage() {
     //查询图片列表
-
     return new Promise((resolve) => {
       this.service.getImage().then((res) => {
         this.watermarkload = false;
@@ -436,41 +379,5 @@ export class ElectronicSignatureSearchItemComponent implements OnInit {
         }
       });
     });
-  }
-  getZsladmin() {
-    this.service.getZsladmin().then((res) => {
-      if (res.code == "0000") {
-        const { data } = res;
-        this.authorizationForm.patchValue({
-          userListId: data,
-        });
-      }
-    });
-  }
-  seachUser(event) {
-    let searchParams = this.DEFAULT_SEARCH_PARAMS;
-    searchParams.email = event;
-    this.getCduser(searchParams);
-  }
-  getCduser(searchParams) {
-    //获取人员列表
-    this.service.getCduser(searchParams).subscribe((res) => {
-      this.authorizationload = false;
-      if (res.code == "0000") {
-        const { data } = res;
-        this.userList = data.rows.map((val) => ({
-          label: val.name,
-          value: val.email,
-        }));
-      }
-    });
-  }
-  checkFormValid(paramForm) {
-    //表单验证
-    for (const i in paramForm.controls) {
-      paramForm.controls[i].markAsDirty();
-      paramForm.controls[i].updateValueAndValidity();
-    }
-    return paramForm.valid;
   }
 }

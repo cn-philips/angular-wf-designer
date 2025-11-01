@@ -8,6 +8,7 @@ export * from "./contract-sign-info/contract-sign-info.component";
 export * from "./input-suggest/input-suggest.component";
 export * from "./electronic-contract-sign-baseInfo/electronic-contract-sign-baseInfo.component";
 export * from "./electronic-contract-sign-info/electronic-contract-sign-info.component";
+export * from "./pod-electronic-contract-sign-info/pod-electronic-contract-sign-info.component";
 export * from "./esign-button/esign-button.component";
 export * from "./oa-add-info/oa-add-info.component";
 export * from "./oit-form-group/oit-form-group.component";

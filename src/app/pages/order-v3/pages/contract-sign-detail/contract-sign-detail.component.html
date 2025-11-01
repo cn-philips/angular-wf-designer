@@ -31,6 +31,17 @@
           (refreshDetail)="refreshDetail()"></ecos-electronic-contract-sign-info>
       </div>
     </app-tab>
+    <app-tab [title]="'orderv3.pages.contract-sign.podSin' | translate" id="pod-contract-tab" *ngIf="isPODContract">
+      <div class="card-body">
+        <ecos-electronic-contract-sign-baseInfo [formValue]="formValue" [flag]="flag"
+          [applySignatureBtn]="applySignatureBtn" [approvalSigatureBtn]="approvalSigatureBtn"
+          [signaturePageOff]="signaturePageOff"></ecos-electronic-contract-sign-baseInfo>
+        <ecos-pod-electronic-contract-sign-info [info]="info" [contractSignFileList]="contractSignFileList"
+          [contractSignedFilesList]="signFileFormData"
+          [contractId]="contractId" from="CONTRACT"
+          (refreshDetail)="refreshDetail()"></ecos-pod-electronic-contract-sign-info>
+      </div>
+    </app-tab>
     <app-tab [title]="'orderv3.pages.contract-sign.history' | translate" id="approval-record">
       <div class="card-body">
         <app-form-section [title]="'orderv3.pages.contract-examine.history'| translate">
@@ -60,7 +71,7 @@
       </div>
     </app-tab>
   </app-tabs>
-  <!-- <div *ngIf="flag === '1' && sign === '1' && applySignatureBtn" nz-row nzType="flex" class="fixed-btn-group"
+  <div *ngIf="flag === '1' && sign === '1' && applySignatureBtn" nz-row nzType="flex" class="fixed-btn-group"
     nzJustify="start" nzAlign="middle">
     <div nz-col nzSpan="24">
       <nz-form-item>
@@ -74,5 +85,5 @@
         </nz-form-control>
       </nz-form-item>
     </div>
-  </div> -->
+  </div>
 </div>

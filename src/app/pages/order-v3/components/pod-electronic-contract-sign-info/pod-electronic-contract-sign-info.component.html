@@ -1,0 +1,412 @@
+<app-form-section [title]="'orderv3.components.contract-sign.title3' | translate">
+  <nz-spin [nzSpinning]="signSpinning">
+    <div class="bestSignWrap">
+      <div nz-row nzType="flex" nzJustify="start" nzAlign="middle" *ngIf="createSignVisible">
+        <button nz-button nzType="primary" (click)="createSignProcess()">
+          新建签章流程
+        </button>
+      </div>
+      <div nz-row>
+        <div nz-col nzXs="24" nzSm="24" nzMd="24" *ngFor="let item of signDataSource; index as indx;"
+          style="margin-top: 20px;">
+
+          <div nz-row>
+            <nz-form-item>
+              <nz-form-label nzXs="24" nzSm="24" nzMd="2" [nzNoColon]="true">
+                {{("orderv3.components.contract-sign.flowName" | translate) + (signDataSource.length - indx)}}
+              </nz-form-label>
+              <nz-form-control nzXs="24" nzSm="24" nzMd="21">
+                <ng-container>
+                  <div>
+                    <button nz-button nzType="primary" [disabled]="item.allDisable" *ngIf="item.status !== 'DRAFT'"
+                      (click)="refreshFlowInfo(item.id, indx)">
+                      刷新状态
+                    </button>
+                    <button (click)="handleChooseFile(indx, item.id)" [disabled]="item.allDisable" nz-button
+                      nzType="primary" *ngIf="item.showfile">
+                      选择合同文件
+                    </button>
+                    <span nz-tooltip [nzTitle]="item.contracts.length === 0?'合同文件为空，无法发起电子签章，请上传文件！':(item.contracts.length >1?'合同文件数量大于1，无法发起电子签章，请调整文件数量！':null)" nzPlacement="top">
+                      <button nz-button *ngIf="item.showsend" [disabled]="item.allDisable || item.contracts.length === 0 || item.contracts.length >1"
+                        (click)="signSign(indx, item.id)" nzType="primary">
+                        发起电子签章
+                      </button>
+                    </span>
+                    <button nz-button *ngIf="item.showsignbutton"
+                      (click)="signAdminSign(indx, item.currentUserRole, item.id)" [disabled]="item.allDisable"
+                      nzType="primary">
+                      {{ item.currentUserShowName + '签章' }}
+                    </button>
+                    <button nz-button *ngIf="item.showback" [disabled]="item.allDisable"
+                      (click)="signBack(indx, item.id)" nzType="primary">
+                      撤回电子签章
+                    </button>
+                    <button nz-button *ngIf="item.showbpavid" [disabled]="item.allDisable"
+                      (click)="signVoid(indx, item.id, item.currentUserRole)" nzType="danger">
+                      驳回电子签章
+                    </button>
+                    <button nz-button *ngIf="item.showdelflow" [disabled]="item.allDisable"
+                      (click)="signDel(indx, item.id)" nzType="danger">
+                      删除流程
+                    </button>
+                    <button nz-button *ngIf="item.status !== 'DRAFT'" [disabled]="item.allDisable"
+                      (click)="signDownloadAll(item.id)" nzType="primary">
+                      打包下载
+                    </button>
+                    <button nz-button
+                      *ngIf="item.status === 'COMPLETE' || item.status === 'IN_INVALIDING' || item.status=== 'INVALID'"
+                      [disabled]="item.allDisable" (click)="signSyncContract(item.id)" nzType="primary">
+                      同步合同到已签署的正式合同
+                    </button>
+                    <button nz-button [disabled]="item.allDisable" nzType="primary" *ngIf="item.invalidContractId"
+                      (click)="signInvalidDown(item.id)">作废声明文档下载</button>
+                  </div>
+                </ng-container>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          <div nz-row>
+            <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="12" nzXl="12">
+              <nz-form-item>
+                <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired [nzNoColon]="true">
+                  {{"orderv3.components.contract-sign.dealerName" | translate}}
+                </nz-form-label>
+                <nz-form-control nzXs="24" nzSm="24" nzMd="16">
+                  <input nz-input disabled [(ngModel)]="item.dealerName" />
+                  <nz-alert *ngIf="item.dealerCheckStatus" nzType="warning" [nzMessage]="item.dealerCheckStatus"
+                    nzShowIcon></nz-alert>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+            <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="12" nzXl="12">
+              <nz-form-item>
+                <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired [nzNoColon]="true">
+                  {{"orderv3.components.contract-sign.dealerAccount" | translate}}
+                </nz-form-label>
+                <nz-form-control nzXs="24" nzSm="24" nzMd="16">
+                  <!-- <input nz-input [(ngModel)]="dealerAccount" /> -->
+                  <input-suggest ngDefaultControl [suggestions]="dealerAccountSuggestList"
+                    [(ngModel)]="item.dealerBestSignAccount"
+                    (ngModelChange)="dealerAccountChange('dealerBestSignAccount', $event, item.id)"
+                    [disabled]="item.status !== 'DRAFT' || item.allDisable"></input-suggest>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+            <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="12" nzXl="12">
+              <nz-form-item>
+                <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired [nzNoColon]="true">
+                  {{"orderv3.components.contract-sign.dealerRepresentativeBestSignAccount" | translate}}
+                </nz-form-label>
+                <nz-form-control nzXs="24" nzSm="24" nzMd="16">
+                  <!-- <input nz-input [(ngModel)]="dealerRepresentativeBestSignAccount" /> -->
+                  <input-suggest ngDefaultControl [suggestions]="dealerRepresentativeAccountSuggestList"
+                    [(ngModel)]="item.dealerRepresentativeBestSignAccount"
+                    (ngModelChange)="dealerAccountChange('dealerRepresentativeBestSignAccount', $event, item.id)"
+                    [disabled]="item.status !== 'DRAFT' || item.allDisable"></input-suggest>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+          </div>
+
+          <div nz-row *ngIf="contractCurrency === 'USD'">
+            <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="12" nzXl="12">
+              <nz-form-item>
+                <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired [nzNoColon]="true">
+                  {{"orderv3.components.contract-sign.foreignTradeCorpName" | translate}}
+                </nz-form-label>
+                <nz-form-control nzXs="24" nzSm="24" nzMd="16">
+                  <input nz-input disabled [(ngModel)]="item.foreignTradeCorpName" />
+                  <nz-alert *ngIf="item.foreignerCheckStatus" nzType="warning" [nzMessage]="item.foreignerCheckStatus"
+                    nzShowIcon></nz-alert>
+                </nz-form-control>
+
+              </nz-form-item>
+            </div>
+            <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="12" nzXl="12">
+              <nz-form-item>
+                <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired [nzNoColon]="true">
+                  {{"orderv3.components.contract-sign.foreignTradeCorpAccount" | translate}}
+                </nz-form-label>
+                <nz-form-control nzXs="24" nzSm="24" nzMd="16">
+                  <!-- <input nz-input [(ngModel)]="foreignTradeCorpBestSignAccount" /> -->
+                  <input-suggest ngDefaultControl [suggestions]="foreignTradeCorpAccountSuggestList"
+                    [(ngModel)]="item.foreignTradeCorpBestSignAccount"
+                    (ngModelChange)="dealerAccountChange('foreignTradeCorpBestSignAccount', $event, item.id)"
+                    [disabled]="item.status !== 'DRAFT' || item.allDisable"></input-suggest>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+            <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="12" nzXl="12">
+              <nz-form-item>
+                <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired [nzNoColon]="true">
+                  {{"orderv3.components.contract-sign.foreignTradeCorpRepresentativeBestSignAccount" | translate}}
+                </nz-form-label>
+                <nz-form-control nzXs="24" nzSm="24" nzMd="16">
+                  <!-- <input nz-input [(ngModel)]="foreignTradeCorpRepresentativeBestSignAccount" /> -->
+                  <input-suggest ngDefaultControl [suggestions]="foreignTradeCorpRepresentativeAccountSuggestList"
+                    [(ngModel)]="item.foreignTradeCorpRepresentativeBestSignAccount"
+                    (ngModelChange)="dealerAccountChange('foreignTradeCorpRepresentativeBestSignAccount', $event, item.id)"
+                    [disabled]="item.status !== 'DRAFT' || item.allDisable"></input-suggest>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+          </div>
+          <div nz-row>
+            <nz-form-item>
+              <nz-form-label nzXs="24" nzSm="24" nzMd="2" [nzNoColon]="true">选择合同币种</nz-form-label>
+              <nz-form-control nzXs="24" nzSm="24" nzMd="21">
+                <ng-container>
+                  <nz-radio-group [(ngModel)]="item.currency" [nzDisabled]="true"
+                    (ngModelChange)="currencyChange($event, indx)">
+                    <label nz-radio nzValue="CNY" [nzDisabled]="true">人民币</label>
+                    <label nz-radio nzValue="USD" [nzDisabled]="true">美金</label>
+                  </nz-radio-group>
+                </ng-container>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          <div nz-row>
+            <nz-form-item>
+              <nz-form-label nzXs="24" nzSm="24" nzMd="2" [nzNoColon]="true">选择签署方式</nz-form-label>
+              <nz-form-control nzXs="24" nzSm="24" nzMd="21">
+                <ng-container>
+                  <nz-select class="contract-select" (ngModelChange)="templateChange($event, indx)"
+                    *ngIf="item.status === 'DRAFT'; else otherTemplateRadio" nzShowSearch [(ngModel)]="item.signWay"
+                    [nzDisabled]="item.allDisable">
+                    <nz-option *ngFor="let sitem of templateList"
+                      [nzLabel]="sitem.templateName + '：' +sitem.templateDisplayName"
+                      [nzValue]="sitem.templateId"></nz-option>
+                  </nz-select>
+                  <ng-template #otherTemplateRadio>
+                    <nz-select class="contract-select" nzShowSearch [(ngModel)]="item.signWay" [nzDisabled]="true">
+                      <nz-option *ngFor="let sitem of templateList"
+                        [nzLabel]="sitem.templateName + '：' +sitem.templateDisplayName"
+                        [nzValue]="sitem.templateId"></nz-option>
+                    </nz-select>
+                  </ng-template>
+                </ng-container>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          <div nz-row>
+            <nz-form-item>
+              <nz-form-label nzXs="24" nzSm="24" nzMd="2" [nzNoColon]="true">是否为取消/赔偿协议</nz-form-label>
+              <nz-form-control nzXs="24" nzSm="24" nzMd="21">
+
+                <div nz-row nzType="flex" nzJustify="start" nzAlign="middle" style="width: 100%;">
+                  <nz-radio-group [disabled]="item.allDisable || item.status !== 'DRAFT'"
+                    [(ngModel)]="item.isCancelAgreement" (ngModelChange)="agreementChange($event, indx)">
+                    <label nz-radio [nzValue]="false">否</label>
+                    <label nz-radio [nzValue]="true">是</label>
+                  </nz-radio-group>
+                  <nz-select class="contract-select" [disabled]="item.allDisable || item.status !== 'DRAFT'"
+                    nzMode="multiple" (ngModelChange)="agreementSelectChange($event, indx)"
+                    [(ngModel)]="item.agreementApplyIdArray" *ngIf="item.isCancelAgreement && item.status === 'DRAFT'">
+                    <nz-option *ngFor="let sitem of relatedSPCancelOrderList" [nzLabel]="sitem.applyCode"
+                      [nzValue]="sitem.id"></nz-option>
+                  </nz-select>
+                  <div *ngIf="item.isCancelAgreement && item.status !== 'DRAFT'">
+                    <button [disabled]="item.allDisable" class="tableLink" nz-button nzType="link"
+                      *ngFor="let sitem of item.agreements"
+                      (click)="goJump(sitem, 'agreements')">{{sitem.applyCode}}</button>
+                  </div>
+                </div>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          <div nz-row>
+            <nz-form-item>
+              <nz-form-label nzXs="24" nzSm="24" nzMd="2" [nzNoColon]="true">是否关联相同DealForm下的其他合同概要表</nz-form-label>
+              <nz-form-control nzXs="24" nzSm="24" nzMd="21">
+                <div nz-row nzType="flex" nzJustify="start" nzAlign="middle" style="width: 100%;">
+                  <nz-radio-group [nzDisabled]="item.allDisable || item.status !== 'DRAFT'"
+                    [(ngModel)]="item.ifRelatedOrderSummary" (ngModelChange)="summaryChange($event, indx)">
+                    <label nz-radio [nzValue]="false">否</label>
+                    <label nz-radio [nzValue]="true">是</label>
+                  </nz-radio-group>
+                  <nz-select class="contract-select" [nzDisabled]="item.allDisable" nzMode="multiple"
+                    [(ngModel)]="item.relatedOrderSummaryIdsArray"
+                    *ngIf="item.ifRelatedOrderSummary && item.status === 'DRAFT'"
+                    (ngModelChange)="summarySelectChange($event, indx)">
+                    <nz-option *ngFor="let sitem of relatedContractSummaryList" [nzLabel]="sitem.referenceId"
+                      [nzValue]="sitem.applyId"></nz-option>
+                  </nz-select>
+                  <div *ngIf="item.ifRelatedOrderSummary && item.status !== 'DRAFT'">
+                    <button [disabled]="item.allDisable" class="tableLink" nz-button nzType="link"
+                      *ngFor="let sitem of item.relatedOrderSummaries"
+                      (click)="goJump(sitem, 'summaries')">{{sitem.referenceId}}</button>
+                  </div>
+                </div>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          <nz-table #contractTable [nzData]="item.contracts" [nzScroll]="{ x: isMobile ? '1000px' : '1500px' }"
+            [nzShowPagination]="false" style="margin-top: 16px">
+            <thead>
+              <tr>
+                <th class="tableHead" nzAlign="center" style="width: 320px">
+                  {{"list-pages.table-header.file-name" | translate}}
+                </th>
+                <th class="tableHead" nzAlign="center" style="width: 320px">
+                  {{"list-pages.table-header.support-file-name" | translate}}
+                </th>
+                <th class="tableHead" nzAlign="center" style="width: 220px">
+                  {{"list-pages.table-header.file-type" | translate}}
+                </th>
+                <th class="tableHead" nzAlign="center" style="width: 240px">
+                  {{"list-pages.table-header.file-status" | translate}}
+                </th>
+                <th class="tableHead" nzAlign="center" [nzRight]="isMobile ? false : '0px'" class="tableAction">
+                  {{"list-pages.table-header.action" | translate}}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let data of contractTable.data; index as dataIndex;">
+                <td style="width: 320px;" nzAlign="center">
+                  <button class="tableLink" nz-button nzType="link" (click)="downloadFile(data ,'')"
+                    [disabled]="item.allDisable">{{
+                    data.fileName }}</button>
+                </td>
+                <td style="width: 320px;" nzAlign="center">
+                  <div class="supportFileNameDiv" style="display: flex; flex-direction: column">
+                    <button class="tableLink" nz-button nzType="link" [disabled]="item.allDisable"
+                      (click)="downloadFile(sitem, '')" *ngFor="let sitem of data.supportFileIds; index as sindex;">
+                      {{ sitem.fileName }}
+                    </button>
+                  </div>
+                </td>
+                <td style="width: 220px;" nzAlign="center">
+                  <nz-select style="width: 200px;" [nzDisabled]="item.allDisable || item.status !== 'DRAFT'"
+                    [(ngModel)]="data.documentId" (ngModelChange)="documentsChange($event, indx, dataIndex)" [nzAllowClear]="true">
+                    <nz-option [nzValue]="itm.documentId" [nzLabel]="itm.documentName"
+                      *ngFor="let itm of item.backupDocuments; index as inx;" [nzDisabled]="itm.disabled"></nz-option>
+                  </nz-select>
+                </td>
+                <td style="width: 240px;" nzAlign="center">
+                  <div *ngIf="(item.status !== 'DRAFT' && item.status !== 'CREATED'); else elseBlock"
+                    [nzOverlayStyle]="{minWidth: isMobile ? '280px' : '400px'}" nz-popover [nzTitle]="titleTemplate"
+                    [nzContent]="contentTemplate">
+                    {{item.statusTxt}}
+                  </div>
+                  <ng-template #elseBlock><span>{{ item.statusTxt }}</span></ng-template>
+                  <ng-template #titleTemplate>
+                    {{ convertStatusText(item.status) }}
+                  </ng-template>
+                  <ng-template #contentTemplate>
+                    <nz-timeline nzMode="alternate">
+                      <nz-timeline-item *ngFor="let history of item.history;" dotTemplate
+                        [nzColor]="getDotColor(history.action)">
+                        <ng-template #dotTemplate>
+                          <ng-container
+                            *ngIf="(history.action === 'BEING_CARRIED' || history.action === 'REJECT'); else elseDotTemplate">
+                            <i nz-icon nzType="edit" nzTheme="outline" style="color: #ff9100"
+                              *ngIf="history.action === 'BEING_CARRIED'"></i>
+                            <i nz-icon nzType="stop" nzTheme="outline" *ngIf="history.action === 'REJECT'"></i>
+                          </ng-container>
+                          <ng-template #elseDotTemplate>
+                            <div
+                              style="width: 6px;height: 6px;border-radius: 50%;border: 2px solid rgb(163, 163, 163);">
+                            </div>
+                          </ng-template>
+                        </ng-template>
+                        <div>
+                          {{roleDisplayNameFilter(history.currentUserRole)}}{{history.currentUserName ?
+                          '('+history.currentUserName+')' : ''}}
+                        </div>
+                        <span nz-tooltip [nzTitle]="tooltipTitleTemplate" *ngIf="history.comments; else tooltipBlock"
+                          nzPlacement="left">
+                          <nz-badge [nzDot]="true" nzColor="blue">
+                            <b>{{ convertSignStatusText(history.action, history.contractType,history.isAutoSigned) }}</b>
+                          </nz-badge>
+                        </span>
+                        <ng-template #tooltipTitleTemplate>
+                          <span><small>Comments: {{ history.comments }}</small></span>
+                        </ng-template>
+                        <ng-template #tooltipBlock>
+                          <b>{{ convertSignStatusText(history.action, history.contractType) }}</b>
+                        </ng-template>
+                        <br />
+                        <small>{{ myMoment(history.updateTime) }}</small>
+                      </nz-timeline-item>
+                    </nz-timeline>
+                  </ng-template>
+                </td>
+                <td class="tableAction" nzAlign="center" [nzRight]="isMobile ? false : '0px'">
+                  <nz-upload *ngIf="item.showsupport" [nzBeforeUpload]="beforeUpload" [nzMultiple]="true"
+                    [nzShowUploadList]="false">
+                    <button nz-button [disabled]="item.allDisable" nzType="link"
+                      (click)="clickset('support', indx, item.id, data.id)"
+                      [nzSize]="isMobile ? 'small' : 'default'">上传支持文件</button>
+                  </nz-upload>
+                  <button nz-button [disabled]="item.allDisable" nzType="link" *ngIf="item.showdelfile"
+                    (click)="delContract(data, indx, item.id)" [nzSize]="isMobile ? 'small' : 'default'">删除</button>
+                  <button nz-button [disabled]="item.allDisable" nzType="link" *ngIf="item.status !== 'DRAFT'"
+                    (click)="signDown(data)" [nzSize]="isMobile ? 'small' : 'default'">最新签署文件下载</button>
+                </td>
+              </tr>
+            </tbody>
+          </nz-table>
+        </div>
+      </div>
+    </div>
+  </nz-spin>
+</app-form-section>
+
+<nz-modal [nzTitle]="modalTitle" [(nzVisible)]="modalVisible" (nzOnCancel)="modalVisible = false"
+  (nzOnOk)="handleModalOk()" [nzMaskClosable]="false" [nzKeyboard]="false" [nzCancelLoading]="uploadLoading"
+  [nzOkLoading]="uploadLoading" (nzOnCancel)="modalVisible = false">
+  <div *ngIf="modalType === 'signCancel';else modalTemplate">
+    <div>
+      <nz-select [(ngModel)]="reasonLabel" placeHolder="请选择理由" nzPlaceHolder="请选择理由" style="width: 100%;"
+        (ngModelChange)="reasonChange($event)">
+        <nz-option *ngFor="let item of cancelOptions" [nzLabel]="item.label" [nzValue]="item.code"></nz-option>
+      </nz-select>
+    </div>
+    <div style="margin-top: 15px;" *ngIf="reasonLabel === 'best_sign_reject_reason_other'">
+      <textarea rows="5" placeholder="请输入备注" nz-input [(ngModel)]="cancelBackup"></textarea>
+    </div>
+  </div>
+  <ng-template #modalTemplate>
+    <div>
+      <textarea rows="5" placeholder="请输入理由" nz-input [(ngModel)]="reasonText"></textarea>
+    </div>
+  </ng-template>
+</nz-modal>
+
+<nz-modal [(nzVisible)]="uploadVisible" nzTitle="选择合同文件" [nzWidth]="1000" (nzOnCancel)="uploadVisible = false"
+  [nzContent]="modalContent" [nzMaskClosable]="false" [nzKeyboard]="false" [nzFooter]="modalFooter">
+  <ng-template #modalContent>
+    <nz-table #rowSelectionTable [nzData]="contractSignFileList" [nzShowPagination]="false"
+      (nzCurrentPageDataChange)="currentPageDataChange($event)" [nzScroll]="{x: isMobile ? '600px' : 0}">
+      <thead>
+        <!-- <th nzShowCheckbox [(nzChecked)]="isAllDisplayDataChecked" [nzIndeterminate]="isIndeterminate"
+          (nzCheckedChange)="checkAll($event)" nzAlign="center"></th> -->
+        <th nzAlign="center"></th>
+        <th nzAlign="center">文件名称</th>
+        <th nzAlign="center">文件类型</th>
+        <th nzAlign="center">操作</th>
+      </thead>
+      <tbody>
+        <tr *ngFor="let data of rowSelectionTable.data">
+          <td nzAlign="center" nzShowCheckbox [(nzChecked)]="mapOfCheckedId[data.id]"
+              (nzCheckedChange)="onSingleCheck(data.id)">
+          </td>
+          <td nzAlign="center">{{ data.fileName }}</td>
+          <td nzAlign="center">未签署文件</td>
+          <!-- <td nzAlign="center">{{ data.fileType }}</td> -->
+          <td nzAlign="center">
+            <button nz-button nzType="link" (click)="downloadFile(data, 'modal')"> 查看文件 </button>
+          </td>
+        </tr>
+      </tbody>
+    </nz-table>
+  </ng-template>
+
+  <ng-template #modalFooter>
+    <button nz-button nzType="default" key="back" [disabled]="uploadLoading" (click)="uploadVisible = false">
+      取消</button>
+    <button nz-button nzType="primary" key="submit" type="primary" [nzLoading]="uploadLoading" (click)="handleOk()">
+      确定</button>
+  </ng-template>
+</nz-modal>

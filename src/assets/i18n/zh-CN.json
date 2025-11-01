@@ -1169,6 +1169,7 @@
       "contract-sign": {
         "contract-summary": "合同概要表",
         "sin": "合同签署",
+        "podSin": "POD签署",
         "history": "审批记录",
         "change": "审核改单",
         "cancel": "返回",
@@ -1184,6 +1185,7 @@
       "oit-complete": {
         "contract-summary": "合同概要表",
         "sin": "合同签署",
+        "podSin": "POD签署",
         "oit-tab": "OIT完成",
         "third-tab": "第三方自采核查",
         "so-tab": "上传SO#",

@@ -34,6 +34,7 @@ export class ContractSignDetailComponent implements OnInit {
   public contractSignInfo: any; //合同签署
   public orderSummaryInfo: any; //order summary层级
   public contractInfo: any;
+  public contractType: any; //合同类型
   public applyId;
   public status;
   public editBase: boolean = false;
@@ -49,6 +50,7 @@ export class ContractSignDetailComponent implements OnInit {
     "contract-tab",
     "summary-tab",
     "complete-tab",
+    "pod-contract-tab",
     "approval-record",
   ];
   public signatureStatus: string;
@@ -681,12 +683,16 @@ export class ContractSignDetailComponent implements OnInit {
   get contractBuyerFromData(): FormGroup {
     return this.formValue.get("contractBuyerFrom") as FormGroup;
   }
+  get isPODContract(): boolean {
+    return this.contractType === "POD";
+  }
 
   refreshDetail() {
     this.init();
   }
 
   init() {
+    this.contractType = this.activatedRouter.queryParams["value"].contractType;
     this.applyId = this.activatedRouter.queryParams["_value"].id;
     this.status = this.activatedRouter.queryParams["value"].taskStatus;
     this.processInstanceTaskId =
@@ -800,6 +806,9 @@ export class ContractSignDetailComponent implements OnInit {
 
     setTimeout(() => {
       this.tabIndex = 2;
+      if(this.isPODContract){
+        this.tabIndex = 3;
+      }
       this.myskip(this.tabList[this.tabIndex]);
     }, 200);
   }
@@ -1359,11 +1368,96 @@ export class ContractSignDetailComponent implements OnInit {
       }
     }
   }
+
+  applySignatureSubmit(
+    status: any,
+    zslSignSupplement: any,
+    backParam: any = false
+  ) {
+    const {
+      signFileForm,
+      remarkFrom,
+      contractSignForm,
+      applyId,
+      remarkFromsignature,
+    } = this.formValue.getRawValue();
+    signFileForm.contractConfirmedDate =
+      signFileForm.contractConfirmedDate != null &&
+      signFileForm.contractConfirmedDate != ""
+        ? moment(signFileForm.contractConfirmedDate).format(
+            "YYYY-MM-DD hh:mm:ss"
+          )
+        : null;
+    if (
+      signFileForm.zslNotSignedFile &&
+      signFileForm.zslNotSignedFile.constructor == FormArray
+    ) {
+      signFileForm.zslNotSignedFile =
+        signFileForm.zslNotSignedFile.getRawValue();
+    }
+    const contractSignInfo = {
+      id: contractSignForm.id,
+      ...contractSignForm,
+      ...signFileForm,
+    };
+    //const zslAdminEmail = localStorage.getItem("ecom_ng_philips_code1");
+    const param = {
+      remark: remarkFromsignature.comments,
+      //zslAdminEmail,
+      applyId,
+      status,
+      zslSignSupplement,
+      contractSignInfo,
+    };
+    if (status == "submit" && zslSignSupplement != 1 && !backParam) {
+      const valid = this.cheakSignaturForm(this.signFileFormData);
+      if (!valid) {
+        this.message.create("error", "有必填项没有填写");
+        this.myskip("complete-tab");
+        return;
+      }
+    }
+    if (backParam) {
+      this.remarkFromsignatureData
+        .get("comments")
+        .setValidators(Validators.required);
+      this.remarkFromsignatureData.get("comments").markAsDirty();
+      this.remarkFromsignatureData.updateValueAndValidity();
+      const valid = this.cheakSignaturForm(this.remarkFromsignatureData);
+      if (!valid) {
+        this.message.create("error", "有必填项没有填写");
+        this.myskip("approval-history");
+        return;
+      }
+    }
+    this.pageLoading = true;
+    this.serveice.signatureSubmit(param).subscribe((res) => {
+      this.pageLoading = false;
+      if (res.code == "0000") {
+        if (status == "submit") {
+          this.message.create("success", res.msg);
+          this.routerExtendService.back();
+        } else {
+          // console.log(res.data);
+          this.init();
+          this.message.create("success", res.msg);
+        }
+      }
+    });
+  }
   tabclick(i) {
     //tab选项卡的点击事件
     if (typeof i === "number") {
       this.tabIndex = i;
     }
+  }
+  cheakSignaturForm(param) {
+    //检查是否必填
+    for (const i in param.controls) {
+      param.controls[i].markAsDirty();
+      param.controls[i].updateValueAndValidity();
+    }
+    return param.valid;
   }
   createProdut(val: any, index, currencySystem) {
     //创建产品

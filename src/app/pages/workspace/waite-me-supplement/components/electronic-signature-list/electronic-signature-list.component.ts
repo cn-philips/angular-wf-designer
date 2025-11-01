@@ -16,6 +16,7 @@ export class ElectronicSignatureListComponent implements OnInit {
   @Input() type: any;
   @Input() formData: any;
   @Input() from: any;
+  @Input() signType: any = 'COMMON';
 
   @Output() pageChange = new EventEmitter<any>();
   @Output() setLoading = new EventEmitter<boolean>();
@@ -320,38 +321,9 @@ export class ElectronicSignatureListComponent implements OnInit {
         zslSignSupplement: this.formData.zslSignSupplement,
         signatureStatus: "signatureStatus",
         sign: 1,
+        contractType: this.signType
       },
     });
-    // if (flag) {
-    //   const url = "/order-v3/contractSignDetail";
-    //   this.router.navigate([url], {
-    //     queryParams: {
-    //       id: data.id,
-    //       needFileType: this.type,
-    //       processInstanceTaskId: data.processInstanceTaskId,
-    //       taskStatus: data.taskStatus,
-    //       procInstId: data.procInstId,
-    //       flag: 1,
-    //       zslSignSupplement: this.formData.zslSignSupplement,
-    //       signatureStatus: "signatureStatus",
-    //       sign: 1,
-    //     },
-    //   });
-    // } else {
-    //   const url = "/order-v3/contractSign";
-    //   this.router.navigate([url], {
-    //     queryParams: {
-    //       id: data.id,
-    //       needFileType: this.type,
-    //       processInstanceTaskId: data.processInstanceTaskId,
-    //       taskStatus: data.taskStatus,
-    //       procInstId: data.procInstId,
-    //       flag: 1,
-    //       zslSignSupplement: this.formData.zslSignSupplement,
-    //       signatureStatus: "signatureStatus",
-    //     },
-    //   });
-    // }
   }
 
   // 进单模式

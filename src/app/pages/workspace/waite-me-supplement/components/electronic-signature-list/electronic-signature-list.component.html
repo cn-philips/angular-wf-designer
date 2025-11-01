@@ -10,7 +10,6 @@
 [(nzPageSize)]="pageSize"
 (nzPageIndexChange)="searchData()"
 (nzPageSizeChange)="searchData(true)" -->
-
 <nz-table #bestSignTable [nzData]="tableData" [nzFrontPagination]="false" [(nzPageIndex)]="pageParams.pageNo"
   [(nzPageSize)]="pageParams.pageSize" [nzTotal]="total" [nzLoading]="loading"
   [nzScroll]="{x: (formData.queryType=='todo' || formData.queryType=='handled') ? '1500px' : '2200px'}"

@@ -1161,6 +1161,7 @@
       "contract-sign": {
         "contract-summary": "Contract Summary",
         "sin": "Contract Signed",
+        "podSin": "POD Signed",
         "history": "Approved History",
         "change": "Order Change Review",
         "cancel": "Cancel",
@@ -1176,6 +1177,7 @@
       "oit-complete": {
         "contract-summary": "Contract Summary",
         "sin": "Contract Signed",
+        "podSin": "POD Signed",
         "oit-tab": "OIT Completion",
         "third-tab": "Buyer Purchase 3rd Party Item Check",
         "so-tab": "Upload SO#",
