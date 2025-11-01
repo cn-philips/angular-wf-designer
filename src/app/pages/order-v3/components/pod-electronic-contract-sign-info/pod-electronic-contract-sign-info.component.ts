@@ -48,7 +48,7 @@ export class PodElectronicContractSignInfoComponent implements OnInit {
   // 已签署的合同正本文件
   @Input() contractSignedFilesList: any = [];
   @Output() refreshDetail: EventEmitter<any> = new EventEmitter();
-  private contractType = "COMMON";
+  private contractType = "POD";
   roleMapping = {
     ZoneSalesLeader: "ZSL",
     Philips: "Philips",
@@ -1176,6 +1176,7 @@ export class PodElectronicContractSignInfoComponent implements OnInit {
       ifRelatedOrderSummary: false,
       agreementApplyId: "",
       relatedOrderSummaryIds: "",
+      contractType: this.contractType,
     };
     const res = await this.http.createEditSign(params);
     const { code, data } = res;
