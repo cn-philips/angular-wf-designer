@@ -1126,8 +1126,6 @@ export class PodElectronicContractSignInfoComponent implements OnInit {
     }
   }
   async doCreateSignProcess() {
-
-    const contractCurrency = this.contractCurrency;
     let dealerBestSignAccount = this.dealerBestSignAccount,
       dealerRepresentativeBestSignAccount =
         this.dealerRepresentativeBestSignAccount,

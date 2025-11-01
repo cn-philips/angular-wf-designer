@@ -84,7 +84,6 @@
                   {{"orderv3.components.contract-sign.dealerAccount" | translate}}
                 </nz-form-label>
                 <nz-form-control nzXs="24" nzSm="24" nzMd="16">
-                  <!-- <input nz-input [(ngModel)]="dealerAccount" /> -->
                   <input-suggest ngDefaultControl [suggestions]="dealerAccountSuggestList"
                     [(ngModel)]="item.dealerBestSignAccount"
                     (ngModelChange)="dealerAccountChange('dealerBestSignAccount', $event, item.id)"
@@ -98,7 +97,6 @@
                   {{"orderv3.components.contract-sign.dealerRepresentativeBestSignAccount" | translate}}
                 </nz-form-label>
                 <nz-form-control nzXs="24" nzSm="24" nzMd="16">
-                  <!-- <input nz-input [(ngModel)]="dealerRepresentativeBestSignAccount" /> -->
                   <input-suggest ngDefaultControl [suggestions]="dealerRepresentativeAccountSuggestList"
                     [(ngModel)]="item.dealerRepresentativeBestSignAccount"
                     (ngModelChange)="dealerAccountChange('dealerRepresentativeBestSignAccount', $event, item.id)"
@@ -128,7 +126,6 @@
                   {{"orderv3.components.contract-sign.foreignTradeCorpAccount" | translate}}
                 </nz-form-label>
                 <nz-form-control nzXs="24" nzSm="24" nzMd="16">
-                  <!-- <input nz-input [(ngModel)]="foreignTradeCorpBestSignAccount" /> -->
                   <input-suggest ngDefaultControl [suggestions]="foreignTradeCorpAccountSuggestList"
                     [(ngModel)]="item.foreignTradeCorpBestSignAccount"
                     (ngModelChange)="dealerAccountChange('foreignTradeCorpBestSignAccount', $event, item.id)"
@@ -142,7 +139,6 @@
                   {{"orderv3.components.contract-sign.foreignTradeCorpRepresentativeBestSignAccount" | translate}}
                 </nz-form-label>
                 <nz-form-control nzXs="24" nzSm="24" nzMd="16">
-                  <!-- <input nz-input [(ngModel)]="foreignTradeCorpRepresentativeBestSignAccount" /> -->
                   <input-suggest ngDefaultControl [suggestions]="foreignTradeCorpRepresentativeAccountSuggestList"
                     [(ngModel)]="item.foreignTradeCorpRepresentativeBestSignAccount"
                     (ngModelChange)="dealerAccountChange('foreignTradeCorpRepresentativeBestSignAccount', $event, item.id)"
