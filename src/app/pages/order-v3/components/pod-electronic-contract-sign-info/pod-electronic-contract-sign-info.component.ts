@@ -48,6 +48,7 @@ export class PodElectronicContractSignInfoComponent implements OnInit {
   // 已签署的合同正本文件
   @Input() contractSignedFilesList: any = [];
   @Output() refreshDetail: EventEmitter<any> = new EventEmitter();
+  private contractType = "COMMON";
   roleMapping = {
     ZoneSalesLeader: "ZSL",
     Philips: "Philips",
@@ -1081,7 +1082,7 @@ export class PodElectronicContractSignInfoComponent implements OnInit {
   async getContractSignList() {
     if (!this.contractId) return false;
     let from = this.from;
-    const res = await this.http.getContractSignList(from, this.contractId);
+    const res = await this.http.getContractSignList(from, this.contractType, this.contractId);
     const { code, data, msg } = res;
     if (code === "0000") {
       let lastData = this.judgeStatus(data);

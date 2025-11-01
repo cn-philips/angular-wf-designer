@@ -48,7 +48,7 @@ export class ElectronicSignatureSearchItemComponent implements OnInit {
   @Input() queryType: any = "todo";
   @Input() isWatermark: any = false;
   @Input() from: any;
-  @Input() signType: any = 'COMMON';
+  @Input() contractType: any = 'COMMON';
 
   public showSign: boolean = false;
   public authorizationload: boolean = false;
@@ -87,7 +87,7 @@ export class ElectronicSignatureSearchItemComponent implements OnInit {
     private fileService: FileService
   ) {}
   get isPodContract() {
-    return this.signType === 'POD';
+    return this.contractType === 'POD';
   }
   public formValues = this.fb.group({
     referenceId: [null], //Reference No

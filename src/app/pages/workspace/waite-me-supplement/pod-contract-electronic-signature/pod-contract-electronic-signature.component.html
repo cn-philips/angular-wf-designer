@@ -2,9 +2,9 @@
   <electronic-signature-search-item #electronicSearchItem [loading]="loading" [formData]="formValues"
     [totalOne]="totalOne" [totalTwo]="totalTwo" [totalThree]="totalThree" [totalFour]="totalFour"
     [queryType]="queryType" (search)="updateParams($event)" (setLoading)="getLoading($event)"
-    (batchSign)="handleBatchSignContract()" [from]="from" [signType]="'POD'">
+    (batchSign)="handleBatchSignContract()" [from]="from" [contractType]="'POD'">
   </electronic-signature-search-item>
   <electronic-signature-list #table [loading]="loading" [formData]="formValues" [tableData]="tableData" [total]="total"
-    [type]="type" (pageChange)="updateDataList($event)" (setLoading)="getLoading($event)" [from]="from" [signType]="'POD'">
+    [type]="type" (pageChange)="updateDataList($event)" (setLoading)="getLoading($event)" [from]="from" [contractType]="'POD'">
   </electronic-signature-list>
 </div>

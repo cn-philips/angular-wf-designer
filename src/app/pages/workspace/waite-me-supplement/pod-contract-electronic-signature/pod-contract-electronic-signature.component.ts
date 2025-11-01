@@ -27,7 +27,7 @@ export class PodContractElectronicSignatureComponent implements OnInit {
   public pageParams = {
     pageNo: 1,
     pageSize: 10,
-    signType:'POD'
+    contractType:'POD'
   };
   public total = 0; //统计数量
   public totalOne = 0; //oa无需处理
@@ -63,7 +63,7 @@ export class PodContractElectronicSignatureComponent implements OnInit {
     this.pageParams = {
       pageNo: 1,
       pageSize: 10,
-      signType:'POD'
+      contractType:'POD'
     };
     this.getTableData();
     this.table.resetPage();
@@ -78,7 +78,7 @@ export class PodContractElectronicSignatureComponent implements OnInit {
       this.pageParams = {
         pageNo: 1,
         pageSize: 10,
-      signType:'POD'
+      contractType:'POD'
       };
     }
     this.pageParams["pageNo"] = pagination.pageNo;

@@ -27,7 +27,7 @@ export class ContractElectronicSignatureComponent implements OnInit {
   public pageParams = {
     pageNo: 1,
     pageSize: 10,
-    signType:'COMMON'
+    contractType:'COMMON'
   };
   public total = 0; //统计数量
   public totalOne = 0; //oa无需处理
@@ -63,7 +63,7 @@ export class ContractElectronicSignatureComponent implements OnInit {
     this.pageParams = {
       pageNo: 1,
       pageSize: 10,
-      signType:'COMMON'
+      contractType:'COMMON'
     };
     this.getTableData();
     this.table.resetPage();
@@ -78,7 +78,7 @@ export class ContractElectronicSignatureComponent implements OnInit {
       this.pageParams = {
         pageNo: 1,
         pageSize: 10,
-        signType:'COMMON'
+        contractType:'COMMON'
       };
     }
     this.pageParams["pageNo"] = pagination.pageNo;

@@ -16,7 +16,7 @@ export class ElectronicSignatureListComponent implements OnInit {
   @Input() type: any;
   @Input() formData: any;
   @Input() from: any;
-  @Input() signType: any = 'COMMON';
+  @Input() contractType: any = 'COMMON';
 
   @Output() pageChange = new EventEmitter<any>();
   @Output() setLoading = new EventEmitter<boolean>();
@@ -321,7 +321,7 @@ export class ElectronicSignatureListComponent implements OnInit {
         zslSignSupplement: this.formData.zslSignSupplement,
         signatureStatus: "signatureStatus",
         sign: 1,
-        contractType: this.signType
+        contractType: this.contractType
       },
     });
   }

@@ -373,8 +373,8 @@ export class OrderV3Service {
   }
 
   // 获取电子签章流程列表
-  getContractSignList(from: any, params: any) {
-    const url = `/act/contractSign/${from}/${params}`;
+  getContractSignList(from: any, contractType:any, params: any) {
+    const url = `/act/contractSign/${from}/${contractType}/${params}`;
     return this.http.get(url).toPromise();
   }
 
