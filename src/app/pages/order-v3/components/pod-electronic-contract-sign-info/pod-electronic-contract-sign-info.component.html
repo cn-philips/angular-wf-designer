@@ -65,6 +65,49 @@
               </nz-form-control>
             </nz-form-item>
           </div>
+          <!-- New -->
+          <div nz-row>
+            <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="12" nzXl="12">
+              <nz-form-item>
+                <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired [nzNoColon]="true">
+                  货运代理公司
+                </nz-form-label>
+                <nz-form-control nzXs="24" nzSm="24" nzMd="16">
+                  <input-suggest ngDefaultControl [suggestions]="freightForwarderList"
+                    [(ngModel)]="item.freightForwarderName"
+                    (ngModelChange)="freightForwarderChange($event, item.id)"
+                    [key]="'value'"
+                    [disabled]="item.status !== 'DRAFT' || item.allDisable"></input-suggest>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+            <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="12" nzXl="12">
+              <nz-form-item>
+                <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired [nzNoColon]="true">
+                  货运代理公司盖章人账号
+                </nz-form-label>
+                <nz-form-control nzXs="24" nzSm="24" nzMd="16">
+                  <input-suggest ngDefaultControl [suggestions]="(item.freightForwarderName?freightForwarderBestSignAccountSuggestListTemp[item.freightForwarderName]:[])||[]"
+                    [(ngModel)]="item.freightForwarderBestSignAccount"
+                    (ngModelChange)="freightForwarderBestSignChange($event, item.id)"
+                    [disabled]="item.status !== 'DRAFT' || item.allDisable"></input-suggest>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+            <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="12" nzXl="12">
+              <nz-form-item>
+                <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired [nzNoColon]="true">
+                  货运代理公司签字人账号
+                </nz-form-label>
+                <nz-form-control nzXs="24" nzSm="24" nzMd="16">
+                  <input-suggest ngDefaultControl [suggestions]="(item.freightForwarderName?freightForwarderRepresentativeAccountSuggestListTemp[item.freightForwarderName]:[])||[]"
+                    [(ngModel)]="item.freightForwarderRepresentativeBestSignAccount"
+                    (ngModelChange)="freightForwarderRepresentativeSignChange($event, item.id)"
+                    [disabled]="item.status !== 'DRAFT' || item.allDisable"></input-suggest>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+          </div>
           <div nz-row>
             <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="12" nzXl="12">
               <nz-form-item>
@@ -105,49 +148,7 @@
               </nz-form-item>
             </div>
           </div>
-
-          <div nz-row *ngIf="contractCurrency === 'USD'">
-            <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="12" nzXl="12">
-              <nz-form-item>
-                <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired [nzNoColon]="true">
-                  {{"orderv3.components.contract-sign.foreignTradeCorpName" | translate}}
-                </nz-form-label>
-                <nz-form-control nzXs="24" nzSm="24" nzMd="16">
-                  <input nz-input disabled [(ngModel)]="item.foreignTradeCorpName" />
-                  <nz-alert *ngIf="item.foreignerCheckStatus" nzType="warning" [nzMessage]="item.foreignerCheckStatus"
-                    nzShowIcon></nz-alert>
-                </nz-form-control>
-
-              </nz-form-item>
-            </div>
-            <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="12" nzXl="12">
-              <nz-form-item>
-                <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired [nzNoColon]="true">
-                  {{"orderv3.components.contract-sign.foreignTradeCorpAccount" | translate}}
-                </nz-form-label>
-                <nz-form-control nzXs="24" nzSm="24" nzMd="16">
-                  <input-suggest ngDefaultControl [suggestions]="foreignTradeCorpAccountSuggestList"
-                    [(ngModel)]="item.foreignTradeCorpBestSignAccount"
-                    (ngModelChange)="dealerAccountChange('foreignTradeCorpBestSignAccount', $event, item.id)"
-                    [disabled]="item.status !== 'DRAFT' || item.allDisable"></input-suggest>
-                </nz-form-control>
-              </nz-form-item>
-            </div>
-            <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="12" nzXl="12">
-              <nz-form-item>
-                <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired [nzNoColon]="true">
-                  {{"orderv3.components.contract-sign.foreignTradeCorpRepresentativeBestSignAccount" | translate}}
-                </nz-form-label>
-                <nz-form-control nzXs="24" nzSm="24" nzMd="16">
-                  <input-suggest ngDefaultControl [suggestions]="foreignTradeCorpRepresentativeAccountSuggestList"
-                    [(ngModel)]="item.foreignTradeCorpRepresentativeBestSignAccount"
-                    (ngModelChange)="dealerAccountChange('foreignTradeCorpRepresentativeBestSignAccount', $event, item.id)"
-                    [disabled]="item.status !== 'DRAFT' || item.allDisable"></input-suggest>
-                </nz-form-control>
-              </nz-form-item>
-            </div>
-          </div>
-          <div nz-row>
+          <!-- <div nz-row>
             <nz-form-item>
               <nz-form-label nzXs="24" nzSm="24" nzMd="2" [nzNoColon]="true">选择合同币种</nz-form-label>
               <nz-form-control nzXs="24" nzSm="24" nzMd="21">
@@ -160,7 +161,7 @@
                 </ng-container>
               </nz-form-control>
             </nz-form-item>
-          </div>
+          </div> -->
           <div nz-row>
             <nz-form-item>
               <nz-form-label nzXs="24" nzSm="24" nzMd="2" [nzNoColon]="true">选择签署方式</nz-form-label>
@@ -181,32 +182,6 @@
                     </nz-select>
                   </ng-template>
                 </ng-container>
-              </nz-form-control>
-            </nz-form-item>
-          </div>
-          <div nz-row>
-            <nz-form-item>
-              <nz-form-label nzXs="24" nzSm="24" nzMd="2" [nzNoColon]="true">是否为取消/赔偿协议</nz-form-label>
-              <nz-form-control nzXs="24" nzSm="24" nzMd="21">
-
-                <div nz-row nzType="flex" nzJustify="start" nzAlign="middle" style="width: 100%;">
-                  <nz-radio-group [disabled]="item.allDisable || item.status !== 'DRAFT'"
-                    [(ngModel)]="item.isCancelAgreement" (ngModelChange)="agreementChange($event, indx)">
-                    <label nz-radio [nzValue]="false">否</label>
-                    <label nz-radio [nzValue]="true">是</label>
-                  </nz-radio-group>
-                  <nz-select class="contract-select" [disabled]="item.allDisable || item.status !== 'DRAFT'"
-                    nzMode="multiple" (ngModelChange)="agreementSelectChange($event, indx)"
-                    [(ngModel)]="item.agreementApplyIdArray" *ngIf="item.isCancelAgreement && item.status === 'DRAFT'">
-                    <nz-option *ngFor="let sitem of relatedSPCancelOrderList" [nzLabel]="sitem.applyCode"
-                      [nzValue]="sitem.id"></nz-option>
-                  </nz-select>
-                  <div *ngIf="item.isCancelAgreement && item.status !== 'DRAFT'">
-                    <button [disabled]="item.allDisable" class="tableLink" nz-button nzType="link"
-                      *ngFor="let sitem of item.agreements"
-                      (click)="goJump(sitem, 'agreements')">{{sitem.applyCode}}</button>
-                  </div>
-                </div>
               </nz-form-control>
             </nz-form-item>
           </div>

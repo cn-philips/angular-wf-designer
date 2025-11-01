@@ -12,6 +12,7 @@ export class InputSuggestComponent implements OnInit {
   @Input() suggestions: any = [];
   @Input() disabled: boolean = false;
   @Output() ngModelChange = new EventEmitter<string>();
+  @Input() key: string = "dealerBestSignAccount";
   showSuggest: any = false;
   suggestionList: any = [];
 
@@ -40,7 +41,7 @@ export class InputSuggestComponent implements OnInit {
       let suggestions = this.suggestions;
       for (let i = 0; i < suggestions.length; i++) {
         const el = suggestions[i];
-        if (el.dealerBestSignAccount.indexOf(lastValue) > -1) {
+        if (el[this.key].indexOf(lastValue) > -1) {
           list.push(el);
         }
       }

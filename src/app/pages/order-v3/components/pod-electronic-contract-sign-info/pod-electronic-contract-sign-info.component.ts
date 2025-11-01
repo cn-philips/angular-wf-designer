@@ -90,15 +90,24 @@ export class PodElectronicContractSignInfoComponent implements OnInit {
   dealerName: any = "";
   dealerBestSignAccount: any = "";
   dealerAccountSuggestList: any = [];
+  freightForwarderList:any=[];
+  freightForwarderBestSignAccountSuggestListTemp:any = {};
+  freightForwarderRepresentativeAccountSuggestListTemp:any = {};
+  freightForwarderBestSignAccountSuggestList:any = {};
+  freightForwarderRepresentativeAccountSuggestList:any = {};
+
   dealerRepresentativeBestSignAccount: any = "";
   dealerRepresentativeAccountSuggestList: any = [];
   dealerCheckStatus: any = "";
-  foreignTradeCorpName: any = "";
-  foreignTradeCorpBestSignAccount: any = "";
-  foreignTradeCorpAccountSuggestList: any = [];
-  foreignTradeCorpRepresentativeBestSignAccount: any = "";
-  foreignTradeCorpRepresentativeAccountSuggestList: any = [];
-  foreignerCheckStatus: any = "";
+
+  freightForwarderName:any = ''
+  freightForwarderBestSignAccount:any = ''
+  freightForwarderRepresentativeBestSignAccount:any = ''
+  freightForwarderRepresentativePos:any = ''
+  freightForwarderRepresentativeName:any = ''
+  ETADate:any = null
+  pm:any = ''
+
   get showWarning(){
     return (this.contractSignedFilesList&&this.contractSignedFilesList.length>0)||(this.signDataSource.length>0&&this.signDataSource.some((item:any)=>['COMPLETE','SEND','CREATED'].includes(item.status)))
   }
@@ -107,17 +116,11 @@ export class PodElectronicContractSignInfoComponent implements OnInit {
       let {
         dealerName,
         dealerBestSignSignerAccount,
-        foreignTradeCorpName,
-        foreignBestSignSignerAccount,
       } = this.info.contractInfo;
       return {
         dealerName: dealerName,
         dealerBestSignAccount: dealerBestSignSignerAccount,
         dealerRepresentativeBestSignAccount: dealerBestSignSignerAccount,
-        foreignTradeCorpName: foreignTradeCorpName,
-        foreignTradeCorpBestSignAccount: foreignBestSignSignerAccount,
-        foreignTradeCorpRepresentativeBestSignAccount:
-          foreignBestSignSignerAccount,
       };
     } else {
       return null;
@@ -196,14 +199,14 @@ export class PodElectronicContractSignInfoComponent implements OnInit {
 
   backupZslNotSignedFile: any = [];
 
-  get contractCurrency() {
-    let info = this.info;
-    if (info && Object.keys(info).length > 0 && info.contractInfo) {
-      return info.contractInfo.currencySystem;
-    } else {
-      return "";
-    }
-  }
+  // get contractCurrency() {
+  //   let info = this.info;
+  //   if (info && Object.keys(info).length > 0 && info.contractInfo) {
+  //     return info.contractInfo.currencySystem;
+  //   } else {
+  //     return "";
+  //   }
+  // }
 
   isAllDisplayDataChecked = false;
   isOperating = false;
@@ -223,7 +226,6 @@ export class PodElectronicContractSignInfoComponent implements OnInit {
     const { code, data } = res;
     if (code === "0000") {
       const { authStatus, satisfactoryAuth } = data;
-      // const { authStatus, satisfactoryAuth } = data;
       // satisfactoryAuth 是否满足开发者配置的实名要求
       if (!satisfactoryAuth) {
         status = "不通过";
@@ -238,11 +240,6 @@ export class PodElectronicContractSignInfoComponent implements OnInit {
         status = "不通过";
         statusString = "当前公司未完成上上签的实名认证";
       }
-
-      // result = {
-      //   status,
-      //   statusString,
-      // };
       result = statusString;
     }
     return result;
@@ -319,18 +316,11 @@ export class PodElectronicContractSignInfoComponent implements OnInit {
           dealerName,
           dealerBestSignAccount,
           dealerRepresentativeBestSignAccount,
-          foreignTradeCorpName,
-          foreignTradeCorpBestSignAccount,
-          foreignTradeCorpRepresentativeBestSignAccount,
         } = this.getDealerOrForeignInfo;
         this.dealerName = dealerName;
         this.dealerBestSignAccount = dealerBestSignAccount;
         this.dealerRepresentativeBestSignAccount =
           dealerRepresentativeBestSignAccount;
-        this.foreignTradeCorpName = foreignTradeCorpName;
-        this.foreignTradeCorpBestSignAccount = foreignTradeCorpBestSignAccount;
-        this.foreignTradeCorpRepresentativeBestSignAccount =
-          foreignTradeCorpRepresentativeBestSignAccount;
         this.getSuggestList();
         this.checkDealerOrForeigner();
         this.getList();
@@ -350,20 +340,9 @@ export class PodElectronicContractSignInfoComponent implements OnInit {
       const result = await this.checkCompanyByBestSign(this.dealerName);
       this.dealerCheckStatus = result;
     }
-
-    if (this.contractCurrency === "USD" && this.foreignTradeCorpName) {
-      const result1 = await this.checkCompanyByBestSign(
-        this.foreignTradeCorpName
-      );
-      this.foreignerCheckStatus = result1;
-    }
   }
 
   getSuggestList() {
-    //   dealerAccountSuggestList: any = []
-    // dealerRepresentativeAccountSuggestList: any = []
-    // foreignTradeCorpAccountSuggestList: any = []
-    // foreignTradeCorpRepresentativeAccountSuggestList: any = []
     this.ownHttp.post("/act/contractSign/dealerInfo").subscribe((res) => {
       console.log(res);
       const { code, data, msg } = res;
@@ -384,29 +363,41 @@ export class PodElectronicContractSignInfoComponent implements OnInit {
             item.signatoryType === "SIGN"
           );
         });
-        let foreignTradeCorpAccountSuggestList = list.filter((item) => {
+        this.dealerAccountSuggestList = dealerAccountSuggestList;
+        this.dealerRepresentativeAccountSuggestList = dealerRepresentativeAccountSuggestList;
+
+        let freightForwarderList = list.filter((item) => {
           return (
-            item.dealerType === "FOREIGN_TRADE_CORP" &&
-            item.dealerName === this.foreignTradeCorpName &&
-            item.signatoryType === "SEAL"
+            item.dealerType === "FREIGHT_FORWARDER"
           );
         });
-        let foreignTradeCorpRepresentativeAccountSuggestList = list.filter(
-          (item) => {
-            return (
-              item.dealerType === "FOREIGN_TRADE_CORP" &&
-              item.dealerName === this.foreignTradeCorpName &&
-              item.signatoryType === "SIGN"
-            );
+        console.log('freightForwarderList',freightForwarderList)
+        this.freightForwarderList = Array.from(new Set(freightForwarderList.map(item=>item.dealerName))).map(i=>({value:i}));
+
+        console.log('this.freightForwarderList ',this.freightForwarderList )
+        this.freightForwarderBestSignAccountSuggestListTemp = {}
+        freightForwarderList.filter((item) => {
+          return (
+            item.signatoryType === "SEAL"
+          );
+        }).forEach((item)=>{
+          if(!this.freightForwarderBestSignAccountSuggestListTemp[item.dealerName]){
+            this.freightForwarderBestSignAccountSuggestListTemp[item.dealerName] = []
           }
-        );
-        this.dealerAccountSuggestList = dealerAccountSuggestList;
-        this.dealerRepresentativeAccountSuggestList =
-          dealerRepresentativeAccountSuggestList;
-        this.foreignTradeCorpAccountSuggestList =
-          foreignTradeCorpAccountSuggestList;
-        this.foreignTradeCorpRepresentativeAccountSuggestList =
-          foreignTradeCorpRepresentativeAccountSuggestList;
+          this.freightForwarderBestSignAccountSuggestListTemp[item.dealerName].push(item)
+        });
+        // .filter((item) => item.dealerName === account)
+        this.freightForwarderRepresentativeAccountSuggestListTemp = {};
+        freightForwarderList.filter((item) => {
+          return (
+            item.signatoryType === "SIGN"
+          );
+        }).forEach((item)=>{
+          if(!this.freightForwarderRepresentativeAccountSuggestListTemp[item.dealerName]){
+            this.freightForwarderRepresentativeAccountSuggestListTemp[item.dealerName] = []
+          }
+          this.freightForwarderRepresentativeAccountSuggestListTemp[item.dealerName].push(item)
+        });
       }
     });
   }
@@ -426,40 +417,6 @@ export class PodElectronicContractSignInfoComponent implements OnInit {
       }
     }, 1000);
   }
-
-  // getDealerAccount() {
-  //   let num = 0;
-  // this.timer1 = setInterval(() => {
-  //   num++;
-  //   if (this.dealerName) {
-  //     clearInterval(this.timer1);
-  //     this.timer1 = null;
-  //     this.getAcount("dealerName");
-  //   } else {
-  //     if (num >= 10) {
-  //       clearInterval(this.timer1);
-  //       this.timer1 = null;
-  //     }
-  //   }
-  // }, 1000);
-  // }
-
-  // getForeignTradeCorpAccount() {
-  //   let num = 0;
-  //   this.timer2 = setInterval(() => {
-  //     num++;
-  //     if (this.contractCurrency === "USD") {
-  //       clearInterval(this.timer2);
-  //       this.timer2 = null;
-  //       this.getAcount("foreignTradeCorpName");
-  //     } else {
-  //       if (num >= 10) {
-  //         clearInterval(this.timer2);
-  //         this.timer2 = null;
-  //       }
-  //     }
-  //   }, 1000);
-  // }
 
   async getCancelOrderList() {
     let contractId = this.contractId;
@@ -488,11 +445,7 @@ export class PodElectronicContractSignInfoComponent implements OnInit {
     const dealerName = this.dealerName,
       dealerBestSignAccount = this.dealerBestSignAccount,
       dealerRepresentativeBestSignAccount =
-        this.dealerRepresentativeBestSignAccount,
-      foreignTradeCorpName = this.foreignTradeCorpName,
-      foreignTradeCorpBestSignAccount = this.foreignTradeCorpBestSignAccount,
-      foreignTradeCorpRepresentativeBestSignAccount =
-        this.foreignTradeCorpRepresentativeBestSignAccount;
+        this.dealerRepresentativeBestSignAccount
     if (dataList.length > 0) {
       for (let index = 0; index < dataList.length; index++) {
         const el = dataList[index];
@@ -540,16 +493,6 @@ export class PodElectronicContractSignInfoComponent implements OnInit {
           el.dealerRepresentativeBestSignAccount
             ? el.dealerRepresentativeBestSignAccount
             : dealerRepresentativeBestSignAccount;
-        el.foreignTradeCorpName = el.foreignTradeCorpName
-          ? el.foreignTradeCorpName
-          : foreignTradeCorpName;
-        el.foreignTradeCorpBestSignAccount = el.foreignTradeCorpBestSignAccount
-          ? el.foreignTradeCorpBestSignAccount
-          : foreignTradeCorpBestSignAccount;
-        el.foreignTradeCorpRepresentativeBestSignAccount =
-          el.foreignTradeCorpRepresentativeBestSignAccount
-            ? el.foreignTradeCorpRepresentativeBestSignAccount
-            : foreignTradeCorpRepresentativeBestSignAccount;
 
         if (agreements && agreements.length > 0) {
           // 如果有agreementApplyId，则要转换成数组回显到select
@@ -828,54 +771,43 @@ export class PodElectronicContractSignInfoComponent implements OnInit {
     }
   }
 
-  currencyChange(value: any, index: any) {
-    let templateList = this.templateList;
-    let signDataSource = this.signDataSource;
-    let currency = signDataSource[index].currency;
-    let arr = [];
+  // currencyChange(value: any, index: any) {
+  //   let templateList = this.templateList;
+  //   let signDataSource = this.signDataSource;
+  //   let currency = signDataSource[index].currency;
+  //   let arr = [];
+  //   let lastArr = [];
+  //   if (arr.length > 0) {
+  //     lastArr = arr;
+  //   } else {
+  //     lastArr = templateList;
+  //   }
+  //   let disArr = [],
+  //     templateInfo: any = {};
+  //   for (let i = 0; i < lastArr.length; i++) {
+  //     const displayName = lastArr[i].templateDisplayName;
+  //     if (displayName.indexOf("经销商签章") > -1) {
+  //       disArr.push({
+  //         dealerIndex: displayName.indexOf("经销商签章"),
+  //         ...lastArr[i],
+  //       });
+  //     }
+  //   }
 
-    // for (let i = 0; i < templateList.length; i++) {
-    //   const el = templateList[i];
-    //   let result = false;
-    //   if (el.templateRule) {
-    //     result = this.validDefaultSelect(el, currency);
-    //   }
-    //   if (result) {
-    //     arr.push(el);
-    //   }
-    // }
-    let lastArr = [];
-    if (arr.length > 0) {
-      lastArr = arr;
-    } else {
-      lastArr = templateList;
-    }
-    let disArr = [],
-      templateInfo: any = {};
-    for (let i = 0; i < lastArr.length; i++) {
-      const displayName = lastArr[i].templateDisplayName;
-      if (displayName.indexOf("经销商签章") > -1) {
-        disArr.push({
-          dealerIndex: displayName.indexOf("经销商签章"),
-          ...lastArr[i],
-        });
-      }
-    }
+  //   disArr.sort((a, b) => a.dealerIndex - b.dealerIndex);
+  //   templateInfo = disArr[0];
 
-    disArr.sort((a, b) => a.dealerIndex - b.dealerIndex);
-    templateInfo = disArr[0];
-
-    this.signDataSource[index].lastTemplateList = lastArr;
-    this.signDataSource[index].signWay = templateInfo.templateId;
-    this.changeDetectorRef.markForCheck();
-    this.changeDetectorRef.detectChanges();
-    let params = {
-      id: signDataSource[index].id,
-      currency,
-      templateId: templateInfo.templateId,
-    };
-    this.http.createEditSign(params);
-  }
+  //   this.signDataSource[index].lastTemplateList = lastArr;
+  //   this.signDataSource[index].signWay = templateInfo.templateId;
+  //   this.changeDetectorRef.markForCheck();
+  //   this.changeDetectorRef.detectChanges();
+  //   let params = {
+  //     id: signDataSource[index].id,
+  //     currency,
+  //     templateId: templateInfo.templateId,
+  //   };
+  //   this.http.createEditSign(params);
+  // }
 
   templateChange(value: any, index: any) {
     const templateId = value;
@@ -972,30 +904,6 @@ export class PodElectronicContractSignInfoComponent implements OnInit {
     }, 100);
   }
 
-  async agreementChange($event: any, index: any) {
-    const item = this.signDataSource[index];
-    let params = {
-      id: item.id,
-      isCancelAgreement: $event,
-      agreementApplyId: "",
-    };
-    this.signDataSource[index].agreementApplyIdArray = [];
-    await this.http.createEditSign(params);
-    await this.getContractSignList();
-  }
-
-  async agreementSelectChange($event: any, index: any) {
-    const item = this.signDataSource[index];
-    let params = {
-      id: item.id,
-      isCancelAgreement: true,
-      agreementApplyId: $event.join(","),
-    };
-    this.signDataSource[index].agreementApplyIdArray = $event;
-    await this.http.createEditSign(params);
-    await this.getContractSignList();
-  }
-
   async summaryChange($event: any, index: any) {
     const item = this.signDataSource[index];
     let params = {
@@ -1039,19 +947,7 @@ export class PodElectronicContractSignInfoComponent implements OnInit {
           : "";
       }
     } else {
-      params = {
-        dealerName: this.foreignTradeCorpName,
-      };
-      const res = await this.http.getForeignTradeCorpAccount(params);
-      const { code, data } = res;
-      if (code === "0000") {
-        console.log(data);
-        this.foreignTradeCorpBestSignAccount = data.dealerAccount
-          ? data.dealerAccount
-          : "";
-        this.foreignTradeCorpRepresentativeBestSignAccount =
-          data.dealerContactorAccount ? data.dealerContactorAccount : "";
-      }
+      console.log('getAccount')
     }
   }
   /**
@@ -1129,11 +1025,13 @@ export class PodElectronicContractSignInfoComponent implements OnInit {
     let dealerBestSignAccount = this.dealerBestSignAccount,
       dealerRepresentativeBestSignAccount =
         this.dealerRepresentativeBestSignAccount,
-      foreignTradeCorpName = this.foreignTradeCorpName,
-      foreignTradeCorpBestSignAccount = this.foreignTradeCorpBestSignAccount,
-      foreignTradeCorpRepresentativeBestSignAccount =
-        this.foreignTradeCorpRepresentativeBestSignAccount;
-
+        freightForwarderName = this.freightForwarderName,
+        freightForwarderBestSignAccount = this.freightForwarderBestSignAccount,
+        freightForwarderRepresentativeBestSignAccount = this.freightForwarderRepresentativeBestSignAccount,
+        freightForwarderRepresentativePos = this.freightForwarderRepresentativePos,
+        freightForwarderRepresentativeName = this.freightForwarderRepresentativeName,
+        ETADate = this.ETADate,
+        pm = this.pm;
     let from = this.from;
     // if (!dealerAccount) {
     //   return this.notification.error("请输入或选择经销商账号(邮箱)", "");
@@ -1144,31 +1042,20 @@ export class PodElectronicContractSignInfoComponent implements OnInit {
     // if (!dealerRepresentativeBestSignAccount) {
     //   return this.notification.error("请输入或选择经销商签字人账号(邮箱)", "");
     // }
-
-    // if (contractCurrency === "USD") {
-    //   if (!foreignTradeCorpBestSignAccount) {
-    //     return this.notification.error("请输入或选择外贸公司账号(邮箱)", "");
-    //   }
-    //   if (!foreignTradeCorpRepresentativeName) {
-    //     return this.notification.error("请输入外贸公司签字人姓名", "");
-    //   }
-    //   if (!foreignTradeCorpRepresentativeBestSignAccount) {
-    //     return this.notification.error(
-    //       "请输入或选择外贸公司签字人账号(邮箱)",
-    //       ""
-    //     );
-    //   }
-    // }
     let params = {
       businessId: this.contractId,
       businessType: from,
       dealerName: this.dealerName,
       dealerBestSignAccount: dealerBestSignAccount,
       dealerRepresentativeBestSignAccount,
-      foreignTradeCorpName,
-      foreignTradeCorpBestSignAccount,
-      foreignTradeCorpRepresentativeBestSignAccount,
-      currency: this.contractCurrency === "CNY" ? "CNY" : "USD",
+      freightForwarderName,
+      freightForwarderBestSignAccount,
+      freightForwarderRepresentativeBestSignAccount,
+      freightForwarderRepresentativePos,
+      freightForwarderRepresentativeName,
+      ETADate,
+      pm,
+      // currency: this.contractCurrency === "CNY" ? "CNY" : "USD",
       modality: this.orderModality,
       isCancelAgreement: false,
       ifRelatedOrderSummary: false,
@@ -1218,7 +1105,28 @@ export class PodElectronicContractSignInfoComponent implements OnInit {
       id,
     };
     params[type] = account;
-    const res1: any = await this.http.createEditSign(params);
+    await this.http.createEditSign(params);
+  }
+  async freightForwarderChange(account: any, id: any) {
+    let params = {
+      id,
+      freightForwarderName: account,
+    };
+    await this.http.createEditSign(params);
+  }
+  async freightForwarderBestSignChange(account: any, id: any) {
+    let params = {
+      id,
+      freightForwarderBestSignAccount: account,
+    };
+    await this.http.createEditSign(params);
+  }
+  async freightForwarderRepresentativeSignChange(account: any, id: any) {
+    let params = {
+      id,
+      freightForwarderRepresentativeBestSignAccount: account,
+    };
+    await this.http.createEditSign(params);
   }
   /**
    * 发起签章
@@ -1231,15 +1139,6 @@ export class PodElectronicContractSignInfoComponent implements OnInit {
       agreements = item.agreements||[],
       ifRelatedOrderSummary = item.ifRelatedOrderSummary,
       relatedOrderSummaries = item.relatedOrderSummaries||[];
-    // let {
-    //   dealerName,
-    //   dealerBestSignAccount,
-    //   dealerRepresentativeBestSignAccount,
-    //   foreignTradeCorpName,
-    //   foreignTradeCorpBestSignAccount,
-    //   foreignTradeCorpRepresentativeBestSignAccount,
-    // } = item;
-
     if (contracts.length <= 0) {
       return this.notification.error("请选择需要签署的文件", "");
     }
@@ -1265,24 +1164,8 @@ export class PodElectronicContractSignInfoComponent implements OnInit {
     //   return this.notification.error("请输入或选择经销商签字人账号(邮箱)", "");
     // }
 
-    // if (contractCurrency === "USD") {
-    //   if (!foreignTradeCorpName) {
-    //     return this.notification.error("请输入或选择外贸公司名称", "");
-    //   }
-    //   if (!foreignTradeCorpBestSignAccount) {
-    //     return this.notification.error("请输入或选择外贸公司账号(邮箱)", "");
-    //   }
-    //   if (!foreignTradeCorpRepresentativeBestSignAccount) {
-    //     return this.notification.error(
-    //       "请输入或选择外贸公司签字人账号(邮箱)",
-    //       ""
-    //     );
-    //   }
-    // }
-
     this.signSpinning = true;
     // 发起签章
-
     let sendParams = {
       id,
       callback: window.location.href,
