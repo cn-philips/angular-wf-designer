@@ -61,6 +61,8 @@ export class PodElectronicContractSignInfoComponent implements OnInit {
     DealerRepresentative: "经销商签字人",
     ForeignTradeCorp: "外贸公司",
     ForeignTradeCorpRepresentative: "外贸公司签字人",
+    FreightForwarder: "货运公司",
+    FreightForwarderRepresentative: "货运公司签字人",
   };
 
   signSpinning: any = false;
@@ -943,28 +945,6 @@ export class PodElectronicContractSignInfoComponent implements OnInit {
     await this.getContractSignList();
   }
 
-  async getAcount(type: any) {
-    this.firstAccount = false;
-    if (this.from !== "CONTRACT") return;
-    let params = {};
-    if (type === "dealerName") {
-      params = {
-        dealerName: this.dealerName,
-      };
-      const res = await this.http.getDealerAcount(params);
-      const { code, data } = res;
-      if (code === "0000") {
-        this.dealerBestSignAccount = data.dealerAccount
-          ? data.dealerAccount
-          : "";
-        this.dealerRepresentativeBestSignAccount = data.dealerContactorAccount
-          ? data.dealerContactorAccount
-          : "";
-      }
-    } else {
-      console.log('getAccount')
-    }
-  }
   /**
    * 获取签章模板列表
    */
@@ -1152,20 +1132,20 @@ export class PodElectronicContractSignInfoComponent implements OnInit {
     let item = this.signDataSource[index];
     // let contractCurrency = this.contractCurrency;
     let contracts = item.contracts||[],
-      isCancelAgreement = item.isCancelAgreement,
-      agreements = item.agreements||[],
+      // isCancelAgreement = item.isCancelAgreement,
+      // agreements = item.agreements||[],
       ifRelatedOrderSummary = item.ifRelatedOrderSummary,
       relatedOrderSummaries = item.relatedOrderSummaries||[];
     if (contracts.length <= 0) {
       return this.notification.error("请选择需要签署的文件", "");
     }
     console.log(`signSign - item:${item} - contracts :${contracts}`);
-    if (isCancelAgreement && agreements.length <= 0) {
-      return this.notification.error(
-        "请选择取消/赔偿协议，如果不选择协议，请选择否",
-        ""
-      );
-    }
+    // if (isCancelAgreement && agreements.length <= 0) {
+    //   return this.notification.error(
+    //     "请选择取消/赔偿协议，如果不选择协议，请选择否",
+    //     ""
+    //   );
+    // }
 
     if (ifRelatedOrderSummary && relatedOrderSummaries.length <= 0) {
       return this.notification.error(
