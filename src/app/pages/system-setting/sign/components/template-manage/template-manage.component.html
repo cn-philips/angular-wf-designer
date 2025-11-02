@@ -1,8 +1,5 @@
 <form nz-form [formGroup]="formValues">
-    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle" style="background-color: #F6F7F9;
-    color: #FFFFFF;
-    line-height: 22px;
-    padding-top: 24px">
+    <div nz-row nzType="flex" nzJustify="start" nzAlign="middle" style="background-color: #F6F7F9;color: #FFFFFF;line-height: 22px;padding-top: 24px">
         <div nz-col nzXs="24" nzMd="12" nzXl="8">
             <nz-form-item>
                 <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="8">
@@ -20,6 +17,20 @@
                 </nz-form-label>
                 <nz-form-control nzXs="24" nzMd="14">
                     <input nz-input formControlName="templateDisplayName" placeholder="" />
+                </nz-form-control>
+            </nz-form-item>
+        </div>
+        <div nz-col nzXs="24" nzMd="12" nzXl="8" [style.display]="isCollapse ? 'block' : 'none'">
+            <nz-form-item>
+                <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="8">
+                    合同类型
+                </nz-form-label>
+                <nz-form-control nzXs="24" nzMd="14">
+                    <nz-select style="width: 100%;" formControlName="contractType" nzAllowClear>
+                        <nz-option nzValue="COMMON" nzLabel="常规合同"></nz-option>
+                        <nz-option nzValue="POD" nzLabel="POD合同"></nz-option>
+                    </nz-select>
+                    <!-- <input nz-input formControlName="dealerType" placeholder="" /> -->
                 </nz-form-control>
             </nz-form-item>
         </div>
@@ -83,6 +94,9 @@
             <th class="tableHead" nzAlign="center" style="width: 240px">
                 模板流程
             </th>
+            <th class="tableHead" nzAlign="center" style="width: 240px">
+                合同类型
+            </th>
             <th class="tableHead" nzAlign="center" style="width: 200px">
                 模板规则
             </th>
@@ -104,6 +118,8 @@
 
             <!--模板流程-->
             <td class="tableData" style="width: 200px;" nzAlign="center">{{ data.templateDisplayName }}</td>
+
+            <td class="tableData" style="width: 200px;" nzAlign="center">{{ data.contractType }}</td>
 
             <!--模板规则-->
             <td class="tableData" style="width: 140px;" nzAlign="center">
@@ -166,6 +182,20 @@
                         </nz-form-label>
                         <nz-form-control nzXs="24" nzMd="24" nzXl="24" nzXXl="24">
                             <input nz-input formControlName="templateDisplayName" placeholder="" />
+                        </nz-form-control>
+                    </nz-form-item>
+                </div>
+
+                <div nz-col nzXs="24" nzMd="24" nzXl="24">
+                    <nz-form-item>
+                        <nz-form-label nzRequired nzXs="24" nzMd="24" nzXl="24" nzXXl="24">
+                            模板名称
+                        </nz-form-label>
+                        <nz-form-control nzXs="24" nzMd="24" nzXl="24" nzXXl="24">
+                            <nz-select style="width: 100%;" formControlName="contractType">
+                                <nz-option [nzValue]="item.value" [nzLabel]="item.label"
+                                    *ngFor="let item of contractTypeList; index as inx;" ></nz-option>
+                            </nz-select>
                         </nz-form-control>
                     </nz-form-item>
                 </div>

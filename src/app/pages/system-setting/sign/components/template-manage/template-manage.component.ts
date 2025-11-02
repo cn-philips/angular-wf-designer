@@ -18,6 +18,7 @@ export class TemplateManageComponent implements OnInit {
   public formValues = this.fb.group({
     templateDisplayName: [null],
     templateId: [null],
+    contractType: [null],
     templateName: [null],
     templateOrder: [null],
   });
@@ -32,6 +33,10 @@ export class TemplateManageComponent implements OnInit {
     pageNum: 1,
     pageSize: 10,
   };
+  contractTypeList: any = [
+    { label: "常规合同", value: "COMMON" },
+    { label: "POD合同", value: "POD" },
+  ];
   total: any = 0;
   loading: any = false;
   uploadLoading: any = false;
@@ -61,6 +66,7 @@ export class TemplateManageComponent implements OnInit {
       ],
       templateOrder: [{ value: "", disabled: this.disabled }],
       templateRule: [{ value: "", disabled: this.disabled }],
+      contractType: [{ value: "", disabled: this.disabled }],
     });
     this.loading = true;
     // this.getBestSignTemplateList();
@@ -308,6 +314,7 @@ export class TemplateManageComponent implements OnInit {
       templateDisplayName,
       templateId,
       templateName,
+      contractType,
       templateOrder,
       templateRule,
     } = data;
@@ -317,6 +324,7 @@ export class TemplateManageComponent implements OnInit {
       templateDisplayName,
       templateId,
       templateName,
+      contractType,
       templateOrder,
       templateRule,
     });

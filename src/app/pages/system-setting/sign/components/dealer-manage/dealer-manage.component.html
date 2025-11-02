@@ -32,6 +32,7 @@
                     <nz-select style="width: 100%;" formControlName="dealerType" nzAllowClear>
                         <nz-option nzValue="DEALER" nzLabel="经销商"></nz-option>
                         <nz-option nzValue="FOREIGN_TRADE_CORP" nzLabel="外贸公司"></nz-option>
+                        <nz-option nzValue="FREIGHT_FORWARDER" nzLabel="货运代理公司"></nz-option>
                     </nz-select>
                     <!-- <input nz-input formControlName="dealerType" placeholder="" /> -->
                 </nz-form-control>
@@ -123,8 +124,7 @@
             <!--公司名称-->
             <td class="tableData" style="width: 250px;" nzAlign="center">{{ data.dealerName }}</td>
             <!--公司类型-->
-            <td class="tableData" style="width: 150px;" nzAlign="center">{{ data.dealerType === 'DEALER' ? '经销商' :
-                '外贸公司' }}</td>
+            <td class="tableData" style="width: 150px;" nzAlign="center">{{ cropMap[data.dealerType] }}</td>
             <!--公司签字人名称-->
             <td class="tableData" style="width: 150px;" nzAlign="center">{{ data.dealerContractorName }}</td>
 
@@ -174,6 +174,7 @@
                         </nz-form-control>
                     </nz-form-item>
                 </div>
+
                 <div nz-col nzXs="24" nzMd="24" nzXl="24">
                     <nz-form-item>
                         <nz-form-label nzRequired nzXs="24" nzMd="24" nzXl="24" nzXXl="24">
@@ -183,6 +184,7 @@
                             <nz-select style="width: 100%;" formControlName="dealerType">
                                 <nz-option nzValue="DEALER" nzLabel="经销商"></nz-option>
                                 <nz-option nzValue="FOREIGN_TRADE_CORP" nzLabel="外贸公司"></nz-option>
+                                <nz-option nzValue="FREIGHT_FORWARDER" nzLabel="货运代理公司"></nz-option>
                             </nz-select>
 
                         </nz-form-control>

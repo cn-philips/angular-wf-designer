@@ -44,6 +44,16 @@ export class DealerManageComponent implements OnInit {
   title: any = "";
   modalType: any = "";
   modalId: any = "";
+  posMap: any = {
+    DEALER: "经销商职位",
+    FOREIGN_TRADE_COMPANY: "外贸公司职位",
+    FREIGHT_FORWARDER: "货运代理公司职位",
+  };
+  cropMap: any = {
+    DEALER: "经销商",
+    FOREIGN_TRADE_COMPANY: "外贸公司",
+    FREIGHT_FORWARDER: "货运代理公司",
+  };
   ngOnInit() {
     this.init();
   }
@@ -159,8 +169,7 @@ export class DealerManageComponent implements OnInit {
     let fields = this.modalFormValues.getRawValue();
     let params = {
       ...fields,
-      dealerPosition:
-        fields.dealerType === "DEALER" ? "经销商职位" : "外贸公司职位",
+      dealerPosition:this.posMap[fields.dealerType]
     };
     if (this.modalId) params.id = this.modalId;
     this.uploadLoading = true;
