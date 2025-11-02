@@ -53,7 +53,10 @@ export class TemplateManageComponent implements OnInit {
   ngOnInit() {
     this.init();
   }
-
+  getContractTypeLabel(value: string): string {
+    const type = this.contractTypeList.find((item: any) => item.value === value);
+    return type ? type.label : value;
+  }
   init() {
     this.modalFormValues = this.fb.group({
       templateDisplayName: [{ value: "", disabled: this.disabled }],
