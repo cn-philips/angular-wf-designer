@@ -963,7 +963,7 @@ export class PodElectronicContractSignInfoComponent implements OnInit {
       type = "BIDDING";
     }
     let contractId = this.contractId;
-    const res = await this.http.getFlowTemplate(type, contractId);
+    const res = await this.http.getFlowTemplate(type, contractId, this.contractType);
     const { code, data } = res;
     if (code === "0000") {
       this.templateList = data;

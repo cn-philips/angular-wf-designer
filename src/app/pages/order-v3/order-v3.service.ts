@@ -458,9 +458,8 @@ export class OrderV3Service {
   }
 
   // 获取合同模板
-  getFlowTemplate(templateType: any, contractId: any) {
-    const url = `/act/contractSign/template/${templateType}/${contractId}`;
-    // const url = `/act/contractSign/template/${templateType}`;
+  getFlowTemplate(templateType: any, contractId: any, contractType) {
+    const url = `/act/contractSign/template/${templateType}/${contractType}/${contractId}`;
     return this.http.get(url).toPromise();
   }
 
