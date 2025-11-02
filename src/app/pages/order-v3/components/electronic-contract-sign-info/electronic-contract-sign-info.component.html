@@ -360,7 +360,7 @@
                           <span><small>Comments: {{ history.comments }}</small></span>
                         </ng-template>
                         <ng-template #tooltipBlock>
-                          <b>{{ convertSignStatusText(history.action, history.contractType) }}</b>
+                          <b>{{ convertSignStatusText(history.action, history.contractType,history.isAutoSigned) }}</b>
                         </ng-template>
                         <br />
                         <small>{{ myMoment(history.updateTime) }}</small>

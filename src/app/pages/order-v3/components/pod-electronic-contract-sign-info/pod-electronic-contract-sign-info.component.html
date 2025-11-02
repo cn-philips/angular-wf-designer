@@ -148,25 +148,11 @@
               </nz-form-item>
             </div>
           </div>
-          <!-- <div nz-row>
-            <nz-form-item>
-              <nz-form-label nzXs="24" nzSm="24" nzMd="2" [nzNoColon]="true">选择合同币种</nz-form-label>
-              <nz-form-control nzXs="24" nzSm="24" nzMd="21">
-                <ng-container>
-                  <nz-radio-group [(ngModel)]="item.currency" [nzDisabled]="true"
-                    (ngModelChange)="currencyChange($event, indx)">
-                    <label nz-radio nzValue="CNY" [nzDisabled]="true">人民币</label>
-                    <label nz-radio nzValue="USD" [nzDisabled]="true">美金</label>
-                  </nz-radio-group>
-                </ng-container>
-              </nz-form-control>
-            </nz-form-item>
-          </div> -->
           <div nz-row>
-            <nz-form-item>
-              <nz-form-label nzXs="24" nzSm="24" nzMd="2" [nzNoColon]="true">选择签署方式</nz-form-label>
-              <nz-form-control nzXs="24" nzSm="24" nzMd="21">
-                <ng-container>
+            <div nz-col nzXs="24" nzSm="24" nzMd="24" nzLg="24" nzXl="24">
+              <nz-form-item>
+                <nz-form-label  nzXs="24" nzSm="24" nzMd="4"[nzNoColon]="true">选择签署方式</nz-form-label>
+                <nz-form-control nzXs="24" nzSm="24" nzMd="20">
                   <nz-select class="contract-select" (ngModelChange)="templateChange($event, indx)"
                     *ngIf="item.status === 'DRAFT'; else otherTemplateRadio" nzShowSearch [(ngModel)]="item.signWay"
                     [nzDisabled]="item.allDisable">
@@ -181,9 +167,37 @@
                         [nzValue]="sitem.templateId"></nz-option>
                     </nz-select>
                   </ng-template>
-                </ng-container>
-              </nz-form-control>
-            </nz-form-item>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+          </div>
+          <div nz-row>
+            <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="12" nzXl="12">
+              <nz-form-item>
+                <nz-form-label nzXs="24" nzSm="24" nzMd="8" [nzNoColon]="true">ETA Date</nz-form-label>
+                <nz-form-control nzXs="24" nzSm="24" nzMd="16">
+                  <nz-date-picker [(ngModel)]="item.etaDate" [ngModelOptions]="{standalone:true}" nzPlaceHolder="选择ETA Date">
+                  </nz-date-picker>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+          </div>
+          <div nz-row>
+            <div nz-col nzXs="24" nzSm="24" nzMd="12" nzLg="12" nzXl="12">
+              <nz-form-item>
+                <nz-form-label nzXs="24" nzSm="24" nzMd="8" nzRequired [nzNoColon]="true">
+                PM
+                </nz-form-label>
+                <nz-form-control nzXs="24" nzSm="24" nzMd="16">
+                  <input-suggest ngDefaultControl [suggestions]="PMSuggestList"
+                    [(ngModel)]="item.pm"
+                    (ngModelChange)="dealerAccountChange('pm', $event, item.id)"
+                    [key]="'approverEmail'"
+                    [formatFn]="formatPMSuggestFn"
+                    [disabled]="item.status !== 'DRAFT' || item.allDisable"></input-suggest>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
           </div>
           <div nz-row>
             <nz-form-item>
@@ -295,7 +309,7 @@
                           <span><small>Comments: {{ history.comments }}</small></span>
                         </ng-template>
                         <ng-template #tooltipBlock>
-                          <b>{{ convertSignStatusText(history.action, history.contractType) }}</b>
+                          <b>{{ convertSignStatusText(history.action, history.contractType, history.isAutoSigned)}}</b>
                         </ng-template>
                         <br />
                         <small>{{ myMoment(history.updateTime) }}</small>

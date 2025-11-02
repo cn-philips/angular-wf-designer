@@ -106,6 +106,8 @@ export class PodElectronicContractSignInfoComponent implements OnInit {
   freightForwarderRepresentativePos:any = ''
   freightForwarderRepresentativeName:any = ''
   ETADate:any = null
+
+  PMSuggestList: any = [];
   pm:any = ''
 
   get showWarning(){
@@ -333,8 +335,20 @@ export class PodElectronicContractSignInfoComponent implements OnInit {
     // this.getForeignTradeCorpAccount();
     this.getCancelOrderList();
     this.getContractSummaryList();
+    this.getPODContractPmList();
   }
+  public formatPMSuggestFn = (item)=>`${item.approverEmail}(${item.approverName})`
+  async getPODContractPmList(){
+    let applyId = this.activatedRoute.queryParams["value"].id;
 
+    this.ownHttp.post("/act/contractSign/pod/pm/"+applyId).subscribe((res) => {
+      const { code, data, msg } = res;
+      if (code === "0000") {
+        console.log('PMSuggestList',data)
+        this.PMSuggestList = data;
+      }
+    })
+  }
   async checkDealerOrForeigner() {
     if (this.dealerName) {
       const result = await this.checkCompanyByBestSign(this.dealerName);
@@ -404,6 +418,7 @@ export class PodElectronicContractSignInfoComponent implements OnInit {
 
   getList() {
     let num = 0;
+    this.getContractSignList();
     this.timer = setInterval(() => {
       if (this.isCanLoad) {
         clearInterval(this.timer);
@@ -966,6 +981,8 @@ export class PodElectronicContractSignInfoComponent implements OnInit {
     const res = await this.http.getFlowTemplate(type, contractId, this.contractType);
     const { code, data } = res;
     if (code === "0000") {
+      console.log('this.contractType',this.contractType)
+      console.log('template data',data)
       this.templateList = data;
       if (data.length <= 0) {
         this.signSpinning = false;

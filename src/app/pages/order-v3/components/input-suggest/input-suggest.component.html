@@ -2,7 +2,10 @@
   <input nz-input [disabled]="disabled" [(ngModel)]="ngModel" (ngModelChange)="onChange($event)" (focus)="onFocus()"
     (blur)="onBlur()" />
   <div class="suggest-list" *ngIf="showSuggest">
-    <div class="suggest-item" *ngFor="let item of suggestionList; index as index"
-      (click)="chooseAccount(item[key])">{{item[key]}}</div>
+    <div class="suggest-item"
+      *ngFor="let item of suggestionList; index as index"
+      (click)="chooseAccount(item[key])">
+      {{formatFn?formatFn(item):item[key]}}
+    </div>
   </div>
 </div>
