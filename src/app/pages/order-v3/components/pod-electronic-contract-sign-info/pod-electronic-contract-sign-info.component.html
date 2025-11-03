@@ -22,10 +22,33 @@
                       (click)="refreshFlowInfo(item.id, indx)">
                       刷新状态
                     </button>
-                    <button (click)="handleChooseFile(indx, item.id)" [disabled]="item.allDisable" nz-button
+                    <!-- <button (click)="handleChooseFile(indx, item.id)" [disabled]="item.allDisable" nz-button
                       nzType="primary" *ngIf="item.showfile">
                       选择合同文件
-                    </button>
+                    </button> -->
+                    <ng-container *ngIf="item.showfile">
+                      <button [disabled]="allDisable" nz-button nzType="primary" *ngIf="allDisable; else fileTemplate">
+                        选择合同文件
+                      </button>
+                      <ng-template #fileTemplate>
+                        <button disabled nz-button nzType="primary">
+                          选择合同文件
+                        </button>
+                      </ng-template>
+                      <ng-template #fileTemplate>
+                        <nz-dropdown>
+                          <button nz-button nzType="primary" nz-dropdown>选择文件<i nz-icon type="down"></i></button>
+                          <ul nz-menu (nzClick)="handleMenuClick($event, indx, item.id)">
+                            <li nz-menu-item id="choosefile2">
+                              <nz-upload [nzBeforeUpload]="beforeUpload" [nzMultiple]="true" [nzShowUploadList]="false"
+                                nzAccept=".pdf">
+                                <a (click)="clickset('contract', indx, item.id, '')">上传本地文件</a>
+                              </nz-upload>
+                            </li>
+                          </ul>
+                        </nz-dropdown>
+                      </ng-template>
+                    </ng-container>
                     <span nz-tooltip [nzTitle]="item.contracts.length === 0?'合同文件为空，无法发起电子签章，请上传文件！':(item.contracts.length >1?'合同文件数量大于1，无法发起电子签章，请调整文件数量！':null)" nzPlacement="top">
                       <button nz-button *ngIf="item.showsend" [disabled]="item.allDisable || item.contracts.length === 0 || item.contracts.length >1"
                         (click)="signSign(indx, item.id)" nzType="primary">
@@ -53,11 +76,11 @@
                       (click)="signDownloadAll(item.id)" nzType="primary">
                       打包下载
                     </button>
-                    <button nz-button
+                    <!-- <button nz-button
                       *ngIf="item.status === 'COMPLETE' || item.status === 'IN_INVALIDING' || item.status=== 'INVALID'"
                       [disabled]="item.allDisable" (click)="signSyncContract(item.id)" nzType="primary">
                       同步合同到已签署的正式合同
-                    </button>
+                    </button> -->
                     <button nz-button [disabled]="item.allDisable" nzType="primary" *ngIf="item.invalidContractId"
                       (click)="signInvalidDown(item.id)">作废声明文档下载</button>
                   </div>

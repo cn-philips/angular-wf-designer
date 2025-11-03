@@ -1794,23 +1794,23 @@ export class PodElectronicContractSignInfoComponent implements OnInit {
     });
   }
 
-  signSyncContract(flowId: any) {
-    this.signSpinning = true;
-    this.http.syncToContractFile(flowId).then((res) => {
-      const { code, data, msg } = res;
-      this.signSpinning = false;
-      if (code === "0000") {
-        this.refreshDetail.emit();
-        this.firstInfo = true;
-        this.notification.success(
-          "同步成功",
-          "数据已同步，需要刷新页面，请耐心等待"
-        );
-      } else {
-        this.notification.error(msg ? msg : data, "");
-      }
-    });
-  }
+  // signSyncContract(flowId: any) {
+  //   this.signSpinning = true;
+  //   this.http.syncToContractFile(flowId).then((res) => {
+  //     const { code, data, msg } = res;
+  //     this.signSpinning = false;
+  //     if (code === "0000") {
+  //       this.refreshDetail.emit();
+  //       this.firstInfo = true;
+  //       this.notification.success(
+  //         "同步成功",
+  //         "数据已同步，需要刷新页面，请耐心等待"
+  //       );
+  //     } else {
+  //       this.notification.error(msg ? msg : data, "");
+  //     }
+  //   });
+  // }
 
   goJump(item: any, type: any) {
     console.log(item);
