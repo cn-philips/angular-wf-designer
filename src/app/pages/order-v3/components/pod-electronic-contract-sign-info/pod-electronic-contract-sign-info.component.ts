@@ -107,7 +107,7 @@ export class PodElectronicContractSignInfoComponent implements OnInit {
   freightForwarderRepresentativeBestSignAccount:any = ''
   freightForwarderRepresentativePos:any = ''
   freightForwarderRepresentativeName:any = ''
-  ETADate:any = null
+  etaDate:any = null
 
   PMSuggestList: any = [];
   pm:any = ''
@@ -1027,7 +1027,7 @@ export class PodElectronicContractSignInfoComponent implements OnInit {
         freightForwarderRepresentativeBestSignAccount = this.freightForwarderRepresentativeBestSignAccount,
         freightForwarderRepresentativePos = this.freightForwarderRepresentativePos,
         freightForwarderRepresentativeName = this.freightForwarderRepresentativeName,
-        ETADate = this.ETADate,
+        etaDate = this.etaDate,
         pm = this.pm;
     let from = this.from;
     // if (!dealerAccount) {
@@ -1050,7 +1050,7 @@ export class PodElectronicContractSignInfoComponent implements OnInit {
       freightForwarderRepresentativeBestSignAccount,
       freightForwarderRepresentativePos,
       freightForwarderRepresentativeName,
-      ETADate,
+      etaDate,
       pm,
       // currency: this.contractCurrency === "CNY" ? "CNY" : "USD",
       modality: this.orderModality,
@@ -1096,7 +1096,13 @@ export class PodElectronicContractSignInfoComponent implements OnInit {
         }).catch(() => console.log("Oops errors!")),
     });
   }
-
+  async etaDateChange(date: any, id: any) {
+    let params = {
+      id,
+      etaDate: date,
+    };
+    await this.http.createEditSign(params);
+  }
   async dealerAccountChange(type: string, account: any, id: any) {
     let params = {
       id,

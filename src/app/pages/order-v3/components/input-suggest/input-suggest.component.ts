@@ -13,7 +13,7 @@ export class InputSuggestComponent implements OnInit {
   @Input() disabled: boolean = false;
   @Output() ngModelChange = new EventEmitter<string>();
   @Input() key: string = "dealerBestSignAccount";
-  @Input() formatFn: any = (item: any) => item;
+  @Input() formatFn: Function = null;
   showSuggest: any = false;
   suggestionList: any = [];
 

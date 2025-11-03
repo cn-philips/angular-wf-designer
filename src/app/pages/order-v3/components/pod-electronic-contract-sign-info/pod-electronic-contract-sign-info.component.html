@@ -176,7 +176,8 @@
               <nz-form-item>
                 <nz-form-label nzXs="24" nzSm="24" nzMd="8" [nzNoColon]="true">ETA Date</nz-form-label>
                 <nz-form-control nzXs="24" nzSm="24" nzMd="16">
-                  <nz-date-picker [(ngModel)]="item.etaDate" [ngModelOptions]="{standalone:true}" nzPlaceHolder="选择ETA Date">
+                  <nz-date-picker [(ngModel)]="item.etaDate" [ngModelOptions]="{standalone:true}" nzPlaceHolder="选择ETA Date" (ngModelChange)="etaDateChange($event, item.id)"
+                    [nzDisabled]="item.status !== 'DRAFT' || item.allDisable">
                   </nz-date-picker>
                 </nz-form-control>
               </nz-form-item>
