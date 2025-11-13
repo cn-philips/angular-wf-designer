@@ -1141,7 +1141,11 @@ export class PodElectronicContractSignInfoComponent implements OnInit {
       // isCancelAgreement = item.isCancelAgreement,
       // agreements = item.agreements||[],
       ifRelatedOrderSummary = item.ifRelatedOrderSummary,
-      relatedOrderSummaries = item.relatedOrderSummaries||[];
+      relatedOrderSummaries = item.relatedOrderSummaries||[],
+      etaDate = item.etaDate,
+      pm = item.pm,
+      freightForwarderBestSignAccount = item.freightForwarderBestSignAccount,
+      freightForwarderRepresentativeBestSignAccount = item.freightForwarderRepresentativeBestSignAccount;
     if (contracts.length <= 0) {
       return this.notification.error("请选择需要签署的文件", "");
     }
@@ -1166,6 +1170,19 @@ export class PodElectronicContractSignInfoComponent implements OnInit {
     // if (!dealerRepresentativeBestSignAccount) {
     //   return this.notification.error("请输入或选择经销商签字人账号(邮箱)", "");
     // }
+
+    if(null === etaDate){
+      return this.notification.error("请选择ETA日期", "");
+    }
+    if (!pm) {
+      return this.notification.error("请输入或选择PM邮箱", "");
+    }
+    if (!freightForwarderBestSignAccount) {
+      return this.notification.error("请输入或选择货运代理盖章人账号(邮箱)", "");
+    }
+    if (!freightForwarderRepresentativeBestSignAccount) {
+      return this.notification.error("请输入或选择货运代理签字人账号(邮箱)", "");
+    }
 
     this.signSpinning = true;
     // 发起签章
