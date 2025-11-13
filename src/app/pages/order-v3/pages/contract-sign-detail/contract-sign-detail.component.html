@@ -20,7 +20,7 @@
         <app-oa-add-info #oaAddInfoChild [formValue]="formValue"></app-oa-add-info>
       </div>
     </app-tab>
-    <app-tab [title]="'orderv3.pages.contract-sign.sin' | translate" id="complete-tab">
+    <app-tab [title]="'orderv3.pages.contract-sign.sin' | translate" id="complete-tab" *ngIf="!isPODContract">
       <div class="card-body">
         <ecos-electronic-contract-sign-baseInfo [formValue]="formValue" [flag]="flag"
           [applySignatureBtn]="applySignatureBtn" [approvalSigatureBtn]="approvalSigatureBtn"
@@ -33,9 +33,9 @@
     </app-tab>
     <app-tab [title]="'orderv3.pages.contract-sign.podSin' | translate" id="pod-contract-tab" *ngIf="isPODContract">
       <div class="card-body">
-        <ecos-electronic-contract-sign-baseInfo [formValue]="formValue" [flag]="flag"
+        <!-- <ecos-electronic-contract-sign-baseInfo [formValue]="formValue" [flag]="flag"
           [applySignatureBtn]="applySignatureBtn" [approvalSigatureBtn]="approvalSigatureBtn"
-          [signaturePageOff]="signaturePageOff"></ecos-electronic-contract-sign-baseInfo>
+          [signaturePageOff]="signaturePageOff"></ecos-electronic-contract-sign-baseInfo> -->
         <ecos-pod-electronic-contract-sign-info [info]="info" [contractSignFileList]="contractSignFileList"
           [contractSignedFilesList]="signFileFormData"
           [contractId]="contractId" from="CONTRACT"
