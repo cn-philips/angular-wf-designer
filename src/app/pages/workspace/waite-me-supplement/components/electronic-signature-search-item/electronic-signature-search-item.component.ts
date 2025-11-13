@@ -342,7 +342,7 @@ export class ElectronicSignatureSearchItemComponent implements OnInit {
   }
 
   handleDownloadExcel() {
-    const url = "/act/contractSign/flow/export";
+    const url = this.isPodContract ? "/act/contractSign/flow/pod/export" : "/act/contractSign/flow/export" ;
     this.http.postDownload(url, null).subscribe(
       (rest) => {
         this.fileService.downloadResponse("Tasks", rest);
