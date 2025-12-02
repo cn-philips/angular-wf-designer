@@ -156,7 +156,7 @@ export class PodContractElectronicSignatureComponent implements OnInit {
   }
   getAllTotal() {
     const role = JSON.parse(localStorage.getItem("roles"));
-    if (role.includes("OA")) {
+    if (role.includes("OM")) {
       forkJoin(
         this.getTabTotal("todo"),
         this.getTabTotal("handled"),

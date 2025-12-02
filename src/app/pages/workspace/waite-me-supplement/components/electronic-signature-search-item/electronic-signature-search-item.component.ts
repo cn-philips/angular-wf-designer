@@ -141,7 +141,10 @@ export class ElectronicSignatureSearchItemComponent implements OnInit {
       this.authorization = true;
       this.getUserModalityCycleGroup();
     }
-    if (role.includes("OA")) {
+    if (this.contractType ==='COMMON' && role.includes("OA")) {
+      this.showSign = true;
+    }
+    if (this.contractType ==='POD' && role.includes("OM")) {
       this.showSign = true;
     }
     this.queryType = this.from === "my-done" ? "done" : "todo";
