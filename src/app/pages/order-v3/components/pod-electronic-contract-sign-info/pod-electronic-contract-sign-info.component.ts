@@ -193,7 +193,7 @@ export class PodElectronicContractSignInfoComponent implements OnInit {
 
   get createSignVisible() {
     const userrole = JSON.parse(localStorage.getItem("roles"));
-    if (userrole.indexOf("OA") > -1) {
+    if (userrole.indexOf("OM") > -1) {
       return true;
     }
     return false;
