@@ -54,7 +54,7 @@
     <h4> User Management 人员管理</h4>
   </div>
   <div nz-col>
-    <button nz-button nzSize="small" nzType="primary" [disabled]="!role" (click)="handleCreate()">
+    <button nz-button nzSize="small" nzType="primary" [disabled]="!role" (click)="handleCreate()" *ngIf="isUserAdmin">
       Add 添加
     </button>
   </div>
@@ -88,13 +88,13 @@
           <td><a style="color: #1e70cd" (click)="handlelook(data.id,data.email)">{{ data.email }}</a></td>
           <td nzRight="0px">
             <button nz-button nzSize="small" nzType="primary" (click)="handleEdit(data.id)"
-              [disabled]="data.dataSource == 'CD' || data.dataSource == 'CP'">
+              [disabled]="data.dataSource == 'CD' || data.dataSource == 'CP'" *ngIf="isUserAdmin">
               Edit 编辑
             </button>
             <br>
             <button style="margin-top: 4px" nz-popconfirm nzTitle="确定删除此条记录？" nz-button nzSize="small" nzType="danger"
               [disabled]="data.dataSource == 'CD' || data.dataSource == 'CP'"
-              (nzOnConfirm)="handleDelete(data.id,data.email)" (nzOnCancel)="cancel()">
+              (nzOnConfirm)="handleDelete(data.id,data.email)" (nzOnCancel)="cancel()" *ngIf="isUserAdmin">
               Delete 删除
             </button>
           </td>

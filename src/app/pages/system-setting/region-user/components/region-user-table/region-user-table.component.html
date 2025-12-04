@@ -8,9 +8,9 @@
     nzJustify="space-between"
   >
     <div nz-col>
-      <h4>User Management  人员管理</h4>
+      <h4>User Management 人员管理</h4>
     </div>
-    <div nz-col>
+    <div nz-col *ngIf="isUserAdmin">
       <button nz-button (click)="handleCreate()" [disabled]="regionNode == undefined ? true: regionNode.level != 0 ? false : true" nzType="primary">Add 添加</button>
     </div>
   </div>
@@ -53,6 +53,7 @@
             nzSize="small"
             nzType="primary"
             (click)="handleEdit(i)"
+            *ngIf="isUserAdmin||isUserViewer"
           >
             Edit 编辑
           </button>

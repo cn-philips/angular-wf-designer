@@ -7,6 +7,7 @@ import { RoleModalityBMCFormComponent } from '../role-modality-bmc-form/role-mod
 import { UserBasicInfoFormComponent } from '../user-basic-info-form/user-basic-info-form.component';
 import { BusinessInfoArea, BusinessInfoAreaComponent } from '../business-info-area/business-info-area.component';
 import { NzModalService } from 'ng-zorro-antd/modal';
+import { PermissionService } from '@app/modern-themes/services/permission.service';
 
 @Component({
   selector: "app-region-user-form",
@@ -35,8 +36,15 @@ export class RegionUserFormComponent implements OnInit {
   constructor(
     private http: HttpService,
     private message: NzMessageService,
-    private modal: NzModalService
+    private modal: NzModalService,
+    public permission:PermissionService
   ) {
+  }
+  get isUserAdmin(): Boolean {
+    return this.permission.hasRole('Admin User');
+  }
+  get isUserViewer(): Boolean {
+    return this.permission.hasRole('Business super user');
   }
   rolelist: any[] = null;
   @Input() role: any = null;

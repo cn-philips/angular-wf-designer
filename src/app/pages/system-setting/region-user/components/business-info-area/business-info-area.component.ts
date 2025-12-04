@@ -3,6 +3,7 @@ import { NzModalService } from 'ng-zorro-antd/modal';
 import { getNzScrollXByColumns } from '@core/util/table.utils';
 import { HttpService } from '@core/services';
 import {FORM_ACTION_TYPE } from '@core/domain'
+import { PermissionService } from '@app/modern-themes/services/permission.service';
 
 export interface BusinessInfoArea {
   dataSource: string,
@@ -79,9 +80,16 @@ export class BusinessInfoAreaComponent implements OnInit {
 
   constructor(
     private http: HttpService,
-    private modal: NzModalService
+    private modal: NzModalService,
+    public permission:PermissionService
   ) { }
 
+  get isUserAdmin(): Boolean {
+    return this.permission.hasRole('Admin User');
+  }
+  get isUserViewer(): Boolean {
+    return this.permission.hasRole('Business super user');
+  }
   ngOnInit() {
     this.scrollX = getNzScrollXByColumns(this.tableHeader)
   }

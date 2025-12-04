@@ -5,6 +5,7 @@ import { FileService, HttpService } from '@core/services';
 import { RegionManagementTreeComponent } from '../region-management-tree/region-management-tree.component';
 import { RegionUserTableComponent } from '../region-user-table/region-user-table.component';
 import { url } from 'inspector';
+import { PermissionService } from '@app/modern-themes/services/permission.service';
 
 @Component({
   selector: "app-region-management-filter",
@@ -38,7 +39,14 @@ export class RegionManagementFilterComponent implements OnInit {
     private http: HttpService,
     private message: NzMessageService,
     private fileService: FileService,
+    public permission:PermissionService
   ) {
+  }
+  get isUserAdmin(): Boolean {
+    return this.permission.hasRole('Admin User');
+  }
+  get isUserViewer(): Boolean {
+    return this.permission.hasRole('Business super user');
   }
   areaUpdate: any[] = [];
   mode: boolean = false;
@@ -210,7 +218,7 @@ export class RegionManagementFilterComponent implements OnInit {
         return;
       }
     }
-    
+
     const url = '/act/ecom/homepage/updateAreaInfo';
     this.http.post(url, this.area).subscribe(res => {
       if (res.code == '0000') {

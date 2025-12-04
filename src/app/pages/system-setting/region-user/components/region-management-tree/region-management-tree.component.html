@@ -1,5 +1,5 @@
-<button (click)="showDialog()" nzSize="small" nzShape="round" nz-button nzType="primary">
-  <i nz-icon nzType="plus" nzTheme="outline"></i>New 新建
+<button (click)="showDialog()" nzSize="small" nzShape="round" nz-button nzType="primary" *ngIf="isUserAdmin">
+  <i nz-icon nzType="plus" nzTheme="outline" ></i>New 新建
 </button>
 
 <nz-skeleton [nzLoading]="treeloading">

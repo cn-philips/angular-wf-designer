@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angu
 import { NzTreeNode, NzFormatEmitEvent, NzMessageService, NzTreeBase } from 'ng-zorro-antd';
 import { HttpService } from '@core/services';
 import { ActivatedRoute } from '@angular/router';
+import { PermissionService } from '@app/modern-themes/services/permission.service';
 
 @Component({
   selector: "app-region-management-tree",
@@ -13,7 +14,14 @@ export class RegionManagementTreeComponent implements OnInit {
     private http: HttpService,
     private message: NzMessageService,
     public activatedRouter: ActivatedRoute,
+    public permission:PermissionService
   ) { }
+  get isUserAdmin(): Boolean {
+    return this.permission.hasRole('Admin User');
+  }
+  get isUserViewer(): Boolean {
+    return this.permission.hasRole('Business super user');
+  }
   expandKey: string[] = ['0'];
   nodes = [];
   groupDisabled: boolean = false;

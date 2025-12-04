@@ -5,29 +5,29 @@
         <h4>Area Information 区域信息</h4>
       </div>
       <div nz-col>
-        <button (click)="editArea()" *ngIf="!mode"
+        <button (click)="editArea()" *ngIf="!mode && isUserAdmin"
           [disabled]="regionNode == undefined ? true: (regionNode.origin.importFlag != 'CD' ? false : true)" nz-button
           nzType="primary">
           Edit 编辑
         </button>
-        <button (click)="saveArea()" *ngIf="mode" nz-button nzType="primary">
+        <button (click)="saveArea()" *ngIf="mode&&isUserAdmin" nz-button nzType="primary">
           Save 保存
         </button>
-        <button (click)="cancel()" *ngIf="mode" nz-button nzType="primary">
+        <button (click)="cancel()" *ngIf="mode&&isUserAdmin" nz-button nzType="primary">
           Cancel 取消
         </button>
         <!-- [disabled]="regionNode == undefined ? true: regionNode.level != 0 ? false : true"-->
-        <button nz-popconfirm nzTitle="你确定要删除这个区域吗？" *ngIf="!isDeleteable" nz-button
+        <button nz-popconfirm nzTitle="你确定要删除这个区域吗？" *ngIf="!isDeleteable&&isUserAdmin" nz-button
           [disabled]="regionNode == undefined ? true: (regionNode.origin.importFlag != 'CD' ? false : true)"
           (nzOnConfirm)="deleteArea()" (nzOnCancel)="cancels()" nzType="danger">Delete 删除</button>
 
         <button nz-button nzType="primary" style="background-color: #3798DB"
           [disabled]="regionNode == undefined ? true: false" (click)="exportUserData($event)"
-          [nzLoading]="exportLoading">
+          [nzLoading]="exportLoading" *ngIf="isUserAdmin||isUserViewer">
           <i nz-icon nzType="export" nzTheme="outline"></i>导出人员数据
         </button>
 
-        <button nz-button nzType="primary" (click)="exportOperateRecords()" [nzLoading]="eLoading">
+        <button nz-button nzType="primary" (click)="exportOperateRecords()" [nzLoading]="eLoading" *ngIf="isUserAdmin||isUserViewer">
           <i nz-icon nzType="export" nzTheme="outline"></i>导出操作记录
         </button>
       </div>

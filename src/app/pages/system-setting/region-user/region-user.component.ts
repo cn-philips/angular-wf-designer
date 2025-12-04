@@ -6,17 +6,24 @@ import { BusinessInfoArea, BusinessInfoAreaComponent } from './components/busine
 import { UserBasicInfoFormComponent } from './components/user-basic-info-form/user-basic-info-form.component';
 import { RoleUser } from '@core/domain';
 import { NzMessageService } from 'ng-zorro-antd';
+import { PermissionService } from '@app/modern-themes/services/permission.service';
 
 @Component({
   templateUrl: './region-user.component.html',
   styleUrls: ['./region-user.component.scss']
 })
 export class RegionUserComponent implements OnInit {
-  constructor(private http: HttpService,private message: NzMessageService) { }
+  constructor(private http: HttpService,private message: NzMessageService,public permission:PermissionService) { }
   @ViewChild('treeComponent') treeCompinent: RegionManagementTreeComponent;
   activeNode: NzTreeNode;
   email: any = null;
 
+  get isUserAdmin(): Boolean {
+    return this.permission.hasRole('Admin User');
+  }
+  get isUserViewer(): Boolean {
+    return this.permission.hasRole('Business super user');
+  }
   ngOnInit() {
 
   }
@@ -113,7 +120,7 @@ export class RegionUserComponent implements OnInit {
     bmcMags: [],
     serveTeams: [],
   };
-  
+
   public userInfoPage = {
     pageNo: 1,
     pageSize: 10,
@@ -164,7 +171,7 @@ export class RegionUserComponent implements OnInit {
         };
       }
     }, error => {
-      
+
     })
   }
 

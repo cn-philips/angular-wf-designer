@@ -4,6 +4,7 @@ import { FORM_ACTION_TYPE } from '@core/domain';
 import { HttpService } from '@core/services';
 import { RegionUserFormComponent } from '../region-user-form/region-user-form.component';
 import { RegionManagementTreeComponent } from '../region-management-tree/region-management-tree.component';
+import { PermissionService } from '@app/modern-themes/services/permission.service';
 
 @Component({
   selector: "app-region-user-table",
@@ -16,8 +17,15 @@ export class RegionUserTableComponent implements OnInit {
     private http: HttpService,
     private nzMessageService: NzMessageService,
     private message: NzMessageService,
+    public permission:PermissionService
   ) { }
   @ViewChild('userFormComponent') userFormCompent: RegionUserFormComponent;
+  get isUserAdmin(): Boolean {
+    return this.permission.hasRole('Admin User');
+  }
+  get isUserViewer(): Boolean {
+    return this.permission.hasRole('Business super user');
+  }
   public paramsOnwer = {
     pageNo: 1,
     pageSize: 10,
