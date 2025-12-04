@@ -365,23 +365,6 @@
                            [(ngModel)]="dataBase.paymentDescription" nzAllowClear nzPlaceHolder="Select 请选择">
                   <nz-option *ngFor="let item of dataBase.paymentList" [nzValue]="item.dictValue"
                              [nzLabel]="item.dictLabel"></nz-option>
-                  <!-- <nz-option nzValue="1" nzLabel="DI&IGT-100% LC before OIT"></nz-option>
-                  <nz-option nzValue="2" nzLabel="DI&IGT-100% TT before OIT"></nz-option>
-                  <nz-option nzValue="3" nzLabel="DI&IGT-100% LC before FP"></nz-option>
-                  <nz-option nzValue="4" nzLabel="DI&IGT-100% TT before FP"></nz-option>
-                  <nz-option nzValue="5" nzLabel="DI&IGT-90% LC before OIT, 10% TT against installation"></nz-option>
-                  <nz-option nzValue="6" nzLabel="DI&IGT-90% TT before FP, 10% TT against AC"></nz-option>
-                  <nz-option nzValue="7" nzLabel="DI&IGT-90% LC before FP, 10% TT against AC"></nz-option>
-                  <nz-option nzValue="8" nzLabel="DI&IGT-30% TT before OIT, 70% before shipment"></nz-option>
-                  <nz-option nzValue="9" nzLabel="DI&IGT-30%TT before OIT, 70% TT before FP"></nz-option>
-                  <nz-option nzValue="10" nzLabel="DI&IGT-30% TT before OIT, 60% TT before FP, 10% TT against ICF">
-                  </nz-option>
-                  <nz-option nzValue="11" nzLabel="DI&IGT-15% before OIT, 85% before shipment"></nz-option>
-                  <nz-option nzValue="12" nzLabel="DI&IGT-15% before OIT, 85% before FP"></nz-option>
-                  <nz-option nzValue="13" nzLabel="DI&IGT-10% TT before OIT, 90% TT before FP"></nz-option>
-                  <nz-option nzValue="14" nzLabel="DI&IGT-10% TT before OIT, 80% TT before FP, 10% TT against AC">
-                  </nz-option>
-                  <nz-option nzValue="15" nzLabel="其它"></nz-option> -->
                 </nz-select>
                 <nz-form-explain
                   *ngIf="validateForm.get('paymentDescription')?.dirty && validateForm.get('paymentDescription')?.errors">
