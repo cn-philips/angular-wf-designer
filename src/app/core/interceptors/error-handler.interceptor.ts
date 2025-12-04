@@ -11,13 +11,15 @@ import { HttpService } from '../services';
 import { ToastrService } from 'ngx-toastr';
 import { Observable } from 'rxjs/Observable';
 import { tap } from 'rxjs/operators';
+import { PermissionService } from '@app/modern-themes/services/permission.service';
 
 @Injectable()
 export class ErrorHandlerInterceptor implements HttpInterceptor {
   constructor(
     private router: Router,
     private toastrService: ToastrService,
-    private http: HttpService
+    private http: HttpService,
+    private permissionService: PermissionService
   ) {}
 
   private queryParams = {
@@ -77,6 +79,8 @@ export class ErrorHandlerInterceptor implements HttpInterceptor {
               default: {
                 //放行
                 // this.router.navigate(['/errorpage']);
+                // 刷新用户活动时间
+                this.permissionService.updateUserActivity();
                 break;
               }
             }
