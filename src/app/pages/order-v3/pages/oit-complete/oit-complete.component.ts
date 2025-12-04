@@ -64,14 +64,7 @@ export class OitcompleteComponent implements OnInit {
   public isThirdParty : boolean;
   public isLegancy: boolean;
   public paymentProvisionList = [
-    // "10% TT before OIT, 80% TT before FP, 10% TT against AC",
-    // "10% TT before OIT, 90% TT before FP",
-    // "15% TT before OIT, 85% before FP",
-    // "30% TT before OIT, 60% TT before FP, 10% TT against ICF",
-    // "100% TT before OIT",
-    // "100% LC before OIT",
-    // "30%TT before OIT, 70% TT before FP",
-    "30% TT before OIT, 70% before shipment",
+    "30% TT before OIT, 70% before production",
     "100% TT before OIT",
     "100% LC before OIT",
     "(non-stock)15% TT before OIT, 85% before FP",
@@ -1291,7 +1284,6 @@ export class OitcompleteComponent implements OnInit {
       this.oitInformData.patchValue({
         credentialFileRequired: true,
       })
-
     }
     else {
       this.oitInformData.get("credentialFile").clearValidators();
