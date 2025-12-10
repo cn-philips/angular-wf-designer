@@ -76,11 +76,11 @@
                       (click)="signDownloadAll(item.id)" nzType="primary">
                       打包下载
                     </button>
-                    <!-- <button nz-button
+                    <button nz-button
                       *ngIf="item.status === 'COMPLETE' || item.status === 'IN_INVALIDING' || item.status=== 'INVALID'"
                       [disabled]="item.allDisable" (click)="signSyncContract(item.id)" nzType="primary">
                       同步合同到已签署的正式合同
-                    </button> -->
+                    </button>
                     <button nz-button [disabled]="item.allDisable" nzType="primary" *ngIf="item.invalidContractId"
                       (click)="signInvalidDown(item.id)">作废声明文档下载</button>
                   </div>
