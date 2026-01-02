@@ -147,7 +147,7 @@ export class RegionUserTableComponent implements OnInit {
   ngOnInit() { }
   ngOnChanges() {
     this.userTable = [];
-    if (this.regionNode === undefined ? false : this.regionNode.level > 0) {
+    if (this.regionNode !== undefined) {
       this.getArea();
       this.getlevel();
     }
@@ -176,6 +176,7 @@ export class RegionUserTableComponent implements OnInit {
       this.message.error('请先选择需要添加角色的节点');
     }
     const level = [];
+    console.log('this.regionNode.level',this.regionNode.level)
     switch (this.regionNode.level) {
       case 0: {
         level.push(this.regionNode.title);
