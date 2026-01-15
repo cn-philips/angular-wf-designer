@@ -5,7 +5,7 @@
     color: #FFFFFF;
     line-height: 22px;
     padding-top: 24px">
-      <div nz-col nzXs="24" nzMd="12" nzXl="8">
+      <div nz-col nzXs="24" nzMd="8" nzXl="8">
         <nz-form-item>
           <nz-form-label nzXs="24" nzMd="10" nzXl="8" nzXXl="6">
             SO#
@@ -15,14 +15,14 @@
           </nz-form-control>
         </nz-form-item>
       </div>
-      <div nz-col nzXs="24" nzMd="12" nzXl="10">
+      <div nz-col nzXs="24" nzMd="8" nzXl="10">
         <nz-form-item>
           <nz-form-label nzXs="12" nzMd="12" nzXl="10">
-            是否被抽取核查三方
+            是否锁定
           </nz-form-label>
           <nz-form-control nzXs="12" nzMd="12" nzXl="14">
             <nz-select formControlName="status" style="width: 100%" nzPlaceHolder="">
-              <nz-option *ngFor="let item of registerList" [nzValue]="item.value" [nzLabel]="item.label"></nz-option>
+              <nz-option *ngFor="let item of lockList" [nzValue]="item.value" [nzLabel]="item.label"></nz-option>
             </nz-select>
           </nz-form-control>
         </nz-form-item>

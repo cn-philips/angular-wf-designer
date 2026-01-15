@@ -37,7 +37,7 @@ export class RegisterICFComponent implements OnInit {
 
   formValues = this.fb.group({
     so: null,
-    status: 'picked',
+    status: 'locked',
     dealFormId: null,
     hasRegistered: 0 //是否登记 true-已登记 false未登记
   })
@@ -47,10 +47,11 @@ export class RegisterICFComponent implements OnInit {
     pageSize: 10,
   };
 
-  public registerList = [
-    {label: '已抽取', value: 'picked'},
-    {label: '未抽取', value: 'unpicked'},
-    {label: '全部', value: ''},
+  public lockList = [
+    {label: '已锁定', value: 'locked'},
+    {label: '未锁定', value: 'unlocked'},
+    // {label: '未抽取', value: 'unpicked'},
+    // {label: '全部', value: 'all'},
   ]
 
   updateParams() {
@@ -67,7 +68,7 @@ export class RegisterICFComponent implements OnInit {
     this.formValues.reset();
     this.formValues.patchValue({
       ...this.formValues.value,
-      status: 'picked',
+      status: 'locked',
     })
     this.updateParams()
   }
