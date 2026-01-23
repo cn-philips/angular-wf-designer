@@ -108,6 +108,7 @@ export class ContractElectronicSignatureComponent implements OnInit {
       (rest) => {
         if (rest.code === "0000") {
           const data = rest.data.rows;
+          this.tableData = [];
           data.map((item, index) => {
             item.processor = item.processor ? item.processor.toLowerCase() : "";
             item.processor = item.processor.split(",");

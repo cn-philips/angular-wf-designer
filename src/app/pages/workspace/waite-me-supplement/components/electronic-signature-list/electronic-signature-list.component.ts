@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { FormBuilder } from "@angular/forms";
 import { Router } from "@angular/router";
 import { DictService, HttpService } from "@core/services";
+import { getuuid } from "assets/js/tools";
 import { NzMessageService, NzModalService } from "ng-zorro-antd";
 
 @Component({
@@ -125,7 +126,6 @@ export class ElectronicSignatureListComponent implements OnInit {
     if (waitingSignContractList.length === 0) {
       return this.message.error("请勾选要签署的合同");
     }
-    let number = 0;
     this.modal.confirm({
       nzTitle: "确认批量签署？",
       nzOkText: "确定",
@@ -133,62 +133,60 @@ export class ElectronicSignatureListComponent implements OnInit {
       nzStyle: { top: "150px" },
       nzOnOk: async () => {
         this.setLoading.emit(true);
-        for (const {
-          flowId,
-          contractSignFlowVo: { currentUserRole, status },
-        } of waitingSignContractList) {
-          if (status === "SENT") {
-            number++;
-            this.handleSignContract(flowId, currentUserRole).subscribe(
-              ({ code, msg }) => {
-                number--;
-                if (code === "0000") {
-                  if (number <= 0) {
-                    this.message.success(`${flowId}签署成功`);
-                    this.pageChange.emit(this.pageParams);
-                  }
-                } else {
-                  this.message.error(`${flowId}签署失败, ${msg}`);
-                }
-                if (number <= 0) {
-                  this.loading = false;
-                  this.setLoading.emit(this.loading);
-                }
-              },
-              (error) => {
-                number--;
-                this.message.error(error);
-                this.loading = false;
-                this.setLoading.emit(this.loading);
-              }
-            );
-          } else if (status === "IN_INVALIDING") {
-            number++;
-            this.handleConfirmCancel(flowId, currentUserRole).subscribe(
-              ({ code, msg }) => {
-                number--;
-                if (code === "0000") {
-                  if (number <= 0) {
-                    this.message.success(`${flowId}签署成功`);
-                    this.pageChange.emit(this.pageParams);
-                  }
-                } else {
-                  this.message.error(`${flowId}签署失败, ${msg}`);
-                }
-                if (number <= 0) {
-                  this.loading = false;
-                  this.setLoading.emit(this.loading);
-                }
-              },
-              (error) => {
-                number--;
-                this.message.error(error);
-                this.loading = false;
-                this.setLoading.emit(this.loading);
-              }
-            );
-          }
+        const signContracts = waitingSignContractList.filter((item)=>item.contractSignFlowVo.status==='SENT')
+        const invalidingContracts = waitingSignContractList.filter((item)=>item.contractSignFlowVo.status==='IN_INVALIDING')
+        let signContractsDtos=[]
+        let invalidingContractsDtos=[]
+        console.log('signContracts',signContracts);
+        console.log('invalidingContracts',invalidingContracts);
+        console.log('waitingSignContractList',waitingSignContractList);
+        if(signContracts.length>0){
+          signContractsDtos = signContracts.map(item=>({
+            flowId:item.flowId,
+            roleName:item.contractSignFlowVo.currentUserRole,
+            idemKey: getuuid()
+          }));
         }
+        if(invalidingContracts.length>0){
+          invalidingContractsDtos = invalidingContracts.map(item=>({
+            flowId:item.flowId,
+            roleName:item.contractSignFlowVo.currentUserRole,
+            idemKey: getuuid()
+          }));
+        }
+        let promiseArr = [];
+        if(invalidingContractsDtos.length>0){
+          let promise = this.handleBatchConfirmCancelApi(invalidingContractsDtos).toPromise();
+          promiseArr.push(promise);
+        }
+        if(signContractsDtos.length>0){
+          let promise = this.handleBatchSignContractApi(signContractsDtos).toPromise();
+          promiseArr.push(promise);
+        }
+        Promise.all(promiseArr).then((resArr)=>{
+          let hasError = false;
+          resArr.forEach(res=>{
+            const { code, msg } = res;
+            if (code !== "0000") {
+              hasError = true;
+              this.message.error(`批量签署失败, ${msg}`);
+            }
+          })
+          if(!hasError){
+            this.message.success(`批量签署成功`);
+            setTimeout(() => {
+              // this.setLoading.emit(false);
+              // this.pageChange.emit({...this.pageParams,reload:true});//强制刷新当前页
+              location.reload();
+            }, 30000);
+          }else{
+            this.setLoading.emit(false);
+          }
+        }).catch(error=>{
+          this.message.error(`批量签署失败, ${error}`);
+          this.setLoading.emit(false);
+          this.pageChange.emit({...this.pageParams,reload:true});//强制刷新当前页
+        })
       },
     });
   }
@@ -230,10 +228,18 @@ export class ElectronicSignatureListComponent implements OnInit {
     const url = `/act/contractSign/flow/${flowId}/${roleName}/confirmCancel`;
     return this.http.post(url);
   }
+  handleBatchConfirmCancelApi(signDtos: any[]) {
+    const url = `/act/contractSign/batch/confirmCancel`;
+    return this.http.post(url,signDtos);
+  }
 
   handleSignContract(flowId, roleName) {
     const url = `act/contractSign/${flowId}/${roleName}/sign`;
     return this.http.post(url);
+  }
+  handleBatchSignContractApi(signDtos: any[]) {
+    const url = `act/contractSign/batch/sign`;
+    return this.http.post(url,signDtos);
   }
 
   handleCancel({ flowId, contractSignFlowVo: { currentUserRole } }) {
