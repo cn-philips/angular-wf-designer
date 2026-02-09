@@ -153,7 +153,7 @@
         <div nz-row>
             <div nz-col nzXs="24" nzSm="24" nzMd="8">
                 <nz-form-item>
-                    <nz-form-label nzXl="8" nzXXl="6" nzRequired>合同约定的OIT支付比率</nz-form-label>
+                    <nz-form-label nzXl="8" nzXXl="6" nzRequired>OIT标准支付比率</nz-form-label>
                     <nz-form-control nzXs="24" nzSm="24" nzMd="14">
                         <nz-input-number [nzPrecision]="2"
                                        formControlName="ratioAsContracted"
@@ -176,7 +176,7 @@
 
             <div nz-col nzXs="24" nzSm="24" nzMd="8">
                 <nz-form-item>
-                    <nz-form-label nzXl="8" nzXXl="6" nzRequired>合同约定的OIT金额</nz-form-label>
+                    <nz-form-label nzXl="8" nzXXl="6" nzRequired>OIT标准支付金额</nz-form-label>
                     <nz-form-control nzXs="24" nzSm="24" nzMd="14">
                         <money-input formControlName="dealPriceAsContracted"
                                    [readonly]="!editable && !isCCFeedbackNode"
@@ -216,7 +216,7 @@
                             实际OIT支付比率不能大于100%
                         </nz-form-explain>
                         <nz-form-explain *ngIf="financeInfoForm.get('actualRatio')?.hasError('actualRatioExceedsContracted')">
-                            实际OIT支付比率不能大于合同约定的OIT支付比率
+                            实际OIT支付比率不能大于OIT标准支付比率
                         </nz-form-explain>
                     </nz-form-control>
                 </nz-form-item>
@@ -239,7 +239,7 @@
                             实际OIT支付金额不能超过DealForm含税总金额
                         </nz-form-explain>
                         <nz-form-explain *ngIf="financeInfoForm.get('actualDealPrice')?.hasError('actualAmountExceedsContracted')">
-                            实际OIT支付金额不能大于合同约定的OIT金额
+                            实际OIT支付金额不能大于OIT标准支付金额
                         </nz-form-explain>
                     </nz-form-control>
                 </nz-form-item>

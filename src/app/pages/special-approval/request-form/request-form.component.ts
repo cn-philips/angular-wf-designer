@@ -329,7 +329,7 @@ export class RequestFormComponent implements OnInit {
       dealPriceCny:[null],
       dealPriceCnyNet:[null],
       dealPriceUsd:[null],
-      ratioAsContracted:[null, [Validators.required]], // 合同约定的OIT支付比率
+      ratioAsContracted:[null, [Validators.required]], // OIT标准支付比率
       dealPriceAsContracted:[null, [Validators.required]], //合同约定的OIT支付金额
       actualRatio:[null, [Validators.required]],//实际OIT支付比率
       actualDealPrice:[null, [Validators.required]],//实际OIT支付金额

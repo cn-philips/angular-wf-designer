@@ -409,13 +409,13 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
     return null;
   }
 
-  // 自定义验证器：验证实际OIT金额不大于合同约定的OIT金额
+  // 自定义验证器：验证实际OIT金额不大于OIT标准支付金额
   private actualOitAmountMaxValidator = (control: any) => {
     if (!control.value) return null;
     const actualAmount = Number(control.value);
     if (isNaN(actualAmount)) return null;
 
-    // 获取合同约定的OIT金额
+    // 获取OIT标准支付金额
     const contractedAmountControl = this.financeInfoForm ? this.financeInfoForm.get('dealPriceAsContracted') : null;
     const contractedAmount = contractedAmountControl ? contractedAmountControl.value : null;
 
@@ -659,7 +659,7 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
         this.calculateGapRatio();
         this.calculateGapPrice();
       });
-    }    // 监听 合同约定的OIT支付比率 变化
+    }    // 监听 OIT标准支付比率 变化
     const ratioAsContractedControl = this.financeInfoForm.get('ratioAsContracted');
     if (ratioAsContractedControl) {
       this.ratioAsContractedSubscription = ratioAsContractedControl.valueChanges.subscribe(ratio => {
@@ -680,7 +680,7 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
       });
     }
 
-    // 监听 合同约定的OIT金额 变化
+    // 监听 OIT标准支付金额 变化
     const dealPriceAsContractedControl = this.financeInfoForm.get('dealPriceAsContracted');
     if (dealPriceAsContractedControl) {
       this.dealPriceAsContractedSubscription = dealPriceAsContractedControl.valueChanges.subscribe(amount => {
@@ -810,7 +810,7 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
       if (ratio > 100) {
         // 只在数据初始化完成后显示警告
         if (this.isDataInitialized) {
-          this.message.warning('合同约定的OIT支付比率不能大于100%');
+          this.message.warning('OIT标准支付比率不能大于100%');
         }
         // 重置比率为100%
         const ratioControl = this.financeInfoForm.get('ratioAsContracted');
@@ -826,7 +826,7 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
       if (calculatedAmount > basePrice) {
         // 只在数据初始化完成后显示警告
         if (this.isDataInitialized) {
-          this.message.warning('合同约定的OIT金额不能超过DealForm含税总金额');
+          this.message.warning('OIT标准支付金额不能超过DealForm含税总金额');
         }
         // 重新计算符合限制的金额
         const maxAmount = basePrice;
@@ -867,7 +867,7 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
       if (amount > basePrice) {
         // 只在数据初始化完成后显示警告
         if (this.isDataInitialized) {
-          this.message.warning('合同约定的OIT金额不能超过DealForm含税总金额');
+          this.message.warning('OIT标准支付金额不能超过DealForm含税总金额');
         }
         // 重置金额为最大允许值
         const dealPriceAsContractedControl = this.financeInfoForm.get('dealPriceAsContracted');
@@ -883,7 +883,7 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
       if (calculatedRatio > 100) {
         // 只在数据初始化完成后显示警告
         if (this.isDataInitialized) {
-          this.message.warning('合同约定的OIT支付比率不能大于100%');
+          this.message.warning('OIT标准支付比率不能大于100%');
         }
         // 重新计算符合限制的比率
         const maxRatio = 100;
@@ -1030,7 +1030,7 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
     }
   }
 
-  // 计算差额比例：合同约定的OIT支付比率 - 实际OIT支付比率
+  // 计算差额比例：OIT标准支付比率 - 实际OIT支付比率
   calculateGapRatio() {
     const ratioAsContractedControl = this.financeInfoForm.get('ratioAsContracted');
     const actualRatioControl = this.financeInfoForm.get('actualRatio');
@@ -1060,7 +1060,7 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
     }
   }
 
-  // 计算差额含税金额：合同约定的OIT金额 - 实际OIT支付金额
+  // 计算差额含税金额：OIT标准支付金额 - 实际OIT支付金额
   calculateGapPrice() {
     const dealPriceAsContractedControl = this.financeInfoForm.get('dealPriceAsContracted');
     const actualDealPriceControl = this.financeInfoForm.get('actualDealPrice');
@@ -1638,19 +1638,19 @@ export class AdvancedPayComponent implements OnInit, OnDestroy {
   private validateFinanceInfo(): { isValid: boolean; errorMessage?: string } {
     const financeInfo = this.financeInfoForm.value;
 
-    // 验证合同约定的OIT支付比率
+    // 验证OIT标准支付比率
     if (!financeInfo.ratioAsContracted || financeInfo.ratioAsContracted <= 0) {
       return {
         isValid: false,
-        errorMessage: '合同约定的OIT支付比率不能为空且必须大于0'
+        errorMessage: 'OIT标准支付比率不能为空且必须大于0'
       };
     }
 
-    // 验证合同约定的OIT金额
+    // 验证OIT标准支付金额
     if (!financeInfo.dealPriceAsContracted || financeInfo.dealPriceAsContracted <= 0) {
       return {
         isValid: false,
-        errorMessage: '合同约定的OIT金额不能为空且必须大于0'
+        errorMessage: 'OIT标准支付金额不能为空且必须大于0'
       };
     }
 
