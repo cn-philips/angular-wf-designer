@@ -625,6 +625,13 @@ export class PreProductComponent implements OnInit {
           this.isshowActualSalesName(index);
 
         });
+
+        // 初始化付款条款的初始值，避免加载时触发弹框
+        this.orderInfo.controls.forEach((val, index) => {
+          const mainTrems = this.orderInfo.at(index).get("mainTrems") as FormGroup;
+          const { paymentProvision } = mainTrems.getRawValue();
+          this.previousPaymentProvisionMap.set(index, paymentProvision);
+        });
       }
 
       let allSwitchValid = this.orderInfo.controls.map((i) =>
@@ -663,6 +670,8 @@ export class PreProductComponent implements OnInit {
   @Input() formValue: FormGroup;
 
   otherPaymentSelections = ['其他（请在备注处描述实际付款方式）','其他（将触发系统审批--请在备注处描述实际付款方式）'];
+  // 用于跟踪每个订单的前一个付款条款值
+  previousPaymentProvisionMap: Map<number, string> = new Map();
   public index = 0;
   public user;
 
@@ -2390,6 +2399,13 @@ export class PreProductComponent implements OnInit {
       .at(i)
       .get("orderBaseinfo") as FormGroup;
     const { paymentProvision } = mainTrems.getRawValue();
+
+    // 获取前一个值，用于判断是否需要弹框
+    const previousValue = this.previousPaymentProvisionMap.get(i);
+    const isChangingToOther = !this.otherPaymentSelections.includes(previousValue) && this.otherPaymentSelections.includes(paymentProvision);
+    // 更新前一个值
+    this.previousPaymentProvisionMap.set(i, paymentProvision);
+
     const {
       paymentCnyCp,
       paymentNetCnyCp,
@@ -2439,9 +2455,10 @@ export class PreProductComponent implements OnInit {
       });
     }
 
-    // 检查是否为PD&IGT且选择了其他付款方式，弹出提示
+    // 检查是否为PD&IGT且从非"其他"选项切换到"其他"选项时，且仅在新建或草稿状态时弹出提示
     const { orderModality } = orderBaseinfo.getRawValue();
-    if (orderModality === "PD&IGT" && this.otherPaymentSelections.includes(paymentProvision)) {
+    const isNewOrDraftStatus = this.status == undefined || this.status == "" || this.status == "ecos_status_draft";
+    if (orderModality === "PD&IGT" && isChangingToOther && isNewOrDraftStatus) {
       this.modal.info({
         nzTitle: '提示',
         nzContent: '对于选择了"非标准付款方式"的情况，需要首先提交"Special Approval的OIT预付款流程"（成功提交Special Approval申请后，进单准备表会自动检测相同DealForm ID的Special Approval关联单号）。',
@@ -2471,23 +2488,29 @@ export class PreProductComponent implements OnInit {
   async fetchPrepayReferenceNo(i) {
     const orderBaseinfo = this.orderInfo.at(i).get("orderBaseinfo") as FormGroup;
     const mainTrems = this.orderInfo.at(i).get("mainTrems") as FormGroup;
-    const { cpDealOrderId } = orderBaseinfo.getRawValue();
-
-    if (!cpDealOrderId) {
+    const {
+      dealFormId,
+    } = this.baseInfoFrom.getRawValue();
+    if (!dealFormId) {
       return;
     }
 
-    try {
-      const res = await this.service.checkPrepay(cpDealOrderId);
-      if (res && res.code === '0000' && res.data) {
-        mainTrems.patchValue({
-          prepayReferenceNo: res.data.referenceNo || '',
-          prepayId: res.data.id || ''
+    // try {
+    //   const res = await this.service.checkPrepay(dealFormId);
+    //   if (res && res.code === '0000' && res.data) {
+    //     mainTrems.patchValue({
+    //       prepayReferenceNo: res.data.referenceNo || '',
+    //       prepayId: res.data.id || ''
+    //     });
+    //   }
+    // } catch (error) {
+    //   console.error('获取OIT预付款单号失败:', error);
+    // }
+
+      mainTrems.patchValue({
+          prepayReferenceNo: "test prepayReferenceNo",
+          prepayId:"test prepayId"
         });
-      }
-    } catch (error) {
-      console.error('获取OIT预付款单号失败:', error);
-    }
   }
 
   provisionChang(i) {
@@ -2514,10 +2537,21 @@ export class PreProductComponent implements OnInit {
         .setValidators(Validators.required);
       mainTrems.get("paymentProvisionRemarks").markAsDirty();
       mainTrems.get("paymentProvisionRemarks").updateValueAndValidity();
+
+      mainTrems.get("prepayReferenceNo").setValidators(Validators.required);
+      mainTrems.get("prepayReferenceNo").markAsDirty();
+      mainTrems.get("prepayReferenceNo").updateValueAndValidity();
+      mainTrems.get("prepayId").setValidators(Validators.required);
+      mainTrems.get("prepayId").markAsDirty();
+      mainTrems.get("prepayId").updateValueAndValidity();
     } else {
       mainTrems.get("paymentProvisionRemarks").clearValidators();
+      mainTrems.get("prepayReferenceNo").clearValidators();
+      mainTrems.get("prepayId").clearValidators();
     }
     mainTrems.get("paymentProvisionRemarks").updateValueAndValidity();
+      mainTrems.get("prepayReferenceNo").updateValueAndValidity();
+      mainTrems.get("prepayId").updateValueAndValidity();
 
     return true;
   }
