@@ -1358,6 +1358,8 @@ export class OrdersummaryBaseInfoComponent implements OnInit {
       paymentProvision: [{ value: val.paymentProvision ? val.paymentProvision : '0', disabled: this.editBase }],//付款条款
       paymentProvisionFile: val.paymentProvisionFile ? [[...val.paymentProvisionFile]] : [],//付款条款文件
       paymentProvisionRemarks: [{ value: val.paymentProvisionRemarks ? val.paymentProvisionRemarks : null, disabled: true }],//付款条款备注
+      prepayReferenceNo: [{ value: val.prepayReferenceNo ? val.prepayReferenceNo : null, disabled: true }],//OIT预付款单号
+      prepayId: [{ value: val.prepayId ? val.prepayId : null, disabled: true }],//OIT预付款ID
       performanceBond: [{ value: val.performanceBond ? val.performanceBond : '0', disabled: true }], //履约保函
       performanceBondFile: val.performanceBondFile ? [[...val.performanceBondFile]] : [],//履约保函文件
       performanceBondRemarks: [{ value: val.performanceBondRemarks ? val.performanceBondRemarks : null, disabled: true }],//履约保函备注

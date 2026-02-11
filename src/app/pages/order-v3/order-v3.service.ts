@@ -341,6 +341,12 @@ export class OrderV3Service {
     return this.http.get(url).toPromise();
   }
 
+  checkPrepay(dealFormId){
+    //查询OIT预付款单号
+    const url = `/act/ecos/oit/checkPrepay/${dealFormId}`;
+    return this.http.get(url).toPromise();
+  }
+
   checkContractSignatory(params){
     const url=`/act/ecos/signature/checkContractSignatory`;
     return this.http.post(url,params)

@@ -30,7 +30,7 @@ import {
   floatDivide,
   floatAdd,
 } from "@core/util/tools";
-import { NzMessageService } from "ng-zorro-antd";
+import { NzMessageService, NzModalService } from "ng-zorro-antd";
 import { areaList } from "@core/util/areajson";
 import { environment } from "@env";
 import { HttpService } from "@core/services";
@@ -45,6 +45,7 @@ export class PreProductComponent implements OnInit {
     private service: OrderV3Service,
     private fb: FormBuilder,
     private message: NzMessageService,
+    private modal: NzModalService,
     private activatedRouter: ActivatedRoute,
     private router: Router,
     public changeDetectorRef: ChangeDetectorRef,
@@ -661,6 +662,7 @@ export class PreProductComponent implements OnInit {
   @ViewChild("selectRefno") selectRefno;
   @Input() formValue: FormGroup;
 
+  otherPaymentSelections = ['其他（请在备注处描述实际付款方式）','其他（将触发系统审批--请在备注处描述实际付款方式）'];
   public index = 0;
   public user;
 
@@ -741,6 +743,7 @@ export class PreProductComponent implements OnInit {
       });
     }
   }
+
   foreignInfoDDpstatus(i) {
     //验证ddp是否过期
     const foreignInfo = this.orderInfo.at(i).get("foreignInfo") as FormGroup;
@@ -885,7 +888,7 @@ export class PreProductComponent implements OnInit {
       .get("orderBaseinfo") as FormGroup;
     const { currencySystem } = orderBaseinfo.getRawValue();
     const { paymentProvision } = mainTrems.getRawValue();
-    if (['其他（请在备注处描述实际付款方式）','其他（将触发系统审批--请在备注处描述实际付款方式）'].includes(paymentProvision) ) {
+    if (this.otherPaymentSelections.includes(paymentProvision) ) {
       if (currencySystem == "CNY") {
         orderBaseinfo.get("paymentNetCny").setValidators([Validators.required]);
         orderBaseinfo.get("paymentUsd").clearValidators();
@@ -2408,7 +2411,8 @@ export class PreProductComponent implements OnInit {
         paymentUsd: paymentUsdCp,
       });
     }
-    if (['其他（请在备注处描述实际付款方式）','其他（将触发系统审批--请在备注处描述实际付款方式）'].includes(paymentProvision) ) {
+
+    if (this.otherPaymentSelections.includes(paymentProvision) ) {
       orderBaseinfo.patchValue({
         creditCny: 0,
         creditCnyNet: 0,
@@ -2421,9 +2425,9 @@ export class PreProductComponent implements OnInit {
         creditUsd: creditUsdCp,
       });
     }
+
     if (
-      !['其他（请在备注处描述实际付款方式）','其他（将触发系统审批--请在备注处描述实际付款方式）'].includes(paymentProvision)  &&
-      paymentProvision != "远期信用证（请在备注处注明信用证期限及开证行）"
+      !this.otherPaymentSelections.includes(paymentProvision)  &&  paymentProvision != "远期信用证（请在备注处注明信用证期限及开证行）"
     ) {
       orderBaseinfo.patchValue({
         creditCny: 0,
@@ -2434,7 +2438,56 @@ export class PreProductComponent implements OnInit {
         paymentUsd: 0,
       });
     }
+
+    // 检查是否为PD&IGT且选择了其他付款方式，弹出提示
+    const { orderModality } = orderBaseinfo.getRawValue();
+    if (orderModality === "PD&IGT" && this.otherPaymentSelections.includes(paymentProvision)) {
+      this.modal.info({
+        nzTitle: '提示',
+        nzContent: '对于选择了"非标准付款方式"的情况，需要首先提交"Special Approval的OIT预付款流程"（成功提交Special Approval申请后，进单准备表会自动检测相同DealForm ID的Special Approval关联单号）。',
+        nzOkText: '关闭',
+        nzOnOk: () => {
+          // 关闭弹框
+        }
+      });
+    }
+
+    // 检查是否选择了其他付款方式，调用接口获取OIT预付款单号
+    if (this.otherPaymentSelections.includes(paymentProvision)) {
+      this.fetchPrepayReferenceNo(i);
+    } else {
+      // 如果不是其他付款方式，清空OIT预付款单号
+      mainTrems.patchValue({
+        prepayReferenceNo: '',
+        prepayId: ''
+      });
+    }
+
+    console.log('Here!')
     this.orderPriceCountCnyOther(i);
+  }
+
+  // 获取OIT预付款单号
+  async fetchPrepayReferenceNo(i) {
+    const orderBaseinfo = this.orderInfo.at(i).get("orderBaseinfo") as FormGroup;
+    const mainTrems = this.orderInfo.at(i).get("mainTrems") as FormGroup;
+    const { cpDealOrderId } = orderBaseinfo.getRawValue();
+
+    if (!cpDealOrderId) {
+      return;
+    }
+
+    try {
+      const res = await this.service.checkPrepay(cpDealOrderId);
+      if (res && res.code === '0000' && res.data) {
+        mainTrems.patchValue({
+          prepayReferenceNo: res.data.referenceNo || '',
+          prepayId: res.data.id || ''
+        });
+      }
+    } catch (error) {
+      console.error('获取OIT预付款单号失败:', error);
+    }
   }
 
   provisionChang(i) {
@@ -2455,7 +2508,7 @@ export class PreProductComponent implements OnInit {
     mainTrems.get("paymentProvision").markAsDirty();
     mainTrems.get("paymentProvision").updateValueAndValidity();
     const { paymentProvision } = mainTrems.getRawValue();
-    if (['其他（请在备注处描述实际付款方式）','其他（将触发系统审批--请在备注处描述实际付款方式）'].includes(paymentProvision) ) {
+    if (this.otherPaymentSelections.includes(paymentProvision) ) {
       mainTrems
         .get("paymentProvisionRemarks")
         .setValidators(Validators.required);

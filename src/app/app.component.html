@@ -5,3 +5,40 @@
 </div>
 <router-outlet></router-outlet>
 
+<!-- 开发环境调试面板 -->
+<div class="debug-panel" *ngIf="!isProduction && showDebugPanel">
+  <div class="debug-panel-header">
+    <span class="debug-panel-title">🔍 组件调试信息</span>
+    <button class="debug-panel-close" (click)="closeDebugPanel()">&times;</button>
+  </div>
+  <div class="debug-panel-content">
+    <div class="debug-info-item">
+      <strong>当前 URL:</strong>
+      <div class="debug-value">{{ debugInfo.currentUrl }}</div>
+    </div>
+    <div class="debug-info-item">
+      <strong>路由路径:</strong>
+      <div class="debug-value">{{ debugInfo.routePath }}</div>
+    </div>
+    <div class="debug-info-item" *ngIf="debugInfo.moduleName">
+      <strong>懒加载模块:</strong>
+      <div class="debug-value module">{{ debugInfo.moduleName }}</div>
+    </div>
+    <div class="debug-info-item">
+      <strong>组件名称:</strong>
+      <div class="debug-value highlight">{{ debugInfo.componentName }}</div>
+    </div>
+    <div class="debug-info-item" *ngIf="debugInfo.componentFile">
+      <strong>模块路径:</strong>
+      <div class="debug-value small">src/app/pages/{{ debugInfo.componentFile }}</div>
+    </div>
+    <div class="debug-info-item">
+      <strong>更新时间:</strong>
+      <div class="debug-value">{{ debugInfo.timestamp }}</div>
+    </div>
+  </div>
+  <div class="debug-panel-footer">
+    <small>按 Ctrl+Shift+D 关闭 | 再次按可刷新信息</small>
+  </div>
+</div>
+
