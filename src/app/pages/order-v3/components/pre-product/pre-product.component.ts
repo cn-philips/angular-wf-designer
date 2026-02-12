@@ -2495,22 +2495,22 @@ export class PreProductComponent implements OnInit {
       return;
     }
 
-    // try {
-    //   const res = await this.service.checkPrepay(dealFormId);
-    //   if (res && res.code === '0000' && res.data) {
-    //     mainTrems.patchValue({
-    //       prepayReferenceNo: res.data.referenceNo || '',
-    //       prepayId: res.data.id || ''
-    //     });
-    //   }
-    // } catch (error) {
-    //   console.error('获取OIT预付款单号失败:', error);
-    // }
-
-      mainTrems.patchValue({
-          prepayReferenceNo: "test prepayReferenceNo",
-          prepayId:"test prepayId"
+    try {
+      const res = await this.service.checkPrepay(dealFormId);
+      if (res && res.code === '0000' && res.data) {
+        mainTrems.patchValue({
+          prepayReferenceNo: res.data.referenceNo || '',
+          prepayId: res.data.id || ''
         });
+      }
+    } catch (error) {
+      console.error('获取OIT预付款单号失败:', error);
+    }
+
+      // mainTrems.patchValue({
+      //     prepayReferenceNo: "test prepayReferenceNo",
+      //     prepayId:"test prepayId"
+      //   });
   }
 
   provisionChang(i) {
