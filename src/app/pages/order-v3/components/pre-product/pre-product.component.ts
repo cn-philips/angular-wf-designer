@@ -1431,6 +1431,12 @@ export class PreProductComponent implements OnInit {
       orderSalesinfo.get("orderApprovalAreaConfiguration").enable();
 
       mainTrems.enable();
+      if (mainTrems.get("prepayReferenceNo")) {
+        mainTrems.get("prepayReferenceNo").disable();
+      }
+      if (mainTrems.get("prepayId")) {
+        mainTrems.get("prepayId").disable();
+      }
       otherTerms.enable();
       accountFrom.enable();
       speciallyTerms.enable();
@@ -2550,8 +2556,8 @@ export class PreProductComponent implements OnInit {
       mainTrems.get("prepayId").clearValidators();
     }
     mainTrems.get("paymentProvisionRemarks").updateValueAndValidity();
-      mainTrems.get("prepayReferenceNo").updateValueAndValidity();
-      mainTrems.get("prepayId").updateValueAndValidity();
+    mainTrems.get("prepayReferenceNo").updateValueAndValidity();
+    mainTrems.get("prepayId").updateValueAndValidity();
 
     return true;
   }
