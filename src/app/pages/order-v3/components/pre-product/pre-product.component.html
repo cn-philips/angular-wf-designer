@@ -1509,6 +1509,15 @@
                     OIT预付款单号
                   </nz-form-label>
                   <nz-form-control nz-col nzXs="24" nzSm="24" nzMd="14">
+
+                      <nz-form-explain *ngIf="
+                            item.controls.mainTrems.get('prepayReferenceNo')
+                              ?.dirty &&
+                            item.controls.mainTrems.get('prepayReferenceNo')
+                              ?.errors
+                          ">
+                        {{'未找到对应的预付款特批申请！' }}
+                      </nz-form-explain>
                     <ng-container>
                       <input nz-input formControlName="prepayReferenceNo" disabled />
                     </ng-container>

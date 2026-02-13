@@ -2537,6 +2537,7 @@ export class PreProductComponent implements OnInit {
     mainTrems.get("paymentProvision").markAsDirty();
     mainTrems.get("paymentProvision").updateValueAndValidity();
     const { paymentProvision } = mainTrems.getRawValue();
+    const { orderModality } = orderBaseinfo.getRawValue();
     if (this.otherPaymentSelections.includes(paymentProvision) ) {
       mainTrems
         .get("paymentProvisionRemarks")
@@ -2544,12 +2545,17 @@ export class PreProductComponent implements OnInit {
       mainTrems.get("paymentProvisionRemarks").markAsDirty();
       mainTrems.get("paymentProvisionRemarks").updateValueAndValidity();
 
-      mainTrems.get("prepayReferenceNo").setValidators(Validators.required);
-      mainTrems.get("prepayReferenceNo").markAsDirty();
-      mainTrems.get("prepayReferenceNo").updateValueAndValidity();
-      mainTrems.get("prepayId").setValidators(Validators.required);
-      mainTrems.get("prepayId").markAsDirty();
-      mainTrems.get("prepayId").updateValueAndValidity();
+      if (orderModality === "PD&IGT") {
+        mainTrems.get("prepayReferenceNo").setValidators(Validators.required);
+        mainTrems.get("prepayReferenceNo").markAsDirty();
+        mainTrems.get("prepayReferenceNo").updateValueAndValidity();
+        mainTrems.get("prepayId").setValidators(Validators.required);
+        mainTrems.get("prepayId").markAsDirty();
+        mainTrems.get("prepayId").updateValueAndValidity();
+      } else {
+        mainTrems.get("prepayReferenceNo").clearValidators();
+        mainTrems.get("prepayId").clearValidators();
+      }
     } else {
       mainTrems.get("paymentProvisionRemarks").clearValidators();
       mainTrems.get("prepayReferenceNo").clearValidators();
