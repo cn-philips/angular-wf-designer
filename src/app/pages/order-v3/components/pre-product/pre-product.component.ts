@@ -1431,12 +1431,6 @@ export class PreProductComponent implements OnInit {
       orderSalesinfo.get("orderApprovalAreaConfiguration").enable();
 
       mainTrems.enable();
-      if (mainTrems.get("prepayReferenceNo")) {
-        mainTrems.get("prepayReferenceNo").disable();
-      }
-      if (mainTrems.get("prepayId")) {
-        mainTrems.get("prepayId").disable();
-      }
       otherTerms.enable();
       accountFrom.enable();
       speciallyTerms.enable();
