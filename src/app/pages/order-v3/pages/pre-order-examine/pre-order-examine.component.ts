@@ -227,6 +227,7 @@ export class PreorderexamineComponent implements OnInit {
     tenderFile: [[], []],//投标文件
     endUserContract: [[], []],//最终用户合同
     projectAnalysisTable: [[], []], //项目分析表模板
+
   }
 
   @ViewChild("baseInfoFromChild") baseInfoFromChild;

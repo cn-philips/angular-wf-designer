@@ -353,6 +353,8 @@ export class ContractSignComponent implements OnInit {
     cpclFileFlag: [null], //CPCL文件是否已查
     igtThirdPartyFile: [{ value: [], disabled: !this.editBase }],//IGT第三方吊塔确认文件
     otherSupportFile: [{ value: [], disabled: !this.editBase }],//其它支持文件
+    prepayReferenceNo: [{ value: null, disabled: true }],//OIT预付款单号
+    prepayId: [{ value: null, disabled: true }],//OIT预付款id
   }
 
   remarkFrom = {
@@ -783,7 +785,9 @@ export class ContractSignComponent implements OnInit {
       profitGross,
       dealerProfit,
       biddingCurrency,
-      endUserActuallyDeliveryAddress
+      endUserActuallyDeliveryAddress,
+      prepayId,
+      prepayReferenceNo
     } = contractInfo;
     this.zslSignSupplement = contractSignInfo.zslSignSupplement;
     this.contractSignFormData.patchValue({
@@ -898,7 +902,9 @@ export class ContractSignComponent implements OnInit {
       ...contractInfo,
     })
     this.baseInfoTableData.patchValue({
-      ...termsCheckInfo
+      ...termsCheckInfo,
+      prepayId,
+      prepayReferenceNo
     })
     this.contractBuyerFromData.patchValue({
       ...contractInfo

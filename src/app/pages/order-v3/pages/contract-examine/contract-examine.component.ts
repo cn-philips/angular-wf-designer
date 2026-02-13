@@ -253,6 +253,9 @@ export class ContractExamineComponent implements OnInit {
     paymentProvisionFile: [[]],//付款条款文件
     paymentProvisionRemarks: [[]],//付款条款备注
 
+    prepayReferenceNo: [{ value: null, disabled: true }],//OIT预付款单号
+    prepayId: [{ value: null, disabled: true }],//OIT预付款id
+
     qualityGuarantee: [{ value: null, disabled: !this.editBase }], //质量保函
     qualityGuaranteeRemarks: [{ value: null, disabled: !this.editBase }], //质量保函备注
     qualityGuaranteeFile: [[]], //质量保函文件
@@ -503,7 +506,9 @@ export class ContractExamineComponent implements OnInit {
       profitGrossRate,
       profitGross,
       dealerProfit,
-      biddingCurrency
+      biddingCurrency,
+      prepayId,
+      prepayReferenceNo,
     } = contractInfo
     this.baseInfoFromData.patchValue({
       oldSalesProvince: contractInfo.dealFormSalesProvince,
@@ -587,7 +592,9 @@ export class ContractExamineComponent implements OnInit {
       ...contractInfo
     })
     this.baseInfoTableData.patchValue({
-      ...termsCheckInfo
+      ...termsCheckInfo,
+      prepayId,
+      prepayReferenceNo
     })
     this.priceApprovalData.patchValue({
       ...contractInfo

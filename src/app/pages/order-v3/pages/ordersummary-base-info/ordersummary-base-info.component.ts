@@ -325,7 +325,10 @@ export class OrdersummaryBaseInfoComponent implements OnInit {
     dealerRequestLetterFile: [{ value: [], disabled: !this.editOther }],//cpcl文件
     otherSupportFile: [{ value: [], disabled: !this.editOther }],// 其它支持文件
     cpclFile: [{ value: [], disabled: !this.editOther }],//cpcl文件
-    cpclFileFlag: [null] //CPCL文件是否已查
+    cpclFileFlag: [null], //CPCL文件是否已查
+
+    prepayReferenceNo: [{ value: null, disabled: true }],//OIT预付款单号
+    prepayId: [{ value: null, disabled: true }],//OIT预付款id
   }
   oaAddInfo = {
     customerRequestLetterDate: [null], // 客户要货函日期
@@ -599,7 +602,10 @@ export class OrdersummaryBaseInfoComponent implements OnInit {
       profitGrossRate,
       profitGross,
       dealerProfit,
-      biddingCurrency
+      biddingCurrency,
+
+      prepayId,
+      prepayReferenceNo
     } = contractInfo
     this.formValue.patchValue({
       applyId: data.applyId ? data.applyId : this.applyId,
@@ -705,6 +711,8 @@ export class OrdersummaryBaseInfoComponent implements OnInit {
     })
     this.baseInfoTableData.patchValue({
       ...termsCheckInfo,
+      prepayId,
+      prepayReferenceNo,
       magneticResonanceShieldingFile: termsCheckInfo.magneticResonanceShieldingFile,
       igtThirdPartyFile: termsCheckInfo.igtThirdPartyFile,
     })
