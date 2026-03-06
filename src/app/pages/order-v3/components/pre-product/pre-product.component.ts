@@ -670,6 +670,7 @@ export class PreProductComponent implements OnInit {
   @Input() formValue: FormGroup;
 
   otherPaymentSelections = ['其他（请在备注处描述实际付款方式）','其他（将触发系统审批--请在备注处描述实际付款方式）'];
+  offlineApprovalPaymentSelections = ['非标付款方式已获得线下审批'];
   // 用于跟踪每个订单的前一个付款条款值
   previousPaymentProvisionMap: Map<number, string> = new Map();
   public index = 0;
@@ -2403,6 +2404,7 @@ export class PreProductComponent implements OnInit {
     // 获取前一个值，用于判断是否需要弹框
     const previousValue = this.previousPaymentProvisionMap.get(i);
     const isChangingToOther = !this.otherPaymentSelections.includes(previousValue) && this.otherPaymentSelections.includes(paymentProvision);
+    const isChangingToOfflineApproval =  !this.offlineApprovalPaymentSelections.includes(previousValue) && this.offlineApprovalPaymentSelections.includes(paymentProvision);
     // 更新前一个值
     this.previousPaymentProvisionMap.set(i, paymentProvision);
 
@@ -2456,9 +2458,9 @@ export class PreProductComponent implements OnInit {
     }
 
     // 检查是否为PD&IGT且从非"其他"选项切换到"其他"选项时，且仅在新建或草稿状态时弹出提示
-    const { orderModality } = orderBaseinfo.getRawValue();
+    // const { orderModality } = orderBaseinfo.getRawValue();
     const isNewOrDraftStatus = this.status == undefined || this.status == "" || this.status == "ecos_status_draft";
-    if (orderModality === "PD&IGT" && isChangingToOther && isNewOrDraftStatus) {
+    if (isChangingToOfflineApproval && isNewOrDraftStatus) {
       this.modal.info({
         nzTitle: '提示',
         nzContent: '对于选择了"非标准付款方式"的情况，需要首先提交"Special Approval的OIT预付款流程"（成功提交Special Approval申请后，进单准备表会自动检测相同DealForm ID的Special Approval关联单号）。',
@@ -2470,7 +2472,7 @@ export class PreProductComponent implements OnInit {
     }
 
     // 检查是否选择了其他付款方式，调用接口获取OIT预付款单号
-    if (this.otherPaymentSelections.includes(paymentProvision)) {
+    if (this.offlineApprovalPaymentSelections.includes(paymentProvision)) {
       this.fetchPrepayReferenceNo(i);
     } else {
       // 如果不是其他付款方式，清空OIT预付款单号
