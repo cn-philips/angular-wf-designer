@@ -2463,7 +2463,7 @@ export class PreProductComponent implements OnInit {
     if (isChangingToOfflineApproval && isNewOrDraftStatus) {
       this.modal.info({
         nzTitle: '提示',
-        nzContent: '对于选择了"非标准付款方式"的情况，需要首先提交"Special Approval的OIT预付款流程"（成功提交Special Approval申请后，进单准备表会自动检测相同DealForm ID的Special Approval关联单号）。',
+        nzContent: '对于选择了"非标付款方式已获得线下审批"的情况，需要首先提交"Special Approval的OIT预付款流程"（成功提交Special Approval申请后，进单准备表会自动检测相同DealForm ID的Special Approval关联单号）。',
         nzOkText: '关闭',
         nzOnOk: () => {
           // 关闭弹框
