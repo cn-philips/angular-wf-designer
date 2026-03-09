@@ -2471,11 +2471,11 @@ export class PreProductComponent implements OnInit {
       });
     }
 
-    // 检查是否选择了其他付款方式，调用接口获取OIT预付款单号
+    // 检查是否选择了其他付款方式，调用接口获取OIT预付款分期申请号
     if (this.offlineApprovalPaymentSelections.includes(paymentProvision)) {
       this.fetchPrepayReferenceNo(i);
     } else {
-      // 如果不是其他付款方式，清空OIT预付款单号
+      // 如果不是其他付款方式，清空OIT预付款分期申请号
       mainTrems.patchValue({
         prepayReferenceNo: '',
         prepayId: ''
@@ -2486,7 +2486,7 @@ export class PreProductComponent implements OnInit {
     this.orderPriceCountCnyOther(i);
   }
 
-  // 获取OIT预付款单号
+  // 获取OIT预付款分期申请号
   async fetchPrepayReferenceNo(i) {
     const orderBaseinfo = this.orderInfo.at(i).get("orderBaseinfo") as FormGroup;
     const mainTrems = this.orderInfo.at(i).get("mainTrems") as FormGroup;
@@ -2506,7 +2506,7 @@ export class PreProductComponent implements OnInit {
         });
       }
     } catch (error) {
-      console.error('获取OIT预付款单号失败:', error);
+      console.error('获取OIT预付款分期申请号失败:', error);
     }
 
       // mainTrems.patchValue({

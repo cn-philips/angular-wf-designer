@@ -342,7 +342,7 @@ export class OrderV3Service {
   }
 
   checkPrepay(dealFormId){
-    //查询OIT预付款单号
+    //查询OIT预付款分期申请号
     const url = `/act/ecos/oit/checkPrepay/${dealFormId}`;
     return this.http.get(url).toPromise();
   }

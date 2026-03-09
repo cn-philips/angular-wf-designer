@@ -1686,7 +1686,7 @@ export class PreOrderComponent implements OnInit {
       paymentProvisionSecondaryApproval: [{ value: val.paymentProvisionSecondaryApproval, disabled: this.editable }], //付款条款二级审核
       paymentProvisionFile: val.paymentProvisionFile ? [[...val.paymentProvisionFile]] : [],//付款条款文件
       paymentProvisionRemarks: [{ value: val.paymentProvisionRemarks ? val.paymentProvisionRemarks : null, disabled: true }],//付款条款备注
-      prepayReferenceNo: [{ value: val.prepayReferenceNo ? val.prepayReferenceNo : null, disabled: true }],//OIT预付款单号
+      prepayReferenceNo: [{ value: val.prepayReferenceNo ? val.prepayReferenceNo : null, disabled: true }],//OIT预付款分期申请号
       prepayId: [{ value: val.prepayId ? val.prepayId : null, disabled: true }],//OIT预付款ID
       performanceBond: [{ value: val.performanceBond ? val.performanceBond : '0', disabled: true }], //履约保函
       performanceBondisRequired: [{ value: false, disabled: true }],

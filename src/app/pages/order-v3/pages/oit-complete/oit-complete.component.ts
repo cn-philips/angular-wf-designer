@@ -447,7 +447,7 @@ export class OitcompleteComponent implements OnInit {
     dealerRequestLetterFileFlag: [null],//经销商要货函是否已查
     cpclFileFlag: [null], //CPCL文件是否已查
 
-    prepayReferenceNo: [{ value: null, disabled: true }],//OIT预付款单号
+    prepayReferenceNo: [{ value: null, disabled: true }],//OIT预付款分期申请号
     prepayId: [{ value: null, disabled: true }],//OIT预付款id
   }
   contractSignForm = {
