@@ -83,6 +83,7 @@ export class PreBaseInfoTableComponent implements OnInit {
   speciallyRow: any = 2;
   usRowspan: any = 4;
 
+  offlineApprovalPaymentSelections = ['非标付款方式已获得线下审批'];
 
   get baseInfoTable(): FormGroup {
     return this.formValue.get('baseInfoTable') as FormGroup;
@@ -677,7 +678,7 @@ export class PreBaseInfoTableComponent implements OnInit {
   }
   provisionChang() {
     const { paymentProvision } = this.baseInfoTable.getRawValue();
-    if (['其他（请在备注处描述实际付款方式）','其他（将触发系统审批--请在备注处描述实际付款方式）'].includes(paymentProvision) ) {
+    if (this.offlineApprovalPaymentSelections.includes(paymentProvision) ) {
       this.baseInfoTable.get('paymentProvisionRemarks').setValidators(Validators.required);
       this.baseInfoTable.get('paymentProvisionRemarks').markAsDirty();
       this.baseInfoTable.get('paymentProvisionRemarks').updateValueAndValidity();
