@@ -2534,7 +2534,7 @@ export class PreProductComponent implements OnInit {
     mainTrems.get("paymentProvision").updateValueAndValidity();
     const { paymentProvision } = mainTrems.getRawValue();
     const { orderModality } = orderBaseinfo.getRawValue();
-    if (this.otherPaymentSelections.includes(paymentProvision) ) {
+    if (this.otherPaymentSelections.includes(paymentProvision) || this.offlineApprovalPaymentSelections.includes(paymentProvision) ) {
       mainTrems
         .get("paymentProvisionRemarks")
         .setValidators(Validators.required);
