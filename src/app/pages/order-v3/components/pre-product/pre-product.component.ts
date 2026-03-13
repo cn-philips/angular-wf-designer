@@ -2540,22 +2540,28 @@ export class PreProductComponent implements OnInit {
         .setValidators(Validators.required);
       mainTrems.get("paymentProvisionRemarks").markAsDirty();
       mainTrems.get("paymentProvisionRemarks").updateValueAndValidity();
-
       if (orderModality === "PD&IGT") {
-        mainTrems.get("prepayReferenceNo").setValidators(Validators.required);
-        mainTrems.get("prepayReferenceNo").markAsDirty();
-        mainTrems.get("prepayReferenceNo").updateValueAndValidity();
         mainTrems.get("prepayId").setValidators(Validators.required);
         mainTrems.get("prepayId").markAsDirty();
         mainTrems.get("prepayId").updateValueAndValidity();
       } else {
-        mainTrems.get("prepayReferenceNo").clearValidators();
         mainTrems.get("prepayId").clearValidators();
       }
     } else {
       mainTrems.get("paymentProvisionRemarks").clearValidators();
-      mainTrems.get("prepayReferenceNo").clearValidators();
       mainTrems.get("prepayId").clearValidators();
+    }
+
+    if (this.offlineApprovalPaymentSelections.includes(paymentProvision)) {
+      if (orderModality === "PD&IGT") {
+        mainTrems.get("prepayReferenceNo").setValidators(Validators.required);
+        mainTrems.get("prepayReferenceNo").markAsDirty();
+        mainTrems.get("prepayReferenceNo").updateValueAndValidity();
+      }else{
+        mainTrems.get("prepayReferenceNo").clearValidators();
+      }
+    }else{
+      mainTrems.get("prepayReferenceNo").clearValidators();
     }
     mainTrems.get("paymentProvisionRemarks").updateValueAndValidity();
     mainTrems.get("prepayReferenceNo").updateValueAndValidity();

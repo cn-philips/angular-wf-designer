@@ -82,7 +82,7 @@ export class PreBaseInfoTableComponent implements OnInit {
   rowspanClause: any = 7;
   speciallyRow: any = 2;
   usRowspan: any = 4;
-
+  otherPaymentSelections = ['其他（请在备注处描述实际付款方式）','其他（将触发系统审批--请在备注处描述实际付款方式）']
   offlineApprovalPaymentSelections = ['非标付款方式已获得线下审批'];
 
   get baseInfoTable(): FormGroup {
@@ -678,7 +678,7 @@ export class PreBaseInfoTableComponent implements OnInit {
   }
   provisionChang() {
     const { paymentProvision } = this.baseInfoTable.getRawValue();
-    if (this.offlineApprovalPaymentSelections.includes(paymentProvision) ) {
+    if (this.otherPaymentSelections.includes(paymentProvision) ) {
       this.baseInfoTable.get('paymentProvisionRemarks').setValidators(Validators.required);
       this.baseInfoTable.get('paymentProvisionRemarks').markAsDirty();
       this.baseInfoTable.get('paymentProvisionRemarks').updateValueAndValidity();
@@ -687,6 +687,19 @@ export class PreBaseInfoTableComponent implements OnInit {
       this.baseInfoTable.get('paymentProvisionRemarks').clearValidators();
     }
     this.baseInfoTable.get('paymentProvisionRemarks').updateValueAndValidity();
+
+    // if(this.offlineApprovalPaymentSelections.includes(paymentProvision)){
+    //   console.log("进入非标付款方式已获得线下审批")
+    //   this.baseInfoTable.get('prepayReferenceNo').setValidators(Validators.required);
+    //   this.baseInfoTable.get('prepayReferenceNo').markAsDirty();
+    //   this.baseInfoTable.get('prepayReferenceNo').updateValueAndValidity();
+    // }else{
+    //   console.log("不进入非标付款方式已获得线下审批")
+    //   this.baseInfoTable.get('prepayReferenceNo').clearValidators();
+    //   this.baseInfoTable.get('prepayReferenceNo').updateValueAndValidity();
+    // }
+
+
     return true
   }
 

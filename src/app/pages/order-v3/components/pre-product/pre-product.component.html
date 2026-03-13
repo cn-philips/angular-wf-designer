@@ -1505,7 +1505,7 @@
               </div>
               <div nz-col nzXs="24" nzSm="24" nzMd="8" *ngIf="offlineApprovalPaymentSelections.includes(item.controls.mainTrems.getRawValue().paymentProvision)">
                 <nz-form-item>
-                  <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true" >
+                  <nz-form-label nzXs="24" nzSm="24" nzMd="6" [nzNoColon]="true" [nzRequired]="true" >
                     OIT预付款分期申请号
                   </nz-form-label>
                   <nz-form-control nz-col nzXs="24" nzSm="24" nzMd="14">
