@@ -325,7 +325,10 @@ export class OrdersummaryBaseInfoComponent implements OnInit {
     dealerRequestLetterFile: [{ value: [], disabled: !this.editOther }],//cpcl文件
     otherSupportFile: [{ value: [], disabled: !this.editOther }],// 其它支持文件
     cpclFile: [{ value: [], disabled: !this.editOther }],//cpcl文件
-    cpclFileFlag: [null] //CPCL文件是否已查
+    cpclFileFlag: [null], //CPCL文件是否已查
+
+    prepayReferenceNo: [{ value: null, disabled: true }],//OIT预付款分期申请号
+    prepayId: [{ value: null, disabled: true }],//OIT预付款id
   }
   oaAddInfo = {
     customerRequestLetterDate: [null], // 客户要货函日期
@@ -599,7 +602,10 @@ export class OrdersummaryBaseInfoComponent implements OnInit {
       profitGrossRate,
       profitGross,
       dealerProfit,
-      biddingCurrency
+      biddingCurrency,
+
+      prepayId,
+      prepayReferenceNo
     } = contractInfo
     this.formValue.patchValue({
       applyId: data.applyId ? data.applyId : this.applyId,
@@ -705,6 +711,8 @@ export class OrdersummaryBaseInfoComponent implements OnInit {
     })
     this.baseInfoTableData.patchValue({
       ...termsCheckInfo,
+      prepayId,
+      prepayReferenceNo,
       magneticResonanceShieldingFile: termsCheckInfo.magneticResonanceShieldingFile,
       igtThirdPartyFile: termsCheckInfo.igtThirdPartyFile,
     })
@@ -1358,6 +1366,8 @@ export class OrdersummaryBaseInfoComponent implements OnInit {
       paymentProvision: [{ value: val.paymentProvision ? val.paymentProvision : '0', disabled: this.editBase }],//付款条款
       paymentProvisionFile: val.paymentProvisionFile ? [[...val.paymentProvisionFile]] : [],//付款条款文件
       paymentProvisionRemarks: [{ value: val.paymentProvisionRemarks ? val.paymentProvisionRemarks : null, disabled: true }],//付款条款备注
+      prepayReferenceNo: [{ value: val.prepayReferenceNo ? val.prepayReferenceNo : null, disabled: true }],//OIT预付款分期申请号
+      prepayId: [{ value: val.prepayId ? val.prepayId : null, disabled: true }],//OIT预付款ID
       performanceBond: [{ value: val.performanceBond ? val.performanceBond : '0', disabled: true }], //履约保函
       performanceBondFile: val.performanceBondFile ? [[...val.performanceBondFile]] : [],//履约保函文件
       performanceBondRemarks: [{ value: val.performanceBondRemarks ? val.performanceBondRemarks : null, disabled: true }],//履约保函备注
