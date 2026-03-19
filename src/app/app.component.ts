@@ -1,4 +1,4 @@
-import { Component, HostListener } from "@angular/core";
+import { Component } from "@angular/core";
 import {
   Router,
   Event as RouterEvent,
@@ -11,7 +11,6 @@ import { AppService } from "./app.service";
 import { AuthGuard } from "@core/guards/auth-guard.service";
 import { LayoutService } from "./layout/layout.service";
 import { TranslateService } from "@ngx-translate/core";
-import { environment } from "environments/environment";
 
 @Component({
   selector: "app-root",

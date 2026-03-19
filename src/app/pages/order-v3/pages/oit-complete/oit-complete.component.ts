@@ -445,10 +445,7 @@ export class OitcompleteComponent implements OnInit {
     confirmationFileCheckFlag: [null],//igt是否已查
     afterSalesCheckFlag: [null],//是否有售后限价是否已查
     dealerRequestLetterFileFlag: [null],//经销商要货函是否已查
-    cpclFileFlag: [null], //CPCL文件是否已查
-
-    prepayReferenceNo: [{ value: null, disabled: true }],//OIT预付款分期申请号
-    prepayId: [{ value: null, disabled: true }],//OIT预付款id
+    cpclFileFlag: [null] //CPCL文件是否已查
   }
   contractSignForm = {
     salesAgreementNo: [{ value: null, disabled: !this.editable }],//买卖协议号
@@ -922,9 +919,7 @@ export class OitcompleteComponent implements OnInit {
       profitGross,
       dealerProfit,
       biddingCurrency,
-      endUserActuallyDeliveryAddress,
-      prepayId,
-      prepayReferenceNo
+      endUserActuallyDeliveryAddress
     } = contractInfo
     this.formValue.patchValue({
       applyId: contractInfo.applyId ? contractInfo.applyId : this.applyId,
@@ -1007,7 +1002,7 @@ export class OitcompleteComponent implements OnInit {
       profitGross,
       dealerProfit,
       biddingCurrency,
-      endUserActuallyDeliveryAddress,
+      endUserActuallyDeliveryAddress
     })
     this.productModelInfoData.patchValue({
       ...contractInfo
@@ -1029,9 +1024,7 @@ export class OitcompleteComponent implements OnInit {
       ...contractInfo
     })
     this.baseInfoTableData.patchValue({
-      ...termsCheckInfo,
-      prepayId,
-      prepayReferenceNo
+      ...termsCheckInfo
     })
     this.priceApprovalData.patchValue({
       ...orderSummaryInfo,

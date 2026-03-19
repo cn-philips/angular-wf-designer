@@ -30,7 +30,7 @@ import {
   floatDivide,
   floatAdd,
 } from "@core/util/tools";
-import { NzMessageService, NzModalService } from "ng-zorro-antd";
+import { NzMessageService } from "ng-zorro-antd";
 import { areaList } from "@core/util/areajson";
 import { environment } from "@env";
 import { HttpService } from "@core/services";
@@ -45,7 +45,6 @@ export class PreProductComponent implements OnInit {
     private service: OrderV3Service,
     private fb: FormBuilder,
     private message: NzMessageService,
-    private modal: NzModalService,
     private activatedRouter: ActivatedRoute,
     private router: Router,
     public changeDetectorRef: ChangeDetectorRef,
@@ -625,13 +624,6 @@ export class PreProductComponent implements OnInit {
           this.isshowActualSalesName(index);
 
         });
-
-        // 初始化付款条款的初始值，避免加载时触发弹框
-        this.orderInfo.controls.forEach((val, index) => {
-          const mainTrems = this.orderInfo.at(index).get("mainTrems") as FormGroup;
-          const { paymentProvision } = mainTrems.getRawValue();
-          this.previousPaymentProvisionMap.set(index, paymentProvision);
-        });
       }
 
       let allSwitchValid = this.orderInfo.controls.map((i) =>
@@ -669,10 +661,6 @@ export class PreProductComponent implements OnInit {
   @ViewChild("selectRefno") selectRefno;
   @Input() formValue: FormGroup;
 
-  otherPaymentSelections = ['其他（请在备注处描述实际付款方式）','其他（将触发系统审批--请在备注处描述实际付款方式）'];
-  offlineApprovalPaymentSelections = ['非标付款方式已获得线下审批'];
-  // 用于跟踪每个订单的前一个付款条款值
-  previousPaymentProvisionMap: Map<number, string> = new Map();
   public index = 0;
   public user;
 
@@ -753,7 +741,6 @@ export class PreProductComponent implements OnInit {
       });
     }
   }
-
   foreignInfoDDpstatus(i) {
     //验证ddp是否过期
     const foreignInfo = this.orderInfo.at(i).get("foreignInfo") as FormGroup;
@@ -898,7 +885,7 @@ export class PreProductComponent implements OnInit {
       .get("orderBaseinfo") as FormGroup;
     const { currencySystem } = orderBaseinfo.getRawValue();
     const { paymentProvision } = mainTrems.getRawValue();
-    if (this.otherPaymentSelections.includes(paymentProvision) ) {
+    if (['其他（请在备注处描述实际付款方式）','其他（将触发系统审批--请在备注处描述实际付款方式）'].includes(paymentProvision) ) {
       if (currencySystem == "CNY") {
         orderBaseinfo.get("paymentNetCny").setValidators([Validators.required]);
         orderBaseinfo.get("paymentUsd").clearValidators();
@@ -2400,14 +2387,6 @@ export class PreProductComponent implements OnInit {
       .at(i)
       .get("orderBaseinfo") as FormGroup;
     const { paymentProvision } = mainTrems.getRawValue();
-
-    // 获取前一个值，用于判断是否需要弹框
-    const previousValue = this.previousPaymentProvisionMap.get(i);
-    const isChangingToOther = !this.otherPaymentSelections.includes(previousValue) && this.otherPaymentSelections.includes(paymentProvision);
-    const isChangingToOfflineApproval =  !this.offlineApprovalPaymentSelections.includes(previousValue) && this.offlineApprovalPaymentSelections.includes(paymentProvision);
-    // 更新前一个值
-    this.previousPaymentProvisionMap.set(i, paymentProvision);
-
     const {
       paymentCnyCp,
       paymentNetCnyCp,
@@ -2429,8 +2408,7 @@ export class PreProductComponent implements OnInit {
         paymentUsd: paymentUsdCp,
       });
     }
-
-    if (this.otherPaymentSelections.includes(paymentProvision) ) {
+    if (['其他（请在备注处描述实际付款方式）','其他（将触发系统审批--请在备注处描述实际付款方式）'].includes(paymentProvision) ) {
       orderBaseinfo.patchValue({
         creditCny: 0,
         creditCnyNet: 0,
@@ -2443,9 +2421,9 @@ export class PreProductComponent implements OnInit {
         creditUsd: creditUsdCp,
       });
     }
-
     if (
-      !this.otherPaymentSelections.includes(paymentProvision)  &&  paymentProvision != "远期信用证（请在备注处注明信用证期限及开证行）"
+      !['其他（请在备注处描述实际付款方式）','其他（将触发系统审批--请在备注处描述实际付款方式）'].includes(paymentProvision)  &&
+      paymentProvision != "远期信用证（请在备注处注明信用证期限及开证行）"
     ) {
       orderBaseinfo.patchValue({
         creditCny: 0,
@@ -2456,63 +2434,7 @@ export class PreProductComponent implements OnInit {
         paymentUsd: 0,
       });
     }
-
-    // 检查是否为PD&IGT且从非"其他"选项切换到"其他"选项时，且仅在新建或草稿状态时弹出提示
-    // const { orderModality } = orderBaseinfo.getRawValue();
-    const isNewOrDraftStatus = this.status == undefined || this.status == "" || this.status == "ecos_status_draft";
-    if (isChangingToOfflineApproval && isNewOrDraftStatus) {
-      this.modal.info({
-        nzTitle: '提示',
-        nzContent: '对于选择了"非标付款方式已获得线下审批"的情况，需要首先提交"Special Approval的OIT预付款流程"（成功提交Special Approval申请后，进单准备表会自动检测相同DealForm ID的Special Approval关联单号）。',
-        nzOkText: '关闭',
-        nzOnOk: () => {
-          // 关闭弹框
-        }
-      });
-    }
-
-    // 检查是否选择了其他付款方式，调用接口获取OIT预付款分期申请号
-    if (this.offlineApprovalPaymentSelections.includes(paymentProvision)) {
-      this.fetchPrepayReferenceNo(i);
-    } else {
-      // 如果不是其他付款方式，清空OIT预付款分期申请号
-      mainTrems.patchValue({
-        prepayReferenceNo: '',
-        prepayId: ''
-      });
-    }
-
-    console.log('Here!')
     this.orderPriceCountCnyOther(i);
-  }
-
-  // 获取OIT预付款分期申请号
-  async fetchPrepayReferenceNo(i) {
-    const orderBaseinfo = this.orderInfo.at(i).get("orderBaseinfo") as FormGroup;
-    const mainTrems = this.orderInfo.at(i).get("mainTrems") as FormGroup;
-    const {
-      dealFormId,
-    } = this.baseInfoFrom.getRawValue();
-    if (!dealFormId) {
-      return;
-    }
-
-    try {
-      const res = await this.service.checkPrepay(dealFormId);
-      if (res && res.code === '0000' && res.data) {
-        mainTrems.patchValue({
-          prepayReferenceNo: res.data.referenceNo || '',
-          prepayId: res.data.id || ''
-        });
-      }
-    } catch (error) {
-      console.error('获取OIT预付款分期申请号失败:', error);
-    }
-
-      // mainTrems.patchValue({
-      //     prepayReferenceNo: "test prepayReferenceNo",
-      //     prepayId:"test prepayId"
-      //   });
   }
 
   provisionChang(i) {
@@ -2533,39 +2455,16 @@ export class PreProductComponent implements OnInit {
     mainTrems.get("paymentProvision").markAsDirty();
     mainTrems.get("paymentProvision").updateValueAndValidity();
     const { paymentProvision } = mainTrems.getRawValue();
-    const { orderModality } = orderBaseinfo.getRawValue();
-    if (this.otherPaymentSelections.includes(paymentProvision) || this.offlineApprovalPaymentSelections.includes(paymentProvision) ) {
+    if (['其他（请在备注处描述实际付款方式）','其他（将触发系统审批--请在备注处描述实际付款方式）'].includes(paymentProvision) ) {
       mainTrems
         .get("paymentProvisionRemarks")
         .setValidators(Validators.required);
       mainTrems.get("paymentProvisionRemarks").markAsDirty();
       mainTrems.get("paymentProvisionRemarks").updateValueAndValidity();
-      if (orderModality === "PD&IGT") {
-        mainTrems.get("prepayId").setValidators(Validators.required);
-        mainTrems.get("prepayId").markAsDirty();
-        mainTrems.get("prepayId").updateValueAndValidity();
-      } else {
-        mainTrems.get("prepayId").clearValidators();
-      }
     } else {
       mainTrems.get("paymentProvisionRemarks").clearValidators();
-      mainTrems.get("prepayId").clearValidators();
-    }
-
-    if (this.offlineApprovalPaymentSelections.includes(paymentProvision)) {
-      if (orderModality === "PD&IGT") {
-        mainTrems.get("prepayReferenceNo").setValidators(Validators.required);
-        mainTrems.get("prepayReferenceNo").markAsDirty();
-        mainTrems.get("prepayReferenceNo").updateValueAndValidity();
-      }else{
-        mainTrems.get("prepayReferenceNo").clearValidators();
-      }
-    }else{
-      mainTrems.get("prepayReferenceNo").clearValidators();
     }
     mainTrems.get("paymentProvisionRemarks").updateValueAndValidity();
-    mainTrems.get("prepayReferenceNo").updateValueAndValidity();
-    mainTrems.get("prepayId").updateValueAndValidity();
 
     return true;
   }
