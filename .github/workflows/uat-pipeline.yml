@@ -19,11 +19,26 @@ jobs:
         with:
           node-version: 12
 
+      - name: Add swap space
+        run: |
+          sudo fallocate -l 8G /swapfile
+          sudo chmod 600 /swapfile
+          sudo mkswap /swapfile
+          sudo swapon /swapfile
+
       - name: Setup npm registry
         run: npm config set registry https://registry.npmjs.org/
 
       - name: Remove lock files
         run: rm -f package-lock.json yarn.lock
+
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node12-${{ hashFiles('package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node12-
 
       - name: Install dependencies
         run: npm install
@@ -32,7 +47,7 @@ jobs:
         run: ln -s illustrations src/assets/image/icons/homepage/Illustrations
 
       - name: Build for UAT
-        run: npm run build-uat
+        run: node --max_old_space_size=6144 ./node_modules/@angular/cli/bin/ng build --prod --configuration=uat
 
       - name: Package ui.zip
         run: |
