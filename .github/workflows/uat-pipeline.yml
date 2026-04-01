@@ -56,4 +56,5 @@ jobs:
           user: ${{ vars.JENKINS_USER }}
           token: ${{ secrets.JENKINS_TOKEN }}
           job: ${{ vars.JENKINS_JOB_NAME }}
-          params: "BRANCH=${{ github.ref_name }}"
+          parameters: |
+            BRANCH=${{ github.ref_name }}
