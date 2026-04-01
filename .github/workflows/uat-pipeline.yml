@@ -17,7 +17,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 12
+          node-version: 14
 
       - name: Setup npm registry
         run: npm config set registry https://registry.npmjs.org/
@@ -40,7 +40,7 @@ jobs:
         run: ln -s illustrations src/assets/image/icons/homepage/Illustrations
 
       - name: Build for UAT
-        run: node --max_old_space_size=6144 ./node_modules/@angular/cli/bin/ng build --prod --configuration=uat
+        run: node --max_old_space_size=6144 ./node_modules/@angular/cli/bin/ng build --prod --configuration=uat --no-build-optimizer
 
       - name: Package ui.zip
         run: |
