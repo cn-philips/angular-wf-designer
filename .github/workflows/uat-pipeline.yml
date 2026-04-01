@@ -40,7 +40,7 @@ jobs:
         run: ln -s illustrations src/assets/image/icons/homepage/Illustrations
 
       - name: Build for UAT
-        run: node --max_old_space_size=6144 ./node_modules/@angular/cli/bin/ng build --prod --configuration=uat --no-build-optimizer
+        run: node --max_old_space_size=4096 ./node_modules/@angular/cli/bin/ng build --configuration=uat --aot=false --optimization=false --build-optimizer=false --source-map=false --vendor-chunk=true
 
       - name: Package ui.zip
         run: |
