@@ -31,16 +31,17 @@ jobs:
       - name: Build for UAT
         run: node --max_old_space_size=4096 ./node_modules/@angular/cli/bin/ng build --configuration=uat --aot=false --optimization=false --build-optimizer=false --source-map=false --vendor-chunk=true
 
-      - name: Prepare ui artifact
+      - name: Package ui.zip
         run: |
-          rm -rf "$GITHUB_WORKSPACE/ui"
-          cp -R ../dist/ui "$GITHUB_WORKSPACE/ui"
+          rm -f "$GITHUB_WORKSPACE/ui.zip"
+          cd ../dist
+          zip -r "$GITHUB_WORKSPACE/ui.zip" ui
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: uat-ui
-          path: ui
+          name: uat-ui-zip
+          path: ui.zip
 
   publish:
     name: Trigger Jenkins Job
