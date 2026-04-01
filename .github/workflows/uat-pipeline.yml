@@ -19,13 +19,6 @@ jobs:
         with:
           node-version: 12
 
-      - name: Add swap space
-        run: |
-          sudo fallocate -l 8G /swapfile
-          sudo chmod 600 /swapfile
-          sudo mkswap /swapfile
-          sudo swapon /swapfile
-
       - name: Setup npm registry
         run: npm config set registry https://registry.npmjs.org/
 
