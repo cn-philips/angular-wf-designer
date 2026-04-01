@@ -42,8 +42,7 @@ jobs:
       - name: Package ui.zip
         run: |
           cd ../dist
-          zip -r ../ui.zip ui
-          cd ..
+          zip -r "$GITHUB_WORKSPACE/ui.zip" ui
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
