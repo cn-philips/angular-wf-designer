@@ -28,6 +28,9 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Fix asset path case sensitivity
+        run: ln -s illustrations src/assets/image/icons/homepage/Illustrations
+
       - name: Build for UAT
         run: npm run build-uat
 
