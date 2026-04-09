@@ -79,13 +79,25 @@
                     </div>
                   </nz-form-item>
                 </div>
-                <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                <div nz-col nzXs="24" nzSm="24" nzMd="8" *ngIf="this.baseInfoTable.getRawValue().paymentProvisionFile">
                   <nz-form-item>
                     <nz-form-control nz-col nzXs="24" nzSm="24" nzMd="24" nz-tooltip>
                       <div class="maxuploadmin">
                         <shared-upload-file [title]="'上传附件'" [type]="null" formControlName="paymentProvisionFile">
                         </shared-upload-file>
                       </div>
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+                <div nz-col nzXs="24" nzSm="24" nzMd="8">
+                  <nz-form-item>
+                    <!-- <nz-form-label nzXs="24" nzSm="24" nzMd="24" [nzNoColon]="true">
+                      OIT预付款分期申请号
+                    </nz-form-label> -->
+                    <nz-form-control nzXs="24" nzSm="24" nzMd="24">
+                      <nz-tooltip nzTrigger="hover" nzPlacement="topLeft"[nzTitle]="'OIT预付款分期申请号'">
+                        <input #inputElement nz-tooltip nz-input formControlName="prepayReferenceNo" readonly />
+                      </nz-tooltip>
                     </nz-form-control>
                   </nz-form-item>
                 </div>
