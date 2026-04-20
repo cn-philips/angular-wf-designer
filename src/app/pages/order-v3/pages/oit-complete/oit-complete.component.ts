@@ -76,6 +76,7 @@ export class OitcompleteComponent implements OnInit {
     "30% TT before OIT, 60% TT before FP, 10% TT against ICF(CVI)",
     "100% LC before OIT(MOS)",
     "30%TT before OIT, 70% TT before FP(MOS)",
+    "非标付款方式已获得线下审批"
   ];
 
   public isRaisedFlow:boolean = false; //是否是raised flow
