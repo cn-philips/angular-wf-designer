@@ -67,14 +67,16 @@ export class OitcompleteComponent implements OnInit {
     "30% TT before OIT, 70% before production",
     "100% TT before OIT",
     "100% LC before OIT",
-    "(non-stock)15% TT before OIT, 85% before FP",
-    "(Stock)15% TT before OIT, 85% TT within 90 days after contract signed",
+    // "(non-stock)15% TT before OIT, 85% before FP",
+    "15% TT before OIT, 85% before FP",
+    // "(Stock)15% TT before OIT, 85% TT within 90 days after contract signed",
     "10% TT before OIT, 80% TT/LC before FP, 10% TT against AC(民营)",
     "15% TT before OIT, 85% before FP",
     "10% TT before OIT, 90% before FP(超千万PO)",
     "30% TT before OIT, 60% TT before FP, 10% TT against ICF(CVI)",
     "100% LC before OIT(MOS)",
     "30%TT before OIT, 70% TT before FP(MOS)",
+    "非标付款方式已获得线下审批"
   ];
 
   public isRaisedFlow:boolean = false; //是否是raised flow
