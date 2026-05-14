@@ -1,0 +1,60 @@
+name: PROD Pipeline
+
+on:
+  push:
+    branches:
+      - prod
+
+jobs:
+  build:
+    name: Build PROD
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 12
+
+      - name: Setup npm registry
+        run: npm config set registry https://registry.npmjs.org/
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Fix asset path case sensitivity
+        run: ln -s illustrations src/assets/image/icons/homepage/Illustrations
+
+      - name: Build for PROD
+        run: node --max_old_space_size=4096 ./node_modules/@angular/cli/bin/ng build --configuration=prod --aot=false --optimization=false --build-optimizer=false --source-map=false --vendor-chunk=true
+
+      - name: Prepare ui artifact directory
+        run: |
+          rm -rf "$GITHUB_WORKSPACE/ui"
+          cp -R ../dist/ui "$GITHUB_WORKSPACE/ui"
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: prod-ui
+          path: ui
+
+  publish:
+    name: Trigger Jenkins Job
+    runs-on: ubuntu-latest
+    needs: build
+    environment: PROD
+
+    steps:
+      - name: Trigger Jenkins
+        uses: appleboy/jenkins-action@v1
+        with:
+          url: ${{ vars.JENKINS_URL }}
+          user: ${{ vars.JENKINS_USER }}
+          token: ${{ secrets.JENKINS_TOKEN }}
+          job: ${{ vars.JENKINS_JOB_NAME }}
+          parameters: |
+            BRANCH=${{ github.ref_name }}
