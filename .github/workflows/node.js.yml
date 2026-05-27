@@ -5,9 +5,9 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "*" ]
   pull_request:
-    branches: [ "master" ]
+    branches: [ "*" ]
 
 permissions:
   contents: read
@@ -17,25 +17,26 @@ permissions:
 jobs:
   build:
 
-    # runs-on: [self-hosted, Linux]
-    runs-on: [self-hosted, macOS]
+    runs-on: [self-hosted, Linux]
+    # runs-on: [self-hosted, macOS]
     environment: github-pages
 
-    strategy:
-      matrix:
-        node-version: [20.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+    # strategy:
+    #   matrix:
+    #     node-version: [24.x]
+    #     # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
     - uses: actions/checkout@v4
-    - name: Use Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-        # cache: 'npm'
-    - run: npm config set registry https://registry.npmmirror.com/
-    - run: npm -g install @angular/cli
-    - run: npm i
+    # - name: Use Node.js
+    #   uses: actions/setup-node@v4
+    #   with:
+    #     node-version: ${{ matrix.node-version }}
+    #     # cache: 'npm'
+    # - run: npm config set registry https://registry.npmmirror.com/
+    # - run: npm -g install @angular/cli
+    # - run: npm i
+    - run: yarn
     - run: ng build --aot #npm run build --if-present
     # - run: npm test
 
