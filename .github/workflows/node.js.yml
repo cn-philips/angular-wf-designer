@@ -9,11 +9,16 @@ on:
   pull_request:
     branches: [ "master" ]
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
   build:
 
-    runs-on: [self-hosted, Linux]
-    # runs-on: [self-hosted, macOS]
+    # runs-on: [self-hosted, Linux]
+    runs-on: [self-hosted, macOS]
     environment: github-pages
 
     strategy:
@@ -48,10 +53,10 @@ jobs:
 
     - name: Setup Pages
       uses: actions/configure-pages@v5
-    # - name: Upload artifact
-    #   uses: actions/upload-pages-artifact@v3
-    #   with:
-    #     path: './dist/workflow-designer-angular-sample'
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: './dist/workflow-designer-angular-sample'
     - name: Deploy to GitHub Pages
       id: deployment
       uses: actions/deploy-pages@v5
