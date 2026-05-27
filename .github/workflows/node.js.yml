@@ -50,8 +50,8 @@ jobs:
       run: |
         aws s3 cp --recursive dist/workflow-designer-angular-sample \
             s3://www-cn/angular/workflow-designer-${GITHUB_SHA:0:7};
-        rm -f /usr/local/bin/gtar;
-        brew install gnu-tar;
+        # rm -f /usr/local/bin/gtar;
+        # brew install gnu-tar;
 
     - name: Setup Pages
       uses: actions/configure-pages@v5
