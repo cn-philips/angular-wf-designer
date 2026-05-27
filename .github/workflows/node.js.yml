@@ -12,8 +12,8 @@ on:
 jobs:
   build:
 
-    # runs-on: [self-hosted, Linux]
-    runs-on: [self-hosted, macOS]
+    runs-on: [self-hosted, Linux]
+    # runs-on: [self-hosted, macOS]
     environment: github-pages
 
     strategy:
@@ -28,7 +28,7 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         # cache: 'npm'
-    - run: export TZ=Asia/Shanghai
+    - run: npm config set registry https://registry.npmmirror.com/
     - run: npm -g install @angular/cli
     - run: npm i
     - run: ng build --aot #npm run build --if-present
