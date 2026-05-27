@@ -44,7 +44,7 @@ jobs:
     - name: S3Upload
       run: |
         aws s3 cp --recursive dist/workflow-designer-angular-sample \
-            s3://${{secrets.AWS_S3_BUCKET}}/workflow-designer-angular/${GITHUB_SHA:0:7}
+            s3://www-cn/angular/workflow-designer-${GITHUB_SHA:0:7}
 
     - name: Setup Pages
       uses: actions/configure-pages@v5
