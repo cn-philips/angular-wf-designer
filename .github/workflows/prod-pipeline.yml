@@ -33,7 +33,7 @@ jobs:
         run: ln -s illustrations src/assets/image/icons/homepage/Illustrations
 
       - name: Build for PROD
-        run: node --max_old_space_size=4096 ./node_modules/@angular/cli/bin/ng build --configuration=production --aot=false --optimization=false --build-optimizer=false --source-map=false --vendor-chunk=true
+        run: npm run build-prod
 
       - name: Prepare ui artifact directory
         run: |
