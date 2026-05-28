@@ -3,12 +3,16 @@ name: PROD Pipeline
 on:
   push:
     branches:
-      - prod
+      - '*-prod'
 
 jobs:
   build:
     name: Build PROD
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, aws]
+
+    strategy:
+      matrix:
+        node-version: [14.x]
 
     steps:
       - name: Checkout code
@@ -17,10 +21,10 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 12
+          node-version: ${{ matrix.node-version }}
 
-      - name: Setup npm registry
-        run: npm config set registry https://registry.npmjs.org/
+      # - name: Setup npm registry
+      #   run: npm config set registry https://registry.npmjs.org/
 
       - name: Install dependencies
         run: npm install
