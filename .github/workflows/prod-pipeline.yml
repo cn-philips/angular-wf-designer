@@ -8,7 +8,8 @@ on:
 jobs:
   build:
     name: Build PROD
-    runs-on: [self-hosted, Linux, aws]
+    # runs-on: [self-hosted, Linux, aws]
+    runs-on: [wsl]
 
     strategy:
       matrix:
