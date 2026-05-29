@@ -9,7 +9,7 @@ jobs:
   build:
     name: Build PROD
     # runs-on: [self-hosted, Linux, aws]
-    runs-on: [wsl]
+    runs-on: [aLinux]
 
     strategy:
       matrix:
