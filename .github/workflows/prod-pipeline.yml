@@ -9,13 +9,14 @@ jobs:
   build:
     name: Build PROD
     # runs-on: [self-hosted, Linux, aws]
-    runs-on: [aLinux]
+    runs-on: [ubuntu-24.04]
 
     strategy:
       matrix:
         node-version: [14.x]
 
     steps:
+      - run: free -h
       - name: Checkout code
         uses: actions/checkout@v4
 
