@@ -9,7 +9,7 @@ jobs:
   build:
     name: Build PROD
     # runs-on: [self-hosted, Linux, aws]
-    runs-on: [ubuntu-latest, xlarge]
+    runs-on: [ubuntu-latest, 16G]
     # runs-on:
     #   labels: ubuntu-24.04-16core
 
